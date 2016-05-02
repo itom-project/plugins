@@ -226,7 +226,7 @@ void DockWidgetNanotecStepMotor::actuatorStatusChanged(QVector<int> status, QVec
                 m_pGoButtons[i]->setEnabled(false);
                 running = true;
             }
-            else if (status[i] & ito::actuatorInterrupted)
+			else if (status[i] & ito::actuatorInterrupted)
             {
                 style = "background-color: red";
                 m_pIncButtons[i]->setEnabled(true);

@@ -60,9 +60,6 @@ class NanotecStepMotor : public ito::AddInActuator
         ito::AddInDataIO *m_pSer;
         int m_async;
         int m_numAxes;
-//        QVector<int> m_axesID;
-//        int m_deviceAddress;
-//        double m_unitPerSteps; //number of mm or degree per stepper motor full step
 
         QSharedPointer<ito::Param> endlineParam;
 

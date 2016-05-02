@@ -24,6 +24,8 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
+#define NOMINMAX
+
 #include "NanotecStepMotor.h"
 
 #include "pluginVersion.h"
@@ -108,7 +110,7 @@ ito::RetVal NanotecStepMotor::NSMReadWrite(const int deviceIndex, const QString 
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Invalide command: '%1'").arg(commandStr).toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Invalid command: '%1'").arg(commandStr).toLatin1().data());
             }
         }
         else
@@ -307,6 +309,11 @@ NanotecStepMotor::NanotecStepMotor() :
     param.setMeta(&crm, false);
     m_params.insert("coilCurrentRest", param);
 
+	param = ito::Param("endSwitchSettings", ito::ParamBase::IntArray, NULL, tr("end switch behaviour").toLatin1().data());
+    crm = ito::IntArrayMeta(0, std::numeric_limits<int>::max(), 1, 1, 255, 1);
+    param.setMeta(&crm, false);
+    m_params.insert("endSwitchSettings", param);
+
     m_currentPos.fill(0.0, 1);
     m_currentStatus.fill(0, 1);
     m_targetPos.fill(0.0, 1);
@@ -410,6 +417,7 @@ ito::RetVal NanotecStepMotor::init(QVector<ito::ParamBase> *paramsMand, QVector<
     {
         int value = 0;
         int *microSteps = new int[m_numAxes];
+		int *endSwitchBehaviour = new int[m_numAxes];
         int *accel = new int[m_numAxes];
         int *decel = new int[m_numAxes];
         int *speed = new int[m_numAxes];
@@ -425,6 +433,25 @@ ito::RetVal NanotecStepMotor::init(QVector<ito::ParamBase> *paramsMand, QVector<
 
         for (int i = 0; i < m_numAxes; ++i)
         {
+			//configure end switch behaviour for all motors
+			retval += NSMReadWrite(i, QString("l5138")); //Bit0, Bit4, Bit10, Bit12 (default behaviour: set external references to move back from the reference switch if it is reached!)
+			/*retval += NSMReadWrite(i, QString("=0"));
+			retval += NSMReadWrite(i, QString("f0"));
+			retval += NSMReadWrite(i, QString("R100"));
+			retval += NSMReadWrite(i, QString("Q-100"));
+			retval += NSMReadWrite(i, QString("L16712127"));
+			retval += NSMReadWrite(i, QString("h16712127"));
+			retval += NSMReadWrite(i, QString("Y0"));*/
+			retval += NSMReadWrite(i, QString("K20")); //entprellzeit
+			retval += NSMReadWrite(i, QString(":port_in_a7")); //configure all input ports to be sensitive for reference switch...
+			retval += NSMReadWrite(i, QString(":port_in_b7"));
+			retval += NSMReadWrite(i, QString(":port_in_c7"));
+			retval += NSMReadWrite(i, QString(":port_in_d7"));
+			retval += NSMReadWrite(i, QString(":port_in_e7"));
+			retval += NSMReadWrite(i, QString(":port_in_f7"));
+			retval += NSMReadWrite(i, QString(":port_in_g7"));
+			retval += NSMReadWrite(i, QString(":port_in_h7"));
+
             retval += getState(i, state, messageText);
             if (retval.containsError() || state == 4)
             {
@@ -477,6 +504,10 @@ ito::RetVal NanotecStepMotor::init(QVector<ito::ParamBase> *paramsMand, QVector<
             // coil rest
             retval += NSMReadWrite(i, "Zr", &value);
             coilCurrentRest[i] = value;
+
+			// end switch behaviour
+            retval += NSMReadWrite(i, "Zl", &value);
+            endSwitchBehaviour[i] = value;
             
             if (retval.containsError())
             {
@@ -490,6 +521,7 @@ ito::RetVal NanotecStepMotor::init(QVector<ito::ParamBase> *paramsMand, QVector<
         m_params["speed"].setVal<int*>(speed, m_numAxes);
         m_params["coilCurrent"].setVal<int*>(coilCurrent, m_numAxes);
         m_params["coilCurrentRest"].setVal<int*>(coilCurrentRest, m_numAxes);
+		m_params["endSwitchSettings"].setVal<int*>(endSwitchBehaviour, m_numAxes);
 
         delete[] microSteps;
         delete[] accel;
@@ -497,6 +529,7 @@ ito::RetVal NanotecStepMotor::init(QVector<ito::ParamBase> *paramsMand, QVector<
         delete[] speed;
         delete[] coilCurrent;
         delete[] coilCurrentRest;
+		delete[] endSwitchBehaviour;
     }
 
     if (!retval.containsError())
@@ -639,16 +672,6 @@ ito::RetVal NanotecStepMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 
     if (!retValue.containsError())
     {
-        //here the new parameter is checked whether its type corresponds or can be cast into the
-        // value in m_params and whether the new type fits to the requirements of any possible
-        // meta structure.
-        retValue += apiValidateParam(*it, *val, false, true);
-
-        //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
-        //API method instead of the one above: The difference is, that incoming parameters that are
-        //compatible but do not have the same type than the corresponding m_params value are cast
-        //to the type of the internal parameter and incoming double values are rounded to the
-        //next value (depending on a possible step size, if different than 0.0)
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
@@ -658,6 +681,11 @@ ito::RetVal NanotecStepMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomS
         {
             //check the new value and if ok, assign it to the internal parameter
             m_async = val->getVal<int>();
+
+			if (!retValue.containsError())
+			{
+				retValue += it->copyValueFrom(&(*val));
+			}
         }
         else
         {
@@ -679,15 +707,55 @@ ito::RetVal NanotecStepMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomS
             {
                 command = "o";
             }
+			else if (key == "endSwitchSettings")
+			{
+				command = "l";
+			}
 
-            int* value = val->getVal<int*>();
-            for (int i = 0; i < m_numAxes; ++i)
-            {
-                retValue += NSMReadWrite(i, command + QString("%1").arg(value[i]));
-            }
-        }
+			if (hasIndex)
+			{
+				if (index >= 0 && index < m_numAxes)
+				{
+					retValue += NSMReadWrite(index, command + QString("%1").arg(val->getVal<int>()));
+				}
+				else
+				{
+					retValue += ito::RetVal::format(ito::retError, 0, "invalid index %i", index);
+				}
 
-        retValue += it->copyValueFrom(&(*val));
+				if (!retValue.containsError())
+				{
+					//int value;
+					//// end switch behaviour
+					//NSMReadWrite(index, "Z" + command, &value);
+					//qDebug() << command << value;
+
+					it->getVal<int*>()[index] = val->getVal<int>();
+				}
+			}
+			else
+			{
+				const int* value = val->getVal<const int*>();
+				if (val->getLen() == m_numAxes)
+				{
+					for (int i = 0; i < m_numAxes; ++i)
+					{
+						retValue += NSMReadWrite(i, command + QString("%1").arg(value[i]));
+					}
+				}
+				else
+				{
+					retValue += ito::RetVal::format(ito::retError, 0, "wrong number of values. %i required.", m_numAxes);
+				}
+
+				if (!retValue.containsError())
+				{
+					retValue += it->copyValueFrom(&(*val));
+				}
+			}
+		}
+
+		
     }
 
     if (!retValue.containsError())
@@ -1021,22 +1089,33 @@ ito::RetVal NanotecStepMotor::NSMSetPos(const QVector<int> axis, const QVector<d
             if (axis[i] < m_numAxes)
             {
                 int steps = unitToSteps(axis[i], posUnit[i]);
-                setStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                sendStatusUpdate(false);
+                
+				if (m_currentStatus[axis[i]] & ito::actuatorEndSwitch)
+				{
+					retval += NSMReadWrite(axis[i], "D");
+					setStatus(m_currentStatus[axis[i]], 0, ito::actMovingMask | ito::actStatusMask);
+				}
+
+				setStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actStatusMask | ito::actSwitchesMask);
+				sendStatusUpdate(false);
 
                 if (relNotAbs)
                 {   // Relative movement
                     m_targetPos[axis[i]] = m_currentPos[axis[i]] + posUnit[i];
                     sendTargetUpdate();
 
-                    bool switchMotorDirection = (steps >= 0);
+                    bool switchMotorDirection = (steps >= 0); //true for positive drive to the right, false for negative drive
+
                     if (switchMotorDirection)
                     {
                         retval += NSMReadWrite(axis[i], "d1");
                     }
 
-                    retval += NSMReadWrite(axis[i], QString("s%1").arg(abs(steps)));
-                    retval += NSMReadWrite(axis[i], "A");
+					if (!retval.containsError())
+					{
+						retval += NSMReadWrite(axis[i], QString("s%1").arg(abs(steps)));
+						retval += NSMReadWrite(axis[i], "A");
+					}
 
                     if (switchMotorDirection)
                     {
@@ -1060,7 +1139,7 @@ ito::RetVal NanotecStepMotor::NSMSetPos(const QVector<int> axis, const QVector<d
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("Given asis (%1) out of range!").arg(axis[i]).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Given axis (%1) out of range!").arg(axis[i]).toLatin1().data());
             }
         }
     }
@@ -1092,17 +1171,13 @@ ito::RetVal NanotecStepMotor::NSMSetPos(const QVector<int> axis, const QVector<d
         sendStatusUpdate(false);
     }
 
-    if (!retval.containsError())
+    for (int i = 0; i < axis.size(); ++i)
     {
-        for (int i = 0; i < axis.size(); ++i)
-        {
-            QSharedPointer<double> pos(new double);
-            retval += getPos(axis[i], pos, NULL);
-//            qDebug() << "am Ende von setPos bin ich bei Position:" << *pos << "Achse: " << axis[i];
-            m_currentPos[axis[i]] = *pos;
-        }
-        sendStatusUpdate(false);
+        QSharedPointer<double> pos(new double);
+        if (!getPos(axis[i], pos, NULL).containsError())
+			m_currentPos[axis[i]] = *pos;
     }
+    sendStatusUpdate(false);
 
     if (waitCond && !released)
     {
@@ -1119,8 +1194,16 @@ ito::RetVal NanotecStepMotor::waitForDone(const int timeoutMS, const QVector<int
 {
     ito::RetVal retval(ito::retOk);
     bool done = false;
+	bool error = false;
 
-    //Sleep(10);
+    QVector<int> axis_ = axis;
+	if (axis_.size() == 0)
+	{
+		for (int i = 0; i < m_numAxes; ++i)
+		{
+			axis_.append(i);
+		}
+	}
     
     while (!done && !retval.containsWarningOrError())
     {   
@@ -1146,15 +1229,21 @@ ito::RetVal NanotecStepMotor::waitForDone(const int timeoutMS, const QVector<int
             QString messageText = "";
             done = true;
 
-            for (int i = 0; i < m_numAxes; ++i)
+            foreach (int currentAxis, axis_)
             {
-                retval += NSMReadWrite(i, "$", &state);
-                if ((state & 1) == 0) //this axis is still moving
+                retval += NSMReadWrite(currentAxis, "$", &state);
+				if (state & 0x04) //positioning error in this axis
+				{
+					replaceStatus(m_currentStatus[currentAxis], ito::actuatorMoving, ito::actuatorInterrupted);
+
+					setStatus(m_currentStatus[currentAxis], ito::actuatorEndSwitch, ito::actMovingMask | ito::actStatusMask);
+					error = true;
+				}
+                else if ((state & 1) == 0) //this axis is still moving
                 {
                     done = false;
-                    break;
                 }
-                /*retval += getState(i, state, messageText);
+                /*retval += getState(currentAxis, state, messageText);
                 statePos = statePos & state;
                 stateNeg = stateNeg | state;*/
             }
@@ -1163,7 +1252,7 @@ ito::RetVal NanotecStepMotor::waitForDone(const int timeoutMS, const QVector<int
          
             if (done)
             {   // Position reached and movement done
-                replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+                replaceStatus(axis_, ito::actuatorMoving, ito::actuatorAtTarget);
                 sendStatusUpdate(true);
                 break;
             }
@@ -1174,6 +1263,18 @@ ito::RetVal NanotecStepMotor::waitForDone(const int timeoutMS, const QVector<int
             }
         }
     }
+
+	if (error)
+	{
+		QMutex waitMutex;
+		QWaitCondition waitCondition;
+        //short delay
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, 1000);
+        waitMutex.unlock();
+	}
+
+	
     return retval;
 }
 
