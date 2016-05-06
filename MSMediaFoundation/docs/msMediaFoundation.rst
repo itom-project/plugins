@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`MSMediaFoundation`
 **License**:    :pluginlicense:`MSMediaFoundation`
 **Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
+**Devices**:    USB Plug&Play Cameras, including cameras from The Imaging Source
 **Author**:     :pluginauthor:`MSMediaFoundation`
 **Version**:    :pluginversion:`MSMediaFoundation`
 **Available**:  This plugin will be part of the itom setup from itom 1.2.0 on.

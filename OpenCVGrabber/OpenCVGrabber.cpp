@@ -781,7 +781,8 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     if(!retValue.containsError())
     {
-        //camRetVal = m_pCam->get(CV_CAP_PROP_FOURCC);        //4-character code of codec.
+        unsigned int fourcc = static_cast<unsigned int>(m_pCam->get(CV_CAP_PROP_FOURCC));        //4-character code of codec.
+        //m_pCam->set(CV_CAP_PROP_FOURCC, 0);
         //
         //tempformat = static_cast<unsigned long>(camRetVal);
 
