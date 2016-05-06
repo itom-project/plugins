@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OpenCV-Grabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -300,6 +300,9 @@ that is obtained before the real image is delivered to the getVal / copyVal comm
     meta.addItem("blue");
     meta.addItem("gray");
     paramVal.setMeta(&meta, false);
+    m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param("filename", ito::ParamBase::String, "", tr("optional filename for the CVGrabber. If this is given, cameraNumber is ignored").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     //paramVal = ito::Param("Init-Dialog", ito::ParamBase::Int, 0, 1, 0, tr("If true, a camera selection dialog is opened during startup").toLatin1().data());
@@ -748,13 +751,28 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     bool ret;
 
     m_CCD_ID = paramsOpt->at(0).getVal<int>();
+    QByteArray filename = paramsOpt->at(2).getVal<char*>();
 
     m_pCam = new VideoCaptureItom();
-    ret = m_pCam->open(m_CCD_ID);
+    if (filename == "")
+    {
+        ret = m_pCam->open(m_CCD_ID);
+    }
+    else
+    {
+        ret = m_pCam->open(filename.data());
+    }
 
     if(!m_pCam->isOpened())
     {
-        retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toLatin1().data(), m_CCD_ID);
+        if (filename == "")
+        {
+            retValue += ito::RetVal::format(ito::retError, 0, tr("Camera (%i) could not be opened").toLatin1().data(), m_CCD_ID);
+        }
+        else
+        {
+            retValue += ito::RetVal::format(ito::retError, 0, tr("Camera (%s) could not be opened").toLatin1().data(), filename.data());
+        }
     }
     else
     {
@@ -1021,6 +1039,13 @@ ito::RetVal OpenCVGrabber::acquire(const int trigger, ItomSharedSemaphore *waitC
         else
         {
             m_acquisitionRetVal = ito::RetVal(ito::retError, 0, "could not acquire a new image");
+            /*//maybe the video stream is at its end. restart it:
+            m_pCam->set(CV_CAP_PROP_POS_FRAMES, 0);
+
+            if (m_pCam->grab())
+            {
+                m_acquisitionRetVal = ito::RetVal(ito::retError, 0, "could not acquire a new image");
+            }*/
         }
     }
 
