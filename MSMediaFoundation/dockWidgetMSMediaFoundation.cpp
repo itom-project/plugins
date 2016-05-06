@@ -135,12 +135,12 @@ void DockWidgetMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> pa
             ui.cB_IntegrationTime->setVisible(true);
             ui.combo_IntegrationTime->setVisible(true);
             ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["integrationTime"].getMeta());
-            int minimum = qRound(std::log2(dm->getMin()));
-            int maximum = qRound(std::log2(dm->getMax()));
+            int minimum = qRound(log10(dm->getMin())/log10(2.0));
+            int maximum = qRound(std::log10(dm->getMax())/std::log10(2.0));
             ui.combo_IntegrationTime->clear();
             for (int i = minimum; i <= maximum; ++i)
             {
-                ui.combo_IntegrationTime->addItem(QString("%1 s").arg(std::pow(2.0, (float)i)), i);
+                ui.combo_IntegrationTime->addItem(QString("%1 s").arg(pow(2.0f, i)), i);
             }
             ++propCount;
         }
@@ -222,7 +222,7 @@ void DockWidgetMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> pa
         {
             ui.cB_IntegrationTime->setChecked(params["integrationTimeAuto"].getVal<int>());
 
-            int index = qRound(std::log2(params["integrationTime"].getVal<double>()));
+            int index = qRound(log10(params["integrationTime"].getVal<double>())/log10(2.0));
 
             for (int i = 0; i < ui.combo_IntegrationTime->count(); ++i)
             {

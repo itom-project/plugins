@@ -31,6 +31,8 @@
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
+#include <math.h>
+#include <float.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qplugin.h>
@@ -743,7 +745,7 @@ ito::RetVal MSMediaFoundation::updateCamParam(Parameter &parameter, const ito::P
     }
     else
     {
-        parameter.CurrentValue = qBound(parameter.Min, (long)qRound(std::log2f(paramDbl.getVal<double>())), parameter.Max);
+        parameter.CurrentValue = qBound(parameter.Min, (long)(qRound(log10(paramDbl.getVal<double>())/log10(2.0))), parameter.Max);
     }
 
     return ito::retOk;
