@@ -58,7 +58,7 @@ void VideoDevice::setParameters(CamParameters parameters)
 				for(unsigned int i = 0; i < 7; i++)
 				{
 					if(pPrevParameter[10 + i].CurrentValue != pParameter[10 + i].CurrentValue || pPrevParameter[10 + i].Flag != pParameter[10 + i].Flag)
-					hr = pProcControl->Set(CameraControl_Pan+i, pParameter[10 + i].CurrentValue, pParameter[10 + i].Flag);					
+					    hr = pProcControl->Set(CameraControl_Pan+i, pParameter[10 + i].CurrentValue, pParameter[10 + i].Flag);					
 				}
 
 				pProcControl->Release();
@@ -72,6 +72,7 @@ void VideoDevice::setParameters(CamParameters parameters)
 CamParameters VideoDevice::getParameters()
 {
 	CamParameters out;
+    long flag;
 
 	if(vd_IsSetuped)
 	{
@@ -90,16 +91,26 @@ CamParameters VideoDevice::getParameters()
 				{
 					Parameter temp;
 					
-					hr = pProcAmp->GetRange(VideoProcAmp_Brightness+i, &temp.Min, &temp.Max, &temp.Step, &temp.Default, &temp.Flag);
+					hr = pProcAmp->GetRange(VideoProcAmp_Brightness + i, &temp.Min, &temp.Max, &temp.Step, &temp.Default, &temp.Flag);
 										
 					if (SUCCEEDED(hr))
 					{
-						temp.CurrentValue = temp.Default;
+                        flag = temp.Flag;
+                        if (SUCCEEDED(pProcAmp->Get(VideoProcAmp_Brightness + i, &temp.CurrentValue, &temp.Flag)) == false)
+                        {
+                            temp.CurrentValue = temp.Default;
+                            temp.Flag = flag;
+                        }
+						
                         temp.Available = true;
 
 						pParameter[i] = temp;
 					}
                     else if (hr == E_PROP_ID_UNSUPPORTED)
+                    {
+                        pParameter[i].Available = false;
+                    }
+                    else
                     {
                         pParameter[i].Available = false;
                     }
@@ -117,14 +128,28 @@ CamParameters VideoDevice::getParameters()
 				{
 					Parameter temp;
 					
-					hr = pProcControl->GetRange(CameraControl_Pan+i, &temp.Min, &temp.Max, &temp.Step, &temp.Default, &temp.Flag);
+					hr = pProcControl->GetRange(CameraControl_Pan + i, &temp.Min, &temp.Max, &temp.Step, &temp.Default, &temp.Flag);
 										
 					if (SUCCEEDED(hr))
 					{
-						temp.CurrentValue = temp.Default;
+                        flag = temp.Flag;
+                        if (SUCCEEDED(pProcControl->Get(CameraControl_Pan + i, &temp.CurrentValue, &temp.Flag)) == false)
+                        {
+                            temp.CurrentValue = temp.Default;
+                            temp.Flag = flag;
+                        }
 
+                        temp.Available = true;
 						pParameter[10 + i] = temp;
 					}
+                    else if (hr == E_PROP_ID_UNSUPPORTED)
+                    {
+                        pParameter[10 + i].Available = false;
+                    }
+                    else
+                    {
+                        pParameter[10 + i].Available = false;
+                    }
 				}
 
 				pProcControl->Release();

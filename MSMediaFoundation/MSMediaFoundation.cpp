@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "MSMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2014, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -202,7 +202,7 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
+    paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD in seconds").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("integrationTimeAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled integration time of CCD (on:1, off:0)").toLatin1().data());
@@ -703,9 +703,19 @@ ito::RetVal MSMediaFoundation::synchronizeParam(const Parameter &parameter, ito:
 
     if (parameter.Available && (parameter.Max > parameter.Min))
     {
-        dm->setStepSize(static_cast<double>(parameter.Step) / static_cast<double>(parameter.Max - parameter.Min));
-        paramDbl.setVal<double>(static_cast<double>(parameter.CurrentValue - parameter.Min) / static_cast<double>(parameter.Max - parameter.Min));
-        paramAutoInt.setVal<int>(parameter.Flag == VideoProcAmp_Flags_Auto ? 1 : 0);
+        if (paramDbl.getName()[0] != 'i' && paramDbl.getName()[1] != 'n') //not: IntegrationTime
+        {
+            dm->setStepSize(static_cast<double>(parameter.Step) / static_cast<double>(parameter.Max - parameter.Min));
+            paramDbl.setVal<double>(static_cast<double>(parameter.CurrentValue - parameter.Min) / static_cast<double>(parameter.Max - parameter.Min));
+            paramAutoInt.setVal<int>(parameter.Flag == VideoProcAmp_Flags_Auto ? 1 : 0);
+        }
+        else
+        {
+            dm->setStepSize(0.0);
+            paramDbl.setVal<double>(std::pow(2.0, parameter.CurrentValue));
+            paramDbl.setMeta(new ito::DoubleMeta(std::pow(2.0, parameter.Min), std::pow(2.0, parameter.Max), 0.0), true);
+            paramAutoInt.setVal<int>(parameter.Flag == VideoProcAmp_Flags_Auto ? 1 : 0);
+        }
     }
     else
     {
@@ -727,7 +737,14 @@ ito::RetVal MSMediaFoundation::updateCamParam(Parameter &parameter, const ito::P
         parameter.Flag = VideoProcAmp_Flags_Manual;
     }
 
-    parameter.CurrentValue = parameter.Min + (long)(paramDbl.getVal<double>() * (parameter.Max - parameter.Min));
+    if (paramDbl.getName()[0] != 'i' && paramDbl.getName()[1] != 'n') //not: IntegrationTime
+    {
+        parameter.CurrentValue = parameter.Min + (long)(paramDbl.getVal<double>() * (parameter.Max - parameter.Min));
+    }
+    else
+    {
+        parameter.CurrentValue = qBound(parameter.Min, (long)qRound(std::log2f(paramDbl.getVal<double>())), parameter.Max);
+    }
 
     return ito::retOk;
 }

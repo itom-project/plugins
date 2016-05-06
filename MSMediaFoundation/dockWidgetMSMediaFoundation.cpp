@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "MSMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2014, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -44,8 +44,10 @@ DockWidgetMSMediaFoundation::DockWidgetMSMediaFoundation(ito::AddInDataIO *grabb
 void DockWidgetMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> params)
 {
 //qDebug() << "----------------- valuesChanged m_firstRun: " << m_firstRun << "; m_inEditing: " << m_inEditing;
-    if (m_firstRun)
+    if (m_firstRun && !m_inEditing)
     {
+        m_inEditing = true;
+
         int propCount = 0;
         if (params.contains("brightness"))
         {
@@ -127,6 +129,28 @@ void DockWidgetMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> pa
             ui.sW_Sharpness->setVisible(false);
         }
 
+        if (params.contains("integrationTime"))
+        {
+            ui.lB_IntegrationTime->setVisible(true);
+            ui.cB_IntegrationTime->setVisible(true);
+            ui.combo_IntegrationTime->setVisible(true);
+            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["integrationTime"].getMeta());
+            int minimum = qRound(std::log2(dm->getMin()));
+            int maximum = qRound(std::log2(dm->getMax()));
+            ui.combo_IntegrationTime->clear();
+            for (int i = minimum; i <= maximum; ++i)
+            {
+                ui.combo_IntegrationTime->addItem(QString("%1 s").arg(std::pow(2.0, (float)i)), i);
+            }
+            ++propCount;
+        }
+        else
+        {
+            ui.lB_IntegrationTime->setVisible(false);
+            ui.cB_IntegrationTime->setVisible(false);
+            ui.combo_IntegrationTime->setVisible(false);
+        }
+
         if (params.contains("sizex"))
         {
             ui.lblWidth->setText(QString("%1").arg(params["sizex"].getVal<int>()));
@@ -153,6 +177,7 @@ void DockWidgetMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> pa
         }
 
         m_firstRun = false;
+        m_inEditing = false;
     }
 
     if (!m_inEditing)
@@ -191,6 +216,23 @@ void DockWidgetMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> pa
             ui.cB_Sharpness->setChecked(params["sharpnessAuto"].getVal<int>());
             ui.sW_Sharpness->setValue(params["sharpness"].getVal<double>());
             ui.sW_Sharpness->setEnabled(params["sharpnessAuto"].getVal<int>() == 0);
+        }
+
+        if (params.contains("integrationTime"))
+        {
+            ui.cB_IntegrationTime->setChecked(params["integrationTimeAuto"].getVal<int>());
+
+            int index = qRound(std::log2(params["integrationTime"].getVal<double>()));
+
+            for (int i = 0; i < ui.combo_IntegrationTime->count(); ++i)
+            {
+                if (ui.combo_IntegrationTime->itemData(i).toInt() == index)
+                {
+                    ui.combo_IntegrationTime->setCurrentIndex(i);
+                    break;
+                }
+            }
+            ui.combo_IntegrationTime->setEnabled(params["integrationTimeAuto"].getVal<int>() == 0);
         }
 
         m_inEditing = false;
@@ -272,6 +314,18 @@ void DockWidgetMSMediaFoundation::on_sW_Sharpness_valueChanged(double d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_combo_IntegrationTime_currentIndexChanged(int index)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integrationTime", ito::ParamBase::Double, std::pow(2.0, ui.combo_IntegrationTime->itemData(index).toDouble())));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetMSMediaFoundation::on_cB_Brightness_toggled(bool checked)
 {
     if (!m_inEditing)
@@ -331,6 +385,19 @@ void DockWidgetMSMediaFoundation::on_cB_Sharpness_toggled(bool checked)
         m_inEditing = true;
         ui.sW_Sharpness->setEnabled(!checked);
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("sharpnessAuto",ito::ParamBase::Int,checked ? 1 : 0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_cB_IntegrationTime_toggled(bool checked)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sW_Sharpness->setEnabled(!checked);
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integrationTimeAuto", ito::ParamBase::Int, checked ? 1 : 0));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
