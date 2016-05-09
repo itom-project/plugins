@@ -20,22 +20,24 @@
         <location line="+260"/>
         <location line="+163"/>
         <location line="+148"/>
+        <location line="+775"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+93"/>
-        <location filename="../OpenCVFilters.cpp" line="-1239"/>
+        <location filename="../OpenCVFilters.cpp" line="-2014"/>
         <location line="+372"/>
         <location line="+301"/>
         <location line="+260"/>
         <location line="+163"/>
         <location line="+148"/>
+        <location line="+775"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1204"/>
+        <location filename="../OpenCVFilters.cpp" line="-1979"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -66,11 +68,12 @@
         <location line="+161"/>
         <location line="+142"/>
         <location line="+204"/>
+        <location line="+570"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1055"/>
+        <location filename="../OpenCVFilters.cpp" line="-1625"/>
         <source>Unknown or unexpected CV-Datatype recived.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -187,6 +190,31 @@
     <message>
         <location line="+132"/>
         <source>Rotated object by 180� using cvRotate180-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+640"/>
+        <source>Output Object handle. Will be come complex-type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Low Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ratio between High Threshold and Low Threshold, Canny&apos;s recommendation is three</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Kernel size for Sobel filter, default is 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+127"/>
+        <source>Canny edge filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -611,12 +639,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-813"/>
+        <location filename="../OpenCVFilters.cpp" line="-1587"/>
+        <location line="+1451"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="-1334"/>
         <source>Image of type Integer or float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -655,11 +684,12 @@
         <location line="+203"/>
         <location line="+163"/>
         <location line="+148"/>
+        <location line="+775"/>
         <source>Error: nDim-stacks not supported yet, only 2D and 3D.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+138"/>
+        <location line="-637"/>
         <source>sourceObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1042,6 +1072,14 @@ The function resize resizes the image &apos;inputObject&apos; down to or up by t
 To shrink an image, it will generally look best with CV_INTER_AREA interpolation, whereas to enlarge an image, 
 it will generally look best with CV_INTER_CUBIC (slow) or CV_INTER_LINEAR (faster but still looks OK). 
 The axisScale properties of the x- and y-axes of the outputObject are divided by fx and fy respectively, while the offset values are multiplied with fx and fy.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+208"/>
+        <source>Canny Edge detector using cv::DFT.
+                                                        
+                                                        It&apos;s just Canny&apos;s edge filter
+                                                       </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

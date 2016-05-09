@@ -4,7 +4,7 @@
 <context>
     <name>PclTools</name>
     <message>
-        <location filename="../pclTools.cpp" line="+4264"/>
+        <location filename="../pclTools.cpp" line="+4349"/>
         <source>saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -116,7 +116,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4164"/>
+        <location line="-4246"/>
         <source>point cloud to save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -809,7 +809,7 @@
     <message>
         <location line="+39"/>
         <location filename="../pclModelFit.cpp" line="+36"/>
-        <location filename="../pclTools.cpp" line="+2934"/>
+        <location filename="../pclTools.cpp" line="+3016"/>
         <source>invalid point cloud type not defined or point cloud invalid</source>
         <translation type="unfinished"></translation>
     </message>
@@ -825,7 +825,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclTools.cpp" line="-2908"/>
+        <location filename="../pclTools.cpp" line="-2990"/>
         <source>Valid point cloud whose normals should be estimated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1123,7 +1123,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+124"/>
+        <location line="+123"/>
+        <source>Valid target point cloud of type XYZ</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Point cloud of same type than target cloud. This cloud is registered to the target.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gives the number of closest source points taken into account for registration. By closest source points we mean the source points closest to the target. These points are computed anew at each iteration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>	is the estimated rigid transform. IMPORTANT: this matrix is also taken as the initial guess for the alignment. If there is no guess, set the matrix to identity!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+78"/>
         <location line="+134"/>
         <source>Valid polygon mesh</source>
         <translation type="unfinished"></translation>
@@ -1348,7 +1368,7 @@
 <context>
     <name>PclToolsInterface</name>
     <message>
-        <location line="-4232"/>
+        <location line="-4314"/>
         <source>Filters and methods for pointClouds and polygonMeshes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1400,6 +1420,7 @@ by this plugin.</source>
         <location line="+245"/>
         <location line="+129"/>
         <location line="+129"/>
+        <location line="+82"/>
         <location line="+134"/>
         <location line="+51"/>
         <location line="+311"/>
@@ -1414,7 +1435,7 @@ by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3417"/>
+        <location line="-3499"/>
         <source>saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image
 
 This file format allows displaying volume data from the given 3D data object for instance using ParaView.</source>
@@ -1429,7 +1450,7 @@ adjust its position and orientation. The rotation vector are the euler angles rx
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2379"/>
+        <location line="+2461"/>
         <source>calculates a point cloud with normal information which contains the normal at each triangle of the given 
 polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.</source>
         <translation type="unfinished"></translation>

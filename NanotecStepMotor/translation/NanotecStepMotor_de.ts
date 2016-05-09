@@ -146,10 +146,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalide command: &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Wrong answer: &apos;%1&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -291,6 +287,18 @@
     </message>
     <message>
         <source>interrupt occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid command: &apos;%1&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>end switch behaviour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Given axis (%1) out of range!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -585,7 +585,7 @@ Only BS-840-1-HP is tested.
 The company website can be found under http://www.superlumdiodes.com 
 This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization. 
 
-It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
+It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -738,7 +738,7 @@ It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
         <location line="+6"/>
         <location line="+281"/>
         <location line="+105"/>
-        <location line="+393"/>
+        <location line="+391"/>
         <location line="+237"/>
         <location line="+30"/>
         <location line="+55"/>
@@ -747,7 +747,7 @@ It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1486"/>
+        <location line="-1484"/>
         <source>Optical output of device is enabled!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -774,7 +774,7 @@ It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
         <location line="+109"/>
         <location line="+105"/>
         <location line="+7"/>
-        <location line="+466"/>
+        <location line="+464"/>
         <location line="+19"/>
         <location line="+25"/>
         <location line="+26"/>
@@ -796,7 +796,7 @@ It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1342"/>
+        <location line="-1340"/>
         <source>Optical Output is ENABLED!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -837,7 +837,7 @@ It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
         <location line="+16"/>
         <location line="+16"/>
         <location line="+15"/>
-        <location line="+49"/>
+        <location line="+47"/>
         <source>function not defined</source>
         <translation type="unfinished"></translation>
     </message>
@@ -871,7 +871,7 @@ It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
 <context>
     <name>SuperlumBSInterface</name>
     <message>
-        <location line="-1259"/>
+        <location line="-1257"/>
         <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>

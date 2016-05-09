@@ -179,7 +179,7 @@
         <translation type="vanished">Optionaler Parameter ist NULL</translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="+515"/>
+        <location filename="../dialogSerialIO.cpp" line="+523"/>
         <source>Char token not closed correctly or number to big.</source>
         <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>

@@ -4,7 +4,7 @@
 <context>
     <name>FFTWFilters</name>
     <message>
-        <location filename="../FFTWfilters.cpp" line="+1142"/>
+        <location filename="../FFTWfilters.cpp" line="+1494"/>
         <location line="+420"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
@@ -16,7 +16,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1311"/>
+        <location line="-1796"/>
+        <location line="+463"/>
         <location line="+41"/>
         <source>Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128)</source>
         <translation type="unfinished"></translation>
@@ -49,7 +50,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+500"/>
+        <location line="+507"/>
         <source>1D FFT (via FFTW). Scaled by 1/sqrt(n).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -74,7 +75,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+252"/>
         <source>2D FFT (via FFTW). Scaled by 1/sqrt(n).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -99,7 +100,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+90"/>
         <location line="+419"/>
         <source>Error: one object must be real, the other complex</source>
         <translation type="unfinished"></translation>
@@ -233,7 +234,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+36"/>
         <source>Warning: compatibility error between fftw_complex and ito::complex128</source>
         <translation type="unfinished"></translation>
     </message>
@@ -241,7 +242,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-2211"/>
+        <location line="-2559"/>
         <source>Wrapper for the FFTW</source>
         <translation type="unfinished"></translation>
     </message>
@@ -269,7 +270,23 @@ To build this plugin you will need the libs from the fftw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+246"/>
+        <location line="+205"/>
+        <source>Perform fftshift as known from Python, Matlab and so on, i.e. make the 
+zero order of diffraction appear in the center.
+
+The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+68"/>
+        <source>Perform ifftshift as known from Python, Matlab and so on, i.e. move the 
+zero order of diffraction back to the corner to run the inverse fft correctly.
+
+The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+295"/>
         <source>Compute the one-dimensional discrete Fourier Transform. 
 
 This method computes the one-dimensional n-point discrete Fourier Transform (DFT) with the efficient 

@@ -206,7 +206,7 @@
 <context>
     <name>PGRFlyCapture</name>
     <message>
-        <location filename="../PGRFlyCapture.cpp" line="+252"/>
+        <location filename="../PGRFlyCapture.cpp" line="+253"/>
         <source>Pixelsize in x (cols)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,7 +286,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2174"/>
+        <location line="+2175"/>
         <source>Bitdepth of %i bit is not supported by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -346,7 +346,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1584"/>
+        <location line="-1585"/>
         <source>name of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -506,7 +506,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+50"/>
         <source>Error in startDevice-function: %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -551,7 +551,7 @@
 <context>
     <name>PGRFlyCaptureInterface</name>
     <message>
-        <location line="-2015"/>
+        <location line="-2016"/>
         <source>colorMode: &apos;gray&apos; (default) or &apos;color&apos; if color camera. In color mode, bpp is limited to 8 per color.</source>
         <translation type="unfinished"></translation>
     </message>

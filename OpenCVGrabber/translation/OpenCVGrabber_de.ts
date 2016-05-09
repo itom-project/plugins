@@ -12,17 +12,17 @@
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+351"/>
+        <location filename="../OpenCVGrabber.cpp" line="+354"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+406"/>
+        <location line="+416"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-300"/>
+        <location line="-310"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -42,7 +42,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+607"/>
+        <location line="+623"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -57,12 +57,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+78"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-734"/>
+        <location line="-757"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -117,7 +117,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+702"/>
+        <location line="+386"/>
+        <source>Camera (%s) could not be opened</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+339"/>
         <source>Error: grabbed image is empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -170,7 +175,7 @@
 <context>
     <name>OpenCVGrabberInterface</name>
     <message>
-        <location line="-1073"/>
+        <location line="-1099"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -179,11 +184,16 @@
         <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+11"/>
+        <source>optional filename for the CVGrabber. If this is given, cameraNumber is ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-46"/>
+        <location line="-57"/>
         <source>OpenCV Video Capture (USB-Cams, Firewire CMU1394...)</source>
         <translation type="unfinished"></translation>
     </message>

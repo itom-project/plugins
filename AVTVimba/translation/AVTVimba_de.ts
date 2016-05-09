@@ -115,6 +115,10 @@
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name of plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DialogAvtVimba</name>
@@ -314,7 +318,7 @@
 - Marlin, F033 (monochrome, Firewire) 
 - Manta G-917B and G-146B (monochrome, GigE) 
 
-The plugin is compiled using the AVT Vimba version 1.3.0. 
+The plugin was tested with AVT Vimba 1.3.0 and 1.4.0. 
 
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. 
 Color formats are not supported.</source>

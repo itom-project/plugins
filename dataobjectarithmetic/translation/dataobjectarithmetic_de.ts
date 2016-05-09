@@ -4,7 +4,7 @@
 <context>
     <name>DataObjectArithmetic</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="+111"/>
+        <location filename="../dataobjectarithmetic.cpp" line="+112"/>
         <location line="+13"/>
         <location line="+3"/>
         <location line="+16"/>

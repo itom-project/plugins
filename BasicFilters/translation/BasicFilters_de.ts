@@ -34,7 +34,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="+3335"/>
+        <location filename="../BasicSpecialFilters.cpp" line="+3337"/>
         <location filename="../BasicFilters.cpp" line="+37"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
@@ -235,7 +235,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-3141"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-3142"/>
         <location line="+139"/>
         <location line="+72"/>
         <location line="+169"/>
@@ -516,7 +516,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+586"/>
+        <location line="+587"/>
         <source>Output image (1xN) of the same type than the input image, where N corresponds to different radiuses.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -536,7 +536,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1616"/>
+        <location line="-1617"/>
         <location line="+379"/>
         <source>value set to clipped values (default: 0.0)</source>
         <translation type="unfinished"></translation>
@@ -653,7 +653,7 @@
     </message>
     <message>
         <location line="+38"/>
-        <location line="+75"/>
+        <location line="+76"/>
         <location line="+98"/>
         <location line="+22"/>
         <location line="+22"/>
@@ -839,12 +839,12 @@ This filter also works inplace (same source and destination).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-815"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-816"/>
         <source>calculates histgram of real input data object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+822"/>
+        <location line="+823"/>
         <source>Calculates the mean value for radial circles with a given center point an a radius step size 
 
 The radiuses are the distances from the given center point to the physical coordinates of each pixel.</source>

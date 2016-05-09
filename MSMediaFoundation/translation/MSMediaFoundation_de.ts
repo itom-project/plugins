@@ -73,7 +73,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+36"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -125,40 +125,50 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+7"/>
+        <location line="+27"/>
         <location line="+24"/>
+        <location line="+27"/>
+        <location line="+27"/>
+        <location line="+30"/>
+        <source>auto-control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-115"/>
         <source>Contrast:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+24"/>
         <source>Saturation:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+27"/>
         <source>Sharpness:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+27"/>
         <source>Gain:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Integration Time:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+203"/>
+        <location filename="../MSMediaFoundation.cpp" line="+205"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Integrationtime of CCD [0..1] (no unit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>auto-controlled integration time of CCD (on:1, off:0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -298,7 +308,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+415"/>
+        <location line="+432"/>
         <source>Timeout while acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -313,7 +323,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-940"/>
+        <location line="-957"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -353,7 +363,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+5"/>
+        <source>Integrationtime of CCD in seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+58"/>
         <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -363,12 +378,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+91"/>
         <source>Parameter not available or useless range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+230"/>
+        <location line="+237"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -426,7 +441,7 @@
 <context>
     <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-1225"/>
+        <location line="-1242"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>

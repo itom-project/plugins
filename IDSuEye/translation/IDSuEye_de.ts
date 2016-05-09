@@ -295,7 +295,7 @@
 - UI224xSE-M (monochrome, USB2). 
 - UI337xCP-C (colored, USB3) 
 
-The plugin has been compiled using the IDS library version %1.%2. 
+The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. 
 
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. 
 

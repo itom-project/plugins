@@ -4,72 +4,173 @@
 <context>
     <name>DockWidgetUhl</name>
     <message>
+        <location filename="../../UhlRegister/dockWidgetUhl.ui" line="+61"/>
         <source>General Information</source>
-        <translation type="obsolete">Allgemeine Informationen</translation>
+        <translation type="unfinished">Allgemeine Informationen</translation>
     </message>
     <message>
+        <location line="+36"/>
+        <source>ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>[ID]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Axis:</source>
-        <translation type="obsolete">Achsen:</translation>
+        <translation type="unfinished">Achsen:</translation>
     </message>
     <message>
+        <location line="+25"/>
+        <source>[Axis]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Joystick</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+53"/>
         <source>Properties</source>
-        <translation type="obsolete">Eigenschaften</translation>
+        <translation type="unfinished">Eigenschaften</translation>
     </message>
     <message>
+        <location line="+21"/>
         <source>enable x</source>
-        <translation type="obsolete">x aktiv</translation>
+        <translation type="unfinished">x aktiv</translation>
     </message>
     <message>
+        <location line="+10"/>
         <source>enable y</source>
-        <translation type="obsolete">y aktiv</translation>
+        <translation type="unfinished">y aktiv</translation>
     </message>
     <message>
+        <location line="+13"/>
         <source>enable z</source>
-        <translation type="obsolete">z aktiv</translation>
+        <translation type="unfinished">z aktiv</translation>
     </message>
     <message>
         <source>enable Joystick</source>
         <translation type="obsolete">Joystick aktiv</translation>
     </message>
     <message>
+        <location line="+31"/>
         <source>Relative Positioning</source>
-        <translation type="obsolete">Relative Positionierung</translation>
+        <translation type="unfinished">Relative Positionierung</translation>
     </message>
     <message>
+        <location line="+35"/>
         <source>Step Size</source>
-        <translation type="obsolete">Schrittweite</translation>
+        <translation type="unfinished">Schrittweite</translation>
     </message>
     <message>
+        <location line="+10"/>
+        <source> µm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>x -</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>y+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>x+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>z+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>y -</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>z -</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Absolut Positioning</source>
-        <translation type="obsolete">Absolute Positionierung</translation>
+        <translation type="unfinished">Absolute Positionierung</translation>
     </message>
     <message>
+        <location line="+20"/>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <location line="+25"/>
+        <location line="+25"/>
+        <location line="+32"/>
+        <location line="+25"/>
+        <location line="+28"/>
+        <source>mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
         <source>Refresh</source>
-        <translation type="obsolete">Aktualisieren</translation>
+        <translation type="unfinished">Aktualisieren</translation>
     </message>
     <message>
+        <location line="-225"/>
         <source>x axis</source>
-        <translation type="obsolete">x Achse</translation>
+        <translation type="unfinished">x Achse</translation>
     </message>
     <message>
+        <location line="+14"/>
         <source>z axis</source>
-        <translation type="obsolete">z Achse</translation>
+        <translation type="unfinished">z Achse</translation>
     </message>
     <message>
+        <location line="-7"/>
         <source>y axis</source>
-        <translation type="obsolete">y Achse</translation>
+        <translation type="unfinished">y Achse</translation>
     </message>
     <message>
+        <location line="-525"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+539"/>
         <source>Actual</source>
-        <translation type="obsolete">Aktuell</translation>
+        <translation type="unfinished">Aktuell</translation>
     </message>
     <message>
+        <location line="+85"/>
         <source>Target</source>
-        <translation type="obsolete">Ziel</translation>
+        <translation type="unfinished">Ziel</translation>
     </message>
     <message>
+        <location line="-441"/>
         <source>enable</source>
-        <translation type="obsolete">aktiv</translation>
+        <translation type="unfinished">aktiv</translation>
     </message>
 </context>
 <context>
@@ -621,104 +722,147 @@ This plugin was published with the kind permission of company Walter Uhl, techni
         <translation type="obsolete">Uhltisch-Konfiguration</translation>
     </message>
     <message>
+        <location filename="../../UhlRegister/dialogUhl.ui" line="+49"/>
         <source>Speed</source>
-        <translation type="obsolete">Geschwindigkeit</translation>
+        <translation type="unfinished">Geschwindigkeit</translation>
     </message>
     <message>
+        <location line="+34"/>
         <source>Accerlaration</source>
-        <translation type="obsolete">Beschleunigung</translation>
+        <translation type="unfinished">Beschleunigung</translation>
     </message>
     <message>
+        <location line="-24"/>
         <source>Speed of Uhl Actuator</source>
-        <translation type="obsolete">Geschwindigkeit des Uhltischs</translation>
+        <translation type="unfinished">Geschwindigkeit des Uhltischs</translation>
     </message>
     <message>
+        <location line="+34"/>
         <source>Accerlaration of Uhl Actuator</source>
-        <translation type="obsolete">Beschleunigung des Uhltischs</translation>
+        <translation type="unfinished">Beschleunigung des Uhltischs</translation>
     </message>
     <message>
+        <location line="+63"/>
+        <location line="+42"/>
+        <location line="+42"/>
         <source>Set current position as null position</source>
-        <translation type="obsolete">Setzt aktuelle Position als Null-Position</translation>
+        <translation type="unfinished">Setzt aktuelle Position als Null-Position</translation>
     </message>
     <message>
+        <location line="-39"/>
         <source>Origin Y</source>
-        <translation type="obsolete">Null-Pos. Y</translation>
+        <translation type="unfinished">Null-Pos. Y</translation>
     </message>
     <message>
+        <location line="+42"/>
         <source>Origin Z</source>
-        <translation type="obsolete">Null-Pos. Z</translation>
+        <translation type="unfinished">Null-Pos. Z</translation>
     </message>
     <message>
+        <location line="-100"/>
         <source>Change the direction of X-axis</source>
-        <translation type="obsolete">Dreht die Fahrtrichtung der X-Achse um</translation>
+        <translation type="unfinished">Dreht die Fahrtrichtung der X-Achse um</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Invert X</source>
-        <translation type="obsolete">Invert. X</translation>
+        <translation type="unfinished">Invert. X</translation>
     </message>
     <message>
+        <location line="+13"/>
         <source>Origin X</source>
-        <translation type="obsolete">Null-Pos. X</translation>
+        <translation type="unfinished">Null-Pos. X</translation>
     </message>
     <message>
+        <location line="-29"/>
         <source>Enable or Disable the X-axis</source>
-        <translation type="obsolete">Schaltet die X-Achse ein oder aus</translation>
+        <translation type="unfinished">Schaltet die X-Achse ein oder aus</translation>
     </message>
     <message>
+        <location line="-104"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <location line="+34"/>
+        <source>mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+37"/>
         <source>Enable X</source>
-        <translation type="obsolete">X Aktiv</translation>
+        <translation type="unfinished">X Aktiv</translation>
     </message>
     <message>
+        <location line="+39"/>
         <source>Enable or Disable the Y-axis</source>
-        <translation type="obsolete">Schaltet die Y-Achse ein oder aus</translation>
+        <translation type="unfinished">Schaltet die Y-Achse ein oder aus</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Enable Y</source>
-        <translation type="obsolete">Y Aktiv</translation>
+        <translation type="unfinished">Y Aktiv</translation>
     </message>
     <message>
+        <location line="+10"/>
         <source>Change the direction of Y-axis</source>
-        <translation type="obsolete">Dreht die Fahrtrichtung derYx-Achse um</translation>
+        <translation type="unfinished">Dreht die Fahrtrichtung derYx-Achse um</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Invert Y</source>
-        <translation type="obsolete">Invert. Y</translation>
+        <translation type="unfinished">Invert. Y</translation>
     </message>
     <message>
+        <location line="+39"/>
         <source>Change the direction of Z-axis</source>
-        <translation type="obsolete">Dreht die Fahrtrichtung der Z-Achse um</translation>
+        <translation type="unfinished">Dreht die Fahrtrichtung der Z-Achse um</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Invert Z</source>
-        <translation type="obsolete">Invert. Z</translation>
+        <translation type="unfinished">Invert. Z</translation>
     </message>
     <message>
+        <location line="+85"/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-101"/>
         <source>Enable or Disable the Z-axis</source>
-        <translation type="obsolete">Schaltet die Z-Achse ein oder aus</translation>
+        <translation type="unfinished">Schaltet die Z-Achse ein oder aus</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Enable Z</source>
-        <translation type="obsolete">Z Aktiv</translation>
+        <translation type="unfinished">Z Aktiv</translation>
     </message>
     <message>
+        <location line="+36"/>
         <source>Moves all axes to their null position</source>
-        <translation type="obsolete">Fährt alle Achsen auf deren Null-Position</translation>
+        <translation type="unfinished">Fährt alle Achsen auf deren Null-Position</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Calibrate</source>
-        <translation type="obsolete">Kalibrieren</translation>
+        <translation type="unfinished">Kalibrieren</translation>
     </message>
     <message>
+        <location line="+31"/>
         <source>Cancel</source>
-        <translation type="obsolete">Abbrechen</translation>
+        <translation type="unfinished">Abbrechen</translation>
     </message>
     <message>
+        <location line="-249"/>
         <source>Properties</source>
-        <translation type="obsolete">Eigenschaften</translation>
+        <translation type="unfinished">Eigenschaften</translation>
     </message>
     <message>
+        <location line="+83"/>
         <source>Axis</source>
-        <translation type="obsolete">Achsen</translation>
+        <translation type="unfinished">Achsen</translation>
     </message>
 </context>
 <context>
