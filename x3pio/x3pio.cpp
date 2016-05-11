@@ -2,7 +2,7 @@
     Plugin "x3pio" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2013, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -1202,7 +1202,7 @@ ito::RetVal X3pIO::parseUnit(const std::string &unitString, double &unitScale)
     {
         unitScale = 1.0e-3;
     }
-    else if (unitString == "\u00B5m")  // mu m
+    else if (unitString == "\u00B5m" || (unitString.size() == 2 && unitString.data()[0] == -75 && unitString.data()[1] == 'm'))  // mu m
     {
         unitScale = 1.0e-6;
     }
@@ -1286,7 +1286,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
    {
        xyScaleFactor = 1000.0;
    }
-   else if (xyUnit == "\u00B5m")  // mu m
+   else if (xyUnit == "\u00B5m" || (xyUnit.size() == 2 && xyUnit.data()[0] == -75 && xyUnit.data()[1] == 'm'))  // mu m
    {
        xyScaleFactor = 1.0e6;
    }
@@ -1309,7 +1309,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
    {
        valueScaleFactor = 1000.0;
    }
-   else if (valueUnit == " \u00B5m")  // mu m
+   else if (valueUnit == " \u00B5m" || (valueUnit.size() == 2 && valueUnit.data()[0] == -75 && valueUnit.data()[1] == 'm'))  // mu m
    {
        valueScaleFactor = 1.0e6;
    }
