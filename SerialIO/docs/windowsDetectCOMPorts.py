@@ -14,7 +14,6 @@ def DetectCOMPorts():
         print( "Unable to Connect to the Window Registry and read keys" )
     finally:
         key.Close()
-
     return values_list
 
 def NumberOfCOMPorts( values_list ):
