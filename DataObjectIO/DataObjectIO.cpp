@@ -5292,7 +5292,7 @@ struct Buffer
 
                             for (int i = 0; i < buffers.size(); ++i)
                             {
-                                std::cout << "type: " << buffers[i].bufferType << ", sensor counter: " << (buffers[i].sensorCounter >> 32) << ", num buffers (planes):" << buffers[i].pointers.size();
+                                std::cout << "type: " << QByteArray::number(buffers[i].bufferType).data() << ", sensor counter: " << QByteArray::number(buffers[i].sensorCounter >> 32).data() << ", num buffers (planes): " << QByteArray::number(buffers[i].pointers.size()).data();
 
                                 if (i == selectedBufferIndex)
                                 {
