@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-    Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -56,7 +56,8 @@ class AvantesAvaSpec : public ito::AddInGrabber
     private:
         ito::RetVal sendCommand(const char* cmd, int cmd_size, unsigned char* buf, int &buf_size);
         ito::RetVal readWithFixedLength(char* buf, int &buf_size);
-        ito::RetVal checkAnswerForError(const unsigned char* buf, const unsigned char &desiredCmd, bool warningNotError = false);
+        ito::RetVal checkAnswerForError(const unsigned char* buf, const unsigned char &desiredCmd, bool warningNotError = false, const char *prefix = "");
+		void dummyRead();
 
         ito::AddInDataIO *m_pUsb;
         bool m_isGrabbing;

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+	Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -111,7 +111,13 @@ AvantesAvaSpecInterface::AvantesAvaSpecInterface() : AddInInterfaceBase()
     setObjectName("AvantesAvaSpec");
 
     m_description = QObject::tr("Avantes AvaSpec");
-    m_detaildescription = QObject::tr("This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itoM. It is used for CCM / CCSI with the AvaSpec 3468 USB-Spectrometer.");
+    m_detaildescription = QObject::tr(
+"This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. \
+It uses a low-level libusb connection to communicate with the devices and has been \
+tested with the following spectrometers: \
+\
+* AvaSpec 3468 USB-Spectrometer \
+* AvaSpec 2048 USB-Spectrometer.");
     m_author = "M. Gronle, W. Lyda, ITO, University Stuttgart";
     m_license = QObject::tr("LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -153,13 +159,10 @@ AvantesAvaSpec::AvantesAvaSpec() :
     m_pUsb(NULL),
     m_isGrabbing(false)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AvantesAvaSpec", "PlugIn-Name");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AvantesAvaSpec", "plugin name");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.00001, (double)MAX_INTEGRATION_TIME / 1000.0, 0.001, tr("Integrationtime of CCD programmed in s").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0037, 0.0037, 0.0037, tr("Shortest time between two frames of CCD in s").toLatin1().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.00001, (double)MAX_INTEGRATION_TIME / 1000.0, 0.002, tr("Integration time of CCD programmed in s, some devices do not accept the full range of allowed values (see AvaSpec for real minimum value of your device).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     int roi[] = {0, 0, 4096, 1};
@@ -180,21 +183,12 @@ AvantesAvaSpec::AvantesAvaSpec() :
     paramVal = ito::Param("average", ito::ParamBase::Int, 1, 10, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("time_out", ito::ParamBase::Double, 0.001, 4095.0, 1.0, tr("Timeout for grabbing in s").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("trigger_enable", ito::ParamBase::Int | ito::ParamBase::NoAutosave | ito::ParamBase::Readonly, 0, 0, 0, tr("Enable triggermode").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
     paramVal = ito::Param("lambda_coeffs", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Coefficients for polynom that determines lambda_table (lambda_table[idx] = c[0] + c[1]*idx + c[2]*idx^2 + ... + c[4]*idx^4)").toLatin1().data());
     double coeffs[NR_WAVELEN_POL_COEF];
     paramVal.setVal<double*>(coeffs, NR_WAVELEN_POL_COEF);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("lambda_table", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Vector with the wavelength of all active pixels").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 2, 0, tr("Set Triggermode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, NULL, tr("Serial number of spectrometer. Same as identifier.").toLatin1().data());
@@ -265,7 +259,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         AvsIdentityType avs_id;
         int size = sizeof(avs_id);
         retValue += sendCommand((char*)cmd, sizeof(cmd), (unsigned char*)&avs_id, size);
-        retValue += checkAnswerForError(avs_id.prefix, 0x93, false);
+        retValue += checkAnswerForError(avs_id.prefix, 0x93, false, "Get serial number from device: ");
 
         if (!retValue.containsError())
         {
@@ -282,7 +276,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         memset(answer, 0, 8 * sizeof(unsigned char));
         int size = 8;
         retValue += sendCommand((char*)cmd, sizeof(cmd), answer, size);
-        retValue += checkAnswerForError(answer, 0x92, true);
+        retValue += checkAnswerForError(answer, 0x92, true, "Receive reason for last reset: ");
     }
 
     if (!retValue.containsError())
@@ -294,7 +288,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 
         if (size != sizeof(m_deviceConfig) || m_deviceConfig.prefix[2] != 0xFE || m_deviceConfig.prefix[4] != 0x81)
         {
-            retValue += ito::RetVal(ito::retError, 0, "error reading entire device configuration");
+			retValue += checkAnswerForError((unsigned char*)(&m_deviceConfig), 0x81, false, "Get configuration of device: ");
         }
         else
         {
@@ -482,6 +476,10 @@ ito::RetVal AvantesAvaSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
                 retValue += this->startDevice(NULL);
                 setGrabberStarted(started);
             }
+
+			//calc minimum timeout for libusb
+			double timeout = 3.0 + m_params["average"].getVal<int>() * m_params["integration_time"].getVal<double>();
+			retValue += m_pUsb->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)), NULL);
         }
         else
         {
@@ -519,11 +517,11 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
         uint32 average = m_params["average"].getVal<int>();
 
         config.prefix[00]=0x20;
-        config.prefix[01]=0x00;
+        config.prefix[01]=0x00; //REVERSE: 0x00;
         config.prefix[02]=0x2B;   // length of the command
         config.prefix[03]=0x00;
         config.prefix[04]=0x05;   // prepare_measurement
-        config.prefix[05]=0x00;
+        config.prefix[05]=0x00; //REVERSE: 0x00
 
         config.m_Meas.m_StartPixel = swap16(roi[0]);
         config.m_Meas.m_StopPixel = swap16(roi[0] + roi[2] - 1);
@@ -547,13 +545,30 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
         //send config
         int config_size = sizeof(config);
         int config_answer_size = 6;
-        unsigned char config_answer[6];
+        unsigned char config_answer[8];
         retValue += this->sendCommand((const char*)&config, config_size, config_answer, config_answer_size);
         if (!retValue.containsError())
         {
             if ((config_answer_size != 6) || (config_answer[4] != 0x85) || (config_answer[2] != 0x02))
             {
-                retValue += ito::RetVal(ito::retError, 0, "error while setting configuration");
+				if (config_answer[2] == 0x03) //error message, obtain the last missing two characters
+				{
+					int len = 8 - config_answer_size;
+					retValue += sendCommand(NULL, 0, &(config_answer[config_answer_size]), len);
+
+					if (!retValue.containsError())
+					{
+						retValue += this->checkAnswerForError(config_answer, 0x85, false, "Setting configuration: ");
+					}
+					else
+					{
+						retValue += ito::RetVal(ito::retError, 0, "unknown error while setting configuration (v1).");
+					}
+				}
+				else
+				{
+					retValue += ito::RetVal(ito::retError, 0, "unknown error while setting configuration (v2).");
+				}
             }
         }
     }
@@ -575,7 +590,8 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvantesAvaSpec::stopDevice(ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
+
+	ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
     decGrabberStarted();
@@ -642,6 +658,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             int xsize = m_data.getSize(1);
 
             int request_size;
+			int obtained_size = 0;
             if ((average <= 1) && (bpp == 16)) 
             {
                 request_size = sizeof(sony_single_meas) - sizeof(sony_single_meas.pixels) + xsize * sizeof(uint16);
@@ -652,8 +669,14 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                 
                 if (!m_acquisitionRetVal.containsError())
                 {
+					obtained_size = 4 + sony_single_meas.prefix[3] * 256 + sony_single_meas.prefix[2]; //sometimes the devices delivers more values than required
+
                     for (int teller=0; teller < xsize; ++teller) 
+					{
                         vals[teller] = swap16(sony_single_meas.pixels[teller]); 
+					}
+
+					m_data.setTag("timestamp", (double)sony_single_meas.timestamp * 1e-5); //timestamp is in 10us units
                 }
             }
             else if ((average > 1) && (bpp == 32)) 
@@ -666,13 +689,25 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 
                 if (!m_acquisitionRetVal.containsError())
                 {
+					obtained_size =  4 + sony_multi_meas.prefix[3] * 256 + sony_multi_meas.prefix[2]; //sometimes the devices delivers more values than required
+
                     for (int teller=0; teller < xsize; ++teller) 
                     {
                         vals[teller] = swap32(sony_multi_meas.pixels[teller]); 
                         vals[teller] = vals[teller]/average;
                     }
+
+					m_data.setTag("timestamp", (double)sony_multi_meas.timestamp * 1e-5); //timestamp is in 10us units
                 }
             }
+
+			//check if some idle pixels have to be transferred:
+			if (obtained_size > request_size)
+			{
+				int length = obtained_size - request_size;
+				readWithFixedLength((char*)&sony_multi_meas, length); //sony_multi_meas is only taken as big buffer, the content is not used.
+			}
+
 
             unsigned char cmd2[] = {0x21, 0x00, 0x02 /*length of command*/, 0x00, 0xC0 /*acknowledge*/, 0x00};
             m_acquisitionRetVal += m_pUsb->setVal((const char*)cmd2, sizeof(cmd2), NULL);
@@ -728,6 +763,9 @@ ito::RetVal AvantesAvaSpec::retrieveData(ito::DataObject *externalDataObject)
                     retVal += ito::RetVal(ito::retError, 0, tr("Wrong picture type").toLatin1().data());
                     break;
             }
+
+			bool valid;
+			externalDataObject->setTag("timestamp", m_data.getTag("timestamp", valid));
         }
 
         m_isGrabbing = false;
@@ -866,8 +904,13 @@ void AvantesAvaSpec::updateParameters(QMap<QString, ito::ParamBase> params)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvantesAvaSpec::sendCommand(const char* cmd, int cmd_size, unsigned char* buf, int &buf_size)
 {
-    ito::RetVal retVal = m_pUsb->setVal(cmd, cmd_size, NULL);
-    
+	ito::RetVal retVal;
+
+	if (cmd_size > 0)
+	{
+		retVal = m_pUsb->setVal(cmd, cmd_size, NULL);
+	}
+
     if (!retVal.containsError() && buf != NULL)
     {
         QSharedPointer<int> chuck_size(new int);
@@ -937,9 +980,22 @@ ito::RetVal AvantesAvaSpec::readWithFixedLength(char* buf, int &buf_size)
 }
 // AvantesAvaSpec
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void AvantesAvaSpec::dummyRead()
+{
+	ito::RetVal retValue;
+
+	//dummy read to clear input buffer
+	char buf[1024];
+	QSharedPointer<int> size(new int);
+	*size = 1024;
+	QSharedPointer<char> buffer(buf, idleCharDeleter);
+    m_pUsb->getVal(buffer, size, NULL);
+}
+
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvantesAvaSpec::checkAnswerForError(const unsigned char* buf, const unsigned char &desiredCmd, bool warningNotError /*= false*/)
+ito::RetVal AvantesAvaSpec::checkAnswerForError(const unsigned char* buf, const unsigned char &desiredCmd, bool warningNotError /*= false*/, const char *prefix /*= ""*/)
 {
     if (buf[4] == desiredCmd)
     {
@@ -951,53 +1007,53 @@ ito::RetVal AvantesAvaSpec::checkAnswerForError(const unsigned char* buf, const 
         switch (buf[6])
         {
         case 0x00:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: unknown", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: unknown", prefix, buf[6]);
             break;
         case 0x01:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid parameter", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid parameter", prefix, buf[6]);
             break;
         case 0x02:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid password", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid password", prefix, buf[6]);
             break;
         case 0x03:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid command", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid command", prefix, buf[6]);
             break;
         case 0x04:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid size", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid size", prefix, buf[6]);
             break;
         case 0x05:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: measurement pending", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: measurement pending", prefix, buf[6]);
             break;
         case 0x06:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid pixel range", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid pixel range", prefix, buf[6]);
             break;
         case 0x07:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid integration time", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid integration time", prefix, buf[6]);
             break;
         case 0x08:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: operation not supported", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: operation not supported", prefix, buf[6]);
             break;
         case 0x09:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid combination", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid combination", prefix, buf[6]);
             break;
         case 0x0A:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: no buffer available", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: no buffer available", prefix, buf[6]);
             break;
         case 0x0B:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: no spectra available", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: no spectra available", prefix, buf[6]);
             break;
         case 0x0C:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid state", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid state", prefix, buf[6]);
             break;
         case 0x0D:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: unexpected dma int", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: unexpected dma int", prefix, buf[6]);
             break;
         case 0x0E:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i: invalid fpga file", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: invalid fpga file", prefix, buf[6]);
             break;
         default:
         //case 0x00:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "error %i", buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i", prefix, buf[6]);
         }
         return retVal;
     }
