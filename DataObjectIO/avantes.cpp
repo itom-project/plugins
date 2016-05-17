@@ -95,8 +95,8 @@ typedef struct
     ito::uint8              SDmarker; // 1 if file originated from SDcard, 0 otherwise
     AvantesIdentityType     identity; // 75 byte structure with serial number and friendly name
     AvantesMeasConfigType   measconf;
-    DWORD                   timestamp;
-    DWORD                   SPCfiledate;
+    ito::uint32             timestamp;
+    ito::uint32             SPCfiledate;
     ito::float32            detectortemp;
     ito::float32            boardtemp;
     ito::float32            NTC2volt; // raw voltage from NTC2
