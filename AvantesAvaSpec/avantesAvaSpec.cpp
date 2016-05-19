@@ -658,19 +658,31 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             int xsize = m_data.getSize(1);
 
             int request_size;
-			int obtained_size = 0;
+			int expected_size;
             if ((average <= 1) && (bpp == 16)) 
             {
-                request_size = sizeof(sony_single_meas) - sizeof(sony_single_meas.pixels) + xsize * sizeof(uint16);
-                memset(sony_single_meas.pixels, 0, sizeof(sony_single_meas.pixels));
-                m_acquisitionRetVal += readWithFixedLength((char*)&sony_single_meas, request_size);
-                m_acquisitionRetVal += checkAnswerForError((unsigned char*)&sony_single_meas, 0xB0, false);
+				expected_size = (sizeof(sony_single_meas) - sizeof(sony_single_meas.pixels) + xsize * sizeof(uint16));
+				//at first get the first 6 bytes (prefix) to check for the size of
+				//the data. Then obtain the data.
+				memset(sony_single_meas.pixels, 0, sizeof(sony_single_meas.pixels));
+				request_size = sizeof(sony_single_meas.prefix);
+				m_acquisitionRetVal += readWithFixedLength((char*)&sony_single_meas, request_size);
+				m_acquisitionRetVal += checkAnswerForError((unsigned char*)&sony_single_meas, 0xB0, false);
+				request_size = sony_single_meas.prefix[3] * 256 + sony_single_meas.prefix[2] - 2;
+				m_acquisitionRetVal += readWithFixedLength((char*)&(sony_single_meas.timestamp), request_size);
+
+				if (!m_acquisitionRetVal.containsError())
+				{
+					if ((request_size + 6) != expected_size)
+					{
+						qDebug() << "received buffer has " << request_size + 6 << " bytes. " << expected_size << " bytes expected.";
+					}
+				}
+                
                 ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0,0);
                 
                 if (!m_acquisitionRetVal.containsError())
                 {
-					obtained_size = 4 + sony_single_meas.prefix[3] * 256 + sony_single_meas.prefix[2]; //sometimes the devices delivers more values than required
-
                     for (int teller=0; teller < xsize; ++teller) 
 					{
                         vals[teller] = swap16(sony_single_meas.pixels[teller]); 
@@ -681,16 +693,27 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             }
             else if ((average > 1) && (bpp == 32)) 
             {
-                request_size = sizeof(sony_multi_meas) - sizeof(sony_multi_meas.pixels) + xsize * sizeof(uint32);
+                expected_size = sizeof(sony_multi_meas) - sizeof(sony_multi_meas.pixels) + xsize * sizeof(uint32);
+				//at first get the first 6 bytes (prefix) to check for the size of
+				//the data. Then obtain the data.
+				request_size = sizeof(sony_multi_meas.prefix);
                 memset(sony_multi_meas.pixels, 0, sizeof(sony_multi_meas.pixels));
                 m_acquisitionRetVal += readWithFixedLength((char*)&sony_multi_meas, request_size);
                 m_acquisitionRetVal += checkAnswerForError((unsigned char*)&sony_multi_meas, 0xB1, false);
+				request_size = sony_multi_meas.prefix[3] * 256 + sony_multi_meas.prefix[2] - 2;
+				m_acquisitionRetVal += readWithFixedLength((char*)&(sony_multi_meas.timestamp), request_size);
                 ito::float32 *vals = (ito::float32*)m_data.rowPtr(0,0);
+
+				if (!m_acquisitionRetVal.containsError())
+				{
+					if ((request_size + 6) != expected_size)
+					{
+						qDebug() << "received buffer has " << request_size + 6 << " bytes. " << expected_size << " bytes expected.";
+					}
+				}
 
                 if (!m_acquisitionRetVal.containsError())
                 {
-					obtained_size =  4 + sony_multi_meas.prefix[3] * 256 + sony_multi_meas.prefix[2]; //sometimes the devices delivers more values than required
-
                     for (int teller=0; teller < xsize; ++teller) 
                     {
                         vals[teller] = swap32(sony_multi_meas.pixels[teller]); 
@@ -702,11 +725,11 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             }
 
 			//check if some idle pixels have to be transferred:
-			if (obtained_size > request_size)
+			/*if (obtained_size > request_size)
 			{
 				int length = obtained_size - request_size;
 				readWithFixedLength((char*)&sony_multi_meas, length); //sony_multi_meas is only taken as big buffer, the content is not used.
-			}
+			}*/
 
 
             unsigned char cmd2[] = {0x21, 0x00, 0x02 /*length of command*/, 0x00, 0xC0 /*acknowledge*/, 0x00};
