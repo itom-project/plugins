@@ -23,6 +23,7 @@
 #define AVANTESDEFINES_H
 
 #pragma pack(push,1)
+
 typedef signed char     int8;
 typedef unsigned char   uint8;
 typedef signed short    int16;
@@ -246,5 +247,6 @@ typedef struct
 } sony_multi_measdatatype;
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#pragma pack(pop)
 
 #endif // AVANTESDEFINES_H
