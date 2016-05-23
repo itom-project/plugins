@@ -957,7 +957,10 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     }
 
     if (dObj->getSize(dObj->getDims() - 1) == 1)
+    {
         xdatat = Record1Type::Axes_type::CX_type::DataType_type::I;
+        xscale = 1.0;
+    }
     else
     {
         xscale = dObj->getAxisScale(dObj->getDims() - 1);
@@ -971,7 +974,10 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         }
     }
     if (dObj->getSize(dObj->getDims() - 2) == 1)
+    {
         ydatat = Record1Type::Axes_type::CX_type::DataType_type::I;
+        yscale = 1.0;
+    }
     else
     {
         yscale = dObj->getAxisScale(dObj->getDims() - 2);
