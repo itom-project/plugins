@@ -144,7 +144,7 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::saveNistSDF, DataObjectIO::saveNistSDFParams, saveNistSDFDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("ASCII Surface Data File (*.sdf)"));
     m_filterList.insert("saveSDF", filter);
 
-    filter = new FilterDef(DataObjectIO::loadNistSDF, DataObjectIO::loadNistSDFParams, loadNistSDFDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Surface Data File (*.sdf)"));
+    filter = new FilterDef(DataObjectIO::loadNistSDF, DataObjectIO::loadNistSDFParams, loadNistSDFDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII or binary Surface Data File (*.sdf)"));
     m_filterList.insert("loadSDF", filter);
 
     filter = new FilterDef(DataObjectIO::saveTiff, DataObjectIO::saveTiffParams, saveTiffDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.tif *.tiff)"));
@@ -1551,7 +1551,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadNistSDFParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString DataObjectIO::loadNistSDFDoc = QObject::tr("loads an ascii-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.");
+/*static*/ const QString DataObjectIO::loadNistSDFDoc = QObject::tr("loads an ascii or binary-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0, bISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.");
 
 /** loadNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -1569,7 +1569,7 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         ito::Param param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("data object where the file data is loaded to. The type of destinationObject corresponds to the type of the data block in the sdf file (uint8, uint16, uint32, int8, int16, int32, float32, float64) or always float64 if the header value Zscale is != 1.0 or the valueUnit is != 'm'").toLatin1().data());
         paramsMand->append(param);
         
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("filename of the sdf file (aNIST-1.0 or aBCR-1.0 format)").toLatin1().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("filename of the sdf file (aISO-1.0, aNIST-1.0, aBCR-1.0 or bISO-1.0 format)").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "mm", tr("Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than 'm' lead to a multiplication of all values that might exceed the data type limit.)").toLatin1().data());
@@ -1590,7 +1590,7 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         param.setMeta(&sm2, false);
         paramsOpt->append(param);
 
-        param = ito::Param("nanValue", ito::ParamBase::String | ito::ParamBase::In, "BAD", tr("If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If '<minrange>' or <maxrange> the minimum or maximum value of the data type in the data block is assumed (e.g. <maxrange> is used by Zygo to describe NaN values). MountainsMap writes 'BAD' as invalid value (following ISO25178-71).").toLatin1().data());
+        param = ito::Param("nanValue", ito::ParamBase::String | ito::ParamBase::In, "BAD", tr("If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If '<minrange>' or <maxrange> the minimum or maximum value of the data type in the data block is assumed (e.g. <maxrange> is used by Zygo to describe NaN values). MountainsMap writes 'BAD' as invalid value (following ISO25178-71). This value is ignored for binary input.").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -1621,6 +1621,8 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     QFile dataIn(fileinfo.canonicalFilePath());
     std::string xyUnit = paramsOpt->at(0).getVal<char*>();
     std::string valueUnit = paramsOpt->at(1).getVal<char*>();
+    QByteArray nanValue = paramsOpt->at(2).getVal<char*>();
+    ito::float64 zscale = 1.0;
 
     ito::DataObject *dObjDst = (*paramsMand)[0].getVal<ito::DataObject*>();
 
@@ -1638,41 +1640,70 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     }
     else
     {     
-        ito::float64 zscale = 1.0;
-        QByteArray nanValue = paramsOpt->at(2).getVal<char*>();
-        ret += readNistHeader(dataIn, *dObjDst, zscale, 0, xyUnit, valueUnit, nanValue);
-        if (!ret.containsError())
+        //check if binary or ascii format
+        char version[8];
+        int versionLen = dataIn.read(version, 8);
+        bool ascii = false;
+
+        if (versionLen > 0)
         {
-            switch(dObjDst->getType())
+            if (version[0] == 'b')
             {
-            case ito::tInt8:
-                ret += readDataBlock<ito::int8>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            case ito::tUInt8:
-                ret += readDataBlock<ito::uint8>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            case ito::tInt16:
-                ret += readDataBlock<ito::int16>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            case ito::tUInt16:
-                ret += readDataBlock<ito::uint16>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            case ito::tInt32:
-                ret += readDataBlock<ito::int32>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            case ito::tUInt32:
-                ret += readDataBlock<ito::uint32>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            case ito::tFloat32:
-                ret += readDataBlock<ito::float32>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            case ito::tFloat64:
-                ret += readDataBlock<ito::float64>(dataIn, *dObjDst, zscale, 0, nanValue);
-                break;
-            default:
-                return ito::RetVal(ito::retError, 0, "DataType not supported");
-                break;
+                ascii = false;
             }
+            else
+            {
+                ascii = true;
+            }
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, tr("No version tag could be found in file.").toLatin1().data());
+        }
+
+        //move file pointer back to start
+        dataIn.seek(0);
+
+        if (ascii)
+        {
+            ret += readNistHeader(dataIn, *dObjDst, zscale, 0, xyUnit, valueUnit, nanValue);
+            if (!ret.containsError())
+            {
+                switch (dObjDst->getType())
+                {
+                case ito::tInt8:
+                    ret += readDataBlock<ito::int8>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                case ito::tUInt8:
+                    ret += readDataBlock<ito::uint8>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                case ito::tInt16:
+                    ret += readDataBlock<ito::int16>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                case ito::tUInt16:
+                    ret += readDataBlock<ito::uint16>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                case ito::tInt32:
+                    ret += readDataBlock<ito::int32>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                case ito::tUInt32:
+                    ret += readDataBlock<ito::uint32>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                case ito::tFloat32:
+                    ret += readDataBlock<ito::float32>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                case ito::tFloat64:
+                    ret += readDataBlock<ito::float64>(dataIn, *dObjDst, zscale, 0, nanValue);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, "DataType not supported");
+                    break;
+                }
+            }
+        }
+        else
+        {
+            ret += readNistHeaderBinary(dataIn, *dObjDst, zscale, 0, xyUnit, valueUnit, nanValue);
         }
     }
 
@@ -2036,6 +2067,226 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
 
     return retValue;
 };
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DataObjectIO::readNistHeaderBinary(QFile &inFile, ito::DataObject &newObject, double &zscale, const int /*flags*/, const std::string &xyUnit, const std::string &valueUnit, QByteArray &nanString)
+{
+    inFile.seek(0);
+
+    int read;
+    char header[81];
+    memset(header, 0, sizeof(header));
+    read = inFile.read(header, 81);
+    if (read != 81)
+    {
+        return ito::RetVal(ito::retError, 0, "file too short for header information.");
+    }
+
+    std::string version(header, 8);
+    std::string manufacID(&(header[8]), 10);
+    std::string createDate(&(header[18]), 12);
+    std::string modDate(&(header[30]), 12);
+    ito::uint16 numPoints = *((ito::uint16*)(&header[42]));
+    ito::uint16 numProfiles = *((ito::uint16*)(&header[44]));
+    ito::float64 scaleX = *((ito::float64*)(&header[46]));
+    ito::float64 scaleY = *((ito::float64*)(&header[54]));
+    zscale = *((ito::float64*)(&header[62]));
+    ito::float64 zResolution = *((ito::float64*)(&header[70]));
+    char compression = header[78];
+    char dataTypeRaw = header[79];
+    char checkType = header[80];
+    
+    if (version != "bISO-1.0")
+    {
+        return ito::RetVal(ito::retError, 0, "Version tag bISO-1.0 could not be found.");
+    }
+
+    ito::RetVal retValue;
+    ito::float64 xscale = scaleX, yscale = scaleY, zRes = 1.0;
+    int xsize = numPoints, ysize = numProfiles;
+    int dataType = -1;
+    std::map<std::string, std::string> metaData;
+
+    metaData["ManufacID"] = manufacID;
+        
+    QDateTime date = QDateTime::fromString(QString::fromStdString(createDate), "ddMMyyyyHHmm");
+    if (date.isValid())
+    {
+        metaData["CreateDate"] = date.toString("yyyy-MM-ddTHH:mm:00.0+00:00").toStdString(); //same format than x3p format
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, "Header CreateDate can not be parsed in format DDMMYYYYHHMM");
+    }
+
+    date = QDateTime::fromString(QString::fromStdString(modDate), "ddMMyyyyHHmm");
+    if (date.isValid())
+    {
+        metaData["ModDate"] = date.toString("yyyy-MM-ddTHH:mm:00.0+00:00").toStdString(); //same format than x3p format
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, "Header ModDate can not be parsed in format DDMMYYYYHHMM");
+    }
+
+    if (numPoints <= 0 || numPoints > 65535)
+    {
+        //limit 65535 is given in ISO 25178-71
+        retValue += ito::RetVal(ito::retError, 0, "Header NumPoints out of range (0, 65535]");
+    }
+        
+    if (numProfiles <= 0 || numProfiles > 65535)
+    {
+        //limit 65535 is given in ISO 25178-71
+        retValue += ito::RetVal(ito::retError, 0, "Header NumProfiles out of range (0, 65535]");
+    }
+        
+    if (zResolution < 0.0)
+    {
+        zResolution = 1.0; //BCR Format 1.0 says: if zResolution negative, it is unknown
+    }
+    metaData["Zresolution"] = zResolution;
+
+    if (compression != 0)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "compression value must be 0 in file format.");
+    }
+
+    if (checkType != 0)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "checksum value must be 0 in file format.");
+    }
+
+    int size = 0;
+
+    switch (dataTypeRaw)
+    {
+    case 5:
+        dataType = ito::tInt16;
+        size = xsize * ysize * sizeof(ito::int16);
+        break;
+    case 6:
+        dataType = ito::tInt32;
+        size = xsize * ysize * sizeof(ito::int32);
+        break;
+    case 7:
+        dataType = ito::tFloat64;
+        size = xsize * ysize * sizeof(ito::float64);
+        break;
+    default:
+        retValue += ito::RetVal(ito::retError, 0, "DataType not supported!");
+        dataType = -1;
+        break;
+    }
+
+    if (!retValue.containsError())
+    {
+        newObject = ito::DataObject(ysize, xsize, dataType);
+        read = inFile.read((char*)newObject.rowPtr(0, 0), size);
+        if (read < size)
+        {
+            retValue += ito::RetVal(ito::retError, 0, "file size is too small for all required data.");
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        if (dataType != -1 && (valueUnit != "m" || std::abs(zscale - 1.0) > std::numeric_limits<double>::epsilon()) && newObject.getType() != ito::tFloat64)
+        {
+            ito::DataObject temp;
+            newObject.copyTo(temp);
+            retValue = temp.convertTo(newObject ,ito::tFloat64);
+        }
+    }
+
+    if (!retValue.containsError() && dataType > -1 && xsize > 0 && ysize > 0)
+    {
+        if (xsize == 1)
+        {
+            std::swap(xsize, ysize);
+        }
+
+        double xyFactor;
+
+        if (xyUnit == "m")
+        {
+            xyFactor = 1.0;
+        }
+        else if (xyUnit == "cm")
+        {
+            xyFactor = 100.0;
+        }
+        else if (xyUnit == "mm")
+        {
+            xyFactor = 1000.0;
+        }
+        else if (xyUnit == "µm")
+        {
+            xyFactor = 1.0e6;
+        }
+        else if (xyUnit == "nm")
+        {
+            xyFactor = 1.0e9;
+        }
+
+        if (std::abs(yscale) > std::numeric_limits<ito::float64>::epsilon())
+        {
+            newObject.setAxisScale(0, yscale * xyFactor);
+        }
+        else
+        {
+            newObject.setAxisScale(0, 1.0);
+        }
+        newObject.setAxisUnit(0, xyUnit.data());
+
+        if (std::abs(xscale) > std::numeric_limits<ito::float64>::epsilon())
+        {
+            newObject.setAxisScale(1, xscale * xyFactor);
+        }
+        else
+        {
+            newObject.setAxisScale(1, 1.0);
+        }
+        newObject.setAxisUnit(1, xyUnit.data());
+
+        std::map<std::string, std::string>::iterator it = metaData.begin();
+        while (it != metaData.end())
+        {
+            newObject.setTag(it->first, it->second);
+            ++it;
+        }
+
+        //zscale *= zRes; //the resolution is not multiplied to the values since it only indicates the uncertainty of each discretized value (according to aBCR1.0 standard, basis for and referenced by aNIST1.0 standard)
+
+        if (xyUnit == "m")
+        {
+            //zscale *= 1.0;
+        }
+        else if (xyUnit == "cm")
+        {
+            zscale *= 100.0;
+        }
+        else if (xyUnit == "mm")
+        {
+            zscale *= 1000.0;
+        }
+        else if (xyUnit == "µm")
+        {
+            zscale *= 1.0e6;
+        }
+        else if (xyUnit == "nm")
+        {
+            zscale *= 1.0e9;
+        }
+
+        newObject *= zscale;
+
+
+        newObject.setValueUnit(valueUnit.data());
+    }
+
+    return retValue;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! readDataBlock

@@ -191,6 +191,7 @@ class DataObjectIO : public ito::AddInAlgo
         template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator, const double nanValue);
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const QByteArray &nanString);
         static ito::RetVal readNistHeader(QFile &inFile, ito::DataObject &newObject, double &zscale, const int flags, const std::string &xyUnit, const std::string &valueUnit, QByteArray &nanString);
+        static ito::RetVal readNistHeaderBinary(QFile &inFile, ito::DataObject &newObject, double &zscale, const int flags, const std::string &xyUnit, const std::string &valueUnit, QByteArray &nanString);
 
         static void checkAndModifyFilenameSuffix(QFileInfo &file, const QString &desiredAndAllowedSuffix, const QString &allowedSuffix2 = QString(), const QString &allowedSuffix3 = QString());
 
