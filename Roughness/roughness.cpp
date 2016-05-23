@@ -192,6 +192,7 @@ template<typename _Tp> ito::RetVal CalcZp(const uchar* data, const size_t byte_s
         Z_mean = 0.0;
         Z_min = std::numeric_limits<ito::float64>::max();
         Z_max = 0.0;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -205,12 +206,24 @@ template<typename _Tp> ito::RetVal CalcZp(const uchar* data, const size_t byte_s
                 values += steps;
             }
 
+            if (current > 0.0)
+            {
+                valids = true;
+            }
+
             Z_mean += current;
             Z_min = std::min(Z_min, current);
             Z_max = std::max(Z_max, current);
         }
 
         Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
     return retval;
@@ -246,6 +259,7 @@ template<typename _Tp> ito::RetVal CalcZv(const uchar* data, const size_t byte_s
         Z_mean = 0.0;
         Z_min = 0.0;
         Z_max = -std::numeric_limits<ito::float64>::max();
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -259,12 +273,24 @@ template<typename _Tp> ito::RetVal CalcZv(const uchar* data, const size_t byte_s
                 values += steps;
             }
 
+            if (current < 0.0)
+            {
+                valids = true;
+            }
+
             Z_mean += current;
             Z_min = std::min(Z_min, current);
             Z_max = std::max(Z_max, current);
         }
 
         Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
     return retval;
@@ -300,6 +326,7 @@ template<typename _Tp> ito::RetVal CalcZz(const uchar* data, const size_t byte_s
         Z_mean = 0.0;
         Z_min = std::numeric_limits<ito::float64>::max();
         Z_max = 0.0;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -317,6 +344,8 @@ template<typename _Tp> ito::RetVal CalcZz(const uchar* data, const size_t byte_s
                     {
                         current_lowest = -*values;
                     }
+
+                    valids = true;
                 }
 
                 values += steps;
@@ -328,6 +357,13 @@ template<typename _Tp> ito::RetVal CalcZz(const uchar* data, const size_t byte_s
         }
 
         Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
     return retval;
@@ -354,6 +390,7 @@ template<typename _Tp> ito::RetVal CalcZt(const uchar* data, const size_t byte_s
     size_t steps = byte_steps / sizeof(_Tp);
     ito::float64 current_lowest = 0.0;
     ito::float64 current_highest = 0.0;
+    bool valids = false;
 
     for (int i = 0; i < length; ++i)
     {
@@ -367,11 +404,12 @@ template<typename _Tp> ito::RetVal CalcZt(const uchar* data, const size_t byte_s
             {
                 current_lowest = -*values;
             }
+            valids = true;
         }
         values += steps;
     }
 
-    Z = current_lowest + current_highest;
+    Z = valids ? current_lowest + current_highest : std::numeric_limits<ito::float64>::quiet_NaN();
     return ito::retOk;
 }
 
@@ -406,6 +444,7 @@ template<typename _Tp> ito::RetVal CalcZa(const uchar* data, const size_t byte_s
         Z_min = std::numeric_limits<ito::float64>::max();
         Z_max = 0.0;
         ito::float64 current;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -416,6 +455,7 @@ template<typename _Tp> ito::RetVal CalcZa(const uchar* data, const size_t byte_s
                 if (ito::dObjHelper::isFinite(*values))
                 {
                     current += std::abs(*values);
+                    valids = true;
                 }
                 values += steps;
             }
@@ -425,9 +465,17 @@ template<typename _Tp> ito::RetVal CalcZa(const uchar* data, const size_t byte_s
             Z_min = std::min(Z_min, current);
             Z_max = std::max(Z_max, current);
         }
+
+        Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
-    Z_mean /= (ito::float64)num_samples;
     return retval;
 }
 
@@ -462,6 +510,7 @@ template<typename _Tp> ito::RetVal CalcZq(const uchar* data, const size_t byte_s
         Z_min = std::numeric_limits<ito::float64>::max();
         Z_max = 0.0;
         ito::float64 current;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -471,6 +520,7 @@ template<typename _Tp> ito::RetVal CalcZq(const uchar* data, const size_t byte_s
                 if (ito::dObjHelper::isFinite(*values))
                 {
                     current += (*values * *values);
+                    valids = true;
                 }
                 values += steps;
             }
@@ -480,9 +530,17 @@ template<typename _Tp> ito::RetVal CalcZq(const uchar* data, const size_t byte_s
             Z_min = std::min(Z_min, current);
             Z_max = std::max(Z_max, current);
         }
+
+        Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
-    Z_mean /= (ito::float64)num_samples;
     return retval;
 }
 
@@ -517,6 +575,7 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
         Z_min = std::numeric_limits<ito::float64>::max();
         Z_max = -std::numeric_limits<ito::float64>::max();
         ito::float64 current = 0.0;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -530,6 +589,7 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
                     temp = *values * *values;
                     current_Rq += temp;
                     current_Sk += (temp * *values);
+                    valids = true;
                 }
                 values += steps;
             }
@@ -548,9 +608,19 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
             Z_min = std::min(Z_min, current);
             Z_max = std::max(Z_max, current);
         }
+
+        Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
-    Z_mean /= (ito::float64)num_samples;
+    
+
     return retval;
 }
 
@@ -585,6 +655,7 @@ template<typename _Tp> ito::RetVal CalcZku(const uchar* data, const size_t byte_
         Z_min = std::numeric_limits<ito::float64>::max();
         Z_max = -std::numeric_limits<ito::float64>::max();
         ito::float64 current = 0.0;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -598,6 +669,7 @@ template<typename _Tp> ito::RetVal CalcZku(const uchar* data, const size_t byte_
                     temp = *values * *values;
                     current_Rq += temp;
                     current_Sk += (temp * temp);
+                    valids = true;
                 }
                 values += steps;
             }
@@ -616,9 +688,17 @@ template<typename _Tp> ito::RetVal CalcZku(const uchar* data, const size_t byte_
             Z_min = std::min(Z_min, current);
             Z_max = std::max(Z_max, current);
         }
+
+        Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
-    Z_mean /= (ito::float64)num_samples;
     return retval;
 }
 
@@ -666,6 +746,7 @@ template<typename _Tp> ito::RetVal CalcZdq(const uchar* data, const size_t byte_
         int p1 = steps;
         int p2 = 2*steps;
         int p3 = 3*steps;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -680,6 +761,7 @@ template<typename _Tp> ito::RetVal CalcZdq(const uchar* data, const size_t byte_
                 {
                     current += (temp * temp);
                     counts++;
+                    valids = true;
                 }
 
                 values += steps;
@@ -697,9 +779,17 @@ template<typename _Tp> ito::RetVal CalcZdq(const uchar* data, const size_t byte_
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("at least one sample does not contain at least 7 adjacent valid data points").toLatin1().data());
             }
         }
+
+        Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
-    Z_mean /= (ito::float64)num_samples;
     return retval;
 }
 
@@ -746,6 +836,7 @@ template<typename _Tp> ito::RetVal CalcZda(const uchar* data, const size_t byte_
         int p1 = steps;
         int p2 = 2*steps;
         int p3 = 3*steps;
+        bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
         {
@@ -760,6 +851,7 @@ template<typename _Tp> ito::RetVal CalcZda(const uchar* data, const size_t byte_
                 {
                     current += std::abs(temp);
                     counts++;
+                    valids = true;
                 }
 
                 values += steps;
@@ -777,9 +869,17 @@ template<typename _Tp> ito::RetVal CalcZda(const uchar* data, const size_t byte_
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("at least one sample does not contain at least 7 adjacent valid data points").toLatin1().data());
             }
         }
+
+        Z_mean /= (ito::float64)num_samples;
+
+        if (!valids)
+        {
+            Z_mean = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_min = std::numeric_limits<ito::float64>::quiet_NaN();
+            Z_max = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
     }
 
-    Z_mean /= (ito::float64)num_samples;
     return retval;
 }
 
@@ -806,12 +906,14 @@ template<typename _Tp> ito::RetVal CalcZdc(const uchar* data, const size_t byte_
     size_t steps = byte_steps / sizeof(_Tp);
     std::vector<_Tp> vec;
     int count = 0;
+    bool valids = false;
     
     if (std::numeric_limits<_Tp>::is_exact)
     {
         vec.resize(length);
         memcpy(vec.data(), data, length * sizeof(_Tp));
         count = length;
+        valids = true;
     }
     else
     {
@@ -823,6 +925,7 @@ template<typename _Tp> ito::RetVal CalcZdc(const uchar* data, const size_t byte_
             {
                 vec[count] = *values;
                 count++;
+                valids = true;
             }
             values += steps;
         }
@@ -835,6 +938,12 @@ template<typename _Tp> ito::RetVal CalcZdc(const uchar* data, const size_t byte_
     std::nth_element(vec.begin(), vec.begin() + idxHigh, vec.end());
 
     Z = vec[idxHigh] - vec[idxLow];
+
+    if (!valids)
+    {
+        Z = std::numeric_limits<ito::float64>::quiet_NaN();
+    }
+
     return ito::retOk;
 }
 
