@@ -688,7 +688,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                         vals[teller] = swap16(sony_single_meas.pixels[teller]); 
 					}
 
-					m_data.setTag("timestamp", (double)sony_single_meas.timestamp * 1e-5); //timestamp is in 10us units
+					m_data.setTag("timestamp", (double)swap32(sony_single_meas.timestamp) * 1e-5); //timestamp is in 10us units
                 }
             }
             else if ((average > 1) && (bpp == 32)) 
@@ -720,7 +720,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                         vals[teller] = vals[teller]/average;
                     }
 
-					m_data.setTag("timestamp", (double)sony_multi_meas.timestamp * 1e-5); //timestamp is in 10us units
+					m_data.setTag("timestamp", (double)swap32(sony_multi_meas.timestamp) * 1e-5); //timestamp is in 10us units
                 }
             }
 
