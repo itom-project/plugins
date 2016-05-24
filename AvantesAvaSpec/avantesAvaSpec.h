@@ -61,10 +61,11 @@ class AvantesAvaSpec : public ito::AddInGrabber
 
         ito::AddInDataIO *m_pUsb;
         bool m_isGrabbing;
-        sony_single_measdatatype sony_single_meas;
-        sony_multi_measdatatype sony_multi_meas;
+        AvsSingleMeasdata singleMeasdata;
+        AvsMultiMeasdata multiMeasdata;
         DeviceConfigType m_deviceConfig;
         ito::RetVal m_acquisitionRetVal;
+        int m_numberDeadPixels; //this depends on the detector! some detectors don't have deadpixels, which are located at the start of the pixel stream. The list of detectors and numbers of dead pixels was provided by Avantes.
 
         static void idleCharDeleter(char* /*v*/) {};
         static void idleIntDeleter(int* /*v*/) {};

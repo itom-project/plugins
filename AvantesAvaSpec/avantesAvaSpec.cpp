@@ -157,7 +157,8 @@ const ito::RetVal AvantesAvaSpec::showConfDialog(void)
 AvantesAvaSpec::AvantesAvaSpec() :  
     AddInGrabber(), 
     m_pUsb(NULL),
-    m_isGrabbing(false)
+    m_isGrabbing(false),
+    m_numberDeadPixels(0)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AvantesAvaSpec", "plugin name");
     m_params.insert(paramVal.getName(), paramVal);
@@ -192,6 +193,9 @@ AvantesAvaSpec::AvantesAvaSpec() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, NULL, tr("Serial number of spectrometer. Same as identifier.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("detector_name", ito::ParamBase::String | ito::ParamBase::Readonly, NULL, tr("Name of the detector.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -292,6 +296,80 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         }
         else
         {
+            m_numberDeadPixels = 0;
+
+            switch (m_deviceConfig.m_Detector.m_SensorType)
+            {
+            case SENS_HAMS8378_256:
+                m_params["detector_name"].setVal<char*>("HAMS8378_256");
+                break;
+
+            case SENS_HAMS8378_1024:
+                m_params["detector_name"].setVal<char*>("HAMS8378_1024");
+                break;
+            case SENS_ILX554:
+                m_params["detector_name"].setVal<char*>("ILX554");
+                m_numberDeadPixels = 18; //uint8 const ILX_FIRST_USED_DARK_PIXEL = 2; uint8 const ILX_USED_DARK_PIXELS = 14; uint8 const ILX_TOTAL_DARK_PIXELS = 18;
+                break;
+            case SENS_HAMS9201:
+                m_params["detector_name"].setVal<char*>("HAMS9201");
+                break;
+            case SENS_TCD1304:
+                m_params["detector_name"].setVal<char*>("TCD1304");
+                m_numberDeadPixels = 13; //uint8 const TCD_FIRST_USED_DARK_PIXEL = 0; uint8 const TCD_USED_DARK_PIXELS = 12; uint8 const TCD_TOTAL_DARK_PIXELS = 13;
+                break;
+            case SENS_TSL1301:
+                m_params["detector_name"].setVal<char*>("TSL1301");
+                break;
+            case SENS_TSL1401:
+                m_params["detector_name"].setVal<char*>("TSL1401");
+                break;
+            case SENS_HAMS8378_512:
+                m_params["detector_name"].setVal<char*>("HAMS8378_512");
+                break;
+            case SENS_HAMS9840:
+                m_params["detector_name"].setVal<char*>("HAMS9840");
+                m_numberDeadPixels = 8; //uint8 const HAMS9840_FIRST_USED_DARK_PIXEL = 0; uint8 const HAMS9840_USED_DARK_PIXELS = 8; uint8 const HAMS9840_TOTAL_DARK_PIXELS = 8;
+                break;
+            case SENS_ILX511:
+                m_params["detector_name"].setVal<char*>("ILX511");
+                m_numberDeadPixels = 18; //uint8 const ILX_FIRST_USED_DARK_PIXEL = 2; uint8 const ILX_USED_DARK_PIXELS = 14; uint8 const ILX_TOTAL_DARK_PIXELS = 18;
+                break;
+            case SENS_HAMS10420_2048X64:
+                m_params["detector_name"].setVal<char*>("HAMS10420_2048X64");
+                m_numberDeadPixels = 4; //uint8 const     HAMS10420_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS10420_USED_DARK_PIXELS = 4; uint8 const     HAMS10420_TOTAL_DARK_PIXELS = 4;
+                break;
+            case SENS_HAMS11071_2048X64:
+                m_params["detector_name"].setVal<char*>("HAMS11071_2048X64");
+                m_numberDeadPixels = 4; //uint8 const     HAMS11071_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS11071_USED_DARK_PIXELS = 4; uint8 const     HAMS11071_TOTAL_DARK_PIXELS = 4;
+                break;
+            case SENS_HAMS7031_1024X122:
+                m_params["detector_name"].setVal<char*>("HAMS7031_1024X122");
+                m_numberDeadPixels = 4; //uint8 const     HAMS7031_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS7031_USED_DARK_PIXELS = 4; uint8 const     HAMS7031_TOTAL_DARK_PIXELS = 4;
+                break;
+            case SENS_HAMS7031_1024X58:
+                m_params["detector_name"].setVal<char*>("HAMS7031_1024X58");
+                m_numberDeadPixels = 4; //uint8 const     HAMS7031_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS7031_USED_DARK_PIXELS = 4; uint8 const     HAMS7031_TOTAL_DARK_PIXELS = 4;
+                break;
+            case SENS_HAMS11071_2048X16:
+                m_params["detector_name"].setVal<char*>("HAMS11071_2048X16");
+                m_numberDeadPixels = 4; //uint8 const     HAMS11071_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS11071_USED_DARK_PIXELS = 4; uint8 const     HAMS11071_TOTAL_DARK_PIXELS = 4;
+                break;
+            case SENS_HAMS11155:
+                m_params["detector_name"].setVal<char*>("HAMS11155");
+                break;
+            case SENS_SU256LSB:
+                m_params["detector_name"].setVal<char*>("SU256LSB");
+                break;
+            case SENS_SU512LDB:
+                m_params["detector_name"].setVal<char*>("SU512LDB");
+                break;
+            default:
+                m_params["detector_name"].setVal<char*>("unknown");
+                m_numberDeadPixels = -1; //guess it!
+                break;
+            }
+
             double *fit = m_params["lambda_coeffs"].getVal<double*>();
             for (int t = 0; t < NR_WAVELEN_POL_COEF; ++t)
             {
@@ -658,88 +736,83 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             int xsize = m_data.getSize(1);
 
             int request_size;
-			int expected_size;
             if ((average <= 1) && (bpp == 16)) 
             {
-				expected_size = (sizeof(sony_single_meas) - sizeof(sony_single_meas.pixels) + xsize * sizeof(uint16));
 				//at first get the first 6 bytes (prefix) to check for the size of
 				//the data. Then obtain the data.
-				memset(sony_single_meas.pixels, 0, sizeof(sony_single_meas.pixels));
-				request_size = sizeof(sony_single_meas.prefix);
-				m_acquisitionRetVal += readWithFixedLength((char*)&sony_single_meas, request_size);
-				m_acquisitionRetVal += checkAnswerForError((unsigned char*)&sony_single_meas, 0xB0, false);
-				request_size = sony_single_meas.prefix[3] * 256 + sony_single_meas.prefix[2] - 2;
-				m_acquisitionRetVal += readWithFixedLength((char*)&(sony_single_meas.timestamp), request_size);
+                memset(singleMeasdata.pixels, 0, sizeof(singleMeasdata.pixels));
+                request_size = sizeof(singleMeasdata.prefix);
+                m_acquisitionRetVal += readWithFixedLength((char*)&singleMeasdata, request_size);
+                m_acquisitionRetVal += checkAnswerForError((unsigned char*)&singleMeasdata, 0xB0, false);
+                request_size = singleMeasdata.prefix[3] * 256 + singleMeasdata.prefix[2] - 2;
+                m_acquisitionRetVal += readWithFixedLength((char*)&(singleMeasdata.timestamp), request_size);
 
 				if (!m_acquisitionRetVal.containsError())
 				{
-					if ((request_size + 6) != expected_size)
+                    request_size += 6;
+                    int expected_size = (sizeof(AvsSingleMeasdata) - sizeof(singleMeasdata.pixels) + (xsize + std::max(0, m_numberDeadPixels)) * sizeof(uint16));
+                    if (request_size != expected_size)
 					{
-						qDebug() << "received buffer has " << request_size + 6 << " bytes. " << expected_size << " bytes expected.";
-					}
-				}
-                
-                ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0,0);
-                
-                if (!m_acquisitionRetVal.containsError())
-                {
-                    for (int teller=0; teller < xsize; ++teller) 
-					{
-                        vals[teller] = swap16(sony_single_meas.pixels[teller]); 
+                        if (m_numberDeadPixels == -1)
+                        {
+                            m_numberDeadPixels = (expected_size - request_size) / sizeof(uint16);
+                        }
+                        else
+                        {
+                            qDebug() << "received buffer has " << request_size << " bytes. " << expected_size << " bytes expected.";
+                        }
 					}
 
-					m_data.setTag("timestamp", (double)swap32(sony_single_meas.timestamp) * 1e-5); //timestamp is in 10us units
+                    ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0, 0);
+
+                    for (int teller=0; teller < xsize; ++teller) 
+					{
+                        vals[teller] = swap16(singleMeasdata.pixels[teller + m_numberDeadPixels]);
+					}
+
+                    m_data.setTag("timestamp", (double)swap32(singleMeasdata.timestamp) * 1e-5); //timestamp is in 10us units
                 }
             }
             else if ((average > 1) && (bpp == 32)) 
             {
-                expected_size = sizeof(sony_multi_meas) - sizeof(sony_multi_meas.pixels) + xsize * sizeof(uint32);
-				//at first get the first 6 bytes (prefix) to check for the size of
-				//the data. Then obtain the data.
-				request_size = sizeof(sony_multi_meas.prefix);
-                memset(sony_multi_meas.pixels, 0, sizeof(sony_multi_meas.pixels));
-                m_acquisitionRetVal += readWithFixedLength((char*)&sony_multi_meas, request_size);
-                m_acquisitionRetVal += checkAnswerForError((unsigned char*)&sony_multi_meas, 0xB1, false);
-				request_size = sony_multi_meas.prefix[3] * 256 + sony_multi_meas.prefix[2] - 2;
-				m_acquisitionRetVal += readWithFixedLength((char*)&(sony_multi_meas.timestamp), request_size);
-                ito::float32 *vals = (ito::float32*)m_data.rowPtr(0,0);
-
-				if (!m_acquisitionRetVal.containsError())
-				{
-					if ((request_size + 6) != expected_size)
-					{
-						qDebug() << "received buffer has " << request_size + 6 << " bytes. " << expected_size << " bytes expected.";
-					}
-				}
+                //at first get the first 6 bytes (prefix) to check for the size of
+                //the data. Then obtain the data.
+                memset(multiMeasdata.pixels, 0, sizeof(multiMeasdata.pixels));
+                request_size = sizeof(multiMeasdata.prefix);
+                m_acquisitionRetVal += readWithFixedLength((char*)&multiMeasdata, request_size);
+                m_acquisitionRetVal += checkAnswerForError((unsigned char*)&multiMeasdata, 0xB0, false);
+                request_size = multiMeasdata.prefix[3] * 256 + multiMeasdata.prefix[2] - 2;
+                m_acquisitionRetVal += readWithFixedLength((char*)&(multiMeasdata.timestamp), request_size);
 
                 if (!m_acquisitionRetVal.containsError())
                 {
-                    for (int teller=0; teller < xsize; ++teller) 
+                    request_size += 6;
+                    int expected_size = (sizeof(AvsMultiMeasdata) - sizeof(multiMeasdata.pixels) + (xsize + std::max(0, m_numberDeadPixels)) * sizeof(uint32));
+                    if (request_size != expected_size)
                     {
-                        vals[teller] = swap32(sony_multi_meas.pixels[teller]); 
-                        vals[teller] = vals[teller]/average;
+                        if (m_numberDeadPixels == -1)
+                        {
+                            m_numberDeadPixels = (expected_size - request_size) / sizeof(uint32);
+                        }
+                        else
+                        {
+                            qDebug() << "received buffer has " << request_size << " bytes. " << expected_size << " bytes expected.";
+                        }
                     }
 
-					m_data.setTag("timestamp", (double)swap32(sony_multi_meas.timestamp) * 1e-5); //timestamp is in 10us units
+                    ito::uint32 *vals = (ito::uint32*)m_data.rowPtr(0, 0);
+
+                    for (int teller = 0; teller < xsize; ++teller)
+                    {
+                        vals[teller] = swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]);
+                    }
+
+                    m_data.setTag("timestamp", (double)swap32(multiMeasdata.timestamp) * 1e-5); //timestamp is in 10us units
                 }
             }
 
-			//check if some idle pixels have to be transferred:
-			/*if (obtained_size > request_size)
-			{
-				int length = obtained_size - request_size;
-				readWithFixedLength((char*)&sony_multi_meas, length); //sony_multi_meas is only taken as big buffer, the content is not used.
-			}*/
-
-
             unsigned char cmd2[] = {0x21, 0x00, 0x02 /*length of command*/, 0x00, 0xC0 /*acknowledge*/, 0x00};
             m_acquisitionRetVal += m_pUsb->setVal((const char*)cmd2, sizeof(cmd2), NULL);
-
-            //QSharedPointer<char> f(new char[500]);
-            //QSharedPointer<int> i(new int);
-            //*i = 500;
-            //m_acquisitionRetVal += m_pUsb->getVal(f, i, NULL);
-            //int j = 0;
         }
     }
     

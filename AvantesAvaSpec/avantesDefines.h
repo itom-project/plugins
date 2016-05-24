@@ -54,6 +54,7 @@ uint8 const     SAT_DISABLE_DET         = 0;
 uint8 const     SAT_ENABLE_DET          = 1;
 uint8 const     SAT_PEAK_INVERSION      = 2;
 uint8 const     NR_DAC_POL_COEF         = 2;
+uint8 const     MAX_NR_DARKPIXELS       = 20;
 
 typedef struct
 {
@@ -70,7 +71,27 @@ typedef struct
     uint8                   m_ForgetPercentage;
 } DarkCorrectionType;
 
-typedef uint8 SensorType;
+typedef enum
+{
+    SENS_HAMS8378_256 = 1,
+    SENS_HAMS8378_1024,
+    SENS_ILX554,
+    SENS_HAMS9201,
+    SENS_TCD1304,
+    SENS_TSL1301,
+    SENS_TSL1401,
+    SENS_HAMS8378_512,
+    SENS_HAMS9840,
+    SENS_ILX511,
+    SENS_HAMS10420_2048X64,
+    SENS_HAMS11071_2048X64,
+    SENS_HAMS7031_1024X122,
+    SENS_HAMS7031_1024X58,
+    SENS_HAMS11071_2048X16,
+    SENS_HAMS11155,
+    SENS_SU256LSB,
+    SENS_SU512LDB
+} SensorType;
 
 typedef struct
 {
@@ -233,18 +254,16 @@ typedef struct
 {
     uint8    prefix[6];
     uint32    timestamp;
-    uint16    deadpix[13];
-    uint16    pixels[3648];
-} sony_single_measdatatype;
+    uint16    pixels[3648 + MAX_NR_DARKPIXELS]; //the biggest detector has 3648 pixels, at the beginning there might be some dark-pixels (depending on the detector, therefore a buffer of up to 20px is reserved for this, too)
+} AvsSingleMeasdata;
 
 typedef struct
 {
     uint8    prefix[6];
     uint32    timestamp;
     uint16    averages;
-    uint32    deadpix[13];
-    uint32    pixels[3648];
-} sony_multi_measdatatype;
+    uint32    pixels[3648 + MAX_NR_DARKPIXELS]; //the biggest detector has 3648 pixels, at the beginning there might be some dark-pixels (depending on the detector, therefore a buffer of up to 20px is reserved for this, too)
+} AvsMultiMeasdata;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #pragma pack(pop)
