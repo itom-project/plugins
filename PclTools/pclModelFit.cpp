@@ -25,6 +25,7 @@
 
 #include "DataObject/dataobj.h"
 #include "common/helperCommon.h"
+#include "common/numeric.h"
 #include "PointCloud/pclStructures.h"
 #include "PointCloud/pclFunctions.h"
 #include "PointCloud/impl/pclFunctionsImpl.h"
@@ -932,7 +933,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -953,7 +954,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -972,7 +973,7 @@ SACMODEL_STICK = 17 \n\
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -992,7 +993,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1017,7 +1018,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {                       
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1035,7 +1036,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1052,7 +1053,7 @@ SACMODEL_STICK = 17 \n\
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {   
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1069,7 +1070,7 @@ SACMODEL_STICK = 17 \n\
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {    
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1097,7 +1098,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1119,7 +1120,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1140,7 +1141,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1161,7 +1162,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1190,7 +1191,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1212,7 +1213,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1233,7 +1234,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1254,7 +1255,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1280,7 +1281,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1298,7 +1299,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1315,7 +1316,7 @@ SACMODEL_STICK = 17 \n\
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1333,7 +1334,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                         
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1358,7 +1359,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1376,7 +1377,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1393,7 +1394,7 @@ SACMODEL_STICK = 17 \n\
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1410,7 +1411,7 @@ SACMODEL_STICK = 17 \n\
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
-                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
