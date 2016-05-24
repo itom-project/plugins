@@ -181,7 +181,10 @@ AvantesAvaSpec::AvantesAvaSpec() :
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 32, 16, tr("Bit depth. 16 (uint16), if single acquisition. 32 (float32), if averaging.").toLatin1().data()); 
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("average", ito::ParamBase::Int, 1, 10, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
+    paramVal = ito::Param("average", ito::ParamBase::Int, 1, 65000, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
+    m_params.insert(paramVal.getName(), paramVal);
+	
+	paramVal = ito::Param("smoothing_pixels", ito::ParamBase::Int, 0, 3648, 0, tr("Number of smoothing pixels, not working or implemented for all devices").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("lambda_coeffs", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Coefficients for polynom that determines lambda_table (lambda_table[idx] = c[0] + c[1]*idx + c[2]*idx^2 + ... + c[4]*idx^4)").toLatin1().data());
@@ -394,6 +397,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             m_params["roi"].getVal<int*>()[2] = nrPixels;
             m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, nrPixels-1, 1, 1, nrPixels, 1), ito::RangeMeta(0, 0)), true);
             
+			m_params["smoothing_pixels"].setMeta(new ito::IntMeta(0, nrPixels, 1), true);
         }
     }
 
@@ -528,7 +532,7 @@ ito::RetVal AvantesAvaSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
     
     if(!retValue.containsError())
     {
-        if(key == "integration_time" || key == "roi" || key == "average")
+        if(key == "integration_time" || key == "roi" || key == "average" || key == "smoothing_pixels")
         {
             int started = grabberStartedCount();
             if (started > 0)
@@ -593,6 +597,8 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
         const int *roi = m_params["roi"].getVal<int*>();
         double int_time_ms = m_params["integration_time"].getVal<double>() * 1e3;
         uint32 average = m_params["average"].getVal<int>();
+		int smooth = m_params["smoothing_pixels"].getVal<int>();
+
 
         config.prefix[00]=0x20;
         config.prefix[01]=0x00; //REVERSE: 0x00;
@@ -608,7 +614,7 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
         config.m_Meas.m_NrAverages = swap32(average);
         config.m_Meas.m_CorDynDark.m_Enable = 0;
         config.m_Meas.m_CorDynDark.m_ForgetPercentage = 0;
-        config.m_Meas.m_Smoothing.m_SmoothPix = 0;
+        config.m_Meas.m_Smoothing.m_SmoothPix = swap16(smooth);
         config.m_Meas.m_Smoothing.m_SmoothModel = 0;
         config.m_Meas.m_SaturationDetection = 0;
         config.m_Meas.m_Trigger.m_Mode = 0; //Hardware
@@ -780,7 +786,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                 memset(multiMeasdata.pixels, 0, sizeof(multiMeasdata.pixels));
                 request_size = sizeof(multiMeasdata.prefix);
                 m_acquisitionRetVal += readWithFixedLength((char*)&multiMeasdata, request_size);
-                m_acquisitionRetVal += checkAnswerForError((unsigned char*)&multiMeasdata, 0xB0, false);
+                m_acquisitionRetVal += checkAnswerForError((unsigned char*)&multiMeasdata, 0xB1, false);
                 request_size = multiMeasdata.prefix[3] * 256 + multiMeasdata.prefix[2] - 2;
                 m_acquisitionRetVal += readWithFixedLength((char*)&(multiMeasdata.timestamp), request_size);
 
@@ -800,11 +806,11 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                         }
                     }
 
-                    ito::uint32 *vals = (ito::uint32*)m_data.rowPtr(0, 0);
+                    ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
 
                     for (int teller = 0; teller < xsize; ++teller)
                     {
-                        vals[teller] = swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]);
+                        vals[teller] = (ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) / (ito::float32)average;
                     }
 
                     m_data.setTag("timestamp", (double)swap32(multiMeasdata.timestamp) * 1e-5); //timestamp is in 10us units

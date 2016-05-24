@@ -95,7 +95,7 @@ typedef enum
 
 typedef struct
 {
-    SensorType              m_SensorType;
+    uint8                   m_SensorType; //value is of enumeration SensorType
     uint16                  m_NrPixels;
     float                   m_aFit[NR_WAVELEN_POL_COEF];
     bool                    m_NLEnable;
