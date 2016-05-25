@@ -180,7 +180,7 @@ AvantesAvaSpec::AvantesAvaSpec() :
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("current height").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 10, 16, 14, tr("Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled and the dark_correction is disabled or no dark correction pixels are available for this sensor.").toLatin1().data()); 
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 16, 16, tr("Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled and the dark_correction is disabled or no dark correction pixels are available for this sensor.").toLatin1().data()); 
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("average", ito::ParamBase::Int, 1, 65000, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
@@ -752,7 +752,6 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
         {
             m_isGrabbing = true;
             uint32 average = m_params["average"].getVal<int>();
-            int bpp = m_params["bpp"].getVal<int>();
 			int darkCorrection = m_params["dark_correction"].getVal<int>() > 0;
 			if (m_numberOfCorrectionValues == 0)
 			{
