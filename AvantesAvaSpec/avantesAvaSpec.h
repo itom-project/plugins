@@ -66,6 +66,8 @@ class AvantesAvaSpec : public ito::AddInGrabber
         DeviceConfigType m_deviceConfig;
         ito::RetVal m_acquisitionRetVal;
         int m_numberDeadPixels; //this depends on the detector! some detectors don't have deadpixels, which are located at the start of the pixel stream. The list of detectors and numbers of dead pixels was provided by Avantes.
+		int m_numberOfCorrectionValues;
+		int m_startCorrectionIndex;
 
         static void idleCharDeleter(char* /*v*/) {};
         static void idleIntDeleter(int* /*v*/) {};

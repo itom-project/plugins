@@ -44,6 +44,16 @@ DockWidgetAvantesAvaSpec::DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber) :
         ui.spinBox_average->setMinimum(params["average"].getMin()); 
         ui.spinBox_average->setSingleStep(1);
 
+		ui.comboDarkCorrection->clear();
+		ui.comboDarkCorrection->addItem("No");
+		ui.comboDarkCorrection->addItem("Static correction");
+		ui.comboDarkCorrection->addItem("Dynamic correction");
+		ui.comboDarkCorrection->setToolTipText( \
+"Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
+dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. \n\
+Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software \n\
+AvaSpec) and subtracts different mean values for odd and even pixels.");
+
         m_firstRun = false;
     }
     
@@ -57,6 +67,8 @@ DockWidgetAvantesAvaSpec::DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber) :
         ui.rangeWidget_ROI->setMaximumValue(roi[2]);
 
         ui.spinBox_average->setValue(params["average"].getVal<int>());
+		ui.comboDarkCorrection->setCurrentIndex(params["dark_correction"].getVal<int>());
+		ui.comboDarkCorrection->setDisabled(params["dark_correction"].getFlags() & ito::ParamBase::Readonly);
 
         m_inEditing = false;
     }
@@ -137,6 +149,20 @@ void DockWidgetAvantesAvaSpec::on_spinBox_average_valueChanged(int value)
         m_inEditing = true;
 
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("average",ito::ParamBase::Int,value));
+        setPluginParameter(p, msgLevelWarningAndError);
+        
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetAvantesAvaSpec::void on_comboDarkCorrection_currentIndexChanged(int d)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("dark_correction",ito::ParamBase::Int,d));
         setPluginParameter(p, msgLevelWarningAndError);
         
         m_inEditing = false;

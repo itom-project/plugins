@@ -158,7 +158,9 @@ AvantesAvaSpec::AvantesAvaSpec() :
     AddInGrabber(), 
     m_pUsb(NULL),
     m_isGrabbing(false),
-    m_numberDeadPixels(0)
+    m_numberDeadPixels(0),
+	m_numberOfCorrectionValues(0),
+	m_startCorrectionIndex(0)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AvantesAvaSpec", "plugin name");
     m_params.insert(paramVal.getName(), paramVal);
@@ -178,13 +180,16 @@ AvantesAvaSpec::AvantesAvaSpec() :
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("current height").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 32, 16, tr("Bit depth. 16 (uint16), if single acquisition. 32 (float32), if averaging.").toLatin1().data()); 
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 10, 16, 14, tr("Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled and the dark_correction is disabled or no dark correction pixels are available for this sensor.").toLatin1().data()); 
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("average", ito::ParamBase::Int, 1, 65000, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
     m_params.insert(paramVal.getName(), paramVal);
 	
-	paramVal = ito::Param("smoothing_pixels", ito::ParamBase::Int, 0, 3648, 0, tr("Number of smoothing pixels, not working or implemented for all devices").toLatin1().data());
+	paramVal = ito::Param("dark_correction", ito::ParamBase::Int, 0, 2, 0, tr("Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
+dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. \n\
+Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software \n\
+AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): default.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("lambda_coeffs", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Coefficients for polynom that determines lambda_table (lambda_table[idx] = c[0] + c[1]*idx + c[2]*idx^2 + ... + c[4]*idx^4)").toLatin1().data());
@@ -313,6 +318,8 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             case SENS_ILX554:
                 m_params["detector_name"].setVal<char*>("ILX554");
                 m_numberDeadPixels = 18; //uint8 const ILX_FIRST_USED_DARK_PIXEL = 2; uint8 const ILX_USED_DARK_PIXELS = 14; uint8 const ILX_TOTAL_DARK_PIXELS = 18;
+				m_numberOfCorrectionValues = 14;
+				m_startCorrectionIndex = 2;
                 break;
             case SENS_HAMS9201:
                 m_params["detector_name"].setVal<char*>("HAMS9201");
@@ -320,6 +327,8 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             case SENS_TCD1304:
                 m_params["detector_name"].setVal<char*>("TCD1304");
                 m_numberDeadPixels = 13; //uint8 const TCD_FIRST_USED_DARK_PIXEL = 0; uint8 const TCD_USED_DARK_PIXELS = 12; uint8 const TCD_TOTAL_DARK_PIXELS = 13;
+				m_numberOfCorrectionValues = 12;
+				m_startCorrectionIndex = 0;
                 break;
             case SENS_TSL1301:
                 m_params["detector_name"].setVal<char*>("TSL1301");
@@ -333,30 +342,44 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             case SENS_HAMS9840:
                 m_params["detector_name"].setVal<char*>("HAMS9840");
                 m_numberDeadPixels = 8; //uint8 const HAMS9840_FIRST_USED_DARK_PIXEL = 0; uint8 const HAMS9840_USED_DARK_PIXELS = 8; uint8 const HAMS9840_TOTAL_DARK_PIXELS = 8;
+				m_numberOfCorrectionValues = 8;
+				m_startCorrectionIndex = 0;
                 break;
             case SENS_ILX511:
                 m_params["detector_name"].setVal<char*>("ILX511");
                 m_numberDeadPixels = 18; //uint8 const ILX_FIRST_USED_DARK_PIXEL = 2; uint8 const ILX_USED_DARK_PIXELS = 14; uint8 const ILX_TOTAL_DARK_PIXELS = 18;
+				m_numberOfCorrectionValues = 14;
+				m_startCorrectionIndex = 2;
                 break;
             case SENS_HAMS10420_2048X64:
                 m_params["detector_name"].setVal<char*>("HAMS10420_2048X64");
                 m_numberDeadPixels = 4; //uint8 const     HAMS10420_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS10420_USED_DARK_PIXELS = 4; uint8 const     HAMS10420_TOTAL_DARK_PIXELS = 4;
+				m_numberOfCorrectionValues = 4;
+				m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS11071_2048X64:
                 m_params["detector_name"].setVal<char*>("HAMS11071_2048X64");
                 m_numberDeadPixels = 4; //uint8 const     HAMS11071_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS11071_USED_DARK_PIXELS = 4; uint8 const     HAMS11071_TOTAL_DARK_PIXELS = 4;
+				m_numberOfCorrectionValues = 4;
+				m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS7031_1024X122:
                 m_params["detector_name"].setVal<char*>("HAMS7031_1024X122");
                 m_numberDeadPixels = 4; //uint8 const     HAMS7031_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS7031_USED_DARK_PIXELS = 4; uint8 const     HAMS7031_TOTAL_DARK_PIXELS = 4;
+				m_numberOfCorrectionValues = 4;
+				m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS7031_1024X58:
                 m_params["detector_name"].setVal<char*>("HAMS7031_1024X58");
                 m_numberDeadPixels = 4; //uint8 const     HAMS7031_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS7031_USED_DARK_PIXELS = 4; uint8 const     HAMS7031_TOTAL_DARK_PIXELS = 4;
+				m_numberOfCorrectionValues = 4;
+				m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS11071_2048X16:
                 m_params["detector_name"].setVal<char*>("HAMS11071_2048X16");
                 m_numberDeadPixels = 4; //uint8 const     HAMS11071_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS11071_USED_DARK_PIXELS = 4; uint8 const     HAMS11071_TOTAL_DARK_PIXELS = 4;
+				m_numberOfCorrectionValues = 4;
+				m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS11155:
                 m_params["detector_name"].setVal<char*>("HAMS11155");
@@ -372,6 +395,12 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 m_numberDeadPixels = -1; //guess it!
                 break;
             }
+
+			if (m_numberOfCorrectionValues == 0)
+			{
+				m_params["dark_correction"].setVal<int>(0);
+				m_params["dark_correction"].setFlags(ito::ParamBase::Readonly);
+			}
 
             double *fit = m_params["lambda_coeffs"].getVal<double*>();
             for (int t = 0; t < NR_WAVELEN_POL_COEF; ++t)
@@ -396,8 +425,6 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 
             m_params["roi"].getVal<int*>()[2] = nrPixels;
             m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, nrPixels-1, 1, 1, nrPixels, 1), ito::RangeMeta(0, 0)), true);
-            
-			m_params["smoothing_pixels"].setMeta(new ito::IntMeta(0, nrPixels, 1), true);
         }
     }
 
@@ -517,22 +544,10 @@ ito::RetVal AvantesAvaSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
         //next value (depending on a possible step size, if different than 0.0)
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
-
-    if(!retValue.containsError())
-    {
-        if((key == "average") && (val->getVal<int>() <= 1))
-        {
-            m_params["bpp"].setVal<int>(16);
-        }
-        if((key == "average") && (val->getVal<int>() > 1))
-        {
-            m_params["bpp"].setVal<int>(32);
-        }
-    }
     
     if(!retValue.containsError())
     {
-        if(key == "integration_time" || key == "roi" || key == "average" || key == "smoothing_pixels")
+        if(key == "integration_time" || key == "roi" || key == "average" || key == "dark_correction")
         {
             int started = grabberStartedCount();
             if (started > 0)
@@ -597,7 +612,6 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
         const int *roi = m_params["roi"].getVal<int*>();
         double int_time_ms = m_params["integration_time"].getVal<double>() * 1e3;
         uint32 average = m_params["average"].getVal<int>();
-		int smooth = m_params["smoothing_pixels"].getVal<int>();
 
 
         config.prefix[00]=0x20;
@@ -614,7 +628,7 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
         config.m_Meas.m_NrAverages = swap32(average);
         config.m_Meas.m_CorDynDark.m_Enable = 0;
         config.m_Meas.m_CorDynDark.m_ForgetPercentage = 0;
-        config.m_Meas.m_Smoothing.m_SmoothPix = swap16(smooth);
+        config.m_Meas.m_Smoothing.m_SmoothPix = 0;
         config.m_Meas.m_Smoothing.m_SmoothModel = 0;
         config.m_Meas.m_SaturationDetection = 0;
         config.m_Meas.m_Trigger.m_Mode = 0; //Hardware
@@ -738,11 +752,16 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             m_isGrabbing = true;
             uint32 average = m_params["average"].getVal<int>();
             int bpp = m_params["bpp"].getVal<int>();
+			int darkCorrection = m_params["dark_correction"].getVal<int>() > 0;
+			if (m_numberOfCorrectionValues == 0)
+			{
+				darkCorrection = 0;
+			}
             m_acquisitionRetVal = ito::retOk;
             int xsize = m_data.getSize(1);
 
             int request_size;
-            if ((average <= 1) && (bpp == 16)) 
+            if (average <= 1) 
             {
 				//at first get the first 6 bytes (prefix) to check for the size of
 				//the data. Then obtain the data.
@@ -769,17 +788,51 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                         }
 					}
 
-                    ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0, 0);
+                    
+					ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean] multiplied by average
 
-                    for (int teller=0; teller < xsize; ++teller) 
+					if (m_numberOfCorrectionValues > 0)
 					{
-                        vals[teller] = swap16(singleMeasdata.pixels[teller + m_numberDeadPixels]);
+						ito::int32 darkEven = 0;
+						ito::int32 darkOdd = 0;
+						for (int teller = m_startCorrectionIndex; teller < m_startCorrectionIndex + m_numberOfCorrectionValues; teller += 2)
+						{
+							darkEven += swap16(singleMeasdata.pixels[teller]);
+							darkOdd += swap16(singleMeasdata.pixels[teller + 1]);
+						}
+						m_data.setTag("dark", (double)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+						if (darkCorrection == 1)
+						{
+							darkOddEvenCorrection[0] = darkOddEvenCorrection[1] = (ito::float32)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+						}
+						else
+						{
+							darkOddEvenCorrection[0] = (ito::float32)darkEven / (m_numberOfCorrectionValues / 2);
+							darkOddEvenCorrection[1] = (ito::float32)darkOdd / (m_numberOfCorrectionValues / 2);
+						}
+					}
+
+					if (darkCorrection > 0)
+					{
+						ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
+						for (int teller = 0; teller < xsize; ++teller) 
+						{
+							vals[teller] = (ito::float32)swap16(singleMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[((teller + m_numberDeadPixels) % 2)];
+						}
+					}
+					else
+					{
+						ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0, 0);
+						for (int teller = 0; teller < xsize; ++teller) 
+						{
+							vals[teller] = swap16(singleMeasdata.pixels[teller + m_numberDeadPixels]);
+						}
 					}
 
                     m_data.setTag("timestamp", (double)swap32(singleMeasdata.timestamp) * 1e-5); //timestamp is in 10us units
                 }
             }
-            else if ((average > 1) && (bpp == 32)) 
+            else //average > 1
             {
                 //at first get the first 6 bytes (prefix) to check for the size of
                 //the data. Then obtain the data.
@@ -807,11 +860,79 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                     }
 
                     ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
+					ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean] multiplied by average
 
-                    for (int teller = 0; teller < xsize; ++teller)
-                    {
-                        vals[teller] = (ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) / (ito::float32)average;
-                    }
+					if (m_numberOfCorrectionValues > 0)
+					{
+						ito::uint32 darkEven = 0;
+						ito::uint32 darkOdd = 0;
+						for (int teller = m_startCorrectionIndex; teller < m_startCorrectionIndex + m_numberOfCorrectionValues; teller += 2)
+						{
+							darkEven += swap32(multiMeasdata.pixels[teller]);
+							darkOdd += swap32(multiMeasdata.pixels[teller + 1]);
+						}
+						m_data.setTag("dark", (double)(darkEven + darkOdd) / (average * m_numberOfCorrectionValues));
+						darkOddEvenCorrection[0] = (ito::float32)darkEven / (m_numberOfCorrectionValues / 2) - ((ito::float32)(darkEven + darkOdd) / (m_numberOfCorrectionValues));
+						darkOddEvenCorrection[1] = (ito::float32)darkOdd / (m_numberOfCorrectionValues / 2) - ((ito::float32)(darkEven + darkOdd) / (m_numberOfCorrectionValues));
+					}
+
+					if (dynDark)
+					{
+						for (int teller = 0; teller < xsize; ++teller) 
+						{
+							vals[teller] = ((ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[(teller + m_numberDeadPixels) % 2]) / (ito::float32)average;
+						}
+					}
+					else
+					{
+						for (int teller = 0; teller < xsize; ++teller)
+						{
+							vals[teller] = (ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) / (ito::float32)average;
+						}
+					}
+
+					//NEU:
+					ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean] multiplied by average
+
+					if (m_numberOfCorrectionValues > 0)
+					{
+						ito::uint32 darkEven = 0;
+						ito::uint32 darkOdd = 0;
+						for (int teller = m_startCorrectionIndex; teller < m_startCorrectionIndex + m_numberOfCorrectionValues; teller += 2)
+						{
+							darkEven += swap32(multiMeasdata.pixels[teller]);
+							darkOdd += swap32(multiMeasdata.pixels[teller + 1]);
+						}
+						m_data.setTag("dark", (double)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+						if (darkCorrection == 1)
+						{
+							darkOddEvenCorrection[0] = darkOddEvenCorrection[1] = (ito::float32)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+						}
+						else
+						{
+							darkOddEvenCorrection[0] = (ito::float32)darkEven / (m_numberOfCorrectionValues / 2);
+							darkOddEvenCorrection[1] = (ito::float32)darkOdd / (m_numberOfCorrectionValues / 2);
+						}
+					}
+
+					if (darkCorrection > 0)
+					{
+						ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
+						for (int teller = 0; teller < xsize; ++teller) 
+						{
+							vals[teller] = (ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[((teller + m_numberDeadPixels) % 2)];
+						}
+					}
+					else
+					{
+						ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0, 0);
+						for (int teller = 0; teller < xsize; ++teller) 
+						{
+							vals[teller] = swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]);
+						}
+					}
+
+
 
                     m_data.setTag("timestamp", (double)swap32(multiMeasdata.timestamp) * 1e-5); //timestamp is in 10us units
                 }
@@ -853,12 +974,12 @@ ito::RetVal AvantesAvaSpec::retrieveData(ito::DataObject *externalDataObject)
     {      
         if (externalDataObject)
         {
-            switch (m_params["bpp"].getVal<int>())
+            switch (m_data.getType())
             {
-                case 16:
+				case ito::tUInt16:
                     retVal += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)m_data.rowPtr(0,0), m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
                     break;
-                case 32:
+				case ito::tFloat32:
                     retVal += externalDataObject->copyFromData2D<ito::float32>((ito::float32*)m_data.rowPtr(0,0), m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
                     break;
                 default:
@@ -868,6 +989,10 @@ ito::RetVal AvantesAvaSpec::retrieveData(ito::DataObject *externalDataObject)
 
 			bool valid;
 			externalDataObject->setTag("timestamp", m_data.getTag("timestamp", valid));
+			if (m_data.existTag("dark"))
+			{
+				externalDataObject->setTag("dark", m_data.getTag("dark", valid));
+			}
         }
 
         m_isGrabbing = false;
@@ -884,18 +1009,16 @@ ito::RetVal AvantesAvaSpec::checkData(ito::DataObject *externalDataObject)
     int futureType;
 
     int bpp = m_params["bpp"].getVal<int>();
+	int darkDetection = m_params["dark_detection"].getVal<int>();
+	int average = m_params["average"].getVal<int>();
     
-    if (bpp <= 16)
+    if (bpp <= 16 && (darkDetection == 0 || m_numberOfCorrectionValues == 0) && average == 1 )
     {
         futureType = ito::tUInt16;
     }
-    else if (bpp <= 32)
+    else
     {
         futureType = ito::tFloat32;
-    }
-    else 
-    {
-        futureType = ito::tFloat64; // not necessary
     }
 
     if (externalDataObject == NULL)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>231</width>
-    <height>303</height>
+    <width>226</width>
+    <height>229</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,6 +20,19 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
+   <item row="4" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="sizePolicy">
@@ -74,14 +87,14 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
-       <widget class="RangeWidget" name="rangeWidget_ROI" native="true">
-        <property name="maximum" stdset="0">
+       <widget class="RangeWidget" name="rangeWidget_ROI">
+        <property name="maximum">
          <number>9999</number>
         </property>
-        <property name="maximumValue" stdset="0">
+        <property name="maximumValue">
          <number>99</number>
         </property>
-        <property name="maximumRange" stdset="0">
+        <property name="maximumRange">
          <UInt>9999</UInt>
         </property>
        </widget>
@@ -135,7 +148,14 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1" rowspan="2">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_average">
+        <property name="text">
+         <string>Average</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
        <widget class="QSpinBox" name="spinBox_average">
         <property name="keyboardTracking">
          <bool>false</bool>
@@ -146,27 +166,21 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_average">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Average</string>
+         <string>Dark correction</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="comboDarkCorrection">
+        <property name="toolTip">
+         <string/>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
-   </item>
-   <item row="3" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
