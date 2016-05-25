@@ -780,7 +780,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 					{
                         if (m_numberDeadPixels == -1)
                         {
-                            m_numberDeadPixels = (expected_size - request_size) / sizeof(uint16);
+                            m_numberDeadPixels = (request_size - expected_size) / sizeof(uint16);
                         }
                         else
                         {
@@ -851,7 +851,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                     {
                         if (m_numberDeadPixels == -1)
                         {
-                            m_numberDeadPixels = (expected_size - request_size) / sizeof(uint32);
+                            m_numberDeadPixels = (request_size - expected_size) / sizeof(uint32);
                         }
                         else
                         {
@@ -870,7 +870,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 							darkEven += swap32(multiMeasdata.pixels[teller]);
 							darkOdd += swap32(multiMeasdata.pixels[teller + 1]);
 						}
-						m_data.setTag("dark", (double)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+						m_data.setTag("dark", average * (double)(darkEven + darkOdd) / m_numberOfCorrectionValues);
 
 						if (darkCorrection == 1)
 						{
@@ -977,10 +977,10 @@ ito::RetVal AvantesAvaSpec::checkData(ito::DataObject *externalDataObject)
     int futureType;
 
     int bpp = m_params["bpp"].getVal<int>();
-	int darkDetection = m_params["dark_detection"].getVal<int>();
+	int darkCorrection = m_params["dark_correction"].getVal<int>();
 	int average = m_params["average"].getVal<int>();
     
-    if (bpp <= 16 && (darkDetection == 0 || m_numberOfCorrectionValues == 0) && average == 1 )
+    if (bpp <= 16 && (darkCorrection == 0 || m_numberOfCorrectionValues == 0) && average == 1 )
     {
         futureType = ito::tUInt16;
     }

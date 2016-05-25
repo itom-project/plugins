@@ -35,6 +35,8 @@ DockWidgetAvantesAvaSpec::DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber) :
  {
     if (m_firstRun)
     {
+		m_inEditing = true;
+
         ui.rangeWidget_ROI->setMaximum(params["sizex"].getVal<int>());
 
         ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
@@ -55,6 +57,7 @@ Dynamic (2) is only available for some devices (see if dyn. dark correction is e
 AvaSpec) and subtracts different mean values for odd and even pixels.");
 
         m_firstRun = false;
+		m_inEditing = false;
     }
     
     if (!m_inEditing)
