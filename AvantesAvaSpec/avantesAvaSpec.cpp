@@ -718,7 +718,8 @@ ito::RetVal AvantesAvaSpec::stopDevice(ItomSharedSemaphore *waitCond)
          
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *waitCond)
-{ItomSharedSemaphoreLocker locker(waitCond);
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
 
     ito::RetVal retValue(ito::retOk);
 
@@ -789,7 +790,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 					}
 
                     
-					ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean] multiplied by average
+					ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean]
 
 					if (m_numberOfCorrectionValues > 0)
 					{
@@ -803,12 +804,12 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 						m_data.setTag("dark", (double)(darkEven + darkOdd) / m_numberOfCorrectionValues);
 						if (darkCorrection == 1)
 						{
-							darkOddEvenCorrection[0] = darkOddEvenCorrection[1] = (ito::float32)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+							darkOddEvenCorrection[0] = darkOddEvenCorrection[1] = (ito::float32)(darkEven + darkOdd) / m_numberOfCorrectionValues;
 						}
-						else
+                        else if (darkCorrection == 2)
 						{
-							darkOddEvenCorrection[0] = (ito::float32)darkEven / (m_numberOfCorrectionValues / 2);
-							darkOddEvenCorrection[1] = (ito::float32)darkOdd / (m_numberOfCorrectionValues / 2);
+                            darkOddEvenCorrection[0] = 2 * (ito::float32)darkEven / m_numberOfCorrectionValues;
+                            darkOddEvenCorrection[1] = 2 * (ito::float32)darkOdd / m_numberOfCorrectionValues;
 						}
 					}
 
@@ -817,7 +818,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 						ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
 						for (int teller = 0; teller < xsize; ++teller) 
 						{
-							vals[teller] = (ito::float32)swap16(singleMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[((teller + m_numberDeadPixels) % 2)];
+							vals[teller] = (ito::float32)swap16(singleMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[(teller + m_numberDeadPixels) % 2];
 						}
 					}
 					else
@@ -859,39 +860,6 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                         }
                     }
 
-                    ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
-					ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean] multiplied by average
-
-					if (m_numberOfCorrectionValues > 0)
-					{
-						ito::uint32 darkEven = 0;
-						ito::uint32 darkOdd = 0;
-						for (int teller = m_startCorrectionIndex; teller < m_startCorrectionIndex + m_numberOfCorrectionValues; teller += 2)
-						{
-							darkEven += swap32(multiMeasdata.pixels[teller]);
-							darkOdd += swap32(multiMeasdata.pixels[teller + 1]);
-						}
-						m_data.setTag("dark", (double)(darkEven + darkOdd) / (average * m_numberOfCorrectionValues));
-						darkOddEvenCorrection[0] = (ito::float32)darkEven / (m_numberOfCorrectionValues / 2) - ((ito::float32)(darkEven + darkOdd) / (m_numberOfCorrectionValues));
-						darkOddEvenCorrection[1] = (ito::float32)darkOdd / (m_numberOfCorrectionValues / 2) - ((ito::float32)(darkEven + darkOdd) / (m_numberOfCorrectionValues));
-					}
-
-					if (dynDark)
-					{
-						for (int teller = 0; teller < xsize; ++teller) 
-						{
-							vals[teller] = ((ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[(teller + m_numberDeadPixels) % 2]) / (ito::float32)average;
-						}
-					}
-					else
-					{
-						for (int teller = 0; teller < xsize; ++teller)
-						{
-							vals[teller] = (ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) / (ito::float32)average;
-						}
-					}
-
-					//NEU:
 					ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean] multiplied by average
 
 					if (m_numberOfCorrectionValues > 0)
@@ -904,14 +872,15 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 							darkOdd += swap32(multiMeasdata.pixels[teller + 1]);
 						}
 						m_data.setTag("dark", (double)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+
 						if (darkCorrection == 1)
 						{
-							darkOddEvenCorrection[0] = darkOddEvenCorrection[1] = (ito::float32)(darkEven + darkOdd) / m_numberOfCorrectionValues);
+							darkOddEvenCorrection[0] = darkOddEvenCorrection[1] = (ito::float32)(darkEven + darkOdd) / m_numberOfCorrectionValues;
 						}
-						else
+                        else if (darkCorrection == 2)
 						{
-							darkOddEvenCorrection[0] = (ito::float32)darkEven / (m_numberOfCorrectionValues / 2);
-							darkOddEvenCorrection[1] = (ito::float32)darkOdd / (m_numberOfCorrectionValues / 2);
+							darkOddEvenCorrection[0] = 2 * (ito::float32)darkEven / m_numberOfCorrectionValues;
+							darkOddEvenCorrection[1] = 2 * (ito::float32)darkOdd / m_numberOfCorrectionValues;
 						}
 					}
 
@@ -920,15 +889,15 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
 						ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
 						for (int teller = 0; teller < xsize; ++teller) 
 						{
-							vals[teller] = (ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[((teller + m_numberDeadPixels) % 2)];
+                            vals[teller] = ((ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[((teller + m_numberDeadPixels) % 2)]) / (ito::float32)average;
 						}
 					}
 					else
 					{
-						ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0, 0);
+                        ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
 						for (int teller = 0; teller < xsize; ++teller) 
 						{
-							vals[teller] = swap32(multiMeasdata.pixels[teller + m_numberDeadPixels]);
+                            vals[teller] = ((ito::float32)swap32(multiMeasdata.pixels[teller + m_numberDeadPixels])) / (ito::float32)average;
 						}
 					}
 

@@ -48,7 +48,7 @@ DockWidgetAvantesAvaSpec::DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber) :
 		ui.comboDarkCorrection->addItem("No");
 		ui.comboDarkCorrection->addItem("Static correction");
 		ui.comboDarkCorrection->addItem("Dynamic correction");
-		ui.comboDarkCorrection->setToolTipText( \
+		ui.comboDarkCorrection->setToolTip( \
 "Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
 dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. \n\
 Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software \n\
@@ -156,7 +156,7 @@ void DockWidgetAvantesAvaSpec::on_spinBox_average_valueChanged(int value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetAvantesAvaSpec::void on_comboDarkCorrection_currentIndexChanged(int d)
+void DockWidgetAvantesAvaSpec::on_comboDarkCorrection_currentIndexChanged(int d)
 {
     if (!m_inEditing)
     {
