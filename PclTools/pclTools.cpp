@@ -3350,11 +3350,7 @@ const QString PclTools::pclPCADOC = QObject::tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclTrimmedICPDOC = QObject::tr("\n\
-\n\
-\n\
-\n\
-\n");
+const QString PclTools::pclTrimmedICPDOC = QObject::tr("");
 
 ito::RetVal PclTools::pclTrimmedICPParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
