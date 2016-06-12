@@ -26,6 +26,7 @@
 #include <math.h>
 #include "OpenCVFilters.h"
 #include "itomCvConversions.h"
+#include "common/numeric.h"
 
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
@@ -1114,6 +1115,11 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
     }
 
+    if (dObjImages->getDims() == 0)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: input object must not be empty.").toLatin1().data());
+    }
+
     int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
     int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
     int planes = 0;
@@ -1277,6 +1283,11 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
     }
 
+    if (dObjImages->getDims() == 0)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: input object must not be empty.").toLatin1().data());
+    }
+
     int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
     int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
     int planes = 0;
@@ -1423,6 +1434,11 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
     if (dObjImages->getDims() > 3)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
+    }
+
+    if (dObjImages->getDims() == 0)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: input object must not be empty.").toLatin1().data());
     }
 
     int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
