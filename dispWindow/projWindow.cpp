@@ -31,7 +31,7 @@
 #include <qdir.h>
 #include <qimage.h>
 
-#if (QT_VERSION < 0x050000) || (defined linux)
+#if (QT_VERSION < 0x050000)
     #include "GL/glew.h"
 #endif
 

@@ -25,6 +25,7 @@
 
 #include "DataObject/dataobj.h"
 #include "common/sharedStructures.h"
+#include "common/numeric.h"
 
 #include "DataObject/dataObjectFuncs.h"
 
