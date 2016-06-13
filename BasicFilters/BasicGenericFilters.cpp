@@ -29,10 +29,13 @@
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
-#include "DataObject/dataObjectFuncs.h"
+
 #include "BasicFilters.h"
 
+#include "common/numeric.h"
 #include "common/helperCommon.h"
+#include "DataObject/dataObjectFuncs.h"
+
 #if (USEOMP)
     #include <omp.h>
 #endif
@@ -67,7 +70,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     ito::int32 x = x0; 
     ito::int32 y = y0;
 
-    //bool check = ito::dObjHelper::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());
+    //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());
     //ito::int32 invalidInt = cv::saturate_cast<ito::int32>(invalid);
     
     // Check if y colidates with image boarder
@@ -183,7 +186,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 y = y0;
     ito::int32 validCnt = 1;
 
-    //bool check = ito::dObjHelper::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
+    //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
     // Check if y colidates with image boarder
     if (y < 0)
     {
@@ -223,7 +226,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
  
     for(i = 0; i < dx; i++)
     {
-        if (ito::dObjHelper::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
+        if (ito::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
         {
             vTemp = buf[i + a];
             break;
@@ -232,7 +235,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
 
     for (i = 0; i < dx; ++i)
     {
-        if (ito::dObjHelper::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
+        if (ito::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
         {
             inv[i + a] = 1;
             lastval = i + a;
@@ -252,7 +255,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
             {
                 if (k + i >= dx)
                     break;
-                if (ito::dObjHelper::isFinite<ito::float32>(buf[i + a + k]))
+                if (ito::isFinite<ito::float32>(buf[i + a + k]))
                 {
                     max = k;
                     v += buf[i + a + k];
@@ -265,7 +268,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
                 if ((y + k >= 0) && (y + k < plane->rows))
                 {
                     w = plane->at<ito::float32>(y + k, i + x);
-                    if (ito::dObjHelper::isFinite<ito::float32>(w))
+                    if (ito::isFinite<ito::float32>(w))
                     {
                         v += w;
                         validCnt ++;
@@ -278,7 +281,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
                 if ((y - k >= 0) && (y - k < plane->rows))
                 {
                     w = plane->at<ito::float32>(y - k, i + x);
-                    if (ito::dObjHelper::isFinite<ito::float32>(w))
+                    if (ito::isFinite<ito::float32>(w))
                     {
                         v += w;
                         validCnt++;
@@ -312,7 +315,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 y = y0;
     ito::int32 validCnt = 1;
 
-    //bool check = ito::dObjHelper::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
+    //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
     // Check if y colidates with image boarder
     if (y < 0)
     {
@@ -352,7 +355,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     // First previll the default kernel value for this line
     for(i = 0; i < dx; i++)
     {
-        if (ito::dObjHelper::isFinite<ito::float64>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
+        if (ito::isFinite<ito::float64>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
         {
             vTemp = buf[i + a];
             break;
@@ -361,7 +364,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
 
     for (i = 0; i < dx; ++i)
     {
-        if (ito::dObjHelper::isFinite<ito::float64>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
+        if (ito::isFinite<ito::float64>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
         {
             inv[i + a] = 1;
             lastval = i + a;
@@ -382,7 +385,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
             {
                 if (k + i >= dx)
                     break;
-                if (ito::dObjHelper::isFinite<ito::float64>(buf[i + a + k]))
+                if (ito::isFinite<ito::float64>(buf[i + a + k]))
                 {
                     max = k;
                     v += buf[i + a + k];
@@ -395,7 +398,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
                 if ((y + k >= 0) && (y + k < plane->rows))
                 {
                     w = plane->at<ito::float64>(y + k, i + x);
-                    if (ito::dObjHelper::isFinite<ito::float64>(w))
+                    if (ito::isFinite<ito::float64>(w))
                     {
                         v += w;
                         validCnt ++;
@@ -408,7 +411,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
                 if ((y - k >= 0) && (y - k < plane->rows))
                 {
                     w = plane->at<ito::float64>(y - k, i + x);
-                    if (ito::dObjHelper::isFinite<ito::float64>(w))
+                    if (ito::isFinite<ito::float64>(w))
                     {
                         v += w;
                         validCnt ++;
@@ -2957,7 +2960,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     dstRowPtr = dstMat->ptr<_Type>(y);
                     for(int x = 0; x < compMat->cols; x++)
                     {
-                        if (ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        if (ito::isFinite(scrRowPtr[x]) && ito::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
                             dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
@@ -2973,7 +2976,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     dstRowPtr = dstMat->ptr<_Type>(y);
                     for(int x = 0; x < compMat->cols; x++)
                     {
-                        if (ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        if (ito::isFinite(scrRowPtr[x]) && ito::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
                             dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
@@ -3258,7 +3261,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
         case ito::tFloat32:
         {
             ito::float32 newVal = std::numeric_limits<ito::float32>::quiet_NaN();
-            if (ito::dObjHelper::isFinite(newValue))
+            if (ito::isFinite(newValue))
             {
                 ito::float32 newVal = cv::saturate_cast<ito::float32>(newValue);
                 newValueCasted = (ito::float64)(newVal);

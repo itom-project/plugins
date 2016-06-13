@@ -25,8 +25,8 @@
 
 #include "x3pio.h"
 #include "DataObject/dataobj.h"
-#include "DataObject/dataObjectFuncs.h"
-//#include "../../common/helperCommon.h"
+#include "common/numeric.h"
+
 #include "pluginVersion.h"
 #include <opengps/cxx/opengps.hxx>
 #include <opengps/iso5436_2.h>
@@ -544,7 +544,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
                         pDataRow = plane->ptr(y);
                         for (int x = 0; x < xSize; x++)
                         {
-                            if (ito::dObjHelper::isFinite(((ito::float32*)pDataRow)[x]))
+                            if (ito::isFinite(((ito::float32*)pDataRow)[x]))
                             {
                                 ogps_SetFloatZ(vector, zFactor * ((ito::float32*)pDataRow)[x]);
                                 ogps_SetMatrixPoint(handle, x, y, nMat, vector);
@@ -572,7 +572,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
                         pDataRow = plane->ptr(y);
                         for (int x = 0; x < xSize; x++)
                         {
-                            if (ito::dObjHelper::isFinite(((ito::float32*)pDataRow)[x]))
+                            if (ito::isFinite(((ito::float32*)pDataRow)[x]))
                             {
                                 ogps_SetFloatZ(vector, ((ito::float32*)pDataRow)[x]);
                                 ogps_SetMatrixPoint(handle, x, y, nMat, vector);
@@ -603,7 +603,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
                         pDataRow = plane->ptr(y);
                         for (int x = 0; x < xSize; x++)
                         {
-                            if (ito::dObjHelper::isFinite(((ito::float64*)pDataRow)[x]))
+                            if (ito::isFinite(((ito::float64*)pDataRow)[x]))
                             {
                                 ogps_SetDoubleZ(vector, zFactor * ((ito::float64*)pDataRow)[x]);
                                 ogps_SetMatrixPoint(handle, x, y, nMat, vector);
@@ -631,7 +631,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
                         pDataRow = plane->ptr(y);
                         for (int x = 0; x < xSize; x++)
                         {
-                            if (ito::dObjHelper::isFinite(((ito::float64*)pDataRow)[x]))
+                            if (ito::isFinite(((ito::float64*)pDataRow)[x]))
                             {
                                 ogps_SetDoubleZ(vector, ((ito::float64*)pDataRow)[x]);
                                 ogps_SetMatrixPoint(handle, x, y, nMat, vector);
@@ -660,7 +660,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
                     pDataRow = plane->ptr(y);
                     for (int x = 0; x < xSize; x++)
                     {
-                        if (ito::dObjHelper::isFinite(((ito::complex64*)pDataRow)[x]))
+                        if (ito::isFinite(((ito::complex64*)pDataRow)[x]))
                         {
                             ogps_SetFloatZ(vector, zFactor * ((ito::complex64*)pDataRow)[x].real());
                             ogps_SetMatrixPoint(handle, x, y, nMat * 2, vector);
@@ -691,7 +691,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
                     pDataRow = plane->ptr(y);
                     for (int x = 0; x < xSize; x++)
                     {
-                        if (ito::dObjHelper::isFinite(((ito::complex128*)pDataRow)[x]))
+                        if (ito::isFinite(((ito::complex128*)pDataRow)[x]))
                         {
                             ogps_SetDoubleZ(vector, zFactor * ((ito::complex128*)pDataRow)[x].real());
                             ogps_SetMatrixPoint(handle, x, y, nMat * 2, vector);

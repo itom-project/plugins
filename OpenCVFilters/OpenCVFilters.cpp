@@ -29,6 +29,7 @@
 
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
+#include "common/numeric.h"
 
 //#ifdef _DEBUG
 #ifdef USEOPENMP
@@ -1654,7 +1655,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
             tmpPtr = cvTemp.ptr<ito::uint8>(y);
             for(int x = 0; x < cvMatIn->cols; x++)
             {
-                if (ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipVal && srcPtr[x] < maxClipVal)
+                if (ito::isFinite(srcPtr[x]) && srcPtr[x] > minClipVal && srcPtr[x] < maxClipVal)
                 {
                     tmpPtr[x] = 1;
                 }
@@ -1677,7 +1678,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
             tmpPtr = cvTemp.ptr<ito::uint8>(y);
             for(int x = 0; x < cvMatIn->cols; x++)
             {
-                if (ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipValf && srcPtr[x] < maxClipValf)
+                if (ito::isFinite(srcPtr[x]) && srcPtr[x] > minClipValf && srcPtr[x] < maxClipValf)
                 {
                     tmpPtr[x] = 1;
                 }

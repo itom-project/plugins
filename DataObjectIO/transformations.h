@@ -1032,7 +1032,7 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat &dstMa
                 destPtr[col][0] = qBlue(colorMap[index]);
                 
 
-                if (ito::dObjHelper::isFinite<_TpSrc>(linePtr[col]))
+                if (ito::isFinite<_TpSrc>(linePtr[col]))
                 {
                     destPtr[col][3] = UCHAR_MAX;
                 }
@@ -1086,7 +1086,7 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(QImage &dstImg
                 index = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);    
                 destPtr[col] = colorMap[index];
 
-                if (ito::dObjHelper::isFinite<_TpSrc>(linePtr[col]))
+                if (ito::isFinite<_TpSrc>(linePtr[col]))
                 {
                     destPtr[col] |= 0xff000000; //set alpha to 0xff
                 }

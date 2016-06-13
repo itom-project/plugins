@@ -28,6 +28,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "pluginVersion.h"
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
+#include "common/numeric.h"
 
 #include <QtCore/QtPlugin>
 #include <qnumeric.h>
@@ -199,7 +200,7 @@ template<typename _Tp> ito::RetVal CalcZp(const uchar* data, const size_t byte_s
             ito::float64 current = 0.0;
             for (int i = 0; i < sample_length; ++i)
             {
-                if (*values > current && ito::dObjHelper::isFinite(*values))
+                if (*values > current && ito::isFinite(*values))
                 {
                     current = *values;
                 }
@@ -266,7 +267,7 @@ template<typename _Tp> ito::RetVal CalcZv(const uchar* data, const size_t byte_s
             ito::float64 current = 0.0;
             for (int i = 0; i < sample_length; ++i)
             {
-                if (*values < current && ito::dObjHelper::isFinite(*values))
+                if (*values < current && ito::isFinite(*values))
                 {
                     current = *values;
                 }
@@ -334,7 +335,7 @@ template<typename _Tp> ito::RetVal CalcZz(const uchar* data, const size_t byte_s
             ito::float64 current_highest = 0.0;
             for (int i = 0; i < sample_length; ++i)
             {
-                if (ito::dObjHelper::isFinite(*values))
+                if (ito::isFinite(*values))
                 {
                     if (*values > current_highest)
                     {
@@ -394,7 +395,7 @@ template<typename _Tp> ito::RetVal CalcZt(const uchar* data, const size_t byte_s
 
     for (int i = 0; i < length; ++i)
     {
-        if (ito::dObjHelper::isFinite(*values))
+        if (ito::isFinite(*values))
         {
             if (*values > current_highest)
             {
@@ -452,7 +453,7 @@ template<typename _Tp> ito::RetVal CalcZa(const uchar* data, const size_t byte_s
             ito::float64 current_highest = 0.0;
             for (int i = 0; i < sample_length; ++i)
             {
-                if (ito::dObjHelper::isFinite(*values))
+                if (ito::isFinite(*values))
                 {
                     current += std::abs(*values);
                     valids = true;
@@ -517,7 +518,7 @@ template<typename _Tp> ito::RetVal CalcZq(const uchar* data, const size_t byte_s
             current = 0.0;
             for (int i = 0; i < sample_length; ++i)
             {
-                if (ito::dObjHelper::isFinite(*values))
+                if (ito::isFinite(*values))
                 {
                     current += (*values * *values);
                     valids = true;
@@ -584,7 +585,7 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
             ito::float64 current_Sk = 0.0;
             for (int i = 0; i < sample_length; ++i)
             {
-                if (ito::dObjHelper::isFinite(*values))
+                if (ito::isFinite(*values))
                 {
                     temp = *values * *values;
                     current_Rq += temp;
@@ -664,7 +665,7 @@ template<typename _Tp> ito::RetVal CalcZku(const uchar* data, const size_t byte_
             ito::float64 current_Sk = 0.0;
             for (int i = 0; i < sample_length; ++i)
             {
-                if (ito::dObjHelper::isFinite(*values))
+                if (ito::isFinite(*values))
                 {
                     temp = *values * *values;
                     current_Rq += temp;
@@ -757,7 +758,7 @@ template<typename _Tp> ito::RetVal CalcZdq(const uchar* data, const size_t byte_
             for (int i = 3; i < sample_length - 3; ++i)
             {
                 temp = 1.0/(60.0 * params.spacing) * (values[p3] - 9*values[p2] + 45*values[p1] - 45*values[m1] + 9*values[m2] - values[m3]);
-                if (ito::dObjHelper::isFinite(temp))
+                if (ito::isFinite(temp))
                 {
                     current += (temp * temp);
                     counts++;
@@ -847,7 +848,7 @@ template<typename _Tp> ito::RetVal CalcZda(const uchar* data, const size_t byte_
             for (int i = 3; i < sample_length - 3; ++i)
             {
                 temp = 1.0/(60.0 * params.spacing) * (values[p3] - 9*values[p2] + 45*values[p1] - 45*values[m1] + 9*values[m2] - values[m3]);
-                if (ito::dObjHelper::isFinite(temp))
+                if (ito::isFinite(temp))
                 {
                     current += std::abs(temp);
                     counts++;
@@ -921,7 +922,7 @@ template<typename _Tp> ito::RetVal CalcZdc(const uchar* data, const size_t byte_
 
         for (int i = 0; i < length; ++i)
         {
-            if (ito::dObjHelper::isFinite(*values))
+            if (ito::isFinite(*values))
             {
                 vec[count] = *values;
                 count++;
@@ -974,7 +975,7 @@ template<typename _Tp> ito::RetVal CalcAbbott(const uchar* data, const size_t by
 
         for (int i = 0; i < length; ++i)
         {
-            if (ito::dObjHelper::isFinite(*values))
+            if (ito::isFinite(*values))
             {
                 vec[count] = *values;
                 count++;

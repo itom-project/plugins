@@ -33,6 +33,7 @@
 #include "FFTWfilters.h"
 
 #include "DataObject/dataObjectFuncs.h"
+#include "common/numeric.h"
 #include "fftw3.h"
 #include "qnumeric.h"
 #include "qvariant.h"
@@ -1167,7 +1168,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
             bool test;
 
             ito::float64 newScale = dObjOut->getAxisScale(axis);
-            if (ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
+            if (ito::isFinite<ito::float64>(newScale) && ito::isNotZero<ito::float64>(newScale))
             {
                 newScale = 1.0 / (newScale * dObjOut->getSize(axis)); //factor of 2pi is missing, but is usually assumed to be part of the unit, e.g. lambda becomes k = 2pi / lambda
                 axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(axis, test));
@@ -1442,7 +1443,7 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
             for (int axis = dims - 2; axis < dims; ++axis)
             {
                 ito::float64 newScale = dObjOut->getAxisScale(axis);
-                if (ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
+                if (ito::isFinite<ito::float64>(newScale) && ito::isNotZero<ito::float64>(newScale))
                 {
                     newScale = 1.0 / (newScale * dObjOut->getSize(axis)); //factor of 2pi is missing, but is usually assumed to be part of the unit, e.g. lambda becomes k = 2pi / lambda
                     axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(axis, test));
@@ -2304,11 +2305,11 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     ito::float64 lambda_c = static_cast<ito::float64>((*paramsOpt)[2].getVal<ito::float64>());
     ito::float64 lambda_f = static_cast<ito::float64>((*paramsOpt)[3].getVal<ito::float64>());
 
-    if (!ito::dObjHelper::isNotZero(R_z) && !ito::dObjHelper::isNotZero(lambda_c))
+    if (!ito::isNotZero(R_z) && !ito::isNotZero(lambda_c))
     {
         return ito::RetVal(ito::retError, 0, tr("Define R_z or 1 pair of lambdas").toLatin1().data());
     }
-    else if (ito::dObjHelper::isNotZero(R_z)) // search lookuptable for adequate lambdas (in mm!!)
+    else if (ito::isNotZero(R_z)) // search lookuptable for adequate lambdas (in mm!!)
     {
         if (R_z <= 0.1e-3)
         {
@@ -2423,7 +2424,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         filterFunc.setAxisScale(1, freqInc);
     }
 
-    if (ito::dObjHelper::isNotZero(lambda_s))
+    if (ito::isNotZero(lambda_s))
     {
         ito::float64 cuExp1 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFS, 2));
         ito::float64 cuExp2 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFC, 2));
@@ -2453,7 +2454,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     {
         //filtWavi[0][0] = fourDomain[0][0];    //real fourier component (amplitude)
 
-        if (ito::dObjHelper::isNotZero(lambda_f))
+        if (ito::isNotZero(lambda_f))
         {
             ito::float64 cuExp1 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFC, 2));
             ito::float64 cuExp2 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFF, 2));

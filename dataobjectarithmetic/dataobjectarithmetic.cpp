@@ -513,7 +513,7 @@ template<typename _Type> bool areEqualHelper(_Type* first, int xStep0, int yStep
             curSecond =(_Type*)(((char*)second) + y * yStep0);
             for (int x = 0; x < cols - 1; x++)
             {
-                if (ito::dObjHelper::isNotZero<_Type>(first[x] != second[x])) return true;
+                if (ito::isNotZero<_Type>(first[x] != second[x])) return true;
             }
         }
     }
@@ -531,8 +531,8 @@ template<> bool areEqualHelper<complex64>(complex64* first, int xStep0, int ySte
         curSecond =(complex64*)(((char*)second) + y * yStep0);
         for (int x = 0; x < cols - 1; x++)
         {
-            if (ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
-            if (ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
+            if (ito::isNotZero(first[x].real() - second[x].real())) return true;
+            if (ito::isNotZero(first[x].imag() - second[x].imag())) return true;
         }
     }
 
@@ -551,8 +551,8 @@ template<> bool areEqualHelper<complex128>(complex128* first, int xStep0, int yS
         curSecond =(complex128*)(((char*)second) + y * yStep0);
         for (int x = 0; x < cols - 1; x++)
         {
-            if (ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
-            if (ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
+            if (ito::isNotZero(first[x].real() - second[x].real())) return true;
+            if (ito::isNotZero(first[x].imag() - second[x].imag())) return true;
         }
     }
 
@@ -919,7 +919,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *param
     (*paramsOut)[0].setVal<ito::float64>(cy);
     (*paramsOut)[1].setVal<ito::float64>(cx);
 
-    if (!retval.containsError() && ito::dObjHelper::isFinite<ito::float64>(cy))
+    if (!retval.containsError() && ito::isFinite<ito::float64>(cy))
     {
         bool test;
         cxPhys = dObj->getPixToPhys(dObj->getDims()-1, cx, test);
@@ -969,7 +969,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
             pValue = mat->ptr<_Tp>(y);
             for (x = 0; x < mat->cols; ++x)
             {
-                if (ito::dObjHelper::isFinite<_Tp>(pValue[x]) && pValue[x] >= lowThres && pValue[x] <= highThres)
+                if (ito::isFinite<_Tp>(pValue[x]) && pValue[x] >= lowThres && pValue[x] <= highThres)
                 {
                     val = (ito::float64) (pValue[x] - lowThres);
                     sumva += val;
@@ -980,7 +980,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
         }    
     }
 
-    if (ito::dObjHelper::isNotZero<ito::float64>(sumva))
+    if (ito::isNotZero<ito::float64>(sumva))
     {
         xCOG = sumXv / sumva;
         yCOG = sumYv / sumva;    
@@ -1137,7 +1137,7 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
                     {
                         if (LCOGRADIUS(r, c) <= half_width)
                         {
-                            if (ito::dObjHelper::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
+                            if (ito::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
                             {
                                 roiMinimum = std::min(roiMinimum, (ito::float64)*sourceRow);
                                 vals.push_back(*sourceRow);
@@ -1159,7 +1159,7 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
 
                     for (int c = start_col; c <= end_col; ++c)
                     {
-                        if (ito::dObjHelper::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
+                        if (ito::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
                         {
                             roiMinimum = std::min(roiMinimum, (ito::float64)*sourceRow);
                             vals.push_back(*sourceRow);
@@ -1179,7 +1179,7 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
                 denomy = 0.0;
                 nom = 0.0;
 
-                if (ito::dObjHelper::isFinite<ito::float64>(lowThreshold))
+                if (ito::isFinite<ito::float64>(lowThreshold))
                 {
                     for (int c = 0; c < count; ++c)
                     {
@@ -1757,7 +1757,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
         outINT[pixelCnt] = maxVal;
 
         //calculate and save current cog position
-        if (ito::dObjHelper::isNotZero<ito::float64>(sumI))
+        if (ito::isNotZero<ito::float64>(sumI))
         {
             outCOG[pixelCnt] = ((sumPxI / sumI) - offset) * scale; //sumPxI / sumI is in pixel-coordinates, outCOG is in physical coordinates: (px - offset) * scaling = phys
         }
@@ -1879,7 +1879,7 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
                 rowPtr = (_Tp*)(dObj->rowPtr(p, mi));
                 for (int ni = 0; ni < n; ++ni)
                 {
-                    if (ito::dObjHelper::isFinite(rowPtr[ni]))
+                    if (ito::isFinite(rowPtr[ni]))
                     {
                         values.push_back(rowPtr[ni]);
                         numValues++;

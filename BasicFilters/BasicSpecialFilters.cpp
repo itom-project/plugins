@@ -32,6 +32,7 @@
 #include "BasicFilters.h"
 
 #include "DataObject/dataObjectFuncs.h"
+#include "common/numeric.h"
 #include "common/sharedStructuresPrimitives.h"
 #include "common/shape.h"
 
@@ -475,7 +476,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
 
                 for (int col = 0 ; col < srcMat->cols ; col++)
                 {
-                    if (!ito::dObjHelper::isFinite(floatLinePtr1[col]))
+                    if (!ito::isFinite(floatLinePtr1[col]))
                     {
                         floatLinePtr3[col] = floatLinePtr2[col];
                         nrOfReplacements++;
@@ -498,7 +499,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
 
                 for (int col = 0 ; col < srcMat->cols ; col++)
                 {
-                    if (!ito::dObjHelper::isFinite(doubleLinePtr1[col]))
+                    if (!ito::isFinite(doubleLinePtr1[col]))
                     {
                         doubleLinePtr3[col] = doubleLinePtr2[col];
                         nrOfReplacements++;
@@ -823,7 +824,7 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
 
                     for (int z = 0; z < sizes[0]; z ++)
                     {
-                        if (ito::dObjHelper::isFinite<_Type>(srcPtr[z][y][x]))
+                        if (ito::isFinite<_Type>(srcPtr[z][y][x]))
                         {
                             value += (ito::float64)(srcPtr[z][y][x]);
                             cnts++;                    
@@ -913,7 +914,7 @@ template<typename _Type, typename _TypeDst> void calcDeviationOverZHelp(_Type **
 
                     for (int z = 0; z < sizes[0]; z ++)
                     {
-                        if (ito::dObjHelper::isFinite<_Type>(srcPtr[z][y][x]))
+                        if (ito::isFinite<_Type>(srcPtr[z][y][x]))
                         {
                             value += pow((ito::float64)(srcPtr[z][y][x]) - (ito::float64)(meanlinePtr[x]), 2);
                             cnts++;                    
@@ -1596,7 +1597,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         dObjDst->setAxisDescription(1, axisDescription);
         dObjDst->setAxisUnit(1, axisUnit);
 
-        if (ito::dObjHelper::isNotZero(stepSizePhys)) dObjDst->setAxisScale(1, stepSizePhys);
+        if (ito::isNotZero(stepSizePhys)) dObjDst->setAxisScale(1, stepSizePhys);
         else dObjDst->setAxisScale(1, stepSizePhys);
 
         dObjDst->setAxisOffset(1, startPx);
@@ -1664,7 +1665,7 @@ template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp min
                 rowPtr = (_Tp*)planeInOut->ptr(y);
                 for (x = 0; x < planeInOut->cols; x++)
                 {
-                    if (!ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
+                    if (!ito::isFinite<_Tp>(rowPtr[x]))
                     {
                         rowPtr[x] = newValue;
                     }
@@ -1690,7 +1691,7 @@ template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp min
             rowPtr = (_Tp*)planeInOut->ptr(y);
             for (x = 0; x < planeInOut->cols; x++)
             {
-                /*if (!ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
+                /*if (!ito::isFinite<_Tp>(rowPtr[x]))
                 {
                     rowPtr[x] = newValue;
                 }
@@ -1874,11 +1875,11 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
             ito::float32 maxVal = cv::saturate_cast<ito::float32>((*paramsMand)[3].getVal<double>());
             ito::float32 newValue;
             valProt = (*paramsOpt)[0].getVal<double>();
-            if (ito::dObjHelper::isNaN<double>(valProt))
+            if (ito::isNaN<double>(valProt))
             {
                 newValue = std::numeric_limits<ito::float32>::quiet_NaN();
             }
-            else if (ito::dObjHelper::isInf<double>(valProt))
+            else if (ito::isInf<double>(valProt))
             {
                 newValue = std::numeric_limits<ito::float32>::infinity();
             }
@@ -1999,7 +2000,7 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
                 rowPtrComp = (_Tp*)planeComp->ptr(y);
                 for (x = 0; x < planeBinary.cols; x++)
                 {
-                    if (!ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
+                    if (!ito::isFinite<_Tp>(rowPtrComp[x]))
                     {
                         rowPtrInOut[x] = 0;
                     }
@@ -2030,7 +2031,7 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
             rowPtrComp = (_Tp*)planeComp->ptr(y);
             for (x = 0; x < planeBinary.cols; x++)
             {
-                /* if (!ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
+                /* if (!ito::isFinite<_Tp>(rowPtrComp[x]))
                 {
                     rowPtr[x] = newValue;
                 }
@@ -2320,11 +2321,11 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
         {
             ito::float32 newValue;
             double valProt = (*paramsOpt)[0].getVal<double>();
-            if (ito::dObjHelper::isNaN<double>(valProt))
+            if (ito::isNaN<double>(valProt))
             {
                 newValue = std::numeric_limits<ito::float32>::quiet_NaN();
             }
-            else if (ito::dObjHelper::isInf<double>(valProt))
+            else if (ito::isInf<double>(valProt))
             {
                 newValue = std::numeric_limits<ito::float32>::infinity();
             }
@@ -3137,7 +3138,7 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 			if (fabs(rA - rB) < dObjDst->getAxisScale(xDim) && fabs(rA - rB) < dObjDst->getAxisScale(yDim)) type = ito::Shape::Circle;
 			else type = ito::Shape::Ellipse;
 
-            if (!ito::dObjHelper::isNotZero(rA) || !ito::dObjHelper::isNotZero(rB))  
+            if (!ito::isNotZero(rA) || !ito::isNotZero(rB))  
             {
                 return ito::RetVal(ito::retError, 0, tr("Error: radii of geometricElement must not be zero").toLatin1().data());
             }
@@ -3155,7 +3156,7 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
     cv::Mat* myMat = (cv::Mat*)(dObjDst->get_mdata()[dObjDst->seekMat(0)]);
 
-    if (!ito::dObjHelper::isFinite(rA) || !ito::dObjHelper::isFinite(rB) || !ito::dObjHelper::isFinite(x0) || !ito::dObjHelper::isFinite(y1) || !ito::dObjHelper::isFinite(x1) || !ito::dObjHelper::isFinite(y0))  
+    if (!ito::isFinite(rA) || !ito::isFinite(rB) || !ito::isFinite(x0) || !ito::isFinite(y1) || !ito::isFinite(x1) || !ito::isFinite(y0))  
     {
         return ito::RetVal(ito::retError, 0, tr("Error: coordinates of geometricElement must be finite").toLatin1().data());
     }
@@ -3372,7 +3373,7 @@ template<typename _T1, typename _T2> void calcRadialMeanHelper(const ito::DataOb
 
         for (int x = 0; x <input.getSize(1); ++x)
         {
-            if (ito::dObjHelper::isFinite(rowPtr[x]))
+            if (ito::isFinite(rowPtr[x]))
             {
                 dx = (x - xOffset) * xScale - cx;
                 r = std::sqrt(dx*dx + dy*dy);

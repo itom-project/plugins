@@ -25,6 +25,7 @@
 
 #include "fittingfilters.h"
 
+#include "common/numeric.h"
 #include "DataObject/dataObjectFuncs.h"
 
 #include <omp.h>
@@ -2072,7 +2073,7 @@ template<typename _Tp> /*static*/ void FittingFilters::polyfit1d_basic(const _Tp
     {
         for (size_t i = 0; i < length; ++i)
         {
-            if (ito::dObjHelper::isFinite(*input_))
+            if (ito::isFinite(*input_))
             {
                 value_storage[i] = cv::saturate_cast<double>(*input_);
             }

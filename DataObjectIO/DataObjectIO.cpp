@@ -1499,10 +1499,10 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                     curLine.clear();
                     for (x = 0; x < xsize - 1; x ++)
                     {
-                        if (ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
+                        if (ito::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                         curLine.append(seperator);
                     }
-                    if (ito::dObjHelper::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
+                    if (ito::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
                     curLine.append('\n');
                     outFile.write(curLine);
                 } 
@@ -1514,11 +1514,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                     curLine.clear();
                     for (x = 0; x < xsize - 1; x ++)
                     {
-                        if (ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
+                        if (ito::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                         else curLine.append(QByteArray::number(nanValue, 'f', decimals));
                         curLine.append(seperator);
                     }
-                    if (ito::dObjHelper::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
+                    if (ito::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
                     else curLine.append(QByteArray::number(nanValue, 'f', decimals));
                     curLine.append('\n');
                     outFile.write(curLine);
@@ -1531,11 +1531,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                     curLine.clear();
                     for (x = 0; x < xsize - 1; x ++)
                     {
-                        if (ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
+                        if (ito::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                         else curLine.append("BAD");
                         curLine.append(seperator);
                     }
-                    if (ito::dObjHelper::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
+                    if (ito::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
                     else curLine.append("BAD");
                     curLine.append('\n');
                     outFile.write(curLine);
@@ -4770,13 +4770,13 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         {
             rowPtr = myMat->ptr<ito::float32>(y);
             
-            if (ito::dObjHelper::isFinite(rowPtr[1]) && ito::dObjHelper::isNotZero(rowPtr[1] - lastY)) 
+            if (ito::isFinite(rowPtr[1]) && ito::isNotZero(rowPtr[1] - lastY)) 
             {
                 yCords.append(rowPtr[1]);
                 lastY = rowPtr[1];
             }
 
-            if (ito::dObjHelper::isFinite(rowPtr[0]) && !xCords.contains(rowPtr[0]))
+            if (ito::isFinite(rowPtr[0]) && !xCords.contains(rowPtr[0]))
             {
                 xCords.append(rowPtr[0]);
             }    
@@ -5061,7 +5061,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         const ito::float64 *row = (const ito::float64*)source.rowPtr(0, 0);
         for (int i = 0; i < len; ++i)
         {
-            if (ito::dObjHelper::isFinite(row[i]))
+            if (ito::isFinite(row[i]))
             {
                 dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
                 dataOut.write("\n");
