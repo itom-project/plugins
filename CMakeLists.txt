@@ -351,6 +351,14 @@ if (PLUGIN_SuperlumBL)
     ADD_SUBDIRECTORY(SuperlumBL)
 endif (PLUGIN_SuperlumBL)
 
+# ST8SMC4USB
+IF (WIN32)
+    OPTION(PLUGIN_ST8SMC4USB "Build with this plugin." ON)
+    if (PLUGIN_ST8SMC4USB)
+            ADD_SUBDIRECTORY(ST8SMC4USB)
+    endif (PLUGIN_ST8SMC4USB)
+ENDIF (WIN32)
+
 # ThorlabsCCS Spectrometer
 IF (WIN32)
     OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." ON)
