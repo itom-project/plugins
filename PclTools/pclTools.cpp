@@ -26,7 +26,10 @@
 #include "pclTools.h"
 #include "pluginVersion.h"
 #define EIGEN_QT_SUPPORT
-#define EIGEN2_SUPPORT
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+//before we defined #define EIGEN2_SUPPORT, which also set the #define above.
+//However, EIGEN2_SUPPORT leads to errors using newer Eigen libraries (Eigen2 support has been removed there)
+//The "I know sparse module is not stable yet" define is only set to also compile with older Eigen libraries (e.g. 3.0.5)
 
 #include "DataObject/dataobj.h"
 #include "common/helperCommon.h"
@@ -65,8 +68,8 @@
 #include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
 
-#include <pcl/recognition/ransac_based/trimmed_icp.h>
 #include <pcl/recognition/auxiliary.h>
+#include <pcl/recognition/ransac_based/trimmed_icp.h>
 
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/organized_fast_mesh.h>
