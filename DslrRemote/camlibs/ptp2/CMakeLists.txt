@@ -2,6 +2,8 @@ SET (target_name ptp2)
 
 project(${target_name})
 
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
+
 cmake_minimum_required(VERSION 3.0)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)

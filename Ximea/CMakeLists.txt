@@ -2,6 +2,8 @@ SET (target_name Ximea)
 
 project(${target_name})
 
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
+
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)

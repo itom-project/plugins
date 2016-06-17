@@ -11,6 +11,8 @@ SET (target_name LibModBus)
 
 project(${target_name})
 
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
+
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 2.8)

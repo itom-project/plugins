@@ -11,6 +11,8 @@ SET (target_name NI-DAQmx) #->replace PCI6115 by the name of your plugin (one wo
 
 project(${target_name})
 
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
+
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 2.8)

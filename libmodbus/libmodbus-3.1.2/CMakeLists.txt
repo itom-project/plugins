@@ -1,5 +1,7 @@
 SET (target_name libmodbus_library)
-project(${target_name}) 
+project(${target_name})
+
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------") 
 
 cmake_minimum_required(VERSION 2.8)
  

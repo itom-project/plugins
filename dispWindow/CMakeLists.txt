@@ -2,7 +2,7 @@ SET (target_name dispWindow)
 
 project(${target_name})
 
-message(STATUS "--------------- PLUGIN ${target_name} ---------------")
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 cmake_minimum_required(VERSION 2.8)
 
