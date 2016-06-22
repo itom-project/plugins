@@ -25,7 +25,7 @@
 
 #include "common/addInInterface.h"
 #include "DataObject/dataobj.h"
-#include "libusb.h"
+#include "lusb0_usb.h"
 
 #include <qsharedpointer.h>
 #include <qbytearray.h>
