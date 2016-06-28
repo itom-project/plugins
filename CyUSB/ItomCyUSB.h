@@ -49,11 +49,20 @@ class ItomCyUSB : public ito::AddInDataIO //, public
 
     private:
 
-
 		HANDLE cyHandle;
 		CCyUSBDevice *m_cyDevices;
 		CCyUSBEndPoint  **m_endPoints;
-		/*
+
+		enum endpointType {
+			IsocIn = 0x0001,
+			IsocOut = 0x0002,
+			bulkIn = 0x0003,
+			bulkOut = 0x0004,
+			interruptIn = 0x0005,
+			interruptOut = 0x0006,
+			controlEndPoint = 0x0007
+			};
+		
 		CCyIsocEndPoint *m_isocInEndPoint;
 		CCyIsocEndPoint *m_isocOutEndPoint;
 		CCyBulkEndPoint *m_bulkInEndPoint;
@@ -61,7 +70,7 @@ class ItomCyUSB : public ito::AddInDataIO //, public
 		CCyInterruptEndPoint *m_interruptInEndPoint;
 		CCyInterruptEndPoint *m_interruptOutEndPoint;
 		CCyControlEndPoint *m_controlEndPoint;
-		*/
+		
 		static QVector<CCyUSBDevice> openedDevices;
         static QMutex openedDevicesReadWriteMutex;
 

@@ -123,10 +123,17 @@ const ito::RetVal ItomCyUSB::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-	ItomCyUSB::ItomCyUSB() : AddInDataIO(),
-cyHandle(NULL),
-m_cyDevices(NULL),
-m_endPoints(NULL)
+ItomCyUSB::ItomCyUSB() : AddInDataIO(),
+	cyHandle(NULL),
+	m_cyDevices(NULL),
+	m_endPoints(NULL),
+	m_isocInEndPoint(NULL),
+	m_isocOutEndPoint(NULL),
+	m_bulkInEndPoint(NULL),
+	m_bulkOutEndPoint(NULL),
+	m_interruptInEndPoint(NULL),
+	m_interruptOutEndPoint(NULL),
+	m_controlEndPoint(NULL)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomCyUSB", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
@@ -413,7 +420,7 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 					attrib = m_endPoints[cnt + 1]->Attributes;
 
 					m_endPoints[cnt + 1]->XferMode = XMODE_DIRECT;
-
+					m_endPoints[cnt + 1]->TimeOut = m_params["timeout"].getVal<int>() * 1000;
 					//get read endpoints
 					if (bIn)
 					{
@@ -422,6 +429,27 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 							sizeMin_read = cnt + 1;
 							m_params["endpoint_read"].setVal<int>(cnt + 1);
 							endpoint_read_detected = true;
+							/*
+							//get read endpoints
+							if ((m_isocInEndPoint == NULL) && (attrib == 1) && bIn)
+							{
+								m_isocInEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
+								std::cout << "-----------------------------\n"
+									<< "Input endPoint ist: CCyIsocEndPoint\n" << std::endl;
+							}
+							if ((m_bulkInEndPoint == NULL) && (attrib == 2) && bIn)
+							{
+								m_bulkInEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
+								std::cout << "-----------------------------\n"
+									<< "Input endPoint ist: CCyBulkEndPoint\n" << std::endl;
+							}
+							if ((m_interruptInEndPoint == NULL) && (attrib == 3) && bIn)
+							{
+								m_interruptInEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
+								std::cout << "-----------------------------\n"
+									<< "Input endPoint ist: CCyInterruptEndPoint\n" << std::endl;
+							}
+							*/
 						}
 
 						sizeMax_read = cnt + 1;
@@ -435,42 +463,33 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 							sizeMin_write = cnt + 1;
 							m_params["endpoint_write"].setVal<int>(cnt + 1);
 							endpoint_write_detected = true;
+
+							/*
+							//get write entpoints
+							if ((m_isocOutEndPoint == NULL) && (attrib == 1) && !bIn)
+							{
+								m_isocOutEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
+								std::cout << "-----------------------------\n"
+									<< "Output endPoint ist: CCyIsocEndPoint\n" << std::endl;
+							}
+							if ((m_bulkOutEndPoint == NULL) && (attrib == 2) && !bIn)
+							{
+								m_bulkOutEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
+								std::cout << "-----------------------------\n"
+									<< "Output endPoint ist: CCyBulkEndPoint\n" << std::endl;
+							}
+							if ((m_interruptOutEndPoint == NULL) && (attrib == 3) && !bIn)
+							{
+								m_interruptOutEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
+								std::cout << "-----------------------------\n"
+									<< "Output endPoint ist: CCyInterruptEndPoint\n" << std::endl;
+							}
+							*/
 						}
 
 						sizeMax_write = cnt + 1;
 
-					}
-
-					/*
-					//get read endpoints
-					if ((m_isocInEndPoint == NULL) && (attrib == 1) && bIn)
-					{
-						m_isocInEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
-					}
-					if ((m_bulkInEndPoint == NULL) && (attrib == 2) && bIn)
-					{
-						m_bulkInEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
-					}
-					if ((m_interruptInEndPoint == NULL) && (attrib == 3) && bIn)
-					{
-						m_interruptInEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
-					}
-
-					//get write entpoints
-					if ((m_isocOutEndPoint == NULL) && (attrib == 1) && !bIn)
-					{
-						m_isocOutEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
-					}
-					if ((m_bulkOutEndPoint == NULL) && (attrib == 2) && !bIn)
-					{
-						m_bulkOutEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
-					}
-					if ((m_interruptOutEndPoint == NULL) && (attrib == 3) && !bIn)
-					{
-						m_interruptOutEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
-					}
-					*/
-					
+					}				
 
 				}
 
@@ -576,7 +595,62 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 
 	if (m_cyDevices->IsOpen() && m_endPoints != NULL)
 	{
-		bool status = false;
+		CCyUSBEndPoint *endPoint = m_endPoints[m_params["endpoint_read"].getVal<int>()];
+		UCHAR bIn = endPoint->Address & 0x80;
+		UCHAR attrib = endPoint->Attributes;
+		
+		if (bIn && attrib == 1) //Incoming, isocronous endpoint
+		{
+			long len = *length;
+			PUCHAR buffer = (PUCHAR)data.data();
+			int pkts;
+			// Allocate the IsoPktInfo objects, and find-out how many were allocated
+			CCyIsoPktInfo *isoPktInfos = ((CCyIsocEndPoint *)endPoint)->CreatePktInfos(len, pkts);
+
+			bool status = endPoint->XferData(buffer, len, isoPktInfos);
+
+			if (!status)
+			{
+				*length = 0;
+				ULONG errCode = endPoint->NtStatus;
+				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+			}
+			else
+			{
+				*length = 0;
+				for (int i = 0; i < pkts; ++i)
+				{
+					if (isoPktInfos[i].Status == 0)
+					{
+						*length += isoPktInfos[i].Length;
+					}
+				}
+			}
+
+			delete[] isoPktInfos;
+		}
+		else if (bIn) //bulk or interrupt endpoint
+		{
+			long len = *length;
+			PUCHAR buffer = (PUCHAR)data.data();
+			bool status = endPoint->XferData(buffer, len, NULL);
+
+			if (!status)
+			{
+				*length = 0;
+				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+			}
+			else
+			{
+				*length = len;
+			}
+		}
+		else
+		{
+			retval += ito::RetVal(ito::retError, 0, "endpoint does not handle incoming tranfer.");
+		}
+
+		/*bool status = false;	
 		OVERLAPPED inOvLap;
 		inOvLap.hEvent = CreateEvent(NULL, false, false, L"CYUSB_IN");
 
@@ -588,16 +662,31 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 		int endpointNum = m_params["endpoint_read"].getVal<int>();
 		UCHAR *inContext = m_endPoints[endpointNum]->BeginDataXfer(inBuf, length, &inOvLap);
 		
-		status = m_endPoints[endpointNum]->WaitForXfer(&inOvLap, 100);
-		status = m_endPoints[endpointNum]->FinishDataXfer(inBuf, length, &inOvLap, inContext);
-		status = CloseHandle(inOvLap.hEvent);
-
-		*data = inBuf[0];
-
-		if (!status)
+		if (!m_endPoints[endpointNum]->WaitForXfer(&inOvLap, 100) && !retval.containsError())
 		{
-			retval += ito::RetVal(ito::retError, 0, tr("setVal error during transfer").toLatin1().data());
+			retval += ito::RetVal(ito::retError, 0, tr("setVal error during WaitForXFer").toLatin1().data());
 		}
+
+		if (!m_endPoints[endpointNum]->FinishDataXfer(inBuf, length, &inOvLap, inContext) && !retval.containsError())
+		{
+			retval += ito::RetVal(ito::retError, 0, tr("setVal error during FinishDataXfer").toLatin1().data());
+		}
+
+		if (!retval.containsError())
+		{
+			*data = inBuf[0];
+		}			
+
+		if (!CloseHandle(inOvLap.hEvent) && !retval.containsError())
+		{
+			retval += ito::RetVal(ito::retError, 0, tr("setVal error during CloseHandle").toLatin1().data());
+		}
+
+		if (retval.containsError())
+		{
+			CloseHandle(inOvLap.hEvent);
+		}*/
+		
 	}
 	else
 	{
@@ -625,37 +714,53 @@ ito::RetVal ItomCyUSB::setVal(const char *data, const int datalength, ItomShared
     ito::RetVal retval(ito::retOk);
 
 	if (m_cyDevices->IsOpen() && m_endPoints != NULL)
-	{	
-		bool status = false;
-		OVERLAPPED outOvLap;
-		outOvLap.hEvent = CreateEvent(NULL, false, false, L"CYUSB_OUT");
+	{
+		CCyUSBEndPoint *endPoint = m_endPoints[m_params["endpoint_write"].getVal<int>()];
+		UCHAR bIn = endPoint->Address & 0x80;
+		UCHAR attrib = endPoint->Attributes;
 
-		unsigned char outBuf[128];
-		ZeroMemory(outBuf, 128);
-
-		LONG length = sizeof(outBuf);
-		
-		outBuf[0] = (BYTE)data[0];
-
-		//outBuf[1] = (BYTE)data[1];
-		//outBuf[9] = (BYTE)data[9];
-
-		int endpointNum = m_params["endpoint_write"].getVal<int>();
-		UCHAR *outContext = m_endPoints[endpointNum]->BeginDataXfer(outBuf, length, &outOvLap);
-		status = m_endPoints[endpointNum]->WaitForXfer(&outOvLap, 100); //set timeout!
-		status = m_endPoints[endpointNum]->FinishDataXfer(outBuf, length, &outOvLap, outContext);
-		status = CloseHandle(outOvLap.hEvent);
-		
-		if (!status)
+		if (!bIn && attrib == 1) //Incoming, isocronous endpoint
 		{
-			retval += ito::RetVal(ito::retError, 0, tr("setVal error during transfer").toLatin1().data());
+			long len = datalength;
+			PUCHAR buffer = (PUCHAR)data[0];
+			int pkts;
+			// Allocate the IsoPktInfo objects, and find-out how many were allocated
+			CCyIsoPktInfo *isoPktInfos = ((CCyIsocEndPoint *)endPoint)->CreatePktInfos(len, pkts);
+
+			bool status = endPoint->XferData(buffer, len, isoPktInfos);
+
+			if (!status)
+			{
+				ULONG errCode = endPoint->NtStatus;
+				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+			}
+			
+
+			delete[] isoPktInfos;
 		}
+		else if (!bIn) //bulk or interrupt endpoint
+		{
+			long len = datalength;
+			PUCHAR buffer = (PUCHAR)data;
+			bool status = endPoint->XferData(buffer, len, NULL);
+
+			if (!status)
+			{
+				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+			}
+
+		}
+		else
+		{
+			retval += ito::RetVal(ito::retError, 0, "endpoint does not handle incoming tranfer.");
+		}
+
+
 	}
 	else
 	{
 		retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint Poiter is NULL.").toLatin1().data());
 	}
-	
 
 	if (m_params["debug"].getVal<int>() == 1)
 	{
