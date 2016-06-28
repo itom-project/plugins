@@ -72,7 +72,9 @@ The plugin is implemented for Window.\n\
 \n\
 To connect to a device you need the vendor ID and the product ID.\n\
 \n\
-The setVal and getVal functions will write and read on the specified endpoint.\n");
+The setVal and getVal functions will write and read on the specified endpoint.\n\
+\n\
+!Only the setVal function could be tested!");
 
     m_author = "J Krauter, ITO University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
