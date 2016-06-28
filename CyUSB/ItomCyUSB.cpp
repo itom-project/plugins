@@ -250,6 +250,15 @@ ito::RetVal ItomCyUSB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
+			
+			if (!retValue.containsError())
+			{
+				int countEndPoint = m_cyDevices->EndPointCount() - 1;
+				for (int cnt = 0; cnt < countEndPoint; cnt++)
+				{
+					m_endPoints[cnt + 1]->TimeOut = m_params["timeout"].getVal<int>() * 1000;
+				}
+			}
 
         }
         else if (key == "debug")
@@ -612,8 +621,8 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 			if (!status)
 			{
 				*length = 0;
-				ULONG errCode = endPoint->NtStatus;
-				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+				//ULONG errCode = endPoint->NtStatus;
+				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (isoc input endpoint).").toLatin1().data());
 			}
 			else
 			{
@@ -638,7 +647,8 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 			if (!status)
 			{
 				*length = 0;
-				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+				ULONG errCode = endPoint->NtStatus;
+				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (bulk or interrupt input endpoint).").toLatin1().data());
 			}
 			else
 			{
@@ -732,7 +742,7 @@ ito::RetVal ItomCyUSB::setVal(const char *data, const int datalength, ItomShared
 			if (!status)
 			{
 				ULONG errCode = endPoint->NtStatus;
-				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (isoc output endpoint).").toLatin1().data());
 			}
 			
 
@@ -746,7 +756,8 @@ ito::RetVal ItomCyUSB::setVal(const char *data, const int datalength, ItomShared
 
 			if (!status)
 			{
-				retval += ito::RetVal(ito::retError, 0, "error while obtaining data.");
+				//ULONG errCode = endPoint->NtStatus;
+				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data (bulk or interrupt output endpoint).").toLatin1().data());
 			}
 
 		}
