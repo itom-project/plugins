@@ -143,9 +143,9 @@ ItomCyUSB::ItomCyUSB() : AddInDataIO(),
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all out and inputs are written to the dockWidget.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endpoint_read", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for reading operations. The used index is ItomCyUSB_ENDPOINT_IN + endpoint_read, with ItomCyUSB_ENDPOINT_IN = %1 (default: initialization parameter 'endpoint')").toLatin1().data());
+    paramVal = ito::Param("endpoint_read", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for reading operations. (default: first detected input endpoint.)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. The used index is ItomCyUSB_ENDPOINT_OUT + endpoint_write, with ItomCyUSB_ENDPOINT_OUT = %1  (default: initialization parameter 'endpoint')").toLatin1().data());
+    paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. (default: first detected output endpoint.)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("number_of_devices", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("maximum number of detected devices").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);

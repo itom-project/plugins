@@ -33,9 +33,9 @@ An instance of this plugin has the following internal parameters:
 **debug**: {int}
     If true, all out and inputs are written to the dockWidget.
 **endpoint_read**: {int}
-    Endpoint index for reading operations. The used index is ItomCyUSB_ENDPOINT_IN + endpoint_read, with ItomCyUSB_ENDPOINT_IN = %1 (default: initialization parameter 'endpoint')
+    Endpoint index for reading operations. (default: first detected input endpoint.)
 **endpoint_write**: {int}
-    Endpoint index for writing operations. The used index is ItomCyUSB_ENDPOINT_OUT + endpoint_write, with ItomCyUSB_ENDPOINT_OUT = %1  (default: initialization parameter 'endpoint')
+    Endpoint index for writing operations. (default: first detected output endpoint.)
 **name**: {str}
     name of device
 **number_of_devices**: {int}
