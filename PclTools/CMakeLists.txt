@@ -128,11 +128,11 @@ IF(ITOM_SDK_PCL_SUPPORT)
         file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
         #handle translations END STEP 1
 
-		SET(VTK_LIBS "")
-		IF("${VTK_MAJOR_VERSION}" EQUAL 5)
-            foreach(__comps ${VTK_LIBRARIES})
-                set(VTK_LIBS ${VTK_LIBS} debug ${__comps}-gd.lib optimized ${__comps}.lib)
-            endforeach(__comps)
+        SET(VTK_LIBS "")
+        IF("${VTK_MAJOR_VERSION}" EQUAL 5)
+        foreach(__comps ${VTK_LIBRARIES})
+            set(VTK_LIBS ${VTK_LIBS} debug ${__comps}-gd optimized ${__comps})
+        endforeach(__comps)
         ENDIF()
 
         ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
