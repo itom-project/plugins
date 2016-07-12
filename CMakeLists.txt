@@ -373,6 +373,14 @@ IF (WIN32)
     endif (PLUGIN_ThorlabsCCS)
 ENDIF (WIN32)
 
+# ThorlabsISM stepper motor
+IF (WIN32)
+    OPTION(PLUGIN_ThorlabsISM "Build with this plugin." ON)
+    if (PLUGIN_ThorlabsISM)
+        ADD_SUBDIRECTORY(ThorlabsISM)
+    endif (PLUGIN_ThorlabsISM)
+ENDIF (WIN32)
+
 # ThorlabsDCxCam cameras
 IF (WIN32)
     OPTION(PLUGIN_ThorlabsDCxCam "Build with this plugin." OFF)
