@@ -26,6 +26,8 @@
 
 #include "ThorlabsISM.h"
 
+#define NOMINMAX
+
 #include "pluginVersion.h"
 
 #include <qstring.h>
