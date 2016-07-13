@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -169,8 +169,9 @@ DummyMotor::DummyMotor() :
     paramVal.setMeta( new ito::IntMeta(0,5),true);
     m_params.insert(paramVal.getName(), paramVal);*/
 
-    m_currentPos = QVector<double>(10,0.0);
-    m_currentStatus = QVector<int>(10, ito::actuatorAtTarget);
+    m_currentPos = QVector<double>(10, 0.0);
+    m_currentStatus = QVector<int>(10, ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable);
+    m_targetPos = QVector<double>(10, 0.0);
 
     // This is for the docking widged
     //now create dock widget for this plugin
@@ -303,7 +304,7 @@ ito::RetVal DummyMotor::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     for (int i=oldLength-1;i<m_currentPos.size();i++)
     {
         m_currentPos[i]     = 0.0;
-        m_currentStatus[i]  = ito::actuatorAtTarget;
+        m_currentStatus[i]  = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
         m_targetPos[i]      = 0.0;
     }
 
@@ -802,17 +803,15 @@ void DummyMotor::dockWidgetVisibilityChanged(bool visible)
     {
         if (visible)
         {
-            QObject::connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
-            QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)),getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
             emit parametersChanged(m_params);
-            requestStatusAndPosition(true,true);
+            //requestStatusAndPosition(true, true); //not necessary since called by motorAxisController widget of dock widget
         }
         else
         {
-            QObject::disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
-            QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)),getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
         }
     }
 }

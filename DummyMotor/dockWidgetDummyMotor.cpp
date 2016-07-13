@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -32,6 +32,8 @@
 
 #include "dockWidgetDummyMotor.h"
 
+#include "motorAxisController.h"
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.
 *
@@ -42,34 +44,13 @@
 */
 DockWidgetDummyMotor::DockWidgetDummyMotor(int uniqueID, ito::AddInActuator * myPlugin) :
     ito::AbstractAddInDockWidget(myPlugin),
+    m_pActuator(myPlugin),
     m_isVisible(false),
     m_numaxis(-1)
 {   
     ui.setupUi(this);
 
     ui.lblID->setText(QString::number(uniqueID));
-
-    m_btnRelDec.append(ui.pushButton_xm);
-    m_btnRelDec.append(ui.pushButton_ym);
-    m_btnRelDec.append(ui.pushButton_zm);
-    m_btnRelDec.append(ui.pushButton_am);
-    m_btnRelDec.append(ui.pushButton_bm);
-    m_btnRelDec.append(ui.pushButton_cm);
-    foreach(QPushButton* btn, m_btnRelDec)
-    {
-        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelDecClicked()));
-    }
-
-    m_btnRelInc.append(ui.pushButton_xp);
-    m_btnRelInc.append(ui.pushButton_yp);
-    m_btnRelInc.append(ui.pushButton_zp);
-    m_btnRelInc.append(ui.pushButton_ap);
-    m_btnRelInc.append(ui.pushButton_bp);
-    m_btnRelInc.append(ui.pushButton_cp);
-    foreach(QPushButton* btn, m_btnRelInc)
-    {
-        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelIncClicked()));
-    }
 
     m_checkEnabled.append(ui.checkBox_enablex);
     m_checkEnabled.append(ui.checkBox_enabley);
@@ -81,27 +62,6 @@ DockWidgetDummyMotor::DockWidgetDummyMotor(int uniqueID, ito::AddInActuator * my
     {
         connect(btn, SIGNAL(clicked(bool)), this, SLOT(checkEnabledClicked(bool)));
     }
-
-    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_x);
-    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_y);
-    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_z);
-    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_a);
-    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_b);
-    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_c);
-
-    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_x);
-    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_y);
-    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_z);
-    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_a);
-    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_b);
-    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_c);
-
-    m_labels.append(ui.label_xachse);
-    m_labels.append(ui.label_yachse);
-    m_labels.append(ui.label_zachse);
-    m_labels.append(ui.label_aachse);
-    m_labels.append(ui.label_bachse);
-    m_labels.append(ui.label_cachse);
 
     enableWidget(true);
 }
@@ -119,97 +79,47 @@ void DockWidgetDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
     {
         m_numaxis = params["numaxis"].getVal<int>();
         ui.lblAxis->setText(QString::number(m_numaxis));
+        ui.axisController->setNumAxis(m_numaxis);
 
-        visibleWidget();
+        for (int i = 0; i < m_checkEnabled.size(); i++)
+        {
+            m_checkEnabled[i]->setVisible(m_numaxis > i);
+            if (m_numaxis > i)
+            {
+                ui.axisController->setAxisEnabled(i, m_checkEnabled[i]->isChecked());
+
+                switch (i)
+                {
+                case 0:
+                    ui.axisController->setAxisName(i, "x");
+                    ui.axisController->setAxisType(i, MotorAxisController::TypeLinear);
+                    break;
+                case 1:
+                    ui.axisController->setAxisName(i, "y");
+                    ui.axisController->setAxisType(i, MotorAxisController::TypeLinear);
+                    break;
+                case 2:
+                    ui.axisController->setAxisName(i, "z");
+                    ui.axisController->setAxisType(i, MotorAxisController::TypeLinear);
+                    break;
+                case 3:
+                    ui.axisController->setAxisName(i, "a");
+                    ui.axisController->setAxisType(i, MotorAxisController::TypeRotational);
+                    break;
+                case 4:
+                    ui.axisController->setAxisName(i, "b");
+                    ui.axisController->setAxisType(i, MotorAxisController::TypeRotational);
+                    break;
+                case 5:
+                    ui.axisController->setAxisName(i, "c");
+                    ui.axisController->setAxisType(i, MotorAxisController::TypeRotational);
+                    break;
+                }
+            }
+        }
     }
 
     enableWidget(true);
-
-    for (int i = 0; i < m_checkEnabled.size(); i++)
-    {
-        m_checkEnabled[i]->setChecked(m_numaxis > i);
-        m_btnRelDec[i]->setEnabled(m_numaxis > i);
-        m_btnRelInc[i]->setEnabled(m_numaxis > i);
-        m_spinTargetPos[i]->setEnabled(m_numaxis > i);
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::targetChanged(QVector<double> targetPos)
-{
-    for (int i = 0; i < targetPos.size(); i++)
-    {
-        m_spinTargetPos[i]->setValue(targetPos[i]);
-    }
- }
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
-{
-    bool running = false;
-    QString style;
-
-    for (int i = 0; i < std::min(status.size(), m_spinCurrentPos.size()); i++)
-    {
-        if (status[i] & ito::actuatorMoving)
-        {
-            style = "background-color: yellow";
-            running = true;
-        }
-        else if (status[i] & ito::actuatorInterrupted)
-        {
-            style = "background-color: red";
-        }
-        /*else if (status[i] & ito::actuatorTimeout) //timeout is bad for dummyMotor, since the waitForDone-method always drops into a timeout
-        {
-            style = "background-color: green";
-        }*/
-        else
-        {
-            style = "background-color: ";
-        }
-
-        m_spinCurrentPos[i]->setStyleSheet(style);
-    }
-
-    enableWidget(!running);
-
-    for (int i = 0; i < std::min(positions.size(), m_spinCurrentPos.size()); i++)
-    {
-        m_spinCurrentPos[i]->setValue(positions[i]);
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::btnRelDecClicked()                //slot if any button for a relative, negative movement is clicked
-{
-    double dpos = ui.spinStepSize->value() / -1e3;
-
-    if (qobject_cast<QPushButton*>(sender()))
-    {
-        int idx = m_btnRelDec.indexOf(qobject_cast<QPushButton*>(sender()));
-
-        if (idx >= 0)
-        {
-            setActuatorPosition(idx, dpos, true);
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::btnRelIncClicked()                //slot if any button for a relative, positive movement is clicked
-{
-    double dpos = ui.spinStepSize->value() / 1e3;
-
-    if (qobject_cast<QPushButton*>(sender()))
-    {
-        int idx = m_btnRelInc.indexOf(qobject_cast<QPushButton*>(sender()));
-
-        if (idx >= 0)
-        {
-            setActuatorPosition(idx, dpos, true);
-        }
-    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -221,66 +131,8 @@ void DockWidgetDummyMotor::checkEnabledClicked(bool checked) //slot if any "enab
 
         if (idx >= 0)
         {
-            m_btnRelDec[idx]->setEnabled(checked);
-            m_btnRelInc[idx]->setEnabled(checked);
-            m_spinTargetPos[idx]->setEnabled(checked);
+            ui.axisController->setAxisEnabled(idx, checked);
         }
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_stop_clicked()
-{
-    setActuatorInterrupt();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_start_clicked()
-{
-    QVector<int> axis;
-    QVector<double> dpos;
-
-    for (int i = 0; i < m_checkEnabled.size(); ++i)
-    {
-        if (m_checkEnabled[i]->isChecked() == 1)
-        {
-            axis << i;
-            dpos << m_spinTargetPos[i]->value();
-        }
-    }
-
-    setActuatorPosition(axis, dpos, false);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_refresh_clicked()
-{
-    requestActuatorStatusAndPositions(true, true);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::visibleWidget()
-{
-    for (int i = 0; i < m_checkEnabled.size(); i++)
-    {
-        m_checkEnabled[i]->setVisible(m_numaxis > i);
-        m_btnRelDec[i]->setVisible(m_numaxis > i);
-        m_btnRelInc[i]->setVisible(m_numaxis > i);
-        m_spinCurrentPos[i]->setVisible(m_numaxis > i);
-        m_spinTargetPos[i]->setVisible(m_numaxis > i);
-        m_labels[i]->setVisible(m_numaxis > i);
-    }
-
-    ui.label_actpos_t->setVisible(m_numaxis > 3);
-    ui.label_tarpos_r->setVisible(m_numaxis > 3);
-
-    if (m_numaxis < 4)
-    {
-        this->setMinimumHeight(278);
-    }
-    else
-    {
-        this->setMinimumHeight(366);
     }
 }
 
@@ -290,12 +142,38 @@ void DockWidgetDummyMotor::enableWidget(bool enabled)
     for (int i = 0; i < m_checkEnabled.size(); i++)
     {
         m_checkEnabled[i]->setEnabled(enabled && m_numaxis > i);
-        m_btnRelDec[i]->setEnabled(enabled && m_numaxis > i);
-        m_btnRelInc[i]->setEnabled(enabled && m_numaxis > i);
     }
 
-    ui.pushButton_start->setVisible(enabled);
-    ui.pushButton_stop->setVisible(!enabled);
+    ui.axisController->setEnabled(enabled);
+}
 
-    ui.spinStepSize->setFocus();
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetDummyMotor::dockWidgetVisibilityChanged(bool visible)
+{
+    if (visible)
+    {
+        //to connect the signals
+        QPointer<ito::AddInActuator> actuator(m_pActuator);
+        ui.axisController->setActuator(actuator);
+    }
+    else
+    {
+        ui.axisController->setActuator(QPointer<ito::AddInActuator>());
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetDummyMotor::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
+{
+    bool running = false;
+
+    for (int i = 0; i < status.size(); i++)
+    {
+        if (status[i] & ito::actuatorMoving)
+        {
+            running = true;
+        }
+    }
+
+    ui.groupProperties->setEnabled(!running);
 }
