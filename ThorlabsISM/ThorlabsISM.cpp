@@ -42,6 +42,8 @@
 
 #include <qdebug.h>
 
+QList<QByteArray> ThorlabsISM::openedDevices = QList<QByteArray>();
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -204,7 +206,21 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         if (serial == "")
         {
-            serial = serialNumbers[0];
+			bool found = false;
+			for (int i = 0; i < serialNumbers.size(); ++i)
+			{
+				if (!openedDevices.contains(serialNumbers[i]))
+				{
+					serial = serialNumbers[i];
+					found = true;
+					break;
+				}
+			}
+            
+			if (!found)
+			{
+				retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found.");
+			}
         }
         else
         {
@@ -222,6 +238,10 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             {
                 retval += ito::RetVal::format(ito::retError, 0, "no device with the serial number '%s' found", serial.data());
             }
+			else if (openedDevices.contains(serial))
+			{
+				retval += ito::RetVal::format(ito::retError, 0, "Thorlabs device with the serial number '%s' already in use.", serial.data());
+			}
         }
     }
 
@@ -234,8 +254,8 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         else
         {
             m_params["numaxis"].setVal<int>(1);
-            m_params["serialNumber"].setVal<char*>(deviceInfo.serialNo);
-            setIdentifier(QLatin1String(deviceInfo.serialNo));
+			m_params["serialNumber"].setVal<char*>(serial.data()); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
+			setIdentifier(QLatin1String(serial.data())); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
             m_params["deviceName"].setVal<char*>(deviceInfo.description);
         }
     }
@@ -252,6 +272,7 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             if (!retval.containsError())
             {
                 m_opened = true;
+				openedDevices.append(m_serialNo);
             }
         }
         else
@@ -340,6 +361,7 @@ ito::RetVal ThorlabsISM::close(ItomSharedSemaphore *waitCond)
 
         ISC_Close(m_serialNo);
         m_opened = false;
+		openedDevices.removeOne(m_serialNo);
     }
 
 
@@ -578,18 +600,30 @@ ito::RetVal ThorlabsISM::calib(const int axis, ItomSharedSemaphore *waitCond)
         WORD messageType;
         WORD messageId;
         DWORD messageData;
-        ISC_WaitForMessage(m_serialNo, &messageType, &messageId, &messageData);
-        while (messageType != 2 || messageId != 0)
-        {
-            ISC_WaitForMessage(m_serialNo, &messageType, &messageId, &messageData);
-            setAlive();
+		bool interrupted = false;
 
-            if (isInterrupted())
-            {
-                retval += checkError(ISC_StopImmediate(m_serialNo), "interrupt homing");
-                retval += ito::RetVal(ito::retError, 0, "Homing interrupted");
-            }
-        }
+        do
+		{
+			while (ISC_MessageQueueSize(m_serialNo) == 0)
+			{
+				setAlive();
+
+				if (isInterrupted())
+				{
+					retval += checkError(ISC_StopImmediate(m_serialNo), "interrupt homing");
+					retval += ito::RetVal(ito::retError, 0, "Homing interrupted");
+					interrupted = true;
+					break;
+				}
+				Sleep(100);
+			}
+
+			if (!interrupted)
+			{
+				ISC_WaitForMessage(m_serialNo, &messageType, &messageId, &messageData);
+			}
+            
+		} while (!interrupted && (messageType != 2 || messageId != 0));
 
         int accel, speed;
         retval += checkError(ISC_GetVelParams(m_serialNo, &accel, &speed), "get speed and acceleration");

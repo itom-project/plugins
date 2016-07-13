@@ -69,6 +69,7 @@ class DialogThorlabsISM : public ito::AbstractAddInConfigDialog
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
         void on_btnCalib_clicked();
+		void on_btnCalibInterrupt_clicked();
 
 };
 

@@ -293,6 +293,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="btnCalibInterrupt">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="lblHomed">
        <property name="text">
         <string>TextLabel</string>

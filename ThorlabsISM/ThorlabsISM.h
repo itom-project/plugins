@@ -30,6 +30,7 @@
 
 #include <qsharedpointer.h>
 #include <qvector.h>
+#include <qlist.h>
 #include <qpair.h>
 #include <qbytearray.h>
 #include <qlibrary.h>
@@ -87,6 +88,8 @@ class ThorlabsISM : public ito::AddInActuator
         bool m_async;
         bool m_opened;
         char m_serialNo[16];
+
+		static QList<QByteArray> openedDevices;
 
         double m_unitToRealWorldFactor;
 
