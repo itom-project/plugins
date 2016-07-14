@@ -72,3 +72,8 @@ To compile this plugin, install the Thorlabs KINESIS driver package in the same 
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
 The required libraries from Kinesis will automatically be copied to the *lib* folder of itom.
 
+Changelog
+==========
+
+* This plugin is part of itom with version > 2.1.0. In setup version 2.2.0 it will be compiled with Thorlabs Kinesis 1.6.0.
+
