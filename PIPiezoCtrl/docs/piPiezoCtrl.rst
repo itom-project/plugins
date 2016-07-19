@@ -25,7 +25,7 @@ The following parameters are mandatory or optional for initializing an instance 
     
     .. plugininitparams::
         :plugin: PIPiezoCtrl
-		
+
 Parameters
 ==========
 
@@ -63,8 +63,8 @@ parameters can be changed using *setParam*.
     return after starting the movement without waiting for the end of the movement.
 **checkFlags**: {int}, [0,7]
     Bitmask that is used to set if more of less checks should be executed during the positioning. More checks result in more information but need a little bit more
-    time during the positioning. These possible values can be combined using an or-combination: 0x0001: check position boundaries before positioning and actualize current 
-    position after positioning (default: on), 0x0010: check for errors when positioning (default: off), 0x1000: if device has a on-target flag, it is used for checking if 
+    time during the positioning. These possible values can be combined using an or-combination: 0x01: check position boundaries before positioning and actualize current 
+    position after positioning (default: on), 0x02: check for errors when positioning (default: off), 0x04: if device has a on-target flag, it is used for checking if 
     the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning
 **PI_CMD**: {str}
     Special parameter that can be used to directly set or read parameters from the PI device. Use this parameter followed by :YourCommand in order to read/write value 

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PIPiezoControl" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -129,7 +129,7 @@ PIPiezoCtrl::PIPiezoCtrl() :
     paramVal = ito::Param("hasOnTargetFlag", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("defines whether the device has the ability to check the 'on-target'-status (1), else (0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("checkFlags", ito::ParamBase::Int, 0, 7, 5, tr("Check flags (or-combination possible): 0x0001: check position boundaries before positioning and actualize current position after positioning (default: on), 0x0010: check for errors when positioning (default: off), 0x1000: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning").toLatin1().data());
+    paramVal = ito::Param("checkFlags", ito::ParamBase::Int, 0, 7, 5, tr("Check flags (or-combination possible): 0x01: check position boundaries before positioning and actualize current position after positioning (default: on), 0x02: check for errors when positioning (default: off), 0x04: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
@@ -1899,12 +1899,15 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     if (m_getPosInScan)
     {
         retVal += getPos(0, actPos, NULL);
+		m_currentPos[0] = *actPos;
+		sendStatusUpdate(false);
     }
+	else
+	{
+		sendStatusUpdate(true);
+	}
 
-    m_targetPos[0] = *actPos;
-    m_currentPos[0] = *actPos;
-    sendStatusUpdate(false);
-    sendTargetUpdate();
+    
 
     return retVal;
 }
