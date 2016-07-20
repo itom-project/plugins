@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "FringeProj" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -85,15 +85,15 @@ struct tvArray3D {
 */
 int CalcBPS2CILut(const char maxBits, unsigned short *BPS2CITable, unsigned short *bitshift)
 {
-    #if (USEOMP)
+#if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
-    #endif
+#endif
     int b = 0, bitmask = 0, i = 0, invert = 0;
 
-    #if (USEOMP)
+#if (USEOMP)
     #pragma omp for schedule(guided)
-    #endif
+#endif
     for (int g = 0; g <= (1 << maxBits); g++)
     {
         b = g;
@@ -150,10 +150,10 @@ template<typename _Tp> int CalcCIMap(struct tvArray3D **images, const float cont
 
     CalcBPS2CILut(numbits, bps2cilut, bitshift);
 
-    #if (useomp)
+#if (useomp)
     #pragma omp parallel num_threads(NTHREADS)
     {
-    #endif
+#endif
 
     _Tp threas = 0;
     unsigned short bitplanestack = 0;
@@ -165,9 +165,9 @@ template<typename _Tp> int CalcCIMap(struct tvArray3D **images, const float cont
     _Tp curVal;
     bool err;
 
-    #if (useomp)
+#if (useomp)
     #pragma omp for schedule(guided)
-    #endif
+#endif
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
@@ -227,28 +227,6 @@ template<typename _Tp> int CalcCIMap(struct tvArray3D **images, const float cont
             {
                 ((short*)(*CiMap)->vals)[y * width + x] = static_cast<short>(INVPHA);
             }
-
-            /*if (((_Tp*)(*images)->vals)[pagesize + y * width + x] - ((_Tp*)(*images)->vals)[y * width + x] > contThreas)
-            {
-                float threas = 65535;
-                unsigned short bitplanestack = 0;
-
-                threas = (((_Tp*)(*images)->vals)[y * width + x] + ((_Tp*)(*images)->vals)[pagesize + y * width + x]) / 2.0;
-
-                for(int imgNr = 2; imgNr < numbits + 2; imgNr++)
-                {
-                    if (((_Tp*)(*images)->vals)[pagesize * imgNr + y * width + x] > threas)
-                    {
-                        bitplanestack |= bitshift[imgNr - 2];
-                    }
-                }
-
-                ((short*)(*CiMap)->vals)[y * width + x] = static_cast<short>(bps2cilut[bitplanestack]);
-            }
-            else
-            {
-                ((short*)(*CiMap)->vals)[y * width + x] = static_cast<short>(INVPHA);
-            }*/
         }
     }
     #if (useomp)
@@ -275,83 +253,100 @@ template int CalcCIMap<ito::uint16>(struct tvArray3D **images, const float contT
 *   in addition it is checked if the modulation for this pixel is above the threashold and the maximum recorded intensity
 *   below the overexposed value, otherwise the pixel is marked as invalid.
 */
-template<typename _Tp> int CalcPhaseMap4(struct tvArray3D **images, const float contThreas, const _Tp overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap)
+template<typename _Tp> ito::RetVal calcPhaseMap4Tmpl(const ito::DataObject *source, const float contThreas, const _Tp overExp, ito::DataObject &phaseMap, ito::DataObject &modulationMap)
 {
-    int ret = 0;
-    int width = (*images)->sizes[2];
-    int height = (*images)->sizes[1];
-    int pagesize = width * height;
+    /*source must be 3D and size(0) must be 4. Check this before!*/
 
-    #if (useomp)
-    #pragma omp parallel num_threads(NTHREADS)
+    int width = source->getSize(2);
+    int height = source->getSize(1);
+
+    if (phaseMap.getDims() == 0)
     {
-    #pragma omp for schedule(guided)
-    #endif
-    for (int y = 0; y < height; y++)
+        phaseMap = ito::DataObject(height, width, ito::tFloat32);
+    }
+
+    if (modulationMap.getDims() == 0)
     {
-        for (int x = 0; x < width; x++)
+        modulationMap = ito::DataObject(height, width, ito::tFloat32);
+    }
+
+#if (useomp)
+#pragma omp parallel num_threads(NTHREADS)
+    {
+#endif
+        int buf1, buf2, max, max1, max2;
+        ito::float32 contrast;
+        const _Tp *rowI0, *rowI1, *rowI2, *rowI3;
+        ito::float32 *rowPhase, *rowModulation;
+        _Tp intens[4];
+
+#if (useomp)
+#pragma omp for schedule(guided)
+#endif
+
+        for (int y = 0; y < height; y++)
         {
-            int buf1, buf2, max, max1, max2;
-            float contrast;
-            _Tp intens[4];
+            rowI0 = source->rowPtr<_Tp>(0, y);
+            rowI1 = source->rowPtr<_Tp>(1, y);
+            rowI2 = source->rowPtr<_Tp>(2, y);
+            rowI3 = source->rowPtr<_Tp>(3, y);
+            rowPhase = phaseMap.rowPtr<ito::float32>(0, y);
+            rowModulation = modulationMap.rowPtr<ito::float32>(0, y);
 
-            intens[0] = ((_Tp*)(*images)->vals)[y * width + x];
-            intens[1] = ((_Tp*)(*images)->vals)[pagesize + y * width + x];
-            intens[2] = ((_Tp*)(*images)->vals)[2 * pagesize + y * width + x];
-            intens[3] = ((_Tp*)(*images)->vals)[3 * pagesize + y * width + x];
+            for (int x = 0; x < width; x++)
+            {
+                intens[0] = rowI0[x];
+                intens[1] = rowI1[x];
+                intens[2] = rowI2[x];
+                intens[3] = rowI3[x];
 
-            if (intens[0] > intens[1])
-            {
-                max1 = intens[0];
-            }
-            else
-            {
-                max1 = intens[1];
-            }
-            if (intens[2] > intens[3])
-            {
-                max2 = intens[2];
-            }
-            else
-            {
-                max2 = intens[3];
-            }
-            if (max1 > max2)
-            {
-                max = max1;
-            }
-            else
-            {
-                max = max2;
-            }
+                if (intens[0] > intens[1])
+                {
+                    max1 = intens[0];
+                }
+                else
+                {
+                    max1 = intens[1];
+                }
+                if (intens[2] > intens[3])
+                {
+                    max2 = intens[2];
+                }
+                else
+                {
+                    max2 = intens[3];
+                }
+                if (max1 > max2)
+                {
+                    max = max1;
+                }
+                else
+                {
+                    max = max2;
+                }
 
-            buf1 = intens[3] - intens[1];
-            buf2 = intens[2] - intens[0];
-            contrast = sqrt((CFPTYPE)(buf1 * buf1 + buf2 * buf2));
+                buf1 = intens[3] - intens[1];
+                buf2 = intens[2] - intens[0];
+                contrast = sqrt((float)(buf1 * buf1 + buf2 * buf2));
 
-            if ((contrast > contThreas) && (((overExp) && (max < overExp)) || !overExp))
-            {
-                ((CFPTYPE*)(*PhaseMap)->vals)[y * width + x] = atan2((CFPTYPE)buf1, (CFPTYPE)buf2);
-                ((CFPTYPE*)(*ModulationMap)->vals)[y * width + x] = contrast;
-            }
-            else
-            {
-                ((CFPTYPE*)(*PhaseMap)->vals)[y * width + x] = INVPHA;
-                ((CFPTYPE*)(*ModulationMap)->vals)[y * width + x] = 0;
+                if ((contrast > contThreas) && (((overExp) && (max < overExp)) || !overExp))
+                {
+                    rowPhase[x] = atan2((CFPTYPE)buf1, (CFPTYPE)buf2);
+                    rowModulation[x] = contrast;
+                }
+                else
+                {
+                    rowPhase[x] = INVPHA;
+                    rowModulation[x] = 0;
+                }
             }
         }
+#if (useomp)
     }
-    #if (useomp)
-    }
-    #endif
+#endif
 
-//end:
-    return ret;
+    return ito::retOk;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-template int CalcPhaseMap4<ito::uint8>(struct tvArray3D **images, const float contThreas, const ito::uint8 overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
-template int CalcPhaseMap4<ito::uint16>(struct tvArray3D **images, const float contThreas, const ito::uint16 overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** calculate the modulus 2 pi phase map of a sequence of equally shifted fringe images
@@ -365,55 +360,70 @@ template int CalcPhaseMap4<ito::uint16>(struct tvArray3D **images, const float c
 *   shifts are equal for all images. As in the version for four images the contrast threashold and overexposure are
 *   checked and out of boundaries pixels are marked invalid.
 */
-template<typename _Tp> int CalcPhaseMapN(struct tvArray3D **images, const float contThreas, const _Tp overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap)
+template<typename _Tp> ito::RetVal calcPhaseMapNTmpl(const ito::DataObject *source, const float contThreas, const _Tp overExp, ito::DataObject &phaseMap, ito::DataObject &modulationMap)
 {
-    int ret = 0;
-    _Tp max = 0;
-    _Tp Intens[MAXPHASHIFT];
-    int width = (*images)->sizes[2];
-    int height = (*images)->sizes[1];
-    int pagesize = width * height;
-    int numImages = (*images)->sizes[0];
+    int width = source->getSize(2);
+    int height = source->getSize(1);
+    int numPhases = source->getSize(0);
     CFPTYPE sines[MAXPHASHIFT], cosines[MAXPHASHIFT];
 
-    for (int nimg = 0; nimg < numImages; nimg++)
+    for (int nimg = 0; nimg < numPhases; ++nimg)
     {
-        sines[nimg] = sin(nimg * CUDA2PI / (CFPTYPE)(numImages));
-        cosines[nimg] = -1.0 * cos(nimg * CUDA2PI / (CFPTYPE)(numImages));
+        sines[nimg] = sin(-CUDA2PI / 4 + nimg * CUDA2PI / (CFPTYPE)(numPhases));
+        cosines[nimg] = -1.0 * cos(-CUDA2PI / 4 + nimg * CUDA2PI / (CFPTYPE)(numPhases));
     }
 
-    #if (useomp)
-    #pragma omp parallel num_threads(NTHREADS)
+#if (useomp)
+#pragma omp parallel num_threads(NTHREADS)
     {
-    #pragma omp for schedule(guided)
-    #endif
+#endif
+        ito::float32 buf1, buf2;
+        ito::float32 contrast;
+        ito::float32 *rowPhase, *rowModulation;
+        _Tp intens;
+        const _Tp* row[MAXPHASHIFT];
+        _Tp max = 0;
+
+#if (useomp)
+#pragma omp for schedule(guided)
+#endif
     for (int y = 0; y < height; y++)
     {
+        for (int n = 0; n < numPhases; ++n)
+        {
+            row[n] = source->rowPtr<const _Tp>(n, y);
+        }
+        rowPhase = phaseMap.rowPtr<ito::float32>(0, y);
+        rowModulation = modulationMap.rowPtr<ito::float32>(0, y);
+
         for (int x = 0; x < width; x++)
         {
-            CFPTYPE buf1 = 0, buf2 = 0, contrast = 0;
-            for (int n = 0; n < numImages; n++)
+            buf1 = 0;
+            buf2 = 0;
+            max = 0;
+
+            for (int n = 0; n < numPhases; n++)
             {
-                Intens[n] = ((_Tp*)(*images)->vals)[pagesize * n + y * width + x];
-                if (Intens[n] > max)
+                intens = row[n][x];
+                if (intens > max)
                 {
-                    max = Intens[n];
+                    max = intens;
                 }
 
-                buf1 += Intens[n] * sines[n];
-                buf2 += Intens[n] * cosines[n];
+                buf1 += intens * cosines[n];
+                buf2 += intens * sines[n];
             }
             contrast = sqrt(buf1 * buf1 + buf2 * buf2);
 
             if ((contrast > contThreas) && (((overExp) && (max < overExp)) || !overExp))
             {
-                ((CFPTYPE*)(*PhaseMap)->vals)[y * width + x] = atan2(buf1, buf2);
-                ((CFPTYPE*)(*ModulationMap)->vals)[y * width + x] = contrast;
+                rowPhase[x] = atan2(buf1, buf2);
+                rowModulation[x] = contrast;
             }
             else
             {
-                ((CFPTYPE*)(*PhaseMap)->vals)[y * width + x] = INVPHA;
-                ((CFPTYPE*)(*ModulationMap)->vals)[y * width + x] = 0; 
+                rowPhase[x] = INVPHA;
+                rowModulation[x] = 0;
             }
         }
     }
@@ -421,12 +431,8 @@ template<typename _Tp> int CalcPhaseMapN(struct tvArray3D **images, const float 
     }
     #endif
 
-    return ret;
+    return ito::retOk;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-template int CalcPhaseMapN<unsigned char>(struct tvArray3D **images, const float contThreas, const unsigned char overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
-template int CalcPhaseMapN<unsigned short>(struct tvArray3D **images, const float contThreas, const unsigned short overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
 
 //-----------------------------------------------------------------------------
 /** unwrap a modulo 2 pi phase map using a gray code code index map
@@ -633,10 +639,10 @@ ito::RetVal FringeProj::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     filter = new FilterDef(FringeProj::calcCiMap, FringeProj::calcCiMapParams, tr("Calculate the indexmap for graycode image stack"));
     m_filterList.insert("calcCiMap", filter);
 
-    filter = new FilterDef(FringeProj::calcPhaseMapN, FringeProj::calcPhaseMapNParams, tr("Reconstructs wrapped phase from Nx phaseshifts"));
+    filter = new FilterDef(FringeProj::calcPhaseMapN, FringeProj::calcPhaseMapNParams, tr("Reconstructs wrapped phase from N phaseshifted images with a shift of 2pi / N. The definition of the phase is equal to calcPhaseMap4."));
     m_filterList.insert("calcPhaseMapN", filter);
 
-    filter = new FilterDef(FringeProj::calcPhaseMap4, FringeProj::calcPhaseMap4Params, tr("Reconstructs wrapped phase from 4x phaseshifts"));
+    filter = new FilterDef(FringeProj::calcPhaseMap4, FringeProj::calcPhaseMap4Params, tr("Reconstructs wrapped phase from four 90degree phase shifted images. The phase value is determined using the Carré algorithm: atan2(I3-I1,I2-I0)."));
     m_filterList.insert("calcPhaseMap4", filter);
 
     filter = new FilterDef(FringeProj::unwrapPhaseGray, FringeProj::unwrapPhaseGrayParams, tr("Unwrapped phase by Graycode (CiMap)"));
@@ -791,11 +797,11 @@ ito::RetVal FringeProj::calcPhaseMap4Params(QVector<ito::Param> *paramsMand, QVe
 
     if (!retval.containsError())
     {
-        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("4 x Y x X continuous image stack (uint8 or uint16)").toLatin1().data());
+        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("4 x Y x X image stack (uint8 or uint16) with 4 phase shifted images (90° each)").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("contThreas", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Contrast threshold (val < threas = invalid)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("overExp", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 255.0, tr("Value for overexposured pixels").toLatin1().data());
+        param = ito::Param("overExp", ito::ParamBase::Int | ito::ParamBase::In, 0, 65535, 255, tr("Value for over-exposed pixels or 0 if it should not be considered").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("phasePhase", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Wrapped phase result (float32, [-pi..pi] or -10 for invalid)").toLatin1().data());
         paramsMand->append(param);
@@ -816,84 +822,39 @@ ito::RetVal FringeProj::calcPhaseMap4Params(QVector<ito::Param> *paramsMand, QVe
 */
 ito::RetVal FringeProj::calcPhaseMap4(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
 {
-    ito::RetVal retval = ito::retOk;
-    int ret = 0;
+    ito::RetVal retval;
+    const ito::DataObject *dObjImages = (*paramsMand)[0].getVal<const ito::DataObject*>();
+    retval += ito::dObjHelper::verify3DDataObject(dObjImages, "images", 4, 4, 0, std::numeric_limits<int>::max(), 0, std::numeric_limits<int>::max(), 2, ito::tUInt8, ito::tUInt16);
 
-    ito::DataObject *dObjImages = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    if (!dObjImages || !dObjImages->getContinuous() || (dObjImages->getDims() != 3))
+    if (!retval.containsError())
     {
-        return ito::RetVal(ito::retError, 0, tr("image memory used by calcPhaseMap4 must be continuous!").toLatin1().data());
-    }
-    double contThreas = (*paramsMand)[1].getVal<double>();
-    double overExp = (*paramsMand)[2].getVal<double>();
-    ito::DataObject *dObjPhaseMap = (ito::DataObject*)(*paramsMand)[3].getVal<void*>();
-    ito::DataObject *dObjModMap = (ito::DataObject*)(*paramsMand)[4].getVal<void*>();
-    struct tvArray3D *images = new tvArray3D;
-    struct tFloatArray2D *phaseMap = new tFloatArray2D;
-    struct tFloatArray2D *modulationMap = new tFloatArray2D;
-    images->vals = (void*)(((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(0)])->data);
-    images->sizes[2] = dObjImages->getSize(2);
-    images->sizes[1] = dObjImages->getSize(1);
-    images->sizes[0] = dObjImages->getSize(0);
-    if (images->sizes[0] != 4)
-    {
-        delete images;
-        delete phaseMap;
-        delete modulationMap;
-        return ito::RetVal(ito::retError, 0, tr("wrong number of images! calcPhaseMap4 needs four 90deg phase shifted images!").toLatin1().data());
-    }
+        double contThreas = (*paramsMand)[1].getVal<double>();
+        int overExp = (*paramsMand)[2].getVal<int>();
+        ito::DataObject *dObjPhaseMap = (*paramsMand)[3].getVal<ito::DataObject*>();
+        ito::DataObject *dObjModMap = (*paramsMand)[4].getVal<ito::DataObject*>();
 
-    if ((dObjPhaseMap->getDims() < 2) || (dObjPhaseMap->getSize(1) != dObjImages->getSize(2)) || (dObjPhaseMap->getSize(0) != dObjImages->getSize(1)))
-    {
-        (*dObjPhaseMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
-    }
+        if ((dObjPhaseMap->getDims() < 2) || (dObjPhaseMap->getSize(1) != dObjImages->getSize(2)) || (dObjPhaseMap->getSize(0) != dObjImages->getSize(1)) || dObjPhaseMap->getType() != ito::tFloat32)
+        {
+            (*dObjPhaseMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
+        }
 
-    if ((dObjModMap->getDims() < 2) || (dObjModMap->getSize(1) != dObjImages->getSize(2)) || (dObjModMap->getSize(0) != dObjImages->getSize(1)))
-    {
-        (*dObjModMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
-    }
+        if ((dObjModMap->getDims() < 2) || (dObjModMap->getSize(1) != dObjImages->getSize(2)) || (dObjModMap->getSize(0) != dObjImages->getSize(1)) || dObjModMap->getType() != ito::tFloat32)
+        {
+            (*dObjModMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
+        }
 
-    phaseMap->vals = (float*)(((cv::Mat *)dObjPhaseMap->get_mdata()[dObjPhaseMap->seekMat(0)])->data);
-    phaseMap->sizes[1] = dObjPhaseMap->getSize(1);
-    phaseMap->sizes[0] = dObjPhaseMap->getSize(0);
-    modulationMap->vals = (float*)(((cv::Mat *)dObjModMap->get_mdata()[dObjModMap->seekMat(0)])->data);
-    modulationMap->sizes[1] = dObjModMap->getSize(1);
-    modulationMap->sizes[0] = dObjModMap->getSize(0);
-
-    switch (dObjImages->getType())
-    {
+        switch (dObjImages->getType())
+        {
         case ito::tUInt8:
-            if ((ret = CalcPhaseMap4<ito::uint8>(&images, (float)contThreas, (ito::uint8)overExp, &phaseMap, &modulationMap)))
-            {
-                return ito::RetVal(ito::retError, 0, tr("error calling calcPhaseMap4").toLatin1().data());
-            }
-        break;
+            retval += calcPhaseMap4Tmpl<ito::uint8>(dObjImages, contThreas, cv::saturate_cast<ito::uint8>(overExp), *dObjPhaseMap, *dObjModMap);
+            break;
 
         case ito::tUInt16:
-            if ((ret = CalcPhaseMap4<ito::uint16>(&images, contThreas, (ito::uint16)overExp, &phaseMap, &modulationMap)))
-            {
-                return ito::RetVal(ito::retError, 0, tr("error calling calcPhaseMap4").toLatin1().data());
-            }
-        break;
-
-        default:
-            return ito::RetVal(ito::retError, 0, tr("image stack must have format uint8 or uint16").toLatin1().data());
+            retval += calcPhaseMap4Tmpl<ito::uint16>(dObjImages, contThreas, cv::saturate_cast<ito::uint16>(overExp), *dObjPhaseMap, *dObjModMap);
             break;
+        }
     }
 
-//end:
-    if (images)
-    {
-        delete images;
-    }
-    if (phaseMap)
-    {
-        delete phaseMap;
-    }
-    if (modulationMap)
-    {
-        delete modulationMap;
-    }
     return retval;
 }
 
@@ -920,7 +881,7 @@ ito::RetVal FringeProj::calcPhaseMapNParams(QVector<ito::Param> *paramsMand, QVe
         paramsMand->append(param);
         param = ito::Param("contThreas", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Contrast threashold (val < threas = invalid)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("overExp", ito::ParamBase::Double, 0.0, 65535.0, 255.0, tr("Value for overexposured pixels").toLatin1().data());
+        param = ito::Param("overExp", ito::ParamBase::Int | ito::ParamBase::In, 0, 65535, 255, tr("Value for over-exposed pixels or 0 if it should not be considered").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("phasePhase", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Wrapped phase result").toLatin1().data());
         paramsMand->append(param);
@@ -941,70 +902,37 @@ ito::RetVal FringeProj::calcPhaseMapNParams(QVector<ito::Param> *paramsMand, QVe
 */
 ito::RetVal FringeProj::calcPhaseMapN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
 {
-    ito::RetVal retval = ito::retOk;
-    int ret = 0;
-
+    ito::RetVal retval;
     const ito::DataObject *dObjImages = (*paramsMand)[0].getVal<const ito::DataObject*>();
-    if (!dObjImages || !dObjImages->getContinuous() || (dObjImages->getDims() != 3))
-    {
-        return ito::RetVal(ito::retError, 0, tr("image memory used by calcPhaseMap4 must be continuous!").toLatin1().data());
-    }
-    double contThreas = (*paramsMand)[1].getVal<double>();
-    double overExp = (*paramsMand)[2].getVal<double>();
-    ito::DataObject *dObjPhaseMap = (*paramsMand)[3].getVal<ito::DataObject*>();
-    ito::DataObject *dObjModMap = (*paramsMand)[4].getVal<ito::DataObject*>();
-    struct tvArray3D *images = new tvArray3D;
-    struct tFloatArray2D *phaseMap = new tFloatArray2D, *modulationMap = new tFloatArray2D;
-    images->vals = (void*)(((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(0)])->data);
-    images->sizes[2] = dObjImages->getSize(2);
-    images->sizes[1] = dObjImages->getSize(1);
-    images->sizes[0] = dObjImages->getSize(0);
+    retval += ito::dObjHelper::verify3DDataObject(dObjImages, "images", 3, MAXPHASHIFT, 0, std::numeric_limits<int>::max(), 0, std::numeric_limits<int>::max(), 2, ito::tUInt8, ito::tUInt16);
 
-    if ((dObjPhaseMap->getDims() < 2) || (dObjPhaseMap->getSize(1) != dObjImages->getSize(2)) || (dObjPhaseMap->getSize(0) != dObjImages->getSize(1)))
+    if (!retval.containsError())
     {
-        (*dObjPhaseMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
-    }
-    if ((dObjModMap->getDims() < 2) || (dObjModMap->getSize(1) != dObjImages->getSize(2)) || (dObjModMap->getSize(0) != dObjImages->getSize(1)))
-    {
-        (*dObjModMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
-    }
+        double contThreas = (*paramsMand)[1].getVal<double>();
+        int overExp = (*paramsMand)[2].getVal<int>();
+        ito::DataObject *dObjPhaseMap = (*paramsMand)[3].getVal<ito::DataObject*>();
+        ito::DataObject *dObjModMap = (*paramsMand)[4].getVal<ito::DataObject*>();
 
-    phaseMap->vals = (float*)(((cv::Mat *)dObjPhaseMap->get_mdata()[dObjPhaseMap->seekMat(0)])->data);
-    phaseMap->sizes[1] = dObjPhaseMap->getSize(1);
-    phaseMap->sizes[0] = dObjPhaseMap->getSize(0);
-    modulationMap->vals = (float*)(((cv::Mat *)dObjModMap->get_mdata()[dObjModMap->seekMat(0)])->data);
-    modulationMap->sizes[1] = dObjModMap->getSize(1);
-    modulationMap->sizes[0] = dObjModMap->getSize(0);
+        if ((dObjPhaseMap->getDims() < 2) || (dObjPhaseMap->getSize(1) != dObjImages->getSize(2)) || (dObjPhaseMap->getSize(0) != dObjImages->getSize(1)) || dObjPhaseMap->getType() != ito::tFloat32)
+        {
+            (*dObjPhaseMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
+        }
 
-    switch (dObjImages->getType())
-    {
+        if ((dObjModMap->getDims() < 2) || (dObjModMap->getSize(1) != dObjImages->getSize(2)) || (dObjModMap->getSize(0) != dObjImages->getSize(1)) || dObjModMap->getType() != ito::tFloat32)
+        {
+            (*dObjModMap) = ito::DataObject(dObjImages->getSize(1), dObjImages->getSize(2), ito::tFloat32);
+        }
+
+        switch (dObjImages->getType())
+        {
         case ito::tUInt8:
-            if ((ret = CalcPhaseMapN<ito::uint8>(&images, (float)contThreas, (ito::uint8)overExp, &phaseMap, &modulationMap)))
-            {
-                return ito::RetVal(ito::retError, 0, tr("error calling calcPhaseMap4").toLatin1().data());
-            }
-        break;
+            retval += calcPhaseMapNTmpl<ito::uint8>(dObjImages, contThreas, cv::saturate_cast<ito::uint8>(overExp), *dObjPhaseMap, *dObjModMap);
+            break;
 
         case ito::tUInt16:
-            if ((ret = CalcPhaseMapN<ito::uint16>(&images, contThreas, (ito::uint16)overExp, &phaseMap, &modulationMap)))
-            {
-                return ito::RetVal(ito::retError, 0, tr("error calling calcPhaseMap4").toLatin1().data());
-            }
-        break;
-    }
-
-//end:
-    if (images)
-    {
-        delete images;
-    }
-    if (phaseMap)
-    {
-        delete phaseMap;
-    }
-    if (modulationMap)
-    {
-        delete modulationMap;
+            retval += calcPhaseMapNTmpl<ito::uint16>(dObjImages, contThreas, cv::saturate_cast<ito::uint16>(overExp), *dObjPhaseMap, *dObjModMap);
+            break;
+        }
     }
 
     return retval;
