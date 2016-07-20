@@ -1637,19 +1637,17 @@ ito::RetVal PrjWindow::setupProjection()
 {
     ito::RetVal retval(ito::retOk);
 
-    div_t periodTest, test;
     unsigned char bitsTemp;
 
     // test if smallest fringe has a width (in pixels) that is a multiple of 2 (pixels)
-    test = div((int)m_period, (int)2);
-    if (test.rem != 0)
+    //this is required to provide a symmetrical distribution of cosines over the pixel values
+    if (m_period % 2 != 0)
     {
         retval += ito::RetVal::format(ito::retError, 0, "The period of the cosine fringes (%i px) must be dividable by 2.", m_period);
     }
 
     // period must dividable by the number of shifts
-    periodTest = div((int)m_period, (int)m_phaShift);
-    if(periodTest.rem != 0)
+    if(m_period % m_phaShift != 0)
     {
         retval += ito::RetVal::format(ito::retError, 0, "The period of the cosine fringes (%i px) must be dividable by the number of phaseshifts (%i).", m_period, m_phaShift);
     }

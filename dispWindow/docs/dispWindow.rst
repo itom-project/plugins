@@ -45,9 +45,9 @@ Every instance of this plugin has the following parameters:
 **orientation**: {int}
     0: vertical, 1: horizontal; default: vertical
 **period**: {int}
-    Cosine period
+    Cosine period in pixel. This must be a multiple of 2 and the number of 'phaseshift'.
 **phaseshift**: {int}
-    Count of phase shifts
+    Count of phase shifts. If this value is changed and the 'period' does not fit to the new value, the 'period' is adapted to the next possible value.
 **x0**: {int}
     x0 position of display window [px]
 **xsize**: {int}

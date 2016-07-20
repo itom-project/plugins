@@ -201,11 +201,11 @@ DispWindow::DispWindow() :
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DispWindow", tr("name of the plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("period", ito::ParamBase::Int, 12, NULL, tr("Cosine period").toLatin1().data());
+    paramVal = ito::Param("period", ito::ParamBase::Int, 12, new ito::IntMeta(4, 2048, 2), tr("Cosine period in pixel. This must be a multiple of 2 and the number of 'phaseshift'.").toLatin1().data());
     paramVal.setMeta(new ito::IntMeta(4, 4096, 2), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("Count of phase shifts").toLatin1().data());
+    paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("Count of phase shifts. If this value is changed and the 'period' does not fit to the new value, the 'period' is adapted to the next possible value.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("color", ito::ParamBase::Int, 0, 3, 3, tr("0: Red, 1: Green, 2: Blue, 3: White").toLatin1().data());
@@ -539,6 +539,17 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
         else if (QString::compare(key, "phaseshift", Qt::CaseInsensitive) == 0)
         {
+            int period = m_params["period"].getVal<int>();
+            // period must dividable by the number of shifts
+            div_t divisor = div(period, val->getVal<int>());
+            if (divisor.rem != 0)
+            {
+                period = 2 * val->getVal<int>() * qRound((float)period / (float)(2 * val->getVal<int>()));
+
+                retValue += ito::RetVal::format(ito::retWarning, 0, "The period of the cosine fringes (%i px) must be dividable by the number of phaseshifts (%i). The period has been corrected to %i.", m_params["period"].getVal<int>(), val->getVal<int>(), period);
+                m_params["period"].setVal<int>(period);
+            }
+
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(m_pWindow, "configProjection", 
                                     Qt::BlockingQueuedConnection,  
