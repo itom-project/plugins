@@ -698,9 +698,9 @@ ito::RetVal DispWindow::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
                 QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Q_ARG(bool, true));
             }
         }
-    }
 
-    setIdentifier(QString::number(getID()));
+        setIdentifier(QString::number(getID()));
+    }
 
     if (waitCond)
     {

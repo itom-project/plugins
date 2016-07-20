@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GLDisplay" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -544,32 +544,34 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
+    ito::RetVal retval = constructionResult;
 
-    // mandatory and optional parameters
-    if (paramsMand == NULL || paramsOpt == NULL)
+    if (!retval.containsError())
     {
-        retval += ito::RetVal(ito::retError, 0, tr("mandatory or optional parameters vector not initialized!!").toLatin1().data());
-    }
-    
-    if (m_pWindow)
-    {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_pWindow, "getErrors", Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-        if (locker->wait(2000))
+        // mandatory and optional parameters
+        if (paramsMand == NULL || paramsOpt == NULL)
         {
-            retval += locker->returnValue;
+            retval += ito::RetVal(ito::retError, 0, tr("mandatory or optional parameters vector not initialized!!").toLatin1().data());
+        }
+
+        if (m_pWindow)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(m_pWindow, "getErrors", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            if (locker->wait(2000))
+            {
+                retval += locker->returnValue;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("timeout getting initialization status of OpenGL display").toLatin1().data());
+            }
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, tr("timeout getting initialization status of OpenGL display").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("OpenGL display window is not available").toLatin1().data());
         }
     }
-    else
-    {
-        retval += ito::RetVal(ito::retError, 0, tr("OpenGL display window is not available").toLatin1().data());
-    }
-        
 
     if (!retval.containsError())
     {
@@ -619,9 +621,9 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Q_ARG(bool, true));
             }
         }
-    }
 
-    setIdentifier(QString::number(getID()));
+        setIdentifier(QString::number(getID()));
+    }
 
     if (waitCond)
     {
