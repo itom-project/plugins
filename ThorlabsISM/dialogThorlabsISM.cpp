@@ -36,7 +36,7 @@ DialogThorlabsISM::DialogThorlabsISM(ito::AddInActuator *actuator) :
     m_pAia(actuator)
 {
     ui.setupUi(this);
-	ui.btnCalibInterrupt->setVisible(false);
+    ui.btnCalibInterrupt->setVisible(false);
 
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
@@ -189,21 +189,21 @@ void DialogThorlabsISM::on_btnCalib_clicked()
         ui.buttonBox->setEnabled(false);
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_pAia, "calib", Q_ARG(int, 0), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-		ui.btnCalib->setVisible(false);
-		ui.btnCalibInterrupt->setVisible(true);
+        ui.btnCalib->setVisible(false);
+        ui.btnCalibInterrupt->setVisible(true);
         observeInvocation(locker.getSemaphore(), ito::AbstractAddInConfigDialog::msgLevelWarningAndError);
         enableDialog(true);
         ui.buttonBox->setEnabled(true);
-		ui.btnCalib->setVisible(true);
-		ui.btnCalibInterrupt->setVisible(false);
+        ui.btnCalib->setVisible(true);
+        ui.btnCalibInterrupt->setVisible(false);
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogThorlabsISM::on_btnCalibInterrupt_clicked()
 {
-	if (m_pAia)
-	{
-		m_pAia->setInterrupt();
-	}
+    if (m_pAia)
+    {
+        m_pAia->setInterrupt();
+    }
 }

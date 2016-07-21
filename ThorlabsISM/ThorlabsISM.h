@@ -20,8 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef FIRGELLILAC_H
-#define FIRGELLILAC_H
+#ifndef THORLABSISM_H
+#define THORLABSISM_H
 
 #include "common/addInInterface.h"
 
@@ -89,7 +89,7 @@ class ThorlabsISM : public ito::AddInActuator
         bool m_opened;
         char m_serialNo[16];
 
-		static QList<QByteArray> openedDevices;
+        static QList<QByteArray> openedDevices;
 
         double m_unitToRealWorldFactor;
 

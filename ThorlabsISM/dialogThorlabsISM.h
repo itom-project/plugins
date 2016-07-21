@@ -20,8 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGFIRGELLILAC_H
-#define DIALOGFIRGELLILAC_H
+#ifndef DIALOGTHORLABSISM_H
+#define DIALOGTHORLABSISM_H
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"

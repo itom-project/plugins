@@ -20,8 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETFIRGELLILAC_H
-#define DOCKWIDGETFIRGELLILAC_H
+#ifndef DOCKWIDGETTHORLABSISM_H
+#define DOCKWIDGETTHORLABSISM_H
 
 #include "common/abstractAddInDockWidget.h"
 #include "common/addInInterface.h"
