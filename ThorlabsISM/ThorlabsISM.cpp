@@ -404,7 +404,7 @@ ito::RetVal ThorlabsISM::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
     if (!retValue.containsError())
     {
-        *val = it.value();
+        *val = apiGetParam(*it, hasIndex, index, retValue);
     }
 
     if (waitCond)
@@ -1089,17 +1089,10 @@ ito::RetVal ThorlabsISM::requestStatusAndPosition(bool sendCurrentPos, bool send
 {
     ito::RetVal retval(ito::retOk);
 
-    QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
-    *sharedpos = 0.0;
-
-
-
     if (sendCurrentPos)
     {
-        retval += getPos(0, sharedpos, 0);
-        m_currentPos[0] = *sharedpos;
-        
-        sendStatusUpdate(false);
+        QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
+        retval += getPos(0, sharedpos, NULL);
     }
     else
     {
