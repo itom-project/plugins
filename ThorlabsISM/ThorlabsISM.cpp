@@ -104,7 +104,7 @@ This plugin has been tested with the cage rotator K10CR1.");
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");    
     
-    m_initParamsMand.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("additionalGearFactor", ito::ParamBase::Double, 0.0000000001, 1.0e12, 2048.0, tr("There seems to be an additional conversion factor between device and real world units. This can be given here.").toLatin1().data()));
 }
 
@@ -173,8 +173,8 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-    QByteArray serial = paramsMand->at(0).getVal<char*>();
-    double additionalGearFactor = paramsOpt->at(0).getVal<double>();
+    QByteArray serial = paramsOpt->at(0).getVal<char*>();
+    double additionalGearFactor = paramsOpt->at(1).getVal<double>();
 
     retval += checkError(TLI_BuildDeviceList(), "build device list");
     QByteArray existingSerialNumbers("", 256);
