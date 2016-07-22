@@ -658,6 +658,7 @@ ito::RetVal ThorlabsISM::calib(const int axis, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal ThorlabsISM::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
     if (axis.size() != 1 || axis[0] != 0)
@@ -696,6 +697,7 @@ ito::RetVal ThorlabsISM::setOrigin(const int axis, ItomSharedSemaphore * waitCon
 //----------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsISM::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::RetVal(ito::retWarning, 0, "set origin not implemented");
 
     if (waitCond)
