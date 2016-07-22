@@ -105,9 +105,9 @@ The position values are always in mm if the corresponding axis is in closed-loop
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");    
     
-    m_initParamsMand.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("channels", ito::ParamBase::IntArray, NULL, tr("list of channels to connect to. If an empty list is given, all connected channels are used. The plugin axis indices are then mapped to the channels.").toLatin1().data()));
-    m_initParamsOpt[0].setMeta(new ito::IntArrayMeta(1, 3, 1, 0, 3, 1), true);
+    m_initParamsOpt[1].setMeta(new ito::IntArrayMeta(1, 3, 1, 0, 3, 1), true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -173,9 +173,9 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-    QByteArray serial = paramsMand->at(0).getVal<char*>();
-    const int* channels = paramsOpt->at(0).getVal<int*>();
-    int numChannels = paramsOpt->at(0).getLen();
+    QByteArray serial = paramsOpt->at(0).getVal<char*>();
+    const int* channels = paramsOpt->at(1).getVal<int*>();
+    int numChannels = paramsOpt->at(1).getLen();
 
     retval += checkError(TLI_BuildDeviceList(), "build device list");
     QByteArray existingSerialNumbers("", 256);
