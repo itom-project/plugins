@@ -63,10 +63,10 @@ find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector 
 FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 
 FIND_PATH( AVTVIMBA_INCLUDE_DIR VimbaCPP.h DOC "Include directory of VimbaCPP SDK")
-set(AVTVIMBA_API_DIR ${AVTVIMBA_INCLUDE_DIR}/../ CACHE PATH "Base directory of VimbaCPP SDK")
+
 
 IF(AVTVIMBA_INCLUDE_DIR)
-
+    set(AVTVIMBA_API_DIR ${AVTVIMBA_INCLUDE_DIR}/../ CACHE PATH "Base directory of VimbaCPP SDK")
     #################################################################
     # General settings and preprocessor settings
     #################################################################
@@ -214,16 +214,16 @@ IF(AVTVIMBA_INCLUDE_DIR)
     ENDIF(AVTVIMBA_LIBRARY)
     
     IF(WIN32)
-        find_file(AVTVIMBA_BINARY1 "VimbaC.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
-        find_file(AVTVIMBA_BINARY2 "VimbaCPP.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
+        find_file(AVTVIMBA_BINARY_C "VimbaC.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
+        find_file(AVTVIMBA_BINARY_CPP "VimbaCPP.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
     ENDIF(WIN32)
     
         
-    IF(AVTVIMBA_BINARY1)
-        MESSAGE(STATUS "AVTVimba binary found at ${AVTVIMBA_BINARY1}")
-    ELSE(AVTVIMBA_BINARY1)
-        MESSAGE(FATAL "AVTVimba binary not found")
-    ENDIF(AVTVIMBA_BINARY1)
+    IF(AVTVIMBA_BINARY_C)
+        MESSAGE(STATUS "AVTVimba binary C found at ${AVTVIMBA_BINARY_C}")
+    ELSE(AVTVIMBA_BINARY_C)
+        MESSAGE(FATAL "AVTVimba binary C not found")
+    ENDIF(AVTVIMBA_BINARY_C)
 
 
     #################################################################
@@ -315,8 +315,8 @@ IF(AVTVIMBA_INCLUDE_DIR)
     # the itom build directory, use the following macro:
     #
     # POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target}, ${listOfFiles})
-    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} AVTVIMBA_BINARY1)
-    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} AVTVIMBA_BINARY2)
+    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} AVTVIMBA_BINARY_C)
+    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} AVTVIMBA_BINARY_CPP)
     
 ELSE (AVTVIMBA_INCLUDE_DIR)
     message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
