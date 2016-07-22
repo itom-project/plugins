@@ -73,7 +73,7 @@ This plugin does not have any unusual dependencies.");
     m_aboutThis = QObject::tr("N.A.");       
     
     NTHREADS  = QThread::idealThreadCount();
-
+    //NTHREADS = ito::AddInBase::getMaximumThreadCount();
     return;
 }
 
