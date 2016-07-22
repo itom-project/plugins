@@ -182,7 +182,7 @@ corresponds to the number of acquired frames. If this is the case, the tags are:
 Installation
 ============
 
-Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.0.0.5 and 4.4.0) and check that
+Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.10.0.0) and check that
 your camera runs with the internal XiViewer from XIMEA. If this is the case, the camera should also run with itom.
 
 If you want to externally trigger the camera, make sure that you check if your GPIO pins require a 5V or 24V signal. Some cameras
@@ -197,3 +197,5 @@ Changelog
 * itom setup 1.4.0: This plugin has been compiled using the Ximea API 4.0.0.5
 * itom setup 2.0.0: This plugin has been compiled using the Ximea API 4.4.0
 * itom setup 2.1.0: This plugin has been compiled using the Ximea API 4.4.0
+* itom setup > 2.1.0: This plugin has been compiled using the Ximea API 4.10.0
+
