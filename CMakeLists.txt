@@ -365,6 +365,14 @@ IF (WIN32)
     endif (PLUGIN_ST8SMC4USB)
 ENDIF (WIN32)
 
+# ThorlabsBP benchtop piezo
+IF (WIN32)
+    OPTION(PLUGIN_ThorlabsBP "Build with this plugin." ON)
+    if (PLUGIN_ThorlabsBP)
+        ADD_SUBDIRECTORY(ThorlabsBP)
+    endif (PLUGIN_ThorlabsBP)
+ENDIF (WIN32)
+
 # ThorlabsCCS Spectrometer
 IF (WIN32)
     OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." ON)
