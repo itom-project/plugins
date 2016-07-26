@@ -186,6 +186,9 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::loadAvantesRaw, DataObjectIO::loadAvantesRawParams, loadAvantesRawDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)"));
     m_filterList.insert("loadAvantesRaw", filter);
 
+    filter = new FilterDef(DataObjectIO::loadZygoMetroPro, DataObjectIO::loadZygoMetroProParams, loadZygoMetroProDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Zygo MetroPro Data File (*.dat)"));
+    m_filterList.insert("loadZygoMetroPro", filter);
+
     filter = new FilterDef(DataObjectIO::savePtbPR, DataObjectIO::savePtbPRParams, savePtbPRDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("PR Line Profile (*.pr)"));
     m_filterList.insert("savePtbPR", filter);
 
