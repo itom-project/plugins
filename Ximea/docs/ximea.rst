@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`Ximea`
 **Type**:       :plugintype:`Ximea`
 **License**:    :pluginlicense:`Ximea`
-**Platforms**:  Windows, (Linux possible but yet not implemented)
+**Platforms**:  Windows, Linux
 **Devices**:    Cameras from company *Ximea* (tested with various xiQ USB3 cameras, monochrome and color)
 **Author**:     :pluginauthor:`Ximea`
 =============== ========================================================================================================
@@ -182,8 +182,16 @@ corresponds to the number of acquired frames. If this is the case, the tags are:
 Installation
 ============
 
+*Windows:*
+
 Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.10.0.0) and check that
 your camera runs with the internal XiViewer from XIMEA. If this is the case, the camera should also run with itom.
+
+*Linux:*
+
+Install the XIMEA driver from the ximea website and use the commands described there, too, in oder to install the driver.
+The point the CMAKE variable XIMEA_APIDIR to the include directory of the Ximea package. This must contain the file m3api.h.
+Like under Windows, the library itself is dynamically load at runtime. It is usually loaded from /usr/lib.
 
 If you want to externally trigger the camera, make sure that you check if your GPIO pins require a 5V or 24V signal. Some cameras
 only support 24V, modern camera devices support both. This is written at the housing (at least for xiQ USB3 cameras).

@@ -151,13 +151,15 @@ IF(XIMEA_APIDIR)
     ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-
+    
+if(WIN32)
     if(BUILD_TARGET64)
         file(GLOB dlls "${XIMEA_APIDIR}/x64/*.dll")
     else(BUILD_TARGET64)    
         file(GLOB dlls "${XIMEA_APIDIR}/x86/*.dll")
     endif(BUILD_TARGET64)
-        POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
+    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
+endif(WIN32)
         
 ELSE (XIMEA_APIDIR)
     message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
