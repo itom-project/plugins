@@ -398,14 +398,16 @@ ito::RetVal IDSuEye::close(ItomSharedSemaphore *waitCond)
         }
     }
 
+
+    is_DisableEvent(m_camera, IS_SET_EVENT_FRAME);
+    
+#if WIN32 //exit and close only necessary for Windows (see uEye documentation)
     if (m_frameEvent)
     {
-        is_DisableEvent(m_camera, IS_SET_EVENT_FRAME);
-#if WIN32 //exit and close only necessary for Windows (see uEye documentation)
         is_ExitEvent(m_camera, IS_SET_EVENT_FRAME);
         CloseHandle(m_frameEvent);
-#endif
     }
+#endif
 
     if (m_camera != IS_INVALID_HIDS)
     {
