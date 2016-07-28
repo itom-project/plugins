@@ -74,7 +74,7 @@ IDSuEye::IDSuEye() :
     paramVal = ito::Param("gain_rgb", ito::ParamBase::DoubleArray, NULL, tr("RGB-gain values (normalized value 0..1)").toLatin1().data());
     double rgbGain[] = {0.5, 0.5, 0.5};
     paramVal.setVal<double*>(rgbGain,3);
-    paramVal.setMeta(new ito::DoubleMeta(0.0,1.0), true);
+    paramVal.setMeta(new ito::DoubleArrayMeta(0.0, 1.0), true);
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain_boost_enabled", ito::ParamBase::Int, 0, 1, 0, tr("enables / disables an additional analog hardware gain (gain boost). Readonly if not supported.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
