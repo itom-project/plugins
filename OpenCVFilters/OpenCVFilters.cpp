@@ -2029,139 +2029,9 @@ ito::RetVal OpenCVFilters::cvResize(QVector<ito::ParamBase> *paramsMand, QVector
 }
         
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
-{
-    ito::RetVal retval = ito::retOk;
-    FilterDef *filter = NULL;
-
-    filter = new FilterDef(OpenCVFilters::cvDilate, OpenCVFilters::cvDilateErodeParams, cvDilateDoc);
-    m_filterList.insert("cvDilate", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, cvErodeDoc);
-    m_filterList.insert("cvErode", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, cvMedianBlurDoc);
-    m_filterList.insert("cvMedianBlur", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, cvBlurDoc);
-    m_filterList.insert("cvBlur", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, cvFFT2DDoc);
-    m_filterList.insert("cvFFT2D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, cvIFFT2DDoc);
-    m_filterList.insert("cvIFFT2D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, cvFFT1DDoc);
-    m_filterList.insert("cvFFT1D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, cvIFFT1DDoc);
-    m_filterList.insert("cvIFFT1D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, cvRemoveSpikesDoc);
-    m_filterList.insert("cvRemoveSpikes", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvSplitChannels, OpenCVFilters::cvSplitChannelsParams, cvSplitChannelsDoc);
-    m_filterList.insert("cvSplitChannels", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvMergeChannels, OpenCVFilters::cvMergeChannelsParams, cvMergeChannelsDoc);
-    m_filterList.insert("cvMergeChannels", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvResize, OpenCVFilters::cvResizeParams, cvResizeDoc);
-    m_filterList.insert("cvResize", filter);
-
-    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, cvCalcHistDoc);
-    m_filterList.insert("cvCalcHistogram", filter);*/
-
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
-    filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, cvFindCirclesDoc);
-    m_filterList.insert("cvFindCircles", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, cvFindChessboardCornersDoc);
-    m_filterList.insert("cvFindChessboardCorners", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, cvCornerSubPixDoc);
-    m_filterList.insert("cvCornerSubPix", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvCalibrateCamera, OpenCVFilters::cvCalibrateCameraParams, cvCalibrateCameraDoc);
-    m_filterList.insert("cvCalibrateCamera", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvDrawChessboardCorners, OpenCVFilters::cvDrawChessboardCornersParams, cvDrawChessboardCornersDoc);
-    m_filterList.insert("cvDrawChessboardCorners", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvEstimateAffine3D, OpenCVFilters::cvEstimateAffine3DParams, cvEstimateAffine3DDoc);
-    m_filterList.insert("cvEstimateAffine3DParams", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvUndistort, OpenCVFilters::cvUndistortParams, cvUndistortDoc);
-    m_filterList.insert("cvUndistort", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvUndistortPoints, OpenCVFilters::cvUndistortPointsParams, cvUndistortPointsDoc);
-    m_filterList.insert("cvUndistortPoints", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvInitUndistortRectifyMap, OpenCVFilters::cvInitUndistortRectifyMapParams, cvInitUndistortRectifyMapDoc);
-    m_filterList.insert("cvInitUndistortRectifyMap", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvRemap, OpenCVFilters::cvRemapParams, cvRemapDoc);
-    m_filterList.insert("cvRemapParams", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFindHomography, OpenCVFilters::cvFindHomographyParams, cvFindHomographyDoc);
-    m_filterList.insert("cvFindHomography", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFindFundamentalMat, OpenCVFilters::cvFindFundamentalMatParams, cvFindFundamentalMatDoc);
-    m_filterList.insert("cvFindFundamentalMat", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvComputeCorrespondEpilines, OpenCVFilters::cvComputeCorrespondEpilinesParams, cvComputeCorrespondEpilinesDoc);
-    m_filterList.insert("cvComputeCorrespondEpilines", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFlannBasedMatcher, OpenCVFilters::cvFlannBasedMatcherParams, cvFlannBasedMatcherDoc);
-    m_filterList.insert("cvFlannBasedMatcher", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvDrawKeypoints, OpenCVFilters::cvDrawKeypointsParams, cvDrawKeypointsDoc);
-    m_filterList.insert("cvDrawKeypoints", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, cvDrawMatcherDoc);
-    m_filterList.insert("cvDrawMatcher", filter);
-    
-    filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, cvWarpPerspectiveDoc);
-    m_filterList.insert("cvWarpPerspective", filter);
-
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
-    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, cvFlipUpDownDoc);
-    m_filterList.insert("cvFlipUpDown", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, cvFlipLeftRightDoc);
-    m_filterList.insert("cvFlipLeftRight", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvRotP90, OpenCVFilters::stdParams2Objects, cvRotP90Doc);
-    m_filterList.insert("cvRotateP90", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvRotM90, OpenCVFilters::stdParams2Objects, cvRotM90Doc);
-    m_filterList.insert("cvRotateM90", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvRot180, OpenCVFilters::stdParams2Objects, cvRot180Doc);
-    m_filterList.insert("cvRotate180", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvCannyEdge, OpenCVFilters::cvCannyEdgeParams, cvDilateDoc);
-    m_filterList.insert("cvCannyEdge", filter);
-
-    setInitialized(true); //init method has been finished (independent on retval)
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OpenCVFilters::close(ItomSharedSemaphore * /*waitCond*/)
-{
-    ito::RetVal retval = ito::retOk;
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 const QString OpenCVFilters::cvCannyEdgeDoc = QObject::tr("Canny Edge detector using cv::DFT.\n\
-                                                        \n\
-                                                        It's just Canny's edge filter\n\
-                                                       ");
+\n\
+It's just Canny's edge filter\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvCannyEdgeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2309,6 +2179,338 @@ ito::RetVal OpenCVFilters::cvCannyEdge(QVector<ito::ParamBase> *paramsMand, QVec
         dObjOutp->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvCvtColorDoc = QObject::tr("Converts an image from one color space to another.\n\
+In case of linear transformations, the range does not matter. But in case of a non-linear transformation,\n\
+an input RGB image should be normalized to the proper value range to get the correct results, for example,\n\
+for RGB -> L*u*v* transformation. For example, if you have a 32-bit floating-point image directly\n\
+converted from an 8-bit image without any scaling, then it will have the 0..255 value range instead of 0..1\n\
+assumed by the function. So, before calling cvtColor , you need first to scale the image down\n\
+\n\
+The parameter code defines the conversion:\n\
+RGB <-> GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)\n\
+RGB <-> CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)\n\
+RGB <-> YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)\n\
+RGB <-> HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )\n\
+RGB <-> HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)\n\
+RGB <-> CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)\n\
+RGB <-> CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)\n\
+Bayer <-> RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...\n\
+                        CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)\n\
+\n\
+For more details see OpenCV documentation.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvCvtColorParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input Object handle, must be a single plane").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output Object handle. Will be come complex-type").toLatin1().data());
+        paramsMand->append(param);
+
+        param = ito::Param("code", ito::ParamBase::Int | ito::ParamBase::In, 0, 65535, 0, tr("Transformation code, see (OpenCV) documentation").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("dstChan", ito::ParamBase::Int | ito::ParamBase::In, 0, 5, 0, tr("number of color channels of destination image, for 0 the number of channels is derived from the transformation (default)").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvCvtColor(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjInp = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjOutp = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    ito::uint16 code = (*paramsOpt)[0].getVal<int>();
+    ito::uint8  numChan = (*paramsOpt)[1].getVal<int>();
+
+    ito::DataObject destTemp;
+
+    bool overWrite = true;
+
+    if (!dObjInp)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
+    }
+
+    if (!dObjOutp)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
+    }
+
+    if (dObjInp->getDims() > 3)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
+    }
+
+    int ysize = dObjInp->getSize(dObjInp->getDims() - 2);
+    int xsize = dObjInp->getSize(dObjInp->getDims() - 1);
+    int planes = 0;
+    if (dObjInp->getDims() > 1)
+    {
+        planes = dObjInp->getSize(dObjInp->getDims() - 3);
+    }
+
+    if (!retval.containsError())
+    {
+        retval += ito::dObjHelper::verifyDataObjectType(dObjInp, "srcImage", 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64, ito::tRGBA32);
+    }
+
+    if (!retval.containsError())
+    {
+        if (dObjOutp != dObjInp)
+        {
+            if (planes > 0)
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjOutp, "destImage", planes, planes, ysize, ysize, xsize, xsize, 1, dObjInp->getType());
+                if (tRetval.containsError())
+                {
+                    int sizes[3] = { planes, ysize, xsize };
+                    destTemp = ito::DataObject(3, sizes, dObjInp->getType());
+                }
+                else
+                {
+                    destTemp = *dObjOutp;
+                    overWrite = false;
+                }
+            }
+            else
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjOutp, "destImage", ysize, ysize, xsize, xsize, 1, dObjInp->getType());
+                if (tRetval.containsError())
+                {
+                    destTemp = ito::DataObject(ysize, xsize, dObjInp->getType());
+                }
+                else
+                {
+                    destTemp = *dObjOutp;
+                    overWrite = false;
+                }
+            }
+        }
+        else
+        {
+            //destDataPhase = ito::DataObject( ysize, xsize, ito::tFloat64);
+            destTemp = *dObjOutp;
+            overWrite = false;
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        int z_length = dObjInp->calcNumMats();
+
+        cv::Mat *cvMatIn = NULL;
+        cv::Mat *cvMatOut = NULL;
+        int outType, inType;
+        int outChan, inChan;
+
+        for (int z = 0; z < z_length; z++)
+        {
+            cvMatIn = (cv::Mat*)dObjInp->get_mdata()[dObjInp->seekMat(z)];
+            cvMatOut = (cv::Mat*)destTemp.get_mdata()[destTemp.seekMat(z)];
+            try
+            {
+                cv::cvtColor(*cvMatIn, *cvMatOut, code, numChan);
+            }
+            catch (cv::Exception &exc)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
+                break;
+            }
+            inType = cvMatIn->type();
+            inChan = cvMatIn->channels();
+            outType = cvMatOut->type();
+            outChan = cvMatOut->channels();
+        }
+
+        // conversion changed data type, so we need to adapt the output dataObject
+        if (inType != outType || inChan != outChan)
+        {
+            int *newSizes = (int*)calloc(destTemp.getDims(), sizeof(int));
+            for (int ns = 0; ns < destTemp.getDims(); ns++)
+            {
+                newSizes[ns] = destTemp.getSize(ns);
+            }
+            // do we really need this?
+            newSizes[destTemp.getDims() - 1] = newSizes[destTemp.getDims() - 1] * outChan;
+            switch (outType)
+            {
+                case CV_8U:
+                    destTemp = ito::DataObject(destTemp.getDims(), newSizes, ito::tUInt8, *destTemp.get_mdata(), destTemp.getNumPlanes());
+                break;
+
+                case CV_16U:
+                    destTemp = ito::DataObject(destTemp.getDims(), newSizes, ito::tUInt16, *destTemp.get_mdata(), destTemp.getNumPlanes());
+                break;
+
+                case CV_32F:
+                    destTemp = ito::DataObject(destTemp.getDims(), newSizes, ito::tFloat32, *destTemp.get_mdata(), destTemp.getNumPlanes());
+                break;
+            }
+            free(newSizes);
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        if (overWrite)
+        {
+            *dObjOutp = destTemp;
+        }
+
+        if (dObjOutp != dObjInp)
+        {
+            dObjInp->copyAxisTagsTo(*dObjOutp);
+            dObjInp->copyTagMapTo(*dObjOutp);
+        }
+
+        QString msg = tr("CvtColor conversion with code: %1").arg(code);
+        dObjOutp->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
+{
+    ito::RetVal retval = ito::retOk;
+    FilterDef *filter = NULL;
+
+    filter = new FilterDef(OpenCVFilters::cvDilate, OpenCVFilters::cvDilateErodeParams, cvDilateDoc);
+    m_filterList.insert("cvDilate", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, cvErodeDoc);
+    m_filterList.insert("cvErode", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, cvMedianBlurDoc);
+    m_filterList.insert("cvMedianBlur", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, cvBlurDoc);
+    m_filterList.insert("cvBlur", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, cvFFT2DDoc);
+    m_filterList.insert("cvFFT2D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, cvIFFT2DDoc);
+    m_filterList.insert("cvIFFT2D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, cvFFT1DDoc);
+    m_filterList.insert("cvFFT1D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, cvIFFT1DDoc);
+    m_filterList.insert("cvIFFT1D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, cvRemoveSpikesDoc);
+    m_filterList.insert("cvRemoveSpikes", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvSplitChannels, OpenCVFilters::cvSplitChannelsParams, cvSplitChannelsDoc);
+    m_filterList.insert("cvSplitChannels", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvMergeChannels, OpenCVFilters::cvMergeChannelsParams, cvMergeChannelsDoc);
+    m_filterList.insert("cvMergeChannels", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvResize, OpenCVFilters::cvResizeParams, cvResizeDoc);
+    m_filterList.insert("cvResize", filter);
+
+    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, cvCalcHistDoc);
+    m_filterList.insert("cvCalcHistogram", filter);*/
+
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+
+    filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, cvFindCirclesDoc);
+    m_filterList.insert("cvFindCircles", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, cvFindChessboardCornersDoc);
+    m_filterList.insert("cvFindChessboardCorners", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, cvCornerSubPixDoc);
+    m_filterList.insert("cvCornerSubPix", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvCalibrateCamera, OpenCVFilters::cvCalibrateCameraParams, cvCalibrateCameraDoc);
+    m_filterList.insert("cvCalibrateCamera", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvDrawChessboardCorners, OpenCVFilters::cvDrawChessboardCornersParams, cvDrawChessboardCornersDoc);
+    m_filterList.insert("cvDrawChessboardCorners", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvEstimateAffine3D, OpenCVFilters::cvEstimateAffine3DParams, cvEstimateAffine3DDoc);
+    m_filterList.insert("cvEstimateAffine3DParams", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvUndistort, OpenCVFilters::cvUndistortParams, cvUndistortDoc);
+    m_filterList.insert("cvUndistort", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvUndistortPoints, OpenCVFilters::cvUndistortPointsParams, cvUndistortPointsDoc);
+    m_filterList.insert("cvUndistortPoints", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvInitUndistortRectifyMap, OpenCVFilters::cvInitUndistortRectifyMapParams, cvInitUndistortRectifyMapDoc);
+    m_filterList.insert("cvInitUndistortRectifyMap", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRemap, OpenCVFilters::cvRemapParams, cvRemapDoc);
+    m_filterList.insert("cvRemapParams", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFindHomography, OpenCVFilters::cvFindHomographyParams, cvFindHomographyDoc);
+    m_filterList.insert("cvFindHomography", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFindFundamentalMat, OpenCVFilters::cvFindFundamentalMatParams, cvFindFundamentalMatDoc);
+    m_filterList.insert("cvFindFundamentalMat", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvComputeCorrespondEpilines, OpenCVFilters::cvComputeCorrespondEpilinesParams, cvComputeCorrespondEpilinesDoc);
+    m_filterList.insert("cvComputeCorrespondEpilines", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFlannBasedMatcher, OpenCVFilters::cvFlannBasedMatcherParams, cvFlannBasedMatcherDoc);
+    m_filterList.insert("cvFlannBasedMatcher", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvDrawKeypoints, OpenCVFilters::cvDrawKeypointsParams, cvDrawKeypointsDoc);
+    m_filterList.insert("cvDrawKeypoints", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, cvDrawMatcherDoc);
+    m_filterList.insert("cvDrawMatcher", filter);
+    
+    filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, cvWarpPerspectiveDoc);
+    m_filterList.insert("cvWarpPerspective", filter);
+
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+
+    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, cvFlipUpDownDoc);
+    m_filterList.insert("cvFlipUpDown", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, cvFlipLeftRightDoc);
+    m_filterList.insert("cvFlipLeftRight", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRotP90, OpenCVFilters::stdParams2Objects, cvRotP90Doc);
+    m_filterList.insert("cvRotateP90", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRotM90, OpenCVFilters::stdParams2Objects, cvRotM90Doc);
+    m_filterList.insert("cvRotateM90", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRot180, OpenCVFilters::stdParams2Objects, cvRot180Doc);
+    m_filterList.insert("cvRotate180", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvCannyEdge, OpenCVFilters::cvCannyEdgeParams, cvCannyEdgeDoc);
+    m_filterList.insert("cvCannyEdge", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvCvtColor, OpenCVFilters::cvCvtColorParams, cvCvtColorDoc);
+    m_filterList.insert("cvCvtColor", filter);
+
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::close(ItomSharedSemaphore * /*waitCond*/)
+{
+    ito::RetVal retval = ito::retOk;
     return retval;
 }
 
