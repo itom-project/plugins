@@ -114,6 +114,8 @@ require this library.");
 
     paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].").toLatin1().data());
     m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("dObj", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("DataObject with pixel values to display").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -238,6 +240,9 @@ DispWindow::DispWindow() :
     paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("dObj", ito::ParamBase::DObjPtr, NULL, tr("DataObject with pixel values to display.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //initialize m_lut with default values (1:1 relation)
     char lut[256];
     for (int i = 0; i < 256; ++i) lut[i] = i;
@@ -311,7 +316,6 @@ DispWindow::DispWindow() :
         m_pWindow->setCursor(Qt::BlankCursor);
         m_pWindow->setWindowTitle("DispWindow");
         m_pWindow->setPos(defx0, defy0);
-    //    m_pWindow->resize(defwidth, defheight);
         m_pWindow->resize(12, 12);
         m_pWindow->show();
 
@@ -587,6 +591,14 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             {
                 it->copyValueFrom(&(*val));
             }
+        }
+        else if (QString::compare(key, "dObj", Qt::CaseInsensitive) == 0)
+        {
+            m_params["dObj"].setVal<ito::DataObject*>(val->getVal<ito::DataObject*>());
+            m_params["numimg"].setVal<int>(-1);
+            QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int,-1));
+            QMetaObject::invokeMethod(m_pWindow, "setDObj", Qt::BlockingQueuedConnection, Q_ARG(ito::DataObject*,val->getVal<ito::DataObject*>()));
+            //it->copyValueFrom(&(*val));
         }
 
         //one last thing, if the value of numimg is now greater than its maximum, reset the value to the maximum and set the value

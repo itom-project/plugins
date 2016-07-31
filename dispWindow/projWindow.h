@@ -29,6 +29,7 @@
     #include <qopenglfunctions.h>
     #include <qopenglvertexarrayobject.h>
 #endif
+#include "DataObject/dataobj.h"
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 
@@ -80,6 +81,7 @@ class PrjWindow : public QGLWidget
         int m_direction;
         int m_gammaCol;
         GLuint m_texture[38];
+        GLuint m_textureDObj;
         GLuint m_lutTex;
         unsigned char **m_cosImgsVert;
         unsigned char **m_cosImgsHoriz;
@@ -148,6 +150,7 @@ class PrjWindow : public QGLWidget
 
         ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
         void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
+        ito::RetVal setDObj(ito::DataObject *dObj, ItomSharedSemaphore *waitCond = NULL);
 
     private slots:
 

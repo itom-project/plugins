@@ -479,16 +479,9 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-//!> unbind buffer
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //!> generate use list on device
-//    glGenBuffers(1, &ElementBufferName);
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
-    //!> copy use list to device
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
     //!> unbind buffer
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 #else
     m_glf->glGenBuffers(1, &ArrayBufferName);
     m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
@@ -509,15 +502,6 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
 
     //!> unbind buffer
     m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    //!> generate use list on device
-//    m_glf->glGenBuffers(1, &ElementBufferName);
-//    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
-    //!> copy use list to device
-//    m_glf->glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
-    //!> unbind buffer
-//    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
 
     //!> setting up initial gamma lut with linear response for rgb
@@ -712,10 +696,6 @@ void PrjWindow::paintGL()
     drawScene = 1;
     makeCurrent();
 
-    // Set the display viewport
-//    glViewport(0, 0, width, height);
-//    ret = glGetError();
-
     if (m_imgNum == -1)
     {
         GLfloat red = 0, green = 0, blue = 0;
@@ -774,23 +754,27 @@ void PrjWindow::paintGL()
         glActiveTexture(GL_TEXTURE0);
         glUseProgram(ProgramName);
         glBindVertexArray(m_VAO);
-        glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
+        if (m_imgNum == -2)
+            glBindTexture(GL_TEXTURE_2D, m_textureDObj);
+        else
+            glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
 #else
         m_glf->glActiveTexture(GL_TEXTURE0);
         m_glf->glUseProgram(ProgramName);
         m_vao->bind();
 #if QT_VERSION < 0x050300
-        glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
+        if (m_imgNum == -2)
+            glBindTexture(GL_TEXTURE_2D, m_textureDObj);
+        else
+            glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
 #else
-        m_glf->glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
+        if (m_imgNum == -2)
+            m_glf->glBindTexture(GL_TEXTURE_2D, m_textureDObj);
+        else
+            m_glf->glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
 #endif
 #endif
 
-#if QT_VERSION < 0x050000
-//        glUniform1i(UniformTexture, 0);
-#else
-//        m_glf->glUniform1i(UniformTexture, 0);
-#endif
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -801,24 +785,12 @@ void PrjWindow::paintGL()
         glEnableVertexAttribArray(POSITION);
 
         glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-//        glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
-
-        //!> unbind buffer
-//        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        //!> bind use list
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 #else
         m_vao->bind();
         //!> enable the previously set up attribute
         m_glf->glEnableVertexAttribArray(POSITION);
 
         m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-//        m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
-        //!> unbind buffer
-//        m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
-        //!> bind use list
-//        m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 #endif
         //!> draw buffers
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // GL_TRIANGLES was GL_QUADS before
@@ -843,7 +815,6 @@ void PrjWindow::paintGL()
 #endif
     }
 
-//draw:
     //!> flush buffers, wait for drawing to finish and jic swap the buffers (we do not have double buffering)
     swapBuffers();
     int ret = glGetError();
@@ -851,8 +822,6 @@ void PrjWindow::paintGL()
     {
         std::cerr << "error while drawing openGl scene: " << ret << "\n";
     }
-//    glFlush();
-//    glFinish();
 
     doneCurrent();
     drawScene = 0;
@@ -1102,7 +1071,6 @@ ito::RetVal PrjWindow::cosineInit()
             for (j = 0; j < m_period; j++)
             {
                 phasedummy[i][j] = (unsigned char)((phaseVals[(m_period - (j - (m_period / m_phaShift) * i)) % m_period] - minval) / (maxval - minval) * 255.0);
-    //            phasedummy[i][j] = (BYTE)((phaseVals[j] + 1.0) / 2.0 * 255.0);
             }
         }
         //!> Cosine fringes to left
@@ -1111,7 +1079,6 @@ ito::RetVal PrjWindow::cosineInit()
             for (j = 0; j < m_period; j++)
             {
                 phasedummy[i][j] = (unsigned char)((phaseVals[(j + (m_period / m_phaShift) * i) % m_period] - minval) / (maxval - minval) * 255.0);
-    //            phasedummy[i][j] = (BYTE)((phaseVals[j] + 1.0) / 2.0 * 255.0);
             }
         }
     }
@@ -1208,7 +1175,6 @@ ito::RetVal PrjWindow::cosineInit()
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (cosine init)\n";
@@ -1260,7 +1226,6 @@ ito::RetVal PrjWindow::graycodeInit()
     
     if (!(m_isInit & paramsValid) || (m_isInit & initFail))
     {
-
         return retval;
     }
 
@@ -1442,7 +1407,6 @@ ito::RetVal PrjWindow::graycodeInit()
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image black image (graycode init)\n";
@@ -1460,7 +1424,6 @@ ito::RetVal PrjWindow::graycodeInit()
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image black image 2 (graycode init)\n";
@@ -1482,7 +1445,6 @@ ito::RetVal PrjWindow::graycodeInit()
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image white image (graycode init)\n";
@@ -1500,7 +1462,6 @@ ito::RetVal PrjWindow::graycodeInit()
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image white image 2 (graycode init)\n";
@@ -1533,7 +1494,6 @@ ito::RetVal PrjWindow::graycodeInit()
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
@@ -1577,7 +1537,6 @@ ito::RetVal PrjWindow::graycodeInit()
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
@@ -1785,30 +1744,6 @@ void PrjWindow::setLUT(QVector<unsigned char> &lut)
     doneCurrent();
     m_isInit |= oldval;
 
-    //for opengl < 2.0:
-    /*GLfloat *par, *pag, *pab;
-
-    par = (GLfloat*)calloc(256, sizeof(GLfloat));
-    pag = (GLfloat*)calloc(256, sizeof(GLfloat));
-    pab = (GLfloat*)calloc(256, sizeof(GLfloat));
-
-    for (float i = 0; i < 256; i++)
-    {
-        par[(int)i] = m_lut[i] / 255.0;
-        pag[(int)i] = m_lut[i] / 255.0;
-        pab[(int)i] = m_lut[i] / 255.0;
-    }
-
-    //glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
-
-    glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 256, pag);
-    glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 256, par);
-    glPixelMapfv(GL_PIXEL_MAP_I_TO_B, 256, pab);
-
-    free(par);
-    free(pag);
-    free(pab);*/
-
     paintGL();
 }
 
@@ -1816,7 +1751,6 @@ void PrjWindow::setLUT(QVector<unsigned char> &lut)
 ito::RetVal PrjWindow::setColor(const int col)
 {
     ito::RetVal retval = ito::retOk;
-//    int ret = 0;
 
     if (m_glVer <= QGLFormat::OpenGL_Version_2_0 /*32*/)
     {
@@ -2172,6 +2106,7 @@ ito::RetVal PrjWindow::shutDown(ItomSharedSemaphore *waitCond)
     makeCurrent();
     cosineExit();
     graycodeExit();
+    glDeleteTextures(1, &m_textureDObj);
     doneCurrent();
 
     if (waitCond)
@@ -2220,6 +2155,9 @@ ito::RetVal PrjWindow::configProjection(int period, int phaseShift, int orient, 
                 retval += graycodeInit();
             }
         }
+
+        // generate texture for DObj
+        glGenTextures(1, &m_textureDObj);
 
         doneCurrent();
 
@@ -2308,6 +2246,54 @@ ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaph
         }
     }
 
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::setDObj(ito::DataObject *dObj, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
+
+    if (!dObj || dObj->getDims() > 2 || dObj->getSize(0) < 1 || dObj->getSize(1) < 1)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("DataObject must not be NULL").toLatin1().data());
+    }
+    else
+    {
+        int sizex = dObj->getSize(1), sizey = dObj->getSize(0), ret = 0;
+        
+        makeCurrent();
+        glBindTexture(GL_TEXTURE_2D, (GLuint)m_textureDObj);
+        if ((ret = glGetError()))
+        {
+            std::cerr << "error bind texture (setDObj)\n";
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
+            goto end;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, sizex, sizey, 0, GL_RED, GL_UNSIGNED_BYTE, dObj->rowPtr(0, 0));
+        if ((ret = glGetError()))
+        {
+            std::cerr << "error tex image (setDObj)\n";
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
+            goto end;
+        }
+        glBindTexture(GL_TEXTURE_2D, 0);
+        doneCurrent();
+
+        m_imgNum = -2;
+        setSize(sizex, sizey);
+        paintGL();
+    }   
+
+end:
     if (waitCond)
     {
         waitCond->returnValue = retval;
