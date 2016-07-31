@@ -74,6 +74,7 @@ set(plugin_HEADERS
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/DataObjectIO.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/avantes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zygo.cpp
 )
 
 set(plugin_UI

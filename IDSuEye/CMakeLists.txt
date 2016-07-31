@@ -28,8 +28,11 @@ IF(IDS_DEVELOP_DIRECTORY)
         SET (IDS_INCLUDE_DIRECTORY "${IDS_DEVELOP_DIRECTORY}/include" )
         find_file( IDS_HEADER_FILE uEye.h PATHS ${IDS_INCLUDE_DIRECTORY} PATH_SUFFIXES IDS include)
     ELSE(WIN32)
-        SET (IDS_INCLUDE_DIRECTORY "/usr/include" )
-        find_file( IDS_HEADER_FILE ueye.h PATHS "/usr/include")
+        find_path(IDS_INCLUDE_DIRECTORY
+        NAMES ueye.h
+        PATHS /usr/local/include/
+              /usr/include)
+        find_file(IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY})
     ENDIF(WIN32)
 ELSE(IDS_DEVELOP_DIRECTORY)
     IF(WIN32)
@@ -37,8 +40,11 @@ ELSE(IDS_DEVELOP_DIRECTORY)
         SET (IDS_INCLUDE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs/IDS" )
         find_file( IDS_HEADER_FILE uEye.h PATHS ${IDS_INCLUDE_DIRECTORY} PATH_SUFFIXES "IDS")
     ELSE(WIN32)
-        SET (IDS_INCLUDE_DIRECTORY "/usr/include" )
-        find_file( IDS_HEADER_FILE ueye.h PATHS "/usr/include")
+        find_path(IDS_INCLUDE_DIRECTORY
+        NAMES ueye.h
+        PATHS /usr/local/include/
+              /usr/include)
+        find_file(IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY})
     ENDIF(WIN32)
 ENDIF(IDS_DEVELOP_DIRECTORY)
 
@@ -103,9 +109,21 @@ IF (IDS_HEADER_FILE)
         IF(IDS_DEVELOP_DIRECTORY)
         ELSE(IDS_DEVELOP_DIRECTORY)
             IF(BUILD_TARGET64)
-                set( IDS_LIBRARY "/usr/lib/libueye_api64.so.4.50" )
+                FIND_LIBRARY(IDS_LIBRARY NAMES ueye_api64 libueye_api64
+                    PATHS /usr/local/lib64/
+                          /usr/local/lib/
+                          /usr/lib/
+                          /usr/lib/x86_64-linux-gnu/
+                          /usr/lib64/
+                )
             ELSE(BUILD_TARGET64)
-                set( IDS_LIBRARY "/usr/lib/libueye_api.so.4.50" )
+                FIND_LIBRARY(IDS_LIBRARY NAMES ueye_api libueye_api
+                    PATHS /usr/local/lib/
+                          /usr/local/lib64
+                          /usr/lib/i386-linux-gnu/
+                          /usr/lib/
+                          /usr/lib64/
+                )
             ENDIF(BUILD_TARGET64)
         ENDIF(IDS_DEVELOP_DIRECTORY)
     ENDIF(WIN32)

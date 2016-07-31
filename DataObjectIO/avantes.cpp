@@ -1,7 +1,7 @@
 ﻿/* ********************************************************************
     Plugin "DataObjectIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -124,7 +124,7 @@ ito::RetVal DataObjectIO::loadAvantesRawParams(QVector<ito::Param> *paramsMand, 
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source filename").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("dataType", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 1, tr("type of data to be loaded: 0 fully caluclated array of wavelengths, 1 scopemode spectrum, 2 dark spectrum, 3 reference spectrum").toLatin1().data());
+        param = ito::Param("dataType", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 1, tr("type of data to be loaded: 0 fully calculated array of wavelengths, 1 scopemode spectrum, 2 dark spectrum, 3 reference spectrum").toLatin1().data());
         paramsOpt->append(param);
     }
 

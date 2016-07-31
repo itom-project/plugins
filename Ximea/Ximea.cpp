@@ -913,7 +913,7 @@ ito::RetVal Ximea::LoadLib(void)
     if (!ximeaLib)
     {
 #if linux
-        ximeaLib = dlopen("./lib/libm3api.so", RTLD_LAZY);
+        ximeaLib = dlopen("libm3api.so", RTLD_LAZY);
         if (!ximeaLib)
         {
             char *error = dlerror();
