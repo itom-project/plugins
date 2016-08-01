@@ -2281,7 +2281,7 @@ ito::RetVal OpenCVFilters::cvCvtColor(QVector<ito::ParamBase> *paramsMand, QVect
                 else
                 {
                     destTemp = *dObjOutp;
-                    overWrite = false;
+//                    overWrite = false;
                 }
             }
             else
@@ -2294,7 +2294,7 @@ ito::RetVal OpenCVFilters::cvCvtColor(QVector<ito::ParamBase> *paramsMand, QVect
                 else
                 {
                     destTemp = *dObjOutp;
-                    overWrite = false;
+//                    overWrite = false;
                 }
             }
         }
@@ -2302,7 +2302,7 @@ ito::RetVal OpenCVFilters::cvCvtColor(QVector<ito::ParamBase> *paramsMand, QVect
         {
             //destDataPhase = ito::DataObject( ysize, xsize, ito::tFloat64);
             destTemp = *dObjOutp;
-            overWrite = false;
+//            overWrite = false;
         }
     }
 
