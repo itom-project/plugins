@@ -60,7 +60,7 @@ IF (WIN32)
 ENDIF (WIN32)
 
 # CyUSB
-OPTION(PLUGIN_CyUSB "Build with this plugin." ON)
+OPTION(PLUGIN_CyUSB "Build with this plugin." OFF)
 if (PLUGIN_CyUSB)
         ADD_SUBDIRECTORY(CyUSB)
 endif (PLUGIN_CyUSB)
