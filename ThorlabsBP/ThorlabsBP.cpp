@@ -355,7 +355,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
                 retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded.");
             }*/
 
-            if (!PBC_StartPolling(m_serialNo, 100, channel))
+            if (!PBC_StartPolling(m_serialNo, channel, 100))
             {
                 retval += ito::RetVal(ito::retError, 0, "error starting position and status polling.");
             }
@@ -1087,15 +1087,15 @@ ito::RetVal ThorlabsBP::getPos(const QVector<int> axis, QSharedPointer<QVector<d
     const int* hasFeedback = m_params["hasFeedback"].getVal<int*>();
     const ito::float64* maximumTravelRange = m_params["maximumTravelRange"].getVal<ito::float64*>();
     const int* maximumVoltage = m_params["maximumVoltage"].getVal<int*>();
-    int a;
+    int idx;
 
-    for (int idx = 0; idx < axis.size(); ++idx)
+    for (int i = 0; i < axis.size(); ++i)
     {
-        a = axis[idx];
+        idx = axis[i];
 
-        if (a < 0 || a >= m_numChannels)
+        if (idx < 0 || idx >= m_numChannels)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "invalid axis index %i", a);
+            retval += ito::RetVal::format(ito::retError, 0, "invalid axis index %i", idx);
             break;
         }
 
@@ -1103,13 +1103,13 @@ ito::RetVal ThorlabsBP::getPos(const QVector<int> axis, QSharedPointer<QVector<d
         {
             //in mm
             m_currentPos[idx] = maximumTravelRange[0] * (ito::float64)PBC_GetPosition(m_serialNo, m_channelIndices[idx]) / 32767.0;
-            (*pos)[idx] = m_currentPos[idx];
+            (*pos)[i] = m_currentPos[idx];
         }
         else
         {
             //in V
             m_currentPos[idx] = maximumVoltage[0] * (ito::float64)PBC_GetOutputVoltage(m_serialNo, m_channelIndices[idx]) / 32767.0;
-            (*pos)[idx] = m_currentPos[idx];
+            (*pos)[i] = m_currentPos[idx];
         }
     }
 
@@ -1195,28 +1195,28 @@ ito::RetVal ThorlabsBP::setPosAbs(const QVector<int> axis, QVector<double> pos, 
 
             if (controlMode[idx] && hasFeedback[idx]) //set in mm
             {
-                if (pos[idx] < 0 || pos[idx] > maximumTravelRange[idx])
+                if (pos[i] < 0 || pos[i] > maximumTravelRange[idx])
                 {
                     retval += ito::RetVal::format(ito::retError, 0, "target of axis %i out of bounds.", idx);
                     break;
                 }
                 else
                 {
-                    m_targetPos[idx] = pos[idx];
-                    //PBC_SetPosition(m_serialNo, m_channelIndices[idx], 32767 * (pos[idx] / maximumTravelRange[idx]));
+                    m_targetPos[idx] = pos[i];
+                    //PBC_SetPosition(m_serialNo, m_channelIndices[idx], 32767 * (pos[i] / maximumTravelRange[idx]));
                 }
             }
             else
             {
-                if (pos[idx] < -maximumVoltage[idx] || pos[idx] > maximumVoltage[idx])
+                if (pos[i] < -maximumVoltage[idx] || pos[i] > maximumVoltage[idx])
                 {
                     retval += ito::RetVal::format(ito::retError, 0, "target of axis %i out of bounds.", idx);
                     break;
                 }
                 else
                 {
-                    m_targetPos[idx] = pos[idx];
-                    //PBC_SetOutputVoltage(m_serialNo, m_channelIndices[idx], 32767 * (pos[idx] / maximumVoltage[idx]));
+                    m_targetPos[idx] = pos[i];
+                    //PBC_SetOutputVoltage(m_serialNo, m_channelIndices[idx], 32767 * (pos[i] / maximumVoltage[idx]));
                 }
 
                 flags += (1 << idx);
@@ -1362,7 +1362,7 @@ ito::RetVal ThorlabsBP::setPosRel(const QVector<int> axis, QVector<double> pos, 
         for (int i = 0; i < axis.size(); ++i)
         {
             idx = axis[i];
-            newAbsPos = m_currentPos[idx] + pos[idx];
+            newAbsPos = m_currentPos[idx] + pos[i];
 
             if (controlMode[idx] && hasFeedback[idx]) //set in mm
             {
@@ -1374,7 +1374,7 @@ ito::RetVal ThorlabsBP::setPosRel(const QVector<int> axis, QVector<double> pos, 
                 else
                 {
                     m_targetPos[idx] = newAbsPos;
-                    //PBC_SetPosition(m_serialNo, m_channelIndices[idx], 32767 * (pos[idx] / maximumTravelRange[idx]));
+                    //PBC_SetPosition(m_serialNo, m_channelIndices[idx], 32767 * (pos[i] / maximumTravelRange[idx]));
                 }
             }
             else
@@ -1387,7 +1387,7 @@ ito::RetVal ThorlabsBP::setPosRel(const QVector<int> axis, QVector<double> pos, 
                 else
                 {
                     m_targetPos[idx] = newAbsPos;
-                    //PBC_SetOutputVoltage(m_serialNo, m_channelIndices[idx], 32767 * (pos[idx] / maximumVoltage[idx]));
+                    //PBC_SetOutputVoltage(m_serialNo, m_channelIndices[idx], 32767 * (pos[i] / maximumVoltage[idx]));
                 }
 
                 flags += (1 << idx);
@@ -1493,26 +1493,29 @@ ito::RetVal ThorlabsBP::waitForDone(const int timeoutMS, const QVector<int> axis
     ito::RetVal retval(ito::retOk);
     bool done = false;
     Sleep(120); //to be sure that the first requested status is correct
+    QVector<double> oldCurrentPos = m_currentPos;
     QElapsedTimer timer;
     timer.start();
 
     while (!done && !retval.containsError())
     {   
+        memcpy(oldCurrentPos.data(), m_currentPos.data(), sizeof(double)*m_currentPos.size());
+
         done = true;
         retval += getPos(axis, m_dummyValues, NULL);
 
         foreach(int a, axis)
         {
-            if (flags && (1 << a)) //voltage, precision is 0.01 V
+            if (flags && (1 << a)) //voltage, precision is 0.05 V
             {
-                if (std::abs(m_targetPos[a] - m_currentPos[a]) > 0.01)
+                if ((std::abs(m_targetPos[a] - m_currentPos[a]) > 0.05) || (std::abs(oldCurrentPos[a] - m_currentPos[a]) > 0.01))
                 {
                     done = false;
                 }
             }
-            else //mm, precision is 15nm
+            else //mm, precision is 50nm
             {
-                if (std::abs(m_targetPos[a] - m_currentPos[a]) > 15.0e-6)
+                if ((std::abs(m_targetPos[a] - m_currentPos[a]) > 50.0e-6) || (std::abs(oldCurrentPos[a] - m_currentPos[a]) > 10.0e-6))
                 {
                     done = false;
                 }

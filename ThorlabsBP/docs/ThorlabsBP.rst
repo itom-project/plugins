@@ -71,6 +71,24 @@ parameters can be changed using *setParam*.
 Many parameters are sequences. The length of the sequence must always correspond to the number of axes, such that the first value in the sequence determines
 the parameter for the first connected axis, the second is responsible for the 2nd axis...
 
+Control mode
+=============
+
+Each axis can be set to a closed-loop or open-loop control mode (see parameter *controlMode*). If the axis is operated in closed-loop (only possible if a feedback line
+is connected to the controller) the position values are given in 'mm'. In open-loop, the set-point and hence target position is always given as voltage value ('V'), such
+that the commands **getPos**, **setPosAbs** and **setPosRel** all given or except values in 'V'.
+
+Target position
+===============
+
+The controller itself does not provide information if the set-point position has been reached. Therefore, this decision is taken dependent on the control mode
+of each axis in the following way:
+
+* Closed loop: The target position is considered to be reached if the difference of the current and the desired target position is below 50nm AND the difference between two 
+    current position values (registered with a delay of approximately 120ms) is below 10nm.
+* Open loop: The target position is considered to be reached if the difference of the current and the desired target voltage is below 0.05V AND the difference between two 
+    current voltage values (registered with a delay of approximately 120ms) is below 0.01V.
+
 Compilation
 ===========
 
