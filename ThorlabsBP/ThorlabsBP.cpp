@@ -312,7 +312,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
                 for (int c = 0; c < numChannels; ++c)
                 {
-                    if (PBC_EnableChannel(m_serialNo, c) == 0)
+                    if (PBC_EnableChannel(m_serialNo, channels[c]) == 0)
                     {
                     /*if (PBC_IsChannelValid(serial.data(), channels[c]))
                     {*/
