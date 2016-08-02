@@ -212,8 +212,8 @@ In order to get a list of all available COM ports under Windows, the following p
 
 .. code-block:: python
     
-    '''This script can be used as example for Windows
-    to detect registered COM ports for this computer'''
+    #This script can be used as example for Windows
+    #to detect registered COM ports for this computer
     import winreg as wreg
 
     def DetectCOMPorts():
