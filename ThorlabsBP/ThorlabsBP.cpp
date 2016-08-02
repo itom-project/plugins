@@ -279,7 +279,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "the type of the device is not among the supported devices (Long Travel Stage, Labjack, Cage Rotator)");
+            retval += ito::RetVal(ito::retError, 0, "the type of the device is not among the supported devices (Benchtop Piezo with 1 or 3 channels)");
         }
     }
 
