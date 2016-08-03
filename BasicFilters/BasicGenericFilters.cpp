@@ -1427,7 +1427,7 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
         }
         nextIdleX = x + 1;
 #endif
-
+        //this algorithms seems to be like the following: http://www.i-programmer.info/babbages-bag/505-quick-median.html?start=1
         leftElement = 0;
         rightElement = this->m_bufsize - 1;
         while(leftElement < rightElement)
