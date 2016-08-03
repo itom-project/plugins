@@ -1624,7 +1624,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp minVal, _Tp maxVal, _Tp newValue, bool outside)
 {
     #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     #endif  
 
@@ -1952,7 +1952,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
 template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp, cv::Mat &planeBinary, _Tp minVal, _Tp maxVal, bool outside)
 {
     #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     #endif  
 
@@ -2054,7 +2054,7 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
 template<typename _Tp> ito::RetVal clipAbyBSecondHelper(const cv::Mat &planeBinary, cv::Mat *planeInOut, _Tp newValue)
 {
     #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     #endif  
 
@@ -2397,7 +2397,7 @@ template<typename _Tp> ito::RetVal HistogramBlock(const cv::Mat *planeIn, cv::Ma
     for (int y = 0; y < planeIn->rows; y++)
     {
         #if (USEOMP)
-        #pragma omp parallel num_threads(NTHREADS)
+        #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
         {
         #endif
         ito::int32 index;
@@ -2450,7 +2450,7 @@ template<> ito::RetVal HistogramBlock<ito::Rgba32>(const cv::Mat *planeIn, cv::M
     for (int y = 0; y < planeIn->rows; y++)
     {
         #if (USEOMP)
-        #pragma omp parallel num_threads(NTHREADS)
+        #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
         {
         #endif
         ito::int32 index;
@@ -2791,7 +2791,7 @@ ito::RetVal BasicFilters::fillGeometricParams(QVector<ito::Param> *paramsMand, Q
 template<typename _Tp> void BasicFilters::fillGeoCircle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radius, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
 {
     #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     #endif
 
@@ -2841,7 +2841,7 @@ template<typename _Tp> void BasicFilters::fillGeoCircle(cv::Mat *dst, const ito:
 template<typename _Tp> void BasicFilters::fillGeoEllipse(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radiusX, const ito::float64 radiusY, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
 {
     #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     #endif
 
@@ -2889,7 +2889,7 @@ template<typename _Tp> void BasicFilters::fillGeoEllipse(cv::Mat *dst, const ito
 template<typename _Tp> void BasicFilters::fillGeoRectangle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 x1, const ito::float64 y1, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
 {
     #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     #endif
 

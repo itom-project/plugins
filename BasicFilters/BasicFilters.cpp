@@ -34,8 +34,6 @@
 #include <QtCore/QtPlugin>
 #include "pluginVersion.h"
 
-int NTHREADS = 2;
-
 //----------------------------------------------------------------------------------------------------------------------------------
 BasicFiltersInterface::BasicFiltersInterface()
 {
@@ -71,10 +69,6 @@ This plugin does not have any unusual dependencies.");
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
     m_aboutThis = QObject::tr("N.A.");       
-    
-    NTHREADS  = QThread::idealThreadCount();
-    //NTHREADS = ito::AddInBase::getMaximumThreadCount();
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

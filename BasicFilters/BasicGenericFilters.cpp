@@ -40,8 +40,6 @@
     #include <omp.h>
 #endif
 
-extern int NTHREADS;
-
 //-----------------------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------------------------
@@ -648,12 +646,13 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
 #if (USEOMP)
-    kbuf = new _Tp*[NTHREADS];
+    int numThreads = ito::AddInBase::getMaximumThreadCount();
+    kbuf = new _Tp*[numThreads];
     if (kbuf != NULL)
     {
         this->m_initilized = true;
     }
-    for(int i = 0; i < NTHREADS; ++i)
+    for(int i = 0; i < numThreads; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
         if (kbuf[i] == NULL)
@@ -676,7 +675,7 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
     if (kbuf != NULL)
     {
 #if (USEOMP)
-        for(int i = 0; i < NTHREADS; ++i)
+        for (int i = 0; i < ito::AddInBase::getMaximumThreadCount(); ++i)
         {
             delete kbuf[i];
         }
@@ -700,12 +699,12 @@ template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
 
     //ito::int32 *buf=(ito::int32 *)f->buffer;
     #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+#pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     int bufNum = omp_get_thread_num();
 //    qDebug() << " " << bufNum << "\n"; // << std::endl;
     _Tp* curKernelBuff = kbuf[bufNum];
-    #endif  
+#endif  
 
     ito::int32 x, x1, y1, l;
     _Tp a, b;
@@ -793,13 +792,14 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
     
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
     
-    #if (USEOMP)
-    kbuf = new _Tp*[NTHREADS];
+#if (USEOMP)
+    int numThreads = ito::AddInBase::getMaximumThreadCount();
+    kbuf = new _Tp*[numThreads];
     if (kbuf != NULL)
     {
         this->m_initilized = true;
     }
-    for(int i = 0; i < NTHREADS; ++i)
+    for (int i = 0; i < numThreads; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
         if (kbuf[i] == NULL)
@@ -807,13 +807,13 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
             this->m_initilized = false;
         }
     }
-    #else
+#else
     kbuf = new _Tp[this->m_bufsize];
     if (kbuf != NULL)
     {
         this->m_initilized = true;
     }
-    #endif
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -821,15 +821,15 @@ template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
 {
     if (kbuf != NULL)
     {
-        #if (USEOMP)
-        for(int i = 0; i < NTHREADS; ++i)
+#if (USEOMP)
+        for (int i = 0; i < ito::AddInBase::getMaximumThreadCount(); ++i)
         {
             delete kbuf[i];
         }
         delete kbuf;
-        #else
+#else
         delete kbuf;
-        #endif
+#endif
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -843,18 +843,18 @@ template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax
-    #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+#if (USEOMP)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     int bufNum = omp_get_thread_num();
     _Tp* curKernelBuff = kbuf[bufNum];
-    #endif  
+#endif  
     ito::int32 x, x1, y1, l;
     _Tp a, b;
 
-    #if (USEOMP)
+#if (USEOMP)
     #pragma omp for schedule(guided)
-    #endif    
+#endif    
     for (x = 0; x < this->m_dx; ++x)
     {
         for (x1 = 0; x1 < this->m_kernelSizeX; ++x1)
@@ -1281,10 +1281,11 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
     
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
     
-    #if (USEOMP)
-    kbuf = new _Tp*[NTHREADS];
-    kbufPtr = new _Tp**[NTHREADS];
-    for(int i = 0; i < NTHREADS; ++i)
+#if (USEOMP)
+    int numThreads = ito::AddInBase::getMaximumThreadCount();
+    kbuf = new _Tp*[numThreads];
+    kbufPtr = new _Tp**[numThreads];
+    for (int i = 0; i < numThreads; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
         kbufPtr[i] = new _Tp*[this->m_bufsize];
@@ -1292,7 +1293,7 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
             kbufPtr[i][j] = (_Tp*)&(kbuf[i][j]);
     }
     this->m_initilized = true;
-    #else
+#else
     kbuf = new _Tp[this->m_bufsize];
     kbufPtr = new _Tp*[this->m_bufsize];
     if (kbuf != NULL && kbufPtr != NULL)
@@ -1301,7 +1302,7 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
     }
     for (ito::int16 i = 0; i < this->m_bufsize; ++i)
         kbufPtr[i] = (_Tp*)&(kbuf[i]);
-    #endif
+#endif
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void MedianFilter<_Tp>::clearFunc()
@@ -1312,29 +1313,32 @@ template<typename _Tp> void MedianFilter<_Tp>::clearFunc()
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 {
+#if (USEOMP)
+    int numThreads = ito::AddInBase::getMaximumThreadCount();
+#endif
     if (kbuf != NULL)
     {
-        #if (USEOMP)
-        for(int i = 0; i < NTHREADS; ++i)
+#if (USEOMP)
+        for (int i = 0; i < numThreads; ++i)
         {
             delete kbuf[i];
         }
         delete kbuf;
-        #else
+#else
         delete kbuf;
-        #endif
+#endif
     }
     if (kbufPtr != NULL)
     {
-        #if (USEOMP)
-        for(int i = 0; i < NTHREADS; ++i)
+#if (USEOMP)
+        for (int i = 0; i < numThreads; ++i)
         {
             delete kbufPtr[i];
         }
         delete kbufPtr;
-        #else
+#else
         delete kbufPtr;
-        #endif
+#endif
     }
 }
 
@@ -1351,16 +1355,16 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 */
 template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
 {
-    #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+#if (USEOMP)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     int bufNum = omp_get_thread_num();
     _Tp **pptr = kbufPtr[bufNum];
     _Tp *dptr = kbuf[bufNum];
-    #else
+#else
     _Tp **pptr = kbufPtr;
     _Tp *dptr = kbuf;
-    #endif
+#endif
 
     ito::uint32 leftElement = 0;
     ito::uint32 rightElement = 0;
@@ -1386,43 +1390,43 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
         }
     }
 
-    #if (USEOMP)
+#if (USEOMP)
     ito::int32 nextIdleX = 0;
     #pragma omp for schedule(guided)
-    #endif    
+#endif    
     for (x = 0; x < this->m_dx; ++x)
     {
-        #if (USEOMP)
+#if (USEOMP)
         ito::int16 cn =  ((x - nextIdleX) >= this->m_kernelSizeX ? this->m_kernelSizeX - 1 : (x - nextIdleX));
 
         for (; cn >= 0; cn--)
         {            
-        #endif
+#endif
             for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
             {
     //            *dptr++ = ((ito::float64 **)gf->buf)[y1][x + gf->nkx - 1];
-                #if (USEOMP)
+#if (USEOMP)
                 *dptr++ = this->m_pInLines[y1][x - cn + this->m_kernelSizeX - 1];
-                #else
+#else
                 *dptr++ = this->m_pInLines[y1][x + this->m_kernelSizeX - 1];
-                #endif
+#endif
             }
             x1++;
             if (x1 >= this->m_kernelSizeX)
             {
     //            dptr = (ito::float64 *)f->buffer;
-                #if (USEOMP)
+#if (USEOMP)
                 dptr = kbuf[bufNum];
-                #else
+#else
                 dptr = kbuf;
-                #endif
+#endif
 
                 x1 = 0;
             }
-        #if (USEOMP)
+#if (USEOMP)
         }
         nextIdleX = x + 1;
-        #endif
+#endif
 
         leftElement = 0;
         rightElement = this->m_bufsize - 1;
@@ -1462,9 +1466,9 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
         }
         this->m_pOutLine[x] = *pptr[halfKernSize];
     }
-    #if (USEOMP)
+#if (USEOMP)
     }
-    #endif
+#endif
     //return ito::retOk;
 }
 
@@ -2365,14 +2369,11 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
     //    #pragma omp barrier
     //}
 
-    #if (USEOMP)
-    #pragma omp parallel num_threads(NTHREADS)
+#if (USEOMP)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
-    #endif
-
-    #if (USEOMP)
     #pragma omp for schedule(guided)
-    #endif  
+#endif  
     for(ito::int32 x = 0; x < this->m_dx; x++)
     {
         this->m_pOutLine[x] = 0;
@@ -2383,9 +2384,9 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
         }
     }
     
-    #if (USEOMP)
+#if (USEOMP)
     }
-    #endif
+#endif
 
     //return ito::retOk;
 }
