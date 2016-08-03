@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "FittingFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -27,6 +27,7 @@
 
 #include "common/numeric.h"
 #include "DataObject/dataObjectFuncs.h"
+#include "opencv2/imgproc/imgproc.hpp"
 
 #include <omp.h>
 #include <QtCore/QtPlugin>
@@ -1419,6 +1420,391 @@ the rectangle. If this is not possible, NaN is returned as value.");
     return retval;
 }
 
+//--------------------------------------------------------------------------------------
+//careful: values will be changed within this function!
+template <typename _Tp> _Tp nanmedian(_Tp *values, uint32 num)
+{
+    //this algorithms seems to be like the following: http://www.i-programmer.info/babbages-bag/505-quick-median.html?start=1
+    ito::uint32 halfKernSize = num / 2;
+    ito::uint32 leftElement = 0;
+    ito::uint32 rightElement = num - 1;
+    ito::uint32 leftPos, rightPos;
+    _Tp a;
+    _Tp tempValue;
+    while (leftElement < rightElement)
+    {
+        a = values[halfKernSize];
+        leftPos = leftElement;
+        rightPos = rightElement;
+        do
+        {
+            while (values[leftPos] < a)
+            {
+                leftPos++;
+            }
+            while (values[rightPos] > a)
+            {
+                rightPos--;
+            }
+            if (leftPos <= rightPos)
+            {
+                tempValue = values[leftPos];
+                values[leftPos] = values[rightPos];
+                values[rightPos] = tempValue;
+                leftPos++;
+                rightPos--;
+            }
+        } while (leftPos <= rightPos);
+
+        if (rightPos < halfKernSize)
+        {
+            leftElement = leftPos;
+        }
+        if (halfKernSize < leftPos)
+        {
+            rightElement = rightPos;
+        }
+    }
+    return values[halfKernSize];
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString FittingFilters::fillInvalidAreasDoc = QObject::tr("This filter can be used to fill NaN areas in a float32 or float64 input object with interpolated values. \n\
+\n\
+This filter processes independently every plane of the input object. For every plane the following steps are done: \n\
+\n\
+1. Locate connected areas with NaN values (using OpenCVs method 'connectedComponentsWithStats'). \n\
+2. For every area whose size does not exceed 'maxAreaSize': \n\
+   \n\
+   - depending on 'regionType' and 'regionExtend' an enlarged area around the NaN area is taken \n\
+   - depending on 'method' an interpolation plane or single value is calculated using all valid values within the enlarged area \n\
+   - The NaN values within the area are filled with the interpolated plane value of the interpolated scalar \n\
+\n\
+RegionType \n\
+----------- \n\
+\n\
+* Per default, the region type is 'BoundingBox'. Then, a rectangular bounding box is set around each area of invalid values and the size of the bounding box. \n\
+  is increased in all directions by the parameter 'regionExtend' (different value possible for horizontal and vertical extend). 'BoundingBox' is the fastest\n\
+  method, however may produce very varying results, if the shape of the areas is different from simple rectangles. \n\
+* ErodeRect: Around the invalid area, an erosion is calculated with a rectangle element. The interpolation is only done with values within the eroded ribbon. \n\
+  The extend is the maximum horizontal and vertical distance from a edge element of the invalid area, e.g. (1,1) is a 1-pixel ribbon whose valid values are used for interpolation. \n\
+* ErodeEllipse: This is the same than 'ErodeRect', however the element has an ellipse form and not a rectangle making the ribbon more smooth. \n\
+\n\
+Method \n\
+------- \n\
+\n\
+* LeastSquaresPlane: A plane is fitted into the valid values of the region using the least squares fit approach. \n\
+* LMedSPlane: A plane is fitted into the valid values of the region using the approach to minimize the median of the squared distances. \n\
+* Mean: A mean value of a valid values of the region replaces the invalid values within the region. \n\
+* Median: A median value of a valid values of the region replaces the invalid values within the region. \n\
+\n\
+Currently, the filter does not work inplace such that the output object is always a newly allocated dataObject of the same type and size than the input object.");
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FittingFilters::fillInvalidAreasParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (retval.containsError()) return retval;
+
+    paramsMand->append(ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input real-valued data object with possible NaN values (float32, float64)."));
+    paramsMand->append(ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output real-valued data object that equals 'inputObject' but NaN values are filled with interpolated values (float32, float64)."));  
+
+    paramsOpt->append(Param("method", ito::ParamBase::String | ParamBase::In, "LeastSquaresPlane", tr("LeastSquaresPlane (default), LMedSPlane (Least median of squares), Median, Mean").toLatin1().data()));
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "LeastSquaresPlane");
+    sm->addItem("LMedSPlane");
+    sm->addItem("Median");
+    sm->addItem("Mean");
+    (*paramsOpt)[0].setMeta(sm, true);
+
+    paramsOpt->append(Param("regionType", ito::ParamBase::String | ParamBase::In, "BoundingBox", tr("BoundingBox (default): a bounding box is set around each invalid area and the interpolation is done over all valid values within the bounding box. For other region types see the description of this filter.").toLatin1().data()));
+    sm = new ito::StringMeta(ito::StringMeta::String, "BoundingBox");
+    sm->addItem("ErodeRect");
+    sm->addItem("ErodeEllipse");
+    (*paramsOpt)[1].setMeta(sm, true);
+
+    int32 extend[] = { 3, 3 };
+    paramsOpt->append(Param("regionExtend", ito::ParamBase::IntArray | ParamBase::In, 2, extend, tr("The invalid region is extend by the 'regionType'. The size of the extend in x- and y- direction is given by this parameter as tuple (dx,dy).").toLatin1().data()));
+    (*paramsOpt)[2].setMeta(new ito::IntArrayMeta(1, 2001, 1, 2, 2, 1), true);
+
+    paramsOpt->append(Param("maxAreaSize", ito::ParamBase::Int | ParamBase::In, 1, std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), tr("Only invalid area whose number of pixels is below this value are filled by interpolated values.").toLatin1().data()));
+
+    paramsOpt->append(Param("validPointProbability", ParamBase::Double | ParamBase::In, 0.0, 0.999999, 0.2, tr("probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFitPlane)").toLatin1().data()));
+    paramsOpt->append(Param("allowedErrorProbability", ParamBase::Double | ParamBase::In, 0.0000001, 1.0, 0.001, tr("allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFitPlane)").toLatin1().data()));
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    const ito::DataObject *inputObject = paramsMand->at(0).getVal<const ito::DataObject*>();
+    retval += ito::dObjHelper::verifyDataObjectType(inputObject, "inputObject", 2, ito::tFloat32, ito::tFloat64);
+    QByteArray method = paramsOpt->at(0).getVal<const char*>();
+    int meth;
+    QByteArray regionType = paramsOpt->at(1).getVal<const char*>();
+    const int *extend = paramsOpt->at(2).getVal<const int32*>();
+    int maxAreaSize = paramsOpt->at(3).getVal<int>();
+    double valid_probability = paramsOpt->at(4).getVal<double>();
+    double alarm_rate = paramsOpt->at(5).getVal<double>();
+
+    const cv::Mat *input = NULL;
+    cv::Mat *output = NULL;
+    cv::Mat nanMask;
+    cv::Mat labels, stats, centroids;
+    int numTotalAreas = 0;
+    int numTotalFilledAreas = 0;
+    ito::int32 *statsRow;
+    cv::Mat inputPatch;
+    cv::Mat outputPatch;
+    cv::Mat labelPatch;
+    cv::Mat inputPatchValidMask;
+    cv::Scalar scalar;
+    std::vector<ito::float32> floatVec;
+    std::vector<ito::float64> doubleVec;
+    ito::float32 *floatPtr;
+    ito::float64 *doublePtr;
+    ito::int32 *labelPtr;
+    int x, y, w, h, x2, y2;
+    double A, B, C;
+    cv::Mat erodeElement;
+
+    if (method == "LeastSquaresPlane")
+    {
+        meth = inputObject->getType() | 0x01000000;
+    }
+    else if (method == "LMedSPlane")
+    {
+        meth = inputObject->getType() | 0x02000000;
+    }
+    else if (method == "Median")
+    {
+        meth = inputObject->getType() | 0x04000000;
+    }
+    else if (method == "Mean")
+    {
+        meth = inputObject->getType() | 0x08000000;
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "unsupported method.");
+    }
+
+    if (!retval.containsError())
+    {
+        int numPlanes = inputObject->getNumPlanes();
+
+        //create a copy of the input object to output object
+        ito::DataObject outputObject;
+        inputObject->copyTo(outputObject, 1);
+        inputObject->copyAxisTagsTo(outputObject);
+        inputObject->copyTagMapTo(outputObject);
+
+        if (regionType == "ErodeRect")
+        {
+            erodeElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1 + 2 * extend[0], 1 + 2 * extend[1]));
+        }
+        else if (regionType == "ErodeEllipse")
+        {
+            erodeElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(1 + 2 * extend[0], 1 + 2 * extend[1]));
+        }
+
+        for (int planeIdx = 0; planeIdx < numPlanes; ++planeIdx)
+        {
+            input = inputObject->getCvPlaneMat(0);
+            output = outputObject.getCvPlaneMat(0);
+
+            //get all NaN values
+            nanMask = cv::Mat(*input != *input);
+
+            //label all NaN areas
+            int numAreas = cv::connectedComponentsWithStats(nanMask, labels, stats, centroids, 8, CV_32S);
+            numTotalAreas += (numAreas - 1); //the first area is the background
+
+            for (int areaIdx = 1; areaIdx < numAreas; ++areaIdx)
+            {
+                statsRow = stats.ptr<ito::int32>(areaIdx);
+                if (statsRow[cv::CC_STAT_AREA] <= maxAreaSize)
+                {
+                    x = qBound(0, statsRow[cv::CC_STAT_LEFT] - extend[0], input->cols - 1);
+                    y = qBound(0, statsRow[cv::CC_STAT_TOP] - extend[1], input->rows - 1);
+                    x2 = qBound(0, statsRow[cv::CC_STAT_LEFT] + statsRow[cv::CC_STAT_WIDTH] + extend[0], input->cols); //excluded
+                    y2 = qBound(0, statsRow[cv::CC_STAT_TOP] + statsRow[cv::CC_STAT_HEIGHT] + extend[1], input->rows);//excluded
+                    w = x2 - x;
+                    h = y2 - y;
+
+                    if (w > 0 && h > 0)
+                    {
+                        outputPatch = (*output)(cv::Rect(x, y, w, h));
+                        labelPatch = labels(cv::Rect(x, y, w, h));
+
+                        if (regionType == "BoundingBox")
+                        {
+                            inputPatch = (*input)(cv::Rect(x, y, w, h));
+                        }
+                        else //eroding
+                        {
+                            //the inputPatch is manipulated (therefore a copy is necessary), such
+                            //that all values that are in the boundingBox but outside of a ribbon generated by eroding the
+                            //invalid area are also set to invalid. Then, all the outer values are not considered for calculating
+                            //the interpolated plane, mean or median value.
+                            cv::Mat labelPatchMorph = (labelPatch != areaIdx); //0 is within invalid area, 1 is outside
+                            cv::Mat labelPatchMorphEroded;
+                            cv::erode(labelPatchMorph, labelPatchMorphEroded, erodeElement);
+                            (*input)(cv::Rect(x, y, w, h)).copyTo(inputPatch);
+                            if (inputObject->getType() == ito::tFloat32)
+                            {
+                                inputPatch.setTo(std::numeric_limits<ito::float32>::quiet_NaN(), labelPatchMorphEroded);
+                            }
+                            else
+                            {
+                                inputPatch.setTo(std::numeric_limits<ito::float64>::quiet_NaN(), labelPatchMorphEroded);
+                            }
+                        }
+
+                        outputPatch = (*output)(cv::Rect(x, y, w, h));
+                        labelPatch = labels(cv::Rect(x, y, w, h));
+
+                        switch (meth)
+                        {
+                        case ito::tFloat32 | 0x01000000: //Least Squares Plane with float32 input
+                            retval += lsqFitPlane<ito::float32>(&inputPatch, A, B, C);
+
+                            for (int r = 0; r < inputPatch.rows; ++r)
+                            {
+                                floatPtr = outputPatch.ptr<ito::float32>(r);
+                                labelPtr = labelPatch.ptr<ito::int32>(r);
+                                for (int c = 0; c < inputPatch.cols; ++c)
+                                {
+                                    if (labelPtr[c] == areaIdx)
+                                    {
+                                        floatPtr[c] = A + B * c + C * r;
+                                    }
+                                }
+                            }
+                            break;
+                        case ito::tFloat64 | 0x01000000: //Least Squares Plane with float64 input
+                            retval += lsqFitPlane<ito::float64>(&inputPatch, A, B, C);
+
+                            for (int r = 0; r < inputPatch.rows; ++r)
+                            {
+                                doublePtr = outputPatch.ptr<ito::float64>(r);
+                                labelPtr = labelPatch.ptr<ito::int32>(r);
+                                for (int c = 0; c < inputPatch.cols; ++c)
+                                {
+                                    if (labelPtr[c] == areaIdx)
+                                    {
+                                        doublePtr[c] = A + B * c + C * r;
+                                    }
+                                }
+                            }
+                            break;
+                        case ito::tFloat32 | 0x02000000: //Least Median Plane with float32 input
+                            retval += lmedsFitPlane<ito::float32>(&inputPatch, A, B, C, valid_probability, alarm_rate);
+
+                            for (int r = 0; r < inputPatch.rows; ++r)
+                            {
+                                floatPtr = outputPatch.ptr<ito::float32>(r);
+                                labelPtr = labelPatch.ptr<ito::int32>(r);
+                                for (int c = 0; c < inputPatch.cols; ++c)
+                                {
+                                    if (labelPtr[c] == areaIdx)
+                                    {
+                                        floatPtr[c] = A + B * c + C * r;
+                                    }
+                                }
+                            }
+                            break;
+                        case ito::tFloat64 | 0x02000000: //Least Median Plane with float64 input
+                            retval += lmedsFitPlane<ito::float64>(&inputPatch, A, B, C, valid_probability, alarm_rate);
+
+                            for (int r = 0; r < inputPatch.rows; ++r)
+                            {
+                                doublePtr = outputPatch.ptr<ito::float64>(r);
+                                labelPtr = labelPatch.ptr<ito::int32>(r);
+                                for (int c = 0; c < inputPatch.cols; ++c)
+                                {
+                                    if (labelPtr[c] == areaIdx)
+                                    {
+                                        doublePtr[c] = A + B * c + C * r;
+                                    }
+                                }
+                            }
+                            break;
+                        case ito::tFloat32 | 0x04000000: //Median with float32 input
+                        {
+                            //calculate median
+                            floatVec.clear();
+                            floatVec.reserve(inputPatch.rows * inputPatch.cols);
+                            for (int r = 0; r < inputPatch.rows; ++r)
+                            {
+                                floatPtr = inputPatch.ptr<ito::float32>(r);
+                                for (int c = 0; c < inputPatch.cols; ++c)
+                                {
+                                    if (ito::isFinite(floatPtr[c]))
+                                    {
+                                        floatVec.push_back(floatPtr[c]);
+                                    }
+                                }
+                            }
+                                
+                            scalar = nanmedian<ito::float32>(floatVec.data(), floatVec.size());
+                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                        }
+                        break;
+                        case ito::tFloat64 | 0x04000000: //Median Plane with float64 input
+                        {
+                            //calculate median
+                            doubleVec.clear();
+                            doubleVec.reserve(inputPatch.rows * inputPatch.cols);
+                            for (int r = 0; r < inputPatch.rows; ++r)
+                            {
+                                doublePtr = inputPatch.ptr<ito::float64>(r);
+                                for (int c = 0; c < inputPatch.cols; ++c)
+                                {
+                                    if (ito::isFinite(doublePtr[c]))
+                                    {
+                                        doubleVec.push_back(doublePtr[c]);
+                                    }
+                                }
+                            }
+
+                            scalar = nanmedian<ito::float64>(doubleVec.data(), floatVec.size());
+                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                        }
+                        break;
+                        case ito::tFloat32 | 0x08000000: //Mean with float32 input
+                            inputPatchValidMask = (inputPatch == inputPatch);
+                            scalar = cv::mean(inputPatch, inputPatchValidMask);
+                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                            break;
+                        case ito::tFloat64 | 0x08000000: //Mean with float64 input
+                            inputPatchValidMask = (inputPatch == inputPatch);
+                            scalar = cv::mean(inputPatch, inputPatchValidMask);
+                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "unsupported regionType. Only 'BoundingBox' is currently implemented.");
+                        break;
+                    }
+
+                    numTotalFilledAreas++;
+                }
+            }
+        }
+
+        *((*paramsMand)[1].getVal<ito::DataObject*>()) = outputObject;
+    }
+
+    return retval;
+}
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //----- HELPER METHODS ------------------------------
 
@@ -2134,6 +2520,11 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
 
     filter = new FilterDef(FittingFilters::subtract1DRegressionPolynom, FittingFilters::subtract1DRegressionPolynomParams, subtract1DRegressionPolynomDoc);
     m_filterList.insert("subtract1DRegression", filter);
+
+#if (CV_MAJOR_VERSION >= 3)
+    filter = new FilterDef(FittingFilters::fillInvalidAreas, FittingFilters::fillInvalidAreasParams, fillInvalidAreasDoc);
+    m_filterList.insert("fillInvalidAreas", filter);
+#endif
     
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;

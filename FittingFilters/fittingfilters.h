@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "FittingFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -122,6 +122,12 @@ class FittingFilters : public ito::AddInAlgo
         static const QString getInterpolatedValuesDoc;
         static ito::RetVal getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+#if (CV_MAJOR_VERSION >= 3)
+        static const QString fillInvalidAreasDoc;
+        static ito::RetVal fillInvalidAreas(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal fillInvalidAreasParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+#endif
 
     private:
         struct Koeffizienten {
