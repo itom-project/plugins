@@ -88,9 +88,12 @@ class DataObjectArithmetic : public ito::AddInAlgo
         
         static const QString meanValueDoc;
         static ito::RetVal meanValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);      //*< Static filter function to calcuate the mean Value of a dataObject */
+
+        static const QString medianValueDoc;
+        static ito::RetVal medianValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);      //*< Static filter function to calcuate the median Value of a dataObject */
         
         static const QString devValueDoc;
-        static ito::RetVal devValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);       //*< Static filter function to calcuate the mean Value and the standard deviation of a dataObject */
+        static ito::RetVal devValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);       //*< Static filter function to calcuate the standard deviation Value and the standard deviation of a dataObject */
         
         static const QString areEqualDoc;
         static ito::RetVal areEqual(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);       //*< Static filter function to compare to dataObjects element-wise and by type */

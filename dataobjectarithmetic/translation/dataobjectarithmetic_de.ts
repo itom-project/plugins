@@ -358,7 +358,7 @@ This plugin does not have any unusual dependencies.</source>
 
 The result value will be Integer vor all integer types or Double for all floating point types
 
-The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types
+The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
@@ -369,7 +369,7 @@ The filter do not work with RGBA32, Complex64 and Complex128, but with all other
 
 The result value will be Integer vor all integer types or Double for all floating point types
 
-The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types
+The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
@@ -391,7 +391,7 @@ The filter do not work with RGBA32 but with all other data-types
 
 The return value containing the mean value of the dataObject.
 
-The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types
+The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
@@ -402,7 +402,7 @@ The filter do not work with RGBA32, Complex64 and Complex128, but with all other
 The optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)
 or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)
 
-The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types
+The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
@@ -412,7 +412,7 @@ The filter do not work with RGBA32, Complex64 and Complex128, but with all other
         <source>Check pixel-wise wether two dataObjects are equal. 
 The filter returns 1 if both objects are pixel-wise equal, else returns 0.
 
-The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types
+The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
