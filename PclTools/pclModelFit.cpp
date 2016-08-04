@@ -661,13 +661,13 @@ const QString PclTools::pclFitConeDOC = QObject::tr("fits a conical model to the
 //------------------------------------------------------------------------------------------------------------------------------
 const QString PclTools::pclDistanceToModelDOC = QObject::tr("Calculates the distances of points of a point cloud to a given model. \n\
 \n\
-Possible types are: \n\
---------------------\n\
+**Possible types are:** \n\
+\n\
 SACMODEL_SPHERE = 4, \n\
 SACMODEL_CYLINDER = 5, \n\
 \n\
-Not supported yet: \n\
-------------------- \n\
+**Not supported yet:** \n\
+\n\
 SACMODEL_PLANE = 0, \n\
 SACMODEL_LINE = 1, \n\
 SACMODEL_CIRCLE2D = 2, \n\

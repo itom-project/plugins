@@ -46,7 +46,7 @@ parameters can be changed using *setParam*.
 **dll_version**: {str}, read-only
     Version of DLL file
 **name**: {str}, read-only
-    
+    Name of the plugin
 **speed**: {float}
     Target speed in %; range: 0.0..100.0 %
 **spoolMax**: {float}, read-only

@@ -5120,8 +5120,7 @@ Per default, the standard dataset (e.g. topology) is loaded. Set 'printAllBuffer
 buffers printed to the command line (only if more than one buffer is available). While buffers at different levels are automatically \n\
 loaded to a 3D data object instead of a 2D one, the user can select the type and sensor counter that should be loaded. Possible values are among others: \n\
 \n\
-bufferType \n\
---------------- \n\
+**bufferType** \n\
 \n\
 * 0x0001: piezo \n\
 * 0x0002: intensity \n\
@@ -5139,8 +5138,7 @@ bufferType \n\
 * 0x0401: fit \n\
 * 0x0402: slope \n\
 \n\
-sensorCounter \n\
---------------- \n\
+**sensorCounter** \n\
 \n\
 Currently, only 0 (sensor 1 - top) and 1 (sensor 2 - bottom) seems to be implemented in files. In future sensor 3 and sensor 4 (indices 2 and 3) might follow.");
 

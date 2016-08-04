@@ -296,7 +296,7 @@ FirgelliLAC::FirgelliLAC() :
     m_async(0)
 {
     // Read only - Parameters
-    m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "FirgelliLAC", NULL));
+    m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "FirgelliLAC", tr("Name of the plugin").toLatin1().data()));
     m_params.insert("deviceID", ito::Param("device_id", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Name of controller").toLatin1().data()));
     m_params.insert("dllVersion", ito::Param("dll_version", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Version of DLL file").toLatin1().data()));
     m_params.insert("spoolMax", ito::Param("spoolMax", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 100000.0, 20.0, tr("Maximum length of spool (mm)").toLatin1().data()));

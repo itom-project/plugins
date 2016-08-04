@@ -256,7 +256,7 @@ NanotecStepMotor::NanotecStepMotor() :
     m_async(0)
 {
     // Read only - Parameters
-    m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NanotecStepMotor", NULL));
+    m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NanotecStepMotor", tr("Name of the plugin").toLatin1().data()));
     m_params.insert("deviceID", ito::Param("deviceID", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Name of controller").toLatin1().data()));
     m_params.insert("devicePort", ito::Param("devicePort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 255, 0, tr("Serial port of device").toLatin1().data()));
     m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 255, 0, tr("Number of axis").toLatin1().data()));

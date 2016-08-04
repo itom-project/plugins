@@ -82,7 +82,7 @@ SMC100::SMC100() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("current_status", ito::ParamBase::IntArray, NULL, tr("Displays the current status in the Newport system.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "SMC100", NULL);
+    paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "SMC100", tr("Name of the plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 32, 0, tr("Number of Axis").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);

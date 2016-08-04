@@ -1480,8 +1480,7 @@ This filter processes independently every plane of the input object. For every p
    - depending on 'method' an interpolation plane or single value is calculated using all valid values within the enlarged area \n\
    - The NaN values within the area are filled with the interpolated plane value of the interpolated scalar \n\
 \n\
-RegionType \n\
------------ \n\
+**RegionType** \n\
 \n\
 * Per default, the region type is 'BoundingBox'. Then, a rectangular bounding box is set around each area of invalid values and the size of the bounding box. \n\
   is increased in all directions by the parameter 'regionExtend' (different value possible for horizontal and vertical extend). 'BoundingBox' is the fastest\n\
@@ -1490,8 +1489,7 @@ RegionType \n\
   The extend is the maximum horizontal and vertical distance from a edge element of the invalid area, e.g. (1,1) is a 1-pixel ribbon whose valid values are used for interpolation. \n\
 * ErodeEllipse: This is the same than 'ErodeRect', however the element has an ellipse form and not a rectangle making the ribbon more smooth. \n\
 \n\
-Method \n\
-------- \n\
+**Method** \n\
 \n\
 * LeastSquaresPlane: A plane is fitted into the valid values of the region using the least squares fit approach. \n\
 * LMedSPlane: A plane is fitted into the valid values of the region using the approach to minimize the median of the squared distances. \n\
