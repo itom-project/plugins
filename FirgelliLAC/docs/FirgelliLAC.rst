@@ -60,4 +60,5 @@ Before using this motor install the required driver, e.g. by installing the LAC 
 Changelog
 ==========
 
+* 2016-04-07: This plugin will be delivered with itom 2.2.0 for the first time
 * 2016-04-07: The required library MPUSBAPI is delivered with the sources of this plugin in version 1.1.0.
