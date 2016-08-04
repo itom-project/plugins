@@ -1468,6 +1468,7 @@ template <typename _Tp> _Tp nanmedian(_Tp *values, uint32 num)
     return values[halfKernSize];
 }
 
+#if (CV_MAJOR_VERSION >= 3)
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString FittingFilters::fillInvalidAreasDoc = QObject::tr("This filter can be used to fill NaN areas in a float32 or float64 input object with interpolated values. \n\
 \n\
@@ -1800,7 +1801,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
 
     return retval;
 }
-
+#endif
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
