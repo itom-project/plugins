@@ -1530,7 +1530,9 @@ ito::RetVal FittingFilters::fillInvalidAreasParams(QVector<ito::Param> *paramsMa
 
     paramsOpt->append(Param("validPointProbability", ParamBase::Double | ParamBase::In, 0.0, 0.999999, 0.2, tr("probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFitPlane)").toLatin1().data()));
     paramsOpt->append(Param("allowedErrorProbability", ParamBase::Double | ParamBase::In, 0.0000001, 1.0, 0.001, tr("allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFitPlane)").toLatin1().data()));
-
+    
+    paramsOut->append(Param("numTotalInvalidAreas", ParamBase::Int | ParamBase::Out, 0, std::numeric_limits<int>::max(), 0, tr("total number of detected invalid areas").toLatin1().data()));
+    paramsOut->append(Param("numFilledAreas", ParamBase::Int | ParamBase::Out, 0, std::numeric_limits<int>::max(), 0, tr("number of areas that where filled (their area size was <= maxAreaSize and the interpolation values based on surrounding pixels are valid).").toLatin1().data()));
     return retval;
 }
 
@@ -1618,7 +1620,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
             nanMask = cv::Mat(*input != *input);
 
             //label all NaN areas
-            int numAreas = cv::connectedComponentsWithStats(nanMask, labels, stats, centroids, 8, CV_32S);
+            int numAreas = cv::connectedComponentsWithStats(nanMask, labels, stats, centroids, 4, CV_32S);
             numTotalAreas += (numAreas - 1); //the first area is the background
 
             for (int areaIdx = 1; areaIdx < numAreas; ++areaIdx)
@@ -1670,65 +1672,81 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                         case ito::tFloat32 | 0x01000000: //Least Squares Plane with float32 input
                             retval += lsqFitPlane<ito::float32>(&inputPatch, A, B, C);
 
-                            for (int r = 0; r < inputPatch.rows; ++r)
+                            if (ito::isFinite(A))
                             {
-                                floatPtr = outputPatch.ptr<ito::float32>(r);
-                                labelPtr = labelPatch.ptr<ito::int32>(r);
-                                for (int c = 0; c < inputPatch.cols; ++c)
+                                for (int r = 0; r < inputPatch.rows; ++r)
                                 {
-                                    if (labelPtr[c] == areaIdx)
+                                    floatPtr = outputPatch.ptr<ito::float32>(r);
+                                    labelPtr = labelPatch.ptr<ito::int32>(r);
+                                    for (int c = 0; c < inputPatch.cols; ++c)
                                     {
-                                        floatPtr[c] = A + B * c + C * r;
+                                        if (labelPtr[c] == areaIdx)
+                                        {
+                                            floatPtr[c] = A + B * c + C * r;
+                                        }
                                     }
                                 }
+                                numTotalFilledAreas++;
                             }
                             break;
                         case ito::tFloat64 | 0x01000000: //Least Squares Plane with float64 input
                             retval += lsqFitPlane<ito::float64>(&inputPatch, A, B, C);
 
-                            for (int r = 0; r < inputPatch.rows; ++r)
+                            if (ito::isFinite(A))
                             {
-                                doublePtr = outputPatch.ptr<ito::float64>(r);
-                                labelPtr = labelPatch.ptr<ito::int32>(r);
-                                for (int c = 0; c < inputPatch.cols; ++c)
+                                for (int r = 0; r < inputPatch.rows; ++r)
                                 {
-                                    if (labelPtr[c] == areaIdx)
+                                    doublePtr = outputPatch.ptr<ito::float64>(r);
+                                    labelPtr = labelPatch.ptr<ito::int32>(r);
+                                    for (int c = 0; c < inputPatch.cols; ++c)
                                     {
-                                        doublePtr[c] = A + B * c + C * r;
+                                        if (labelPtr[c] == areaIdx)
+                                        {
+                                            doublePtr[c] = A + B * c + C * r;
+                                        }
                                     }
                                 }
+                                numTotalFilledAreas++;
                             }
                             break;
                         case ito::tFloat32 | 0x02000000: //Least Median Plane with float32 input
                             retval += lmedsFitPlane<ito::float32>(&inputPatch, A, B, C, valid_probability, alarm_rate);
 
-                            for (int r = 0; r < inputPatch.rows; ++r)
+                            if (ito::isFinite(A))
                             {
-                                floatPtr = outputPatch.ptr<ito::float32>(r);
-                                labelPtr = labelPatch.ptr<ito::int32>(r);
-                                for (int c = 0; c < inputPatch.cols; ++c)
+                                for (int r = 0; r < inputPatch.rows; ++r)
                                 {
-                                    if (labelPtr[c] == areaIdx)
+                                    floatPtr = outputPatch.ptr<ito::float32>(r);
+                                    labelPtr = labelPatch.ptr<ito::int32>(r);
+                                    for (int c = 0; c < inputPatch.cols; ++c)
                                     {
-                                        floatPtr[c] = A + B * c + C * r;
+                                        if (labelPtr[c] == areaIdx)
+                                        {
+                                            floatPtr[c] = A + B * c + C * r;
+                                        }
                                     }
                                 }
+                                numTotalFilledAreas++;
                             }
                             break;
                         case ito::tFloat64 | 0x02000000: //Least Median Plane with float64 input
                             retval += lmedsFitPlane<ito::float64>(&inputPatch, A, B, C, valid_probability, alarm_rate);
 
-                            for (int r = 0; r < inputPatch.rows; ++r)
+                            if (ito::isFinite(A))
                             {
-                                doublePtr = outputPatch.ptr<ito::float64>(r);
-                                labelPtr = labelPatch.ptr<ito::int32>(r);
-                                for (int c = 0; c < inputPatch.cols; ++c)
+                                for (int r = 0; r < inputPatch.rows; ++r)
                                 {
-                                    if (labelPtr[c] == areaIdx)
+                                    doublePtr = outputPatch.ptr<ito::float64>(r);
+                                    labelPtr = labelPatch.ptr<ito::int32>(r);
+                                    for (int c = 0; c < inputPatch.cols; ++c)
                                     {
-                                        doublePtr[c] = A + B * c + C * r;
+                                        if (labelPtr[c] == areaIdx)
+                                        {
+                                            doublePtr[c] = A + B * c + C * r;
+                                        }
                                     }
                                 }
+                                numTotalFilledAreas++;
                             }
                             break;
                         case ito::tFloat32 | 0x04000000: //Median with float32 input
@@ -1749,7 +1767,11 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                             }
                                 
                             scalar = nanmedian<ito::float32>(floatVec.data(), floatVec.size());
-                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                            if (ito::isFinite(scalar[0]))
+                            {
+                                outputPatch.setTo(scalar, labelPatch == areaIdx);
+                                numTotalFilledAreas++;
+                            }
                         }
                         break;
                         case ito::tFloat64 | 0x04000000: //Median Plane with float64 input
@@ -1770,18 +1792,30 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                             }
 
                             scalar = nanmedian<ito::float64>(doubleVec.data(), floatVec.size());
-                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                            if (ito::isFinite(scalar[0]))
+                            {
+                                outputPatch.setTo(scalar, labelPatch == areaIdx);
+                                numTotalFilledAreas++;
+                            }
                         }
                         break;
                         case ito::tFloat32 | 0x08000000: //Mean with float32 input
                             inputPatchValidMask = (inputPatch == inputPatch);
                             scalar = cv::mean(inputPatch, inputPatchValidMask);
-                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                            if (ito::isFinite(scalar[0]))
+                            {
+                                outputPatch.setTo(scalar, labelPatch == areaIdx);
+                                numTotalFilledAreas++;
+                            }
                             break;
                         case ito::tFloat64 | 0x08000000: //Mean with float64 input
                             inputPatchValidMask = (inputPatch == inputPatch);
                             scalar = cv::mean(inputPatch, inputPatchValidMask);
-                            outputPatch.setTo(scalar, labelPatch == areaIdx);
+                            if (ito::isFinite(scalar[0]))
+                            {
+                                outputPatch.setTo(scalar, labelPatch == areaIdx);
+                                numTotalFilledAreas++;
+                            }
                             break;
                         }
                     }
@@ -1791,13 +1825,16 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                         break;
                     }
 
-                    numTotalFilledAreas++;
+                    
                 }
             }
         }
 
         *((*paramsMand)[1].getVal<ito::DataObject*>()) = outputObject;
     }
+
+    (*paramsOut)[0].setVal<int>(numTotalAreas);
+    (*paramsOut)[1].setVal<int>(numTotalFilledAreas);
 
     return retval;
 }
