@@ -1046,7 +1046,7 @@ ito::RetVal Roughness::getGaussianFilterKernelParams(QVector<ito::Param> *params
     if (retval.containsError()) return retval;
 
     paramsMand->append(ito::Param("kernel", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, QObject::tr("kernel data object that contains the kernel after the call.").toLatin1().data()));
-    paramsMand->append(ito::Param("cutoff_wavelength", ito::ParamBase::Double | ito::ParamBase::In, 10.0, 100000.0, 80.0, QObject::tr("cut-off wavelength in _m").replace("_", QLatin1String("\u00B5")).toLatin1().data()));
+    paramsMand->append(ito::Param("cutoff_wavelength", ito::ParamBase::Double | ito::ParamBase::In, 0.0001, 100000.0, 80.0, QObject::tr("cut-off wavelength in _m").replace("_", QLatin1String("\u00B5")).toLatin1().data()));
     paramsMand->append(ito::Param("spacing", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 1.0, QObject::tr("spacing in _m between two adjacent pixels").replace("_", QLatin1String("\u00B5")).toLatin1().data()));
     paramsOpt->append(ito::Param("cutoff_factor", ito::ParamBase::Double | ito::ParamBase::In, 0.5, 1.0, 0.6, QObject::tr("quality factor for the length of the filter kernel. The kernel is set to zero for indices > cutoff-wavelength * cutoff_factor. See ISO 16610-21:2013 A.5: 0.5 for general purpose, high precision: 0.6, reference software: 1.0").toLatin1().data()));
 
@@ -1840,6 +1840,13 @@ ito::RetVal Roughness::calcAbbottCurve(QVector<ito::ParamBase> *paramsMand, QVec
 *   The first half of the kernel is not calculated since it is symmetrical.
 *   If the kernel is applied in gauss_conv_non_periodic_rowwise, the first and last (len(kernel)-1) values must be ignored since they do not
 *   contain valid values.
+*
+*   In addition to the standard, the kernel is normalized. In the continuous domain the integral of the gaussian kernel
+*   has to be 1.0 in order to guarantee the desired amplitude transfer factor of 1.0. This is usually achieved if the disrete values
+*   of the discrete gaussian kernel are summed up. However if the sampling rate is very low (close to the cut-off frequency), the discrete
+*   integral is over-estimated, which leads to bad results. Of course, one has to think if it is allowed to filter under-sampled profiles
+*   with a short cut-off frequency, nevertheless, if this happens, it is not desired to get magnified results. Therefore, we decided
+*   to normalize the gaussian profile.
 *   
 *   @param [in] spacing is the spacing between two points in input_line (in \mu m, nm or similar length unit)
 *   @param [in] cutoff is the cut-off wavelength lambda of the filter (must be in the same unit than spacing)
@@ -1854,17 +1861,32 @@ std::vector<ito::float64> Roughness::gen_gauss_convolution(const ito::float64 sp
     ito::float64 sqrt_pi = 1.7724538509055160273; //sqrt(pi)
 
     ito::float64 h1 = spacing / (alpha * cutoff);
-    ito::float64 h3;
+    ito::float64 h3 = 0.0;
     ito::float64 h2 = sqrt_pi * h1;
+    ito::float64 sum = 0.0;
 
     int m = std::ceil((cutoff * cutoff_factor) / spacing);
 
     std::vector<ito::float64> kernel;
     kernel.resize(m+1);
-    for (int k = 0; k <= m; ++k)
+
+    /* k = 0: */
+    //h3 = 0.0;
+    kernel[0] = h1;
+    sum += kernel[0];
+
+    /* k > 0: */
+    for (int k = 1; k <= m; ++k)
     {
         h3 = h2 * (double)k;
         kernel[k] = h1 * std::exp(-h3*h3);
+        sum += 2 * kernel[k];
+    }
+
+    //normalize
+    for (int k = 0; k <= m; ++k)
+    {
+        kernel[k] /= sum;
     }
 
     nr_of_endeffect_pixels = m;
