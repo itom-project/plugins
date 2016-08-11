@@ -2541,8 +2541,8 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::DataObject *dObjImages = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
+    const ito::DataObject *dObjImages = (*paramsMand)[0].getVal<const ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
 
     if (!dObjImages)
     {
@@ -2626,7 +2626,7 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
             return ito::RetVal(ito::retError, 0, tr("Histogram can only be calculated for (u)int8, (u)int16, (u)int32, float32, float64 or rgba32").toLatin1().data());
     }
 
-    int z_length = dObjImages->calcNumMats();
+    int z_length = dObjImages->getNumPlanes();
 
     int *sizesVector = new int[dObjImages->getDims()];
 
@@ -2658,10 +2658,9 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         dObjDestination = new ito::DataObject(dObjImages->getDims(), sizesVector, ito::tInt32);
     }
 
-    delete sizesVector;
-    sizesVector = NULL;
+    DELETE_AND_SET_NULL_ARRAY(sizesVector);
 
-    cv::Mat *cvMatIn;
+    const cv::Mat *cvMatIn;
     cv::Mat *cvMatOut;
 
     if (recalcMinMax)
@@ -2750,6 +2749,7 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
 
         // add protocol
         dObjImages->copyTagMapTo(*dObjDestination);
+        dObjDestination->setTag("title", "Histogram");
         QString msg = tr("Calculated histogramm between %1 : %2").arg(minVal).arg(maxVal);
         dObjDestination->addToProtocol(std::string(msg.toLatin1().data()));
 
