@@ -1751,10 +1751,10 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
    //     #if (USEOMP)
    //     #pragma omp for schedule(guided)
    //     #endif    
-        for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
+        for(ito::uint32 x = 0; x < this->m_dx + kernelLastX; x++)
         {
             this->m_colwiseSumBuffer[x] = (ito::float64) this->m_pInLines[0][x];
-            for(ito::int16 y = 1; y < this->m_kernelSizeY; y++)
+            for(ito::uint16 y = 1; y < this->m_kernelSizeY; y++)
             {
                 //((ito::int32 *)this->csum)[x]+=((ito::int32 **)this->buf)[y][x];
 
@@ -1767,7 +1767,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
  //       #if (USEOMP)
  //       #pragma omp for schedule(guided)
  //       #endif  
-        for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
+        for(ito::uint32 x = 0; x < this->m_dx + kernelLastX; x++)
         {
             //((ito::int32 *)this->csum)[x]+=((ito::int32 **)this->buf)[this->nky-1][x];
             this->m_colwiseSumBuffer[x] += (ito::float64) this->m_pInLines[kernelLastY][x];
@@ -1783,13 +1783,13 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
  //   #pragma omp master
  //   {
  //   #endif  
-    for(ito::int16 x = 0; x < kernelLastX; x++)
+    for(ito::uint16 x = 0; x < kernelLastX; x++)
     {
         //summe+=((ito::int32 *)this->csum)[x];
         summe += this->m_colwiseSumBuffer[x];
     }
 
-    for(ito::int16 x = 0; x < this->m_dx; x++)
+    for(ito::uint32 x = 0; x < this->m_dx; x++)
     {
         //summe+=((ito::int32 *)this->csum)[x+this->nkx-1];
         //((ito::int32 *)this->out)[x]=summe/this->divisor;
@@ -1811,7 +1811,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
 //    #if (USEOMP)
 //    #pragma omp for schedule(guided)
 //    #endif  
-    for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
+    for(ito::uint32 x = 0; x < this->m_dx + kernelLastX; x++)
     {
         //((ito::int32 *)f->csum)[x]-=((ito::int32 **)this->buf)[0][x];
         this->m_colwiseSumBuffer[x] -= (ito::float64) this->m_pInLines[0][x];
