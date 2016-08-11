@@ -578,39 +578,82 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
         ito::float64 current = 0.0;
         bool valids = false;
 
-        for (int sample = 0; sample < num_samples; ++sample)
+        if (params.RskRkuOld)
         {
-            ito::float64 temp;
-            ito::float64 current_Rq = 0.0;
-            ito::float64 current_Sk = 0.0;
-            for (int i = 0; i < sample_length; ++i)
+            //based on the old standard, every single Rsk,i for i in range(0, sample) uses Rq,i as quotient
+            for (int sample = 0; sample < num_samples; ++sample)
             {
-                if (ito::isFinite(*values))
+                ito::float64 temp;
+                ito::float64 current_Rq = 0.0;
+                ito::float64 current_Sk = 0.0;
+                for (int i = 0; i < sample_length; ++i)
                 {
-                    temp = *values * *values;
-                    current_Rq += temp;
-                    current_Sk += (temp * *values);
-                    valids = true;
+                    if (ito::isFinite(*values))
+                    {
+                        temp = *values * *values;
+                        current_Rq += temp;
+                        current_Sk += (temp * *values);
+                        valids = true;
+                    }
+                    values += steps;
                 }
-                values += steps;
+
+                current_Rq = std::sqrt(current_Rq / sample_length);
+                if (current_Rq > 0)
+                {
+                    current = (current_Sk / sample_length) / (current_Rq*current_Rq*current_Rq);
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zsk not determinable").toLatin1().data());
+                }
+
+                Z_mean += current;
+                Z_min = std::min(Z_min, current);
+                Z_max = std::max(Z_max, current);
             }
 
-            current_Rq = std::sqrt(current_Rq / sample_length);
-            if (current_Rq > 0)
-            {
-                current = (current_Sk / sample_length) / (current_Rq*current_Rq*current_Rq);
-            }
-            else
-            {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zsk not determinable").toLatin1().data());
-            }
-
-            Z_mean += current;
-            Z_min = std::min(Z_min, current);
-            Z_max = std::max(Z_max, current);
+            Z_mean /= (ito::float64)num_samples;
         }
+        else
+        {
+            //based on the new standard, every single Rsk,i for i in range(0, sample) uses the same overall Rq as quotient
+            ito::float64 Rq_mean, Rq_min, Rq_max;
+            retval += CalcZq<_Tp>(data, steps, length, params, Rq_mean, Rq_min, Rq_max, num_samples);
+            Rq_mean = (Rq_mean * Rq_mean * Rq_mean);
 
-        Z_mean /= (ito::float64)num_samples;
+            if (!retval.containsError())
+            {
+                for (int sample = 0; sample < num_samples; ++sample)
+                {
+                    ito::float64 current_Sk = 0.0;
+                    for (int i = 0; i < sample_length; ++i)
+                    {
+                        if (ito::isFinite(*values))
+                        {
+                            current_Sk += (*values * *values * *values);
+                            valids = true;
+                        }
+                        values += steps;
+                    }
+
+                    if (Rq_mean > 0)
+                    {
+                        current = (current_Sk / sample_length) / (Rq_mean);
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zsk not determinable").toLatin1().data());
+                    }
+
+                    Z_mean += current;
+                    Z_min = std::min(Z_min, current);
+                    Z_max = std::max(Z_max, current);
+                }
+
+                Z_mean /= (ito::float64)num_samples;
+            }
+        }
 
         if (!valids)
         {
@@ -658,39 +701,86 @@ template<typename _Tp> ito::RetVal CalcZku(const uchar* data, const size_t byte_
         ito::float64 current = 0.0;
         bool valids = false;
 
-        for (int sample = 0; sample < num_samples; ++sample)
+        if (params.RskRkuOld)
         {
-            ito::float64 temp;
-            ito::float64 current_Rq = 0.0;
-            ito::float64 current_Sk = 0.0;
-            for (int i = 0; i < sample_length; ++i)
+            //based on the old standard, every single Rsk,i for i in range(0, sample) uses Rq,i as quotient
+            for (int sample = 0; sample < num_samples; ++sample)
             {
-                if (ito::isFinite(*values))
+                ito::float64 temp;
+                ito::float64 current_Rq = 0.0;
+                ito::float64 current_Sk = 0.0;
+                for (int i = 0; i < sample_length; ++i)
                 {
-                    temp = *values * *values;
-                    current_Rq += temp;
-                    current_Sk += (temp * temp);
-                    valids = true;
+                    if (ito::isFinite(*values))
+                    {
+                        temp = *values * *values;
+                        current_Rq += temp;
+                        current_Sk += (temp * temp);
+                        valids = true;
+                    }
+                    values += steps;
                 }
-                values += steps;
+
+                current_Rq = current_Rq / sample_length;
+                if (current_Rq > 0)
+                {
+                    current = (current_Sk / sample_length) / (current_Rq * current_Rq);
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zku not determinable").toLatin1().data());
+                }
+
+                Z_mean += current;
+                Z_min = std::min(Z_min, current);
+                Z_max = std::max(Z_max, current);
             }
 
-            current_Rq = current_Rq / sample_length;
-            if (current_Rq > 0)
-            {
-                current = (current_Sk / sample_length) / (current_Rq * current_Rq);
-            }
-            else
-            {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zku not determinable").toLatin1().data());
-            }
-
-            Z_mean += current;
-            Z_min = std::min(Z_min, current);
-            Z_max = std::max(Z_max, current);
+            Z_mean /= (ito::float64)num_samples;
         }
+        else
+        {
+            //based on the new standard, every single Rsk,i for i in range(0, sample) uses the same overall Rq as quotient
+            ito::float64 Rq_mean, Rq_min, Rq_max;
+            retval += CalcZq<_Tp>(data, steps, length, params, Rq_mean, Rq_min, Rq_max, num_samples);
 
-        Z_mean /= (ito::float64)num_samples;
+            if (!retval.containsError())
+            {
+                Rq_mean *= Rq_mean;
+                Rq_mean *= Rq_mean;
+
+                for (int sample = 0; sample < num_samples; ++sample)
+                {
+                    ito::float64 temp;
+                    ito::float64 current_Sk = 0.0;
+                    for (int i = 0; i < sample_length; ++i)
+                    {
+                        if (ito::isFinite(*values))
+                        {
+                            temp = *values * *values;
+                            current_Sk += (temp * temp);
+                            valids = true;
+                        }
+                        values += steps;
+                    }
+
+                    if (Rq_mean > 0)
+                    {
+                        current = (current_Sk / sample_length) / (Rq_mean);
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zku not determinable").toLatin1().data());
+                    }
+
+                    Z_mean += current;
+                    Z_min = std::min(Z_min, current);
+                    Z_max = std::max(Z_max, current);
+                }
+
+                Z_mean /= (ito::float64)num_samples;
+            }
+        }
 
         if (!valids)
         {
@@ -1505,6 +1595,7 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
             params.spacing = spacing;
             params.cutoff_wavelength = lc;
             params.sampling_length_mode = (RoughnessParams::SamplingLengthDivision)sampling_length_mode;
+            params.RskRkuOld = false;
             cv::Mat plane_cropped;
 
             if (endeffect_pixels == 0)

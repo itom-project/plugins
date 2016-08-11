@@ -110,6 +110,7 @@ class Roughness : public ito::AddInAlgo
             int spacing_discriminiation; //e.g. 1%
             int RdcHigh; //0-100% as higher value for the R\deltac or W\deltac values
             int RdcLow; //0-100% as lower value for the R\deltac or W\deltac values
+            bool RskRkuOld; //if true, Rsk and Rku will be determined using the old norm ISO 4287 (see ptb.de/rptb -> Help), else Rsk and Rku will be determined using the new version of ISO 4287 (default)
         };
 
     private:
