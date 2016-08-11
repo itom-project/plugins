@@ -144,6 +144,7 @@ RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<i
     *paramsOut << Param("B", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy").toLatin1().data());
     *paramsOut << Param("C", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter C of regression plane z = A + Bx + Cy").toLatin1().data());
 
+    /*Info: if you change any parameters here, also check the method subtractRegressionLine and adapt it.*/
     return retval;
 }
 
@@ -270,6 +271,8 @@ RetVal FittingFilters::subtractPlaneParams(QVector<ito::Param> *paramsMand, QVec
     *paramsMand << Param("B", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());
     *paramsMand << Param("C", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter C of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());
 
+    /*Info: if you change any parameters here, also check the method subtractRegressionLine and adapt it.*/
+
     return retval;
 }
 
@@ -376,7 +379,15 @@ RetVal FittingFilters::subtractRegressionPlaneParams(QVector<ito::Param> *params
     *paramsMand << Param("sourceImage", ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("source image data object").toLatin1().data());
     *paramsMand << Param("destinationImage", ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image data object").toLatin1().data());
 
-    paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD)").toLatin1().data()) );
+    paramsOpt->append(Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD, leastMedianFit)").toLatin1().data()));
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "leastSquareFit");
+    sm->addItem("leastSquareFitSVD");
+    sm->addItem("leastMedianFit");
+    (*paramsOpt)[0].setMeta(sm, true);
+
+    paramsOpt->append(Param("validPointProbability", ParamBase::Double | ParamBase::In, 0.0, 0.999999, 0.2, tr("probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)").toLatin1().data()));
+    paramsOpt->append(Param("allowedErrorProbability", ParamBase::Double | ParamBase::In, 0.0000001, 1.0, 0.001, tr("allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)").toLatin1().data()));
+
     return retval;
 }
 
@@ -391,6 +402,8 @@ RetVal FittingFilters::subtractRegressionPlane(QVector<ito::ParamBase> *paramsMa
 
     paramsMandTemp << (*paramsMand)[0]; //source object
     paramsOptTemp << (*paramsOpt)[0]; //method
+    paramsOptTemp << (*paramsOpt)[1]; //validPointProbability
+    paramsOptTemp << (*paramsOpt)[2]; //allowedErrorProbability
     paramsOutTemp << ParamBase("A", ParamBase::Double, 0.0);
     paramsOutTemp << ParamBase("B", ParamBase::Double, 0.0);
     paramsOutTemp << ParamBase("C", ParamBase::Double, 0.0);
