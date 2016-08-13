@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OpenCV-Filter" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -93,7 +93,13 @@ imgproc and calib3d.";
 * feature detections (circles, chessboard corners...) \n\
 \n\
 This plugin not only requires access to the core library of OpenCV but also to further libraries like \
-imgproc and calib3d.");
+imgproc and calib3d. \n\
+\n\
+This plugin has been created at a time when OpenCV did not yet provide bindings for Python 3. \n\
+From OpenCV 3 on, these bindings exist. Therefore, it is possible to access almost all OpenCV \n\
+methods via the cv2 python package. The wrapped methods within this plugin can still be used; \n\
+In addition to the cv2 methods, they can sometimes operate on multi-plane dataObjects, preserve \n\
+the tags and meta information and save protocol data.");
 
     m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
