@@ -49,8 +49,6 @@
 #define useomp 0
 #endif
 
-int NTHREADS = 2;
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FFTWFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -93,8 +91,6 @@ To build this plugin you will need the libs from the fftw.");
     m_license = QObject::tr("GPL (uses FFTW licensed under GPL, too)");
     m_aboutThis = QObject::tr("1D and 2D FFT algorithms (using the fast FFTW library)");       
 
-    NTHREADS = QThread::idealThreadCount();
-
     return;
 }
 
@@ -121,7 +117,7 @@ FFTWFiltersInterface::~FFTWFiltersInterface()
 ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
-    ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128)").toLatin1().data());
+    ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128) which is shifted in-place.").toLatin1().data());
     paramsMand->append(param);
     return retval;
 }
@@ -151,7 +147,7 @@ template<typename _TP> void doifftshift(_TP *field, int sx, int sy, int lineStep
         zeroC = field[halfY * lineStep + sx - 1];
     }
 #if (USEOMP)
-#pragma omp parallel num_threads(NTHREADS)
+#pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
 #endif
         _TP buffer;
@@ -236,7 +232,7 @@ template<typename _TP> void dofftshift(_TP *field, int sx, int sy, int lineStep)
         zeroC = field[halfY * lineStep];
     }
 #if (USEOMP)
-#pragma omp parallel num_threads(NTHREADS)
+#pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
 #endif
         _TP buffer;
@@ -299,7 +295,7 @@ template<typename _TP> void dofftshift(_TP *field, int sx, int sy, int lineStep)
 const QString FFTWFilters::fftshiftDOC = QObject::tr("Perform fftshift as known from Python, Matlab and so on, i.e. make the \n\
 zero order of diffraction appear in the center.\n\
 \n\
-The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.");
+The shift is currently implemented as 2D shift and executed within each plane of the source dataObject (inplace only).");
 /*static*/ ito::RetVal FFTWFilters::fftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -360,6 +356,28 @@ The shift is currently implemented as 2D shift and executed within each plane of
         }
     }
 
+    if (!retval.containsError())
+    {
+        //shift the axis scales of the last two axis
+        int dims = inField->getDims();
+        int size;
+        double phys1, phys2;
+        for (int d = dims - 2; d < dims; ++d)
+        {
+            if (d >= 0)
+            {
+                size = inField->getSize(d);
+                if (size > 0)
+                {
+                    phys1 = inField->getPixToPhys(d, 0);
+                    phys2 = inField->getPixToPhys(d, size - 1);
+                    phys1 = 0.5 * (phys1 + phys2);
+                    inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                }
+            }
+        }
+    }
+
     return retval;
 }
 
@@ -367,7 +385,7 @@ The shift is currently implemented as 2D shift and executed within each plane of
 const QString FFTWFilters::ifftshiftDOC = QObject::tr("Perform ifftshift as known from Python, Matlab and so on, i.e. move the \n\
 zero order of diffraction back to the corner to run the inverse fft correctly.\n\
 \n\
-The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.");
+The shift is currently implemented as 2D shift and executed within each plane of the source dataObject (inplace only).");
 /*static*/ ito::RetVal FFTWFilters::ifftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -424,6 +442,28 @@ The shift is currently implemented as 2D shift and executed within each plane of
             case ito::tComplex128:
                 doifftshift<ito::complex128>((ito::complex128*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
                 break;
+            }
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        //shift the axis scales of the last two axis
+        int dims = inField->getDims();
+        int size;
+        double phys1, phys2;
+        for (int d = dims - 2; d < dims; ++d)
+        {
+            if (d >= 0)
+            {
+                size = inField->getSize(d);
+                if (size > 0)
+                {
+                    phys1 = inField->getPixToPhys(d, 0);
+                    phys2 = inField->getPixToPhys(d, size - 1);
+                    phys1 = 0.5 * (phys1 + phys2);
+                    inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                }
             }
         }
     }
@@ -632,9 +672,9 @@ ito::RetVal FFTWFilters::xfftw2dParams(QVector<ito::Param> *paramsMand, QVector<
 
         param = ito::Param("plan_flag", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, \
             tr("Method flag, 0: Estimate (default), 1: Measure.  Measure instructs FFTW to run and measure the execution time of several FFTs in order to \
-               find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the \
-               size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal. \
-               In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. ").toLatin1().data());
+find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the \
+size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal. \
+In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. ").toLatin1().data());
         paramsOpt->append(param);
 
         param = ito::Param("norm", ito::ParamBase::String | ito::ParamBase::In, "default", tr("Normalization method. no: neither fft nor ifft are scaled, default: direct transform (fft) is not scaled, inverse transform is scaled by 1/n, ortho: both direct and inverse transforms are scaled by 1/sqrt(n)").toLatin1().data());
@@ -876,11 +916,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
 
 #if (USEOMP)
             fftw_init_threads();
-#if WIN32
-            fftw_plan_with_nthreads(NTHREADS);
-#else
-            fftw_plan_with_nthreads(NTHREADS);
-#endif
+            fftw_plan_with_nthreads(ito::AddInBase::getMaximumThreadCount());
 #endif
             if (axis >= dims - 2) //axis is along x or y, works inplace and not-inplace
             {
@@ -1290,11 +1326,7 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
         {
 #if (USEOMP)
             fftw_init_threads();
-#if WIN32
-            fftw_plan_with_nthreads(NTHREADS);
-#else
-            fftw_plan_with_nthreads(NTHREADS);
-#endif
+            fftw_plan_with_nthreads(ito::AddInBase::getMaximumThreadCount());
 #endif
             bool inplace = (dObjIn == dObjOut);
 
