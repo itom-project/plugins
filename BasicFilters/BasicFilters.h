@@ -141,6 +141,12 @@ class BasicFilters : public ito::AddInAlgo
         // Defined in BasicGenericFilters.cpp
         static ito::RetVal genericStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const QString genericLowValueFilterDoc;
+        static const QString genericHighValueFilterDoc;
+        static const QString genericMedianFilterDoc;
+        static const QString genericLowPassFilterDoc;
+        static const QString genericGaussianEpsilonFilterDoc;
+        static const QString genericGaussianFilterDoc;
         static ito::RetVal genericHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal genericLowValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericLowHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, bool lowHigh);
@@ -204,7 +210,7 @@ template<typename _Tp> class GenericFilterEngine
 
     protected:
         bool m_initilized;
-        ito::DataObject *m_pInpObj;
+        const ito::DataObject *m_pInpObj;
         ito::DataObject *m_pOutObj;
         _Tp ** m_pInLines;               //< input buffer
         _Tp *  m_pOutLine;               //< output buffer
@@ -231,7 +237,7 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
         #endif
 
     public:
-        explicit LowValueFilter(ito::DataObject *in, 
+        explicit LowValueFilter(const ito::DataObject *in, 
             ito::DataObject *out, 
             ito::int32 roiX0, 
             ito::int32 roiY0, 
@@ -261,7 +267,7 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
         #endif
 
     public:
-        explicit HighValueFilter(ito::DataObject *in, 
+        explicit HighValueFilter(const ito::DataObject *in, 
             ito::DataObject *out, 
             ito::int32 roiX0, 
             ito::int32 roiY0, 
@@ -293,7 +299,7 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
         #endif
 
     public:
-        explicit MedianFilter(ito::DataObject *in, 
+        explicit MedianFilter(const ito::DataObject *in, 
             ito::DataObject *out, 
             ito::int32 roiX0, 
             ito::int32 roiY0, 
@@ -321,7 +327,7 @@ template<typename _Tp> class LowPassFilter : public GenericFilterEngine<_Tp>
         ito::float64 m_divisor;
 
     public:
-        explicit LowPassFilter(ito::DataObject *in, 
+        explicit LowPassFilter(const ito::DataObject *in, 
             ito::DataObject *out, 
             ito::int32 roiX0, 
             ito::int32 roiY0, 
@@ -350,7 +356,7 @@ template<typename _Tp> class GaussianFilter : public GenericFilterEngine<_Tp>
         bool m_isFilled;
 
     public:
-        explicit GaussianFilter(ito::DataObject *in, 
+        explicit GaussianFilter(const ito::DataObject *in, 
                                 ito::DataObject *out, 
                                 ito::int32 roiX0, 
                                 ito::int32 roiY0, 
@@ -361,7 +367,7 @@ template<typename _Tp> class GaussianFilter : public GenericFilterEngine<_Tp>
                                 ito::float64 sigmaSizeY, 
                                 ito::float64 epsilonSizeY);
 
-        explicit GaussianFilter(ito::DataObject *in, 
+        explicit GaussianFilter(const ito::DataObject *in, 
                                 ito::DataObject *out, 
                                 ito::int32 roiX0, 
                                 ito::int32 roiY0, 

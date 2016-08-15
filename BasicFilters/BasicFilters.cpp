@@ -195,22 +195,22 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::clipAbyBFilter, BasicFilters::clipAbyBFilterParams, clipAbyBDoc);
     m_filterList.insert("clipAbyB", filter);
 
-    filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine"));
+    filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, genericLowValueFilterDoc);
     m_filterList.insert("lowValueFilter", filter);
 
-    filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the highest value within the kernel (x ,y) using the generic mcpp filter engine"));
+    filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, genericHighValueFilterDoc);
     m_filterList.insert("highValueFilter", filter);
 
-    filter = new FilterDef(BasicFilters::genericMedianFilter, BasicFilters::genericStdParams, tr("Performs a median filter with kernelsize (x ,y) using the generic mcpp filter engine"));
+    filter = new FilterDef(BasicFilters::genericMedianFilter, BasicFilters::genericStdParams, genericMedianFilterDoc);
     m_filterList.insert("medianFilter", filter);
 
-    filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, tr("Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine"));
+    filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, genericLowPassFilterDoc);
     m_filterList.insert("lowPassFilter", filter);
 
-    filter = new FilterDef(BasicFilters::genericGaussianEpsilonFilter, BasicFilters::genericGaussianEpsilonParams, tr("Performs a gaussian blur filter according to sigma and epsilon using the generic mcpp filter engine. The kernelsize (x ,y) will be estimated."));
+    filter = new FilterDef(BasicFilters::genericGaussianEpsilonFilter, BasicFilters::genericGaussianEpsilonParams, genericGaussianEpsilonFilterDoc);
     m_filterList.insert("gaussianFilterEpsilon", filter);
 
-    filter = new FilterDef(BasicFilters::genericGaussianFilter, BasicFilters::genericGaussianParams, tr("Performs a gaussian blur filter with kernelsize (x ,y) and according to sigmaX and sigmaY using the generic mcpp filter engine"));
+    filter = new FilterDef(BasicFilters::genericGaussianFilter, BasicFilters::genericGaussianParams, genericGaussianFilterDoc);
     m_filterList.insert("gaussianFilter", filter);
 
     filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeCompFilterStdParams, spikeMedianFilterDoc);
