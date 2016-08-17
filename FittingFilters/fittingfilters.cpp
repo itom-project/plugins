@@ -1543,6 +1543,8 @@ ito::RetVal FittingFilters::fillInvalidAreasParams(QVector<ito::Param> *paramsMa
 
     paramsOpt->append(Param("validPointProbability", ParamBase::Double | ParamBase::In, 0.0, 0.999999, 0.2, tr("probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFitPlane)").toLatin1().data()));
     paramsOpt->append(Param("allowedErrorProbability", ParamBase::Double | ParamBase::In, 0.0000001, 1.0, 0.001, tr("allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFitPlane)").toLatin1().data()));
+
+    paramsOpt->append(Param("statistics", ParamBase::DObjPtr | ParamBase::In | ParamBase::Out, NULL, tr("optional dataObject (only possible if 'inputObject' only contains one plane). If given, the dataObject will be a float32 Mx8 dataObject where each row corresponds to one detected area. Its content is [inclusive leftmost pixel-coordinate of the area, inclusive topmost pixel-coordinate of the area, width of bounding box of area in pixel, height of bound box of area in pixel, total number of pixels in area, x-coordinate of centroid of area in physical units, y-coordinate of centroid of area in physical units, 1: area has been filled, else 0]").toLatin1().data()));
     
     paramsOut->append(Param("numTotalInvalidAreas", ParamBase::Int | ParamBase::Out, 0, std::numeric_limits<int>::max(), 0, tr("total number of detected invalid areas").toLatin1().data()));
     paramsOut->append(Param("numFilledAreas", ParamBase::Int | ParamBase::Out, 0, std::numeric_limits<int>::max(), 0, tr("number of areas that where filled (their area size was <= maxAreaSize and the interpolation values based on surrounding pixels are valid).").toLatin1().data()));
@@ -1562,6 +1564,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
     int maxAreaSize = paramsOpt->at(3).getVal<int>();
     double valid_probability = paramsOpt->at(4).getVal<double>();
     double alarm_rate = paramsOpt->at(5).getVal<double>();
+    ito::DataObject *statsObj = paramsOpt->at(6).getVal<ito::DataObject*>();
 
     const cv::Mat *input = NULL;
     cv::Mat *output = NULL;
@@ -1583,6 +1586,9 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
     int x, y, w, h, x2, y2;
     double A, B, C;
     cv::Mat erodeElement;
+    ito::DataObject statisticObject;
+    ito::float32 *statisticObjectRowPtr = NULL;
+    int dims = inputObject->getDims();
 
     if (method == "LeastSquaresPlane")
     {
@@ -1624,6 +1630,12 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
             erodeElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(1 + 2 * extend[0], 1 + 2 * extend[1]));
         }
 
+        if (numPlanes > 1 && statsObj)
+        {
+            retval += ito::RetVal(ito::retWarning, 0, "The inputObject contains more than one plane. The statistic can then not be returned as 'statistic' dataObject.");
+            statsObj = NULL;
+        }
+
         for (int planeIdx = 0; planeIdx < numPlanes; ++planeIdx)
         {
             input = inputObject->getCvPlaneMat(0);
@@ -1636,9 +1648,30 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
             int numAreas = cv::connectedComponentsWithStats(nanMask, labels, stats, centroids, 4, CV_32S);
             numTotalAreas += (numAreas - 1); //the first area is the background
 
+            
+
+            if (statsObj && numAreas > 1)
+            {
+                statisticObject.zeros(numAreas - 1, 8, ito::tFloat32);
+            }
+
             for (int areaIdx = 1; areaIdx < numAreas; ++areaIdx)
             {
                 statsRow = stats.ptr<ito::int32>(areaIdx);
+
+                if (statsObj)
+                {
+                    statisticObjectRowPtr = statisticObject.rowPtr<ito::float32>(0, areaIdx - 1);
+                    statisticObjectRowPtr[0] = statsRow[cv::CC_STAT_LEFT];
+                    statisticObjectRowPtr[1] = statsRow[cv::CC_STAT_TOP];
+                    statisticObjectRowPtr[2] = statsRow[cv::CC_STAT_WIDTH];
+                    statisticObjectRowPtr[3] = statsRow[cv::CC_STAT_HEIGHT];
+                    statisticObjectRowPtr[4] = statsRow[cv::CC_STAT_AREA];
+                    statisticObjectRowPtr[5] = inputObject->getPixToPhys(dims - 1, centroids.at<double>(areaIdx, 0));
+                    statisticObjectRowPtr[6] = inputObject->getPixToPhys(dims - 2, centroids.at<double>(areaIdx, 1));
+                    statisticObjectRowPtr[7] = statsRow[cv::CC_STAT_AREA] <= maxAreaSize;
+                }
+                
                 if (statsRow[cv::CC_STAT_AREA] <= maxAreaSize)
                 {
                     x = qBound(0, statsRow[cv::CC_STAT_LEFT] - extend[0], input->cols - 1);
@@ -1840,6 +1873,11 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
 
                     
                 }
+            }
+
+            if (statsObj)
+            {
+                *((*paramsOpt)[6].getVal<ito::DataObject*>()) = statisticObject;
             }
         }
 
