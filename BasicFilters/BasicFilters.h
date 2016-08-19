@@ -146,6 +146,10 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericLowHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, bool lowHigh);
         static ito::RetVal genericMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericLowPassFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
+        
+        static ito::RetVal genericSobelOptParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        static ito::RetVal genericSobelOptFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
+        static ito::RetVal genericKernelFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
         static ito::RetVal genericGaussianEpsilonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal genericGaussianEpsilonFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
@@ -197,13 +201,13 @@ template<typename _Tp> class GenericFilterEngine
     // the easiest way is using the this-> syntax    
     public:
         GenericFilterEngine() : m_pInpObj(NULL), m_pOutObj(NULL), m_pInLines(NULL), m_pOutLine(NULL), m_pInvalidMap(NULL),
-            m_bufsize(0), m_kernelSizeX(0), m_kernelSizeY(0), m_x0(0), m_y0(0), m_dx(0), m_dy(0), m_AnchorX(0), m_AnchorY(0), m_initilized(false) {}
+            m_bufsize(0), m_kernelSizeX(0), m_kernelSizeY(0), m_x0(0), m_y0(0), m_dx(0), m_dy(0), m_AnchorX(0), m_AnchorY(0), m_initialized(false) {}
 //        explicit GenericFilterEngine(ito::DataObject *in, ito::DataObject *out) : inp(in), outp(out), buf(NULL), bufsize(0) {};
         ~GenericFilterEngine() {}
         ito::RetVal runFilter(bool replaceNaN);
 
     protected:
-        bool m_initilized;
+        bool m_initialized;
         ito::DataObject *m_pInpObj;
         ito::DataObject *m_pOutObj;
         _Tp ** m_pInLines;               //< input buffer
@@ -308,6 +312,29 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
 
         void filterFunc();
         void clearFunc();
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> class SobelOptFilter : public GenericFilterEngine<_Tp>
+{
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax    
+private:
+    ito::uint8 m_gradDir;
+
+public:
+    explicit SobelOptFilter(ito::DataObject *in,
+        ito::DataObject *out,
+        ito::int32 roiX0,
+        ito::int32 roiY0,
+        ito::int32 roiXSize,
+        ito::int32 roiYSize,
+        ito::uint8 gradDir);
+
+    ~SobelOptFilter();
+
+    void filterFunc();
+    void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

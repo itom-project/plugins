@@ -207,6 +207,9 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, tr("Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowPassFilter", filter);
 
+    filter = new FilterDef(BasicFilters::genericSobelOptFilter, BasicFilters::genericSobelOptParams, tr("Performs a Sobel filtering with kernelsize (3 ,3) using the generic mcpp filter engine"));
+    m_filterList.insert("SobelOpt", filter);
+
     filter = new FilterDef(BasicFilters::genericGaussianEpsilonFilter, BasicFilters::genericGaussianEpsilonParams, tr("Performs a gaussian blur filter according to sigma and epsilon using the generic mcpp filter engine. The kernelsize (x ,y) will be estimated."));
     m_filterList.insert("gaussianFilterEpsilon", filter);
 

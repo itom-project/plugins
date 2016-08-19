@@ -71,19 +71,19 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());
     //ito::int32 invalidInt = cv::saturate_cast<ito::int32>(invalid);
     
-    // Check if y colidates with image boarder
+    // Check if y collides with image boarder
     if (y < 0)
     {
         y = 0;
     }
 
-    // Check if y colidates with image boarder
+    // Check if y collides with image boarder
     if (y >= plane->rows)//o->sizes[1])
     {
         y = plane->rows - 1;
     }
     
-    // Check if x or dx colidate with image boarder
+    // Check if x or dx collide with image boarder
     if (x < 0)
     {
         a = -x0;
@@ -91,7 +91,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
         dx -= a;
     }
 
-    // Check if x or dx colidate with image boarder
+    // Check if x or dx collide with image boarder
     if (x + dx > plane->cols)
     {
         b = x + dx - plane->cols;
@@ -174,6 +174,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     }
     //std::fill(buf[a + dx], buf[a + dx + b - 1], buf[a + dx - 1]);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito::int32 y0, ito::int32 dx, ito::float32 *buf, ito::int8 *inv, const ito::int32 kern, const ito::float64 /*invalid*/ )
 {
@@ -185,13 +186,13 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 validCnt = 1;
 
     //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
-    // Check if y colidates with image boarder
+    // Check if y collides with image boarder
     if (y < 0)
     {
         y = 0;
     }
 
-    // Check if y colidates with image boarder
+    // Check if y collides with image boarder
     if (y >= plane->rows)//o->sizes[1])
     {
         y = plane->rows - 1;
@@ -200,7 +201,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     //prefill invalid map with all invalids
     memset(inv, 0, dx);
 
-    // Check if x or dx colidate with image boarder
+    // Check if x or dx collide with image boarder
     if (x < 0)
     {
         a = -x0;
@@ -208,7 +209,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
         dx -= a;
     }
 
-    // Check if x or dx colidate with image boarder
+    // Check if x or dx collide with image boarder
     if (x + dx > plane->cols)
     {
         b = x + dx - plane->cols;
@@ -303,6 +304,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     }
     //std::fill(buf[a + dx], buf[a + dx + b - 1], buf[a + dx - 1]);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito::int32 y0, ito::int32 dx, ito::float64 *buf, ito::int8 *inv, const ito::int32 kern, const ito::float64 /*invalid*/ )
 {
@@ -314,13 +316,13 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 validCnt = 1;
 
     //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
-    // Check if y colidates with image boarder
+    // Check if y collides with image boarder
     if (y < 0)
     {
         y = 0;
     }
 
-    // Check if y colidates with image boarder
+    // Check if y collides with image boarder
     if (y >= plane->rows)//o->sizes[1])
     {
         y = plane->rows - 1;
@@ -329,7 +331,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     //prefill invalid map with all invalids
     memset(inv, 0, dx);
 
-    // Check if x or dx colidate with image boarder
+    // Check if x or dx collide with image boarder
     if (x < 0)
     {
         a = -x0;
@@ -337,7 +339,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
         dx -= a;
     }
 
-    // Check if x or dx colidate with image boarder
+    // Check if x or dx collide with image boarder
     if (x + dx > plane->cols)
     {
         b = x + dx - plane->cols;
@@ -434,6 +436,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     }
     //memcpy((void*)buf[a + dx + i], (void*)buf[a + dx - 1], n * sizeof(_Tp));
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function gives the standard parameters for most of the genericfilter blocks to the addin-interface.
 \param[out]   paramsMand  Mandatory parameters for the filter function
@@ -472,7 +475,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
     if (std::numeric_limits<_Tp>::is_exact) replaceNaN = true;
     else invalid = std::numeric_limits<_Tp>::quiet_NaN();
 
-    if (!m_initilized)
+    if (!m_initialized)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Tried to run generic filter engine without correct initilization of all buffers").toLatin1().data());
     }
@@ -650,21 +653,21 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
     kbuf = new _Tp*[numThreads];
     if (kbuf != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
     for(int i = 0; i < numThreads; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
         if (kbuf[i] == NULL)
         {
-            this->m_initilized = false;
+            this->m_initialized = false;
         }
     }
 #else
     kbuf = new _Tp[this->m_bufsize];
     if (kbuf != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
 #endif
 }
@@ -685,12 +688,14 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
 #endif
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void LowValueFilter<_Tp>::clearFunc()
 {
     // Do nothing
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
 {
@@ -797,21 +802,21 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
     kbuf = new _Tp*[numThreads];
     if (kbuf != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
     for (int i = 0; i < numThreads; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
         if (kbuf[i] == NULL)
         {
-            this->m_initilized = false;
+            this->m_initialized = false;
         }
     }
 #else
     kbuf = new _Tp[this->m_bufsize];
     if (kbuf != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
 #endif
 }
@@ -832,12 +837,14 @@ template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
 #endif
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void HighValueFilter<_Tp>::clearFunc()
 {
     // Do nothing
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
 {
@@ -1292,24 +1299,26 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
         for (ito::int16 j = 0; j < this->m_bufsize; ++j)
             kbufPtr[i][j] = (_Tp*)&(kbuf[i][j]);
     }
-    this->m_initilized = true;
+    this->m_initialized = true;
 #else
     kbuf = new _Tp[this->m_bufsize];
     kbufPtr = new _Tp*[this->m_bufsize];
     if (kbuf != NULL && kbufPtr != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
     for (ito::int16 i = 0; i < this->m_bufsize; ++i)
         kbufPtr[i] = (_Tp*)&(kbuf[i]);
 #endif
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void MedianFilter<_Tp>::clearFunc()
 {
     // Do nothing
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 {
@@ -1675,6 +1684,308 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> SobelOptFilter<_Tp>::SobelOptFilter(ito::DataObject *in,
+    ito::DataObject *out,
+    ito::int32 roiX0,
+    ito::int32 roiY0,
+    ito::int32 roiXSize,
+    ito::int32 roiYSize,
+    ito::uint8 gradDir
+    ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
+{
+    this->m_pInpObj = in;
+    this->m_pOutObj = out;
+
+    this->m_x0 = roiX0;
+    this->m_y0 = roiY0;
+
+    this->m_dx = roiXSize;
+    this->m_dy = roiYSize;
+
+    this->m_kernelSizeX = 3;
+    this->m_kernelSizeY = 3;
+
+    this->m_AnchorX = 1;
+    this->m_AnchorY = 1;
+
+    this->m_initialized = true;
+
+    m_gradDir = gradDir;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> SobelOptFilter<_Tp>::~SobelOptFilter()
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void SobelOptFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    return;
+}
+
+//-----------------------------------------------------------------------------------------------
+template<typename _Tp> /*ito::RetVal*/ void SobelOptFilter<_Tp>::filterFunc()
+{
+    #if (USEOMP)
+    #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
+    {
+    #endif
+
+    ito::float64 gradx, grady;
+
+    if (m_gradDir == 0)
+    {
+        #if (USEOMP)
+        #pragma omp for schedule(guided)
+        #endif  
+        for (ito::int32 x = 0; x < this->m_dx; x++)
+        {
+            this->m_pOutLine[x] = 3.0 / 32.0 * this->m_pInLines[0][x] + 10.0 / 32.0 * this->m_pInLines[1][x] + 3.0 / 32.0 * this->m_pInLines[2][x]
+                - 3.0 / 32.0 * this->m_pInLines[0][x + 2] - 10.0 / 32.0 * this->m_pInLines[1][x + 2] - 3.0 / 32.0 * this->m_pInLines[2][x + 2];
+        }
+    }
+    else if (m_gradDir == 1)
+    {
+        #if (USEOMP)
+        #pragma omp for schedule(guided)
+        #endif  
+        for (ito::int32 x = 0; x < this->m_dx; x++)
+        {
+            this->m_pOutLine[x] = 3.0 / 32.0 * this->m_pInLines[0][x] + 10.0 / 32.0 * this->m_pInLines[0][x + 1] + 3.0 / 32.0 * this->m_pInLines[0][x + 2]
+                - 3.0 / 32.0 * this->m_pInLines[2][x] - 10.0 / 32.0 * this->m_pInLines[2][x + 1] - 3.0 / 32.0 * this->m_pInLines[2][x + 2];
+        }
+    }
+    else
+    {
+        #if (USEOMP)
+        #pragma omp for schedule(guided)
+        #endif
+        for (ito::int32 x = 0; x < this->m_dx; x++)
+        {
+            gradx = 3.0 / 32.0 * this->m_pInLines[0][x] + 10.0 / 32.0 * this->m_pInLines[0][x + 1] + 3.0 / 32.0 * this->m_pInLines[0][x + 2]
+                - 3.0 / 32.0 * this->m_pInLines[2][x] - 10.0 / 32.0 * this->m_pInLines[2][x + 1] - 3.0 / 32.0 * this->m_pInLines[2][x + 2];
+            grady = 3.0 / 32.0 * this->m_pInLines[0][x] + 10.0 / 32.0 * this->m_pInLines[1][x] + 3.0 / 32.0 * this->m_pInLines[2][x]
+                - 3.0 / 32.0 * this->m_pInLines[0][x + 2] - 10.0 / 32.0 * this->m_pInLines[1][x + 2] - 3.0 / 32.0 * this->m_pInLines[2][x + 2];
+            this->m_pOutLine[x] = sqrt(gradx * gradx + grady * grady);
+        }
+    }
+    #if (USEOMP)
+    }
+    #endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail This function gives the standard parameters for optimized Sobel filter.
+\param[out]   paramsMand  Mandatory parameters for the filter function
+\param[out]   paramsOpt   Optinal parameters for the filter function
+\author ITO
+\sa  BasicFilters::genericLowPassFilter,
+\date
+*/
+ito::RetVal BasicFilters::genericSobelOptParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("dir", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("derivative in x: 0, y: 1 direction or 2: 2D magnitude sqrt(dx*dx + dy*dy)").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copied to output image (default)").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\detail This function uses the generic filter engine to run the optimized Sobel filter (s. Jähne Digitale Bildverarbeitung)
+\param[in|out]   paramsMand  Mandatory parameters for the filter function
+\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   outVals   Outputvalues, not implemented for this function
+\param[in]   lowHigh  Flag which toggles low or high filter
+\author ITO
+\sa  BasicFilters::genericStdParams
+\date
+*/
+ito::RetVal BasicFilters::genericSobelOptFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
+    ito::uint8 inPlace = 0;
+
+    if (!dObjSrc)    // Report error if input object is not defined
+    {
+        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
+    }
+    else if (dObjSrc->getDims() < 1) // Report error of input object is empty
+    {
+        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
+    }
+    if (!dObjDst)    // Report error of output object is not defined
+    {
+        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
+    }
+
+    if (dObjDst == dObjSrc)
+    {
+        dObjDst = new ito::DataObject();
+        inPlace = 1;
+    }
+
+    switch (dObjSrc->getType())
+    {
+        case ito::tUInt8:
+            (*dObjDst) = ito::DataObject(dObjSrc->getDims(), dObjSrc->getSize(), ito::tInt8, dObjSrc->getContinuous());
+        break;
+
+        case ito::tUInt16:
+            (*dObjDst) = ito::DataObject(dObjSrc->getDims(), dObjSrc->getSize(), ito::tInt16, dObjSrc->getContinuous());
+        break;
+
+        case ito::tUInt32:
+            (*dObjDst) = ito::DataObject(dObjSrc->getDims(), dObjSrc->getSize(), ito::tInt32, dObjSrc->getContinuous());
+        break;
+
+        default:
+            (*dObjDst) = ito::DataObject(dObjSrc->getDims(), dObjSrc->getSize(), dObjSrc->getType(), dObjSrc->getContinuous());
+        break;
+    }
+    dObjDst->deleteAllTags();
+    dObjSrc->copyAxisTagsTo(*dObjDst);
+    dObjSrc->copyTagMapTo(*dObjDst);
+
+    // Check if input type is allowed or not
+    retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    if (retval.containsError())
+        return retval;
+
+    // get the kernelsize
+    ito::uint8 gradDir = (*paramsMand)[2].getVal<int>();
+
+    bool replaceNaN = (*paramsOpt)[0].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
+
+    //ito::int32 z_length = dObjSrc->calcNumMats();  // get the number of Mats (planes) in the input object
+    switch (dObjSrc->getType())
+    {
+        case ito::tInt8:
+        {
+            SobelOptFilter<ito::int8> filterEngine(dObjSrc,
+                dObjDst,
+                0,
+                0,
+                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                gradDir);
+            retval += filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tUInt8:
+        {
+            SobelOptFilter<ito::uint8> filterEngine(dObjSrc,
+                dObjDst,
+                0,
+                0,
+                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                gradDir);
+            retval += filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tInt16:
+        {
+            SobelOptFilter<ito::int16> filterEngine(dObjSrc,
+                dObjDst,
+                0,
+                0,
+                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                gradDir);
+            retval += filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tUInt16:
+        {
+            SobelOptFilter<ito::uint16> filterEngine(dObjSrc,
+                dObjDst,
+                0,
+                0,
+                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                gradDir);
+            retval += filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tInt32:
+        {
+            SobelOptFilter<ito::int32> filterEngine(dObjSrc,
+                dObjDst,
+                0,
+                0,
+                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                gradDir);
+            retval += filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tFloat32:
+        {
+            SobelOptFilter<ito::float32> filterEngine(dObjSrc,
+                dObjDst,
+                0,
+                0,
+                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                gradDir);
+            retval += filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tFloat64:
+        {
+            SobelOptFilter<ito::float64> filterEngine(dObjSrc,
+                dObjDst,
+                0,
+                0,
+                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                gradDir);
+            retval += filterEngine.runFilter(replaceNaN);
+        }
+        break;
+    }
+
+    // if no errors reported -> create new dataobject with values stored in cvMatOut
+    if (!retval.containsError())
+    {
+        // Add Protokoll
+        QString msg;
+        msg = tr("Optimized Sobel filter with kernel 3 x 3");
+
+        if (replaceNaN)
+        {
+            msg.append(tr(" and removed NaN-values"));
+        }
+
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    if (inPlace)
+        *dObjSrc = *dObjDst;
+    //int64 testend = cv::getTickCount() - teststart;
+    //ito::float64 duration = (ito::float64)testend / cv::getTickFrequency();
+    //std::cout << "Time: " << duration << "ms\n";
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  ito::DataObject *in, 
                                                            ito::DataObject *out, 
                                                            ito::int32 roiX0, 
@@ -1710,7 +2021,7 @@ template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  ito::DataObject *in,
 
     if (m_colwiseSumBuffer != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
 
     this->m_isFilled = false;
@@ -1724,6 +2035,7 @@ template<typename _Tp> LowPassFilter<_Tp>::~LowPassFilter()
         delete m_colwiseSumBuffer;
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void LowPassFilter<_Tp>::clearFunc()
 {
@@ -1822,6 +2134,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
 //    #endif
     //return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
@@ -2023,6 +2336,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in, 
                                                            ito::DataObject *out, 
@@ -2127,7 +2441,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
     if (this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
 
     this->m_pInLinesFiltered = new ito::float64*[this->m_kernelSizeY];
@@ -2135,7 +2449,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
     if (this->m_pInLinesFiltered == NULL)
     {
-        this->m_initilized = false;
+        this->m_initialized = false;
     }
     else
     {
@@ -2145,7 +2459,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
             this->m_pInLinesFiltered[y] = new ito::float64[roiXSize + this->m_kernelSizeX];
             if (this->m_pInLinesFiltered[y] == NULL)
             {
-                this->m_initilized = false;
+                this->m_initialized = false;
                 break;
             }
         }
@@ -2154,6 +2468,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
     this->m_isFilled = false;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in, 
                                                            ito::DataObject *out, 
@@ -2239,7 +2554,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
     if (this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
     {
-        this->m_initilized = true;
+        this->m_initialized = true;
     }
 
     this->m_pInLinesFiltered = new ito::float64*[this->m_kernelSizeY];
@@ -2247,7 +2562,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
     if (this->m_pInLinesFiltered == NULL)
     {
-        this->m_initilized = false;
+        this->m_initialized = false;
     }
     else
     {
@@ -2257,7 +2572,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
             this->m_pInLinesFiltered[y] = new ito::float64[roiXSize + this->m_kernelSizeX];
             if (this->m_pInLinesFiltered[y] == NULL)
             {
-                this->m_initilized = false;
+                this->m_initialized = false;
                 break;
             }
         }
@@ -2266,6 +2581,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
     this->m_isFilled = false;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void GaussianFilter<_Tp>::clearFunc()
 {
@@ -2273,6 +2589,7 @@ template<typename _Tp> void GaussianFilter<_Tp>::clearFunc()
     m_isFilled = false;
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> GaussianFilter<_Tp>::~GaussianFilter()
 {
@@ -2297,6 +2614,7 @@ template<typename _Tp> GaussianFilter<_Tp>::~GaussianFilter()
         delete this->m_pInLinesFiltered;
     }
 }
+
 //-----------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 {
@@ -2390,6 +2708,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 
     //return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function gives the standard parameters for most of the genericfilter blocks to the addin-interface.
 \param[out]   paramsMand  Mandatory parameters for the filter function
