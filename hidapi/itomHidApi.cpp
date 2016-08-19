@@ -432,7 +432,7 @@ ito::RetVal ItomHidApi::getVal(QSharedPointer<char> data, QSharedPointer<int> le
     if (numread < 0) 
     {
         QString err = QString::fromWCharArray(hid_error(m_pDevice));
-        retval += ito::RetVal::format(ito::retError, 0, "error reading from device: %s", err.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, "error reading from HID device: %s", err.toLatin1().data());
         numread = 0;
     }
 
@@ -478,7 +478,7 @@ ito::RetVal ItomHidApi::setVal(const char *data, const int datalength, ItomShare
     if (res < 0)
     {
         QString err = QString::fromWCharArray(hid_error(m_pDevice));
-        retval += ito::RetVal::format(ito::retError, 0, "error writing to device: %s", err.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, "error writing to HID device: %s", err.toLatin1().data());
     }
 
     if (waitCond)
