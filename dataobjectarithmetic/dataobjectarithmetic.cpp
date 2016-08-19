@@ -1360,7 +1360,7 @@ The value 'lowerBoundary' is set to the corresponding maximum of 'lowerThreshold
 all drop to zero at the edge of each search range; for a valid cog determination, it is necessary to assume that all values that are far away from the cog position have values around zero; \n\
 if this is not the case consider to set an appropriate value 'lowerThreshold' and / or 'dynamicThreshold'. \n\
 \n\
-The filter is not implemented for complex data types and the type rgba32.");
+The filter is not implemented for complex data types and the type rgba32 since there is no maximum value defined for these types.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::centerOfGravity1DimParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
@@ -1368,19 +1368,19 @@ RetVal DataObjectArithmetic::centerOfGravity1DimParams(QVector<ito::Param> *para
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("source image data (2D or 3D) object for operation (u)int8, (u)int16, int32, float32 or float64").toLatin1().data());
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("source image data (2D or 3D) object for operation (u)int8, (u)int16, int32, float32 or float64").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destCOG", ito::ParamBase::DObjPtr, NULL, tr("destination image data object for operation, will contain evaluated COG (in physical coordinates)").toLatin1().data());
+        param = ito::Param("destCOG", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination object for center of gravity values (in physical coordinates), float64, size: [numPlanes x sizeOfElements]").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destIntensity", ito::ParamBase::DObjPtr, NULL, tr("destination image data object for operation, will contain maximal intensity").toLatin1().data());
+        param = ito::Param("destIntensity", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination object for the absolute maximum along the search direction, same type than source image, size: [numPlanes x sizeOfElements]").toLatin1().data());
         paramsMand->append(param);
-        param = Param("pvThreshold", ito::ParamBase::Double, 0.0, std::numeric_limits<ito::float64>::max(), 0.0, tr("if (max-min) along the search direction is lower or equal this pvThreshold (peak-to-valley), no cog is determined and a NaN value is set into the resulting position array (default: this threshold is not considered).").toLatin1().data());
+        param = Param("pvThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<ito::float64>::max(), 0.0, tr("if (max-min) along the search direction is lower or equal this pvThreshold (peak-to-valley), no cog is determined and a NaN value is set into the resulting position array (default: this threshold is not considered).").toLatin1().data());
         paramsOpt->append(param);
-        param = Param("dynamicThreshold", ito::ParamBase::Double, 0.0, 0.999, 0.5, tr("If != 0.0, values <= (max+min)*dynamicThreshold will be ignored. To only consider values above the FWHM, set this value to 0.5 (default).").toLatin1().data());
+        param = Param("dynamicThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 0.999, 0.5, tr("If != 0.0, values <= (max+min)*dynamicThreshold will be ignored. To only consider values above the FWHM, set this value to 0.5 (default).").toLatin1().data());
         paramsOpt->append(param);
-        param = Param("lowerThreshold", ito::ParamBase::Double, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), -std::numeric_limits<ito::float64>::max(), tr("values <= lowerThreshold will not be considered for the cog calculation (default: this threshold is not considered).").toLatin1().data());
+        param = Param("lowerThreshold", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), -std::numeric_limits<ito::float64>::max(), tr("values <= lowerThreshold will not be considered for the cog calculation (default: this threshold is not considered).").toLatin1().data());
         paramsOpt->append(param);
-        param = Param("columnWise", ito::ParamBase::Int, 0, 1, 0, tr("The search direction is along each column if 1, else along each row (default, 0)").toLatin1().data());
+        param = Param("columnWise", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("0: COG search along each row (default), 1: along each column").toLatin1().data());
         paramsOpt->append(param);
     }
 

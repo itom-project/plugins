@@ -59,8 +59,6 @@ After the copy procedure, the data is checked for invalids and if invalid are fo
 \sa  GenericFilterEngine::runFilter
 \date    12.2011
 */
-
-
 template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::int32 y0, ito::int32 dx, _Tp *buf, ito::int8 *inv, const ito::int32 kern, const ito::float64 /*invalid*/ )
 {
     ito::int32 a = 0, b = 0, i;
@@ -68,9 +66,6 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     ito::int32 x = x0; 
     ito::int32 y = y0;
 
-    //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());
-    //ito::int32 invalidInt = cv::saturate_cast<ito::int32>(invalid);
-    
     // Check if y collides with image boarder
     if (y < 0)
     {
@@ -99,80 +94,18 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     }
     // Copy a line with data from plane to buffer
     memcpy((void*)&buf[a], (void*)&(plane->ptr<_Tp>(y)[x]), dx * sizeof(_Tp));
-    //memcpy((void*)&buf[a], (_Tp*)&((plane->ptr(y))[x]), dx * sizeof(_Tp));
 
     lastval = -kern;
-
-/*
-    memset(inv, 1, dx);   // must be one to not use invalid stuff
-    //memset(inv, 0, dx);   // must be zero to not use invalid stuff
-    if (check)
-    {
-        for (i = 0; i < dx; ++i)
-        {
-            if (buf[i + a] == invalidInt)
-            {
-                max = kern;
-                v = 0;
-                if (i + a - lastval < max)
-                {
-                    max = i + a - lastval;
-                    v = buf[lastval];
-                }
-                for (k = 1; k < max; ++k)
-                {
-                    if (k + i >= dx)
-                        break;
-                    if (buf[i + a + k] != invalidInt)
-                    {
-                        max = k;
-                        v = buf[i + a + k];
-                        break;
-                    }
-                }
-                for (k = 1; k < max; ++k)
-                {
-                    if ((y + k >= 0) && (y + k < plane->rows))
-                    {
-                        w = plane->at<_Tp>(y + k, i + x);
-                        if (w != invalidInt)
-                        {
-                            v = w;
-                            break;
-                        }
-                    }
-                    if ((y - k >= 0) && (y - k < plane->rows))
-                    {
-                        w = plane->at<_Tp>(y - k, i + x);
-                        if (w != invalidInt)
-                        {
-                            v = w;
-                            break;
-                        }
-                    }
-                }
-                buf[i + a] = v;
-            }
-            else
-            {
-                inv[i + a] = 1;
-                lastval = i + a;
-            }
-        }
-    }
-*/
  
     for (i = 0; i < a; ++i)
     {
         buf[i] = buf[a];
     }
-    //std::fill(buf[0], buf[a-1], buf[a]);
 
     for (i = 0; i < b; ++i)
     {
         buf[a + dx + i] = buf[a + dx - 1];
     }
-    //std::fill(buf[a + dx], buf[a + dx + b - 1], buf[a + dx - 1]);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -184,8 +117,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 x = x0; 
     ito::int32 y = y0;
     ito::int32 validCnt = 1;
-
-    //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
+   
     // Check if y collides with image boarder
     if (y < 0)
     {
@@ -216,7 +148,6 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
         dx = plane->cols - x;
     }
     // Copy a line with data from plane to buffer
-    //memcpy((void*)&buf[a], (_Tp*)&((plane->ptr(y))[x]), dx * sizeof(_Tp));
     memcpy((void*)&buf[a], (void*)&(plane->ptr<ito::float32>(y)[x]), dx * sizeof(ito::float32));
 
     lastval = -kern;
@@ -296,13 +227,11 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     {
         buf[i] = buf[a];
     }
-    //std::fill(buf[0], buf[a-1], buf[a]);
 
     for (i = 0; i < b; ++i)
     {
         buf[a + dx + i] = buf[a + dx - 1];
     }
-    //std::fill(buf[a + dx], buf[a + dx + b - 1], buf[a + dx - 1]);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -315,7 +244,6 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 y = y0;
     ito::int32 validCnt = 1;
 
-    //bool check = ito::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
     // Check if y collides with image boarder
     if (y < 0)
     {
@@ -346,7 +274,6 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
         dx = plane->cols - x;
     }
     // Copy a line with data from plane to buffer
-    //memcpy((void*)&buf[a], (_Tp*)&((plane->ptr(y))[x]), dx * sizeof(_Tp));
     memcpy((void*)&buf[a], (void*)&(plane->ptr<ito::float64>(y)[x]), dx * sizeof(ito::float64));
 
     lastval = -kern;
@@ -428,13 +355,10 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
         buf[i] = buf[a];
     }
 
-    //memcpy((void*)buf[i], (void*)buf[a], a * sizeof(_Tp));
-
     for (i = 0; i < b; ++i /*k++*/)
     {
         buf[a + dx + i] = buf[a + dx - 1];
     }
-    //memcpy((void*)buf[a + dx + i], (void*)buf[a + dx - 1], n * sizeof(_Tp));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -450,15 +374,15 @@ ito::RetVal BasicFilters::genericStdParams(QVector<ito::Param> *paramsMand, QVec
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("N-dimensional dataObject of any real type. This object is processed plane-by-plane.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toLatin1().data());
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Resulting dataObject that has the same size and type than the sourceImage.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Odd kernelsize in x").toLatin1().data());
+        param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Size of kernel in x-direction (odd values only)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("kernely", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Odd kernelsize in y").toLatin1().data());
+        param = ito::Param("kernely", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Size of kernel in y-direction (odd values only)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copied to output image (default)").toLatin1().data());
+        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1, NaN values of sourceImage will be replaced by interpolated filter values in destImage, else destImage also contains NaN values at these positions (0, default).").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -619,7 +543,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 * \sa  GenericFilter::DoGenericFilter, _LowPassFilter
 * \date 12.2013
 */
-template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in, 
+template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(const ito::DataObject *in, 
     ito::DataObject *out, 
     ito::int32 roiX0, 
     ito::int32 roiY0, 
@@ -768,7 +692,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
  * \sa  GenericFilter::DoGenericFilter, _LowPassFilter
  * \date 12.2013
  */
-template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in, 
+template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(const ito::DataObject *in, 
                                                            ito::DataObject *out, 
                                                            ito::int32 roiX0, 
                                                            ito::int32 roiY0, 
@@ -901,6 +825,7 @@ template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
     //return ito::retOk;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
 \detail This function use the generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
@@ -922,15 +847,15 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
 
     if (!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is invalid").toLatin1().data());
     }
     else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is empty").toLatin1().data());
     }
     if (!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination image is invalid").toLatin1().data());
     }
 
     if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -1199,21 +1124,16 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
     // if no errors reported -> create new dataobject with values stored in cvMatOut
     if (!retval.containsError())
     {
-        // Add Protokoll
-
-        //        char prot[81] = {0};
+        // Add protocol
         QString msg;
         if (lowHigh)
         {
-            //            _snprintf(prot, 80, "high value filter with kernel %i : %i", kernelsizex, kernelsizey);
             msg = tr("high value filter with kernel %1 x %2").arg(kernelsizex).arg(kernelsizey);
         }
         else
         {
-            //            _snprintf(prot, 80, "Low value filter with kernel %i : %i", kernelsizex, kernelsizey);
             msg = tr("Low value filter with kernel %1 x %2").arg(kernelsizex).arg(kernelsizey);
         }
-        //        dObjDst -> addToProtocol(std::string(prot));
 
         if (replaceNaN)
         {
@@ -1223,24 +1143,37 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
         dObjDst -> addToProtocol(std::string(msg.toLatin1().data()));
     }
 
-//    if (f.buffer)      // delete the f.buffer defined in medianFilter-struct
-//    {
-//        free(f.buffer);
-//    }
-
-    //int64 testend = cv::getTickCount() - teststart;
-    //ito::float64 duration = (ito::float64)testend / cv::getTickFrequency();
-    //std::cout << "Time: " << duration << "ms\n";
-
     return retval;
 }
 
+const QString BasicFilters::genericLowValueFilterDoc = QObject::tr("2D minimum filter that set a pixel to the lowest value within the surrounding kernel. \n\
+\n\
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image \n\
+is then set to the minimum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values \n\
+by the minimum of the surrounding kernel, too, if the parameter 'replaceNaN' is set to 1. \n\
+\n\
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all \n\
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size \n\
+and type than the input image. \n\
+\n\
+See also: highValueFilter");
 //-----------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::genericLowValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     return genericLowHighValueFilter(paramsMand, paramsOpt, paramsOut, false);
 }
 
+const QString BasicFilters::genericHighValueFilterDoc = QObject::tr("2D maximum filter that set a pixel to the highest value within the surrounding kernel. \n\
+\n\
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image \n\
+is then set to the maximum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values \n\
+by the maximum of the surrounding kernel, too, if the parameter 'replaceNaN' is set to 1. \n\
+\n\
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all \n\
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size \n\
+and type than the input image \n\
+\n\
+See also: lowValueFilter");
 //-----------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::genericHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1259,7 +1192,7 @@ ito::RetVal BasicFilters::genericHighValueFilter(QVector<ito::ParamBase> *params
  * \sa  GenericFilter::DoGenericFilter, _LowPassFilter
  * \date 12.2013
  */
-template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in, 
+template<typename _Tp> MedianFilter<_Tp>::MedianFilter(const ito::DataObject *in, 
                                                            ito::DataObject *out, 
                                                            ito::int32 roiX0, 
                                                            ito::int32 roiY0, 
@@ -1482,6 +1415,15 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::genericMedianFilterDoc = QObject::tr("2D median filter that set a pixel to the median value of all valid pixels within the kernel. \n\
+\n\
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image \n\
+is then set to the median value of all valid pixels within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values \n\
+by the median value of the surrounding kernel, too, if the parameter 'replaceNaN' is set to 1. \n\
+\n\
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all \n\
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size \n\
+and type than the input image");
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -1500,15 +1442,15 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
 
     if (!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is invalid").toLatin1().data());
     }
     else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is empty").toLatin1().data());
     }
     if (!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination image is invalid").toLatin1().data());
     }
 
     if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -1986,7 +1928,7 @@ ito::RetVal BasicFilters::genericSobelOptFilter(QVector<ito::ParamBase> *paramsM
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  ito::DataObject *in, 
+template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  const ito::DataObject *in,
                                                            ito::DataObject *out, 
                                                            ito::int32 roiX0, 
                                                            ito::int32 roiY0, 
@@ -2146,6 +2088,18 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
 \sa  BasicFilters::genericStdParams
 \date
 */
+
+const QString BasicFilters::genericLowPassFilterDoc = QObject::tr("2D lowpass (blurring) filter that set a pixel to the mean value of all valid pixels within the kernel. \n\
+\n\
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image \n\
+is then set to the mean value of all valid pixels within the kernel. It is possible to fill the invalid values \n\
+by the mean value of the surrounding kernel, too, if the parameter 'replaceNaN' is set to 1. If the kernel only contains invalid values, \n\
+no replacement is possible and the corresponding pixel in the destination image remains invalid. \n\
+\n\
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all \n\
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size \n\
+and type than the input image");
+
 ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -2154,15 +2108,15 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 
     if (!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is invalid").toLatin1().data());
     }
     else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is empty").toLatin1().data());
     }
     if (!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination image is invalid").toLatin1().data());
     }
 
     if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -2338,7 +2292,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in, 
+template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObject *in, 
                                                            ito::DataObject *out, 
                                                            ito::int32 roiX0, 
                                                            ito::int32 roiY0, 
@@ -2470,7 +2424,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in, 
+template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObject *in, 
                                                            ito::DataObject *out, 
                                                            ito::int32 roiX0, 
                                                            ito::int32 roiY0, 
@@ -2534,7 +2488,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     else
     {
         ito::float64 sigSQR = sigmaSizeX * sigmaSizeX;
-        ito::float64 norm = 1 / sqrt( 2.0 * M_PI * sigSQR);
+        ito::float64 norm = 1.0 / sqrt( 2.0 * M_PI * sigSQR);
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
             this->m_pRowKernel[x] =  norm * exp( pow( (ito::float64)(x - this->m_AnchorX), 2) * -0.5 / sigSQR ); 
@@ -2722,19 +2676,19 @@ ito::RetVal BasicFilters::genericGaussianParams(QVector<ito::Param> *paramsMand,
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("N-dimensional dataObject of any real type. This object is processed plane-by-plane.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toLatin1().data());
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Resulting dataObject that has the same size and type than the sourceImage.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 5001, 3, tr("Odd kernelsize in x").toLatin1().data());
+        param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Size of kernel in x-direction (odd values only)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("kernely", ito::ParamBase::Int | ito::ParamBase::In, 1, 5001, 3, tr("Odd kernelsize in y").toLatin1().data());
+        param = ito::Param("kernely", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Size of kernel in y-direction (odd values only)").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("sigmaX", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("sigmaY", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
+        param = ito::Param("sigmaY", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in y direction").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copied to output image (default)").toLatin1().data());
+        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1, NaN values of sourceImage will be replaced by interpolated filter values in destImage, else destImage also contains NaN values at these positions (0, default).").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -2742,6 +2696,23 @@ ito::RetVal BasicFilters::genericGaussianParams(QVector<ito::Param> *paramsMand,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::genericGaussianFilterDoc = QObject::tr("2D gaussian blur filter that convolves the source image with a Gaussian kernel. \n\
+\n\
+The convolution kernel is rectangular with a side length of (kernely, kernelx). The gaussian kernel for a pixel (x0,y0) is defined by: \n\
+\n\
+f(x,y) = A * exp(-[(x-x0)^2/(2*sigma_x^2) + (y-y0)^2/(2*sigma_y^2)]) \n\
+\n\
+with \n\
+\n\
+A = 1 / (2 * pi * sigmaX * sigmaY)) \n\
+\n\
+Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values \n\
+by the Gaussian blurred value of the surrounding kernel, too, if the parameter 'replaceNaN' is set to 1. If the kernel only contains invalid values, \n\
+no replacement is possible and the corresponding pixel in the destination image remains invalid. \n\
+\n\
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all \n\
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size \n\
+and type than the input image");
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -2755,20 +2726,20 @@ ito::RetVal BasicFilters::genericGaussianParams(QVector<ito::Param> *paramsMand,
 ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
+    const ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<const ito::DataObject*>();  //Input object
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();  //Filtered output object
 
     if (!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is invalid").toLatin1().data());
     }
     else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is empty").toLatin1().data());
     }
     if (!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination image is invalid").toLatin1().data());
     }
 
     if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -2794,9 +2765,8 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
         return retval;
 
     // get the kernelsize
-    
-    ito::int32 kernelX = (*paramsMand)[2].getVal<double>();
-    ito::int32 kernelY = (*paramsMand)[3].getVal<double>();
+    ito::int32 kernelX = (*paramsMand)[2].getVal<int>();
+    ito::int32 kernelY = (*paramsMand)[3].getVal<int>();
 
     if (kernelX % 2 == 0) //even
     {
@@ -2813,8 +2783,6 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
     
 
     bool replaceNaN = (*paramsOpt)[0].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
-
-    //ito::int32 z_length = dObjSrc->calcNumMats();  // get the number of Mats (planes) in the input object
 
     switch(dObjSrc->getType())
     {
@@ -2960,19 +2928,19 @@ ito::RetVal BasicFilters::genericGaussianEpsilonParams(QVector<ito::Param> *para
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("N-dimensional dataObject of any real type. This object is processed plane-by-plane.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toLatin1().data());
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Resulting dataObject that has the same size and type than the sourceImage.").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("sigmaX", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("epsilonX", ito::ParamBase::Double | ito::ParamBase::In, 0.00001, 1.0, 0.001, tr("Stop condition in x-direction, kernel values less than epsilon are ignored").toLatin1().data());
+        param = ito::Param("epsilonX", ito::ParamBase::Double | ito::ParamBase::In, 0.00001, 1.0, 0.001, tr("Stop condition in x-direction, the kernel in x-direction is cropped for Gaussian values below this limit").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("sigmaY", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
+        param = ito::Param("sigmaY", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in y direction").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("epsilonY", ito::ParamBase::Double | ito::ParamBase::In, 0.00001, 1.0, 0.001, tr("Stop condition in y-direction, kernel values less than epsilon are ignored").toLatin1().data());
+        param = ito::Param("epsilonY", ito::ParamBase::Double | ito::ParamBase::In, 0.00001, 1.0, 0.001, tr("Stop condition in y-direction, the kernel in y-direction is cropped for Gaussian values below this limit").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copied to output image (default)").toLatin1().data());
+        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1, NaN values of sourceImage will be replaced by interpolated filter values in destImage, else destImage also contains NaN values at these positions (0, default).").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -2980,6 +2948,30 @@ ito::RetVal BasicFilters::genericGaussianEpsilonParams(QVector<ito::Param> *para
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::genericGaussianEpsilonFilterDoc = QObject::tr("2D gaussian blur filter that convolves the source image with a Gaussian kernel. \n\
+\n\
+The convolution kernel is rectangular with a side length that is determined by the epsilon values epsilonX and epsilonY. \n\
+The gaussian kernel for a pixel (x0,y0) is defined by: \n\
+\n\
+f(x,y) = A * exp(-[(x-x0)^2/(2*sigmaX^2) + (y-y0)^2/(2*sigmaY^2)]) \n\
+\n\
+with \n\
+\n\
+A = 1 / (2 * pi * sigmaX * sigmaY)) \n\
+\n\
+The size of the kernel is adjusted such that the limit values in x- and y-direction fullfill the following inequation: \n\
+\n\
+f(x,y=0) = exp(-[(x-x0)^2/(2*sigmaX^2)]) / sqrt(2 * pi * sigmaX^2) >= epsilonX \n\
+f(x=0,y) = exp(-[(y-y0)^2/(2*sigmaY^2)]) / sqrt(2 * pi * sigmaY^2) >= epsilonY \n\
+\n\
+Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values \n\
+by the Gaussian blurred value of the surrounding kernel, too, if the parameter 'replaceNaN' is set to 1. If the kernel only contains invalid values, \n\
+no replacement is possible and the corresponding pixel in the destination image remains invalid. \n\
+\n\
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all \n\
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size \n\
+and type than the input image");
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -2998,15 +2990,15 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
 
     if (!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is invalid").toLatin1().data());
     }
     else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is empty").toLatin1().data());
     }
     if (!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination image is invalid").toLatin1().data());
     }
 
     if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -3378,7 +3370,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
 
     if (!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Source image is invalid").toLatin1().data());
     }
     else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
@@ -3386,7 +3378,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
     if (!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination image is invalid").toLatin1().data());
     }
 
     if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject

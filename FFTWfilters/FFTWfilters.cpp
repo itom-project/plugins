@@ -49,8 +49,6 @@
 #define useomp 0
 #endif
 
-int NTHREADS = 2;
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FFTWFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -93,8 +91,6 @@ To build this plugin you will need the libs from the fftw.");
     m_license = QObject::tr("GPL (uses FFTW licensed under GPL, too)");
     m_aboutThis = QObject::tr("1D and 2D FFT algorithms (using the fast FFTW library)");       
 
-    NTHREADS = QThread::idealThreadCount();
-
     return;
 }
 
@@ -121,189 +117,348 @@ FFTWFiltersInterface::~FFTWFiltersInterface()
 ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
-    ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128)").toLatin1().data());
+    ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128) which is shifted in-place.").toLatin1().data());
     paramsMand->append(param);
+
+    param = ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, -1, 1, -1, tr("axes over which to shift: x and y axis (-1, default), only y axis (0), only x axis (1)").toLatin1().data());
+    paramsOpt->append(param);
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _TP> void doifftshift(_TP *field, int sx, int sy, int lineStep)
+template<typename _Tp> void calcfftshift(uchar *data, int n, int m, int lineStep, int axis, bool forward)
 {
-    int halfX = sx / 2, halfY = sy / 2;
-    int xodd = 0, yodd = 0;
-    _TP *colbuf = NULL, *rowbuf = NULL, zeroR, zeroC;
-    if (sx / 2 != sx / 2.0)
-    {
-        xodd = 1;
-        colbuf = (_TP*)malloc(sx * sizeof(_TP));
-        for (int n = 0; n < sy; n++)
-            colbuf[n] = field[n * lineStep + sx - 1];
-    }
-    if (sy / 2 != sy / 2.0)
-    {
-        yodd = 1;
-        rowbuf = (_TP*)malloc(sx * sizeof(_TP));
-        memcpy(rowbuf, field + (sy - 1) * lineStep, sx * sizeof(_TP));
-    }
-    if (xodd && yodd)
-    {
-        zeroR = field[(sy - 1) * lineStep + halfX];
-        zeroC = field[halfY * lineStep + sx - 1];
-    }
-#if (USEOMP)
-#pragma omp parallel num_threads(NTHREADS)
-    {
-#endif
-        _TP buffer;
+    int p;
+    bool even;
+    int bufSize, bufSize2;
 
-#if (USEOMP)
-#pragma omp for schedule(guided)
-#endif
-        for (int n = halfY - 1; n >= 0; n--)
+    lineStep *= sizeof(_Tp); //lineStep is in pixel, however we want it in bytes
+
+    if ((axis == 0 || axis == -1) && m > 1)
+    {
+        /*from... switch to...
+        (case: m is even)       (case: m is odd)         (case: m is odd)
+        forward = backward      backward                 forward
+        ---            ---      ---            ---       ---            ---
+         1              3        1              3         1              3
+         |              |        |              |         |              |
+         |              |        |              |         |              |
+         |              |        |              |         |              |
+         |              |        2              |         |              4
+         2              4       ---             4         2             ---
+        ---            ---       3             ---       ---             1
+         3 (idx: p)     1        |              1         3              |
+         |              |        |              |         |              |
+         |              |        |              |         |              |
+         |              |        |              |         |              |
+         |              |        4              2         4              2
+         4              2       ---            ---       ---            ---
+        ---            ---       
+        */
+        p = forward ? (m + 1) / 2 : (m - (m + 1) / 2);
+        even = ((m % 2) == 0);
+        bufSize = sizeof(_Tp) * n;
+
+        _Tp *buf1 = (_Tp*)malloc(bufSize);
+
+        if (even) //simple switch lines
         {
-            for (int m = halfX - 1; m >= 0; m--)
+            for (int i = 0; i < p; ++i)
             {
-                buffer = field[(n) * lineStep + m];
-                field[(n) * lineStep + m] = field[(n + halfY) * lineStep + m + halfX];
-                field[(n + halfY + yodd) * lineStep + m + halfX + xodd] = buffer;
-                buffer = field[(n + halfY) * lineStep + m];
-                field[(n + halfY + yodd) * lineStep + m] = field[(n) * lineStep + m + halfX];
-                field[n * lineStep + m + halfX + xodd] = buffer;
+                //switch line i and (p+i)
+                memcpy(buf1, data + i * lineStep, bufSize);
+                memcpy(data + i * lineStep, data + (p + i) * lineStep, bufSize);
+                memcpy(data + (p + i) * lineStep, buf1, bufSize);
             }
         }
-
-        if (xodd)
+        else
         {
-#if (USEOMP)
-#pragma omp for schedule(guided)
-#endif
-            for (int n = 0; n < halfY + yodd; n++)
+            _Tp *buf2 = (_Tp*)malloc(bufSize);
+
+            //a 2nd buffer is required to store another intermediate result
+            if (p > 0 && !forward)
             {
-                field[lineStep * n + halfX] = colbuf[n + halfY];
-                field[(n + halfY) * lineStep + halfX] = colbuf[n - yodd];
+                memcpy(buf1, data, bufSize);
+                memcpy(data, data + p * lineStep, bufSize);
+
+                for (int i = 1; i <= p; ++i)
+                {
+                    memcpy(buf2, buf1, bufSize);
+                    memcpy(buf1, data + i * lineStep, bufSize);
+                    memcpy(data + i * lineStep, data + (p + i) * lineStep, bufSize);
+                    memcpy(data + (p + i) * lineStep, buf2, bufSize);
+                }
             }
+            else if (p > 0 && forward)
+            {
+                memcpy(buf1, data + (m - 1) * lineStep, bufSize);
+                memcpy(data + (m - 1) * lineStep, data + (m - p) * lineStep, bufSize);
+
+                for (int i = 1; i <= (m - p); ++i)
+                {
+                    memcpy(buf2, buf1, bufSize);
+                    memcpy(buf1, data + (m - i - 1) * lineStep, bufSize);
+                    memcpy(data + (m - i - 1) * lineStep, data + (m - p - i) * lineStep, bufSize);
+                    memcpy(data + (m - p - i) * lineStep, buf2, bufSize);
+                }
+            }
+
+            free(buf2);
+            buf2 = NULL;
         }
 
-        if (yodd)
-        {
-#if (USEOMP)
-#pragma omp for schedule(guided)
-#endif
-            for (int m = 0; m < halfX + xodd; m++)
-            {
-                field[(halfY)* lineStep + m] = rowbuf[m + halfX];
-                field[(halfY)* lineStep + m + halfX] = rowbuf[m - xodd];
-            }
-        }
-#if (USEOMP)
+        free(buf1);
+        buf1 = NULL;
     }
-#endif
-    /*
-    if (xodd && yodd)
-    {
-        field[halfY * lineStep + sx - 1] = zeroR;
-        field[(sy - 1) * lineStep + halfX] = zeroC;
-    }
-    */
-    if (rowbuf)
-        free(rowbuf);
-    if (colbuf)
-        free(colbuf);
-}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-template<typename _TP> void dofftshift(_TP *field, int sx, int sy, int lineStep)
-{
-    int halfX = sx / 2, halfY = sy / 2;
-    int xodd = 0, yodd = 0;
-    _TP *colbuf = NULL, *rowbuf = NULL, zeroR, zeroC;
-    if (sx / 2 != sx / 2.0)
+    if ((axis == 1 || axis == -1) && n > 1)
     {
-        xodd = 1;
-        colbuf = (_TP*)malloc(sx * sizeof(_TP));
-        for (int n = 0; n < sy; n++)
-            colbuf[n] = field[n * lineStep];
-    }
-    if (sy / 2 != sy / 2.0)
-    {
-        yodd = 1;
-        rowbuf = (_TP*)malloc(sx * sizeof(_TP));
-        memcpy(rowbuf, field, sx * sizeof(_TP));
-    }
-    if (xodd && yodd)
-    {
-        zeroR = field[halfX];
-        zeroC = field[halfY * lineStep];
-    }
-#if (USEOMP)
-#pragma omp parallel num_threads(NTHREADS)
-    {
-#endif
-        _TP buffer;
+        /*
+        m: even, forward == backward
+        |1----2,3----4|    ->  |3----4,1----2|
+
+        m: odd, forward
+        |1----2,3---4|     ->  |3---4,1----2|
+
+        m: odd, backward
+        |1---2,3----4|     ->  |3----4,1---2|
+
+        */
+        p = forward ? (n + 1) / 2 : (n - (n + 1) / 2);
+        even = ((m % 2) == 0);
+
+        if (even || forward)
+        {
+            bufSize = sizeof(_Tp) * p; //bufSize >= bufSize2
+            bufSize2 = sizeof(_Tp) * (n - p);
+        }
+        else
+        {
+            bufSize = sizeof(_Tp) * p; //bufSize < bufSize2
+            bufSize2 = sizeof(_Tp) * (n - p);
+        }
 
 #if (USEOMP)
-        #pragma omp for schedule(guided)
+#pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
+        {
 #endif
-        for (int n = 0; n < halfY; n++)
+        uchar *dataline;
+
+        if (even || forward)
         {
-            for (int m = 0; m < halfX; m++)
-            {
-                buffer = field[(n + yodd) * lineStep + m + xodd];
-                field[n * lineStep + m] = field[(n + yodd + halfY) * lineStep + m + halfX + xodd];
-                field[(n + halfY + yodd) * lineStep + m + halfX + xodd] = buffer;
-                buffer = field[(n + yodd + halfY) * lineStep + m + xodd];
-                field[(n + halfY + yodd) * lineStep + m] = field[(n + yodd) * lineStep + m + halfX + xodd];
-                field[n * lineStep + m + halfX + xodd] = buffer;
-            }
-        }
-        
-        if (xodd)
-        {
-#if (USEOMP)
+            _Tp *buf1 = (_Tp*)malloc(bufSize);
+
+#if USEOMP
             #pragma omp for schedule(guided)
 #endif
-            for (int n = 0; n < halfY; n++)
+            for (int i = 0; i < m; ++i)
             {
-                field[lineStep * n + halfX] = colbuf[n + halfY + yodd];
-                field[(n + halfY) * lineStep + halfX] = colbuf[n];
+                dataline = data + i * lineStep;
+                memcpy(buf1, dataline, bufSize);
+                memcpy(dataline, dataline + bufSize, bufSize2);
+                memcpy(dataline + bufSize2, buf1, bufSize);
             }
-        }
 
-        if (yodd)
+            free(buf1);
+            buf1 = NULL;
+        }
+        else //odd and backward
         {
-#if (USEOMP)
+            _Tp *buf1 = (_Tp*)malloc(bufSize2);
+
+#if USEOMP
             #pragma omp for schedule(guided)
 #endif
-            for (int m = 0; m < halfX; m++)
+            for (int i = 0; i < m; ++i)
             {
-                field[(halfY) * lineStep + m] = rowbuf[m + halfX + xodd];
-                field[(halfY) * lineStep + m + halfX] = rowbuf[m];
+                dataline = data + i * lineStep;
+                memcpy(buf1, dataline + bufSize, bufSize2);
+                memcpy(dataline + bufSize2, dataline, bufSize);
+                memcpy(dataline, buf1, bufSize2);
             }
+
+            free(buf1);
+            buf1 = NULL;
         }
 #if (USEOMP)
     }
 #endif
-    if (xodd && yodd)
-    {
-        field[halfY * lineStep + sx - 1] = zeroR;
-        field[(sy - 1) * lineStep + halfX] = zeroC;
     }
-
-    if (rowbuf)
-        free(rowbuf);
-    if (colbuf)
-        free(colbuf);
 }
+
+////----------------------------------------------------------------------------------------------------------------------------------
+//template<typename _TP> void doifftshift(_TP *field, int sx, int sy, int lineStep)
+//{
+//    int halfX = sx / 2, halfY = sy / 2;
+//    int xodd = 0, yodd = 0;
+//    _TP *colbuf = NULL, *rowbuf = NULL, zeroR, zeroC;
+//    if (sx / 2 != sx / 2.0)
+//    {
+//        xodd = 1;
+//        colbuf = (_TP*)malloc(sx * sizeof(_TP));
+//        for (int n = 0; n < sy; n++)
+//            colbuf[n] = field[n * lineStep + sx - 1];
+//    }
+//    if (sy / 2 != sy / 2.0)
+//    {
+//        yodd = 1;
+//        rowbuf = (_TP*)malloc(sx * sizeof(_TP));
+//        memcpy(rowbuf, field + (sy - 1) * lineStep, sx * sizeof(_TP));
+//    }
+//    if (xodd && yodd)
+//    {
+//        zeroR = field[(sy - 1) * lineStep + halfX];
+//        zeroC = field[halfY * lineStep + sx - 1];
+//    }
+//#if (USEOMP)
+//#pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
+//    {
+//#endif
+//        _TP buffer;
+//
+//#if (USEOMP)
+//#pragma omp for schedule(guided)
+//#endif
+//        for (int n = halfY - 1; n >= 0; n--)
+//        {
+//            for (int m = halfX - 1; m >= 0; m--)
+//            {
+//                buffer = field[(n) * lineStep + m];
+//                field[(n) * lineStep + m] = field[(n + halfY) * lineStep + m + halfX];
+//                field[(n + halfY + yodd) * lineStep + m + halfX + xodd] = buffer;
+//                buffer = field[(n + halfY) * lineStep + m];
+//                field[(n + halfY + yodd) * lineStep + m] = field[(n) * lineStep + m + halfX];
+//                field[n * lineStep + m + halfX + xodd] = buffer;
+//            }
+//        }
+//
+//        if (xodd)
+//        {
+//#if (USEOMP)
+//#pragma omp for schedule(guided)
+//#endif
+//            for (int n = 0; n < halfY + yodd; n++)
+//            {
+//                field[lineStep * n + halfX] = colbuf[n + halfY];
+//                field[(n + halfY) * lineStep + halfX] = colbuf[n - yodd];
+//            }
+//        }
+//
+//        if (yodd)
+//        {
+//#if (USEOMP)
+//#pragma omp for schedule(guided)
+//#endif
+//            for (int m = 0; m < halfX + xodd; m++)
+//            {
+//                field[(halfY)* lineStep + m] = rowbuf[m + halfX];
+//                field[(halfY)* lineStep + m + halfX] = rowbuf[m - xodd];
+//            }
+//        }
+//#if (USEOMP)
+//    }
+//#endif
+//
+//    if (rowbuf)
+//        free(rowbuf);
+//    if (colbuf)
+//        free(colbuf);
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+//template<typename _TP> void dofftshift(_TP *field, int sx, int sy, int lineStep)
+//{
+//    int halfX = sx / 2, halfY = sy / 2;
+//    int xodd = 0, yodd = 0;
+//    _TP *colbuf = NULL, *rowbuf = NULL, zeroR, zeroC;
+//    if (sx / 2 != sx / 2.0)
+//    {
+//        xodd = 1;
+//        colbuf = (_TP*)malloc(sx * sizeof(_TP));
+//        for (int n = 0; n < sy; n++)
+//            colbuf[n] = field[n * lineStep];
+//    }
+//    if (sy / 2 != sy / 2.0)
+//    {
+//        yodd = 1;
+//        rowbuf = (_TP*)malloc(sx * sizeof(_TP));
+//        memcpy(rowbuf, field, sx * sizeof(_TP));
+//    }
+//    if (xodd && yodd)
+//    {
+//        zeroR = field[halfX];
+//        zeroC = field[halfY * lineStep];
+//    }
+//#if (USEOMP)
+//#pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
+//    {
+//#endif
+//        _TP buffer;
+//
+//#if (USEOMP)
+//        #pragma omp for schedule(guided)
+//#endif
+//        for (int n = 0; n < halfY; n++)
+//        {
+//            for (int m = 0; m < halfX; m++)
+//            {
+//                buffer = field[(n + yodd) * lineStep + m + xodd];
+//                field[n * lineStep + m] = field[(n + yodd + halfY) * lineStep + m + halfX + xodd];
+//                field[(n + halfY + yodd) * lineStep + m + halfX + xodd] = buffer;
+//                buffer = field[(n + yodd + halfY) * lineStep + m + xodd];
+//                field[(n + halfY + yodd) * lineStep + m] = field[(n + yodd) * lineStep + m + halfX + xodd];
+//                field[n * lineStep + m + halfX + xodd] = buffer;
+//            }
+//        }
+//        
+//        if (xodd)
+//        {
+//#if (USEOMP)
+//            #pragma omp for schedule(guided)
+//#endif
+//            for (int n = 0; n < halfY; n++)
+//            {
+//                field[lineStep * n + halfX] = colbuf[n + halfY + yodd];
+//                field[(n + halfY) * lineStep + halfX] = colbuf[n];
+//            }
+//        }
+//
+//        if (yodd)
+//        {
+//#if (USEOMP)
+//            #pragma omp for schedule(guided)
+//#endif
+//            for (int m = 0; m < halfX; m++)
+//            {
+//                field[(halfY) * lineStep + m] = rowbuf[m + halfX + xodd];
+//                field[(halfY) * lineStep + m + halfX] = rowbuf[m];
+//            }
+//        }
+//#if (USEOMP)
+//    }
+//#endif
+//    if (xodd && yodd)
+//    {
+//        field[halfY * lineStep + sx - 1] = zeroR;
+//        field[(sy - 1) * lineStep + halfX] = zeroC;
+//    }
+//
+//    if (rowbuf)
+//        free(rowbuf);
+//    if (colbuf)
+//        free(colbuf);
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString FFTWFilters::fftshiftDOC = QObject::tr("Perform fftshift as known from Python, Matlab and so on, i.e. make the \n\
 zero order of diffraction appear in the center.\n\
 \n\
-The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.");
+The shift is currently implemented along the x and y or one of both axes within each plane (inplace).");
 /*static*/ ito::RetVal FFTWFilters::fftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
+    int axis = paramsOpt->at(0).getVal<int>();
 
     if (!inField)
     {
@@ -328,34 +483,56 @@ The shift is currently implemented as 2D shift and executed within each plane of
             {
             case ito::tInt8:
             case ito::tUInt8:
-                dofftshift<ito::uint8>((ito::uint8*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::uint8>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
                 break;
 
             case ito::tInt16:
             case ito::tUInt16:
-                dofftshift<ito::uint16>((ito::uint16*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::uint16>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
                 break;
 
             case ito::tInt32:
             case ito::tUInt32:
-                dofftshift<ito::uint32>((ito::uint32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::uint32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
                 break;
 
             case ito::tFloat32:
-                dofftshift<ito::float32>((ito::float32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::float32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
                 break;
 
             case ito::tFloat64:
-                dofftshift<ito::float64>((ito::float64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::float64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
                 break;
 
             case ito::tComplex64:
-                dofftshift<ito::complex64>((ito::complex64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::complex64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
                 break;
 
             case ito::tComplex128:
-                dofftshift<ito::complex128>((ito::complex128*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::complex128>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
                 break;
+            }
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        //shift the axis scales of the last two axis
+        int dims = inField->getDims();
+        int size;
+        double phys1, phys2;
+        for (int d = dims - 2; d < dims; ++d)
+        {
+            if (d >= 0)
+            {
+                size = inField->getSize(d);
+                if (size > 0)
+                {
+                    phys1 = inField->getPixToPhys(d, 0);
+                    phys2 = inField->getPixToPhys(d, size - 1);
+                    phys1 = 0.5 * (phys1 + phys2);
+                    inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                }
             }
         }
     }
@@ -367,11 +544,12 @@ The shift is currently implemented as 2D shift and executed within each plane of
 const QString FFTWFilters::ifftshiftDOC = QObject::tr("Perform ifftshift as known from Python, Matlab and so on, i.e. move the \n\
 zero order of diffraction back to the corner to run the inverse fft correctly.\n\
 \n\
-The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.");
+The shift is currently implemented along the x and y or one of both axes within each plane (inplace).");
 /*static*/ ito::RetVal FFTWFilters::ifftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
+    int axis = paramsOpt->at(0).getVal<int>();
 
     if (!inField)
     {
@@ -396,34 +574,56 @@ The shift is currently implemented as 2D shift and executed within each plane of
             {
             case ito::tInt8:
             case ito::tUInt8:
-                doifftshift<ito::uint8>((ito::uint8*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::uint8>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
                 break;
 
             case ito::tInt16:
             case ito::tUInt16:
-                doifftshift<ito::uint16>((ito::uint16*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::uint16>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
                 break;
 
             case ito::tInt32:
             case ito::tUInt32:
-                doifftshift<ito::uint32>((ito::uint32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::uint32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
                 break;
 
             case ito::tFloat32:
-                doifftshift<ito::float32>((ito::float32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::float32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
                 break;
 
             case ito::tFloat64:
-                doifftshift<ito::float64>((ito::float64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::float64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
                 break;
 
             case ito::tComplex64:
-                doifftshift<ito::complex64>((ito::complex64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::complex64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
                 break;
 
             case ito::tComplex128:
-                doifftshift<ito::complex128>((ito::complex128*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                calcfftshift<ito::complex128>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
                 break;
+            }
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        //shift the axis scales of the last two axis
+        int dims = inField->getDims();
+        int size;
+        double phys1, phys2;
+        for (int d = dims - 2; d < dims; ++d)
+        {
+            if (d >= 0)
+            {
+                size = inField->getSize(d);
+                if (size > 0)
+                {
+                    phys1 = inField->getPixToPhys(d, 0);
+                    phys2 = inField->getPixToPhys(d, size - 1);
+                    phys1 = 0.5 * (phys1 + phys2);
+                    inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                }
             }
         }
     }
@@ -632,9 +832,9 @@ ito::RetVal FFTWFilters::xfftw2dParams(QVector<ito::Param> *paramsMand, QVector<
 
         param = ito::Param("plan_flag", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, \
             tr("Method flag, 0: Estimate (default), 1: Measure.  Measure instructs FFTW to run and measure the execution time of several FFTs in order to \
-               find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the \
-               size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal. \
-               In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. ").toLatin1().data());
+find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the \
+size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal. \
+In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. ").toLatin1().data());
         paramsOpt->append(param);
 
         param = ito::Param("norm", ito::ParamBase::String | ito::ParamBase::In, "default", tr("Normalization method. no: neither fft nor ifft are scaled, default: direct transform (fft) is not scaled, inverse transform is scaled by 1/n, ortho: both direct and inverse transforms are scaled by 1/sqrt(n)").toLatin1().data());
@@ -876,11 +1076,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
 
 #if (USEOMP)
             fftw_init_threads();
-#if WIN32
-            fftw_plan_with_nthreads(NTHREADS);
-#else
-            fftw_plan_with_nthreads(NTHREADS);
-#endif
+            fftw_plan_with_nthreads(ito::AddInBase::getMaximumThreadCount());
 #endif
             if (axis >= dims - 2) //axis is along x or y, works inplace and not-inplace
             {
@@ -1290,11 +1486,7 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
         {
 #if (USEOMP)
             fftw_init_threads();
-#if WIN32
-            fftw_plan_with_nthreads(NTHREADS);
-#else
-            fftw_plan_with_nthreads(NTHREADS);
-#endif
+            fftw_plan_with_nthreads(ito::AddInBase::getMaximumThreadCount());
 #endif
             bool inplace = (dObjIn == dObjOut);
 

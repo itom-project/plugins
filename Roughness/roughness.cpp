@@ -25,6 +25,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "roughness.h"
 
+
 #include "pluginVersion.h"
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
@@ -1408,6 +1409,17 @@ ito::RetVal Roughness::calcRoughnessProfile(QVector<ito::ParamBase> *paramsMand,
             {
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("unsupported mode").toLatin1().data());
             }
+
+			QString msg;
+			msg = tr("Roughness filtered with L_c = %1 and L_s = %2, mode = %3").arg(lc).arg(ls).arg(mode);
+			roughness.addToProtocol(std::string(msg.toLatin1().data()));
+			roughness.setTag("lc", lc);
+			roughness.setTag("ls", ls);
+
+			msg = tr("Waviness filtered with L_c = %1 and L_s = %2, mode = %3").arg(lc).arg(ls).arg(mode);
+			waviness.addToProtocol(std::string(msg.toLatin1().data()));
+			waviness.setTag("lc", lc);
+			waviness.setTag("ls", ls);
         }
     }
 
@@ -1637,6 +1649,9 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
                         ito::DataObject result_detailed_(1,3,ito::tFloat64);
                         memcpy(result_detailed_.rowPtr(0,0), Z_out, 3*sizeof(ito::float64));
                         *result_detailed = result_detailed_;
+						result_detailed->setTag("lc", lc);
+						bool dummy;
+						result_detailed->setTag("ls", input.getTag("ls", dummy));
                     }
                 }
             }
@@ -1676,7 +1691,10 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
 
                 if (result_detailed)
                 {
-                    *result_detailed = result_detailed_;
+					*result_detailed = result_detailed_;
+					result_detailed->setTag("lc", lc);
+					bool dummy;
+					result_detailed->setTag("ls", input.getTag("ls", dummy));
                 }
 
                 if (!retval.containsError())
