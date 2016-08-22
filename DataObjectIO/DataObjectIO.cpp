@@ -1593,7 +1593,7 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         param.setMeta(&sm2, false);
         paramsOpt->append(param);
 
-        param = ito::Param("nanValue", ito::ParamBase::String | ito::ParamBase::In, "BAD", tr("If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If '<minrange>' or <maxrange> the minimum or maximum value of the data type in the data block is assumed (e.g. <maxrange> is used by Zygo to describe NaN values). MountainsMap writes 'BAD' as invalid value (following ISO25178-71). This value is ignored for binary input.").toLatin1().data());
+        param = ito::Param("nanValue", ito::ParamBase::String | ito::ParamBase::In, "BAD", tr("If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If '<minrange>' or <maxrange> the minimum or maximum value of the data type in the data block is assumed (e.g. <maxrange> is used by Zygo to describe NaN values). MountainsMap writes 'BAD' as invalid value (following ISO25178-71). This value is ignored for binary input since invalid values are directly encoded in floating point values.").toLatin1().data());
         paramsOpt->append(param);
     }
 
