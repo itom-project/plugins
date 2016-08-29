@@ -1251,10 +1251,79 @@ ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand
         {
             retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], &dst);
         }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvProjectPointsDoc = QObject::tr("Project points from object into image space using the given calibration matrices,\n\
+distortion coefficients rotation and tralsation vector.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvProjectPointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->append(ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image").toLatin1().data()));
+    paramsMand->append(ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output image that has the size dsize and the same type as input image").toLatin1().data()));
+    paramsMand->append(ito::Param("M", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("3x3 camera fundamental matrix").toLatin1().data()));
+    paramsMand->append(ito::Param("distCoeff", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("matrix with distortion coefficients").toLatin1().data()));
+    paramsMand->append(ito::Param("RVec", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("rotation vector").toLatin1().data()));
+    paramsMand->append(ito::Param("TVec", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("translation vector").toLatin1().data()));
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvProjectPoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "source", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
+    ito::DataObject camMat = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(), "M", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
+    ito::DataObject distCoeff = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<ito::DataObject*>(), "distCoeff", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
+    ito::DataObject rVec = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(4).getVal<ito::DataObject*>(), "RVec", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
+    ito::DataObject tVec = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(5).getVal<ito::DataObject*>(), "TVec", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
+
+    if (!paramsMand->at(1).getVal<ito::DataObject*>())
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("destination object must not be NULL").toLatin1().data());
+    }
+
+    if (!retval.containsError())
+    {
+        cv::Mat dst;
+
+        try
+        {
+            cv::projectPoints(*(src.getCvPlaneMat(0)), *(rVec.getCvPlaneMat(0)), *(tVec.getCvPlaneMat(0)), *(camMat.getCvPlaneMat(0)),
+                *(distCoeff.getCvPlaneMat(0)), dst);
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
+        }
 
         if (!retval.containsError())
         {
- 
+            ito::DataObject *dstObj = paramsMand->at(1).getVal<ito::DataObject*>();
+            *dstObj = ito::DataObject(2, dst.rows, ito::tFloat32);
+            ito::float32 *dPtr = (ito::float32*)(dstObj->rowPtr(0, 0));
+            memcpy(dPtr, dst.ptr<float>(0), dst.rows * 2 * sizeof(float));
+            /*
+            for (int np = 0; np < dst.rows; np++)
+            {
+                dPtr[np * 2] = dst.ptr[np * 2];
+                dPtr[np * 2 + 1] = dst.ptr[np * 2 + 1];
+            }
+            */
+            //retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], &dst);
         }
     }
 

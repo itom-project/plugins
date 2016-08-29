@@ -195,6 +195,10 @@ class OpenCVFilters : public ito::AddInAlgo
         static const QString cvWarpPerspectiveDoc;
         static ito::RetVal cvWarpPerspective(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvWarpPerspectiveParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const QString cvProjectPointsDoc;
+        static ito::RetVal cvProjectPoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvProjectPointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
         static const QString cvCannyEdgeDoc;
         static ito::RetVal cvCannyEdge(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);

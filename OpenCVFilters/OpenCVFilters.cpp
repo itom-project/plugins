@@ -2486,6 +2486,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, cvWarpPerspectiveDoc);
     m_filterList.insert("cvWarpPerspective", filter);
 
+    filter = new FilterDef(OpenCVFilters::cvProjectPoints, OpenCVFilters::cvProjectPointsParams, cvProjectPointsDoc);
+    m_filterList.insert("cvProjectPoints", filter);
+
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
     filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, cvFlipUpDownDoc);
