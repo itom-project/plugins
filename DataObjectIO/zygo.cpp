@@ -639,7 +639,7 @@ ito::RetVal DataObjectIO::loadZygoMetroProParams(QVector<ito::Param> *paramsMand
                         break;
                     }
 
-                    obj.setTag("objective", header.obj_name);
+                    obj.setTag("objective", QByteArray(header.obj_name).trimmed().data());
                     obj.setTag("scanDescription", header.scan_descr);
                     obj.setTag("intensityRange", header.intens_range);
                     QDateTime timestamp;
@@ -648,7 +648,7 @@ ito::RetVal DataObjectIO::loadZygoMetroProParams(QVector<ito::Param> *paramsMand
                     obj.setTag("automaticGainControl", header.agc);
                     obj.setTag("exitPupilDiameter", header.exit_pupil_diam);
                     obj.setTag("lightLevelPercentage", header.light_level_pct);
-                    obj.setTag("zoomDescription", header.zoom_descr);
+                    obj.setTag("zoomDescription", QByteArray(header.zoom_descr).trimmed().data());
                     obj.setTag("interferometricScaleFactor", header.intf_scale_factor);
                     obj.setTag("phaseCorrectionFactor", header.obliquity_factor);
                     obj.setTag("acquireMode", header.acq_type == 0 ? "phase" : (header.acq_type == 1 ? "fringe" : "scan"));
