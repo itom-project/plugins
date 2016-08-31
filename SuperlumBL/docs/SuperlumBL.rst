@@ -65,7 +65,7 @@ Then create a new instance of the plugin **SuperlumBL** using the instance of th
 .. code-block:: python
     
     serial = dataIO("SerialIO", COM-Port, Baudrate, endline="\r\n")
-    bs = dataIO("SuperlumBS", serial, deviceName)
+    bs = dataIO("SuperlumBL", serial, deviceName)
 	
 After the initialization of the plugin **SuperlumBL** the remote communication is set. The plugin works only, if the **remote access** is available. 
 If the instance of **SuperlumBL** is deleted, the remote access is switched to the local mode. 
@@ -103,7 +103,7 @@ Then create a new instance of the acuator plugin **SuperlumBL**. Mandatory param
 
 .. code-block:: python
     
-    bl = actuator("SuperlumBl", serial, deviceName)
+    bl = actuator("SuperlumBL", serial, deviceName)
 
 All the parameters can be changed by using the function **setParam**. This example shows how to set output power mode. 0 means "low", 1 means "high". 
 

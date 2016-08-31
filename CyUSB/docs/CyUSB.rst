@@ -76,8 +76,13 @@ This plugin is also used by other hardware plugins to communicate with further d
         
 Compilation
 ===========
-In order to compile CyUSB, get the sources or binaries from CyUSB from libusb.info. Then set LibUSB_DIR to the base
-directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin. The Cypress Seminconductor SDK can be downloaded here: http://www.cypress.com/file/135301?finished=1. 
+In order to compile CyUSB, get the Cypress Seminconductor SDK from: http://www.cypress.com/file/135301?finished=1 (e.g. CY3684Setup.exe). Install the SDK (select typical as 
+setup type to install the SDK components; you can quit installing the 3rd party softwares uVision2 and GPIF Designer). Then set the CMake variable CyAPI_INCLUDE_DIR to a
+directory similar than **C:\Program Files\Cypress\USB\CY3684_EZ-USB_FX2LP_DVK\1.1\Windows Applications\library\cpp\inc**.
+
+Run plugin
+==========
+In order to run a device via the CyUSB plugin, you also need to install the drivers from cypress.com. This is already done if you installed the SDK like stated above.
 
 Changelog
 =========
