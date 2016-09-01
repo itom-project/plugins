@@ -1,4 +1,4 @@
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* This file is generated automatically by configure */\n\
 /* It is valid only for the system type ${effective_target} */\n\
 \n\
@@ -11,7 +11,7 @@ TEST_BIG_ENDIAN(ENDIANNESS)
 
 IF(ENDIANNESS)
 # big endian
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* No other byte swapping functions are available on this big-endian system */\n\
 #define swap16(x)	((uint16_t)(((x) << 8) | ((uint16_t)(x) >> 8)))\n\
 #define swap32(x)	((uint32_t)(((uint32_t)(x) << 24) & 0xff000000UL | \\\n\
@@ -29,7 +29,7 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 \n" APPEND)
 ELSE(ENDIANNESS)
 # little endian
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* Use these as generic byteswapping macros on this little endian system */\n\
 /* on windows we might not have ntohs / ntohl without including winsock.dll,\n\
  * so use generic macros */\n\
@@ -56,7 +56,7 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 
 ENDIF(ENDIANNESS)
 
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* The byte swapping macros have the form: */\n\
 /*   EENN[a]toh or htoEENN[a] where EE is be (big endian) or */\n\
 /* le (little-endian), NN is 16 or 32 (number of bits) and a, */\n\
@@ -110,7 +110,7 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 
 IF(ENDIANNESS)
 # big endian
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* Define our own extended byte swapping macros for big-endian machines */\n\
 #ifndef htole16\n\
 # define htole16(x)      swap16(x)\n\
@@ -147,7 +147,7 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 
 ELSE(ENDIANNESS)
 # little endian
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* On little endian machines, these macros are null */\n\
 #ifndef htole16\n\
 # define htole16(x)      (x)\n\
@@ -188,7 +188,7 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 \n" APPEND)
 ENDIF(ENDIANNESS)
 
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 	"/* Define the C99 standard length-specific integer types */\n\
 #include <stdint.h>\n\
 \n" APPEND)
@@ -196,7 +196,7 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 MESSAGE(STATUS "PROC-TYPE: " ${CMAKE_SYSTEM_PROCESSOR})
 # this is for x86 platforms only but we simply include for the time being until the test 
 # for the platform is included
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* Here are some macros to create integers from a byte array */\n\
 /* These are used to get and put integers from/into a uint8_t array */\n\
 /* with a specific endianness.  This is the most portable way to generate */\n\
@@ -245,7 +245,7 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 \n" APPEND)
 
 # guess this is ambigious need to take a look at it ...
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* Here are some macros to create integers from a byte array */\n\
 /* These are used to get and put integers from/into a uint8_t array */\n\
 /* with a specific endianness.  This is the most portable way to generate */\n\
@@ -280,4 +280,4 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
         (a)[1]=(uint8_t)((x)>>8), (a)[0]=(uint8_t)(x)\n\
 */\n" APPEND)
 
-WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" "#endif /*__BYTEORDER_H*/" APPEND)
+WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" "#endif /*__BYTEORDER_H*/" APPEND)

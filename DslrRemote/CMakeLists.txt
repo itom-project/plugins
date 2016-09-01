@@ -57,6 +57,8 @@ IF (WIN32 OR LIBGPHOTO_FOUND)
     ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
+    
+    include("CreateEndianHeader.cmake")
 
     INCLUDE_DIRECTORIES(
         ${CMAKE_CURRENT_BINARY_DIR}
