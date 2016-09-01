@@ -54,6 +54,7 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2
 	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2_port
 	${CMAKE_CURRENT_SOURCE_DIR}/../../ #for gphoto2 directory
+    ${CMAKE_CURRENT_BINARY_DIR}/../../ #for gphoto2 directory
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
