@@ -1285,7 +1285,7 @@ ito::RetVal OpenCVFilters::cvProjectPointsParams(QVector<ito::Param> *paramsMand
 ito::RetVal OpenCVFilters::cvProjectPoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "source", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "source", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 1, ito::tFloat32);
     ito::DataObject camMat = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(), "M", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
     ito::DataObject distCoeff = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<ito::DataObject*>(), "distCoeff", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
     ito::DataObject rVec = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(4).getVal<ito::DataObject*>(), "RVec", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
@@ -1313,9 +1313,9 @@ ito::RetVal OpenCVFilters::cvProjectPoints(QVector<ito::ParamBase> *paramsMand, 
         if (!retval.containsError())
         {
             ito::DataObject *dstObj = paramsMand->at(1).getVal<ito::DataObject*>();
-            *dstObj = ito::DataObject(2, dst.rows, ito::tFloat32);
+            *dstObj = ito::DataObject(dst.rows, 2, ito::tFloat32);
             ito::float32 *dPtr = (ito::float32*)(dstObj->rowPtr(0, 0));
-            memcpy(dPtr, dst.ptr<float>(0), dst.rows * 2 * sizeof(float));
+            memcpy(dPtr, dst.ptr<float>(0), dst.rows * 2 * sizeof(ito::float32));
             /*
             for (int np = 0; np < dst.rows; np++)
             {
