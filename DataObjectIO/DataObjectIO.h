@@ -184,6 +184,10 @@ class DataObjectIO : public ito::AddInAlgo
         static const QString loadZygoMetroProDoc;
         static ito::RetVal loadZygoMetroPro(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal loadZygoMetroProParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+		static const QString loadNanoscopeIIIDoc;
+		static  ito::RetVal loadNanoscopeIII(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+		static  ito::RetVal loadNanoscopeIIIParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
     private:
         static ito::RetVal saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const ImageFormat &imageFormat);
         static ito::RetVal saveDataObjectQt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const ImageFormat &imageFormat);
@@ -195,6 +199,14 @@ class DataObjectIO : public ito::AddInAlgo
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const QByteArray &nanString);
         static ito::RetVal readNistHeader(QFile &inFile, ito::DataObject &newObject, double &zscale, const int flags, const std::string &xyUnit, const std::string &valueUnit, QByteArray &nanString);
         static ito::RetVal readNistHeaderBinary(QFile &inFile, ito::DataObject &newObject, double &zscale, const int flags, const std::string &xyUnit, const std::string &valueUnit, QByteArray &nanString);
+
+		static ito::RetVal readNanoscopeIIIHeader(QFile &inFile, ito::DataObject &outObj, float &scalingFactor, unsigned long &startImage, unsigned long &imageLength, const int &numImage);
+		static ito::RetVal readNanoscopeIIIData(QFile &inFile, ito::DataObject *outObj, const float &scalingFactor, const unsigned short &start, const int &bpp);
+		static ito::RetVal readSize(const QMap<QByteArray, QByteArray>* map, unsigned short &x, unsigned short &y);
+		static ito::RetVal readIsNonSquareAspect(const QMap<QByteArray, QByteArray>* map, bool &aspect);
+		static ito::RetVal printOutInformation(const QMap<QByteArray, QByteArray>* map, const int& idx);
+		static ito::RetVal addTags(const QList<QPair<QByteArray, QMap<QByteArray, QByteArray>*>> orderList, ito::DataObject &outObj, const int & numImage);
+		static ito::RetVal mapToDataField(const QMap<QByteArray, QByteArray>* map, ito::DataObject &outObj, unsigned short &gx, unsigned short &gy, bool &gNoneSquare, const int &bpp, QFile &inFile, const double &gzScale, const QString &unitStr);
 
         static void checkAndModifyFilenameSuffix(QFileInfo &file, const QString &desiredAndAllowedSuffix, const QString &allowedSuffix2 = QString(), const QString &allowedSuffix3 = QString());
 

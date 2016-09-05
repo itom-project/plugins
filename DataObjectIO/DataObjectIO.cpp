@@ -183,8 +183,11 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::loadFrt, DataObjectIO::loadFrtParams, loadFrtDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("MicroProf FRT (*.frt)"));
     m_filterList.insert("loadFRT", filter);
 
-    filter = new FilterDef(DataObjectIO::loadAvantesRaw, DataObjectIO::loadAvantesRawParams, loadAvantesRawDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)"));
-    m_filterList.insert("loadAvantesRaw", filter);
+    filter = new FilterDef(DataObjectIO::loadNanoscopeIII, DataObjectIO::loadNanoscopeIIIParams, loadNanoscopeIIIDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Veeco Nanoscope III (*.001 *.002 *.003 *.004)"));
+    m_filterList.insert("loadNanoscopeIII", filter);
+
+	filter = new FilterDef(DataObjectIO::loadAvantesRaw, DataObjectIO::loadAvantesRawParams, loadAvantesRawDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)"));
+	m_filterList.insert("loadAvantesRaw", filter);
 
     filter = new FilterDef(DataObjectIO::loadZygoMetroPro, DataObjectIO::loadZygoMetroProParams, loadZygoMetroProDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Zygo MetroPro Data File (*.dat)"));
     m_filterList.insert("loadZygoMetroPro", filter);
