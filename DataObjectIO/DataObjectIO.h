@@ -205,7 +205,7 @@ class DataObjectIO : public ito::AddInAlgo
 		static ito::RetVal readSize(const QMap<QByteArray, QByteArray>* map, unsigned short &x, unsigned short &y);
 		static ito::RetVal readIsNonSquareAspect(const QMap<QByteArray, QByteArray>* map, bool &aspect);
 		static ito::RetVal printOutInformation(const QMap<QByteArray, QByteArray>* map, const int& idx);
-		static ito::RetVal addTags(const QList<QPair<QByteArray, QMap<QByteArray, QByteArray>*>> orderList, ito::DataObject &outObj, const int & numImage);
+		static ito::RetVal addTags(const QList<QPair<QByteArray, QMap<QByteArray, QByteArray>*> > orderList, ito::DataObject &outObj, const int & numImage);
 		static ito::RetVal mapToDataField(const QMap<QByteArray, QByteArray>* map, ito::DataObject &outObj, unsigned short &gx, unsigned short &gy, bool &gNoneSquare, const int &bpp, QFile &inFile, const double &gzScale, const QString &unitStr);
 
         static void checkAndModifyFilenameSuffix(QFileInfo &file, const QString &desiredAndAllowedSuffix, const QString &allowedSuffix2 = QString(), const QString &allowedSuffix3 = QString());

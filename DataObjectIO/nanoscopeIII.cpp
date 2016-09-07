@@ -123,7 +123,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
 		char* col;
 		QString keyString, unit;
 		double zScale;
-		QList<QPair<QByteArray, QMap<QByteArray,QByteArray>*>> orderList;
+		QList<QPair<QByteArray, QMap<QByteArray,QByteArray>*> > orderList;
 
 
 		while (!curLine.contains((char)0x1A))//marks the end of the header
@@ -571,8 +571,8 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 					}
 					outObj.setAxisScale(0, fieldY / y);
 					outObj.setAxisScale(1, fieldX / x);
-					outObj.setAxisUnit(0, "µm");
-					outObj.setAxisUnit(1, "µm");
+					outObj.setAxisUnit(0, "\B5m");
+					outObj.setAxisUnit(1, "\B5m");
 
 
 					retval += readNanoscopeIIIData(inFile, &outObj, pow(1.0 / 256.0, bpp), offset, bpp);
@@ -633,7 +633,7 @@ ito::RetVal DataObjectIO::printOutInformation(const QMap<QByteArray, QByteArray>
 	return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DataObjectIO::addTags(const QList<QPair<QByteArray, QMap<QByteArray, QByteArray>*>> orderList, ito::DataObject &outObj, const int & numImage)
+ito::RetVal DataObjectIO::addTags(const QList<QPair<QByteArray, QMap<QByteArray, QByteArray>*> > orderList, ito::DataObject &outObj, const int & numImage)
 {
 	ito::RetVal retval;
 	QPair<QByteArray, QMap<QByteArray, QByteArray>*> item;
