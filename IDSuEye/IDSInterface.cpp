@@ -100,11 +100,12 @@ In order to run your camera, please install the SDK imaging software in the righ
 The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart."; 
     m_detaildescription = tr(docstring).arg(major).arg(minor);*/
     m_detaildescription = tr(
- "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
-- UI145xSE-C (colored, USB2) \n\
-- UI124xSE-M (monochrome, USB2). \n\
-- UI224xSE-M (monochrome, USB2). \n\
-- UI337xCP-C (colored, USB3) \n\
+"This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
+* UI145xSE-C (colored, USB2) \n\
+* UI124xSE-M (monochrome, USB2) \n\
+* UI224xSE-M (monochrome, USB2) \n\
+* UI337xCP-C (colored, USB3) \n\
+* UI318xCP-M (monochrome, USB3) \n\
 \n\
 The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. \n\
 \n\
@@ -119,7 +120,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     m_license = tr("Licensed under LGPL");
     m_aboutThis = tr( "N.A." );  
 
-    ito::Param param( "camera_id", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, tr("Camera ID of the camera to open (0: the next free camera will opened [default], 1-254: else)").toLatin1().data());
+    ito::Param param( "camera_id", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, tr("Camera ID (user-definable in IDS camera manager) of the camera to open (0: the next free camera will opened [default], 1-254: specific camera ID)").toLatin1().data());
     m_initParamsOpt.append(param);
 
     param = ito::Param("color_mode", ito::ParamBase::String, "auto", tr("initial color model of camera ('gray', 'color' or 'auto' (default)). 'color' is only possible for color cameras").toLatin1().data());
