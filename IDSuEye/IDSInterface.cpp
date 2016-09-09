@@ -106,6 +106,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 * UI224xSE-M (monochrome, USB2) \n\
 * UI337xCP-C (colored, USB3) \n\
 * UI318xCP-M (monochrome, USB3) \n\
+* UI318xCP-C (colored, USB3) \n\
 \n\
 The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. \n\
 \n\
