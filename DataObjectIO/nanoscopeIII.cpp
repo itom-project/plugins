@@ -409,7 +409,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 	unsigned short x, y, offset, size;
 	bool check, nonSquare, sizeOK(false), useGlobal(false), old(false);
 	double fieldX, fieldY, scale;
-	char *end, *s, un[5], *unit;
+	char *end, *s, un[5];
 
 
 
@@ -571,8 +571,8 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 					}
 					outObj.setAxisScale(0, fieldY / y);
 					outObj.setAxisScale(1, fieldX / x);
-					outObj.setAxisUnit(0, "\B5m");
-					outObj.setAxisUnit(1, "\B5m");
+                    outObj.setAxisUnit(0, "\u00B5m"); // \mu m
+                    outObj.setAxisUnit(1, "\u00B5m"); // \mu m
 
 
 					retval += readNanoscopeIIIData(inFile, &outObj, pow(1.0 / 256.0, bpp), offset, bpp);
