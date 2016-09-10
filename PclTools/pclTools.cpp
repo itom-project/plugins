@@ -1109,11 +1109,11 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::transformAffineDOC = QObject::tr("\n\
+const QString PclTools::transformAffineDOC = QObject::tr("Applies an affine coordinate transform to the input pointCloud \n\
 \n\
-\n\
-\n\
-\n");
+The transformed point cloud is saved in 'pointCloudOut' (inplace possible). The transformation matrix has to be a 4x4 homogeneous transformation matrix \
+given by a 4x4 real dataObject (uint8, int8, uint16, int16, uint32, int32 or float32 allowed). Every point P_in in the input cloud \
+is transformed by P_out = transform * P_in. Independent on the type of the transformation matrix, the matrix multiplication is done with float32 precision.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::transformAffineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1128,8 +1128,8 @@ const QString PclTools::transformAffineDOC = QObject::tr("\n\
 
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("The affine transform is applied to this point cloud").toLatin1().data()));
-    paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("The affine transform is applied to this point cloud").toLatin1().data()));
-    paramsMand->append(ito::Param("transform", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("4x4 homogeneous transformation matrix").toLatin1().data()));
+    paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Resulting, transformed point cloud (inplace possible)").toLatin1().data()));
+    paramsMand->append(ito::Param("transform", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("4x4 homogeneous transformation matrix (uint8, int8, uint16, int16, uint32, int32, float32, float64)").toLatin1().data()));
 
     paramsOpt->clear();
     return retval;
@@ -1142,25 +1142,26 @@ const QString PclTools::transformAffineDOC = QObject::tr("\n\
 
     //read params from mandatory and optional params
     
-    ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
-    ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)(*paramsMand)[1].getVal<void*>();
-    const ito::DataObject *transform = (const ito::DataObject*)(*paramsMand)[2].getVal<void*>();
+    const ito::PCLPointCloud *pclIn = (*paramsMand)[0].getVal<const ito::PCLPointCloud*>();
+    ito::PCLPointCloud *pclOut = (*paramsMand)[1].getVal<ito::PCLPointCloud*>();
+    const ito::DataObject *transform = (*paramsMand)[2].getVal<const ito::DataObject*>();
 
     if (pclIn == NULL || pclOut == NULL)
     {
         retval += ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
+        return retval;
     }
 
     Eigen::Affine3f trafo;
     retval += ito::pclHelper::dataObj4x4ToEigenAffine3f(transform, trafo);
 
-    if (pclIn != pclOut)
-    {
-        *pclOut = ito::PCLPointCloud(pclIn->getType());
-    }
-    
     if (!retval.containsError())
     {
+        if (pclIn != pclOut)
+        {
+            *pclOut = ito::PCLPointCloud(pclIn->getType());
+        }
+
         switch(pclIn->getType())
         {
         case ito::pclXYZ:
@@ -1207,6 +1208,134 @@ const QString PclTools::transformAffineDOC = QObject::tr("\n\
             }
         default:
             break;
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString PclTools::transformAffineMeshDOC = QObject::tr("Applies an affine coordinate transform to all points of the input mesh. \n\
+\n\
+The transformed points are saved in 'meshOut' (inplace possible). The transformation matrix has to be a 4x4 homogeneous transformation matrix \
+given by a 4x4 real dataObject (uint8, int8, uint16, int16, uint32, int32 or float32 allowed). Every point P_in in the input mesh \
+is transformed by P_out = transform * P_in. Independent on the type of the transformation matrix, the matrix multiplication is done with float32 precision.");
+
+/*static*/ ito::RetVal PclTools::transformAffineMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("The affine transform is applied to the points in this polygonal mesh").toLatin1().data()));
+    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Resulting, transformed polygon mesh (inplace possible)").toLatin1().data()));
+    paramsMand->append(ito::Param("transform", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("4x4 homogeneous transformation matrix (uint8, int8, uint16, int16, uint32, int32, float32, float64)").toLatin1().data()));
+
+    paramsOpt->clear();
+    return retval;
+}
+
+/*static*/ ito::RetVal PclTools::transformAffineMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    //read params from mandatory and optional params
+
+    const ito::PCLPolygonMesh *meshIn = (*paramsMand)[0].getVal<const ito::PCLPolygonMesh*>();
+    ito::PCLPolygonMesh *meshOut = (*paramsMand)[1].getVal<ito::PCLPolygonMesh*>();
+    const ito::DataObject *transform = (*paramsMand)[2].getVal<const ito::DataObject*>();
+
+    if (meshIn == NULL || meshOut == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("mesh must not be NULL").toLatin1().data());
+        return retval;
+    }
+    else if (meshIn->polygonMesh().get() == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("input mesh is empty").toLatin1().data());
+    }
+
+    ito::tPCLPointType t = ito::pclHelper::guessPointType(meshIn->polygonMesh()->cloud);
+    if (t == ito::pclInvalid)
+    {
+        return ito::RetVal(ito::retError, 0, tr("cloud type of 'meshIn' is invalid.").toLatin1().data());
+    }
+    
+    Eigen::Affine3f trafo;
+    retval += ito::pclHelper::dataObj4x4ToEigenAffine3f(transform, trafo);
+
+    ito::PCLPointCloud cloud(t);
+
+    if (!retval.containsError())
+    {
+        retval += ito::pclHelper::pointCloud2ToPCLPointCloud(meshIn->polygonMesh()->cloud, &cloud);
+    }
+
+    if (!retval.containsError())
+    {
+        if (meshIn != meshOut)
+        {
+            ito::PCLPointCloud dummyCloud(t);
+            dummyCloud.push_back(ito::PCLPoint(t));
+            *meshOut = ito::PCLPolygonMesh(dummyCloud, meshIn->polygonMesh()->polygons); //constructing a mesh from an empty point cloud crashes in PCL 1.8.0
+        }
+
+        if (!retval.containsError())
+        {
+            switch (cloud.getType())
+            {
+            case ito::pclXYZ:
+            {
+                const pcl::PointCloud<pcl::PointXYZ> *cloudIn = cloud.toPointXYZ().get();
+                pcl::PointCloud<pcl::PointXYZ> *cloudOut = cloud.toPointXYZ().get();
+                pcl::transformPointCloud<pcl::PointXYZ>(*cloudIn, *cloudOut, trafo);
+                break;
+            }
+            case ito::pclXYZI:
+            {
+                const pcl::PointCloud<pcl::PointXYZI> *cloudIn = cloud.toPointXYZI().get();
+                pcl::PointCloud<pcl::PointXYZI> *cloudOut = cloud.toPointXYZI().get();
+                pcl::transformPointCloud<pcl::PointXYZI>(*cloudIn, *cloudOut, trafo);
+                break;
+            }
+            case ito::pclXYZRGBA:
+            {
+                const pcl::PointCloud<pcl::PointXYZRGBA> *cloudIn = cloud.toPointXYZRGBA().get();
+                pcl::PointCloud<pcl::PointXYZRGBA> *cloudOut = cloud.toPointXYZRGBA().get();
+                pcl::transformPointCloud<pcl::PointXYZRGBA>(*cloudIn, *cloudOut, trafo);
+                break;
+            }
+            case ito::pclXYZNormal:
+            {
+                const pcl::PointCloud<pcl::PointNormal> *cloudIn = cloud.toPointXYZNormal().get();
+                pcl::PointCloud<pcl::PointNormal> *cloudOut = cloud.toPointXYZNormal().get();
+                pcl::transformPointCloudWithNormals<pcl::PointNormal>(*cloudIn, *cloudOut, trafo);
+                break;
+            }
+            case ito::pclXYZINormal:
+            {
+                const pcl::PointCloud<pcl::PointXYZINormal> *cloudIn = cloud.toPointXYZINormal().get();
+                pcl::PointCloud<pcl::PointXYZINormal> *cloudOut = cloud.toPointXYZINormal().get();
+                pcl::transformPointCloudWithNormals<pcl::PointXYZINormal>(*cloudIn, *cloudOut, trafo);
+                break;
+            }
+            case ito::pclXYZRGBNormal:
+            {
+                const pcl::PointCloud<pcl::PointXYZRGBNormal> *cloudIn = cloud.toPointXYZRGBNormal().get();
+                pcl::PointCloud<pcl::PointXYZRGBNormal> *cloudOut = cloud.toPointXYZRGBNormal().get();
+                pcl::transformPointCloudWithNormals<pcl::PointXYZRGBNormal>(*cloudIn, *cloudOut, trafo);
+                break;
+            }
+            default:
+                break;
+            }
+
+            retval += ito::pclHelper::pclPointCloudToPointCloud2(cloud, meshOut->polygonMesh()->cloud);
         }
     }
 
@@ -4360,8 +4489,11 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::saveVTKImageData, PclTools::saveVTKImageDataParams, saveVTKImageDataDOC, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("VTK Image Data File (*.vti)"));
     m_filterList.insert("saveVTKImageData", filter);
 
-    filter = new FilterDef(PclTools::transformAffine, PclTools::transformAffineParams, tr("transforms a point cloud with a given homogeneous transformation matrix (4x4 data object)"));
+    filter = new FilterDef(PclTools::transformAffine, PclTools::transformAffineParams, transformAffineDOC);
     m_filterList.insert("pclTransformAffine", filter);
+
+    filter = new FilterDef(PclTools::transformAffineMesh, PclTools::transformAffineMeshParams, transformAffineMeshDOC);
+    m_filterList.insert("meshTransformAffine", filter);
 
     filter = new FilterDef(PclTools::pclFitModel, PclTools::pclFitModelParams, pclFitModelDOC);
     m_filterList.insert("pclFitModel", filter);
