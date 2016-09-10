@@ -275,6 +275,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
     if (!retval.containsError())
     {
+        //qDebug() << PBC_MaxChannelCount(m_serialNo); bug in kinesis: this method always returns 3.
         if (PBC_GetNumChannels(m_serialNo) <= 0)
         {
             retval += ito::RetVal(ito::retError, 0, "The device has no connected channels.");
@@ -469,7 +470,7 @@ ito::RetVal ThorlabsBP::close(ItomSharedSemaphore *waitCond)
         }
         Sleep(200);
 
-        PBC_Close(m_serialNo);
+        PBC_Close(m_serialNo); //Kinesis 1.6.0 and Kinesis 1.7.0 crash in this line! bug. todo.
         m_opened = false;
 		openedDevices.removeOne(m_serialNo);
     }
