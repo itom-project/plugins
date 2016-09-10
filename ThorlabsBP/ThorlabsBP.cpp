@@ -158,16 +158,6 @@ ThorlabsBP::ThorlabsBP() :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Init method which is called by the addInManager after the initiation of a new instance of DummyGrabber.
-    This init method gets the mandatory and optional parameter vectors of type tParam and must copy these given parameters to the
-    internal m_params-vector. Notice that this method is called after that this instance has been moved to its own (non-gui) thread.
-
-    \param [in] paramsMand is a pointer to the vector of mandatory tParams.
-    \param [in] paramsOpt is a pointer to the vector of optional tParams.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \todo check if (*paramsMand)[0] is a serial port
-    \return retOk
-    */
 ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -349,11 +339,11 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         foreach (int channel, m_channelIndices)
         {
             //this method is not available in current SDK (Kinesis 1.6.0)
-            /*int err = PBC_LoadSettings(m_serialNo);
+            int err = PBC_LoadSettings(m_serialNo, channel);
             if (!err)
             {
                 retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded.");
-            }*/
+            }
 
             if (!PBC_StartPolling(m_serialNo, channel, 100))
             {
