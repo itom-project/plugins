@@ -2533,7 +2533,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with removed NaN values").toLatin1().data()));
-    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<int>::max(), 10000, tr("number of randomly picked points").toLatin1().data()));
+    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<int>::max(), 10000, tr("number of randomly picked points.").toLatin1().data()));
     
     return retval;
 }
@@ -2541,8 +2541,8 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclRandomSample(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
-    ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)(*paramsMand)[1].getVal<void*>();
+    const ito::PCLPointCloud *pclIn = (*paramsMand)[0].getVal<ito::PCLPointCloud*>();
+    ito::PCLPointCloud *pclOut = (*paramsMand)[1].getVal<ito::PCLPointCloud*>();
 
     bool inplace = false; //no real inplace is possible
 
@@ -2551,9 +2551,11 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
         return ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
     }
 
+    int nrOfPoints = (*paramsMand)[2].getVal<int>();
+
     if (pclIn == pclOut)
     {
-        pclOut = new ito::PCLPointCloud(pclIn->getType());
+        pclIn = new ito::PCLPointCloud(pclIn->copy()); //deep copy
         inplace = true;
     }
     else
@@ -2561,8 +2563,6 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
         *pclOut = ito::PCLPointCloud(pclIn->getType());
     }
     
-    int nrOfPoints = (*paramsMand)[2].getVal<int>();
-
     switch(pclIn->getType())
     {
     case ito::pclInvalid:
@@ -2574,7 +2574,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
             RandomSampleCorrected<pcl::PointXYZ> randsample;
             randsample.setInputCloud(ptr);
             randsample.setSample(nrOfPoints);
-            randsample.setSeed(0.0);
+            randsample.setSeed((unsigned int)cv::getCPUTickCount());
             randsample.filter(*(pclOut->toPointXYZ()));
         }
         break;
@@ -2585,7 +2585,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
             RandomSampleCorrected<pcl::PointXYZI> randsample;
             randsample.setInputCloud(ptr);
             randsample.setSample(nrOfPoints);
-            randsample.setSeed(0.0);
+            randsample.setSeed((unsigned int)cv::getCPUTickCount());
             randsample.filter(*(pclOut->toPointXYZI()));
         }
         break;
@@ -2596,7 +2596,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
             RandomSampleCorrected<pcl::PointXYZRGBA> randsample;
             randsample.setInputCloud(ptr);
             randsample.setSample(nrOfPoints);
-            randsample.setSeed(0.0);
+            randsample.setSeed((unsigned int)cv::getCPUTickCount());
             randsample.filter(*(pclOut->toPointXYZRGBA()));
         }
         break;
@@ -2607,7 +2607,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
             RandomSampleCorrected<pcl::PointNormal> randsample;
             randsample.setInputCloud(ptr);
             randsample.setSample(nrOfPoints);
-            randsample.setSeed(0.0);
+            randsample.setSeed((unsigned int)cv::getCPUTickCount());
             randsample.filter(*(pclOut->toPointXYZNormal()));
         }
         break;
@@ -2618,7 +2618,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
             RandomSampleCorrected<pcl::PointXYZINormal> randsample;
             randsample.setInputCloud(ptr);
             randsample.setSample(nrOfPoints);
-            randsample.setSeed(0.0);
+            randsample.setSeed((unsigned int)cv::getCPUTickCount());
             randsample.filter(*(pclOut->toPointXYZINormal()));
         }
         break;
@@ -2629,7 +2629,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
             RandomSampleCorrected<pcl::PointXYZRGBNormal> randsample;
             randsample.setInputCloud(ptr);
             randsample.setSample(nrOfPoints);
-            randsample.setSeed(0.0);
+            randsample.setSeed((unsigned int)cv::getCPUTickCount());
             randsample.filter(*(pclOut->toPointXYZRGBNormal()));
         }
 
@@ -2638,8 +2638,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
 
     if (inplace)
     {
-        (*pclIn) = (*pclOut); //here: pclOut is a new, temporary point cloud, pclIn is the given argument pclIn AND pclOut!
-        delete pclOut;
+        DELETE_AND_SET_NULL(pclIn);
     }
 
     return ito::retOk;

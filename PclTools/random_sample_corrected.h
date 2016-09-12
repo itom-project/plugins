@@ -115,42 +115,42 @@
             // Set random seed so derived indices are the same each time the filter runs
             std::srand (seed_);
         
-        float one_over_N = 0.0;
-        int top = N - sample_; //N are the remaining number of elements, n the remaining number of wanted samples
-        unsigned index = 0;
-        unsigned i = 0;
+            float one_over_N = 0.0;
+            int top = N - sample_; //N are the remaining number of elements, n the remaining number of wanted samples
+            unsigned index = 0;
+            unsigned i = 0;
 
-        // Algorithm A
-        for (size_t n = sample_; n > 1; n--)
-        {
-            one_over_N = 1.0f / float(N); //we need to re-calculate N^{-1}
-
-            float V = unifRand ();
-            unsigned S = 0;
-            float quot = float(top) / float(N);
-
-            while( quot > V )
+            // Algorithm A
+            for (size_t n = sample_; n > 1; n--)
             {
-                S++;
-                N--;
-                top--;
-                quot = quot * ( float(top) / float(N) );
+                one_over_N = 1.0f / float(N); //we need to re-calculate N^{-1}
+
+                float V = std::max(0.001f, unifRand ()); //the 0.001 lower bound has been introduced to avoid random huge areas without selected point.
+                unsigned S = 0;
+                float quot = float(top) / float(N);
+
+                while( quot > V )
+                {
+                    S++;
+                    N--;
+                    top--;
+                    quot = quot * ( float(top) / float(N) );
+                }
+
+                N--; //this together with N-- above is the same than N - S - 1 (paper Vit84)
+                index += S;
+                output.points[i++] = input_->points[index++];
             }
 
-            N--; //this together with N-- above is the same than N - S - 1 (paper Vit84)
-            index += S;
-            output.points[i++] = input_->points[index++];
-        }
-
-        if(N > 0)
-        {
-            index += static_cast<unsigned int>( unifRand() * N); // * static_cast<unsigned> (unifRand ());
-            output.points[i++] = input_->points[index++];
-        }
-        else
-        {
-            output.points.resize ( sample_-1 );
-        }
+            if(N > 0)
+            {
+                index += static_cast<unsigned int>( unifRand() * N); // * static_cast<unsigned> (unifRand ());
+                output.points[i++] = input_->points[index++];
+            }
+            else
+            {
+                output.points.resize ( sample_-1 );
+            }
 
 
             /*for (size_t n = sample_; n >= 2; n--)
@@ -182,7 +182,7 @@
       applyFilter (std::vector<int> &indices)
       {
 
-      unsigned N = static_cast<unsigned> (input_->size ());
+      size_t N = static_cast<size_t> (input_->size());
       float one_over_N = 1.0f / float (N);
 
       // If sample size is 0 or if the sample size is greater then input cloud size
@@ -200,7 +200,7 @@
         std::srand (seed_);
 
         // Algorithm A
-        unsigned top = 0; //N - sample_;
+        size_t top = 0; //N - sample_;
         unsigned i = 0;
         unsigned index = 0;
 
