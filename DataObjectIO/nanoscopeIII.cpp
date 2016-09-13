@@ -406,7 +406,8 @@ ito::RetVal DataObjectIO::readIsNonSquareAspect(const QMap<QByteArray, QByteArra
 ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map, ito::DataObject &outObj, unsigned short &gx, unsigned short &gy, bool &gNoneSquare, const int &bpp, QFile &inFile, const double &gzScale, const QString &unitStr)
 {
 	ito::RetVal retval;
-	unsigned short x, y, offset, size;
+    unsigned short x, y, offset;
+    unsigned long size;
 	bool check, nonSquare, sizeOK(false), useGlobal(false), old(false);
 	double fieldX, fieldY, scale;
 	char *end, *s, un[5];
@@ -477,7 +478,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 				{
 					retval += ito::RetVal(ito::retError, 0, "Cannot convert 'Data offset'.");
 				}
-				size =  map->constFind("Data length")->toUShort(&check);
+				size =  map->constFind("Data length")->toULong(&check);
 				if (!check)
 				{
 					retval += ito::RetVal(ito::retError, 0, "Cannot convert 'Data length'.");
