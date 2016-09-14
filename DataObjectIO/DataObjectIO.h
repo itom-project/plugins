@@ -201,7 +201,7 @@ class DataObjectIO : public ito::AddInAlgo
         static ito::RetVal readNistHeaderBinary(QFile &inFile, ito::DataObject &newObject, double &zscale, const int flags, const std::string &xyUnit, const std::string &valueUnit, QByteArray &nanString);
 
 		static ito::RetVal readNanoscopeIIIHeader(QFile &inFile, ito::DataObject &outObj, float &scalingFactor, unsigned long &startImage, unsigned long &imageLength, const int &numImage);
-		static ito::RetVal readNanoscopeIIIData(QFile &inFile, ito::DataObject *outObj, const float &scalingFactor, const unsigned short &start, const int &bpp);
+		static ito::RetVal readNanoscopeIIIData(QFile &inFile, ito::DataObject *outObj, const float &scalingFactor, const int &start, const int &bpp);
 		static ito::RetVal readSize(const QMap<QByteArray, QByteArray>* map, unsigned short &x, unsigned short &y);
 		static ito::RetVal readIsNonSquareAspect(const QMap<QByteArray, QByteArray>* map, bool &aspect);
 		static ito::RetVal printOutInformation(const QMap<QByteArray, QByteArray>* map, const int& idx);

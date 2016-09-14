@@ -407,7 +407,8 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 {
 	ito::RetVal retval;
     unsigned short x, y;
-    unsigned long size, offset;
+    unsigned long size;
+    int offset;
 	bool check, nonSquare, sizeOK(false), useGlobal(false), old(false);
 	double fieldX, fieldY, scale;
 	char *end, *s, un[5];
@@ -473,7 +474,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 				{
 					gy = y;
 				}
-				offset = map->constFind("Data offset")->toULong(&check);
+				offset = map->constFind("Data offset")->toInt(&check); // not sure of a int is big enough but later the mid function is called and this only takes an int
 				if (!check)
 				{
 					retval += ito::RetVal(ito::retError, 0, "Cannot convert 'Data offset'.");
@@ -602,7 +603,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 	return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DataObjectIO::readNanoscopeIIIData(QFile &inFile, ito::DataObject *outObj,const float &scalingFactor, const unsigned short &start, const int &bpp)
+ito::RetVal DataObjectIO::readNanoscopeIIIData(QFile &inFile, ito::DataObject *outObj,const float &scalingFactor, const int &start, const int &bpp)
 {
 	ito::RetVal retval;
 	inFile.seek(0);
