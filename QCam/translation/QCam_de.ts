@@ -449,7 +449,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+993"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+1001"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

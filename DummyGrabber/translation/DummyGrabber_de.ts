@@ -6,7 +6,7 @@
     <message>
         <location filename="../dialogDummyGrabber.cpp" line="+49"/>
         <source>Configuration Dialog</source>
-        <translation type="unfinished">Konfigurationsdialog</translation>
+        <translation>Konfigurationsdialog</translation>
     </message>
 </context>
 <context>
@@ -187,19 +187,7 @@
     <message>
         <location line="+3"/>
         <source>Height of virtual sensor chip, please set this value to 1 (line camera) or a value dividable by 4 for a 2D camera.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Height of virtual sensor chip</source>
-        <translation type="obsolete">Höhe des virtuellen Sensors</translation>
-    </message>
-    <message>
-        <source>Maximum x size of image</source>
-        <translation type="obsolete">Maximale Bildbreite</translation>
-    </message>
-    <message>
-        <source>Maximum y size of image</source>
-        <translation type="obsolete">Maximale Bildhöhe</translation>
+        <translation type="unfinished">Höhe des virtuellen Sensors. Für Linienkameras ist dieser Wert beispielsweise 1, für 2D-Kameras 4.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -223,32 +211,22 @@ The camera is initialized with a maximum width and height of the simulated camer
 You can initialize this camera either as a 2D sensor with a width and height &gt;= 4 or as line camera whose height is equal to 1. 
 
 This plugin can also be used as template for other grabber.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der DummyGrabber ist eine virtuelle Kamera, womit eine Kamera mit weißem Rauschen simuliert wird.
+
+Die Kamera wird mit der maximalen Breite und Höhe des simulierten Kamerachips inizialisiert (beides muss ein Vielfaches von 4 sein). Das Rauschen wird in Bereich zwischen 0 und der aktuellen Bittiefe (bpp - bit per pixel) skaliert. Die tatsächliche Größe des Kamerabilds wird über den Parameter &apos;ROI&apos; eingestellt, wenn die Maße innerhalb der Größe des Kamerachips liegen.
+
+Diese Kamera kann entweder als ein 2D-Sensor (Breite und Höhe &gt;= 4) oder als Linienkamera (Höhe = 1) inizialisiert werden.
+
+Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dienen.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Licensed under LPGL.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>dialogDummyGrabber</name>
-    <message>
-        <source>Buffer and Binning</source>
-        <translation type="obsolete">Puffer und Binning</translation>
-    </message>
-    <message>
-        <source>BitPerPix</source>
-        <translation type="obsolete">BitProPix</translation>
-    </message>
-    <message>
-        <source>Apply</source>
-        <translation type="obsolete">Übernehmen</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Abbrechen</translation>
-    </message>
     <message>
         <location filename="../dialogDummyGrabber.ui" line="+157"/>
         <source>Integration</source>
@@ -276,22 +254,6 @@ This plugin can also be used as template for other grabber.</source>
         <translation type="unfinished">Größe</translation>
     </message>
     <message>
-        <source>XSize</source>
-        <translation type="obsolete">X-Größe</translation>
-    </message>
-    <message>
-        <source>YSize</source>
-        <translation type="obsolete">Y-Größe</translation>
-    </message>
-    <message>
-        <source>Configuration Dialog</source>
-        <translation type="vanished">Konfigurationsdialog</translation>
-    </message>
-    <message>
-        <source>ROI (Binning changed, press apply or save)</source>
-        <translation type="vanished">RIO (Binning wurde geändert, auf Übernehmen oder Speichern klicken)</translation>
-    </message>
-    <message>
         <location line="+99"/>
         <source>x-size</source>
         <translation type="unfinished">X-Größe</translation>
@@ -306,14 +268,6 @@ This plugin can also be used as template for other grabber.</source>
         <location line="-16"/>
         <source>y-size</source>
         <translation type="unfinished">Y-Größe</translation>
-    </message>
-    <message>
-        <source>Region of Interest (ROI)</source>
-        <translation type="vanished">Bildausschnitt (ROI)</translation>
-    </message>
-    <message>
-        <source>reset to full size</source>
-        <translation type="obsolete">Vollbild</translation>
     </message>
     <message>
         <location line="-438"/>
@@ -398,21 +352,6 @@ This plugin can also be used as template for other grabber.</source>
         <location line="-26"/>
         <source>Gain</source>
         <translation></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für Pflichtparameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für optionale Parameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
     </message>
 </context>
 </TS>

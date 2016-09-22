@@ -6,111 +6,107 @@
     <message>
         <location filename="../../UhlRegister/dockWidgetUhl.ui" line="+61"/>
         <source>General Information</source>
-        <translation type="unfinished">Allgemeine Informationen</translation>
+        <translation>Allgemeine Informationen</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>ID:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+25"/>
         <source>[ID]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Axis:</source>
-        <translation type="unfinished">Achsen:</translation>
+        <translation>Achsen:</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>[Axis]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Joystick</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+53"/>
         <source>Properties</source>
-        <translation type="unfinished">Eigenschaften</translation>
+        <translation>Eigenschaften</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>enable x</source>
-        <translation type="unfinished">x aktiv</translation>
+        <translation>x aktiv</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>enable y</source>
-        <translation type="unfinished">y aktiv</translation>
+        <translation>y aktiv</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>enable z</source>
-        <translation type="unfinished">z aktiv</translation>
-    </message>
-    <message>
-        <source>enable Joystick</source>
-        <translation type="obsolete">Joystick aktiv</translation>
+        <translation>z aktiv</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Relative Positioning</source>
-        <translation type="unfinished">Relative Positionierung</translation>
+        <translation>Relative Positionierung</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Step Size</source>
-        <translation type="unfinished">Schrittweite</translation>
+        <translation>Schrittweite</translation>
     </message>
     <message>
         <location line="+10"/>
         <source> µm</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+32"/>
         <source>x -</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+22"/>
         <source>y+</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+19"/>
         <source>x+</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+19"/>
         <source>z+</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+19"/>
         <source>y -</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+19"/>
         <source>z -</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Absolut Positioning</source>
-        <translation type="unfinished">Absolute Positionierung</translation>
+        <translation>Absolute Positionierung</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+44"/>
@@ -120,128 +116,61 @@
         <location line="+25"/>
         <location line="+28"/>
         <source>mm</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Refresh</source>
-        <translation type="unfinished">Aktualisieren</translation>
+        <translation>Aktualisieren</translation>
     </message>
     <message>
         <location line="-225"/>
         <source>x axis</source>
-        <translation type="unfinished">x Achse</translation>
+        <translation>x Achse</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>z axis</source>
-        <translation type="unfinished">z Achse</translation>
+        <translation>z Achse</translation>
     </message>
     <message>
         <location line="-7"/>
         <source>y axis</source>
-        <translation type="unfinished">y Achse</translation>
+        <translation>y Achse</translation>
     </message>
     <message>
         <location line="-525"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+539"/>
         <source>Actual</source>
-        <translation type="unfinished">Aktuell</translation>
+        <translation>Aktuell</translation>
     </message>
     <message>
         <location line="+85"/>
         <source>Target</source>
-        <translation type="unfinished">Ziel</translation>
+        <translation>Ziel</translation>
     </message>
     <message>
         <location line="-441"/>
         <source>enable</source>
-        <translation type="unfinished">aktiv</translation>
-    </message>
-</context>
-<context>
-    <name>QObject</name>
-    <message>
-        <source>N.A.</source>
-        <translation type="obsolete">Nicht verfügbar.</translation>
-    </message>
-    <message>
-        <source>UHL errormessage: </source>
-        <translation type="vanished">Uhl Fehlermeldung: </translation>
-    </message>
-    <message>
-        <source>No valid axis name!</source>
-        <translation type="vanished">Keine gültige Achsenbezeichnung!</translation>
-    </message>
-    <message>
-        <source>No workable function!</source>
-        <translation type="vanished">Keine ausführbare Funktion!</translation>
-    </message>
-    <message>
-        <source>Too many signs in the order string!</source>
-        <translation type="vanished">Zu viele Zeichen im Befehlstext!</translation>
-    </message>
-    <message>
-        <source>No valid order!</source>
-        <translation type="vanished">Kein gültiger Befehl!</translation>
-    </message>
-    <message>
-        <source>Beyond of valid number range!</source>
-        <translation type="vanished">Außerhalb des gültigen Zahlenbereichs!</translation>
-    </message>
-    <message>
-        <source>Wrong number of parameters!</source>
-        <translation type="vanished">Falsche Anzahl der Parameter!</translation>
-    </message>
-    <message>
-        <source>Missing &apos;!&apos; or &apos;?&apos;!</source>
-        <translation type="vanished">Kein &apos;!&apos; oder &apos;?&apos;!</translation>
-    </message>
-    <message>
-        <source>No trigger mode, this axis is active!</source>
-        <translation type="vanished">Kein TVR möglich, da Achse aktiv ist!</translation>
-    </message>
-    <message>
-        <source>No enable or disable of this axis, trigger mode is active!</source>
-        <translation type="vanished">Kein Ein- oder Ausschalten der Achsen, da TVR aktiv!</translation>
-    </message>
-    <message>
-        <source>Function does not configure!</source>
-        <translation type="vanished">Funktion nicht konfiguriert!</translation>
-    </message>
-    <message>
-        <source>Joystick is on!</source>
-        <translation type="vanished">Kein Fahrbefehl möglich, da Joystick auf Handbetrieb!</translation>
-    </message>
-    <message>
-        <source>E-Strike detected!</source>
-        <translation type="vanished">Endanschlag betätigt!</translation>
-    </message>
-    <message>
-        <source>Undefined answer from serial port!</source>
-        <translation type="vanished">Nicht definierte Antwort der seriellen Schnittstelle!</translation>
+        <translation>aktiv</translation>
     </message>
 </context>
 <context>
     <name>UhlText</name>
-    <message>
-        <source>E-Strike detected in Serial Buffer</source>
-        <translation type="obsolete">Endanschlag im seriellen Puffer erkannt</translation>
-    </message>
     <message>
         <location filename="../UhlText.cpp" line="+332"/>
         <location line="+22"/>
@@ -378,10 +307,6 @@
         <location line="+14"/>
         <source>Parameter type conflict</source>
         <translation type="unfinished">Typenkonflikt des Parameters</translation>
-    </message>
-    <message>
-        <source>. Expected answer from serial port missed!</source>
-        <translation type="obsolete">. Keine Antwort der seriellen Schnittstelle!</translation>
     </message>
     <message>
         <location line="-821"/>
@@ -647,17 +572,23 @@ WARNING: The calibration direction of the stages differs according to motor / co
 Check calibration direction before usage. 
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
+
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für Geräte, die über ASCII-Befehle via RS232 Port gesteuert werden.
+WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.
+
+Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>LGPL</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished">Nicht verfügbar.</translation>
+        <translation>Nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -718,18 +649,14 @@ This plugin was published with the kind permission of company Walter Uhl, techni
         <translation>Plugin-Instanz nicht definiert.</translation>
     </message>
     <message>
-        <source>Configuration Uhl Actuator</source>
-        <translation type="obsolete">Uhltisch-Konfiguration</translation>
-    </message>
-    <message>
         <location filename="../../UhlRegister/dialogUhl.ui" line="+49"/>
         <source>Speed</source>
-        <translation type="unfinished">Geschwindigkeit</translation>
+        <translation>Geschwindigkeit</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>Accerlaration</source>
-        <translation type="unfinished">Beschleunigung</translation>
+        <translation>Beschleunigung</translation>
     </message>
     <message>
         <location line="-24"/>
@@ -781,13 +708,13 @@ This plugin was published with the kind permission of company Walter Uhl, techni
     <message>
         <location line="-104"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+36"/>
         <location line="+34"/>
         <source>mm</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+37"/>
@@ -827,7 +754,7 @@ This plugin was published with the kind permission of company Walter Uhl, techni
     <message>
         <location line="+85"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-101"/>
@@ -863,66 +790,6 @@ This plugin was published with the kind permission of company Walter Uhl, techni
         <location line="+83"/>
         <source>Axis</source>
         <translation type="unfinished">Achsen</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für Pflichtparameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für optionale Parameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
-    </message>
-    <message>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="obsolete">Das Plugin scheint einen Konfigurationsdialog zu besitzen, doch die Methode showConfDialog wurde nicht implementiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>timer could not be set</source>
-        <translation type="obsolete">Timer konnte nicht gesetzt werden</translation>
-    </message>
-    <message>
-        <source>not implemented</source>
-        <translation type="obsolete">Nicht implementiert</translation>
     </message>
 </context>
 </TS>

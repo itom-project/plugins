@@ -4,7 +4,7 @@
 <context>
     <name>FFTWFilters</name>
     <message>
-        <location filename="../FFTWfilters.cpp" line="+1494"/>
+        <location filename="../FFTWfilters.cpp" line="+1687"/>
         <location line="+420"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
@@ -16,25 +16,35 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1796"/>
-        <location line="+463"/>
+        <location line="-1325"/>
         <location line="+41"/>
         <source>Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-39"/>
+        <location line="-708"/>
+        <source>Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128) which is shifted in-place.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>axes over which to shift: x and y axis (-1, default), only y axis (0), only x axis (1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+666"/>
         <location line="+41"/>
         <source>Output object (inplace allowed, but only feasible if source is complex64 or complex128). Destination has the same size than the input object, the type is either complex128 (for float64 or complex128 inputs) or complex64 (else).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-37"/>
+        <location line="+41"/>
         <source>Method flag, 0: Estimate (default), 1: Measure.  Measure instructs FFTW to run and measure the execution time of several FFTs in order to find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal. In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-35"/>
         <source>Axis over which to compute the FFT. If not given, the last axis is used.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -45,12 +55,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-6"/>
-        <source>Method flag, 0: Estimate (default), 1: Measure.  Measure instructs FFTW to run and measure the execution time of several FFTs in order to                find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the                size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal.                In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+507"/>
+        <location line="+497"/>
         <source>1D FFT (via FFTW). Scaled by 1/sqrt(n).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -75,7 +80,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+252"/>
+        <location line="+248"/>
         <source>2D FFT (via FFTW). Scaled by 1/sqrt(n).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -242,7 +247,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-2559"/>
+        <location line="-2753"/>
         <source>Wrapper for the FFTW</source>
         <translation type="unfinished"></translation>
     </message>
@@ -270,23 +275,23 @@ To build this plugin you will need the libs from the fftw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+361"/>
         <source>Perform fftshift as known from Python, Matlab and so on, i.e. make the 
 zero order of diffraction appear in the center.
 
-The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.</source>
+The shift is currently implemented along the x and y or one of both axes within each plane (inplace).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+91"/>
         <source>Perform ifftshift as known from Python, Matlab and so on, i.e. move the 
 zero order of diffraction back to the corner to run the inverse fft correctly.
 
-The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.</source>
+The shift is currently implemented along the x and y or one of both axes within each plane (inplace).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+295"/>
+        <location line="+318"/>
         <source>Compute the one-dimensional discrete Fourier Transform. 
 
 This method computes the one-dimensional n-point discrete Fourier Transform (DFT) with the efficient 

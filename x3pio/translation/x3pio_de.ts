@@ -98,7 +98,7 @@ of the library itself see www.opengps.eu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+213"/>
+        <location line="+219"/>
         <source>data set is no matrix: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -106,7 +106,7 @@ of the library itself see www.opengps.eu</source>
 <context>
     <name>X3pIO</name>
     <message>
-        <location line="-866"/>
+        <location line="-872"/>
         <location line="+3"/>
         <source>X3P Files (*.x3p)</source>
         <translation>X3P-Datei (*.x3p)</translation>
@@ -132,7 +132,7 @@ of the library itself see www.opengps.eu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+123"/>
         <source>x3p stores its data in meter, therefore a scaling factor has to be applied. The format of the stored data is changed to double</source>
         <translation type="unfinished"></translation>
     </message>

@@ -4,183 +4,211 @@
 <context>
     <name>BasicFilters</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="+204"/>
-        <source>Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Set each pixel to the highest value within the kernel (x ,y) using the generic mcpp filter engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Performs a median filter with kernelsize (x ,y) using the generic mcpp filter engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Performs a gaussian blur filter according to sigma and epsilon using the generic mcpp filter engine. The kernelsize (x ,y) will be estimated.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Performs a gaussian blur filter with kernelsize (x ,y) and according to sigmaX and sigmaY using the generic mcpp filter engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../BasicSpecialFilters.cpp" line="+3337"/>
-        <location filename="../BasicFilters.cpp" line="+37"/>
+        <location filename="../BasicSpecialFilters.cpp" line="+3338"/>
+        <location filename="../BasicFilters.cpp" line="+253"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicFilters.cpp" line="+2"/>
+        <location filename="../BasicFilters.cpp" line="-43"/>
+        <source>Performs a Sobel filtering with kernelsize (3 ,3) using the generic mcpp filter engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
         <source>Output image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicGenericFilters.cpp" line="+449"/>
-        <location line="+1953"/>
-        <location line="+238"/>
+        <location filename="../BasicGenericFilters.cpp" line="+1735"/>
         <source>n-dim DataObject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2189"/>
-        <location line="+1953"/>
-        <location line="+238"/>
+        <location line="+2"/>
         <source>n-dim DataObject of type sourceImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2189"/>
-        <location line="+1953"/>
-        <location line="+463"/>
+        <location line="+1200"/>
+        <source>Stop condition in x-direction, the kernel in x-direction is cropped for Gaussian values below this limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stop condition in y-direction, the kernel in y-direction is cropped for Gaussian values below this limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+243"/>
         <source>Odd kernelsize in x</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2414"/>
-        <location line="+1953"/>
-        <location line="+463"/>
+        <location line="+2"/>
         <source>Odd kernelsize in y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2414"/>
-        <location line="+1957"/>
-        <location line="+238"/>
+        <location line="-1445"/>
         <source>if 0 NaN values in input image will be copied to output image (default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1737"/>
-        <location line="+572"/>
-        <location line="+350"/>
-        <location line="+603"/>
-        <location line="+238"/>
-        <location line="+380"/>
+        <location line="+27"/>
         <source>Source object not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2139"/>
-        <location line="+572"/>
-        <location line="+350"/>
-        <location line="+603"/>
-        <location line="+238"/>
+        <location line="+4"/>
         <source>Ito data object is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1759"/>
-        <location line="+572"/>
-        <location line="+350"/>
-        <location line="+603"/>
-        <location line="+238"/>
-        <location line="+380"/>
+        <location line="+4"/>
         <source>Destination object not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2110"/>
-        <location line="+572"/>
-        <location line="+350"/>
-        <location line="+602"/>
-        <location line="+614"/>
+        <location line="-885"/>
+        <location line="+595"/>
+        <location line="+666"/>
+        <location line="+621"/>
+        <location line="+636"/>
         <source>Error: kernel in x must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2133"/>
-        <location line="+572"/>
-        <location line="+350"/>
-        <location line="+602"/>
-        <location line="+614"/>
+        <location line="-3032"/>
+        <location line="+2302"/>
+        <location line="+252"/>
+        <source>N-dimensional dataObject of any real type. This object is processed plane-by-plane.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2552"/>
+        <location line="+2302"/>
+        <location line="+252"/>
+        <source>Resulting dataObject that has the same size and type than the sourceImage.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2552"/>
+        <location line="+2302"/>
+        <source>Size of kernel in x-direction (odd values only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2300"/>
+        <location line="+2302"/>
+        <source>Size of kernel in y-direction (odd values only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2300"/>
+        <location line="+2306"/>
+        <location line="+252"/>
+        <source>If 1, NaN values of sourceImage will be replaced by interpolated filter values in destImage, else destImage also contains NaN values at these positions (0, default).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2093"/>
+        <location line="+595"/>
+        <location line="+666"/>
+        <location line="+623"/>
+        <location line="+259"/>
+        <location line="+380"/>
+        <source>Source image is invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2519"/>
+        <location line="+595"/>
+        <location line="+666"/>
+        <location line="+623"/>
+        <location line="+259"/>
+        <source>Source image is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2139"/>
+        <location line="+595"/>
+        <location line="+666"/>
+        <location line="+623"/>
+        <location line="+259"/>
+        <location line="+380"/>
+        <source>Destination image is invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2485"/>
+        <location line="+595"/>
+        <location line="+666"/>
+        <location line="+621"/>
+        <location line="+636"/>
         <source>Error: kernel in y must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1900"/>
+        <location line="-2283"/>
         <source>high value filter with kernel %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>Low value filter with kernel %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <location line="+447"/>
-        <location line="+350"/>
-        <location line="+608"/>
-        <location line="+225"/>
+        <location line="+5"/>
+        <location line="+475"/>
+        <location line="+300"/>
+        <location line="+366"/>
+        <location line="+625"/>
+        <location line="+249"/>
         <source> and removed NaN-values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1188"/>
+        <location line="-1545"/>
         <source>median filter with kernel %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+350"/>
+        <location line="+129"/>
+        <source>derivative in x: 0, y: 1 direction or 2: 2D magnitude sqrt(dx*dx + dy*dy)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+172"/>
+        <source>Optimized Sobel filter with kernel 3 x 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+365"/>
         <source>lowpass-filter (mean) with kernel %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+408"/>
-        <location line="+2"/>
-        <location line="+232"/>
-        <location line="+4"/>
+        <location line="+411"/>
+        <location line="+248"/>
         <source>Standard deviation in x direction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="-246"/>
+        <location line="+250"/>
+        <source>Standard deviation in y direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="-38"/>
-        <location line="+225"/>
+        <location line="+249"/>
         <source>gaussian-filter with sigma %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-189"/>
-        <source>Stop condition in x-direction, kernel values less than epsilon are ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Stop condition in y-direction, kernel values less than epsilon are ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+215"/>
+        <location line="+30"/>
         <source>source dataObject of any real data type.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -688,7 +716,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="-202"/>
+        <location filename="../BasicFilters.cpp" line="-201"/>
         <source>ITO developed filter-functions for data objects</source>
         <translation type="unfinished"></translation>
     </message>
@@ -715,7 +743,7 @@ This plugin does not have any unusual dependencies.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+46"/>
         <source>replaces infinite and/or nan-values by values of second matrix. 
 
 </source>
@@ -780,7 +808,7 @@ Depending on the parameter &apos;insideFlag&apos;, this filter sets all values o
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicGenericFilters.cpp" line="-2813"/>
+        <location filename="../BasicGenericFilters.cpp" line="-3200"/>
         <source>Tried to run generic filter engine without correct initilization of all buffers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -815,7 +843,112 @@ Depending on the parameter &apos;insideFlag&apos;, this filter sets all values o
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2470"/>
+        <location line="+699"/>
+        <source>2D minimum filter that set a pixel to the lowest value within the surrounding kernel. 
+
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
+is then set to the minimum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values 
+by the minimum of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. 
+
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+and type than the input image. 
+
+See also: highValueFilter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>2D maximum filter that set a pixel to the highest value within the surrounding kernel. 
+
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
+is then set to the maximum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values 
+by the maximum of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. 
+
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+and type than the input image 
+
+See also: lowValueFilter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+252"/>
+        <source>2D median filter that set a pixel to the median value of all valid pixels within the kernel. 
+
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
+is then set to the median value of all valid pixels within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values 
+by the median value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. 
+
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+and type than the input image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+674"/>
+        <source>2D lowpass (blurring) filter that set a pixel to the mean value of all valid pixels within the kernel. 
+
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
+is then set to the mean value of all valid pixels within the kernel. It is possible to fill the invalid values 
+by the mean value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values, 
+no replacement is possible and the corresponding pixel in the destination image remains invalid. 
+
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+and type than the input image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+607"/>
+        <source>2D gaussian blur filter that convolves the source image with a Gaussian kernel. 
+
+The convolution kernel is rectangular with a side length of (kernely, kernelx). The gaussian kernel for a pixel (x0,y0) is defined by: 
+
+f(x,y) = A * exp(-[(x-x0)^2/(2*sigma_x^2) + (y-y0)^2/(2*sigma_y^2)]) 
+
+with 
+
+A = 1 / (2 * pi * sigmaX * sigmaY)) 
+
+Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values 
+by the Gaussian blurred value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values, 
+no replacement is possible and the corresponding pixel in the destination image remains invalid. 
+
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+and type than the input image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+253"/>
+        <source>2D gaussian blur filter that convolves the source image with a Gaussian kernel. 
+
+The convolution kernel is rectangular with a side length that is determined by the epsilon values epsilonX and epsilonY. 
+The gaussian kernel for a pixel (x0,y0) is defined by: 
+
+f(x,y) = A * exp(-[(x-x0)^2/(2*sigmaX^2) + (y-y0)^2/(2*sigmaY^2)]) 
+
+with 
+
+A = 1 / (2 * pi * sigmaX * sigmaY)) 
+
+The size of the kernel is adjusted such that the limit values in x- and y-direction fullfill the following inequation: 
+
+f(x,y=0) = exp(-[(x-x0)^2/(2*sigmaX^2)]) / sqrt(2 * pi * sigmaX^2) &gt;= epsilonX 
+f(x=0,y) = exp(-[(y-y0)^2/(2*sigmaY^2)]) / sqrt(2 * pi * sigmaY^2) &gt;= epsilonY 
+
+Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values 
+by the Gaussian blurred value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values, 
+no replacement is possible and the corresponding pixel in the destination image remains invalid. 
+
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+and type than the input image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+355"/>
         <source>Performs a median filter with kernelsize (kernelx, kernely) and pixelwise comparison of 
 filtered image and original image to remove spikes according to delta value. 
 

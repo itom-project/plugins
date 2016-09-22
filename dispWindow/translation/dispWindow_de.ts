@@ -152,22 +152,12 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+184"/>
+        <location filename="../dispWindow.cpp" line="+186"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Cosine period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Count of phase shifts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+27"/>
         <source>0: Red, 1: Green, 2: Blue, 3: White</source>
         <translation>0: rot, 1: grün, 2: blau, 3: weiß</translation>
     </message>
@@ -182,12 +172,12 @@
         <translation type="unfinished">Anzahl der unterschiedlichen Bilder: Phasenschiebung + Grauwert + 2</translation>
     </message>
     <message>
-        <location line="+224"/>
+        <location line="+226"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-269"/>
+        <location line="-271"/>
         <source>Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter &apos;lut&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -217,7 +207,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+3"/>
+        <source>Cosine period in pixel. This must be a multiple of 2 and the number of &apos;phaseshift&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Count of phase shifts. If this value is changed and the &apos;period&apos; does not fit to the new value, the &apos;period&apos; is adapted to the next possible value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>x0 position of display window [px]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -252,17 +252,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+3"/>
+        <source>DataObject with pixel values to display.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+57"/>
         <source>Supported OpenGL Version is lower than 2.0 and therefore not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+176"/>
         <source>Currently the lut only has %i values, therefore the index must be in the range [0,%i]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+160"/>
         <source>mandatory or optional parameters vector not initialized!!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -324,7 +329,7 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-944"/>
+        <location line="-967"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
@@ -369,7 +374,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-16"/>
+        <location line="+2"/>
+        <source>DataObject with pixel values to display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-18"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -425,7 +435,7 @@
 <context>
     <name>PrjWindow</name>
     <message>
-        <location filename="../projWindow.cpp" line="+1124"/>
+        <location filename="../projWindow.cpp" line="+1091"/>
         <source>error out of memory (cosine init 7)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -439,11 +449,16 @@
         <source>error gen texture (graycode / cosine init)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+1159"/>
+        <source>DataObject must not be NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-100"/>
+        <location line="-1257"/>
         <source>error out of memory (cosine init 1)</source>
         <translation type="unfinished"></translation>
     </message>

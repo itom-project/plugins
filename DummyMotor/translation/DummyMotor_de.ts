@@ -6,124 +6,68 @@
     <message>
         <location filename="../dialogDummyMotor.cpp" line="+65"/>
         <source>Configuration Dialog</source>
-        <translation type="unfinished">Konfigurationsdialog</translation>
+        <translation>Konfigurationsdialog</translation>
     </message>
 </context>
 <context>
     <name>DockWidgetDummyMotor</name>
     <message>
-        <location filename="../dockWidgetDummyMotor.ui" line="+59"/>
+        <location filename="../dockWidgetDummyMotor.ui" line="+68"/>
         <source>General Information</source>
-        <translation type="unfinished">Allgemeine Informationen</translation>
+        <translation>Allgemeine Informationen</translation>
     </message>
     <message>
         <location line="+89"/>
         <source>Axis:</source>
-        <translation type="unfinished">Achsen:</translation>
+        <translation>Achsen:</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Properties</source>
-        <translation type="unfinished">Eigenschaften</translation>
+        <translation>Eigenschaften</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>enable x</source>
-        <translation type="unfinished">x Aktiv</translation>
+        <translation>x Aktiv</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>enable y</source>
-        <translation type="unfinished">y Aktiv</translation>
+        <translation>y Aktiv</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>enable z</source>
-        <translation type="unfinished">z Aktiv</translation>
+        <translation>z Aktiv</translation>
     </message>
     <message>
         <location line="+33"/>
         <source>enable c</source>
-        <translation type="unfinished">c Aktiv</translation>
+        <translation>c Aktiv</translation>
     </message>
     <message>
-        <location line="-23"/>
+        <location line="+13"/>
+        <source>Axis  Control</source>
+        <translation>Achsenkontrolle</translation>
+    </message>
+    <message>
+        <location line="-36"/>
         <source>enable a</source>
-        <translation type="unfinished">a Aktiv</translation>
+        <translation>a Aktiv</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>enable b</source>
-        <translation type="unfinished">b Aktiv</translation>
+        <translation>b Aktiv</translation>
     </message>
     <message>
-        <location line="+44"/>
-        <source>Relative Positioning</source>
-        <translation type="unfinished">Relative Positionierung</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Step Size</source>
-        <translation type="unfinished">Schrittweite</translation>
-    </message>
-    <message>
-        <source>Absolut Positioning</source>
-        <translation type="obsolete">Absolute Positionierung</translation>
-    </message>
-    <message>
-        <location line="+341"/>
-        <source>x axis</source>
-        <translation type="unfinished">x Achse</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>y axis</source>
-        <translation type="unfinished">y Achse</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>z axis</source>
-        <translation type="unfinished">z Achse</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location line="+194"/>
-        <source>Actual</source>
-        <translation type="unfinished">Aktuell</translation>
-    </message>
-    <message>
-        <location line="-109"/>
-        <location line="+194"/>
-        <source>Target</source>
-        <translation type="unfinished">Ziel</translation>
-    </message>
-    <message>
-        <location line="-106"/>
-        <source>a axis</source>
-        <translation type="unfinished">a Achse</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>b axis</source>
-        <translation type="unfinished">b Achse</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>c axis</source>
-        <translation type="unfinished">c Achse</translation>
-    </message>
-    <message>
-        <location line="+211"/>
-        <source>Refresh</source>
-        <translation type="unfinished">Aktualisieren</translation>
-    </message>
-    <message>
-        <location line="-1069"/>
+        <location line="-239"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+75"/>
         <source>ID:</source>
         <translation></translation>
     </message>
@@ -135,107 +79,6 @@
     <message>
         <location line="+50"/>
         <source>[Axis]</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+178"/>
-        <source> µm</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+45"/>
-        <source>x -</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>y+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>x+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>z+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>y -</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>z -</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>a -</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>b+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>a+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>c+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>b -</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>c -</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+24"/>
-        <source>Absolute Positioning</source>
-        <translation type="unfinished">Absolute Positionierung</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Position</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+44"/>
-        <location line="+25"/>
-        <location line="+25"/>
-        <location line="+32"/>
-        <location line="+25"/>
-        <location line="+28"/>
-        <location line="+59"/>
-        <location line="+25"/>
-        <location line="+25"/>
-        <location line="+32"/>
-        <location line="+25"/>
-        <location line="+28"/>
-        <source>mm</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+26"/>
-        <source>Start</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Stop</source>
         <translation></translation>
     </message>
 </context>
@@ -277,13 +120,13 @@
         <translation type="unfinished">Schalter um zu warten bis die Fahrt beendet wurde (0:sync) oder nicht (1:async)</translation>
     </message>
     <message>
-        <location line="+435"/>
+        <location line="+436"/>
         <location line="+96"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
     </message>
     <message>
-        <location line="+181"/>
+        <location line="+179"/>
         <source>Axis and velocity vector differ in size.</source>
         <translation type="unfinished">Achse und Geschwindigkeitsvektor unterscheiden sich in der Größe.</translation>
     </message>
@@ -293,7 +136,7 @@
         <translation type="unfinished">Eine Joystick-Bewegung schlug fehl.</translation>
     </message>
     <message>
-        <location line="-535"/>
+        <location line="-533"/>
         <location line="+178"/>
         <source>axis index is out of bound</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
@@ -316,7 +159,7 @@
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs.</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+108"/>
         <source>interrupt occurred</source>
         <translation type="unfinished">Ein Fehler ist aufgetreten</translation>
     </message>
@@ -326,7 +169,7 @@
         <translation type="unfinished">Eine Zeitüberschreitung ist aufgetreten</translation>
     </message>
     <message>
-        <location line="-449"/>
+        <location line="-447"/>
         <location line="+59"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>
@@ -350,7 +193,7 @@
 <context>
     <name>DummyMotorInterface</name>
     <message>
-        <location line="-457"/>
+        <location line="-458"/>
         <source>N.A.</source>
         <translation type="unfinished">Nicht verfügbar.</translation>
     </message>
@@ -368,10 +211,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>A virtual motor to test applications</source>
-        <translation type="obsolete">Ein virtueller Motor um Anwendungen zu testen</translation>
-    </message>
-    <message>
         <location line="-20"/>
         <source>A virtual motor to test real actuators.</source>
         <translation type="unfinished">Ein virtueller Motor um echte Aktuatoren zu testen.</translation>
@@ -381,12 +220,14 @@
         <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. 
 
 The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der DummyMotor ist ein virtuelles Motor-Plugin, welches bis zu 10 lineare Achsen simuliert.
+
+Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung mit dem Parameter &apos;numAxis&apos; angegeben werden. Dieses Plugin kann zur Simulation oder Entwicklung eines Messsystems an anderen Computern genutzt werden. Wann immer der Positionsbefehl ausgeführt wird, wartet das Plugin die benötigte Fahrtzeit bis zum Erreichen der Position (mit berücksichtigter Geschwindigkeit der Achse) ab.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Licensed under LPGL.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -394,70 +235,62 @@ The real number of simulated axes is given by the initialization parameter &apos
     <message>
         <location filename="../dialogDummyMotor.ui" line="+89"/>
         <source>Speed</source>
-        <translation type="unfinished">Geschwindigkeit</translation>
+        <translation>Geschwindigkeit</translation>
     </message>
     <message>
         <location line="-12"/>
         <source>Acceleration</source>
-        <translation type="unfinished">Beschleunigung</translation>
+        <translation>Beschleunigung</translation>
     </message>
     <message>
         <location line="+68"/>
         <source>Enable B</source>
-        <translation type="unfinished">B Aktiv</translation>
+        <translation>B Aktiv</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Enable Y</source>
-        <translation type="unfinished">Y Aktiv</translation>
+        <translation>Y Aktiv</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Enable C</source>
-        <translation type="unfinished">C Aktiv</translation>
+        <translation>C Aktiv</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Enable Z</source>
-        <translation type="unfinished">Z Aktiv</translation>
+        <translation>Z Aktiv</translation>
     </message>
     <message>
         <location line="-59"/>
         <source>Asynchronous mode</source>
-        <translation type="unfinished">Asynchroner Modus</translation>
+        <translation>Asynchroner Modus</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Enable X</source>
-        <translation type="unfinished">X Aktiv</translation>
+        <translation>X Aktiv</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Enable A</source>
-        <translation type="unfinished">A Aktiv</translation>
+        <translation>A Aktiv</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Calibrate</source>
-        <translation type="unfinished">Kalibrieren</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Abbrechen</translation>
-    </message>
-    <message>
-        <source>Configuration Dialog</source>
-        <translation type="vanished">Konfigurationsdialog</translation>
+        <translation>Kalibrieren</translation>
     </message>
     <message>
         <location line="-138"/>
         <source>Properties</source>
-        <translation type="unfinished">Eigenschaften</translation>
+        <translation>Eigenschaften</translation>
     </message>
     <message>
         <location line="+72"/>
         <source>Axis</source>
-        <translation type="unfinished">Achsen</translation>
+        <translation>Achsen</translation>
     </message>
     <message>
         <location line="-80"/>
@@ -473,21 +306,6 @@ The real number of simulated axes is given by the initialization parameter &apos
         <location line="+16"/>
         <source> mm/s²</source>
         <translation></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für Pflichtparameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für optionale Parameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
     </message>
 </context>
 </TS>

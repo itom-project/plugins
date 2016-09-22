@@ -26,31 +26,34 @@
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../fittingfilters.cpp" line="+130"/>
-        <location line="+135"/>
-        <location line="+109"/>
+        <location filename="../fittingfilters.cpp" line="+132"/>
+        <location line="+136"/>
+        <location line="+111"/>
         <source>source image data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-242"/>
+        <location filename="../fittingfilters.cpp" line="-245"/>
+        <location line="+248"/>
         <source>fitting method (leastSquareFit [default], leastSquareFitSVD, leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <location line="+1050"/>
+        <location line="-242"/>
+        <location line="+248"/>
+        <location line="+815"/>
         <source>probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1049"/>
-        <location line="+1050"/>
+        <location line="-1062"/>
+        <location line="+248"/>
+        <location line="+815"/>
         <source>allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-922"/>
+        <location line="-934"/>
         <source>Parameter A of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -65,17 +68,67 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+20"/>
         <source>Error: source image must be two-dimensional.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+90"/>
-        <source>fitting method (leastSquareFit [default], leastSquareFitSVD)</source>
+        <location line="+1233"/>
+        <source>LeastSquaresPlane (default), LMedSPlane (Least median of squares), Median, Mean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+221"/>
+        <location line="+7"/>
+        <source>BoundingBox (default): a bounding box is set around each invalid area and the interpolation is done over all valid values within the bounding box. For other region types see the description of this filter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The invalid region is extend by the &apos;regionType&apos;. The size of the extend in x- and y- direction is given by this parameter as tuple (dx,dy).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Only invalid area whose number of pixels is below this value are filled by interpolated values.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFitPlane)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFitPlane)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>optional dataObject (only possible if &apos;inputObject&apos; only contains one plane). If given, the dataObject will be a float32 Mx8 dataObject where each row corresponds to one detected area. Its content is [inclusive leftmost pixel-coordinate of the area, inclusive topmost pixel-coordinate of the area, width of bounding box of area in pixel, height of bound box of area in pixel, total number of pixels in area, x-coordinate of centroid of area in physical units, y-coordinate of centroid of area in physical units, 1: area has been filled, else 0]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>total number of detected invalid areas</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>number of areas that where filled (their area size was &lt;= maxAreaSize and the interpolation values based on surrounding pixels are valid).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+336"/>
+        <source>%1 of %2 found invalid areas filled with method = %3, maxAreaSize = %4, regionType = %5, regionExtend = %6, validPointProbability = %7, allowedErrorProbability = %8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>%1 of %2 found invalid areas filled with method = %3, maxAreaSize = %4, regionType = %5, regionExtend = %6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1278"/>
         <source>Generated object via polyval2D with order X = %1, Y = %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -100,7 +153,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1042"/>
+        <location line="-1055"/>
         <source>Parameter A of regression plane z = A + Bx + Cy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -115,13 +168,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+152"/>
         <source>source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-26"/>
-        <location line="+109"/>
+        <location line="-28"/>
+        <location line="+111"/>
         <source>destination image data object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -204,7 +257,7 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-289"/>
+        <location filename="../fittingfilters.cpp" line="-292"/>
         <source>Plugin with fitting algorithms.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -241,7 +294,7 @@ iterations &gt;= ceil(log(allowedErrorProbability)/log(1-validPointProbability))
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy) 
 
 If the destinationImage is not the same than the sourceImage, the destinationImage finally is a new data object with the same size and type than the sourceImage and contains the data of the sourceImage subtracted by the given plane. If both are the same, the subtraction is executed in-place. 
@@ -250,14 +303,14 @@ If the input dataObject contains more than one plane, the subtraction is execute
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+115"/>
         <source>subtracts a fitted regression plane from the given 2D input dataObject . 
 
 This method firstly executes the filter *fitPlane* followed by *subtractPlane*.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+58"/>
         <source>This method fits a two-dimensional polynomial of given order in x- and y-direction to the data &apos;inputData&apos;. 
 
 For the fit, the optional scale and offset values of the input data object are considered. The fit is executed in double precision, such that the input is converted to float64 (if not yet done). NaN values in the input data object are ignored. Optionally, you can give a weighting data object (needs to have the same dimension and size than inputData) such that the values are weighted with the values of the data object &apos;weights&apos;. Values with corresponding weights &lt;= 0 are ignored as well. 
@@ -365,6 +418,38 @@ For the interpolation a search rectangle whose height and width is given by &apo
 values that lie within the rectangle. The value is then determined using the coefficients of the fitted plane. Infinite values are ignored for the determination of the plane. 
 The plane is calculated by least-squares fit. If the rectangle exceeds the boundaries of the given matrix, it moved inside of the matrix such that the searched coordinate still lies within 
 the rectangle. If this is not possible, NaN is returned as value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+314"/>
+        <source>This filter can be used to fill NaN areas in a float32 or float64 input object with interpolated values. 
+
+This filter processes independently every plane of the input object. For every plane the following steps are done: 
+
+1. Locate connected areas with NaN values (using OpenCVs method &apos;connectedComponentsWithStats&apos;). 
+2. For every area whose size does not exceed &apos;maxAreaSize&apos;: 
+   
+   - depending on &apos;regionType&apos; and &apos;regionExtend&apos; an enlarged area around the NaN area is taken 
+   - depending on &apos;method&apos; an interpolation plane or single value is calculated using all valid values within the enlarged area 
+   - The NaN values within the area are filled with the interpolated plane value of the interpolated scalar 
+
+**RegionType** 
+
+* Per default, the region type is &apos;BoundingBox&apos;. Then, a rectangular bounding box is set around each area of invalid values and the size of the bounding box. 
+  is increased in all directions by the parameter &apos;regionExtend&apos; (different value possible for horizontal and vertical extend). &apos;BoundingBox&apos; is the fastest
+  method, however may produce very varying results, if the shape of the areas is different from simple rectangles. 
+* ErodeRect: Around the invalid area, an erosion is calculated with a rectangle element. The interpolation is only done with values within the eroded ribbon. 
+  The extend is the maximum horizontal and vertical distance from a edge element of the invalid area, e.g. (1,1) is a 1-pixel ribbon whose valid values are used for interpolation. 
+* ErodeEllipse: This is the same than &apos;ErodeRect&apos;, however the element has an ellipse form and not a rectangle making the ribbon more smooth. 
+
+**Method** 
+
+* LeastSquaresPlane: A plane is fitted into the valid values of the region using the least squares fit approach. 
+* LMedSPlane: A plane is fitted into the valid values of the region using the approach to minimize the median of the squared distances. 
+* Mean: A mean value of a valid values of the region replaces the invalid values within the region. 
+* Median: A median value of a valid values of the region replaces the invalid values within the region. 
+
+Currently, the filter does not work inplace such that the output object is always a newly allocated dataObject of the same type and size than the input object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

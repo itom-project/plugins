@@ -9,12 +9,12 @@
         <location line="+3"/>
         <location line="+16"/>
         <location line="+166"/>
-        <location line="+121"/>
+        <location line="+157"/>
         <source>source image data object for operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-317"/>
+        <location line="-353"/>
         <location line="+17"/>
         <location line="+17"/>
         <source>result of calculation. This param can be int or double</source>
@@ -23,12 +23,12 @@
     <message>
         <location line="-2"/>
         <location line="+166"/>
-        <location line="+123"/>
+        <location line="+159"/>
         <source>Ignore invalid-Values for floating point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-286"/>
+        <location line="-322"/>
         <location line="+168"/>
         <location line="+4"/>
         <source>Index of the plane, which contains the result.</source>
@@ -64,14 +64,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+82"/>
-        <location line="+86"/>
-        <location line="+69"/>
-        <source>Error: source image is NUL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+431"/>
+        <location line="+704"/>
         <location line="+186"/>
         <location line="+917"/>
         <source>2D source image data object (u)int8, (u)int16, int32, float32 or float64 only.</source>
@@ -133,17 +126,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>destination image data object for operation, will contain evaluated COG (in physical coordinates)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>destination image data object for operation, will contain maximal intensity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>if (max-min) along the search direction is lower or equal this pvThreshold (peak-to-valley), no cog is determined and a NaN value is set into the resulting position array (default: this threshold is not considered).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -158,8 +141,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="-8"/>
+        <source>destination object for center of gravity values (in physical coordinates), float64, size: [numPlanes x sizeOfElements]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+2"/>
-        <source>The search direction is along each column if 1, else along each row (default, 0)</source>
+        <source>destination object for the absolute maximum along the search direction, same type than source image, size: [numPlanes x sizeOfElements]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>0: COG search along each row (default), 1: along each column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -228,14 +221,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1750"/>
+        <location line="-1786"/>
         <location line="+61"/>
         <location line="+90"/>
         <source>data type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+99"/>
         <source>mean result</source>
         <translation type="unfinished"></translation>
     </message>
@@ -245,16 +238,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-279"/>
         <location line="+60"/>
         <location line="+86"/>
         <location line="+69"/>
-        <location line="+59"/>
+        <location line="+35"/>
+        <location line="+60"/>
         <source>Error, object dimensions must be unequal zero</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-156"/>
+        <location line="-192"/>
         <source>Switch complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -269,16 +263,24 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+149"/>
         <source>Toggles the calculation mode of standard deviation over N or N-1 elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+268"/>
+        <location line="-218"/>
+        <location line="+86"/>
+        <location line="+69"/>
+        <location line="+35"/>
+        <source>Error: source image is NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-250"/>
+        <location line="+304"/>
         <location line="+111"/>
         <location line="+7"/>
-        <source>Error: source image is NULL</source>
+        <source>Error: source image is NULLL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -326,7 +328,7 @@
 <context>
     <name>DataObjectArithmeticInterface</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="-1923"/>
+        <location filename="../dataobjectarithmetic.cpp" line="-1959"/>
         <source>Arithmetic algorithms filters.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -354,7 +356,7 @@ This plugin does not have any unusual dependencies.</source>
     </message>
     <message>
         <location line="+96"/>
-        <source>This filter calculated the minimal value and its first location within the dataObject. 
+        <source>This filter calculates the minimal value and its first location within the dataObject. 
 
 The result value will be Integer vor all integer types or Double for all floating point types
 
@@ -365,7 +367,7 @@ The filter is implemented for all data types besides RGBA32, Complex64 and Compl
     </message>
     <message>
         <location line="+60"/>
-        <source>This filter calculated the maximal value and its first location within the dataObject. 
+        <source>This filter calculates the maximal value and its first location within the dataObject. 
 
 The result value will be Integer vor all integer types or Double for all floating point types
 
@@ -376,7 +378,7 @@ The filter is implemented for all data types besides RGBA32, Complex64 and Compl
     </message>
     <message>
         <location line="+61"/>
-        <source>This filter calculated the minimal and maximal value and its first location within the dataObject. 
+        <source>This filter calculates the minimal and maximal value and its first location within the dataObject. 
 
 The result value will be Integer vor all integer types or Double for all floating point types
 
@@ -387,7 +389,7 @@ The filter do not work with RGBA32 but with all other data-types
     </message>
     <message>
         <location line="+94"/>
-        <source>This filter calculated the mean value within the dataObject. 
+        <source>This filter calculates the mean value within the dataObject. 
 
 The return value containing the mean value of the dataObject.
 
@@ -397,7 +399,18 @@ The filter is implemented for all data types besides RGBA32, Complex64 and Compl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+35"/>
+        <source>This filter calculates the median value over all values in the data object. 
+
+The return value containing the mean value of the dataObject.
+
+The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+56"/>
         <source>The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.
 The optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)
 or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)
@@ -480,7 +493,7 @@ The value &apos;lowerBoundary&apos; is set to the corresponding maximum of &apos
 all drop to zero at the edge of each search range; for a valid cog determination, it is necessary to assume that all values that are far away from the cog position have values around zero; 
 if this is not the case consider to set an appropriate value &apos;lowerThreshold&apos; and / or &apos;dynamicThreshold&apos;. 
 
-The filter is not implemented for complex data types and the type rgba32.</source>
+The filter is not implemented for complex data types and the type rgba32 since there is no maximum value defined for these types.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

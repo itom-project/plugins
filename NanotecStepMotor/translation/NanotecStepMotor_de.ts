@@ -301,6 +301,10 @@
         <source>Given axis (%1) out of range!</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NanotecStepMotorInterface</name>

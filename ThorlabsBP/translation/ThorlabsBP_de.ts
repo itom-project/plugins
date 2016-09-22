@@ -2,9 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DialogThorlabsISM</name>
+    <name>DialogThorlabsBP</name>
     <message>
-        <source>Firgelli LAC</source>
+        <source>Thorlabs BP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -12,7 +12,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controller:</source>
+        <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -20,35 +20,79 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Number:</source>
+        <source>Serial:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
+        <source>General settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> %</source>
+        <source>Timeout:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Target speed:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max spool size:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Accuracy:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mode</source>
+        <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>asynchronous mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Axis settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slew rate (open loop):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a value of 0 disables the limit of the movement speed (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> V/ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slew rate (closed loop):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum output voltage:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>75 V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>100 V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>150 V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum travel range:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>0 µm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zero this axis (requires few seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Axis enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closed loop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -57,9 +101,9 @@
     </message>
 </context>
 <context>
-    <name>DockWidgetThorlabsISM</name>
+    <name>DockWidgetThorlabsBP</name>
     <message>
-        <source>Firgelli LAC</source>
+        <source>Thorlabs ISM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -67,7 +111,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controller:</source>
+        <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -75,7 +119,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Number:</source>
+        <source>Serial:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -83,82 +127,92 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Positioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Step Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> mm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Absolut Positioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Actual Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh</source>
+        <source>Axis Control</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ThorlabsISM</name>
+    <name>QObject</name>
     <message>
-        <source>Error while writing</source>
+        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Communication error: Wrong command</source>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Communication error: Wrong answer</source>
+        <source>ThorlabsBP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error while reading</source>
+        <source>ThorlabsBP is an acutator plugin to control the following integrated devices from Thorlabs: 
+
+* Benchtop Piezo (1 channel) 
+* Benchtop Piezo (3 channels) 
+
+It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.Benchtop.Piezo.
+
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
+
+This plugin has been tested with the Benchtop Piezo with 1 and 3 channels. 
+
+The position values are always in mm if the corresponding axis is in closed-loop mode and if a strain gauge feedback is connected. Else the values are always in volts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ThorlabsBP</name>
+    <message>
+        <source>name of plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name of controller</source>
+        <source>number of axes (channels)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Version of DLL file</source>
+        <source>Description of the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Maximum length of spool (mm)</source>
+        <source>Serial number of the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The current number of this specific device, if there are more than one devices connected. (0 = first device)</source>
+        <source>Channel number of each axis.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout for positioning in seconds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If 0, the axis is not zeroed. 1: zeroed. If the axis is not zeroed, it is possible that position values at the edge of the valid range can not be reached.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If 0, the axis is not equipped with a strain gauge feedback, else 1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open loop (0), closed loop (1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum travel range for each axis in mm. This requires an actuator with built in position sensing. These values might not be correct if the motor is in open loop mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum output voltage (75, 100 or 150 V).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed limit (slew rate) of each axis in V/ms. 0 (default) disables the limit and let the controller decide to move with the ideal speed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -166,103 +220,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Target speed in %; range: 0.0..100.0 %</source>
+        <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Accuracy in %; range: 0.0..100.0 %</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No device connected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No device found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>InPipe is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error closing device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Not implemented, use calibmode to set actual position as zero.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This device have only one axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Too much axes given!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The motor is running. Further action is not possible!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The target position %1 is higher than spool maximum %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error while setting position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>interrupt occurred</source>
+        <source>timeout occurred</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ThorlabsISMInterface</name>
+    <name>ThorlabsBPInterface</name>
     <message>
-        <source>Maximum length of spool (mm) [default 20.0 mm]</source>
+        <source>Serial number of the device to be loaded, if empty, the first device that can be opened will be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The current number of this specific device, if there are more than one devices connected. (0 = first device)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>error while loading DLL &apos;mpusbapi.dll&apos;: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DLL could not be unloaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>QObject</name>
-    <message>
-        <source>ThorlabsISM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ThorlabsISM is an itom-plugin, which can be used to communicate with the Firgelli USB controllers.
-It has been tested with one connected motor PQ12-SS-GG-VV-P with one axis.
-
-Please indicate the correct working distance of the connected motor (e.g. 20mm) at startup, else the
-plugin might deliver wrong values. At startup, the motor is always moved to its zero-position
-in order to be able to subsequently provide right position values. This behaviour is mandatory
-and cannot be changed (due to the driver of the controller board).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>N.A.</source>
+        <source>list of channels to connect to. If an empty list is given, all connected channels are used. The plugin axis indices are then mapped to the channels.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

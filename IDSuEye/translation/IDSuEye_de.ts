@@ -290,10 +290,12 @@
     <message>
         <location filename="../IDSInterface.cpp" line="+102"/>
         <source>This plugin supports IDS uEye cameras and has currently been tested with the following models: 
-- UI145xSE-C (colored, USB2) 
-- UI124xSE-M (monochrome, USB2). 
-- UI224xSE-M (monochrome, USB2). 
-- UI337xCP-C (colored, USB3) 
+* UI145xSE-C (colored, USB2) 
+* UI124xSE-M (monochrome, USB2) 
+* UI224xSE-M (monochrome, USB2) 
+* UI337xCP-C (colored, USB3) 
+* UI318xCP-M (monochrome, USB3) 
+* UI318xCP-C (colored, USB3) 
 
 The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. 
 
@@ -303,7 +305,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -314,7 +316,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     </message>
     <message>
         <location line="+2"/>
-        <source>Camera ID of the camera to open (0: the next free camera will opened [default], 1-254: else)</source>
+        <source>Camera ID (user-definable in IDS camera manager) of the camera to open (0: the next free camera will opened [default], 1-254: specific camera ID)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -431,13 +433,13 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1954"/>
+        <location line="+1958"/>
         <location line="+5"/>
         <source>Warning framerate is out of bounds, set to closest value possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1981"/>
+        <location line="-1985"/>
         <source>Model identifier of the attached camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -467,7 +469,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+904"/>
+        <location line="+906"/>
         <source>StopDevice of IDSuEye can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -492,7 +494,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+717"/>
+        <location line="+719"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -505,7 +507,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="-51"/>
+        <location filename="../IDSInterface.cpp" line="-53"/>
         <source>IDS uEye grabber.</source>
         <translation type="unfinished"></translation>
     </message>

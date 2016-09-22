@@ -163,7 +163,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+205"/>
+        <location filename="../MSMediaFoundation.cpp" line="+184"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -464,12 +464,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-69"/>
+        <location line="-48"/>
         <source>MSMediaFoundation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+2"/>
         <source>This plugin uses the Microsoft Media Foundation framework (Windows Vista, 7, 8) for capturing supported camera devices (e.g. ordinary USB or integrated cameras). 
 Cameras must provide the UVC 1.1 interface for USB devices. 
 

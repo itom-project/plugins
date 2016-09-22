@@ -34,10 +34,6 @@
         <translation>Löschen</translation>
     </message>
     <message>
-        <source>ignor empty messages</source>
-        <translation type="obsolete">Leere Nachrichten ignorieren</translation>
-    </message>
-    <message>
         <location line="-188"/>
         <source>Form</source>
         <translation></translation>
@@ -171,14 +167,6 @@
         <translation>K.A.</translation>
     </message>
     <message>
-        <source>Mandatory paramers are NULL</source>
-        <translation type="vanished">Pflichtparameter ist NULL</translation>
-    </message>
-    <message>
-        <source>Optinal paramers are NULL</source>
-        <translation type="vanished">Optionaler Parameter ist NULL</translation>
-    </message>
-    <message>
         <location filename="../dialogSerialIO.cpp" line="+523"/>
         <source>Char token not closed correctly or number to big.</source>
         <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
@@ -212,10 +200,6 @@
         <translation>Stopbits nach jedem n-ten Bit</translation>
     </message>
     <message>
-        <source>Toggle parity check</source>
-        <translation type="vanished">Schalter Paritätsprüfung</translation>
-    </message>
-    <message>
         <location line="+4"/>
         <source>Bitmask for flow control as integer</source>
         <translation>Bitmaske für Flusskontrolle als Ganzzahl</translation>
@@ -226,21 +210,9 @@
         <translation>Terminierung, wird bei setVal() automatisch hinzugefügt</translation>
     </message>
     <message>
-        <source>0 -&gt; write output buffer as block at once or single characters with delay (1..65000)</source>
-        <translation type="vanished">0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
-    </message>
-    <message>
         <location line="+11"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
-    </message>
-    <message>
-        <source>If true, all out and inputs are written to dockingWidget</source>
-        <translation type="vanished">Wenn aktiviert, wird die Kommunikation in der Toolbox protokolliert</translation>
-    </message>
-    <message>
-        <source>If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored</source>
-        <translation type="vanished">Wenn das Protokoll aktiviert wurde, können mit diesem Parameter leer Nachrichten ignoriert werden</translation>
     </message>
     <message>
         <location line="-15"/>
@@ -250,12 +222,12 @@
     <message>
         <location line="+8"/>
         <source>Endline character, will be looking for during getVal by using readline</source>
-        <translation type="unfinished">Terminierung für Leseoperationen, nach der bei aktivierter &apos;readline&apos;-Funktion in getVal() gesucht wird</translation>
+        <translation>Terminierung für Leseoperationen, nach der bei aktivierter &apos;readline&apos;-Funktion in getVal() gesucht wird</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>If true, reading next line terminated by endlineRead.</source>
-        <translation type="unfinished">Wenn aktiviert, wird beim Lesen nach der unter &apos;endlineRead&apos; angegebene Terminierung gesucht.</translation>
+        <translation>Wenn aktiviert, wird beim Lesen nach der unter &apos;endlineRead&apos; angegebene Terminierung gesucht.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -295,49 +267,17 @@
     <message>
         <location line="+174"/>
         <source>Mandatory paramers are NULL</source>
-        <translation type="unfinished">Pflichtparameter ist NULL</translation>
+        <translation>Pflichtparameter ist NULL</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Optinal paramers are NULL</source>
-        <translation type="unfinished">Optionaler Parameter ist NULL</translation>
+        <translation>Optionaler Parameter ist NULL</translation>
     </message>
     <message>
         <location line="+225"/>
         <source>timeout</source>
-        <translation type="unfinished">Zeitüberschreitung</translation>
-    </message>
-    <message>
-        <source>name of requested parameter is empty.</source>
-        <translation type="vanished">Name des angeforderten Parameters ist leer.</translation>
-    </message>
-    <message>
-        <source>parameter not found in m_params.</source>
-        <translation type="vanished">Parameter nicht in m_params gefunden.</translation>
-    </message>
-    <message>
-        <source>name of given parameter is empty.</source>
-        <translation type="vanished">Name des Parameters ist leer.</translation>
-    </message>
-    <message>
-        <source>Parameter is read only, input ignored</source>
-        <translation type="vanished">Parameter ist schreibgeschützt, Eingabe wurde ignoriert</translation>
-    </message>
-    <message>
-        <source>New value is larger than parameter range, input ignored</source>
-        <translation type="vanished">Wert ist größer als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
-    </message>
-    <message>
-        <source>New value is smaller than parameter range, input ignored</source>
-        <translation type="vanished">Wert ist kleiner als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
-    </message>
-    <message>
-        <source>Parameter type conflict</source>
-        <translation type="vanished">Konflikt mit Parametertyp</translation>
-    </message>
-    <message>
-        <source>Parameter not found</source>
-        <translation type="vanished">Parameter wurde nicht gefunden</translation>
+        <translation>Zeitüberschreitung</translation>
     </message>
     <message>
         <location line="-138"/>
@@ -401,7 +341,7 @@ Example
     #get result
     answer = bytearray(9) #supposed length is 9 characters
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns</source>
-        <translation type="unfinished">SerialIO ist ein itom-Plugin, welches direkten Zugriff auf den Seriellen Port ermöglicht.
+        <translation>SerialIO ist ein itom-Plugin, welches direkten Zugriff auf den Seriellen Port ermöglicht.
 Es wird zur Kommunikation mit unterschiedlichen Plugins (z. B. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;) verwendet.
 Das Plugin wurde für Linux und Windows implementiert, die möglichen Baudraten sind Betriebssystemabhängig.
 
@@ -410,13 +350,13 @@ Flusskontrolle
 
 Die Flusskontrolle ist eine &apos;OR&apos;-Verknüpfung mit folgenden möglichen Werten:
 Xon/Xoff - Standard: Xoff, Xon=1 (1. bit) 
-rts control - Standard: disabled, enabled=2, handshake=4 or (4+2) (2. und 3. bit) 
+rts control - Standard: disabled, enabled=2, handshake=(4 or (4+2)) (2. und 3. bit) 
 cts control - Standard: disabled, enabled=8 (4. bit) 
-dtr control - Standard: disabled, enabled = 16, handshake = 32 or (32+16) (5. und 6. bit) 
+dtr control - Standard: disabled, enabled = 16, handshake =( 32 or (32+16)) (5. und 6. bit) 
 dsr control - Standard: disabled, enabled = 64 
 
 Wurde eine Terminierung (Endline) mit angegeben, wird diese automatisch bei jeder Nachricht an das Gerät angehängt.
-Beim Lesen hingegen wird die Antwort nach der &apos;endlineRead&apos;-Terminierung gescannt.
+Beim Lesen hingegen wird die Antwort nach der &apos;endlineRead&apos;-Terminierung gescannt und automatisch abgeschnitten.
 Um die Terminierung selbst zu organisieren, dürfen diese Terminierungen keine Zeichen enthalten.
 
 Beispiel
@@ -470,17 +410,9 @@ Beispiel
         <translation>0 -&gt; Schreibt den Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000)</translation>
     </message>
     <message>
-        <source>Parity: 0 -&gt; no parity, 1 -&gt; odd parity, 2 -&gt; even parity</source>
-        <translation type="vanished">Paritätsprüfung: 0 -&gt; keine Parität, 1 -&gt; ODD Parität, 2 -&gt; Parität</translation>
-    </message>
-    <message>
         <location line="-2"/>
         <source>Bitmask for flow control (see docstring for more information)</source>
         <translation>Bitmaske für Flusskontrolle (für nähere Informationen siehe Docstring)</translation>
-    </message>
-    <message>
-        <source>0 -&gt; write output buffer as block or single characters with delay (1..65000)</source>
-        <translation type="vanished">Ausgabepuffer als ganzen Block (0) oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -757,12 +689,12 @@ Beispiel
     <message>
         <location line="+13"/>
         <source>Endline Read</source>
-        <translation type="unfinished">Leseterminierung</translation>
+        <translation>Leseterminierung</translation>
     </message>
     <message>
         <location line="+73"/>
         <source>Readline</source>
-        <translation type="unfinished">Zeilenlesen</translation>
+        <translation>Zeilenlesen</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -804,21 +736,6 @@ Beispiel
         <location line="+129"/>
         <source>OK</source>
         <translation></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="vanished">Uninitialisierte Vektoren für Pflichtparameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="vanished">Uninitialisierte Vektoren für optionale Parameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="vanished">Uninitialisierte Vektoren für Ausgabeparameter!</translation>
     </message>
 </context>
 </TS>

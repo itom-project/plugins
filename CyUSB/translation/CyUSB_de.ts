@@ -4,76 +4,47 @@
 <context>
     <name>DockWidgetItomCyUSB</name>
     <message>
-        <location filename="../dockWidgetItomCyUSB.ui" line="+32"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+36"/>
         <source>General Information</source>
-        <translation>Allgemeine Informationen</translation>
+        <translation type="vanished">Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+18"/>
         <source>ID:</source>
-        <translation>ID:</translation>
+        <translation type="vanished">ID:</translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>[ID]</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+22"/>
         <source>USB Log</source>
-        <translation>USB-Protokoll</translation>
+        <translation type="vanished">USB-Protokoll</translation>
     </message>
     <message>
-        <location line="+33"/>
-        <source>ASCII</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+16"/>
         <source>Decimal</source>
-        <translation>Dezimal</translation>
+        <translation type="vanished">Dezimal</translation>
     </message>
     <message>
-        <location line="+22"/>
         <source>Hexadecimal</source>
-        <translation>Hexadezimal</translation>
+        <translation type="vanished">Hexadezimal</translation>
     </message>
     <message>
-        <location line="+13"/>
         <source>Binary</source>
-        <translation>Binär</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>ignore empty messages</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Binär</translation>
     </message>
     <message>
         <source>ignor empty messages</source>
         <translation type="vanished">Leere Nachrichten ignorieren</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Clear</source>
-        <translation>Löschen</translation>
+        <translation type="vanished">Löschen</translation>
     </message>
 </context>
 <context>
     <name>ItomCyUSB</name>
     <message>
-        <location filename="../ItomCyUSB.cpp" line="+144"/>
         <source>Timeout for reading commands in [s]</source>
-        <translation>Timeout für Lesebefehle in [s]</translation>
+        <translation type="vanished">Timeout für Lesebefehle in [s]</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>If true, all out and inputs are written to dockingWidget</source>
-        <translation>Wenn aktiviert, wird die Kommunikation im dockingWidget protokolliert</translation>
+        <translation type="vanished">Wenn aktiviert, wird die Kommunikation im dockingWidget protokolliert</translation>
     </message>
     <message>
         <source>Clears the input buffer of serial port</source>
@@ -128,32 +99,53 @@
         <translation type="vanished">Der Versuch, das Gerät direkt zu öffnen, schlug fehl!</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Endpoint index for reading operations. The used index is ItomCyUSB_ENDPOINT_IN + endpoint_read, with ItomCyUSB_ENDPOINT_IN = %1 (default: initialization parameter &apos;endpoint&apos;)</source>
-        <translation type="unfinished">Endpoint-Index für Leseoperationen. Der benutzte Index entspricht ItomCyUSB_ENDPOINT_IN + endpoint_read, mit ItomCyUSB_ENDPOINT_IN = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
+        <translation type="obsolete">Endpoint-Index für Leseoperationen. Der benutzte Index entspricht ItomCyUSB_ENDPOINT_IN + endpoint_read, mit ItomCyUSB_ENDPOINT_IN = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Endpoint index for writing operations. The used index is ItomCyUSB_ENDPOINT_OUT + endpoint_write, with ItomCyUSB_ENDPOINT_OUT = %1  (default: initialization parameter &apos;endpoint&apos;)</source>
-        <translation type="unfinished">Endpoint-Index für Schreiboperationen. Der benutzte Index entspricht ItomCyUSB_ENDPOINT_OUT + endpoint_write, mit ItomCyUSB_ENDPOINT_OUT = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
+        <translation type="obsolete">Endpoint-Index für Schreiboperationen. Der benutzte Index entspricht ItomCyUSB_ENDPOINT_OUT + endpoint_write, mit ItomCyUSB_ENDPOINT_OUT = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
     </message>
     <message>
-        <location line="+292"/>
         <source>could not find a known device - please specify type and/or vid:pid and/or bus,dev</source>
-        <translation>Das Gerät wurde nicht gefunden. Bitte den Typ, &apos;vid:pid&apos; und/oder den Bus spezifizieren</translation>
+        <translation type="vanished">Das Gerät wurde nicht gefunden. Bitte den Typ, &apos;vid:pid&apos; und/oder den Bus spezifizieren</translation>
     </message>
     <message>
-        <location line="+25"/>
-        <source>no of the %1 devices that fit to the vendor and product ID can be opened since they are already in use.</source>
+        <source>no device found to open</source>
+        <translation type="obsolete">Kein Gerät zum Öffnen vorhanden</translation>
+    </message>
+    <message>
+        <location filename="../ItomCyUSB.cpp" line="+142"/>
+        <source>Timeout for reading commands in [s].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>no device found to open</source>
-        <translation type="unfinished">Kein Gerät zum Öffnen vorhanden</translation>
+        <location line="+2"/>
+        <source>If true, all out and inputs are written to the dockWidget.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+2"/>
+        <source>Endpoint index for reading operations. (default: first detected input endpoint.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Endpoint index for writing operations. (default: first detected output endpoint.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>maximum number of detected devices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+363"/>
+        <source>given vendor- or product-ID not detected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+47"/>
         <source>StartDevice not necessary</source>
         <translation>&quot;StartDevice&quot; nicht nötig</translation>
     </message>
@@ -168,68 +160,118 @@
         <translation>&quot;Acquire&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+38"/>
+        <source>error while obtaining data. (isoc input endpoint).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>error while obtaining data. (bulk or interrupt input endpoint).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <location line="+70"/>
+        <source>devices is not open or endpoint Poiter is NULL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-28"/>
+        <source>error while obtaining data. (isoc output endpoint).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>error while obtaining data (bulk or interrupt output endpoint).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Number of written characters differ from designated size</source>
-        <translation type="unfinished">Die Anzahl der übergebenen Zeichen entspricht nicht der Vorgabe</translation>
+        <translation type="obsolete">Die Anzahl der übergebenen Zeichen entspricht nicht der Vorgabe</translation>
     </message>
 </context>
 <context>
     <name>ItomCyUSBInterface</name>
     <message>
-        <location line="-675"/>
         <source>itom-plugin for a usb port communication</source>
-        <translation>itom-Plugin für eine USB-Port Kommunikation</translation>
+        <translation type="vanished">itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>ItomCyUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.
-It can be used by plugins for communication analog to the serial port.
-The plugin is implemented for Windows, but Linux should be possible due to ItomCyUSB is also availble on Linux.
-
-To connect to a device you need the vendor id and the product id.
-
-The setVal and getVal functions will write and read on the specified endpoint.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
         <source>The vendor id of the device to connect to</source>
-        <translation type="unfinished">Die Vendor-ID des Geräts für die Verbindung</translation>
+        <translation type="obsolete">Die Vendor-ID des Geräts für die Verbindung</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>The product id of the device to connect to</source>
-        <translation type="unfinished">Die Produkt-ID des Geräts für die Verbindung</translation>
+        <translation type="obsolete">Die Produkt-ID des Geräts für die Verbindung</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>The endpoint to communicate with.</source>
-        <translation type="unfinished">Der &apos;Endpoint&apos; für die Kommunikation.</translation>
+        <translation type="obsolete">Der &apos;Endpoint&apos; für die Kommunikation.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Timeout for reading commands in [s]</source>
-        <translation>Timeout für Lesebefehle in [s]</translation>
+        <translation type="vanished">Timeout für Lesebefehle in [s]</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Debug level: 0 (ItomCyUSB_LOG_LEVEL_NONE): no messages ever printed by the library. 1 (ERROR): error messages are printed to stderr, 2 (WARNING): warning and error messages are printed to stderr, 3 (INFO): informational messages are printed to stdout, warning and error messages are printed to stderr, 4 (DEBUG): like 3 but debug messages are also printed to stdout.</source>
-        <translation type="unfinished">Debug-Level: 0 (ItomCyUSB_LOG_LEVEL_NONE): Keine Meldungen der Library. 1 (ERROR): Fehlermeldung wird an &apos;stderr&apos; übergeben, 2 (WARNING): Warnungen und Fehlermeldung werden an &apos;stderr&apos; übergeben, 3 (INFO): Informationen werden an &apos;stdout&apos;, Warnungen und Fehlermeldung an &apos;stderr&apos; übergeben, 4 (DEBUG): Wie 3, nur dass Debug-Meldungen ebenfalls an &apos;stdout&apos; übergeben werden.</translation>
+        <translation type="obsolete">Debug-Level: 0 (ItomCyUSB_LOG_LEVEL_NONE): Keine Meldungen der Library. 1 (ERROR): Fehlermeldung wird an &apos;stderr&apos; übergeben, 2 (WARNING): Warnungen und Fehlermeldung werden an &apos;stderr&apos; übergeben, 3 (INFO): Informationen werden an &apos;stdout&apos;, Warnungen und Fehlermeldung an &apos;stderr&apos; übergeben, 4 (DEBUG): Wie 3, nur dass Debug-Meldungen ebenfalls an &apos;stdout&apos; übergeben werden.</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>If true, all information about connected devices is print to the console.</source>
-        <translation type="unfinished">Wenn aktiviert, werden alle Informationen über das verbundene Gerät über die Konsole ausgegeben.</translation>
+        <translation type="obsolete">Wenn aktiviert, werden alle Informationen über das verbundene Gerät über die Konsole ausgegeben.</translation>
     </message>
     <message>
         <source>Initialised &apos;debug&apos;-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget</source>
         <translation type="obsolete">Initialisiert den &apos;Debug&apos;-Parameter mit dem übergebenen Wert. Ist dieser &apos;True&apos;, wird die gesammte Ein- und Ausgabekommunikation im DockWidget protokolliert</translation>
     </message>
+    <message>
+        <location line="-696"/>
+        <source>itom-plugin for a USB port communication with Cypress Semiconductor USB chips.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>ItomCyUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.
+It can be used by plugins for communication analog to the USB port.
+The plugin is implemented for Window.
+
+To connect to a device you need the vendor ID and the product ID.
+
+The setVal and getVal functions will write and read on the specified endpoint.
+
+!Only the setVal function could be tested!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>The vendor ID of the device to connect to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The product ID of the device to connect to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>If true, all information about connected devices is printed to the console.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>If true, all communication commands are printed to the dockWidget.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Timeout for reading commands in [s].</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-14"/>
+        <location line="-11"/>
         <source>licensed under LGPL</source>
         <translation></translation>
     </message>
@@ -249,6 +291,64 @@ The setVal and getVal functions will write and read on the specified endpoint.</
     <message>
         <source>Optinal paramers are NULL</source>
         <translation type="obsolete">Optionaler Parameter ist NULL</translation>
+    </message>
+</context>
+<context>
+    <name>dockWidgetItomCyUSB</name>
+    <message>
+        <location filename="../dockWidgetItomCyUSB.ui" line="+32"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>General Information</source>
+        <translation type="unfinished">Allgemeine Informationen</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>ID:</source>
+        <translation type="unfinished">ID:</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>[ID]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>USB Log</source>
+        <translation type="unfinished">USB-Protokoll</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>ASCII</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Decimal</source>
+        <translation type="unfinished">Dezimal</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Hexadecimal</source>
+        <translation type="unfinished">Hexadezimal</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Binary</source>
+        <translation type="unfinished">Binär</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>ignore empty messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Clear</source>
+        <translation type="unfinished">Löschen</translation>
     </message>
 </context>
 <context>

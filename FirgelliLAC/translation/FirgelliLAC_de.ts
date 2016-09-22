@@ -217,6 +217,10 @@
         <source>interrupt occurred</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FirgelliLACInterface</name>

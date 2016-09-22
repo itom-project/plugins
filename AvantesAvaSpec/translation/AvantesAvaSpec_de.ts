@@ -4,17 +4,7 @@
 <context>
     <name>AvantesAvaSpec</name>
     <message>
-        <location filename="../avantesAvaSpec.cpp" line="+159"/>
-        <source>Integrationtime of CCD programmed in s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Shortest time between two frames of CCD in s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location filename="../avantesAvaSpec.cpp" line="+172"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29,27 +19,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Bit depth. 16 (uint16), if single acquisition. 32 (float32), if averaging.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Number of averages for every frame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Timeout for grabbing in s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Enable triggermode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Coefficients for polynom that determines lambda_table (lambda_table[idx] = c[0] + c[1]*idx + c[2]*idx^2 + ... + c[4]*idx^4)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -59,27 +34,45 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Set Triggermode</source>
+        <location line="-32"/>
+        <source>Integration time of CCD programmed in s, some devices do not accept the full range of allowed values (see AvaSpec for real minimum value of your device).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+15"/>
+        <source>Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled and the dark_correction is disabled or no dark correction pixels are available for this sensor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output 
+dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. 
+Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software 
+AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): default.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Serial number of spectrometer. Same as identifier.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+413"/>
+        <location line="+3"/>
+        <source>Name of the detector.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+522"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+226"/>
         <source>Wrong picture type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+54"/>
         <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -97,7 +90,7 @@
 <context>
     <name>AvantesAvaSpecInterface</name>
     <message>
-        <location line="-700"/>
+        <location line="-925"/>
         <source>VendorID of spectrometer, 0x1992 for AvaSpec-3648, 0x471 for AvaSpec-ULS3648...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -115,7 +108,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+25"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -145,30 +138,35 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+13"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+22"/>
         <source>Average</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Dark correction</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../avantesAvaSpec.cpp" line="-14"/>
+        <location filename="../avantesAvaSpec.cpp" line="-20"/>
         <source>Avantes AvaSpec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itoM. It is used for CCM / CCSI with the AvaSpec 3468 USB-Spectrometer.</source>
+        <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. It uses a low-level libusb connection to communicate with the devices and has been tested with the following spectrometers: * AvaSpec 3468 USB-Spectrometer * AvaSpec 2048 USB-Spectrometer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>

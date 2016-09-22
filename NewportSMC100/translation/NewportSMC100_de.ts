@@ -361,6 +361,10 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
         <source>Not implemented, use calibmode to set actual position as zero.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SMC100Interface</name>

@@ -22,8 +22,12 @@
     </message>
     <message>
         <location line="+3"/>
-        <location line="+3"/>
         <source>ASCII Surface Data File (*.sdf)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>ASCII or binary Surface Data File (*.sdf)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -73,7 +77,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+6"/>
+        <source>Veeco Nanoscope III (*.001 *.002 *.003 *.004)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Zygo MetroPro Data File (*.dat)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
         <location line="+818"/>
         <source>2D-DataObject of anytype or 3-planes DataObject of uint8</source>
         <translation type="unfinished"></translation>
@@ -81,7 +100,7 @@
     <message>
         <location line="-816"/>
         <location line="+818"/>
-        <location line="+1144"/>
+        <location line="+1395"/>
         <location line="+73"/>
         <location line="+76"/>
         <location line="+77"/>
@@ -95,7 +114,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4428"/>
+        <location line="-4679"/>
         <source>Format of the Image according to QImage: [&apos;QImage::Format_Mono&apos;, &apos;QImage::Format_MonoLSB&apos;, &apos;QImage::Format_Indexed8&apos;, &apos;QImage::Format_RGB32&apos;, &apos;QImage::Format_ARGB32&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -150,33 +169,33 @@
     </message>
     <message>
         <location line="+5"/>
-        <location line="+2302"/>
+        <location line="+2553"/>
         <source>Entered Image format is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2277"/>
+        <location line="-2528"/>
         <source>Empty dataObjet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+2673"/>
+        <location line="+2924"/>
         <location line="+411"/>
         <location line="+104"/>
         <source>Source file name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3150"/>
-        <location line="+711"/>
-        <location line="+2018"/>
+        <location line="-3401"/>
+        <location line="+713"/>
+        <location line="+2267"/>
         <location line="+473"/>
         <source>The file &apos;%s&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3198"/>
+        <location line="-3449"/>
         <source>The file &apos;%s&apos; is no readable image file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -197,18 +216,34 @@
     </message>
     <message>
         <location line="+74"/>
-        <location line="+3570"/>
+        <location line="+3821"/>
         <source>The file &apos;%s&apos; is no writeable file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3065"/>
+        <location filename="../nanoscopeIII.cpp" line="+42"/>
+        <source>Empty dataObject where the image will be saved to. The destinationObject will be of type float32.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Absolute or relative path to the Veeco nanoscope file (suffix 001, 002, 003, ...).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>defines the index of the image which will be loaded (default: 0). If the parameter is set to -1 a list of all images included in the file will be printed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <location filename="../DataObjectIO.cpp" line="-3314"/>
         <source>Dataobject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <location line="+2491"/>
+        <location filename="../DataObjectIO.cpp" line="+8"/>
+        <location line="+2740"/>
         <source>The file &apos;%s&apos; is no readable file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -244,7 +279,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2463"/>
+        <location line="-2723"/>
         <source>Images (*.xpm *.xbm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -254,18 +289,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+12"/>
         <source>PR Line Profile (*.pr)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+706"/>
-        <location line="+2673"/>
+        <location line="+2924"/>
         <source>Color element: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY; &apos;asIs&apos; ignores alpha channel from supported file types (use rgba instead).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2520"/>
+        <location line="-2771"/>
         <source>Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Skip Value, 2: Substitute by InvalidValue, 3: Substitute by BAD for MountainsMaps.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -280,34 +315,24 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>filename of the sdf file (aNIST-1.0 or aBCR-1.0 format)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <location line="+3328"/>
+        <location line="+6"/>
+        <location line="+3577"/>
         <source>Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3319"/>
-        <location line="+3328"/>
+        <location line="-3568"/>
+        <location line="+3577"/>
         <source>Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3319"/>
-        <source>If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If &apos;&lt;minrange&gt;&apos; or &lt;maxrange&gt; the minimum or maximum value of the data type in the data block is assumed (e.g. &lt;maxrange&gt; is used by Zygo to describe NaN values). MountainsMap writes &apos;BAD&apos; as invalid value (following ISO25178-71).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+124"/>
+        <location line="-3413"/>
         <source>The file &apos;%s&apos; does not contain an &apos;aNIST-1.0&apos;, &apos;aISO-1.0&apos; or &apos;aBCR-1.0&apos;-header.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+415"/>
+        <location line="+635"/>
         <source>number of values in data block does not correspond to NumPoints * NumProfiles of header block</source>
         <translation type="unfinished"></translation>
     </message>
@@ -547,17 +572,36 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location filename="../zygo.cpp" line="+301"/>
+        <location filename="../avantes.cpp" line="+122"/>
+        <location filename="../DataObjectIO.cpp" line="+238"/>
         <source>Destination dataObject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
+        <location filename="../avantes.cpp" line="+2"/>
+        <location filename="../DataObjectIO.cpp" line="+2"/>
         <source>Source filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+2"/>
+        <source>load topography data (1, default), else intensity data (0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Unit of x and y axes. MetroPro assumes to have m as default unit, this can be scaled using other values than m. Default: mm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Unit of value axis. MetroPro assumes to have m as default unit, this can be scaled using other values than m. Default: mm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../DataObjectIO.cpp" line="+21"/>
         <source>some files contain more than one dataset. Then pass the bufferType here (its mask is 0x0000ffdf), if 0 is given, the default buffer type is used.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -572,13 +616,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1995"/>
+        <location line="-1993"/>
         <location line="+379"/>
         <source>DataObject-Type could not be converted to unsigned int 8-bit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-327"/>
+        <location line="-1990"/>
+        <source>filename of the sdf file (aISO-1.0, aNIST-1.0, aBCR-1.0 or bISO-1.0 format)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If &apos;&lt;minrange&gt;&apos; or &lt;maxrange&gt; the minimum or maximum value of the data type in the data block is assumed (e.g. &lt;maxrange&gt; is used by Zygo to describe NaN values). MountainsMap writes &apos;BAD&apos; as invalid value (following ISO25178-71). This value is ignored for binary input since invalid values are directly encoded in floating point values.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+68"/>
+        <source>No version tag could be found in file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1574"/>
         <source>DataObject-Type could not be converted to unsigned int 16-bit.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -654,15 +713,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3415"/>
+        <location line="-3666"/>
         <source>Number of decimal signs (default: 3). For MountainsMaps reduce total number of digits to 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../avantes.cpp" line="+3"/>
+        <source>type of data to be loaded: 0 fully calculated array of wavelengths, 1 scopemode spectrum, 2 dark spectrum, 3 reference spectrum</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../transformations.h" line="+67"/>
+        <location filename="../transformations.h" line="+68"/>
         <location line="+30"/>
         <location line="+47"/>
         <location line="+77"/>
@@ -673,7 +737,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="-974"/>
+        <location filename="../DataObjectIO.cpp" line="-983"/>
         <source>import or export dataObject from/to several file formats.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -701,7 +765,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+109"/>
         <source>saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -718,11 +782,11 @@ This filter is deprecated and can also be directly used via the filter &apos;loa
     </message>
     <message>
         <location line="+529"/>
-        <source>loads an ascii-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.</source>
+        <source>loads an ascii or binary-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0, bISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+587"/>
+        <location line="+838"/>
         <source>Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported). 
 
 The following conventions hold for saving the image: 
@@ -1059,8 +1123,7 @@ Per default, the standard dataset (e.g. topology) is loaded. Set &apos;printAllB
 buffers printed to the command line (only if more than one buffer is available). While buffers at different levels are automatically 
 loaded to a 3D data object instead of a 2D one, the user can select the type and sensor counter that should be loaded. Possible values are among others: 
 
-bufferType 
---------------- 
+**bufferType** 
 
 * 0x0001: piezo 
 * 0x0002: intensity 
@@ -1078,10 +1141,36 @@ bufferType
 * 0x0401: fit 
 * 0x0402: slope 
 
-sensorCounter 
---------------- 
+**sensorCounter** 
 
 Currently, only 0 (sensor 1 - top) and 1 (sensor 2 - bottom) seems to be implemented in files. In future sensor 3 and sensor 4 (indices 2 and 3) might follow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nanoscopeIII.cpp" line="-35"/>
+        <source>This filter loads NanoscopeIII data from Veeco devices. This filter was tested with files from an AFM device &apos;Dimension3100&apos; using the file format 0x05310001. If a file of a other version is used no guarantee about scaling can be given.If a file of Version 4.3 is loaded, no information about the value units are available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../zygo.cpp" line="-34"/>
+        <source>load binary MetroPro files from Zygo. This import filter is mainly tested with the first generation of MetroPro files. 
+However, newer files should also be loaded with the limitation, that only the tags from the first generation are saved 
+into the &apos;destinationObject&apos;.
+
+Per default, a topography is loaded from the binary file into a float32 dataObject. If available, the optional parameter 
+&apos;topography&apos; can be set to 0 in order to load the intensity data to a uint16 dataObject. The &apos;destinationObject&apos; contains 
+many tags that are directly obtained from the binary files. 
+
+Use the optional parameters &apos;xyUnit&apos; and &apos;valueUnit&apos; to get the result in a desired unit. &apos;valueUnit&apos; is ignored for intensity data. 
+
+The file format has been implemented based on the MetroPro Reference Guide, version OMP-0347K.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../avantes.cpp" line="-17"/>
+        <source>load binary files from Avantes devices. The destinationObject is a RxN float32 data object, where R is the number of spectas in the file and N the number of pixels. Use the optional parameter &apos;dataType&apos; to decide which type of data should be loaded (including the calibration wavelength table of the grating). 
+
+The description of the file format has been taken from &apos;AvaSoft 8 File Formats.pdf&apos;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

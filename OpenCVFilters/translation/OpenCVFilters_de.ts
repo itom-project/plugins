@@ -4,7 +4,7 @@
 <context>
     <name>OpenCVFilters</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="+153"/>
+        <location filename="../OpenCVFilters.cpp" line="+161"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -18,26 +18,28 @@
         <location line="+372"/>
         <location line="+301"/>
         <location line="+260"/>
-        <location line="+163"/>
-        <location line="+148"/>
-        <location line="+775"/>
+        <location line="+168"/>
+        <location line="+153"/>
+        <location line="+650"/>
+        <location line="+167"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+93"/>
-        <location filename="../OpenCVFilters.cpp" line="-2014"/>
+        <location filename="../OpenCVFilters.cpp" line="-2066"/>
         <location line="+372"/>
         <location line="+301"/>
         <location line="+260"/>
-        <location line="+163"/>
-        <location line="+148"/>
-        <location line="+775"/>
+        <location line="+168"/>
+        <location line="+153"/>
+        <location line="+650"/>
+        <location line="+167"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1979"/>
+        <location filename="../OpenCVFilters.cpp" line="-2031"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -64,16 +66,17 @@
         <location line="+17"/>
         <location line="+208"/>
         <location line="+261"/>
-        <location line="+307"/>
-        <location line="+161"/>
-        <location line="+142"/>
+        <location line="+312"/>
+        <location line="+166"/>
+        <location line="+147"/>
         <location line="+204"/>
-        <location line="+570"/>
+        <location line="+440"/>
+        <location line="+169"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1625"/>
+        <location filename="../OpenCVFilters.cpp" line="-1679"/>
         <source>Unknown or unexpected CV-Datatype recived.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -178,7 +181,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+743"/>
+        <location line="+476"/>
+        <location line="+168"/>
+        <location line="+153"/>
+        <source>Error: input object must not be empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-44"/>
         <source>Rotated object by 90� clockwise with cvRotateM90-Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,17 +198,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Rotated object by 180� using cvRotate180-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+640"/>
+        <location line="+510"/>
+        <location line="+170"/>
         <source>Output Object handle. Will be come complex-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-167"/>
         <source>Low Threshold</source>
         <translation type="unfinished"></translation>
     </message>
@@ -215,6 +226,21 @@
     <message>
         <location line="+127"/>
         <source>Canny edge filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Transformation code, see (OpenCV) documentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>number of color channels of destination image, for 0 the number of channels is derived from the transformation (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+159"/>
+        <source>CvtColor conversion with code: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -625,27 +651,55 @@
     </message>
     <message>
         <location line="+51"/>
+        <location line="+62"/>
         <source>input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-61"/>
+        <location line="+62"/>
         <source>output image that has the size dsize and the same type as input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-61"/>
         <source>3x3 transformation matrix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1587"/>
-        <location line="+1451"/>
+        <location line="+62"/>
+        <source>3x3 camera fundamental matrix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>matrix with distortion coefficients</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>rotation vector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>translation vector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>destination object must not be NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../OpenCVFilters.cpp" line="-1672"/>
+        <location line="+1336"/>
+        <location line="+170"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1334"/>
+        <location line="-1389"/>
         <source>Image of type Integer or float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -661,12 +715,12 @@
     </message>
     <message>
         <location line="+40"/>
-        <location line="+717"/>
+        <location line="+732"/>
         <source>Error: kernel must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-712"/>
+        <location line="-727"/>
         <source>Error: kernelsize &gt; 3 and object is not uint8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -682,14 +736,15 @@
     </message>
     <message>
         <location line="+203"/>
-        <location line="+163"/>
-        <location line="+148"/>
-        <location line="+775"/>
+        <location line="+168"/>
+        <location line="+153"/>
+        <location line="+650"/>
+        <location line="+167"/>
         <source>Error: nDim-stacks not supported yet, only 2D and 3D.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-674"/>
         <source>sourceObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -709,7 +764,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-552"/>
+        <location line="-562"/>
         <source>Flipped left/rigth with cvFlip-Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -865,7 +920,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1132"/>
+        <location filename="../OpenCVFilters.cpp" line="-1143"/>
         <source>Wrapped algorithms from OpenCV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -879,11 +934,17 @@
 * histogram determination 
 * feature detections (circles, chessboard corners...) 
 
-This plugin not only requires access to the core library of OpenCV but also to further libraries like imgproc and calib3d.</source>
+This plugin not only requires access to the core library of OpenCV but also to further libraries like imgproc and calib3d. 
+
+This plugin has been created at a time when OpenCV did not yet provide bindings for Python 3. 
+From OpenCV 3 on, these bindings exist. Therefore, it is possible to access almost all OpenCV 
+methods via the cv2 python package. The wrapped methods within this plugin can still be used; 
+In addition to the cv2 methods, they can sometimes operate on multi-plane dataObjects, preserve 
+the tags and meta information and save protocol data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+22"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1008,7 +1069,7 @@ It is allowed to let the filter work inplace if you give the same input than des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+154"/>
+        <location line="+159"/>
         <source>This filter rotates the image by 90� count clock wise. 
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
@@ -1028,7 +1089,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+162"/>
+        <location line="+167"/>
         <source>This filter rotates the image by 180�. 
 
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The result is contained in the destination object
@@ -1038,7 +1099,7 @@ It is allowed to let the filter work inplace if you give the same input than des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Set single spikes at measurement edges to a new value. 
 
 This filter creates a binary mask for the input object. The value of mask(y,x) will be 1 if value of input(y,x) is within the specified range and is finite.The mask is eroded and than dilated by kernel size using openCV cv::erode and cv::dilate with a single iteration. In the last step the value of output(y,x) is set to newValue if mask(y,x) is 0.
@@ -1075,11 +1136,34 @@ The axisScale properties of the x- and y-axes of the outputObject are divided by
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+208"/>
+        <location line="+79"/>
         <source>Canny Edge detector using cv::DFT.
-                                                        
-                                                        It&apos;s just Canny&apos;s edge filter
-                                                       </source>
+
+It&apos;s just Canny&apos;s edge filter
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+154"/>
+        <source>Converts an image from one color space to another.
+In case of linear transformations, the range does not matter. But in case of a non-linear transformation,
+an input RGB image should be normalized to the proper value range to get the correct results, for example,
+for RGB -&gt; L*u*v* transformation. For example, if you have a 32-bit floating-point image directly
+converted from an 8-bit image without any scaling, then it will have the 0..255 value range instead of 0..1
+assumed by the function. So, before calling cvtColor , you need first to scale the image down
+
+The parameter code defines the conversion:
+RGB &lt;-&gt; GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)
+RGB &lt;-&gt; CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)
+RGB &lt;-&gt; YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)
+RGB &lt;-&gt; HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )
+RGB &lt;-&gt; HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)
+RGB &lt;-&gt; CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)
+RGB &lt;-&gt; CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)
+Bayer &lt;-&gt; RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...
+                        CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)
+
+For more details see OpenCV documentation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1103,7 +1187,7 @@ This function draws matches of keypoints from two images in the output image. Ma
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calib3d.cpp" line="-1176"/>
+        <location filename="../calib3d.cpp" line="-1258"/>
         <source>Finds circles in a grayscale image using the Hough transform.
 
 This filter is a wrapper for the OpenCV-function cv::HoughCircles.The function finds circles in a grayscale image using a modification of the Hough transform.Based on this filter, circles are identified and located.The result is a dataObject where the number of rows corresponds to the number of found circles, each row is (x,y,r).
@@ -1257,6 +1341,12 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
         <source>Applies a perspective transformation to an image 
 
 The function warpPerspective transforms the source image using the specified matrix H</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Project points from object into image space using the given calibration matrices,
+distortion coefficients rotation and tralsation vector.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -54,10 +54,6 @@
         <translation>z aktiv</translation>
     </message>
     <message>
-        <source>enable Joystick</source>
-        <translation type="obsolete">Joystick aktiv</translation>
-    </message>
-    <message>
         <location line="+31"/>
         <source>Relative Positioning</source>
         <translation>Relative Positionierung</translation>
@@ -171,62 +167,6 @@
         <location line="+21"/>
         <source>enable</source>
         <translation>aktiv</translation>
-    </message>
-</context>
-<context>
-    <name>QObject</name>
-    <message>
-        <source>DLL for old 2-3 axis Uhl-Controller</source>
-        <translation type="obsolete">DLL für alte 2-3 achsige Uhltische</translation>
-    </message>
-    <message>
-        <source>The UhlRegister is a iTom-PlugIn, which can be used to control the 2-3 axis
-stepper motor devices from Uhl (F9S-x)
-It is initialized by actuator(&quot;UhlRegister&quot;, SerialIO, ...).
-WARNING: There are different controller versions with different
-command languages. This DLL is for ??? devices.
-WARNING: The calibration direction of the stages differes according to motor / controller.
-Check calibration direction before usage.</source>
-        <translation type="obsolete">UhlRegister ist ein itom-Plugin, welches zur Steuerung für 2-3 achsige Schrittmotorgeräten von Uhl (F95-x)  verwendet werden kann.
-Es wird über actuator(&quot;UhlRegister&quot;, SerialIO, ...) initialisiert.
-WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für ??? Geräte.
-WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.</translation>
-    </message>
-    <message>
-        <source>N.A.</source>
-        <translation type="obsolete">Nicht verfügbar.</translation>
-    </message>
-    <message>
-        <source>UHL errormessage: </source>
-        <translation type="vanished">Uhl Fehlermeldung: </translation>
-    </message>
-    <message>
-        <source>Wrong command!</source>
-        <translation type="vanished">Falsches Kommando!</translation>
-    </message>
-    <message>
-        <source>Wrong register to read!</source>
-        <translation type="vanished">Falsches Register soll gelesen werden!</translation>
-    </message>
-    <message>
-        <source>Wrong data!</source>
-        <translation type="vanished">Falsche Daten!</translation>
-    </message>
-    <message>
-        <source>Wrong register to write!</source>
-        <translation type="vanished">Falsches Register soll beschrieben werden!</translation>
-    </message>
-    <message>
-        <source>State message in status register!</source>
-        <translation type="vanished">Statusmeldung statt Maske im Statusregister!</translation>
-    </message>
-    <message>
-        <source>Too much axes in register!</source>
-        <translation type="vanished">Zu viele Achsen im Maskenregister!</translation>
-    </message>
-    <message>
-        <source>Undefined answer from serial port!</source>
-        <translation type="vanished">Nicht definierte Antwort der seriellen Schnittstelle!</translation>
     </message>
 </context>
 <context>
@@ -382,10 +322,6 @@ If this is really an UHL table, you should try an other joystick!</source>
 Wenn es sich wirklich um einen Uhltisch handelt, sollte ein anderer Joystick ausprobiert werden!</translation>
     </message>
     <message>
-        <source>No answer from serial port. Initialisation canceld</source>
-        <translation type="obsolete">Keine Antwort der seriellen Schnittstelle. Die Initialisation wurde abgebrochen</translation>
-    </message>
-    <message>
         <location line="+23"/>
         <source>Undefined answer from serial port. Initialisation canceld</source>
         <translation type="unfinished">Nicht definite Antwort der seriellen Schnittstelle. Die Initialisation wurde abgebrochen</translation>
@@ -411,19 +347,6 @@ Wenn es sich wirklich um einen Uhltisch handelt, sollte ein anderer Joystick aus
         <translation>DLL für alte 2-3 achsige Uhltische</translation>
     </message>
     <message>
-        <source>The UhlRegister is a iTom-PlugIn, which can be used to control the 2-3 axis
-stepper motor devices from Uhl (F9S-x)
-It is initialized by actuator(&quot;UhlRegister&quot;, SerialIO, ...).
-WARNING: There are different controller versions with different
-command languages. This DLL is for ??? devices.
-WARNING: The calibration direction of the stages differes according to motor / controller.
-Check calibration direction before usage.</source>
-        <translation type="vanished">UhlRegister ist ein itom-Plugin, welches zur Steuerung für 2-3 achsige Schrittmotorgeräten von Uhl (F9S-x) verwendet werden kann.
-Die Initialisierung erfolg über &apos;actuator(&quot;UhlRegister&quot;, SerialIO, ...)&apos;.
-WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für ??? Geräte.
-WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.</translation>
-    </message>
-    <message>
         <location line="+1"/>
         <source>The UhlRegister is a plugin, which can be used to control the 2-3 axis
 stepper motor devices from Uhl (F9S-x)
@@ -436,24 +359,24 @@ WARNING: The calibration direction of the stages differs according to motor / co
 Check calibration direction before usage. 
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG</source>
-        <translation type="unfinished">UhlRegister ist ein itom-Plugin, welches zur Steuerung für 2-3 achsige Schrittmotorgeräten von Uhl (F9S-x) verwendet werden kann.
+        <translation>UhlRegister ist ein itom-Plugin, welches zur Steuerung für 2-3 achsige Schrittmotorgeräten von Uhl (F9S-x) verwendet werden kann.
 
 Die Initialisierung erfolg über &apos;actuator(&quot;UhlRegister&quot;, SerialIO, ...)&apos;.
 
 WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für F9S Geräte.
 WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.
 
-Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG veröffentlicht</translation>
+Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>LGPL</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished">Nicht verfügbar.</translation>
+        <translation>Nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -502,10 +425,6 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <location line="+6"/>
         <source>plugin instance not defined.</source>
         <translation>Plugin-Instanz nicht definiert.</translation>
-    </message>
-    <message>
-        <source>Configuration Uhl Actuator</source>
-        <translation type="obsolete">Uhltisch-Konfiguration</translation>
     </message>
     <message>
         <location filename="../dialogUhl.ui" line="+49"/>
@@ -649,66 +568,6 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <location line="+83"/>
         <source>Axis</source>
         <translation>Achsen</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für Pflichtparameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor für optionale Parameter!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="obsolete">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
-    </message>
-    <message>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="obsolete">Das Plugin scheint einen Konfigurationsdialog zu besitzen, doch die Methode showConfDialog wurde nicht implementiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>timer could not be set</source>
-        <translation type="obsolete">Timer konnte nicht gesendet werden</translation>
-    </message>
-    <message>
-        <source>not implemented</source>
-        <translation type="obsolete">Nicht implementiert</translation>
     </message>
 </context>
 </TS>

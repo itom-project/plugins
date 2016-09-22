@@ -4,7 +4,7 @@
 <context>
     <name>PclTools</name>
     <message>
-        <location filename="../pclTools.cpp" line="+4349"/>
+        <location filename="../pclTools.cpp" line="+4476"/>
         <source>saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -41,12 +41,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>transforms a point cloud with a given homogeneous transformation matrix (4x4 data object)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+39"/>
+        <location line="+45"/>
         <source>estimates normal vectors to the given input point cloud and returns the normal-enhanced representation of the input point cloud</source>
         <translation type="unfinished"></translation>
     </message>
@@ -116,7 +111,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4246"/>
+        <location line="-4373"/>
         <source>point cloud to save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,26 +326,20 @@
     </message>
     <message>
         <location line="+34"/>
-        <location line="+1"/>
         <source>The affine transform is applied to this point cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>4x4 homogeneous transformation matrix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../pclModelFitGeneric.cpp" line="+77"/>
-        <location filename="../pclTools.cpp" line="+19"/>
-        <location line="+137"/>
+        <location filename="../pclTools.cpp" line="+21"/>
+        <location line="+266"/>
         <location line="+284"/>
         <location line="+125"/>
         <location line="+185"/>
         <location line="+203"/>
         <location line="+189"/>
         <location line="+148"/>
-        <location line="+138"/>
+        <location line="+137"/>
         <location line="+136"/>
         <location line="+193"/>
         <location line="+248"/>
@@ -364,7 +353,7 @@
         <location filename="../pclModelFitGeneric.cpp" line="+39"/>
         <location line="+140"/>
         <location line="+328"/>
-        <location filename="../pclModelFit.cpp" line="+768"/>
+        <location filename="../pclModelFit.cpp" line="+769"/>
         <location line="+60"/>
         <source>Fit of model type %1 not supported</source>
         <translation type="unfinished"></translation>
@@ -422,7 +411,7 @@
         <location line="+42"/>
         <location line="+42"/>
         <location line="+69"/>
-        <location filename="../pclTools.cpp" line="-2035"/>
+        <location filename="../pclTools.cpp" line="-2034"/>
         <source>Input point cloud with normal values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -809,7 +798,7 @@
     <message>
         <location line="+39"/>
         <location filename="../pclModelFit.cpp" line="+36"/>
-        <location filename="../pclTools.cpp" line="+3016"/>
+        <location filename="../pclTools.cpp" line="+3011"/>
         <source>invalid point cloud type not defined or point cloud invalid</source>
         <translation type="unfinished"></translation>
     </message>
@@ -825,7 +814,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclTools.cpp" line="-2990"/>
+        <location filename="../pclTools.cpp" line="-2985"/>
         <source>Valid point cloud whose normals should be estimated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -871,7 +860,7 @@
         <location line="+221"/>
         <location line="+191"/>
         <location line="+152"/>
-        <location line="+133"/>
+        <location line="+132"/>
         <location line="+135"/>
         <location line="+198"/>
         <location line="+245"/>
@@ -880,7 +869,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1687"/>
+        <location line="-1686"/>
         <location line="+119"/>
         <location line="+165"/>
         <location line="+221"/>
@@ -992,12 +981,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+148"/>
-        <source>number of randomly picked points</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+133"/>
+        <location line="+280"/>
         <source>minimum (x,y,z) values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1123,7 +1107,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+123"/>
+        <location line="+119"/>
         <source>Valid target point cloud of type XYZ</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1279,19 +1263,60 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+156"/>
+        <location line="+159"/>
         <source>Uses copy an organized and dense pointcloud to an dataObject.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-537"/>
+        <location line="-540"/>
         <location line="+29"/>
         <location line="+194"/>
         <source>Valid, organized point cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-222"/>
+        <location line="-3139"/>
+        <source>Resulting, transformed point cloud (inplace possible)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+105"/>
+        <source>4x4 homogeneous transformation matrix (uint8, int8, uint16, int16, uint32, int32, float32, float64)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2"/>
+        <source>The affine transform is applied to the points in this polygonal mesh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Resulting, transformed polygon mesh (inplace possible)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>mesh must not be NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>input mesh is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>cloud type of &apos;meshIn&apos; is invalid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1270"/>
+        <source>number of randomly picked points.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1512"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Output dataObject with z-Values</source>
@@ -1350,7 +1375,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+191"/>
         <source>Projects points onto a given model.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1368,7 +1393,7 @@
 <context>
     <name>PclToolsInterface</name>
     <message>
-        <location line="-4314"/>
+        <location line="-4441"/>
         <source>Filters and methods for pointClouds and polygonMeshes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1407,20 +1432,18 @@ by this plugin.</source>
         <location line="+228"/>
         <location line="+482"/>
         <location line="+95"/>
-        <location line="+120"/>
-        <location line="+131"/>
+        <location line="+380"/>
         <location line="+296"/>
         <location line="+119"/>
         <location line="+386"/>
         <location line="+191"/>
         <location line="+152"/>
-        <location line="+133"/>
+        <location line="+132"/>
         <location line="+135"/>
         <location line="+198"/>
         <location line="+245"/>
         <location line="+129"/>
-        <location line="+129"/>
-        <location line="+82"/>
+        <location line="+207"/>
         <location line="+134"/>
         <location line="+51"/>
         <location line="+311"/>
@@ -1435,14 +1458,28 @@ by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3499"/>
+        <location line="-3623"/>
         <source>saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image
 
 This file format allows displaying volume data from the given 3D data object for instance using ParaView.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1131"/>
+        <location line="+419"/>
+        <source>Applies an affine coordinate transform to the input pointCloud 
+
+The transformed point cloud is saved in &apos;pointCloudOut&apos; (inplace possible). The transformation matrix has to be a 4x4 homogeneous transformation matrix given by a 4x4 real dataObject (uint8, int8, uint16, int16, uint32, int32 or float32 allowed). Every point P_in in the input cloud is transformed by P_out = transform * P_in. Independent on the type of the transformation matrix, the matrix multiplication is done with float32 precision.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+106"/>
+        <source>Applies an affine coordinate transform to all points of the input mesh. 
+
+The transformed points are saved in &apos;meshOut&apos; (inplace possible). The transformation matrix has to be a 4x4 homogeneous transformation matrix given by a 4x4 real dataObject (uint8, int8, uint16, int16, uint32, int32 or float32 allowed). Every point P_in in the input mesh is transformed by P_out = transform * P_in. Independent on the type of the transformation matrix, the matrix multiplication is done with float32 precision.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+735"/>
         <source>pclCropBox is a filter that allows the user to filter all the data inside of a given box.
 
 Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to 
@@ -1450,7 +1487,7 @@ adjust its position and orientation. The rotation vector are the euler angles rx
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2461"/>
+        <location line="+2456"/>
         <source>calculates a point cloud with normal information which contains the normal at each triangle of the given 
 polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.</source>
         <translation type="unfinished"></translation>
@@ -1675,13 +1712,13 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
         <location line="+44"/>
         <source>Calculates the distances of points of a point cloud to a given model. 
 
-Possible types are: 
---------------------
+**Possible types are:** 
+
 SACMODEL_SPHERE = 4, 
 SACMODEL_CYLINDER = 5, 
 
-Not supported yet: 
-------------------- 
+**Not supported yet:** 
+
 SACMODEL_PLANE = 0, 
 SACMODEL_LINE = 1, 
 SACMODEL_CIRCLE2D = 2, 

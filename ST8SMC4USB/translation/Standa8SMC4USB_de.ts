@@ -365,6 +365,10 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.</s
         <source>interrupt occurred</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ST8SMC4USBInterface</name>
