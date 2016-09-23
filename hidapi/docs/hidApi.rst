@@ -67,3 +67,4 @@ Changelog
 ==========
 
 * itom 2.1.0: initial version of HidApi, compiled with hidapi-0.7.0
+* itom 2.2.0: initial version of HidApi, compiled with hidapi-0.7.0

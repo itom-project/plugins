@@ -115,5 +115,4 @@ Changelog
 
 * itom setup 2.0.0: This plugin has been compiled using the uEye SDK 4.61
 * itom setup 2.1.0: This plugin has been compiled using the uEye SDK 4.61
-* itom setup > 2.1.0: This plugin has been compiled using the uEye SDK 4.80
-
+* itom setup 2.2.0: This plugin has been compiled using the uEye SDK 4.80

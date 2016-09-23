@@ -81,3 +81,4 @@ Changelog
 =========
 
 * itom setup 2.1.0: This plugin has been compiled using the libusb 1.0.20
+* itom setup 2.2.0: This plugin has been compiled using the libusb 1.0.20

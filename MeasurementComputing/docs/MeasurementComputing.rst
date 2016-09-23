@@ -354,3 +354,4 @@ Changelog
 
 * 2016-01-18: This plugin was added to the public repository and will be part of setups > itom 2.0.0
 * itom setup 2.1.0: This plugin has been compiled using CBW library version 1.83
+* itom setup 2.2.0: This plugin has been compiled using CBW library version 1.83

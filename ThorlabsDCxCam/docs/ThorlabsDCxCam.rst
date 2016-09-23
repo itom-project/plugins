@@ -95,4 +95,3 @@ Changelog
 ==========
 
 * itom setup 2.2.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.60
-

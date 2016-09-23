@@ -99,5 +99,5 @@ The required libraries from Kinesis will automatically be copied to the *lib* fo
 Changelog
 ==========
 
-* This plugin is part of itom with version > 2.1.0. In setup version 2.2.0 it will be compiled with Thorlabs Kinesis 1.7.0.
-
+* This plugin is part of itom with version > 2.1.0.
+* itom setup 2.2.0: This plugin has been compiled with Thorlabs Kinesis 1.7.0

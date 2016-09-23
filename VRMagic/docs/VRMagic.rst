@@ -88,3 +88,4 @@ Changelog
 ==========
 
 * itom setup 2.1.0: This plugin has been compiled using the VRmagic SDK 4.5.0
+* itom setup 2.2.0: This plugin has been compiled using the VRmagic SDK 4.5.0
