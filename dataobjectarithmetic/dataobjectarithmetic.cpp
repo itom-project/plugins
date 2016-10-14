@@ -479,7 +479,15 @@ RetVal DataObjectArithmetic::devValueParams(QVector<ito::Param> *paramsMand, QVe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::devValueDoc = QObject::tr("The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\nThe optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)\nor (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)\n\
+const QString DataObjectArithmetic::devValueDoc = QObject::tr("The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\n\
+\n\
+The optinal flag to toggles if (flag==0) the deviation is calculated by \n\
+\n\
+\n\    \sqrt(\sum{(x-xm)^2} / (n-1))\n\
+\n\
+or (if flag == 1)\n\
+\n\
+\n\    \sqrt(\sum{(x-xm)^2} / n)\n\
 \n\
 The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
 \n");
