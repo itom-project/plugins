@@ -2572,7 +2572,11 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
     switch(dObjImages->getType())
     {
         case ito::tInt8:
-            hbins = 256;
+            if(hbins<1)
+            {
+                hbins = 256;
+            }
+            
 
             if (autoInterval == 0)
             {
@@ -2588,7 +2592,10 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         case ito::tRGBA32:
             rows = 4;
         case ito::tUInt8:
-            hbins = 256;
+            if(hbins<1)
+            {
+                hbins = 256;
+            }
 
             if (autoInterval == 0)
             {

@@ -335,7 +335,7 @@ Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dien
     <message>
         <location line="+85"/>
         <source>full ROI</source>
-        <translation type="unfinished">Komplettes RIO</translation>
+        <translation type="unfinished">Komplette ROI</translation>
     </message>
     <message>
         <location line="-343"/>
