@@ -397,6 +397,14 @@ IF (WIN32)
     endif (PLUGIN_ThorlabsDCxCam)
 ENDIF (WIN32)
 
+# Thorlabs Power Meter
+IF (WIN32)
+    OPTION(PLUGIN_ThorlabsPowerMeter "Build with this plugin." ON)
+    if (PLUGIN_ThorlabsPowerMeter)
+        ADD_SUBDIRECTORY(ThorlabsPowerMeter)
+    endif (PLUGIN_ThorlabsPowerMeter)
+ENDIF (WIN32)
+
 # UhlRegister
 OPTION(PLUGIN_UhlRegister "Build with this plugin." ON)
 if (PLUGIN_UhlRegister)
