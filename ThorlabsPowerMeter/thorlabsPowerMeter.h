@@ -102,7 +102,8 @@ class ThorlabsPowerMeter : public ito::AddInDataIO
             bAutoRange = 0x0020,
             bMeasurementMode = 0x0040,
             bPowerReference = 0x0080,
-            bAll = bWavelength | bAttenuation | bDarkOffset | bLineFrequency | bPowerRange | bAutoRange | bMeasurementMode | bPowerReference 
+            bBandwidth = 0x0100,
+            bAll = bWavelength | bAttenuation | bDarkOffset | bLineFrequency | bPowerRange | bAutoRange | bMeasurementMode | bPowerReference | bBandwidth
         };
 
         ito::RetVal synchronizeParams(int what = bAll);
@@ -128,7 +129,11 @@ class ThorlabsPowerMeter : public ito::AddInDataIO
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        
+
+        ito::RetVal acquireAutograbbing(QSharedPointer<double> value, ItomSharedSemaphore *waitCond);
+        ito::RetVal zeroDevice(ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
+
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 

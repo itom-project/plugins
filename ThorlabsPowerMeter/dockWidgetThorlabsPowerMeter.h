@@ -53,7 +53,8 @@ class DockWidgetThorlabsPowerMeter : public ito::AbstractAddInDockWidget
         bool m_firstRun;
         ito::AddInDataIO *m_plugin;
         int m_timerId;
-        ito::DataObject m_currentVal;
+        bool m_timerIsRunning;
+        void calculateUnit(const ito::float64 &val, QPair<double, QString> &result);
         
     protected:
         void timerEvent(QTimerEvent *event);
@@ -63,7 +64,7 @@ class DockWidgetThorlabsPowerMeter : public ito::AbstractAddInDockWidget
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
-        void manageTimer(bool val);
+        void manageTimer(const bool &val);
 
     private slots:
         void on_dspinWavelength_valueChanged(double val);
@@ -72,7 +73,9 @@ class DockWidgetThorlabsPowerMeter : public ito::AbstractAddInDockWidget
         void on_spinLineFrequency_valueChanged(int val);
         void on_checkBoxAutoRange_stateChanged(int val);
         void on_checkAutograbbing_stateChanged(int val);
-
+        void on_sliderPowerRange_valueChanged(double val);
+        void on_comboBandwidth_currentIndexChanged(int val);
+        void on_btnZero_clicked();
 
         //add here slots connected to changes of any widget
         //example:

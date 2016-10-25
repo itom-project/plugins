@@ -36,11 +36,13 @@ class DialogThorlabsPowerMeter : public ito::AbstractAddInConfigDialog
     private:
         void enableDialog(bool enabled);
         bool m_firstRun;
+        ito::AddInBase *m_plugin;
 
         Ui::DialogMyGrabber ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
+        void on_btnZero_clicked();
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);

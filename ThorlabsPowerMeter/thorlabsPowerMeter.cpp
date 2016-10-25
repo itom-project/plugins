@@ -38,6 +38,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qplugin.h>
 #include <qmessagebox.h>
 #include <iostream>
+#include <QElapsedTimer> 
 
 #include "dockWidgetThorlabsPowerMeter.h"
 #include <PM100D.h>
@@ -153,6 +154,15 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
 
     paramVal = ito::Param("average_number", ito::ParamBase::Int | ito::ParamBase::In, 1, new ito::IntMeta(1, std::numeric_limits<ito::int32>::max()), tr("defines the number of measurements to be averaged").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("bandwidth", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr("defines if the input filter state is whether High (0) or Low (1)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //register exec functions
+    QVector<ito::Param> pMand;
+    QVector<ito::Param> pOpt;
+    QVector<ito::Param> pOut;
+    registerExecFunc("zero_device", pMand, pOpt, pOut, tr("method to the zero value the device").toLatin1().data());
 
 
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
@@ -519,9 +529,18 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         {
             ViReal64  valRef(val->getVal<ito::float64>());
             retValue += checkError(PM100D_setPowerRef(m_instrument, valRef));
-            if (retValue.containsError())
+            if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bPowerReference);
+            }
+        }
+        else if (key == "bandwidth")
+        {
+            ViInt16 bandwidth(val->getVal<ito::int32>());
+            retValue += checkError(PM100D_setInputFilterState(m_instrument, bandwidth));
+            if (!retValue.containsError())
+            {
+                retValue += synchronizeParams(bBandwidth);
             }
         }
         else
@@ -827,6 +846,44 @@ ito::RetVal ThorlabsPowerMeter::checkError(ViStatus err)
     return ito::retOk;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+//! method called to aqcuire and get a image
+/*!
+    This method is invoked from the dock widget to get a value in the autograbbing mode. 
+    \param [in,out] QSharedPointer to return the measured value.
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk if everything is ok, retError if the occurred any error .
+*/
+ito::RetVal ThorlabsPowerMeter::acquireAutograbbing(QSharedPointer<double> value, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval(ito::retOk);
+    ito::int32 num = m_params["average_number"].getVal<ito::int32>();
+    if (num == 1)
+    {
+        retval += checkError(PM100D_measPower(m_instrument, (ViPReal64) (value.data())));
+
+    }
+    else
+    {
+        ito::float64 sum(0);
+        ViReal64 val;
+        for (int i(0); i < num; ++i)
+        {
+            retval += checkError(PM100D_measPower(m_instrument, &val));
+            sum += val;
+            AddInBase::setAlive();
+        }
+        *value = sum / num;
+    }
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
+
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 //! method called to show the configuration dialog
 /*!
     This method is called from the main thread from itom and should show the configuration dialog of the plugin.
@@ -850,6 +907,52 @@ const ito::RetVal ThorlabsPowerMeter::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogThorlabsPowerMeter(this));
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ThorlabsPowerMeter::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> >paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval(ito::retOk);
+    if (funcName == "zero_device")
+    {
+        retval += zeroDevice();
+    }
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ThorlabsPowerMeter::zeroDevice(ItomSharedSemaphore *waitCond/*=NULL*/)
+{
+    ito::RetVal retval(ito::retOk);
+    retval += checkError(PM100D_startDarkAdjust(m_instrument));
+    ViInt16 state = PM100D_STAT_DARK_ADJUST_RUNNING;
+    QElapsedTimer timer;
+    timer.start();
+    while (state == PM100D_STAT_DARK_ADJUST_RUNNING && timer.elapsed() < 10000)
+    {
+        retval += checkError(PM100D_getDarkAdjustState(m_instrument, &state));
+    }
+    if (timer.elapsed() > 10000)
+    {
+        retval += ito::RetVal(ito::retError, 0,tr("Timeout while dark adjustment ").toLatin1().data());
+    }
+    if (!retval.containsError())
+    {
+        synchronizeParams(bDarkOffset);
+    }
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
 {
@@ -865,7 +968,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM100D_getWavelength(m_instrument, PM100D_ATTR_MAX_VAL, &max));
         if (!retval.containsError())
         {
-            m_params["wavelength"].setVal<double>(wavelength);
+            retval += m_params["wavelength"].setVal<double>(wavelength);
             m_params["wavelength"].setMeta(new ito::DoubleMeta(min, max, 0.0), true);
         }
     }
@@ -880,7 +983,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_MIN_VAL, &minAttenuation));
         if (!retval.containsError())
         {
-            m_params["attenuation"].setVal<double>(attenuation);
+            retval += m_params["attenuation"].setVal<double>(attenuation);
             m_params["attenuation"].setMeta(new ito::DoubleMeta(minAttenuation, maxAttenuation, 0.0), true);
         }
     }
@@ -891,7 +994,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
 
         if (!retval.containsError())
         {
-            m_params["dark_offset"].setVal<double>(dark);
+            retval += m_params["dark_offset"].setVal<double>(dark);
         }
     }
     if (what & bLineFrequency)
@@ -903,7 +1006,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM100D_getLineFrequency(m_instrument, &frequency));
         if (!retval.containsError())
         {
-            m_params["line_frequency"].setVal<int>(frequency);
+            retval += m_params["line_frequency"].setVal<int>(frequency);
         }
     }
     if (what & bPowerRange)
@@ -917,7 +1020,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM100D_getPowerRange(m_instrument, PM100D_ATTR_MIN_VAL, &minPowerRange));
         if (!retval.containsError())
         {
-            m_params["power_range"].setVal<double>(powerRange);
+            retval += m_params["power_range"].setVal<double>(powerRange);
 
             m_params["power_range"].setMeta(new ito::DoubleMeta(minPowerRange, maxPowerRange, 0.0), true);
         }
@@ -929,7 +1032,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM100D_getPowerAutorange(m_instrument, &autoRange));
         if (!retval.containsError())
         {
-            m_params["auto_range"].setVal<ito::int32>(autoRange);
+            retval += m_params["auto_range"].setVal<ito::int32>(autoRange);
             if (autoRange)
             {
                 m_params["power_range"].setFlags(ito::ParamBase::Readonly);
@@ -948,10 +1051,10 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         if (!retval.containsError())
         {
             if (mode == PM100D_POWER_REF_ON)
-                m_params["measurement_mode"].setVal<char*>("relative");
+                retval += m_params["measurement_mode"].setVal<char*>("relative");
             else if (mode == PM100D_POWER_REF_OFF)
 
-                m_params["measurement_mode"].setVal<char*>("absolute");
+                retval += m_params["measurement_mode"].setVal<char*>("absolute");
             else
                 retval += ito::RetVal(ito::retError, 0, tr("received invalid mode from device").toLatin1().data());
         }
@@ -966,11 +1069,20 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM100D_getPowerRef(m_instrument, PM100D_ATTR_MIN_VAL, &minRefPower));
         if (!retval.containsError())
         {
-            m_params["reference_power"].setVal<double>(refPower);
+            retval += m_params["reference_power"].setVal<double>(refPower);
             m_params["reference_power"].setMeta(new ito::DoubleMeta(minRefPower, maxRefPower, 0.0), true);
         }
     }
+    if (what & bBandwidth)
+    {
+        ViBoolean bandwidth;
+        retval += checkError(PM100D_getInputFilterState(m_instrument, &bandwidth));
+        if (!retval.containsError())
+        {
+               retval += m_params["bandwidth"].setVal<ito::int32>(bandwidth);
+        }
 
+    }
     
     return retval;
 }
