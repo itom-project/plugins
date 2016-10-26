@@ -57,21 +57,31 @@ ThorlabsPowerMeterInterface::ThorlabsPowerMeterInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This template can be used for implementing a new type of camera or grabber plugin \n\
+"This Plugin can be used to controll any Thorlabs PM100x Power Console with a connected photodiode power sensors. Other sensors like thermal or pyroelectric sensors \
+are currently not supported by this plugin.\n\
+If you start the plugin without further parameters (device=''), the first connected device is opened. \n\
+Set device = '<scan>' in order to get a printed list of detected devices. Use the device string or the desired \n\
+device in order to open this specific one. \n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
+The plugin was tested with a PM100A console and a standard photodiod power sensor \n\
+\n\
+This plugin gives full control over the connected device. For high attenuation there is known issue in setting the power range via the slider widget (this belongs to the great range of possible values) in the config dialog or the dock widget.\
+The power range is at any time fully accessable over the setParam command.\n\
+\n\
+For compiling this plugin, you need to install the Thorlabs PM100x Instrument Driver or the Optical Power Meter Utility (including the driver) , shipped with the spectrometer. \n\
+Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directory (e.g. C:/Program Files/IVI Foundation/VISA/Win64/Include)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "Robin Hahn";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_license = QObject::tr("LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)");
     m_aboutThis = QObject::tr(""); 
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
-    m_initParamsMand.append(ito::Param("device name", ito::ParamBase::String, "", tr("device name that should be opened, an empty string opens the first device that is found. Pass '<scan>' for displaying all devices").toLatin1().data()));
+    m_initParamsMand.append(ito::Param("device", ito::ParamBase::String, "", tr("device name that should be opened, an empty string opens the first device that is found. Pass '<scan>' for displaying all devices").toLatin1().data()));
 
 
 }
