@@ -1,21 +1,21 @@
-===================
- MyGrabber
-===================
+=======================
+ Thorlabs Power Meter
+=======================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MyGrabber`
-**Type**:       :plugintype:`MyGrabber`
-**License**:    :pluginlicense:`MyGrabber`
-**Platforms**:  Some words about supported operating systems
-**Devices**:    Some words about supported devices
-**Author**:     :pluginauthor:`MyGrabber`
+**Summary**:    :pluginsummary:`ThorlabsPowerMeter`
+**Type**:       :plugintype:`ThorlabsPowerMeter`
+**License**:    :pluginlicense:`ThorlabsPowerMeter`
+**Platforms**:  Windows
+**Devices**:    Thorlabs Power and Energy Meter Consoles PM100x
+**Author**:     :pluginauthor:`ThorlabsPowerMeter`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MyGrabber
+    :plugin: ThorlabsPowerMeter
 
 Initialization
 ==============
@@ -23,4 +23,14 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MyGrabber
+        :plugin: ThorlabsPowerMeter
+        
+Installation
+============
+
+For using this plugin, please install the PM100x_Instrument_Driver that is shipped with the Thorlabs power meter.
+        
+Changelog
+=========
+
+itom > 2.2.1: plugin uses the driver PM100x_Instrument_Driver in version 3.0.2
