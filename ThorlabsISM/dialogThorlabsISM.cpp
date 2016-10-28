@@ -40,6 +40,11 @@ DialogThorlabsISM::DialogThorlabsISM(ito::AddInActuator *actuator) :
 
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
+
+    QString m_sec2Char = QLatin1String("s_");
+    m_sec2Char.replace("_", QLatin1String("\u00B2")); //power of two symbol
+
+    QString m_degreeChar = QLatin1String("\u00B0"); //degree symbol
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -62,12 +67,19 @@ void DialogThorlabsISM::parametersChanged(QMap<QString, ito::Param> params)
         if (params["travelMode"].getVal<int>() == MOT_Linear)
         {
             ui.spinSpeed->setSuffix(" mm/s");
-            ui.spinAccel->setSuffix(" mm/s²");
+            QString suffix(" mm/s_");
+            suffix.replace("_", QLatin1String("\u00B2")); //power of two symbol
+            ui.spinAccel->setSuffix(suffix);
         }
         else
         {
-            ui.spinSpeed->setSuffix(QLatin1String(" °/s"));
-            ui.spinAccel->setSuffix(QLatin1String(" °/s²"));
+            QString suffix(" _/s");
+            suffix.replace("_", QLatin1String("\u00B0")); //degree symbol
+            ui.spinSpeed->setSuffix(suffix);
+
+            suffix.append("_");
+            suffix.replace("_", QLatin1String("\u00B2")); //power of two symbol
+            ui.spinAccel->setSuffix(suffix);
         }
 
         m_firstRun = false;
