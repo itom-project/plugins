@@ -107,6 +107,9 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 * UI337xCP-C (colored, USB3) \n\
 * UI318xCP-M (monochrome, USB3) \n\
 * UI318xCP-C (colored, USB3) \n\
+* UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL \n\
+\n\
+(Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU). \n\
 \n\
 The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. \n\
 \n\

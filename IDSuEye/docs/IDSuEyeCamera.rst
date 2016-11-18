@@ -27,6 +27,12 @@ The following parameters are mandatory or optional for initializing an instance 
         
 Usually, the next free camera is opened by *camera_id* = 0. If you want to select a specific camera, make sure to set unique camera IDs in the IDS camera manager tool.
 Then set *camera_id* to the desired camera ID (range 1..254).
+
+Support for Thorlabs cameras
+============================
+
+This plugin can also be used to operate Thorlabs cameras of the **DCC** or **DCU** series (e.g. https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=4024 or https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=2916).
+These cameras are OEM versions from IDS. This plugin has for instance been tested with the version DCC1545M-GL.
     
 Parameters
 ===========
