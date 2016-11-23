@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PCOCamera" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -110,7 +110,7 @@ Download the SDK and install it at any location. Additionally you need to instal
 For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.";
     m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr("The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000. \n\
-This plugin has been tested with the cameras PCO.1200s, PCO.1300 and PCO.2000. \n\
+This plugin has been tested with the cameras PCO.1200s, PCO.1300, PCO.2000 and PCO.edge USB3. \n\
 \n\
 For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. \n\
 The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). \n\
@@ -190,7 +190,9 @@ PCOCamera::PCOCamera() :
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PCOCamera", "GrabberName");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PCOCamera", "name of plugin");
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("camera_name", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", "name of camera");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("camera interface").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -674,7 +676,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
         if (!retVal.containsError())
         {
-            char name[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            char name[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             switch (strCamType.wCamType)
             {
                 case CAMERATYPE_PCO1200HS:
@@ -694,11 +696,41 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 case CAMERATYPE_PCO4000:
                   _snprintf(name, 9, "PCO.4000");
                   break;
+#ifdef CAMERATYPE_PCO_EDGE_42
+                case CAMERATYPE_PCO_EDGE: //                  0x1300 // pco.edge 5.5 (Sensor CIS2521) Interface: CameraLink , rolling shutter
+                    _snprintf(name, 13, "PCO.edge 5.5");
+                    break;
+                case CAMERATYPE_PCO_EDGE_42: //               0x1302 // pco.edge 4.2 (Sensor CIS2020) Interface: CameraLink , rolling shutter
+                    _snprintf(name, 13, "PCO.edge 4.2");
+                    break;
+                case CAMERATYPE_PCO_EDGE_GL: //               0x1310 // pco.edge 5.5 (Sensor CIS2521) Interface: CameraLink , global  shutter
+                    _snprintf(name, 13, "PCO.edge 5.5");
+                    break;
+                case CAMERATYPE_PCO_EDGE_USB3: //             0x1320 // pco.edge     (all sensors   ) Interface: USB 3.0    ,(all shutter modes)
+                    _snprintf(name, 14, "PCO.edge USB3");
+                    break;
+                case CAMERATYPE_PCO_EDGE_HS: //               0x1340 // pco.edge     (all sensors   ) Interface: high speed ,(all shutter modes) 
+                    _snprintf(name, 20, "PCO.edge high speed");
+                    break;
+                case CAMERATYPE_PCO_EDGE_MT: //               0x1304 // pco.edge MT2 (all sensors   ) Interface: CameraLink Base, rolling shutter
+                    _snprintf(name, 13, "PCO.edge MT2");
+                    break;
+#endif
                 default:
                   _snprintf(name, 9, "PCO.????");
             }
             m_params["name"].setVal<char*>(name, (int)strlen(name));
-            setIdentifier(QString("%1 (%2)").arg(name).arg(getID()));
+
+            QByteArray cameraName(50, ' ');
+            if (PCO_GetCameraName(m_hCamera, cameraName.data(), cameraName.size()) == 0)
+            {
+                m_params["camera_name"].setVal<char*>(cameraName.data());
+                setIdentifier(QString("%1 (%2)").arg(name).arg(QLatin1String(cameraName)));
+            }
+            else
+            {
+                setIdentifier(QString("%1 (%2)").arg(name).arg(getID()));
+            }
 
             switch (strCamType.wInterfaceType)
             {
@@ -815,7 +847,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
         if (m_caminfo.dwPixelRateDESC[2]==0)
         {
-            intMeta->setStepSize(intMeta->getMax() - intMeta->getMin());
+            intMeta->setStepSize(std::max(1, intMeta->getMax() - intMeta->getMin()));
         }
         else
         {
@@ -860,8 +892,8 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
             if (!retVal.containsError())
             {
-                int temps[] = {ccdtemp, camtemp, powtemp};
-                m_params["temperatures"].setVal<int*>(temps,3);                
+                double temps[] = { (double)ccdtemp / 10.0, (double)camtemp, (double)powtemp };
+                m_params["temperatures"].setVal<double*>(temps, 3);
             }
     }
 
@@ -962,11 +994,11 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     Cam Ram can be partitioned and set active. 
     by deafult, it is a single piece. An ID is returned
     *************************************************************/
-  
-    if (!retVal.containsError())
+    /*if (!retVal.containsError())
     {
+    //edge 5.5 returns a firmware error in this line. However, until now, nobody is using the ram segments.
         retVal += checkError(PCO_GetActiveRamSegment(m_hCamera, &m_wActSeg));
-    }
+    }*/
   
     /***********************************************************
     ArmCamera validates settings.  
