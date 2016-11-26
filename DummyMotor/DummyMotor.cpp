@@ -130,7 +130,10 @@ DummyMotorInterface::~DummyMotorInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal DummyMotor::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogDummyMotor(this));
+    if (QApplication::instance())
+        return apiShowConfigurationDialog(this, new DialogDummyMotor(this));
+    else
+        return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -173,15 +176,18 @@ DummyMotor::DummyMotor() :
     m_currentStatus = QVector<int>(10, ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable);
     m_targetPos = QVector<double>(10, 0.0);
 
-    // This is for the docking widged
-    //now create dock widget for this plugin
-   DockWidgetDummyMotor *dummyMotorWid = new DockWidgetDummyMotor(getID(), this);    // Create a new non-modal dialog
+    if (QApplication::instance())
+    {
+        // This is for the docking widged
+        //now create dock widget for this plugin
+        DockWidgetDummyMotor *dummyMotorWid = new DockWidgetDummyMotor(getID(), this);    // Create a new non-modal dialog
 
-   Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-   QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dummyMotorWid);    // Give the widget a name ..)
-   
-   // till here
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dummyMotorWid);    // Give the widget a name ..)
+
+        // till here
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -799,7 +805,7 @@ ito::RetVal DummyMotor::requestStatusAndPosition(bool sendCurrentPos, bool sendT
 //---------------------------------------------------------------------------------------------------------------------------------- 
 void DummyMotor::dockWidgetVisibilityChanged(bool visible)
 {
-    if (getDockWidget())
+    if (QApplication::instance() && getDockWidget())
     {
         if (visible)
         {

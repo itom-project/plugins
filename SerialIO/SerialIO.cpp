@@ -42,6 +42,7 @@
 #include <qbytearray.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <qapplication.h>
 
 #include "pluginVersion.h"
 
@@ -1205,7 +1206,10 @@ SerialIOInterface::~SerialIOInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialIO::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new dialogSerialIO(this, (void*)this, m_identifier, (int)(sizeof(SerialPort::baudRates)/sizeof(int))));
+    if (QApplication::instance())
+        return apiShowConfigurationDialog(this, new dialogSerialIO(this, (void*)this, m_identifier, (int)(sizeof(SerialPort::baudRates) / sizeof(int))));
+    else
+        return ito::retOk;
 /*    dialogSerialIO *confDialog = new dialogSerialIO((void*)this, m_identifier);
     QVariant qvar = m_params["port"].getVal<double>();
     confDialog->setVals(&m_params);
@@ -1280,10 +1284,13 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
     //now create dock widget for this plugin
-    DockWidgetSerialIO *dw = new DockWidgetSerialIO(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    if (QApplication::instance())
+    {
+        DockWidgetSerialIO *dw = new DockWidgetSerialIO(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1773,7 +1780,7 @@ ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<it
 //----------------------------------------------------------------------------------------------------------------------------------
 void SerialIO::dockWidgetVisibilityChanged(bool visible)
 {
-    if (getDockWidget())
+    if (QApplication::instance() && getDockWidget())
     {
         DockWidgetSerialIO *dw = qobject_cast<DockWidgetSerialIO*>(getDockWidget()->widget());
         if (visible)
