@@ -130,7 +130,7 @@ DummyMotorInterface::~DummyMotorInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal DummyMotor::showConfDialog(void)
 {
-    if (QApplication::instance())
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
         return apiShowConfigurationDialog(this, new DialogDummyMotor(this));
     else
         return ito::retOk;
@@ -147,7 +147,7 @@ DummyMotor::DummyMotor() :
 
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("AxisNumber", ito::ParamBase::Int, 0, new ito::IntMeta(0,10), tr("Axis number to plot").toLatin1().data());
-    QVector<ito::Param> pOpt = QVector<ito::Param>() << ito::Param("AddName", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("Add motor name").toLatin1().data());
+    QVector<ito::Param> pOpt = QVector<ito::Param>() << ito::Param("AddName", ito::ParamBase::String, "DummyMotor", tr("Add motor name").toLatin1().data());
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("dummyExecFunction", pMand, pOpt, pOut, tr("Print the current positions of the specified axis to the consol"));
     pMand.clear();
@@ -176,7 +176,7 @@ DummyMotor::DummyMotor() :
     m_currentStatus = QVector<int>(10, ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable);
     m_targetPos = QVector<double>(10, 0.0);
 
-    if (QApplication::instance())
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
     {
         // This is for the docking widged
         //now create dock widget for this plugin
@@ -805,7 +805,7 @@ ito::RetVal DummyMotor::requestStatusAndPosition(bool sendCurrentPos, bool sendT
 //---------------------------------------------------------------------------------------------------------------------------------- 
 void DummyMotor::dockWidgetVisibilityChanged(bool visible)
 {
-    if (QApplication::instance() && getDockWidget())
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()) && getDockWidget())
     {
         if (visible)
         {

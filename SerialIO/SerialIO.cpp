@@ -1206,7 +1206,7 @@ SerialIOInterface::~SerialIOInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialIO::showConfDialog(void)
 {
-    if (QApplication::instance())
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
         return apiShowConfigurationDialog(this, new dialogSerialIO(this, (void*)this, m_identifier, (int)(sizeof(SerialPort::baudRates) / sizeof(int))));
     else
         return ito::retOk;
@@ -1284,7 +1284,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
     //now create dock widget for this plugin
-    if (QApplication::instance())
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
     {
         DockWidgetSerialIO *dw = new DockWidgetSerialIO(this);
         Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
@@ -1780,7 +1780,7 @@ ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<it
 //----------------------------------------------------------------------------------------------------------------------------------
 void SerialIO::dockWidgetVisibilityChanged(bool visible)
 {
-    if (QApplication::instance() && getDockWidget())
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()) && getDockWidget())
     {
         DockWidgetSerialIO *dw = qobject_cast<DockWidgetSerialIO*>(getDockWidget()->widget());
         if (visible)
