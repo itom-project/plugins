@@ -236,7 +236,7 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gpo_mode", ito::ParamBase::IntArray, NULL, tr("Set the output pin modes for all available gpo pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gpi_mode", ito::ParamBase::IntArray, NULL, tr("Set the input pin modes for all available gpi pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin. %1: Off, %2: trigger, %3: external signal input (not implemented by Ximea api)").arg(XI_GPI_OFF).arg(XI_GPI_TRIGGER).arg(XI_GPI_EXT_EVENT).toLatin1().data());
+    paramVal = ito::Param("gpi_mode", ito::ParamBase::IntArray, NULL, tr("Set the input pin modes for all available gpi pins. This is a list whose lengths corresponds to the number of available pins. Use gpi_mode[i] to access the i-th pin. %1: Off, %2: trigger, %3: external signal input (not implemented by Ximea api)").arg(XI_GPI_OFF).arg(XI_GPI_TRIGGER).arg(XI_GPI_EXT_EVENT).toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gpi_level", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Current level of all available gpi pins. (0: low level, 1: high level)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);

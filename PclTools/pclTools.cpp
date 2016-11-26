@@ -184,11 +184,14 @@ PclTools::PclTools() : AddInAlgo()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //ItomDoc_STRVAR(savePointCloud_doc, "saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii)");
-    const QString PclTools::savePointCloudDOC = QObject::tr("\n\
+    const QString PclTools::savePointCloudDOC = QObject::tr("save an itom.pointCloud object to a file\n\
 \n\
+The supported file formats are: \n\
 \n\
-\n\
-\n");
+* pcd (point cloud data file format from the point cloud library, binary or ascii mode possible depending on optional parameter 'mode') \n\
+* ply (polygon file format or stanford triangle format, binary or ascii mode possible depending on optional parameter 'mode') \n\
+* vtk (VTK point cloud format) \n\
+* xyz (ascii text format where each line contains a whitespace separated list of the X, Y and Z coordinate of each point. The decimal sign is a dot, the real number precision is 6.)");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::savePointCloudParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -412,11 +415,17 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::loadPointCloudDOC = QObject::tr("\n\
+const QString PclTools::loadPointCloudDOC = QObject::tr("This filter loads point cloud data files to an itom.pointCloud object\n\
 \n\
+The following file formats are supported:\n\
 \n\
+* pcd (point cloud data file format provided from the point cloud library \n\
+* ply (polygon file format also known under stanford triangle format - be careful ply can also contain polygon mesh data which is loaded using 'loadPolygonMesh'). Both ascii and binary formats are supported. \n\
+* vtk (point cloud format from the vtk library\n\
+* xyz (a whitespace separated ascii text file where each line contains the x, y and z coordinate of a point, e.g.: 2.546 -4.345 0.001) \n\
 \n\
-\n");
+Usually the file format is automatically detected by the suffix of the filename. However it is also possible to indicate the \n\
+type by the optional string parameter 'type'.");
 
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::loadPointCloudParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -432,7 +441,7 @@ ito::RetVal PclTools::loadPointCloudParams(QVector<ito::Param> *paramsMand, QVec
     paramsMand->append(ito::Param("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("loaded pointcloud").toLatin1().data()));
     paramsMand->append(ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("complete filename (type is read by suffix)").toLatin1().data()));
 
-    paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('pcd','ply','vtk','auto' [default, check suffix of filename])").toLatin1().data()));
+    paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('xyz', 'pcd','ply','vtk','auto' [default, check suffix of filename])").toLatin1().data()));
     
     return retval;
 }
@@ -512,20 +521,21 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
         {
             QByteArray startContent;
             int i = 0;
-            while (!file.atEnd() && (++i) < 10)
+            while (!file.atEnd() && (++i) < 30)
             {
                 startContent += file.readLine();
             }
 
             file.close();
 
-            if (startContent.contains("comment PCL generated") && startContent.contains("element vertex"))
+            if (startContent.contains("ply") && startContent.contains("format") && \
+                startContent.contains("element vertex") && !(startContent.contains("element face")))
             {
                 ret = pcl::io::loadPLYFile(filename_, pc2);
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not contain point cloud data.").toLatin1().data(), filename_.data());
+                retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not contain valid point cloud data.").toLatin1().data(), filename_.data());
             }
         }        
 #else
@@ -894,11 +904,16 @@ This file format allows displaying volume data from the given 3D data object for
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::savePolygonMeshDOC = QObject::tr("\n\
+const QString PclTools::savePolygonMeshDOC = QObject::tr("save an itom.polygonMesh object to a file\n\
 \n\
+The following file formats are currently supported: \n\
 \n\
+* obj (wavefront obj file format) \n\
+* ply (polygon file format or stanford triangle format - binary file format only) \n\
+* vtk (VTK file format) \n\
+* stl (Stereolithography file format) \n\
 \n\
-\n");
+Usually the format is guessed from the suffix of the given file name. Else use the optional parameter 'type' to indicate the desired file format.");
 
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::savePolygonMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -989,11 +1004,14 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::loadPolygonMeshDOC = QObject::tr("\n\
+const QString PclTools::loadPolygonMeshDOC = QObject::tr("This filter loads polygon mesh data files to an itom.polygonMesh object\n\
 \n\
+The following file formats are supported:\n\
 \n\
-\n\
-\n");
+* ply (polygon file format also known under stanford triangle format - be careful ply can also contain point cloud data only which is loaded using 'loadPointCloud'). Both ascii and binary formats are supported. \n\
+* vtk (point cloud format from the vtk library\n\
+* obj (wavefront OBJ file format) \n\
+* stl (Stereolithography file format)");
 
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::loadPolygonMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1069,20 +1087,21 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
         {
             QByteArray startContent;
             int i = 0;
-            while (!file.atEnd() && (++i)<10)
+            while (!file.atEnd() && (++i) < 30)
             {
                 startContent += file.readLine();
             }
 
             file.close();
-
-            if (startContent.contains("vtkPolyData points and polygons"))
+            
+            if (startContent.contains("ply") && startContent.contains("format") && \
+                startContent.contains("element vertex") && startContent.contains("element face"))
             {
                 ret = pcl::io::loadPolygonFilePLY(filename_, *polyMesh);
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not contain polygon mesh data.").toLatin1().data(), filename_.data());
+                retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not contain valid polygon mesh data.").toLatin1().data(), filename_.data());
             }
         }        
     }

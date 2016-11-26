@@ -15,7 +15,7 @@ Overview
 ========
 
 The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000, with itom. It uses the SDK pco.sdk from PCO AG, Germany.
-The plugin has mainly been developed and tested using the cameras PCO.1200s, PCO.1300 and PCO.2000.
+The plugin has mainly been developed and tested using the cameras PCO.1200s, PCO.1300, PCO.2000 and PCO.edge USB3.
 
 The camera is always operated in a software trigger mode with a standard image size (no extended image size).
 
@@ -36,6 +36,8 @@ parameters can be changed using *setParam*.
 
 **name**: {str}, read-only
     name of the plugin (*PCOCamera*)
+**camera_name**: {str}, read-only
+    device name of camera
 **interface**: {str}, read-only
     name of the interface (eithernet, USB, cameralink...)
 **x0**, **x1**: {int}

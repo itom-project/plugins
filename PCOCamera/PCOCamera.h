@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PCOCamera" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -101,7 +101,7 @@ class PCOCamera : public ito::AddInGrabber
         HANDLE m_hCamera;
 
         HANDLE m_hEvent;
-        WORD m_wActSeg;
+        //WORD m_wActSeg;
 
         //WORD *m_wBuf;
         //short m_curBuf;

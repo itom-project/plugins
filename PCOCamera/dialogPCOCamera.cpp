@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PCOCamera" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -27,7 +27,7 @@
 #include <qvector.h>
 #include <qsharedpointer.h>
 
-
+#include "common/addInInterface.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogPCOCamera::DialogPCOCamera(ito::AddInBase *grabber, PCO_Description &cameraDescription) :
@@ -116,27 +116,15 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
 
-    ito::IntMeta *im;
-    im = static_cast<ito::IntMeta*>(params["x0"].getMeta());
-    ui.rangeX01->setSingleStep(im->getStepSize());
-    ui.rangeX01->setMinimum(0);
-    ui.rangeX01->setMinimumValue(0);
-    im = static_cast<ito::IntMeta*>(params["x1"].getMeta());
-    ui.rangeX01->setMaximum(im->getMax());
-    ui.rangeX01->setMaximumValue(im->getMax());
+    ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+    ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+    ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
 
-    im = static_cast<ito::IntMeta*>(params["y0"].getMeta());
-    ui.rangeY01->setSingleStep(im->getStepSize());
-    ui.rangeY01->setMinimum(0);
-    ui.rangeY01->setMinimumValue(0);
-    im = static_cast<ito::IntMeta*>(params["y1"].getMeta());
-    ui.rangeY01->setMaximum(im->getMax());
-    ui.rangeY01->setMaximumValue(im->getMax());
-    
-    ui.rangeX01->setValues(params["x0"].getVal<int>(), params["x1"].getVal<int>());
-    ui.rangeY01->setValues(params["y0"].getVal<int>(), params["y1"].getVal<int>());
-    ui.rangeX01->setEnabled(! (params["x0"].getFlags() & ito::ParamBase::Readonly));
-    ui.rangeY01->setEnabled(! (params["y0"].getFlags() & ito::ParamBase::Readonly));
+    int *roi = params["roi"].getVal<int*>();
+    ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
+    ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
+    ui.rangeX01->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly));
+    ui.rangeY01->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly));
 
     ui.spinSizeX->setValue(params["sizex"].getVal<int>());
     ui.spinSizeY->setValue(params["sizey"].getVal<int>());
@@ -202,11 +190,25 @@ ito::RetVal DialogPCOCamera::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     bool success = false;
 
-    int ivalFirst, ivalLast;
-    bool changeX0 = false;
-    bool changeX1 = false;
-    bool changeY0 = false;
-    bool changeY1 = false;
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
+    {
+        int x0, x1, y0, y1;
+        ui.rangeX01->values(x0, x1);
+        ui.rangeY01->values(y0, y1);
+        int roi[] = { 0, 0, 0, 0 };
+        memcpy(roi, m_currentParameters["roi"].getVal<int*>(), 4 * sizeof(int));
+
+        if (roi[0] != x0 || roi[1] != y0 || roi[2] != (x1 - x0 + 1) || roi[3] != (y1 - y0 + 1))
+        {
+            roi[0] = x0;
+            roi[1] = y0;
+            roi[2] = x1 - x0 + 1;
+            roi[3] = y1 - y0 + 1;
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
+        }
+    }
+#else
 
     if(ui.rangeX01->isEnabled())
     {
@@ -239,6 +241,7 @@ ito::RetVal DialogPCOCamera::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, y1)));
         }
     }
+#endif 
 
     if(ui.sliderGain->isEnabled())
     {

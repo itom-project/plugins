@@ -32,6 +32,10 @@
 
 #include "common/helperCommon.h"
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 
 /*static*/ int AndorSDK3::andorOpenedIndices[32] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,};
 
@@ -813,6 +817,9 @@ ito::RetVal AndorSDK3::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
     if (grabberStartedCount() == 0)
     {
+#ifdef WIN32
+		Sleep(10);
+#endif
         retValue += checkError(AT_Command(m_handle, L"AcquisitionStop"));
         retValue += checkError(AT_Flush(m_handle));
     }
