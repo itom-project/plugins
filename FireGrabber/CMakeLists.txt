@@ -53,8 +53,10 @@ IF(WIN32)
     ELSE (BUILD_TARGET64)
             SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab/Lib32)
     ENDIF (BUILD_TARGET64)
+    SET(DC1394_INCLUDE_PATH "")
 ELSE(WIN32)
-            # SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab/dc1394)
+    # SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab/dc1394)
+    SET(DC1394_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab)
 ENDIF(WIN32)
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
@@ -65,6 +67,7 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab/Lib
     ${ITOM_SDK_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    ${DC1394_INCLUDE_PATH}
 )
 
 LINK_DIRECTORIES(
@@ -95,13 +98,13 @@ if(MSVC)
 endif(MSVC)
 
 if (QT5_FOUND)
-	#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-	QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-	QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+    QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
 else (QT5_FOUND)
-	QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-	QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-	QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+    QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
 endif (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
