@@ -54,9 +54,19 @@ IF(WIN32)
             SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab/Lib32)
     ENDIF (BUILD_TARGET64)
     SET(DC1394_INCLUDE_PATH "")
+    SET(DC1394_LIBRARY "")
 ELSE(WIN32)
     # SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab/dc1394)
     SET(DC1394_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab)
+    
+    FIND_LIBRARY(DC1394_LIBRARY NAMES dc1394 libdc1394
+        PATHS
+        /usr/lib
+        /usr/lib64
+        /usr/local/lib
+        /usr/local/lib64
+        DOC "DC1394 library"
+    )
 ENDIF(WIN32)
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
@@ -117,7 +127,7 @@ IF(WIN32)
         qt5_use_modules(${target_name} ${QT_COMPONENTS})
     endif (QT5_FOUND)
 ELSE(WIN32)
-	TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dc1394)
+	TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${DC1394_LIBRARY})
     if (QT5_FOUND)
         qt5_use_modules(${target_name} ${QT_COMPONENTS})
     endif (QT5_FOUND)
