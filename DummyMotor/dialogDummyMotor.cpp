@@ -87,7 +87,7 @@ void DialogDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
     case 1:
         ui.checkBox_EnableX->setEnabled(1);
         ui.checkBox_EnableX->setChecked(1);
-    };
+    }
 
     ui.doubleSpinBox_Speed->setMaximum(params["speed"].getMax());
     ui.doubleSpinBox_Speed->setMinimum(params["speed"].getMin());

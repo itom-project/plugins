@@ -60,6 +60,7 @@ class DummyMotorInterface : public ito::AddInInterfaceBase
         DummyMotorInterface(QObject *parent = 0);
         ~DummyMotorInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< Creates a new DummyMotor and gives it a unique identification
+        bool hasDockWidget() { return true; }
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
@@ -100,6 +101,7 @@ class DummyMotor : public ito::AddInActuator
         
         // Cut here
         double m_distance;    //! Just to enable the WaitForAnswer to wait according to the Speed
+        double m_startPos[10];
         // till here
 
     public slots:
@@ -121,10 +123,7 @@ class DummyMotor : public ito::AddInActuator
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
-
-
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);    //!< Slot to trigger a Status and position request
-
         ito::RetVal startJoyStickMovement(QVector<int> axis, QVector<double> vel);
 
     private slots:

@@ -42,7 +42,6 @@
 #include <QtCore/QtPlugin>
 #include <qelapsedtimer.h>
 #include <qwaitcondition.h>
-
 #include "pluginVersion.h"
 
 #include "common/helperCommon.h"
@@ -105,10 +104,21 @@ expired.");
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("N.A.");       
     
-    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(1,6), tr("Number of axis for this motor").toLatin1().data());
+    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 1, new ito::IntMeta(1,6), tr("Number of axis for this motor").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("motorName", ito::ParamBase::String, "DummyMotor", tr("Name for this dummyMotor").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+
+    ito::int32 values[6] = { 0, 0, 0, 0, 0, 0 };
+    paramVal = ito::Param("useLimits", ito::ParamBase::IntArray, 6, values, new ito::IntArrayMeta(0, 6, 1, 6, 6), tr("Use axes limits and limit switches").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+
+    ito::float64 dvalues[6] = { -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208 };
+    paramVal = ito::Param("limitPos", ito::ParamBase::DoubleArray, 6, dvalues, new ito::DoubleArrayMeta(-1.0e208, 1.0e208, 0, 6, 6), tr("positive limits of axes").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param("limitNeg", ito::ParamBase::DoubleArray, 6, dvalues, new ito::DoubleArrayMeta(-1.0e208, 1.0e208, 0, 6, 6), tr("negative limits of axes").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     return;
@@ -152,6 +162,16 @@ DummyMotor::DummyMotor() :
     registerExecFunc("dummyExecFunction", pMand, pOpt, pOut, tr("Print the current positions of the specified axis to the consol"));
     pMand.clear();
     pOpt.clear();
+    pOut.clear();
+
+    //register exec functions
+    pMand = QVector<ito::Param>() << ito::Param("AxisNumber", ito::ParamBase::Int, 0, new ito::IntMeta(0, 10), tr("Axis number for jogging").toLatin1().data());
+    pMand << ito::Param("AxisVelocity", ito::ParamBase::Double, 1.0, new ito::DoubleMeta(-100, 100.0), tr("Maximal velocity in mm/s").toLatin1().data());
+    pMand << ito::Param("duration", ito::ParamBase::Double, 1.0, new ito::DoubleMeta(0.005, 50.0), tr("Duration for jogging in seconds").toLatin1().data());
+    registerExecFunc("jog", pMand, pOpt, pOut, tr("Jog for some seconds"));
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
 
     //end register exec functions
 
@@ -166,6 +186,16 @@ DummyMotor::DummyMotor() :
     paramVal = ito::Param("accel", ito::ParamBase::Double, 1.0, 10.0, 1.0, tr("Acceleration in mm/s^2, currently not implemented").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    ito::int32 values[6] = { 0, 0, 0, 0, 0, 0 };
+    paramVal = ito::Param("useLimits", ito::ParamBase::IntArray, 6, values, new ito::IntArrayMeta(0, 6, 1, 6, 6), tr("Use axes limits and limit switches").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    ito::float64 dvaluesp[6] = { 1.0e208, 1.0e208, 1.0e208, 1.0e208, 1.0e208, 1.0e208 };
+    ito::float64 dvaluesn[6] = { -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208 };
+    paramVal = ito::Param("limitPos", ito::ParamBase::DoubleArray, 6, dvaluesp, new ito::DoubleArrayMeta(-1.0e208, 1.0e208, 0, 6, 6), tr("positive limits of axes").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("limitNeg", ito::ParamBase::DoubleArray, 6, dvaluesn, new ito::DoubleArrayMeta(-1.0e208, 1.0e208, 0, 6, 6), tr("negative limits of axes").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     /*paramVal = ito::Param("array", ito::ParamBase::IntArray, NULL, tr("test").toLatin1().data());
@@ -349,6 +379,7 @@ ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<
     ito::RetVal retValue = ito::retOk;
     ito::ParamBase *param1 = NULL;
     ito::ParamBase *param2 = NULL;
+    ito::ParamBase *param3 = NULL;
 
     if (funcName == "dummyExecFunction")
     {
@@ -373,12 +404,31 @@ ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<
     }
     else if (funcName == "changeGrating")
     {    
-        
-
         if (!retValue.containsError())
         {
             
         }
+    }
+    else if (funcName == "jog")
+    {
+        param1 = ito::getParamByName(&(*paramsMand), "AxisNumber", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "AxisVelocity", &retValue);
+        param3 = ito::getParamByName(&(*paramsMand), "duration", &retValue);
+        m_params["speed"].setVal(param2->getVal<double>());
+        //ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+        if (waitCond)
+        {
+            waitCond->release();
+            waitCond->deleteSemaphore();
+        }
+        retValue += setPosRel(param1->getVal<int>(), param2->getVal<double>() * param3->getVal<double>(), NULL);
+        return retValue;
+        /*
+        waitCond->waitAndProcessEvents(param3->getVal<double>() * 1000.0);
+        retValue += waitCond->returnValue;
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+        */
     }
     else
     {
@@ -646,13 +696,14 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
                 else
                 {
                     // REMOVE THIS IF COPIED! THIS IS JUST NEEDED FOR THE WAIT-FUNCTION
+                    m_startPos[axis[naxis]] = m_currentPos[axis[naxis]];
                     if (abs(m_currentPos[axis[naxis]] - pos[naxis])  > m_distance)
                     {
                         m_distance = abs(m_currentPos[axis[naxis]] - pos[naxis]);
                     }
                     // REMOVE TILL HERE
 
-                    m_currentPos[axis[naxis]] = pos[naxis];
+                    //m_currentPos[axis[naxis]] = pos[naxis];
                     m_targetPos[axis[naxis]] = pos[naxis];
                     retValue = ito::retOk;
                 }
@@ -677,8 +728,8 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
                 retValue += temp;
             }
 
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate();
+            //replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+            //sendStatusUpdate();
 
             if (!m_async && waitCond)
             {
@@ -741,14 +792,14 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
                 }
                 else
                 {
-
                     // REMOVE THIS IF COPIED! THIS IS JUST NEEDED FOR THE WAIT-FUNCTION
+                    m_startPos[axis[naxis]] = m_currentPos[axis[naxis]];
                     if (abs(pos[naxis] * m_scale) > m_distance)
                         m_distance = abs(pos[naxis]);
                     // REMOVE TILL HERE
 
-                    m_currentPos[axis[naxis]] += pos[naxis]; //mm
-                    m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]];
+                    //m_currentPos[axis[naxis]] += pos[naxis]; //mm
+                    m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] + pos[naxis];
                     retValue = ito::retOk;
                 }
             }
@@ -772,8 +823,8 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
                 retValue += temp;
             }
 
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate();
+            //replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+            //sendStatusUpdate();
 
             if (!m_async && waitCond)
             {
@@ -840,6 +891,11 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
     QWaitCondition waitCondition;
     long delay = 10; //[ms]
 
+    int *useLimits = m_params["useLimits"].getVal<int*>();
+    double *limitLow = m_params["limitNeg"].getVal<double*>();
+    double *limitHigh = m_params["limitPos"].getVal<double*>();
+    double cur_speed = m_params["speed"].getVal<double>();
+
     while (!done && !timeout)
     {
         if (!done && isInterrupted())
@@ -860,15 +916,64 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
 
         if (timeoutMS > -1)
         {
-            if (timer.elapsed() > timeoutMS) timeout = true;
+            double currentTime = timer.elapsed();
+            if (currentTime > timeoutMS)
+            {
+                for (int naxis = 0; naxis < axis.size(); naxis++)
+                {
+                    m_currentPos[axis[naxis]] = m_targetPos[axis[naxis]];
+                    if (useLimits[axis[naxis]] > 0)
+                    {
+                        if (m_currentPos[axis[naxis]] > limitHigh[axis[naxis]])
+                        {
+                            m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitHigh[axis[naxis]];
+                            setStatus(axis, ito::actuatorMoving, ito::actuatorRightEndSwitch | ito::actStatusMask);
+                        }
+                        else if (m_currentPos[axis[naxis]] < limitLow[axis[naxis]])
+                        {
+                            m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitLow[axis[naxis]];
+                            setStatus(axis, ito::actuatorMoving, ito::actuatorLeftEndSwitch | ito::actStatusMask);
+                        }
+                    }
+                }
+                timeout = true;
+            }
+            else
+            {
+                for (int naxis = 0; naxis < axis.size(); naxis++)
+                {
+                    double distance = m_targetPos[axis[naxis]] - m_startPos[axis[naxis]];
+                    m_currentPos[axis[naxis]] = m_targetPos[axis[naxis]] - (1.0 - currentTime / timeoutMS) * distance;
+                    if (useLimits[axis[naxis]] > 0)
+                    {
+                        if (m_currentPos[axis[naxis]] > limitHigh[axis[naxis]])
+                        {
+                            m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitHigh[axis[naxis]];
+                            timeout = true;
+                            setStatus(axis, ito::actuatorMoving, ito::actuatorRightEndSwitch | ito::actStatusMask);
+                        }
+                        else if (m_currentPos[axis[naxis]] < limitLow[axis[naxis]])
+                        {
+                            m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitLow[axis[naxis]];
+                            timeout = true;
+                            setStatus(axis, ito::actuatorMoving, ito::actuatorLeftEndSwitch | ito::actStatusMask);
+                        }
+                    }
+                }
+            }
         }
+
+        QCoreApplication::processEvents();
     }
 
     if (timeout)
     {
-        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorAtTarget); //this is special for dummymotor, since timeout is a normal behaviour. Usually you should set the following status: ito::actuatorTimeout);
+        //replaceStatus(_axis, ito::actuatorMoving, ito::actuatorAtTarget); //this is special for dummymotor, since timeout is a normal behaviour. Usually you should set the following status: ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
+
+    replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+    sendStatusUpdate();
 
     return retVal;
 }
