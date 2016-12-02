@@ -815,7 +815,7 @@ const ito::RetVal UhlText::UhlCheckAxisNumber(QVector<int> axis)
 UhlText::UhlText() : AddInActuator(), m_spitchx(0), m_resolution(0), m_pSer(NULL), m_numAxis(0),
     m_turnspeed(40), m_accel(50), m_async(0), m_posrequestlisteners(0)
 {
-    m_scale = 1e3; // Uhl in µm the ugly itom in mm
+    m_scale = 1e3; // Uhl in \B5m the ugly itom in mm
     m_nameAxis[0] = 'x';
     m_nameAxis[1] = 'y';
     m_nameAxis[2] = 'z';
@@ -2470,10 +2470,10 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
         char buf[50];
         memset(buf, 0, 50);
 
-        bool xFast = abs(vel[0]) > abs(vel[1]);
+        bool xFast = qAbs(vel[0]) > qAbs(vel[1]);
         m_jogDir[0] = vel[0] < 0.0 ? false : true;
         m_jogDir[1] = vel[1] < 0.0 ? false : true;
-        if (abs(vel[1]) < 0.001 && abs(vel[0]) < 0.001)
+        if (qAbs(vel[1]) < 0.001 && qAbs(vel[0]) < 0.001)
         { 
             buf[0] = 'a';
             m_pSer->setVal(buf, 1);
@@ -2558,7 +2558,7 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
         }
         */
 
-        if (abs(vel[1]) < 0.001)    // just x
+        if (qAbs(vel[1]) < 0.001)    // just x
         {        
             m_jogging[0] = vel[0] * timing + 0.5;
             m_jogging[1] = 0;
@@ -2570,7 +2570,7 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
             }
             speed = vel[0];
         }
-        else if (abs(vel[0]) < 0.001) // just y
+        else if (qAbs(vel[0]) < 0.001) // just y
         {
             m_jogging[0] = 0;
             m_jogging[1] = vel[1] * timing + 0.5;
