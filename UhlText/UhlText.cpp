@@ -864,6 +864,10 @@ UhlText::UhlText() : AddInActuator(), m_spitchx(0), m_resolution(0), m_pSer(NULL
     paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, 0, tr("Toggle asynchrone mode of this device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 20.0, tr("timeout for axes movements in seconds").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+
+
 //now create dock widget for this plugin
     DockWidgetUhl *UhlWid = new DockWidgetUhl(getID() , this);
 /*
@@ -2212,6 +2216,8 @@ const ito::RetVal UhlText::UhlSetPos(QVector<int> axis, QVector<double> pos, con
     ito::RetVal retval = ito::retOk;
     bool released = false;
 
+	int timeoutMS = m_params["timeout"].getVal<ito::float64>() * 1000;
+
     if (isMotorMoving())
     {
         retval += ito::RetVal(ito::retError,0,"Any motor axis is already moving");
@@ -2340,7 +2346,7 @@ const ito::RetVal UhlText::UhlSetPos(QVector<int> axis, QVector<double> pos, con
             released = true;
         }
 
-        retval += waitForDone(10000, axis);
+		retval += waitForDone(timeoutMS, axis);
 
         if (!m_async && waitCond && !released)
         {
@@ -2363,7 +2369,7 @@ const ito::RetVal UhlText::UhlSetPos(QVector<int> axis, QVector<double> pos, con
 /*
         if (!m_async && retval == ito::retOk)
         {
-            retval += waitForDone(10000, axis);
+            retval += waitForDone(timeoutMS, axis);
         }
 
         if (retval != ito::retError)

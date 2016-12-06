@@ -641,6 +641,9 @@ UhlRegister::UhlRegister() : AddInActuator(), m_spitchx(0), m_resolution(0), m_p
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 20.0, tr("timeout for axes movements in seconds").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+
 //now create dock widget for this plugin
     DockWidgetUhl *UhlWid = new DockWidgetUhl(getID(), this);
 /*    
@@ -1329,7 +1332,7 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
                     if (retval != ito::retError)
                     {
                         retval += UhlWriteReg(START);
-                        retval += waitForDone(10000, axis);
+                        retval += waitForDone(60000, axis);
                         if (retval.containsError())
                         {
                             if ((retval.errorCode() == STATUS_UPPER_REF_SWITCH) || (retval.errorCode() == STATUS_LOWER_REF_SWITCH))
@@ -1362,7 +1365,7 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
                     if (retval != ito::retError)
                     {
                         retval += UhlWriteReg(START);
-                        retval += waitForDone(10000, axis);
+                        retval += waitForDone(60000, axis);
                         if (retval.containsError())
                         {
                             if ((retval.errorCode() == STATUS_UPPER_REF_SWITCH) || (retval.errorCode() == STATUS_LOWER_REF_SWITCH))
@@ -1572,6 +1575,7 @@ const ito::RetVal UhlRegister::UhlSetPos(QVector<int> axis, QVector<double> pos,
     ito::RetVal retval = ito::retOk;
     long mask_move = 0;
     bool released = false;
+	int timeoutMS = m_params["timeout"].getVal<ito::float64>() * 1000;
 
     if (isMotorMoving())
     {
@@ -1626,7 +1630,7 @@ const ito::RetVal UhlRegister::UhlSetPos(QVector<int> axis, QVector<double> pos,
             waitCond->release();
             released = true;
         }
-        retval += waitForDone(10000, axis);
+		retval += waitForDone(timeoutMS, axis);
 
         if (!m_async && waitCond && !released)
         {
