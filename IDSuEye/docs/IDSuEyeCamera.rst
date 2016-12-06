@@ -28,6 +28,10 @@ The following parameters are mandatory or optional for initializing an instance 
 Usually, the next free camera is opened by *camera_id* = 0. If you want to select a specific camera, make sure to set unique camera IDs in the IDS camera manager tool.
 Then set *camera_id* to the desired camera ID (range 1..254).
 
+In the changelog below, you can see which uEye driver has been used to compile this plugin for several setup versions of itom. In order to
+guarantee a full working plugin, you should have the same driver installed on your computer. Else, a warning will be displayed at startup telling
+that some faults may occur. Usually, the compatibility is given, if the major version number and the ten-digit of the minor is equal, e.g. 4.80 and 4.81 are compatible.
+
 Support for Thorlabs cameras
 ============================
 
@@ -121,4 +125,5 @@ Changelog
 
 * itom setup 2.0.0: This plugin has been compiled using the uEye SDK 4.61
 * itom setup 2.1.0: This plugin has been compiled using the uEye SDK 4.61
-* itom setup 2.2.0: This plugin has been compiled using the uEye SDK 4.80
+* itom setup 2.2.0, 2.2.1: This plugin has been compiled using the uEye SDK 4.80 (In order to use newer USB3 cameras with the USB2 port, install the 4.81 driver)
+* itom setup > 2.2.1: This plugin has been compiled using the uEye SDK 4.81

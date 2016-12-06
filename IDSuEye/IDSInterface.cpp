@@ -177,7 +177,7 @@ ito::RetVal IDSInterface::checkVersionConsistency()
     //given if the major and the 'ten' digit of the minor is the same. The build can be ignored.
     if ((get<24,8>(dllVersion) != get<24,8>(libVersion)) || (static_cast<int>(get<16,8>(dllVersion) / 10) != static_cast<int>(get<16,8>(libVersion) / 10)))
     {
-        return ito::RetVal::format(ito::retError, 0, "IDS library version mismatch. Expected version %i.%i.xx, got %i.%i.xx", \
+        return ito::RetVal::format(ito::retWarning, 0, "The IDS driver used at this computer is version %i.%i.xx. However, the IDSuEye plugin has been compiled with version %i.%i.xx. This mismatch can lead to errors during the operation.", \
             get<24,8>(libVersion), get<16,8>(libVersion), \
             get<24,8>(dllVersion), get<16,8>(dllVersion));
     }

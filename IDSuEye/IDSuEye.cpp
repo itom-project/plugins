@@ -1884,8 +1884,10 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI112X_C: it->setVal<char*>("UI112X_C, 0768x576, HDR sensor, color"); break;
             case IS_SENSOR_UI1008_M: it->setVal<char*>("UI1008_M"); break;
             case IS_SENSOR_UI1008_C: it->setVal<char*>("UI1008_C"); break;
+#if defined IS_SENSOR_UIF005_M //SDK < 4.81
             case IS_SENSOR_UIF005_M: it->setVal<char*>("UIF005_M"); break;
             case IS_SENSOR_UIF005_C: it->setVal<char*>("UIF005_C"); break;
+#endif
             case IS_SENSOR_UI1005_M: it->setVal<char*>("UI1005_M"); break;
             case IS_SENSOR_UI1005_C: it->setVal<char*>("UI1005_C"); break;
             case IS_SENSOR_UI1240_M: it->setVal<char*>("UI1240_M, SXGA global shutter, monochrome"); break;
@@ -1942,6 +1944,39 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI1060_M: it->setVal<char*>("UI1060_M, 2.3MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1060_C: it->setVal<char*>("UI1060_C, 2.3MP global shutter, color"); break;
             case IS_SENSOR_UI1013XC: it->setVal<char*>("UI1013XC, 13MP, color"); break;
+#endif
+
+#if defined IS_SENSOR_UI1140M  //>= SDK 4.80         
+			case IS_SENSOR_UI1140M: it->setVal<char*>("UI1140M, 1.3MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1140C: it->setVal<char*>("UI1140C, 1.3MP global shutter, color"); break;
+			case IS_SENSOR_UI1140NIR: it->setVal<char*>("UI1140NIR, 1.3MP global shutter, NIR"); break;
+			case IS_SENSOR_UI1590M: it->setVal<char*>("UI1590M, 18MP rolling shutter, monochrome"); break;
+			case IS_SENSOR_UI1590C: it->setVal<char*>("UI1590C, 18MP rolling shutter, color"); break;
+			case IS_SENSOR_UI1260_M: it->setVal<char*>("UI1260_M, 2.3MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1260_C: it->setVal<char*>("UI1260_C, 2.3MP global shutter, color"); break;
+			case IS_SENSOR_UI1130_M: it->setVal<char*>("UI1130_M, SVGA global shutter, monochrome"); break;
+			case IS_SENSOR_UI1130_C: it->setVal<char*>("UI1130_C, SVGA global shutter, color"); break;
+			case IS_SENSOR_UI1160_M: it->setVal<char*>("UI1160_M, 2.3MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1160_C: it->setVal<char*>("UI1160_C, 2.3MP global shutter, color"); break;
+			case IS_SENSOR_UI1180_M: it->setVal<char*>("UI1180_M, 5.3MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1180_C: it->setVal<char*>("UI1180_C, 5.3MP global shutter, color"); break;
+			case IS_SENSOR_UI1080_M: it->setVal<char*>("UI1080_M, 5MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1080_C: it->setVal<char*>("UI1080_C, 5MP global shutter, color"); break;
+#endif
+
+#if defined IS_SENSOR_UI1280_M //>= SDK 4.81
+			case IS_SENSOR_UI1280_M: it->setVal<char*>("UI1280_M, 5MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1280_C: it->setVal<char*>("UI1280_C, 5MP global shutter, color"); break;
+			case IS_SENSOR_UI1860_M: it->setVal<char*>("UI1860_M, 2MP rolling shutter, monochrome"); break;
+			case IS_SENSOR_UI1860_C: it->setVal<char*>("UI1860_C, 2MP rolling shutter, color"); break;
+			case IS_SENSOR_UI1880_M: it->setVal<char*>("UI1880_M, 6MP rolling shutter, monochrome"); break;
+			case IS_SENSOR_UI1880_C: it->setVal<char*>("UI1880_C, 6MP rolling shutter, color"); break;
+			case IS_SENSOR_UI1270_M: it->setVal<char*>("UI1270_M, 3.2MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1270_C: it->setVal<char*>("UI1270_C, 3.2MP global shutter, color"); break;
+			case IS_SENSOR_UI1070_M: it->setVal<char*>("UI1070_M, 3.2MP global shutter, monochrome"); break;
+			case IS_SENSOR_UI1070_C: it->setVal<char*>("UI1070_C, 3.2MP global shutter, color"); break;
+			case IS_SENSOR_UI1130LE_M: it->setVal<char*>("UI1130LE_M, SVGA global shutter, monochrome"); break;
+			case IS_SENSOR_UI1130LE_C: it->setVal<char*>("UI1130LE_C, SVGA global shutter, color"); break;
 #endif
 
             case IS_SENSOR_UI223X_M: it->setVal<char*>("UI223X_M, Sony CCD sensor - XGA monochrome"); break;

@@ -1,8 +1,8 @@
 /*****************************************************************************/
 /*! \file    ueye.h
 *   \author  (c) 2004-2016 by Imaging Development Systems GmbH
-*   \date    Date: 2016/03/09
-*   \version PRODUCTVERSION: 4.80
+*   \date    Date: 2016/09/20
+*   \version PRODUCTVERSION: 4.81
 *
 *   \brief   Library interface for IDS uEye - camera family.
 *            definition of exported API functions and constants
@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 80, 0)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 81, 0)
 #endif
 
 
@@ -111,9 +111,6 @@ extern "C" {
 
 #define IS_SENSOR_UI1008_M          0x004C
 #define IS_SENSOR_UI1008_C          0x004D
-
-#define IS_SENSOR_UIF005_M          0x0076
-#define IS_SENSOR_UIF005_C          0x0077
 
 #define IS_SENSOR_UI1005_M          0x020A
 #define IS_SENSOR_UI1005_C          0x020B
@@ -210,6 +207,24 @@ extern "C" {
 
 #define IS_SENSOR_UI1080_M          0x0230      // 5MP global shutter, monochrome
 #define IS_SENSOR_UI1080_C          0x0231      // 5MP global shutter, color
+
+#define IS_SENSOR_UI1280_M          0x0232      // 5MP global shutter, monochrome
+#define IS_SENSOR_UI1280_C          0x0233      // 5MP global shutter, color
+
+#define IS_SENSOR_UI1860_M          0x0234      // 2MP rolling shutter, monochrome
+#define IS_SENSOR_UI1860_C          0x0235      // 2MP rolling shutter, color
+
+#define IS_SENSOR_UI1880_M          0x0236      // 6MP rolling shutter, monochrome
+#define IS_SENSOR_UI1880_C          0x0237      // 6MP rolling shutter, color
+
+#define IS_SENSOR_UI1270_M          0x0238      // 3.2MP global shutter, monochrome
+#define IS_SENSOR_UI1270_C          0x0239      // 3.2MP global shutter, color
+
+#define IS_SENSOR_UI1070_M          0x023A      // 3.2MP global shutter, monochrome
+#define IS_SENSOR_UI1070_C          0x023B      // 3.2MP global shutter, color
+
+#define IS_SENSOR_UI1130LE_M        0x023C      // SVGA global shutter, monochrome
+#define IS_SENSOR_UI1130LE_C        0x023D      // SVGA global shutter, color
 
 // CCD Sensors
 #define IS_SENSOR_UI223X_M          0x0080      // Sony CCD sensor - XGA monochrome
@@ -2079,9 +2094,6 @@ typedef struct _DC_INFO
   IDSEXP   is_GetError               (HIDS hCam, INT* pErr, IS_CHAR** ppcErr);
   IDSEXP   is_SetErrorReport         (HIDS hCam, INT Mode);
 
-  IDSEXP   is_ReadEEPROM             (HIDS hCam, INT Adr, char* pcString, INT Count);
-  IDSEXP   is_WriteEEPROM            (HIDS hCam, INT Adr, char* pcString, INT Count);
-
   IDSEXP   is_SetColorMode           (HIDS hCam, INT Mode);
   IDSEXP   is_GetColorDepth          (HIDS hCam, INT* pnCol, INT* pnColMode);
 
@@ -2304,6 +2316,7 @@ typedef struct _DC_INFO
       DWORD                 dwImageHeight;
       DWORD                 dwImageWidth;
       DWORD                 dwHostProcessTime; /* Time spend processing this image in micro seconds */
+      BYTE                  bySequencerIndex;
   } UEYEIMAGEINFO;
 
 
@@ -2783,7 +2796,8 @@ typedef struct
     INT     s32SubsamplingMode;
     INT     s32DetachImageParameters;
     double  dblScalerFactor;
-    BYTE    byReserved[64];
+    INT     s32InUse;
+    BYTE    byReserved[60];
 } AOI_SEQUENCE_PARAMS;
 
 
@@ -3183,9 +3197,8 @@ typedef enum E_DEVICE_FEATURE_CMD
     IS_DEVICE_FEATURE_CMD_EXTENDED_AWB_LIMITS_GET                               = 100,
     IS_DEVICE_FEATURE_CMD_EXTENDED_AWB_LIMITS_SET                               = 101,
     IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_ENABLE_SUPPORTED                      = 102,
-    IS_DEVICE_FEATURE_CMD_SET_SPI_TARGET                                        = 103
-
-
+    IS_DEVICE_FEATURE_CMD_SET_SPI_TARGET                                        = 103,
+    IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_IS_CALIBRATED                      = 104
 } DEVICE_FEATURE_CMD;
 
 
@@ -4388,7 +4401,10 @@ typedef enum E_CONFIGURATION_SEL
     IS_CONFIG_ETH_CONFIGURATION_MODE_ON            = 1,
 
     IS_CONFIG_TRUSTED_PAIRING_OFF                  = 0,
-    IS_CONFIG_TRUSTED_PAIRING_ON                   = 1
+    IS_CONFIG_TRUSTED_PAIRING_ON                   = 1,
+
+    IS_CONFIG_IMAGE_MEMORY_COMPATIBILITY_MODE_OFF  = 0,
+    IS_CONFIG_IMAGE_MEMORY_COMPATIBILITY_MODE_ON   = 1
 
 } CONFIGURATION_SEL;
 
@@ -4419,7 +4435,11 @@ typedef enum E_CONFIGURATION_CMD
     IS_CONFIG_CMD_TRUSTED_PAIRING_SET                      = 15,
     IS_CONFIG_CMD_TRUSTED_PAIRING_GET                      = 16,
     IS_CONFIG_CMD_TRUSTED_PAIRING_GET_DEFAULT              = 17,
-    IS_CONFIG_CMD_RESERVED_1                               = 18
+    IS_CONFIG_CMD_RESERVED_1                               = 18,
+
+    IS_CONFIG_CMD_SET_IMAGE_MEMORY_COMPATIBILIY_MODE         = 19,
+    IS_CONFIG_CMD_GET_IMAGE_MEMORY_COMPATIBILIY_MODE         = 20,
+    IS_CONFIG_CMD_GET_IMAGE_MEMORY_COMPATIBILIY_MODE_DEFAULT = 21
 
 } CONFIGURATION_CMD;
 
@@ -4483,8 +4503,15 @@ typedef struct S_IO_GPIO_CONFIGURATION
 /*!
  * \brief Defines used by is_IO(), \ref is_IO.
  */
-#define IO_LED_STATE_1                      0
-#define IO_LED_STATE_2                      1
+#define IO_LED_STATE_1                      0 // Bit 0
+#define IO_LED_STATE_2                      1 // 
+#define IO_LED_ENABLE                       2 // after cam start up default: blink off, blink x times off
+#define IO_LED_DISABLE                      3 // blink off, blink x times off
+#define IO_LED_BLINK_ENABLE                 4 // no retrun value
+#define IO_LED_BLINK_DISABLE                5 // no retrun value
+#define IO_LED_BLINK_5_TIMES                6 // no retrun value
+
+
 
 #define IO_FLASH_MODE_OFF                   0
 #define IO_FLASH_MODE_TRIGGER_LO_ACTIVE     1
@@ -4520,6 +4547,7 @@ typedef struct S_IO_GPIO_CONFIGURATION
 #define IS_GPIO_MULTI_INTEGRATION_MODE      0x0040
 #define IS_GPIO_TRIGGER                     0x0080
 #define IS_GPIO_I2C                         0x0100
+#define IS_GPIO_TWI                         IS_GPIO_I2C
 
 #define IS_FLASH_AUTO_FREERUN_OFF           0
 #define IS_FLASH_AUTO_FREERUN_ON            1
@@ -5253,6 +5281,271 @@ typedef struct
  * \return Status of the execution.
  */
 IDSEXP is_Multicast( HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParams );
+
+
+/*!
+ * \brief Sequencer command list
+ */
+typedef enum E_SEQUENCER_CMD
+{
+    /*! Enable or disable the sequencer
+     *  Param: in Int32
+     */
+    IS_SEQUENCER_MODE_ENABLED_SET           = 1,
+    /*! Receive the state of the sequencer
+     *  Param: out Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_MODE_ENABLED_GET           = 2,
+
+    /*! Enable or disable the sequencer configuration
+     *  Param: in Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_CONFIGURATION_ENABLED_SET  = 3,
+    /*! Receive the state of the sequencer configuration
+     *  Param: out Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_CONFIGURATION_ENABLED_GET  = 4,
+
+    /*! Receive if the sequencer is supported by the device
+     *  Param: out Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_MODE_SUPPORTED_GET         = 5,
+
+    /*! Reset the sequencer
+     *  Param: NULL
+     *  Size: 0
+     */
+    IS_SEQUENCER_RESET                      = 6,
+
+    /*! Load the given sequencer configuration file
+     *  Param: in wchar_t*
+     *  Size: 0
+     */
+    IS_SEQUENCER_CONFIGURATION_LOAD         = 7,
+
+    /*! Save the current configuration to the given sequencer configuration file
+     *  Param: in wchar_t*
+     *  Size: 0
+     */
+    IS_SEQUENCER_CONFIGURATION_SAVE         = 8,
+
+    /*! Saves the current device state for the currently selected set
+     *  Param: NULL
+     *  Size: 0
+     */
+    IS_SEQUENCER_SET_SAVE                   = 10,
+
+    /*! Sets the initial/start sequencer set, which is the first set used within a sequencer
+     *  Param: in Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_SET_START_SET              = 11,
+
+    /*! Receives the initial/start sequencer set, which is the first set used within a sequencer
+     *  Param: out Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_SET_START_GET              = 12,
+
+    /*! Selects the sequencer set to which further feature settings applies.
+     *  Param: in Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_SET_SELECTED_SET           = 13,
+
+    /*! Receives the currently selected set to which further feature settings applies.
+     *  Param: out Int32
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_SET_SELECTED_GET           = 14,
+
+    /*! Sets the sequencer path configuration
+     *  Param: in IS_SEQUENCER_PATH
+     *  Size: sizeof(IS_SEQUENCER_PATH)
+     */
+    IS_SEQUENCER_SET_PATH_SET               = 15,
+
+    /*! Receives the sequencer path configuration
+     *  Param: in IS_SEQUENCER_PATH
+     *  Size: sizeof(IS_SEQUENCER_PATH)
+     */
+    IS_SEQUENCER_SET_PATH_GET               = 16,
+
+    /*! Receives the maximum count of supported sequencer sets
+    *  Param: out Int32
+    *  Size : sizeof(Int32)
+    */
+    IS_SEQUENCER_SET_MAX_COUNT_GET          = 17,
+
+    /*! Selects which sequencer features to control
+     *  Param: in Int64
+     *  Size: sizeof(Int64)
+     */
+    IS_SEQUENCER_FEATURE_SELECTED_SET        = 20,
+
+    /*! Receives the currently selected sequencer feature to control
+     *  Param: out Int64
+     *  Size: sizeof(Int64)
+     */
+    IS_SEQUENCER_FEATURE_SELECTED_GET        = 21,
+
+    /*! Enables the selected feature and make it active in all the sequencer sets.
+     *  Param: in Int32 (1 to enable, 0 to disable)
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_FEATURE_ENABLED_SET        = 22,
+
+    /*! Receives if the selected feature is enabled.
+     *  Param: out Int32 (1 feature is enabled, 0 feature is disabled)
+     *  Size: sizeof(Int32)
+     */
+    IS_SEQUENCER_FEATURE_ENABLED_GET        = 23,
+
+    /*! Receives a bitmask with the supported sequencer features
+     *  Param: out Int64 (1 feature is enabled, 0 feature is disabled)
+     *  Size: sizeof(Int64)
+     */
+    IS_SEQUENCER_FEATURE_SUPPORTED_GET      = 24,
+
+    /*! Receives the currently saved value for the selected feature
+     *  Param: depends on feature
+     *  Size: sizeof(T)
+     * /see IS_SEQUENCER_FEATURE
+     */
+    IS_SEQUENCER_FEATURE_VALUE_GET          = 25,
+
+    /*! Receives the maximum count of supported paths
+     *  Param: out Int32
+     *  Size : sizeof(Int32)
+     */
+    IS_SEQUENCER_PATH_MAX_COUNT_GET         = 30
+
+}IS_SEQUENCER_CMD;
+
+/*!
+ * \brief Sequencer path configuration
+ */
+typedef struct
+{
+    /*! Path index to which the configuration will apply. (0 and 1 is supported) */
+    UINT u32PathIndex;
+    /*! Specifies the next sequencer set. */
+    UINT u32NextIndex;
+    /*! Specifies the internal signal or physical input line to use as the sequencer trigger source. */
+    UINT u32TriggerSource;
+    /*! Specifies the activation mode of the sequencer trigger */
+    UINT u32TriggerActivation;
+} IS_SEQUENCER_PATH;
+
+/*!
+ * \brief Sequencer gain configuration for the gain feature
+ */
+typedef struct
+{
+    UINT Master;
+
+    UINT Red;
+    UINT Green;
+    UINT Blue;
+}IS_SEQUENCER_GAIN_CONFIGURATION;
+
+/*!
+ * \brief Sequencer features
+ *
+ * Specifies the sequencer features that can be part of a device sequencer set. Allthe device's sequencer
+ * sets have the same features.
+ */
+typedef enum E_IS_SEQUENCER_FEATURE
+{
+    /*! Exposure
+     * Value type: double
+     */
+    IS_FEATURE_EXPOSURE     = 0x01,
+
+    /*! Gain configuration
+     * Value type: IS_SEQUENCER_GAIN_CONFIGURATION
+     */
+    IS_FEATURE_GAIN         = 0x02,
+
+    /*! AOI offset x position
+     * Value type: int32
+     */
+    IS_FEATURE_AOI_OFFSET_X = 0x04,
+
+    /*! AOI offset y position
+     * Value type: int32
+     */
+    IS_FEATURE_AOI_OFFSET_Y = 0x08
+
+} IS_SEQUENCER_FEATURE;
+
+/*!
+ * \brief Sequencer trigger source
+ *
+ * Specifies the internal signal or physical input line to use as the sequencer trigger source.
+ */
+typedef enum E_IS_SEQUENCER_TRIGGER_SOURCE
+{
+    /*! Disables the sequencer trigger source */
+    IS_TRIGGER_SOURCE_OFF       = 0,
+    /*! Starts with the reception of the Frame End. */
+    IS_TRIGGER_SOURCE_FRAME_END = 0x01
+
+} E_IS_SEQUENCER_TRIGGER_SOURCE;
+
+/*!
+ * \brief Sequencer configuration.
+ *
+ * \param hCam              Camera handle.
+ * \param u32Command        Sequencer command.
+ * \param pParam            I/O parameter, depends on the command.
+ * \param cbSizeOfParams    Size of *pParam.
+ * \return Status of the execution.
+ */
+IDSEXP is_Sequencer( HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParams );
+
+
+/*!
+* \brief Structure for read/write of persistent camera memories (EEPROM, Flash)
+*/
+typedef struct {
+	UINT u32Offset;
+	UINT u32Count;
+	INT  s32Option;
+	char* pu8Memory;
+} IS_PERSISTENT_MEMORY;
+
+
+typedef enum E_PERSISTENT_MEMORY_CMD
+{
+	IS_PERSISTENT_MEMORY_READ_USER_EXTENDED			= 1,
+	IS_PERSISTENT_MEMORY_WRITE_USER_EXTENDED		= 2,
+	IS_PERSISTENT_MEMORY_GET_SIZE_USER_EXTENDED		= 3,
+	IS_PERSISTENT_MEMORY_READ_USER					= 4,
+	IS_PERSISTENT_MEMORY_WRITE_USER					= 5,
+	IS_PERSISTENT_MEMORY_GET_SIZE_USER				= 6,
+	IS_PERSISTENT_MEMORY_READ_USER_PROTECTED		= 7,
+	IS_PERSISTENT_MEMORY_WRITE_USER_PROTECTED		= 8,
+	IS_PERSISTENT_MEMORY_GET_SIZE_USER_PROTECTED	= 9
+
+} IS_PERSISTENT_MEMORY_CMD;
+
+/*!
+* \brief Persistent memory read/write. Replaces deprectated functions is_WriteEEPROM, is_ReadEEPROM
+*
+* \param hCam              Camera handle.
+* \param u32Command        Command.
+* \param pParam            I/O parameter, depends on the command.
+* \param cbSizeOfParams    Size of *pParam.
+* \return Status of the execution.
+*/
+IDSEXP is_PersistentMemory(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
+
+
 
 #ifdef __cplusplus
 };
