@@ -712,9 +712,11 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 case CAMERATYPE_PCO_EDGE_HS: //               0x1340 // pco.edge     (all sensors   ) Interface: high speed ,(all shutter modes) 
                     _snprintf(name, 20, "PCO.edge high speed");
                     break;
+#ifdef CAMERATYPE_PCO_EDGE_MT
                 case CAMERATYPE_PCO_EDGE_MT: //               0x1304 // pco.edge MT2 (all sensors   ) Interface: CameraLink Base, rolling shutter
                     _snprintf(name, 13, "PCO.edge MT2");
                     break;
+#endif
 #endif
                 default:
                   _snprintf(name, 9, "PCO.????");
