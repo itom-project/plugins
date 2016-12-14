@@ -190,8 +190,8 @@ your camera runs with the internal XiViewer from XIMEA. If this is the case, the
 *Linux:*
 
 Install the XIMEA driver from the ximea website and use the commands described there, too, in oder to install the driver.
-The point the CMAKE variable XIMEA_APIDIR to the include directory of the Ximea package. This must contain the file m3api.h.
-Like under Windows, the library itself is dynamically load at runtime. It is usually loaded from /usr/lib.
+Then point the CMAKE variable XIMEA_APIDIR to the include directory of the Ximea package. This must contain the file m3api.h.
+Like under Windows, the library itself is dynamically loaded at runtime. It is usually loaded from /usr/lib.
 
 If you want to externally trigger the camera, make sure that you check if your GPIO pins require a 5V or 24V signal. Some cameras
 only support 24V, modern camera devices support both. This is written at the housing (at least for xiQ USB3 cameras).
