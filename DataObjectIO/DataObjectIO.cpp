@@ -34,6 +34,7 @@
 #include <string.h>
 #include <qdatetime.h>
 #include <qdir.h>
+#include <qtextcodec.h>
 
 #include "opencv2/highgui/highgui.hpp"
 
@@ -4347,6 +4348,9 @@ ito::RetVal DataObjectIO::loadDataFromTxtParams(QVector<ito::Param> *paramsMand,
 
         param = ito::Param("wrapSign", ito::ParamBase::String | ito::ParamBase::In, "", tr("Sometimes numbers are wrapped by a sign (.e.g '2.3' or \"4.5\"). If so, indicate the character(s) that wrap the numbers.").toLatin1().data());
         paramsOpt->append(param);
+
+		param = ito::Param("encoding", ito::ParamBase::String | ito::ParamBase::In, "", tr("encoding of text file, e.g. UTF-8, UTF-16, ISO 8859-1... Default: empty string -> the encoding is guessed due to a auto-detection of the first 64 bytes in the text file (using the BOM (Byte Order Mark)).").toLatin1().data());
+		paramsOpt->append(param);
     }
 
     return retval;
@@ -4405,13 +4409,49 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
         }
 
         QString wrapSign = paramsOpt->at(4).getVal<char*>();
+		QString encoding = paramsOpt->at(5).getVal<char*>();
 
-        ito::float64 zscale(0.0);
-        ret += analyseTXTData(dataIn, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines);
-        if (!ret.containsError())
-        {
-            ret += readTXTDataBlock(dataIn, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines, wrapSign);
-        }
+		if (encoding != "")
+		{
+			if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
+			{
+				ret += ito::RetVal::format(ito::retError, 0, "encoding '%s' is unknown", encoding.toLatin1().data());
+			}
+		}
+		else
+		{
+			//try to guess encoding
+			QTextCodec* tc = QTextCodec::codecForUtfText(dataIn.read(64));
+			dataIn.seek(0);
+			if (tc)
+			{
+				encoding = tc->name();
+			}
+			else
+			{
+				ret += ito::RetVal(ito::retWarning, 0, "encoding of file can not be guessed. UTF-8 is assumed.");
+				encoding = "UTF-8";
+			}
+		}
+
+		if (!ret.containsError())
+		{
+			ito::float64 zscale(0.0);
+
+			QTextStream textStream(&dataIn);
+			textStream.setCodec(encoding.toLatin1().data());
+
+			ret += analyseTXTData(textStream, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines);
+			if (!ret.containsError())
+			{
+				if (!dataIn.seek(0))
+				{
+					dataIn.reset();
+				}
+
+				ret += readTXTDataBlock(textStream, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines, wrapSign);
+			}
+		}
     }
 
     if (dataIn.isOpen())
@@ -4423,7 +4463,7 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &separator, QChar &decimalSign, const int flags, const int ignoreLines)
+ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &newObject, QChar &separator, QChar &decimalSign, const int flags, const int ignoreLines)
 {
     ito::RetVal ret(ito::retOk);
 
@@ -4530,10 +4570,12 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
             if (comma == 0 && points == 0)
             {
                 decimalSign = '.';
+				separator = (tabs > 0) ? '\t' : ' ';
             }
             else if (tabs == 0 && space == 0 && sim == 0 && comma == 0)
             {
                 decimalSign = '.';
+				separator = ' ';
             }
             else if (comma != 0 && points != 0)
             {
@@ -4673,7 +4715,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &separator, const QChar &decimalSign, const int flags, const int ignoreLines, const QString &wrapSign)
+ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject &newObject, const QChar &separator, const QChar &decimalSign, const int flags, const int ignoreLines, const QString &wrapSign)
 {
     ito::RetVal ret(ito::retOk);
     ito::float32* rowPtr = NULL;
@@ -4688,12 +4730,6 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
     const char sep = separator.toLatin1();
     QByteArray wrapSign_ = wrapSign.toLatin1();
     int wrapSignLen = wrapSign_.size();
-
-    if (!inFile.seek(0))
-    {
-        inFile.close();
-        inFile.open(QIODevice::ReadOnly);
-    }
 
     for (int i = 0; i < ignoreLines; i++)
     {
@@ -4717,7 +4753,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
             break;
         }
 
-        curline = inFile.readLine();
+        curline = inFile.readLine().toLatin1();
         curLineData = curline.trimmed().split(sep);
 
         if (curLineData.size() > xsize)

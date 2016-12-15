@@ -27,6 +27,7 @@
 #include <qsharedpointer.h>
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qtextstream.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class DataObjectIOInterface
@@ -192,8 +193,8 @@ class DataObjectIO : public ito::AddInAlgo
         static ito::RetVal saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const ImageFormat &imageFormat);
         static ito::RetVal saveDataObjectQt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const ImageFormat &imageFormat);
 
-        static ito::RetVal analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &separator, QChar &decimalSign, const int flags, const int ignoreLines);
-        static ito::RetVal readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &separator, const QChar &decimalSign, const int flags, const int ignoreLines, const QString &wrapSign);
+		static ito::RetVal analyseTXTData(QTextStream &inFile, ito::DataObject &newObject, QChar &separator, QChar &decimalSign, const int flags, const int ignoreLines);
+		static ito::RetVal readTXTDataBlock(QTextStream &inFile, ito::DataObject &newObject, const QChar &separator, const QChar &decimalSign, const int flags, const int ignoreLines, const QString &wrapSign);
 
         template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator, const double nanValue);
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const QByteArray &nanString);
