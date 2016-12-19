@@ -66,11 +66,27 @@ IF(PGRFLYCAP_INCLUDE_DIR)
     )
 
     if(BUILD_TARGET64)
-        SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib64")
-        SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin64")
+		if(MSVC13)
+			SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib/vs2015")
+			SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin64/vs2015")		
+		ELSEIF(MSVC12)
+			SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib/vs2013")
+			SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin64/vs2013")
+		ELSE()
+			SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib64")
+			SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin64")
+		ENDIF()
     else(BUILD_TARGET64)
-        SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib")
-        SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin")
+		if(MSVC13)
+			SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib/vs2015")
+			SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin/vs2015")
+		ELSEIF(MSVC12)
+			SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib/vs2013")
+			SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin/vs2013")
+		ELSE()	
+			SET(PGR_LIBDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../lib")
+			SET(PGR_BINDIR_HINT "${PGRFLYCAP_INCLUDE_DIR}/../bin")
+		ENDIF()
     endif(BUILD_TARGET64)
 
     set(plugin_HEADERS
@@ -114,7 +130,13 @@ IF(PGRFLYCAP_INCLUDE_DIR)
     IF(UNIX)
         FIND_LIBRARY(FLYCAPTURE_LIBRARY NAMES libflycapture flycapture PATHS /usr/lib NO_DEFAULT_PATH)
     ELSE(UNIX)
-        IF(MSVC10)
+		IF(MSVC13)
+			find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v140"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
+		ELSEIF(MSVC12)
+			find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v120"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
+        ELSEIF(MSVC11)
+            find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v110"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012			
+        ELSEIF(MSVC10)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v100"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
         ELSEIF(MSVC9)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v90"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2009
@@ -122,7 +144,7 @@ IF(PGRFLYCAP_INCLUDE_DIR)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2008
         ELSE(MSVC10)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v110"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012
-        ENDIF(MSVC10)
+        ENDIF()
     ENDIF(UNIX)
     
     IF(FLYCAPTURE_LIBRARY)
@@ -132,15 +154,21 @@ IF(PGRFLYCAP_INCLUDE_DIR)
     ENDIF(FLYCAPTURE_LIBRARY)
     
     IF(WIN32)
-        IF(MSVC10)
-            find_file(FLYCAPTURE_BINARY "FlyCapture2_v100.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
+        IF(MSVC13)
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010	
+        ELSEIF(MSVC12)
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v120.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010	
+        ELSEIF(MSVC11)
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v110.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
+        ELSEif(MSVC10)
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v100.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012			
         ELSEIF(MSVC9)
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v90.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2009
         ELSEIF(MSVC8)
             find_file(FLYCAPTURE_BINARY "FlyCapture2.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2008
-        ELSE(MSVC10)
+        ELSE()
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v110.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012
-        ENDIF(MSVC10)
+        ENDIF()
     
         find_file(FLYCAPTURE_LIBIOMP5MD "libiomp5md.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH)
     
