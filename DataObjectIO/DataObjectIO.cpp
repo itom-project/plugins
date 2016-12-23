@@ -175,6 +175,9 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::saveItomIDO, DataObjectIO::saveItomIDOParams, saveItomIDODoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Raw-XML (*.ido *.idh)"));
     m_filterList.insert("saveIDO", filter);
 
+    filter = new FilterDef(DataObjectIO::saveDataToTxt, DataObjectIO::saveDataToTxtParams, saveDataToTxtDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("ASCII Data (*.txt *.csv *.tsv)"));
+    m_filterList.insert("saveTXT", filter);
+
     filter = new FilterDef(DataObjectIO::loadItomIDO, DataObjectIO::loadItomIDOParams, loadItomIDODoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Raw-XML (*.ido *.idh)"));
     m_filterList.insert("loadIDO", filter);
 
@@ -4301,8 +4304,432 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! saveData2Txt
+//! saveDataToTxt
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString DataObjectIO::saveDataToTxtDoc = QObject::tr("saves data to an ascii-based file like txt, csv, tsv or space separated values.\n\n\
+");
+
+
+template<typename _Tp> ito::RetVal doWriteDataD(ito::DataObject *dObjSrc, QTextStream *dataOut, const int asTuple, const int noPhys,
+    QChar wrapSign, QChar separatorSign, QString separatorLines, QString separatorMatrices, const int precision)
+{
+    ito::RetVal retval(ito::retOk);
+
+    ito::float64 zscale(1.0);
+    ito::float64 zoffset(0.0);
+    if (!noPhys)
+    {
+        zscale = dObjSrc->getValueScale();
+        zoffset = dObjSrc->getValueOffset();
+    }
+
+
+    if (!asTuple)
+    {
+        if (wrapSign != NULL)
+        {
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << wrapSign << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale), 'g', precision) << wrapSign;
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorSign;
+                    }
+                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) - 1)
+                        *dataOut << separatorLines;
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+        else
+        { 
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale), 'g', precision);
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorSign;
+                    }
+                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) - 1)
+                        *dataOut << separatorLines;
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+    }
+    else
+    {
+        ito::float64 xscale(1.0);
+        ito::float64 xoffset(0.0);
+        ito::float64 yscale(1.0);
+        ito::float64 yoffset(0.0);
+
+        if (!noPhys)
+        {
+            xscale = dObjSrc->getAxisScale(1);
+            xoffset = dObjSrc->getAxisOffset(1);
+            yscale = dObjSrc->getAxisScale(0);
+            yoffset = dObjSrc->getAxisOffset(0);
+        }
+
+        if (wrapSign != NULL)
+        {
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << wrapSign << QString::number((nx - xoffset) * xscale, 'g', precision) << wrapSign << separatorSign;
+                        *dataOut << wrapSign << QString::number((ny - xoffset) * yscale, 'g', precision) << wrapSign << separatorSign;
+                        *dataOut << wrapSign << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale), 'g', precision) << wrapSign;
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorLines;
+                    }
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+        else
+        {
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << QString::number((nx - xoffset) * xscale, 'g', precision) << separatorSign;
+                        *dataOut << QString::number((ny - xoffset) * yscale, 'g', precision) << separatorSign;
+                        *dataOut << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale), 'g', precision);
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorLines;
+                    }
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+    }
+
+    return retval;
+}
+
+template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextStream *dataOut, const int asTuple, const int noPhys,
+    QChar wrapSign, QChar separatorSign, QString separatorLines, QString separatorMatrices)
+{
+    ito::RetVal retval(ito::retOk);
+
+    ito::float64 zscale(1.0);
+    ito::float64 zoffset(0.0);
+    if (!noPhys)
+    {
+        zscale = dObjSrc->getValueScale();
+        zoffset = dObjSrc->getValueOffset();
+    }
+
+    if (!asTuple)
+    {
+        if (wrapSign != NULL)
+        {
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << wrapSign << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale)) << wrapSign;
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorSign;
+                    }
+                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) - 1)
+                        *dataOut << separatorLines;
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+        else
+        {
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale));
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorSign;
+                    }
+                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) - 1)
+                        *dataOut << separatorLines;
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+    }
+    else
+    {
+        ito::float64 xscale(1.0);
+        ito::float64 xoffset(0.0);
+        ito::float64 yscale(1.0);
+        ito::float64 yoffset(0.0);
+
+        if (!noPhys)
+        {
+            xscale = dObjSrc->getAxisScale(1);
+            xoffset = dObjSrc->getAxisOffset(1);
+            yscale = dObjSrc->getAxisScale(0);
+            yoffset = dObjSrc->getAxisOffset(0);
+        }
+
+        if (wrapSign != NULL)
+        {
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << wrapSign << QString::number((nx - xoffset) * xscale) << wrapSign << separatorSign;
+                        *dataOut << wrapSign << QString::number((ny - xoffset) * yscale) << wrapSign << separatorSign;
+                        *dataOut << wrapSign << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale)) << wrapSign;
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorLines;
+                    }
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+        else
+        {
+            for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
+            {
+                for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
+                {
+                    _Tp *srcPtr = (_Tp*)dObjSrc->rowPtr(nm, ny);
+                    for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
+                    {
+                        *dataOut << QString::number((nx - xoffset) * xscale) << separatorSign;
+                        *dataOut << QString::number((ny - xoffset) * yscale) << separatorSign;
+                        *dataOut << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale));
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                            *dataOut << separatorLines;
+                    }
+                }
+                if (nm < dObjSrc->getNumPlanes() - 1)
+                    *dataOut << separatorMatrices;
+            }
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   saveDataToTxtParams method, specifies the parameter list for saveDataToTxtParams method.
+*   @param [in] paramsMand  mandatory argument parameters
+*   @param [in] paramsOpt   optional argument parameters
+*   @param [out] outVals    optional output parameters
+*
+*   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
+*    and their specifications as required for converting DataObject into Raw-Text data and save it into Hard drive.
+*/
+ito::RetVal DataObjectIO::saveDataToTxtParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("dataObject holding data to save").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination file name").toLatin1().data());
+        paramsMand->append(param);
+
+//        param = ito::Param("ignoreLines", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("Ignore the first n-lines.").toLatin1().data());
+//        paramsOpt->append(param);
+
+//        param = ito::Param("asMatrix", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("(1) Try to interprete list elements with 3 elements per row as a matrix or (0) load as written.").toLatin1().data());
+//        paramsOpt->append(param);
+
+        param = ito::Param("saveAsTuple", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("(1) save values as list of points (x, y, z).").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("noPhysicalValues", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("(1) ignore scale and offset").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("separatorSign", ito::ParamBase::String | ito::ParamBase::In, " ", tr("Uses this as the separator between elements. Default is space \" \".").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("separatorLines", ito::ParamBase::String | ito::ParamBase::In, "\r\n", tr("Uses this as the separator between lines of a matrix. Default is \\r\\n.").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("separatorPlanes", ito::ParamBase::String | ito::ParamBase::In, "\r\n", tr("Uses this as the separator between matrix planes. Default is \\r\\n.").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("decimalSign", ito::ParamBase::String | ito::ParamBase::In, "<guess>", tr("Uses this as the sign for decimal numbers. If <guess>, default is system default.").toLatin1().data());
+        ito::StringMeta sm = ito::StringMeta(ito::StringMeta::String, "<guess>");
+        sm.addItem(".");
+        sm.addItem(",");
+        param.setMeta(&sm, false);
+        paramsOpt->append(param);
+
+        param = ito::Param("wrapSign", ito::ParamBase::String | ito::ParamBase::In, "", tr("Sometimes numbers are wrapped by a sign (.e.g '2.3' or \"4.5\"). If so, indicate the character(s) that wrap the numbers.").toLatin1().data());
+        sm.addItem("");
+        param.setMeta(&sm, false);
+        paramsOpt->append(param);
+
+        param = ito::Param("encoding", ito::ParamBase::String | ito::ParamBase::In, "UTF-8", tr("encoding of text file, e.g. UTF-8, UTF-16, ISO 8859-1... Default: empty string -> the encoding is guessed due to a auto-detection of the first 64 bytes in the text file (using the BOM (Byte Order Mark)).").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   saveDataToTxt method, writes the ascii data and creates corresponding DataObject.
+*   @param [in] paramsMand  mandatory argument parameters
+*   @param [in] paramsOpt   optional argument parameters
+*   @param [out] outVals   optional output parameters
+*
+*   This Function accepts parameters from itom Python application according to specification provided by "loadNistSDF" function.
+*    It retrieves the ascii-data from file location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*/
+ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal ret = ito::retOk;
+    char *filename = (*paramsMand)[1].getVal<char*>();
+//    QFileInfo fileinfo(QString::fromLatin1(filename));
+//    QFile dataOut(fileinfo.canonicalFilePath());
+    QString filename_ = QLatin1String(filename);
+    QFileInfo fileinfo(filename_);
+    QFile dataOut(filename_);
+
+    ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();
+
+    if (dObjSrc == NULL)
+    {
+        ret += ito::RetVal::format(ito::retError, 0, tr("DataObject not initialized").toLatin1().data(), filename);
+    }
+    else if (!dataOut.open(QIODevice::WriteOnly))
+    {
+        ret += ito::RetVal::format(ito::retError, 0, tr("The file '%s' is no readable file.").toLatin1().data(), filename);
+    }
+    else
+    {
+        QChar separatorSign(' ');
+        QString separatorLines("\r\n");
+        QString separatorMatrices("\r\n");
+        QChar decimalSign(0);
+
+        int asTuple = (*paramsOpt)[0].getVal<int>();
+        int noPhys = (*paramsOpt)[1].getVal<int>();
+
+        if ((*paramsOpt)[2].getVal<char*>() != NULL)
+        {
+            separatorSign = paramsOpt->at(2).getVal<char*>()[0];
+        }
+
+        if ((*paramsOpt)[3].getVal<char*>() != NULL)
+        {
+            separatorLines = paramsOpt->at(3).getVal<char*>();
+        }
+
+        if ((*paramsOpt)[4].getVal<char*>() != NULL)
+        {
+            separatorMatrices = paramsOpt->at(4).getVal<char*>();
+        }
+
+        if ((*paramsOpt)[5].getVal<char*>()[0] != '<') //!= <guess>
+        {
+            decimalSign = paramsOpt->at(5).getVal<char*>()[0];
+        }
+
+        QString wrapSign = QString::fromLatin1(paramsOpt->at(6).getVal<char*>());
+        QString encoding = paramsOpt->at(7).getVal<char*>();
+
+        if (encoding != "")
+        {
+            if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
+            {
+                ret += ito::RetVal::format(ito::retError, 0, "encoding '%s' is unknown", encoding.toLatin1().data());
+            }
+        }
+        else
+        {
+            // default to UTF-8
+            encoding = "UTF-8";
+        }
+
+        QLocale local(QLocale::C); //per default a decimal sign is a dot (.) and the thousands group separator is (,)
+        if (decimalSign == ',')
+        {
+            local = QLocale(QLocale::German); //if the decimal sign is a comma (,), the thousands group separator is assumed to be a dot (.)
+        }
+
+        QLocale::setDefault(local);
+        QTextStream textStream(&dataOut);
+        textStream.setCodec(encoding.toLatin1().data());
+
+        switch (dObjSrc->getType())
+        {
+            case ito::tUInt8:
+                ret += doWriteData<ito::uint8>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+            case ito::tInt8:
+                ret += doWriteData<ito::int8>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+            case ito::tUInt16:
+                ret += doWriteData<ito::uint16>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+            case ito::tInt16:
+                ret += doWriteData<ito::int16>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+            case ito::tUInt32:
+                ret += doWriteData<ito::uint32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+            case ito::tInt32:
+                ret += doWriteData<ito::int32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+
+            case ito::tFloat32:
+                ret += doWriteData<ito::float32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+            case ito::tFloat64:
+                ret += doWriteData<ito::float64>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+            break;
+            default:
+                ret += ito::RetVal(ito::retError, 0, tr("data format not supported").toLatin1().data());
+            break;
+        }
+    }
+
+    if (dataOut.isOpen())
+    {
+        dataOut.close();
+    }
+
+    return ret;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadDataFromTxtParams
