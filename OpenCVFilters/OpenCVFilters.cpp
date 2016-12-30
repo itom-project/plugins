@@ -621,7 +621,8 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     cv::Mat *cvMatIn;
     cv::Mat *cvMatOut = new cv::Mat[z_length];
-    int itomtype = 0;
+    ito::tDataType itomtype;
+    ito::RetVal ret;
 
     for (int z = 0; z < z_length; z++)
     {
@@ -638,8 +639,8 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
     }
 
     // Warning: if you copy this, this could cause a problem
-    itomtype = ito::dObjHelper::cvType2itomType(cvMatOut[0].type());
-    if (itomtype > 0)
+    itomtype = ito::guessDataTypeFromCVMat(&(cvMatOut[0]), ret);
+    if (!ret.containsError())
     {
         *dObjDst = ito::DataObject(dObjImages->getDims(), dObjImages->getSize(), itomtype, cvMatOut, z_length);
 
@@ -652,7 +653,7 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Unknown or unexpected CV-Datatype recived.").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("No compatible dataObject type found for given OpenCV matrix type.").toLatin1().data());
     }
 
 end:
@@ -882,7 +883,8 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
 
     cv::Mat *cvMatIn;
     cv::Mat *cvMatOut = new cv::Mat[z_length];
-    int itomtype = 0;
+    ito::tDataType itomtype;
+    ito::RetVal ret;
 
     for (int z = 0; z < z_length; z++)
     {
@@ -898,8 +900,8 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
         }
     }
     // Warning: if you copy this, this could cause a problem
-    itomtype = ito::dObjHelper::cvType2itomType(cvMatOut[0].type());
-    if (itomtype > 0)
+    itomtype = ito::guessDataTypeFromCVMat(&(cvMatOut[0]), ret);
+    if (!ret.containsError())
     {
         *dObjDst = ito::DataObject(dObjImages->getDims(), dObjImages->getSize(), itomtype, cvMatOut, z_length);
         //(*dObjDst).setT(dObjImages->isT());
@@ -915,7 +917,7 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Unknown or unexpected CV-Datatype received.").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("No compatible dataObject type found for given OpenCV matrix type.").toLatin1().data());
     }
 
 end:
