@@ -23,48 +23,47 @@
 #ifndef DIALOGFIREGRABBER_H
 #define DIALOGFIREGRABBER_H
 
-#include "common/addInGrabber.h"
-//#include "common/sharedStructures.h"
-
-#include <QtGui>
-#include <qdialog.h>
+#include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogFireGrabber.h"
 
-class dialogFireGrabber : public QDialog
+#include <qstring.h>
+#include <qmap.h>
+#include <qabstractbutton.h>
+
+namespace ito
 {
-    Q_OBJECT
+	class AddInBase; //forward declaration
+}
 
-    public:
-        dialogFireGrabber(ito::AddInGrabber *grabber):m_Grabber(grabber){m_paramsVals.clear(); ui.setupUi(this);};
-        ~dialogFireGrabber() {m_paramsVals.clear();};
-        int getVals(QMap<QString, ito::Param> *paramVals);
-        int sendVals(void);
+class DialogFireGrabber : public ito::AbstractAddInConfigDialog
+{
+	Q_OBJECT
 
-    private:
-        ito::AddInGrabber *m_Grabber;
+public:
+	DialogFireGrabber(ito::AddInBase *grabber);
+	~DialogFireGrabber() {};
 
-        Ui::dialogFireGrabber ui;
-        QMap<QString, ito::Param> m_paramsVals;
+	ito::RetVal applyParameters();
 
-    signals:
+private:
+	void enableDialog(bool enabled);
+	bool m_firstRun;
 
-    public slots:
+	inline bool dblEq(double v1, double v2) { return qAbs(v1 - v2) <= std::numeric_limits<double>::epsilon(); }
 
-        void valuesChanged(QMap<QString, ito::Param> params);
+	Ui::dialogFireGrabber ui;
 
-    private slots:
-        void on_pushButton_setSizeXMax_clicked();    //!< Set x-size to maximum valid value
-        void on_pushButton_setSizeYMax_clicked();    //!< Set y-sizes to maximum valid value
-        void on_applyButton_clicked();    //!< Write the current settings to the internal paramsVals and sent them to the grabber
+public slots:
+	void parametersChanged(QMap<QString, ito::Param> params);
 
-        void on_spinBox_x0_valueChanged(int value);
-        void on_spinBox_x1_valueChanged(int value);
-        void on_spinBox_y0_valueChanged(int value);
-        void on_spinBox_y1_valueChanged(int value);
-        void on_spinBox_binX_valueChanged(int value);
-        void on_spinBox_binY_valueChanged(int value);
-
+private slots:
+	void on_buttonBox_clicked(QAbstractButton* btn);
+	void on_rangeX01_valuesChanged(int minValue, int maxValue);
+	void on_rangeY01_valuesChanged(int minValue, int maxValue);
+	void on_btnFullROI_clicked();
 };
 
 #endif

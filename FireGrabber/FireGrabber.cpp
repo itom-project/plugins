@@ -134,20 +134,7 @@ FireGrabberInterface::~FireGrabberInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal FireGrabber::showConfDialog(void)
 {
-    dialogFireGrabber *confDialog = new dialogFireGrabber(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        confDialog->sendVals();
-    }
-
-    disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    delete confDialog;
-
-    return ito::retOk;
+	return apiShowConfigurationDialog(this, new DialogFireGrabber(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -188,6 +175,12 @@ FireGrabber::FireGrabber() :
    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual gain").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 0.0, 0.0, tr("Offset not used here.").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+
+   int roi[] = { 0, 0, 2048, 2048 };
+   paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+   ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[2] - 1), ito::RangeMeta(roi[1], roi[3])); //RangeMeta includes the last value, therefore -1
+   paramVal.setMeta(rm, true);
    m_params.insert(paramVal.getName(), paramVal);
 
    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI").toLatin1().data());
@@ -287,7 +280,7 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
         { FCE_NOMEM              /* 1019*/,  "No memory"},
         { FCE_NOTAVAILABLE       /* 1020*/,  "Requested function not available"},
         { FCE_NOTCONNECTED       /* 1021*/,  "Not connected to target"},
-        { FCE_ADJUSTED           /* 1022*/,  "A pararmeter had to be adjusted"},
+        { FCE_ADJUSTED           /* 1022*/,  "A parameter had to be adjusted"},
     };
 
 #else // for fire4linux
@@ -464,6 +457,42 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 retValue += adjustROI(x0temp, x1temp, y0temp, y1temp);
             }
         }
+		else if (key == "roi")
+		{
+			int x0temp = m_params["x0"].getVal<int>();
+			int x1temp = m_params["x1"].getVal<int>();
+			int y0temp = m_params["y0"].getVal<int>();
+			int y1temp = m_params["y1"].getVal<int>();
+
+			if (!hasIndex)
+			{
+				const int* roi = val->getVal<const int*>();
+				x0temp = roi[0];
+				y0temp = roi[1];
+				x1temp = roi[0] + roi[2] - 1;
+				y1temp = roi[1] + roi[3] - 1;
+			}
+			else
+			{
+				switch (index)
+				{
+				case 0:
+					x0temp = val->getVal<int>();
+					break;
+				case 1:
+					y0temp = val->getVal<int>();
+					break;
+				case 2:
+					x1temp = x0temp + val->getVal<int>() - 1;
+					break;
+				case 3:
+					y1temp = y0temp + val->getVal<int>() - 1;
+					break;
+				}
+			}
+
+			retValue += adjustROI(x0temp, x1temp, y0temp, y1temp);
+		}
         else if (!key.compare("integration_time")) // set integration time
         {
 #ifdef WIN32
@@ -685,6 +714,11 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 m_params["y0"].setVal<int>( yPosIs );
                 m_params["x1"].setVal<int>( xPosIs + xSizeIs - 1 );
                 m_params["y1"].setVal<int>( yPosIs + ySizeIs - 1 );
+				int* roi = m_params["roi"].getVal<int*>();
+				roi[0] = xPosIs;
+				roi[1] = yPosIs;
+				roi[2] = xSizeIs;
+				roi[3] = ySizeIs;
                 m_params["sizex"].setVal<int>(xSizeIs);
                 m_params["sizey"].setVal<int>(ySizeIs);
 
@@ -756,10 +790,31 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
             else
             {
                 resizeResult = Camera.SetParameter(FGP_RESIZE, 1); //may return 4 (HALER_MODE) (not allowed in this mode, since this is only necessary if camera is running)
-                retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
-                retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
-                retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
-                retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+
+				retval += AlliedChkError(Camera.GetParameterInfo(FGP_XPOSITION, &xPosInfo));
+				retval += AlliedChkError(Camera.GetParameterInfo(FGP_YPOSITION, &yPosInfo));
+
+				if (xPosInfo.IsValue >= x0)
+				{
+					retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
+					retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
+				}
+				else
+				{
+					retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
+					retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
+				}
+
+				if (yPosInfo.IsValue >= y0)
+				{
+					retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
+					retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+				}
+				else
+				{
+					retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+					retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
+				}
 
                 if (resizeResult != HALER_MODE)
                 {
@@ -778,6 +833,11 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 m_params["y0"].setVal<int>( yPosInfo.IsValue );
                 m_params["x1"].setVal<int>( xPosInfo.IsValue + xSizeInfo.IsValue - 1 );
                 m_params["y1"].setVal<int>( yPosInfo.IsValue + ySizeInfo.IsValue - 1 );
+				int* roi = m_params["roi"].getVal<int*>();
+				roi[0] = xPosInfo.IsValue;
+				roi[1] = yPosInfo.IsValue;
+				roi[2] = xSizeInfo.IsValue;
+				roi[3] = ySizeInfo.IsValue;
                 m_params["sizex"].setVal<int>(xSizeInfo.IsValue);
                 m_params["sizey"].setVal<int>(ySizeInfo.IsValue);
 
@@ -1113,19 +1173,30 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["sizey"].setVal<double>(m_ySize);
         m_params["x1"].setVal<double>(m_xSize - 1);
         m_params["y1"].setVal<double>(m_ySize - 1);
+		int roi[] = { 0, 0, m_xSize, m_ySize };
+		m_params["roi"].setVal<int*>(roi, 4);
 
         // Obtain data geometry
-        uint32_t m_xSize_max, m_ySize_max;
-        Result = dc1394_format7_get_max_image_size(camera, video_mode, &m_xSize_max, &m_ySize_max);
+		uint32_t  xSizeMax, ySizeMax, xPosMax, yPosMax, hUnitImage, vUnitImage, hUnitPos, vUnitPos;
 
-        static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(m_xSize_max);
-        static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(m_ySize_max);
-        static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMin(0);
-        static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMin(0);
-        static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(m_xSize_max - 1);
-        static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(m_ySize_max - 1);
-        static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax(m_xSize_max - 1);
-        static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax(m_ySize_max - 1);
+		//get information    
+		Result = dc1394_format7_get_max_image_size(camera,video_mode,&xSizeMax,&ySizeMax);
+		Result = dc1394_format7_get_unit_size(camera,video_mode,&hUnitImage,&vUnitImage);
+		Result = dc1394_format7_get_unit_position(camera,video_mode,&hUnitPos,&vUnitPos);
+		xPosMax=xSizeMax;
+		yPosMax=ySizeMax;
+
+		m_params["x0"].setMeta(new ito::IntMeta(0, xPosMax, hUnitPos), true);
+		m_params["y0"].setMeta(new ito::IntMeta(0, yPosMax, vUnitPos), true);
+		m_params["x1"].setMeta(new ito::IntMeta(0, xSizeMax - 1, hUnitPos), true);
+		m_params["y1"].setMeta(new ito::IntMeta(0, ySizeMax - 1, vUnitPos), true);
+		m_params["sizex"].setMeta(new ito::IntMeta(0, xSizeMax, hUnitImage), true);
+		m_params["sizey"].setMeta(new ito::IntMeta(0, ySizeMax, vUnitImage), true);
+
+		ito::RectMeta roiMeta(\
+			ito::RangeMeta(0, xSizeMax - 1, hUnitPos, 0, xSizeMax, hUnitImage), \
+			ito::RangeMeta(0, ySizeMax - 1, vUnitPos, 0, ySizeMax, vUnitImage));
+		m_params["roi"].setMeta(&roiMeta, false);
 
         Result = dc1394_feature_is_present(camera, DC1394_FEATURE_FRAME_RATE, &present);
         retValue += AlliedChkError(Result);
@@ -1309,7 +1380,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         // Set camera to scalable mode and max size
 
         //check available parameters
-        FGPINFO info, xInfo, yInfo;
+        FGPINFO info, xInfo, yInfo, xPosInfo, yPosInfo;
         double val;
 
         char *vendorName = new char[512];
@@ -1411,6 +1482,8 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
         Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
+		Result = Camera.GetParameterInfo(FGP_XPOSITION, &xPosInfo);
+		Result = Camera.GetParameterInfo(FGP_YPOSITION, &yPosInfo);
 
         Result = Camera.SetParameter(FGP_XPOSITION, 0);
         Result = Camera.SetParameter(FGP_YPOSITION, 0);
@@ -1421,18 +1494,23 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["sizey"].setVal<double>(yInfo.MaxValue);
         m_params["x1"].setVal<double>(xInfo.MaxValue - 1);
         m_params["y1"].setVal<double>(yInfo.MaxValue - 1);
+		int roi[] = { 0, 0, xInfo.MaxValue, yInfo.MaxValue };
+		m_params["roi"].setVal<int*>(roi, 4);
 
         Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
         Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
 
-        static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(xInfo.MaxValue);
-        static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(yInfo.MaxValue);
-        static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMin(xInfo.MinValue);
-        static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMin(yInfo.MinValue);
-        static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(xInfo.MaxValue - 1);
-        static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(yInfo.MaxValue - 1);
-        static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax(xInfo.MaxValue - 1);
-        static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax(yInfo.MaxValue - 1);
+		m_params["x0"].setMeta(new ito::IntMeta(xPosInfo.MinValue, xPosInfo.MaxValue, xPosInfo.Unit), true);
+		m_params["y0"].setMeta(new ito::IntMeta(yPosInfo.MinValue, yPosInfo.MaxValue, yPosInfo.Unit), true);
+		m_params["x1"].setMeta(new ito::IntMeta(xPosInfo.MinValue, xInfo.MaxValue - 1, xPosInfo.Unit), true);
+		m_params["y1"].setMeta(new ito::IntMeta(yPosInfo.MinValue, yInfo.MaxValue - 1, yPosInfo.Unit), true);
+		m_params["sizex"].setMeta(new ito::IntMeta(xInfo.MinValue, xInfo.MaxValue, xInfo.Unit), true);
+		m_params["sizey"].setMeta(new ito::IntMeta(yInfo.MinValue, yInfo.MaxValue, yInfo.Unit), true);
+
+		ito::RectMeta roiMeta(\
+			ito::RangeMeta(xPosInfo.MinValue, xInfo.MaxValue - 1, xPosInfo.Unit, xInfo.MinValue, xInfo.MaxValue, xInfo.Unit), \
+			ito::RangeMeta(yPosInfo.MinValue, yInfo.MaxValue - 1, yPosInfo.Unit, yInfo.MinValue, yInfo.MaxValue, yInfo.Unit));
+		m_params["roi"].setMeta(&roiMeta, false);
 
         FGPINFO packsize;
         retValue += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
