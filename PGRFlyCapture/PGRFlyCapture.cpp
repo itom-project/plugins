@@ -316,12 +316,15 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
 	paramVal = ito::Param("cam_register", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("Direct read/write of registers, use the hex-number of the register as suffix to read/write a specific register (e.g. getParam('cam_register:0xA01F'))").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
-    DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(this);
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
+    {
+        //now create dock widget for this plugin
+        DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(this);
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 
     checkData();
 }

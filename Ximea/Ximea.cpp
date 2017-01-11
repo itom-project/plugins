@@ -252,13 +252,16 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("color_camera", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 0, tr("0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    //now create dock widget for this plugin
-        //now create dock widget for this plugin
-    DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
+    {
+        //now create dock widget for this plugin
+        DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);
+
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
