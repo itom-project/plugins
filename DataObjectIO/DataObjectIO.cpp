@@ -4326,7 +4326,7 @@ template<typename _Tp> ito::RetVal doWriteDataD(ito::DataObject *dObjSrc, QTextS
 
     if (!asTuple)
     {
-        if (wrapSign != NULL)
+        if (!wrapSign.isNull())
         {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
@@ -4382,7 +4382,7 @@ template<typename _Tp> ito::RetVal doWriteDataD(ito::DataObject *dObjSrc, QTextS
             yoffset = dObjSrc->getAxisOffset(0);
         }
 
-        if (wrapSign != NULL)
+		if (!wrapSign.isNull())
         {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
@@ -4442,7 +4442,7 @@ template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextSt
 
     if (!asTuple)
     {
-        if (wrapSign != NULL)
+		if (!wrapSign.isNull())
         {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
@@ -4498,7 +4498,7 @@ template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextSt
             yoffset = dObjSrc->getAxisOffset(0);
         }
 
-        if (wrapSign != NULL)
+		if (!wrapSign.isNull())
         {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
@@ -4663,7 +4663,8 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
             decimalSign = paramsOpt->at(5).getVal<char*>()[0];
         }
 
-        QString wrapSign = QString::fromLatin1(paramsOpt->at(6).getVal<char*>());
+        QString wrapSign_ = QString::fromLatin1(paramsOpt->at(6).getVal<char*>());
+		QChar wrapSign = wrapSign_.size() > 0 ? wrapSign_[0] : QChar();
         QString encoding = paramsOpt->at(7).getVal<char*>();
 
         if (encoding != "")
@@ -4692,29 +4693,29 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
         switch (dObjSrc->getType())
         {
             case ito::tUInt8:
-                ret += doWriteData<ito::uint8>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::uint8>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
             case ito::tInt8:
-                ret += doWriteData<ito::int8>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::int8>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
             case ito::tUInt16:
-                ret += doWriteData<ito::uint16>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::uint16>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
             case ito::tInt16:
-                ret += doWriteData<ito::int16>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::int16>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
             case ito::tUInt32:
-                ret += doWriteData<ito::uint32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::uint32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
             case ito::tInt32:
-                ret += doWriteData<ito::int32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::int32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
 
             case ito::tFloat32:
-                ret += doWriteData<ito::float32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::float32>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
             case ito::tFloat64:
-                ret += doWriteData<ito::float64>(dObjSrc, &textStream, asTuple, noPhys, wrapSign[0], separatorSign, separatorLines, separatorMatrices);
+                ret += doWriteData<ito::float64>(dObjSrc, &textStream, asTuple, noPhys, wrapSign, separatorSign, separatorLines, separatorMatrices);
             break;
             default:
                 ret += ito::RetVal(ito::retError, 0, tr("data format not supported").toLatin1().data());
