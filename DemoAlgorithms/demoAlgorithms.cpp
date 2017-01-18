@@ -99,7 +99,7 @@ ito::RetVal DemoAlgorithms::init(QVector<ito::ParamBase> * /*paramsMand*/, QVect
 
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
-    //AlgoWidgetDef *widget = NULL;
+    AlgoWidgetDef *widget = NULL;
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------User-Defined-Content-----------------------------------------------------
@@ -111,6 +111,9 @@ ito::RetVal DemoAlgorithms::init(QVector<ito::ParamBase> * /*paramsMand*/, QVect
     m_filterList.insert("demoSnapMovie", filter);
     filter = new FilterDef(DemoAlgorithms::demoTestActuator, DemoAlgorithms::demoTestActuatorParams, tr("Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis of an actuator several time to test the actuator performance."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("demoTestActuator", filter);
+
+	widget = new AlgoWidgetDef(DemoAlgorithms::demoWidget, DemoAlgorithms::demoWidgetParams, tr("Demo widget"));
+	m_algoWidgetList.insert("demoWidget", widget);
 
     //---------------------------------------------------------End-User-Defined-Content-------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -655,3 +658,18 @@ ito::RetVal DemoAlgorithms::demoTestActuator(QVector<ito::ParamBase> *paramsMand
 
     return retval;
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal DemoAlgorithms::demoWidgetParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+	ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+	return retval;
+}
+
+/*static*/ QWidget* DemoAlgorithms::demoWidget(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue)
+{
+	QWidget *widget = new QWidget();
+	return widget;
+}
+
