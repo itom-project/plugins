@@ -53,15 +53,16 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/VistekGigESDK
     ${ITOM_SDK_INCLUDE_DIRS}
-	${ITOM_SDK_INCLUDE_DIR}/itomWidgets
+    ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogVistek.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetVistek.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/SVGigE.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/VistekGigESDK/SVGigE.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Vistek.h
     ${CMAKE_CURRENT_SOURCE_DIR}/VistekContainer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/VistekInterface.h
@@ -71,7 +72,7 @@ set(plugin_HEADERS
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogVistek.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetVistek.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/SVGigE.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/VistekGigESDK/SVGigE.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Vistek.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/VistekContainer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/VistekInterface.cpp
@@ -86,13 +87,13 @@ set(plugin_RCC
 )
 
 if (QT5_FOUND)
-	#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-	QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-	QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 else (QT5_FOUND)
-	QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-	QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-	QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 endif (QT5_FOUND)
 
 #Add version information to the plugIn-dll unter MSVC
@@ -123,9 +124,9 @@ POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 # copy dlls to itoms lib folder
 IF (BUILD_TARGET64)
-    file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/VistekSDKdlls/64bit/*.dll")
+    file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/VistekGigESDK/64bit/*.dll")
 ELSE (BUILD_TARGET64)
-    file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/VistekSDKdlls/32bit/*.dll")
+    file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/VistekGigESDK/32bit/*.dll")
 ENDIF (BUILD_TARGET64)
 
 POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)

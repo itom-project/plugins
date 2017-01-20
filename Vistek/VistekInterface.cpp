@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "Vistek" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -88,24 +88,10 @@ VistekInterface::VistekInterface(QObject *parent)
 
     m_description = QObject::tr("SVS Vistek GigE grabber.");
 
-    //for the docstring, please don't set any spaces at the beginning of the line.
-/*    char* docstring = \
-"itom plugin for GigE cameras from SVS Vistek. Every camera is simply initialized by the serial number of the connected SVS Vistek camera. \
-(see camera housing). \n\
-\n\
-Some files of the SVGigE SDK are shipped within this plugin (currently 1.4.24). Please check the SVS Vistek website for newer versions of the SDK \
-and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the \
-official SDK of SVS Vistek. \n\
-\n\
-This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version \
-and make these libraries available for itom (PATH environment variable, system directory...). \n\
-\n\
-For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter.";
-    m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr("itom plugin for GigE cameras from SVS Vistek. Every camera is simply initialized by the serial number of the connected SVS Vistek camera. \
 (see camera housing). \n\
 \n\
-Some files of the SVGigE SDK are shipped within this plugin (currently 1.4.24). Please check the SVS Vistek website for newer versions of the SDK \
+Some files of the SVGigE SDK are shipped within this plugin (currently 1.5.2). Please check the SVS Vistek website for newer versions of the SDK \
 and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the \
 official SDK of SVS Vistek. \n\
 \n\
