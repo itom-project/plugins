@@ -45,7 +45,7 @@
     #include <pcl/sample_consensus/impl/msac.hpp>
     #include <pcl/sample_consensus/impl/rmsac.hpp>
     #include <pcl/sample_consensus/impl/mlesac.hpp>
-    #include <pcl/sample_consensus/impl/prosac.hpp>*/
+    #include <pcl/sample_consensus/impl/prosac.hpp>
     #include <pcl/sample_consensus/impl/sac_model_stick.hpp>
     #include <pcl/sample_consensus/impl/sac_model_circle3d.hpp>
     #include <pcl/sample_consensus/impl/sac_model_cone.hpp>
@@ -53,7 +53,7 @@
     #include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
     #include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
     #include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
-    #include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>*/
 #endif
 
 #include <qstring.h>

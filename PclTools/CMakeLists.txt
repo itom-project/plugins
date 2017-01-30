@@ -104,6 +104,12 @@ IF(ITOM_SDK_PCL_SUPPORT)
             ${CMAKE_CURRENT_SOURCE_DIR}/implIncludes.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFit.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGeneric.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGenericImpl.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGenericCircleImpl.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGenericConeImpl.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGenericCylinderImpl.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGenericPlaneImpl.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGenericSphereImpl.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclNurbs.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclProjectInliers.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/random_sample_corrected.cpp
