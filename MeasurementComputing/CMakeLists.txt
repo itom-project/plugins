@@ -114,16 +114,17 @@ IF(MeasurementComputing_DAQ_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
 
 
 	ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-	if(MSVC)
+	if (MSVC)
 		#delayload cbw32.dll or cbw64.dll
 		SET_TARGET_PROPERTIES (${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:cbw${bit_dest}.dll")
-		TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${VISUALLEAKDETECTOR_LIBRARIES} Delayimp.lib)
-	else(MSVC)
-		TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${VISUALLEAKDETECTOR_LIBRARIES})
-	endif(MSVC)
-	if (QT5_FOUND)
-		qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
-	endif (QT5_FOUND)
+		TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} Delayimp.lib)
+	else (MSVC)
+		TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+	endif (MSVC)
+
+    IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+        qt5_use_modules(${target_name} ${QT_COMPONENTS})
+    ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 	SET(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
 	PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")

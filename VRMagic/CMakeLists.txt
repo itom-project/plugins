@@ -120,11 +120,12 @@ IF(VRMAGIC_INCLUDE_DIR)
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} vrmusbcam2 ${VISUALLEAKDETECTOR_LIBRARIES}) 
+    
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} vrmusbcam2 ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) 
 
-    if (QT5_FOUND)
+    IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
         qt5_use_modules(${target_name} ${QT_COMPONENTS})
-    endif (QT5_FOUND)
+    ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     
     #translation
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})

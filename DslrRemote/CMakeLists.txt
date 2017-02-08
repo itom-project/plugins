@@ -118,18 +118,13 @@ IF (WIN32)
     SET(LIBGPHOTO2 optimized ./libgphoto2/$(Configuration)/libgphoto2 debug ./libgphoto2/$(Configuration)/libgphoto2d)
     SET(LIBGPHOTO2PORT optimized ./libgphoto2_port/$(Configuration)/libgphoto2_port debug ./libgphoto2_port/$(Configuration)/libgphoto2_portd)
 
-    TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} 
-    ${LTDLLIB}
-    ${REGEXLIB}
-    ${LIBGPHOTO2}
-    ${LIBGPHOTO2PORT}
-    )
+    TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${LTDLLIB} ${REGEXLIB} ${LIBGPHOTO2} ${LIBGPHOTO2PORT})
 ELSE(WIN32)
-    TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${LIBGPHOTO_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${LIBGPHOTO_LIBRARIES})
 ENDIF(WIN32)
-    if (QT5_FOUND)
-        qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
-    endif (QT5_FOUND)
+    IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+        qt5_use_modules(${target_name} ${QT_COMPONENTS})
+    ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 IF (WIN32)
     ADD_DEPENDENCIES(${target_name} regex)
