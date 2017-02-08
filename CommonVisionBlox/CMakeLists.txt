@@ -196,13 +196,11 @@ IF (DEFINED ENV{CVB})
     # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
     # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${XENETH_LIBRARY})
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
     IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
         qt5_use_modules(${target_name} ${QT_COMPONENTS})
     ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-
-    # SET_TARGET_PROPERTIES(${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:SC2_Cam.dll")
 
     #################################################################
     # Plugin Translation

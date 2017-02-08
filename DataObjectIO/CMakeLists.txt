@@ -25,7 +25,7 @@ ENDIF(BUILD_SHARED_LIBS)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON Widgets UiTools Xml LinguistTools)
+FIND_PACKAGE_QT(ON Core Widgets UiTools Xml LinguistTools)
 
 #run once so we get the installed opencv version
 find_package(OpenCV COMPONENTS core highgui REQUIRED)
@@ -104,7 +104,7 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
