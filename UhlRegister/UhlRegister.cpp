@@ -8,6 +8,7 @@
 #include <QtCore/QtPlugin>
 
 //#include "common/helperCommon.h"
+#define NOMINMAX
 
 #ifdef __linux__
     #include <unistd.h>
