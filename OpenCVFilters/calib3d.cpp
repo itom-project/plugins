@@ -412,7 +412,7 @@ before using it in the way that for each view, the last rows are cut where eithe
 
     paramsMand->append(ito::Param("objectPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("[NrOfViews x NrOfPoints x 3] float32 matrix with the coordinates of all points in object space (coordinate system of calibration pattern).. Non-finite rows at the end of each matrix-plane will be truncated.").toLatin1().data()));
     paramsMand->append(ito::Param("imagePoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("[NrOfViews x NrOfPoints x 2] float32 matrix with the pixel coordinates (u,v) of the corresponding plane in each view. Non-finite rows at the end of each matrix-plane will be truncated.").toLatin1().data()));
-    paramsMand->append(ito::Param("imageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("[width,height] of the camera image (in pixels)").toLatin1().data()));
+    paramsMand->append(ito::Param("imageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("[height,width] of the camera image (in pixels)").toLatin1().data()));
 
     paramsMand->append(ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output 3x3 float64 camera patrix. If flags CV_CALIB_USE_INTRINSIC_GUESS and/or CV_CALIB_FIX_ASPECT_RATIO are specified, this matrix must be initialized with right values and is unchanged").toLatin1().data()));
     paramsMand->append(ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output 1x4, 1x5 or 1x8 distortion values (float64). (k1, k2, p1, p2 [,k3 [,k4 ,k5 ,k6]])").toLatin1().data()));
