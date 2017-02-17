@@ -128,12 +128,14 @@ ItomHidApi::ItomHidApi() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL)
     paramVal = ito::Param("use_feature_report_not_output", ito::ParamBase::Int, 0, 1, 0, tr("if true, getVal and setVal will operate on feature reports, else on the output buffer (default)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
-
-    DockWidgetHidApi *dw = new DockWidgetHidApi(m_params, getID() );
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetHidApi *dw = new DockWidgetHidApi(m_params, getID());
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

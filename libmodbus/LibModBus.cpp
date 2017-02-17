@@ -152,12 +152,6 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("registers",ito::ParamBase::String | ito::ParamBase::In,"0,10",tr("Default string for register addressing. Coding is 'Reg1Address,Reg1Size;Reg2Address,Reg2Size...'").toLatin1().data());
     m_params.insert(paramVal.getName(),paramVal);
-
-    //now create dock widget for this plugin
-    /*DockWidgetLibModBus *dw = new DockWidgetLibModBus(m_params, getID() );
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

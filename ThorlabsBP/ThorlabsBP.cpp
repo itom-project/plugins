@@ -148,11 +148,14 @@ ThorlabsBP::ThorlabsBP() :
     m_currentStatus.fill(0, 1);
     m_targetPos.fill(0.0, 1);
 
-    //now create dock widget for this plugin
-    DockWidgetThorlabsBP *dockWidget = new DockWidgetThorlabsBP(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetThorlabsBP *dockWidget = new DockWidgetThorlabsBP(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
+    }
 
     memset(m_serialNo, '\0', sizeof(m_serialNo));
 }

@@ -134,11 +134,14 @@ AndorSDK3::AndorSDK3() :
 
 
     //now create dock widget for this plugin
-    DockWidgetSDK3 *dw = new DockWidgetSDK3(this);
+    if (hasGuiSupport())
+    {
+        DockWidgetSDK3 *dw = new DockWidgetSDK3(this);
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

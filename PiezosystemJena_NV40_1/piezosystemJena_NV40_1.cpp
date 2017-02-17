@@ -116,11 +116,14 @@ PiezosystemJena_NV40_1::PiezosystemJena_NV40_1() :
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
     m_currentPos = QVector<double>(1,0.0);
 
-    //now create dock widget for this plugin
-    m_dockWidget = new DockWidgetPiezosystemJena_NV40_1(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        m_dockWidget = new DockWidgetPiezosystemJena_NV40_1(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

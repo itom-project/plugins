@@ -1284,7 +1284,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
     //now create dock widget for this plugin
-    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
+    if (hasGuiSupport())
     {
         DockWidgetSerialIO *dw = new DockWidgetSerialIO(this);
         Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;

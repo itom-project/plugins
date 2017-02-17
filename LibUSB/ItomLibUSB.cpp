@@ -150,13 +150,16 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
     paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. The used index is LIBUSB_ENDPOINT_OUT + endpoint_write, with LIBUSB_ENDPOINT_OUT = %1  (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_OUT).toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
 
-    //now create dock widget for this plugin
-    DockWidgetLibUSB *dw = new DockWidgetLibUSB(m_params, getID() );
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+        //now create dock widget for this plugin
+        DockWidgetLibUSB *dw = new DockWidgetLibUSB(m_params, getID());
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

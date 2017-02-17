@@ -234,12 +234,15 @@ PCOSensicam::PCOSensicam() :
     paramVal = ito::Param("cam_type", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 10, 0, tr("PCO internal type number of camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
-    DockWidgetPCOSensicam *dw = new DockWidgetPCOSensicam(this);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetPCOSensicam *dw = new DockWidgetPCOSensicam(this);
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 
     checkData();
 }

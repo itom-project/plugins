@@ -191,12 +191,14 @@ PCOPixelFly::PCOPixelFly() :
     memset((void*) &(this->m_waited[0]), 0, BUFFERNUMBER*sizeof(bool));
     memset((void*) &(this->m_pAdr[0]), 0, BUFFERNUMBER*sizeof(void*));
 
-
-    //now create dock widget for this plugin
-    DockWidgetPCOPixelFly *myDockWidget = new DockWidgetPCOPixelFly(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, myDockWidget);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetPCOPixelFly *myDockWidget = new DockWidgetPCOPixelFly(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, myDockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

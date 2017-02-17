@@ -201,11 +201,14 @@ FireGrabber::FireGrabber() :
    //paramVal = ito::Param("fps", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("Read frames per second").toLatin1().data());
    //m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
-    DockWidgetFireGrabber *dw = new DockWidgetFireGrabber(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+   if (hasGuiSupport())
+   {
+       //now create dock widget for this plugin
+       DockWidgetFireGrabber *dw = new DockWidgetFireGrabber(this);
+       Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+       QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+       createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

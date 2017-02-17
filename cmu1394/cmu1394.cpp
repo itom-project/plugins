@@ -341,16 +341,19 @@ CMU1394::CMU1394() :  AddInGrabber(), m_saveParamsOnClose(false),
     paramVal = ito::Param("swapByteOrder", ito::ParamBase::Int, 0, 1, 0, tr("Swap byte order for 16bit images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
-    DockWidgetCMU1394 *cmuwdg = new DockWidgetCMU1394(m_params, getID());
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), cmuwdg, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-//    connect(cmuwdg, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this, SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
-    connect(cmuwdg, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
-    connect(cmuwdg, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetCMU1394 *cmuwdg = new DockWidgetCMU1394(m_params, getID());
+        connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), cmuwdg, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        //    connect(cmuwdg, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this, SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
+        connect(cmuwdg, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
+        connect(cmuwdg, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, cmuwdg);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, cmuwdg);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

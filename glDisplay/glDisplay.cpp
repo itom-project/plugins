@@ -320,11 +320,14 @@ GLDisplay::GLDisplay() :
         m_pWindow->resize(defwidth, defheight);
         m_pWindow->show();
 
-        //now create dock widget for this plugin
-        DockWidgetGLDisplay *DispWinWid = new DockWidgetGLDisplay(this);
-        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+        if (hasGuiSupport())
+        {
+            //now create dock widget for this plugin
+            DockWidgetGLDisplay *DispWinWid = new DockWidgetGLDisplay(this);
+            Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+            QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+            createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+        }
     }
 }
 

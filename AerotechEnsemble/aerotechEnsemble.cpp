@@ -164,25 +164,16 @@ AerotechEnsemble::AerotechEnsemble() :
 
     // // This is for the docking widged
     // //now create dock widget for this plugin
-    m_pAerotechEnsembleWid = new DockWidgetAerotechEnsemble(m_params, getID(), this);    // Create a new non-modal dialog
-//    m_pAerotechEnsembleWid = new DockWidgetAerotechEnsemble(this);    // Create a new non-modal dialog
-
-    //Marc: connect(this, SIGNAL(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)), USBMotion3XIIIWid, SLOT(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)));
-    //Marc: connect(this, SIGNAL(targetsChanged(QVector<bool>, QVector<double>)), USBMotion3XIIIWid, SLOT(targetsChanged(QVector<bool>, QVector<double>)));
-   
-//    connect(m_pAerotechEnsembleWid, SIGNAL(setAbsTargetDegree(double, double, double)), this, SLOT(setAbsTargetDegree(double, double, double)));
-//    connect(m_pAerotechEnsembleWid, SIGNAL(setRelTargetDegree(unsigned int, double)), this, SLOT(setRelTargetDegree(unsigned int, double)));
-
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_pAerotechEnsembleWid);    // Give the widget a name ..)
-   
-//    connect(m_pAerotechEnsembleWid, SIGNAL(MoveRelative(const int,const double ,ItomSharedSemaphore*)), this, SLOT(setPosRel(const int,const double, ItomSharedSemaphore*)));
-//    connect(m_pAerotechEnsembleWid, SIGNAL(MoveAbsolute(QVector<int>, QVector<double>, ItomSharedSemaphore*)), this, SLOT(setPosAbs(QVector<int>, QVector<double>, ItomSharedSemaphore*)));
-    connect(m_pAerotechEnsembleWid, SIGNAL(MotorTriggerStatusRequest(bool,bool)), this, SLOT(RequestStatusAndPosition(bool, bool)));
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), m_pAerotechEnsembleWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(this, SIGNAL(dockWidgetAerotechEnsembleInit(QMap<QString, ito::Param>, QStringList)), m_pAerotechEnsembleWid, SLOT(init(QMap<QString, ito::Param>, QStringList)));
-    // till here
+    if (hasGuiSupport())
+    {
+        m_pAerotechEnsembleWid = new DockWidgetAerotechEnsemble(m_params, getID(), this);    // Create a new non-modal dialog
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_pAerotechEnsembleWid);    // Give the widget a name ..)
+        connect(m_pAerotechEnsembleWid, SIGNAL(MotorTriggerStatusRequest(bool, bool)), this, SLOT(RequestStatusAndPosition(bool, bool)));
+        connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), m_pAerotechEnsembleWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        connect(this, SIGNAL(dockWidgetAerotechEnsembleInit(QMap<QString, ito::Param>, QStringList)), m_pAerotechEnsembleWid, SLOT(init(QMap<QString, ito::Param>, QStringList)));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

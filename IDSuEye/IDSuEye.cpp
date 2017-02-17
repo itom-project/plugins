@@ -133,12 +133,15 @@ IDSuEye::IDSuEye() :
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.04, 1000.0, 3.0, tr("timeout in seconds when waiting for the next image.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
-    DockWidgetIDS *dw = new DockWidgetIDS(this);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetIDS *dw = new DockWidgetIDS(this);
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 
     //globally disable message box based error messages
     is_SetErrorReport(0, IS_DISABLE_ERR_REP);

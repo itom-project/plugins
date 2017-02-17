@@ -868,25 +868,14 @@ UhlText::UhlText() : AddInActuator(), m_spitchx(0), m_resolution(0), m_pSer(NULL
 	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 20.0, tr("timeout for axes movements in seconds").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
-
-//now create dock widget for this plugin
-    DockWidgetUhl *UhlWid = new DockWidgetUhl(getID() , this);
-/*
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), UhlWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(UhlWid, SIGNAL(MoveRelative(const int,const double,ItomSharedSemaphore *)), this, SLOT(setPosRel(const int,const double,ItomSharedSemaphore *)));
-    connect(UhlWid, SIGNAL(MoveAbsolute(QVector<int>,QVector<double>,ItomSharedSemaphore *)), this, SLOT(setPosAbs(QVector<int>,QVector<double>,ItomSharedSemaphore *)));
-    connect(UhlWid, SIGNAL(MotorTriggerStatusRequest(void)), this, SLOT(RequestStatusAndPosition(void)));
-
-    connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), UhlWid, SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-    connect(this, SIGNAL(targetChanged(QVector<double>)), UhlWid, SLOT(targetChanged(QVector<double>)));
-
-//    connect(this, SIGNAL(PositioningStatusChanged(bool)), UhlWid, SLOT(MotorPosStatusChanged(bool)));
-//    connect(this, SIGNAL(SentStatusChanged(int)), UhlWid, SLOT(MotorStatusChanged(int)));
-//    connect(this, SIGNAL(SentPositionChanged(QVector<int>,QVector<double>)), UhlWid, SLOT(MotorPosChanged(QVector<int>,QVector<double>)));
-*/
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, UhlWid);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetUhl *UhlWid = new DockWidgetUhl(getID(), this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, UhlWid);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

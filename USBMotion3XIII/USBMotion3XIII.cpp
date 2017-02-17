@@ -420,16 +420,19 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
 
    // memset(m_pos, 0, 10 * sizeof(double));
 
-   // // This is for the docking widged
-   // //now create dock widget for this plugin
-   USBMotion3XIIIWid = new DockWidgetUSBMotion3XIII(this);    // Create a new non-modal dialog
+    if (hasGuiSupport())
+    {
+        // // This is for the docking widged
+        // //now create dock widget for this plugin
+        USBMotion3XIIIWid = new DockWidgetUSBMotion3XIII(this);    // Create a new non-modal dialog
 
-   //Marc: connect(this, SIGNAL(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)), USBMotion3XIIIWid, SLOT(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)));
-   //Marc: connect(this, SIGNAL(targetsChanged(QVector<bool>, QVector<double>)), USBMotion3XIIIWid, SLOT(targetsChanged(QVector<bool>, QVector<double>)));
+        //Marc: connect(this, SIGNAL(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)), USBMotion3XIIIWid, SLOT(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)));
+        //Marc: connect(this, SIGNAL(targetsChanged(QVector<bool>, QVector<double>)), USBMotion3XIIIWid, SLOT(targetsChanged(QVector<bool>, QVector<double>)));
 
-   Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-   QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, USBMotion3XIIIWid);    // Give the widget a name ..)
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, USBMotion3XIIIWid);    // Give the widget a name ..)
+    }
    
    // till here
     changeStatusTimer(false);

@@ -208,16 +208,16 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
 
     //now create dock widget for this plugin
    
-    DockWidgetAvantesAvaSpec *toolbox = new DockWidgetAvantesAvaSpec(this);
-
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas; //areas where the toolbox can be positioned (see Qt documentation)
-
-    //define some features, saying if the toolbox can be closed, can be undocked (floatable) and moved...
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | \
-    QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-
-    //register the toolbox
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, toolbox);
+    if (hasGuiSupport())
+    {
+        DockWidgetAvantesAvaSpec *toolbox = new DockWidgetAvantesAvaSpec(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas; //areas where the toolbox can be positioned (see Qt documentation)
+        //define some features, saying if the toolbox can be closed, can be undocked (floatable) and moved...
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | \
+            QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        //register the toolbox
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, toolbox);
+    }
     
 
 }

@@ -318,11 +318,14 @@ NanotecStepMotor::NanotecStepMotor() :
     m_currentStatus.fill(0, 1);
     m_targetPos.fill(0.0, 1);
 
-    //now create dock widget for this plugin
-    DockWidgetNanotecStepMotor *dockWidget = new DockWidgetNanotecStepMotor(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetNanotecStepMotor *dockWidget = new DockWidgetNanotecStepMotor(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

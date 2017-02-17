@@ -277,15 +277,18 @@ FileGrabber::FileGrabber() :
 
     m_preloadedObject = ito::DataObject();
 
-    //now create dock widget for this plugin
-    DockWidgetFileGrabber *dw = new DockWidgetFileGrabber(m_params, getID());
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(dw, SIGNAL(GainOffsetPropertiesChanged(double,double)), this, SLOT(GainOffsetPropertiesChanged(double,double)));
-    connect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetFileGrabber *dw = new DockWidgetFileGrabber(m_params, getID());
+        connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        connect(dw, SIGNAL(GainOffsetPropertiesChanged(double, double)), this, SLOT(GainOffsetPropertiesChanged(double, double)));
+        connect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 
     checkData();
 }

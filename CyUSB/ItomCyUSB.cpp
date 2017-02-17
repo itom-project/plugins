@@ -150,12 +150,14 @@ ItomCyUSB::ItomCyUSB() : AddInDataIO(),
 	paramVal = ito::Param("number_of_devices", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("maximum number of detected devices").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
-
-    //now create dock widget for this plugin
-    DockWidgetItomCyUSB *dw = new DockWidgetItomCyUSB(m_params, getID() );
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetItomCyUSB *dw = new DockWidgetItomCyUSB(m_params, getID());
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

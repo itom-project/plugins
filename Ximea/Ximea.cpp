@@ -253,7 +253,7 @@ Ximea::Ximea() :
     paramVal = ito::Param("color_camera", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 0, tr("0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
+    if (hasGuiSupport())
     {
         //now create dock widget for this plugin
         DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);

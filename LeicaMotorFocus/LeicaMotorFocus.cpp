@@ -505,19 +505,22 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
     m_currentPos.fill(0,1);
     m_targetPos.fill(0,1);
 
-//now create dock widget for this plugin
-    DockWidgetLeicaMotorFocus *LMFWid = new DockWidgetLeicaMotorFocus(m_params, getID() ,this);
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), LMFWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(LMFWid, SIGNAL(MoveRelative(const int,const double,ItomSharedSemaphore *)), this, SLOT(setPosRel(const int,const double,ItomSharedSemaphore *)));
-    connect(LMFWid, SIGNAL(MoveAbsolute(const int,const double,ItomSharedSemaphore *)), this, SLOT(setPosAbs(const int,const double,ItomSharedSemaphore *)));
-    connect(LMFWid, SIGNAL(MotorTriggerStatusRequest(bool,bool)), this, SLOT(requestStatusAndPosition(bool,bool)));
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetLeicaMotorFocus *LMFWid = new DockWidgetLeicaMotorFocus(m_params, getID(), this);
+        connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), LMFWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        connect(LMFWid, SIGNAL(MoveRelative(const int, const double, ItomSharedSemaphore *)), this, SLOT(setPosRel(const int, const double, ItomSharedSemaphore *)));
+        connect(LMFWid, SIGNAL(MoveAbsolute(const int, const double, ItomSharedSemaphore *)), this, SLOT(setPosAbs(const int, const double, ItomSharedSemaphore *)));
+        connect(LMFWid, SIGNAL(MotorTriggerStatusRequest(bool, bool)), this, SLOT(requestStatusAndPosition(bool, bool)));
 
-    connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), LMFWid, SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-    connect(this, SIGNAL(targetChanged(QVector<double>)), LMFWid, SLOT(targetChanged(QVector<double>)));
+        connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), LMFWid, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+        connect(this, SIGNAL(targetChanged(QVector<double>)), LMFWid, SLOT(targetChanged(QVector<double>)));
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, LMFWid);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, LMFWid);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

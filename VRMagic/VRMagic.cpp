@@ -138,13 +138,16 @@ VRMagic::VRMagic() :
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
     
-    //now create dock widget for this plugin
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
 
-    DockWidgetVRMagic *m_dockWidget = new DockWidgetVRMagic(getID(), this);
+        DockWidgetVRMagic *m_dockWidget = new DockWidgetVRMagic(getID(), this);
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

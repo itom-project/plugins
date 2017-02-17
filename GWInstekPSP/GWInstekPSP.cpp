@@ -313,14 +313,17 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
     paramVal = ito::Param("lock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Lock status 0: lock, 1: unlock").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-//now create dock widget for this plugin
-   DockWidgetGWInstekPSP *GWInstekPSPWidget = new DockWidgetGWInstekPSP(m_params, getID() );
-   connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), GWInstekPSPWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-   connect(GWInstekPSPWidget, SIGNAL(setParamVoltage(double)), this, SLOT(setParamVoltageFromWgt(double)));
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetGWInstekPSP *GWInstekPSPWidget = new DockWidgetGWInstekPSP(m_params, getID());
+        connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), GWInstekPSPWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        connect(GWInstekPSPWidget, SIGNAL(setParamVoltage(double)), this, SLOT(setParamVoltageFromWgt(double)));
 
-   Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-   QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, GWInstekPSPWidget);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, GWInstekPSPWidget);
+    }
 
    //register exec functions
     QVector<ito::Param> pMand;

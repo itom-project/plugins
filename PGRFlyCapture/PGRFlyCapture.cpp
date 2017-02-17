@@ -316,7 +316,7 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
 	paramVal = ito::Param("cam_register", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("Direct read/write of registers, use the hex-number of the register as suffix to read/write a specific register (e.g. getParam('cam_register:0xA01F'))").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
-    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
+    if (hasGuiSupport())
     {
         //now create dock widget for this plugin
         DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(this);

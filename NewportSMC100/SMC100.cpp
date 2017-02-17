@@ -105,11 +105,14 @@ SMC100::SMC100() :
 
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
 
-    //now create dock widget for this plugin
-    DockWidgetSMC100 *dockWidget = new DockWidgetSMC100(getID(), this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetSMC100 *dockWidget = new DockWidgetSMC100(getID(), this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

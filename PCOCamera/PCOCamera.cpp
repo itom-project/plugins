@@ -241,12 +241,15 @@ PCOCamera::PCOCamera() :
     paramVal = ito::Param("conversionFactor", ito::ParamBase::Double, 3.5, 3.8, 0.3, tr("Conversion factor in electrons/count").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //now create dock widget for this plugin
-    DockWidgetPCOCamera *dw = new DockWidgetPCOCamera(this);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetPCOCamera *dw = new DockWidgetPCOCamera(this);
 
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 
     checkData();
 }

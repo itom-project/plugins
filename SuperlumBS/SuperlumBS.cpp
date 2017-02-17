@@ -159,11 +159,14 @@ SuperlumBS::SuperlumBS() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandM
     paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabeld, (1) optical output is enabled.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     
-    //now create dock widget for this plugin
-    DockWidgetSuperlumBS *m_dockWidget = new DockWidgetSuperlumBS(getID(), this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetSuperlumBS *m_dockWidget = new DockWidgetSuperlumBS(getID(), this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -287,19 +287,6 @@ MeasurementComputing::MeasurementComputing() : AddInDataIO(),
 	pOpt.clear();
 	pOut.clear();
 
-    //now create dock widget for this plugin
-    /*
-	qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
-	DockWidgetMeasurementComputing *MeasurementComputingWidget = new DockWidgetMeasurementComputing(m_params, m_uniqueID);
-	connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), MeasurementComputingWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-	connect(this, SIGNAL(uniqueIDChanged(const int)), MeasurementComputingWidget, SLOT(uniqueIDChanged(const int)));
-	connect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), MeasurementComputingWidget, SLOT(serialLog(QByteArray, QByteArray, const char)));
-
-	Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-	QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-	createDockWidget("Serial IO", features, areas, MeasurementComputingWidget);
-	*/
-
 	//since the cbw32.dll or cbw64.dll are delay loaded, their first startup at the initialization of the first instance
 	//will need a lot of time such that timeouts may occure when calling the first cb... command in init. Therefore the
 	//following dummy command from the library is called here (in the thread of the caller without timeout constraints).

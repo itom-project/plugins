@@ -206,7 +206,7 @@ DummyMotor::DummyMotor() :
     m_currentStatus = QVector<int>(10, ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable);
     m_targetPos = QVector<double>(10, 0.0);
 
-    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
+    if (hasGuiSupport())
     {
         // This is for the docking widged
         //now create dock widget for this plugin

@@ -244,14 +244,6 @@ DslrRemote::DslrRemote() :
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("bitdepth of images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-
-/*
-    //now create dock widget for this plugin
-    DockWidgetDslrRemote *dw = new DockWidgetDslrRemote(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
-*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -321,11 +321,14 @@ DispWindow::DispWindow() :
 
         connect(m_pWindow, SIGNAL(numberOfImagesChanged(int, int, int)), this, SLOT(numberOfImagesChanged(int, int, int)));
 
-        //now create dock widget for this plugin
-        DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow(this);
-        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+        if (hasGuiSupport())
+        {
+            //now create dock widget for this plugin
+            DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow(this);
+            Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+            QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+            createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+        }
     }
 }
 
