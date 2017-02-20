@@ -194,7 +194,7 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     
 
     QString filename = QString::fromLatin1((*paramsMand)[0].getVal<char*>());
-    QString filenameLoad;
+    QString filenameLoad, dcrawExt(".pgm");
     QFileInfo ofileinfo(filename);
     if (!ofileinfo.exists())
     {
@@ -208,6 +208,11 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     }
 
     QString arguments = QString::fromLatin1((*paramsOpt)[0].getVal<char*>());
+
+    if (arguments.contains(" -T"))
+    {
+        dcrawExt = QString(".tiff");
+    }
 
     ito::DataObject dObj;   // create an mepty object
 
@@ -228,12 +233,12 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
             && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
         {
             filename = tmpPath + "/" + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
-            filenameLoad = tmpPath + "/" + ofileinfo.completeBaseName() + ".pgm";
+            filenameLoad = tmpPath + "/" + ofileinfo.completeBaseName() + dcrawExt;
         }
         else
         {
             filename = tmpPath + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
-            filenameLoad = tmpPath + ofileinfo.completeBaseName() + ".pgm";
+            filenameLoad = tmpPath + ofileinfo.completeBaseName() + dcrawExt;
         }
         QFile::copy(tmpFilename, filename);
         ofileinfo = QFileInfo(filename);
@@ -243,11 +248,11 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
         if (ofileinfo.path().lastIndexOf("/") < ofileinfo.path().length() - 1
             && ofileinfo.path().lastIndexOf("\\") < ofileinfo.path().length() - 1)
         {
-            filenameLoad = ofileinfo.path() + "/" + ofileinfo.completeBaseName() + ".pgm";
+            filenameLoad = ofileinfo.path() + "/" + ofileinfo.completeBaseName() + dcrawExt;
         }
         else
         {
-            filenameLoad = ofileinfo.path() + ofileinfo.completeBaseName() + ".pgm";
+            filenameLoad = ofileinfo.path() + ofileinfo.completeBaseName() + dcrawExt;
         }
     }
 
@@ -276,6 +281,12 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     {
         retval += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
     }
+
+    if (filename.length() > 0 && QFile::exists(filename))
+        QFile::remove(filename);
+
+    if (filenameLoad.length() > 0 && QFile::exists(filenameLoad))
+        QFile::remove(filenameLoad);
 
     if (!retval.containsError())
     {
