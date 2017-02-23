@@ -84,7 +84,13 @@ if (PLUGIN_dispWindow)
 endif (PLUGIN_dispWindow)
 
 # dslrRemote - not yet
-OPTION(PLUGIN_DslrRemote "Build with this plugin." ON)
+OPTION(PLUGIN_DslrRemote2 "Build with this plugin." OFF)
+if (PLUGIN_DslrRemote2)
+    ADD_SUBDIRECTORY(DslrRemote2)
+endif (PLUGIN_DslrRemote2)
+
+# dslrRemote - not yet
+OPTION(PLUGIN_DslrRemote "Build with this plugin." OFF)
 if (PLUGIN_DslrRemote)
     ADD_SUBDIRECTORY(DslrRemote)
 endif (PLUGIN_DslrRemote)
