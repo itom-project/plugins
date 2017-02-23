@@ -1104,7 +1104,7 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
 #define LCOGRADIUS(r,c) std::sqrt((float)(coarseRow[1] - r)*(float)(coarseRow[1] - r)+(float)(coarseRow[0] - c)*(float)(coarseRow[0] - c))
 
 #ifdef USEOPENMP
-    omp_set_num_threads(getMaximumThreadCount());
+    omp_set_num_threads(ito::AddInBase::getMaximumThreadCount());
     #pragma omp parallel
     {
 #endif  
@@ -2253,6 +2253,31 @@ Each line corresponds to one peak and contains its sub - pixel precise row and c
 This value may differ from the real peak value due to the search grid size of 'searchStepSize'. \n\
 \n\
 The parameter 'searchStepSize' is a list of two values, the first describes the vertical step size, the second the horizontal step size.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DataObjectArithmetic::findMultiSpotsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError()) return retval;
+
+    paramsMand->append(ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input 2D or 3D uint8 or uint16 data object (in case of 3D, every plane is analyzed independently and the resulting spot object is 3D as well. Indicate parameter 'maxNrOfSpots' in case of 3D.").toLatin1().data()));
+    paramsMand->append(ito::Param("spots", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("resulting data object with spot coordinates. Every line consists of the following entries: [sub-pixel wise row (physical coordinates), sub-pixel wise column (physical coordinates), coarse intensity of the peak, area of the peak (nr of pixels brighter than background)].").toLatin1().data()));
+
+    paramsOpt->append(ito::Param("backgroundNoise", ito::ParamBase::Int | ito::ParamBase::In, 0, 4095, 3, tr("maximum difference between two adjacent background values (used for deciding if pixel belongs to background or peak, only necessary in mode 0)").toLatin1().data()));
+    paramsOpt->append(ito::Param("minPeakHeight", ito::ParamBase::Int | ito::ParamBase::In, 2, 4095, 7, tr("minimum height of a peak (its maximum and the neighbouring background, only necessary in mode 0).").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxPeakDiameter", ito::ParamBase::Int | ito::ParamBase::In, 3, 65000, 15, tr("maximum diameter of a peak (this is used to distinguish between neighbouring peaks and the determination of the sub-pixel peak position).").toLatin1().data()));
+    int searchStepSize[] = { 2, 2 };
+    ito::Param p = ito::Param("searchStepSize", ito::ParamBase::IntArray | ito::ParamBase::In, 2, searchStepSize, tr("step size in pixel for the coarse search of peaks (for rows and columns)").toLatin1().data());
+    p.setMeta(new ito::IntArrayMeta(0, 1000, 1, 2, 2, 1), true);
+    paramsOpt->append(p);
+    paramsOpt->append(ito::Param("maxBackgroundLevel", ito::ParamBase::Int | ito::ParamBase::In, 0, 4095, 5, tr("maximum background level for subpixel determination, in mode 2 this value is the single value used to determine if value is a peak.").toLatin1().data()));
+    paramsOpt->append(ito::Param("mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 4, 0, tr("implemented modes are 0, 2 or 4. Depending on each mode, the search strategy of possible points in each line is kindly different and varies in speed and accuracy.").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxNrOfSpots", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("if > 0 the resulting spots object is limited to the maximum number of spots (unsorted), else it contains as many lines as detected spots. In case of a 3D image, every plane is analyzed. Then it becomes necessary to indicate this parameter. If 'spots' is then allocated with a bigger number of lines than detected peaks, the additional lines are filled with 0.0.").toLatin1().data()));
+
+    return retval;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::findMultiSpots(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
