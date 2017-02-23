@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "MSMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -211,6 +211,10 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("backlightCompensation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("backlightCompensation [0..1]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("whiteBalance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("whiteBalance [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gamma", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("gamma [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("brightnessAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled brightness (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -233,6 +237,10 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     paramVal = ito::Param("zoomAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled zoom (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("backlightCompensationAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled backlightCompensation (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("whiteBalanceAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled whiteBalance (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gammaAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled gamma (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
    
     /*paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toLatin1().data());
@@ -395,7 +403,7 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
     {
         //here the parameter val is checked if it can be casted to *it and if the
         //possible meta information requirements of *it are met.
-        retValue += apiValidateParam(*it, *val, false, true);
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
     if (!retValue.containsError())
@@ -554,7 +562,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
             int j = 0;
             int foundID = -1;
 
-            for (int i = 0; i < m_pVI->getCountFormats(m_deviceID); ++i)
+            for (unsigned int i = 0; i < m_pVI->getCountFormats(m_deviceID); ++i)
             {
                 mediaType = m_pVI->getFormat(m_deviceID, i);
 
@@ -824,8 +832,8 @@ ito::RetVal MSMediaFoundation::synchronizeCameraParametersToParams(bool firstCal
         if (m_camParams.Focus.Available && m_camParams.Focus.Max > m_camParams.Focus.Min)
         {
             m_camParamsHash["focus"] = &m_camParams.Focus;
-            m_camParamsHash["FocusAuto"] = &m_camParams.Focus;
-            synchronizeParam(m_camParams.Focus, m_params["focus"], m_params["FocusAuto"]);
+            m_camParamsHash["focusAuto"] = &m_camParams.Focus;
+            synchronizeParam(m_camParams.Focus, m_params["focus"], m_params["focusAuto"]);
         }
         else if (firstCall)
         {
@@ -879,6 +887,30 @@ ito::RetVal MSMediaFoundation::synchronizeCameraParametersToParams(bool firstCal
         {
             m_params.remove("backlightCompensation");
             m_params.remove("backlightCompensationAuto");
+        }
+
+        if (m_camParams.WhiteBalance.Available && m_camParams.WhiteBalance.Max > m_camParams.WhiteBalance.Min)
+        {
+            m_camParamsHash["whiteBalance"] = &m_camParams.WhiteBalance;
+            m_camParamsHash["whiteBalanceAuto"] = &m_camParams.WhiteBalance;
+            synchronizeParam(m_camParams.WhiteBalance, m_params["whiteBalance"], m_params["whiteBalanceAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("whiteBalance");
+            m_params.remove("whiteBalanceAuto");
+        }
+
+        if (m_camParams.Gamma.Available && m_camParams.Gamma.Max > m_camParams.Gamma.Min)
+        {
+            m_camParamsHash["gamma"] = &m_camParams.Gamma;
+            m_camParamsHash["gammaAuto"] = &m_camParams.Gamma;
+            synchronizeParam(m_camParams.Gamma, m_params["gamma"], m_params["gammaAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("gamma");
+            m_params.remove("gammaAuto");
         }
     }
 

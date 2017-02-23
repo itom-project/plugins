@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "MSMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -396,7 +396,7 @@ void DockWidgetMSMediaFoundation::on_cB_IntegrationTime_toggled(bool checked)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        ui.sW_Sharpness->setEnabled(!checked);
+        ui.combo_IntegrationTime->setEnabled(!checked);
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integrationTimeAuto", ito::ParamBase::Int, checked ? 1 : 0));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
