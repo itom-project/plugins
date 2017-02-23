@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "dataobjectarithmetic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -43,8 +43,6 @@
 #endif
 
 using namespace ito;
-
-int DataObjectArithmetic::numThreads = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -100,7 +98,6 @@ DataObjectArithmeticInterface::~DataObjectArithmeticInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObjectArithmetic::DataObjectArithmetic() : AddInAlgo()
 {
-    numThreads = std::max(1, QThread::idealThreadCount() - 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -483,11 +480,11 @@ const QString DataObjectArithmetic::devValueDoc = QObject::tr("The filter return
 \n\
 The optinal flag to toggles if (flag==0) the deviation is calculated by \n\
 \n\
-\n\    \sqrt(\sum{(x-xm)^2} / (n-1))\n\
+\n    \\sqrt(\\sum{(x-xm)^2} / (n-1))\n\
 \n\
 or (if flag == 1)\n\
 \n\
-\n\    \sqrt(\sum{(x-xm)^2} / n)\n\
+\n    \\sqrt(\\sum{(x-xm)^2} / n)\n\
 \n\
 The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
 \n");
@@ -1107,7 +1104,7 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
 #define LCOGRADIUS(r,c) std::sqrt((float)(coarseRow[1] - r)*(float)(coarseRow[1] - r)+(float)(coarseRow[0] - c)*(float)(coarseRow[0] - c))
 
 #ifdef USEOPENMP
-    omp_set_num_threads(DataObjectArithmetic::numThreads);
+    omp_set_num_threads(getMaximumThreadCount());
     #pragma omp parallel
     {
 #endif  
@@ -2228,6 +2225,580 @@ step3:
     return ito::retOk;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString DataObjectArithmetic::findMultiSpotsDoc = QObject::tr("This method determines the sub-pixel peak position of multiple spots in an image. \n\
+\n\
+This algorithm is implemented for 2D or 3D input images of type uint8 or uint16 only and has been developped with \
+respect to a fast implementation. At first, the image is analyzed line-wise with a line distancen of 'searchStepSize'. \n\
+In every line the coarse peak position of every 1D peak is analyzed. This can be done in two different ways (depending on the \n\
+parameter 'mode' (0, 2 or 4): \n\
+\n\
+In mode 0 (slightly slower) pixels belong to the background if their distance to the previous pixel (the search step size is also \
+considered in each line) is smaller than 'backgroundNoise'. If this is not the case, a potential peak starts. However this peak \
+is only a true peak, if the peak's height is bigger than 'minPeakHeight'. \n\
+\n\
+In mode 2, a peak consists of a sequence of pixels whose gray-value are all >= 'maxBackgroundLevel' (fast, but requires homogeneous background and peak levels). \n\
+\n\
+In mode 4, a peak can only start if a current gray-value is >= 'minPeakHeight' and if the difference to its previous pixel \n\
+is bigger than 'backgroundNoise'. The peak is only finished and hence stopped if the difference between its highest gray-value \n\
+and the start-value has been at least 'minPeakHeight', checked at the moment if the gradient is currently negative and its current \n\
+gray value is either below 'minPeakHeight' or its difference to the previous value is <= 'backgroundNoise'. \n\
+\n\
+After all peaks in all analyzed lines have been detected, peaks in adjacent lines(step size of 'searchStepSize') are clustered \
+considering the parameter 'maxPeakDiameter'.Finally the center of gravity is determined around each local maximum using 'maxPeakDiameter' \
+as rectangular size of the search rectangle around the coarse maximum position.The results are stored in the data object 'spots'. \
+The 'spots' object is two dimensional for a 2D input image, else 3D where the first dimension corresponds to the number of planes in 'input'. \
+Each line corresponds to one peak and contains its sub - pixel precise row and column as well as the coarse intensity value and the area of the peak. \
+This value may differ from the real peak value due to the search grid size of 'searchStepSize'. \n\
+\n\
+The parameter 'searchStepSize' is a list of two values, the first describes the vertical step size, the second the horizontal step size.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DataObjectArithmetic::findMultiSpots(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+#ifdef TIMEIT
+    float times[6];
+    int64 tick = cv::getTickCount();
+#endif
+
+    ito::RetVal retval;
+    const ito::DataObject *image = paramsMand->at(0).getVal<ito::DataObject*>();
+    int type = image->getType();
+    int dims = image->getDims();
+    const cv::Mat *plane = NULL;
+
+    MultiSpotParameters params;
+    params.backgroundNoise = paramsOpt->at(0).getVal<int>();
+    params.minPeakHeight = paramsOpt->at(1).getVal<int>();
+    params.maxPeakDiameter = paramsOpt->at(2).getVal<int>();
+    params.searchStepSizeHeight = paramsOpt->at(3).getVal<int*>()[0];
+    params.searchStepSizeWidth = paramsOpt->at(3).getVal<int*>()[1];
+    params.maxBackgroundLevel = paramsOpt->at(4).getVal<int>();
+    params.mode = paramsOpt->at(5).getVal<int>();
+
+    int maxNrOfSpots = paramsOpt->at(6).getVal<int>();
+    int nrOfPlanes = image->getNumPlanes();
+
+    if (type != ito::tUInt8 && type != ito::tUInt16)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("image must be of type uint8 or uint16").toLatin1().data());
+    }
+    else if (nrOfPlanes < 1)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("image must have at least one plane.").toLatin1().data());
+    }
+    else if (nrOfPlanes > 1 && maxNrOfSpots == 0)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("in case of a 3D input image please indicate the optional parameter 'maxNrOfSpots'").toLatin1().data());
+    }
+
+    if (!retval.containsError())
+    {
+        int rows = image->getSize(dims - 2);
+        int cols = image->getSize(dims - 1);
+        int cols_reduced = std::ceil((double)cols / (double)params.maxPeakDiameter);
+        int rows_reduced = std::ceil((double)rows / (double)params.searchStepSizeHeight);
+        ito::DataObject result;
+        ito::uint16 area;
+        int count;
+        ito::float32 *linePtr;
+
+        if (maxNrOfSpots > 0 && nrOfPlanes > 1)
+        {
+            result.zeros(nrOfPlanes, maxNrOfSpots, 4, ito::tFloat32);
+        }
+        else if (maxNrOfSpots > 0)
+        {
+            result.zeros(maxNrOfSpots, 4, ito::tFloat32);
+        }
+
+        if (type == ito::tUInt8)
+        {
+            //spots is completely uninitialized, therefore don't trust any value. The number of spots should be sufficient to hold all possible spots
+            Spot<ito::uint8> *spots = (Spot<ito::uint8>*)malloc(rows_reduced * cols_reduced * sizeof(Spot<ito::uint8>));
+            Spot<ito::uint8> *spots_temp;
+
+            for (int planeIdx = 0; planeIdx < nrOfPlanes; ++planeIdx)
+            {
+                plane = image->getCvPlaneMat(planeIdx);
+
+#ifdef TIMEIT
+                times[0] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+                spots_temp = spots;
+                for (int r = 0; r < rows; r += params.searchStepSizeHeight)
+                {
+                    //the spot value after the last valid one is marked with row = -1 by findMultiSpots1D!
+                    findMultiSpots1D<ito::uint8>((ito::uint8*)plane->ptr(r), r, cols, spots_temp, params);
+                    spots_temp += cols_reduced;
+                }
+#ifdef TIMEIT
+                times[1] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+
+                Spot<ito::uint8> finalSpotsRoot, tempSpotsRoot;
+                Spot<ito::uint8> *finalSpotsLast = &finalSpotsRoot;
+                Spot<ito::uint8> *firstSpotInLine;
+
+                for (int r = 0; r < rows_reduced; ++r)
+                {
+                    firstSpotInLine = &spots[r * cols_reduced];
+                    if (firstSpotInLine[0].row > -1)
+                    {
+                        clusterSpots<ito::uint8>(firstSpotInLine, &finalSpotsLast, &tempSpotsRoot, r, cols_reduced, params);
+                    }
+                }
+#ifdef TIMEIT
+                times[2] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+
+                finalSpotsLast->next = tempSpotsRoot.next /*first element of tempSpotsRoot, root is only a dummy element */;
+
+                if (maxNrOfSpots == 0)
+                {
+                    //count final spots
+                    finalSpotsLast = finalSpotsRoot.next;
+                    while (finalSpotsLast)
+                    {
+                        maxNrOfSpots++;
+                        finalSpotsLast = finalSpotsLast->next;
+                    }
+
+                    result = ito::DataObject(maxNrOfSpots, 4, ito::tFloat32);
+                }
+
+                finalSpotsLast = finalSpotsRoot.next;
+                count = 0;
+
+                //get subpixel peak for each spot
+                while (finalSpotsLast && count < maxNrOfSpots)
+                {
+                    linePtr = (ito::float32*)result.rowPtr(planeIdx, count);
+                    ++count;
+                    fastCOG<ito::uint8>(plane, finalSpotsLast->row, finalSpotsLast->col, params.maxPeakDiameter / 2, params.maxBackgroundLevel, linePtr[0], linePtr[1], area);
+                    linePtr[2] = finalSpotsLast->value;
+                    linePtr[3] = area;
+                    finalSpotsLast = finalSpotsLast->next;
+                    linePtr[0] = image->getPixToPhys(dims - 2, linePtr[0]);
+                    linePtr[1] = image->getPixToPhys(dims - 1, linePtr[1]);
+                }
+#ifdef TIMEIT
+                times[3] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+            }
+
+            free(spots);
+            spots = NULL;
+
+#ifdef TIMEIT
+            times[4] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+        }
+        else //type uint16
+        {
+            //spots is completely uninitialized, therefore don't trust any value. The number of spots should be sufficient to hold all possible spots
+            Spot<ito::uint16> *spots = (Spot<ito::uint16>*)malloc(rows_reduced * cols_reduced * sizeof(Spot<ito::uint16>));
+            Spot<ito::uint16> *spots_temp;
+
+            for (int planeIdx = 0; planeIdx < nrOfPlanes; ++planeIdx)
+            {
+                plane = image->getCvPlaneMat(planeIdx);
+
+#ifdef TIMEIT
+                times[0] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+                spots_temp = spots;
+                for (int r = 0; r < rows; r += params.searchStepSizeHeight)
+                {
+                    //the spot value after the last valid one is marked with row = -1 by findMultiSpots1D!
+                    findMultiSpots1D<ito::uint16>((ito::uint16*)plane->ptr(r), r, cols, spots_temp, params);
+                    spots_temp += cols_reduced;
+                }
+#ifdef TIMEIT
+                times[1] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+
+                Spot<ito::uint16> finalSpotsRoot, tempSpotsRoot;
+                Spot<ito::uint16> *finalSpotsLast = &finalSpotsRoot;
+                Spot<ito::uint16> *firstSpotInLine;
+
+                for (int r = 0; r < rows_reduced; ++r)
+                {
+                    firstSpotInLine = &spots[r * cols_reduced];
+                    if (firstSpotInLine[0].row > -1)
+                    {
+                        clusterSpots<ito::uint16>(firstSpotInLine, &finalSpotsLast, &tempSpotsRoot, r, cols_reduced, params);
+                    }
+                }
+#ifdef TIMEIT
+                times[2] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+
+                finalSpotsLast->next = tempSpotsRoot.next /*first element of tempSpotsRoot, root is only a dummy element */;
+
+                if (maxNrOfSpots == 0)
+                {
+                    //count final spots
+                    finalSpotsLast = finalSpotsRoot.next;
+                    while (finalSpotsLast)
+                    {
+                        maxNrOfSpots++;
+                        finalSpotsLast = finalSpotsLast->next;
+                    }
+
+                    result = ito::DataObject(maxNrOfSpots, 4, ito::tFloat32);
+                }
+
+                finalSpotsLast = finalSpotsRoot.next;
+                count = 0;
+
+                //get subpixel peak for each spot
+                while (finalSpotsLast && count < maxNrOfSpots)
+                {
+                    linePtr = (ito::float32*)result.rowPtr(planeIdx, count);
+                    ++count;
+                    fastCOG<ito::uint16>(plane, finalSpotsLast->row, finalSpotsLast->col, params.maxPeakDiameter / 2, params.maxBackgroundLevel, linePtr[0], linePtr[1], area);
+                    linePtr[2] = finalSpotsLast->value;
+                    linePtr[3] = area;
+                    finalSpotsLast = finalSpotsLast->next;
+                    linePtr[0] = image->getPixToPhys(dims - 2, linePtr[0]);
+                    linePtr[1] = image->getPixToPhys(dims - 1, linePtr[1]);
+                }
+#ifdef TIMEIT
+                times[3] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+            }
+
+            free(spots);
+            spots = NULL;
+
+#ifdef TIMEIT
+            times[4] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+#endif
+        }
+
+        *(paramsMand->at(1).getVal<ito::DataObject*>()) = result;
+#ifdef TIMEIT
+        times[5] = double(cv::getTickCount() - tick) / cv::getTickFrequency();
+        std::cout << times[0] * 1000.0 << " -> " << times[1] * 1000.0 << " -> " << times[2] * 1000.0 << " -> " << times[3] * 1000.0 << " -> " << \
+            times[4] * 1000.0 << " -> " << times[5] * 1000.0 << " \n" << std::endl;
+#endif
+    }
+
+    return retval;
+}
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------
+//only _Tp uint8 and uint16 are allowed
+//spots points to the first spot item that belongs to the analyzed row. spots must be long enough!
+template <typename _Tp> void DataObjectArithmetic::findMultiSpots1D(const _Tp *lineData, const int &row, const int &cols, Spot<_Tp>* spots, const MultiSpotParameters &params)
+{
+    if (params.mode & 0x02)
+    {
+        bool mode = 0; //false: need to find start of peak, true: start already found
+        _Tp peakPeakVal; //value of the potential maximum of the peak
+        int peakPeakCol1 = 0; //col index of the potential peak
+        int peakPeakCol2 = 0;
+        int idx = 0;
+
+        for (int c = 0; c <= cols - params.searchStepSizeWidth; c += params.searchStepSizeWidth)
+        {
+            if (!mode)
+            {
+                if (lineData[c] > params.maxBackgroundLevel)
+                {
+                    peakPeakCol1 = peakPeakCol2 = c;
+                    peakPeakVal = lineData[c];
+                    mode = true;
+                }
+            }
+            else
+            {
+                if (lineData[c] >= peakPeakVal)
+                {
+                    if (lineData[c] == peakPeakVal)
+                    {
+                        peakPeakCol2 = c;
+                    }
+                    else
+                    {
+                        peakPeakCol1 = peakPeakCol2 = c;
+                        peakPeakVal = lineData[c];
+                    }
+                }
+                else if (lineData[c] <= params.maxBackgroundLevel)
+                {
+                    mode = false;
+                    spots[idx].row = row;
+                    spots[idx].col = (peakPeakCol1 + peakPeakCol2) / 2;
+                    spots[idx++].value = peakPeakVal;
+                }
+            }
+        }
+
+        spots[idx].row = -1; //mark the item after the last valid item with row = -1
+    }
+    else if (params.mode & 0x04)
+    {
+        int idx = 0;
+        int mode = 0; //0: no peak in sight yet, 1: peak started
+        _Tp peakStartVal = lineData[0]; //first, left potential value of a peak
+        _Tp peakPeakVal = lineData[0]; //value of the potential maximum of the peak
+        int peakPeakCol = 0; //col index of the potential peak
+        int peakPeakColTemp = 0; //col index of the potential peak (if the peak is a plateau, this index is always the begin of the plateau)
+        int diff;
+
+        for (int c = 0; c <= cols - params.searchStepSizeWidth; c += params.searchStepSizeWidth)
+        {
+            if (mode == 0)
+            {
+                //search for start of raising flank of peak
+
+                diff = lineData[c] - peakStartVal;
+                if ((diff > params.backgroundNoise) && lineData[c] >= params.minPeakHeight)
+                {
+                    peakPeakVal = lineData[c];
+                    peakPeakCol = peakPeakColTemp = c;
+                    mode = 1;
+                }
+                else
+                {
+                    peakStartVal = lineData[c];
+                }
+            }
+            else
+            {
+                //search for falling flank of peak
+
+                diff = lineData[c] - peakPeakVal;
+                if (diff > 0) //peak weiter steigend
+                {
+                    peakPeakVal = lineData[c];
+                    peakPeakCol = peakPeakColTemp = c;
+                }
+                else if (diff == 0) //stagniert
+                {
+                    peakPeakCol = int((c + peakPeakColTemp) / 2);
+                }
+                else //peak faellt, ist er schon vorbei?
+                {
+                    if (lineData[c] < params.minPeakHeight || (std::abs(diff) <= params.backgroundNoise)) //peak ist vorbei, war er aber auch hoch genug?
+                    {
+                        if (peakPeakVal - peakStartVal >= params.minPeakHeight)
+                        {
+                            spots[idx].row = row;
+                            spots[idx].col = peakPeakCol;
+                            spots[idx].value = peakPeakVal;
+                            idx++;
+                            mode = 0;
+                            c += params.maxPeakDiameter;
+                            peakStartVal = lineData[c];
+                        }
+                        else //peak war nicht hoch genug
+                        {
+                            mode = 0;
+                            peakStartVal = lineData[c];
+                        }
+                    }
+                }
+            }
+        }
+
+        spots[idx].row = -1; //mark the item after the last valid item with row = -1
+    }
+    else
+    {
+        int idx = 0;
+        int mode = 0; //0: no peak in sight yet, 1: peak started
+        _Tp peakStartVal = lineData[0]; //first, left potential value of a peak
+        _Tp peakPeakVal = lineData[0]; //value of the potential maximum of the peak
+        int peakPeakCol = 0; //col index of the potential peak
+        int peakPeakColTemp = 0; //col index of the potential peak (if the peak is a plateau, this index is always the begin of the plateau)
+        int diff;
+
+        for (int c = 0; c <= cols - params.searchStepSizeWidth; c += params.searchStepSizeWidth)
+        {
+            if (mode == 0)
+            {
+                //search for start of raising flank of peak
+
+                diff = lineData[c] - peakStartVal;
+                if (diff > params.backgroundNoise)
+                {
+                    peakPeakVal = lineData[c];
+                    peakPeakCol = peakPeakColTemp = c;
+                    mode = 1;
+                }
+                else
+                {
+                    peakStartVal = lineData[c];
+                }
+            }
+            else
+            {
+                //search for falling flank of peak
+
+                diff = lineData[c] - peakPeakVal;
+                if (diff > 0) //peak weiter steigend
+                {
+                    peakPeakVal = lineData[c];
+                    peakPeakCol = peakPeakColTemp = c;
+                }
+                else if (diff == 0) //stagniert
+                {
+                    peakPeakCol = int((c + peakPeakColTemp) / 2);
+                }
+                else //peak faellt, ist er schon vorbei?
+                {
+                    if (std::abs(lineData[c] - peakStartVal) <= params.backgroundNoise) //peak ist vorbei, war er aber auch hoch genug?
+                    {
+                        if (peakPeakVal - peakStartVal >= params.minPeakHeight)
+                        {
+                            spots[idx].row = row;
+                            spots[idx].col = peakPeakCol;
+                            spots[idx].value = peakPeakVal;
+                            idx++;
+                            mode = 0;
+                            c += params.maxPeakDiameter;
+                            peakStartVal = lineData[c];
+                        }
+                        else //peak war nicht hoch genug
+                        {
+                            mode = 0;
+                            peakStartVal = lineData[c];
+                        }
+                    }
+                }
+            }
+        }
+
+        spots[idx].row = -1; //mark the item after the last valid item with row = -1
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//only _Tp uint8 and uint16 are allowed
+template <typename _Tp> void DataObjectArithmetic::clusterSpots(Spot<_Tp> *spots, Spot<_Tp> **finalSpotsLast, Spot<_Tp> *tempSpotsRoot, const int rowIdx, const int &spotsSlice, const MultiSpotParameters &params)
+{
+    Spot<_Tp> *tempSpotsLast = tempSpotsRoot; //root is dummy, the next element is the first real temporary spot
+
+    //1. check if any tempSpots are out of currentRow and therefore final
+    if (tempSpotsRoot->next) //temporary elements exist
+    {
+        int rowLimit = rowIdx * params.searchStepSizeHeight - params.maxPeakDiameter;
+
+        while (tempSpotsLast->next)
+        {
+            if (tempSpotsLast->next->row < rowLimit)
+            {
+                (*finalSpotsLast)->next = tempSpotsLast->next;
+                *finalSpotsLast = (*finalSpotsLast)->next; //move finalSpotsLast to newly appended element
+                tempSpotsLast->next = (*finalSpotsLast)->next;
+                (*finalSpotsLast)->next = NULL;
+            }
+            else
+            {
+                tempSpotsLast = tempSpotsLast->next;
+            }
+        }
+    }
+
+    //2. now all items in temporaryPeaks are in the range of any peak in currentRow
+    //    check all peaks in currentRow and verify if they are the same than one in temporaryPeaks
+    //    if so, use the higher one, else: append the new peak to temporaryPeaks
+    Spot<_Tp> *item;
+    Spot<_Tp> *tempItem = tempSpotsRoot->next;
+    bool found;
+    for (int i = 0; i < spotsSlice; ++i)
+    {
+        found = false;
+        item = &(spots[i]);
+        if (item->row >= 0) //valid spot
+        {
+            tempItem = tempSpotsRoot->next;
+
+            while (tempItem)
+            {
+                if (std::abs(item->col - tempItem->col) <= params.maxPeakDiameter)
+                {
+                    //found
+                    if (item->value >= tempItem->value)
+                    {
+                        tempItem->col = item->col;
+                        tempItem->row = item->row;
+                        tempItem->value = item->value;
+                    }
+
+                    found = true;
+                    break;
+                }
+
+                tempItem = tempItem->next;
+            }
+
+            if (!found)
+            {
+                tempSpotsLast->next = item;
+                tempSpotsLast = item;
+                item->next = NULL;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template <typename _Tp> void DataObjectArithmetic::fastCOG(const cv::Mat *img, const int row, const int col, const int halfSize, const _Tp lowThreshold, ito::float32 &rowSubPix, ito::float32 &colSubPix, ito::uint16 &area)
+{
+    int startRow = std::max(0, row - halfSize);
+    int startCol = std::max(0, col - halfSize);
+    int width = std::min(1 + 2 * halfSize, img->cols - startCol);
+    int height = std::min(1 + 2 * halfSize, img->rows - startRow);
+    int dm, dn;
+
+    _Tp val;
+    unsigned int sumva = 0, sumMv = 0, sumNv = 0;
+    size_t step_Tp = img->step[0] / sizeof(_Tp);
+    area = 0;
+
+    const _Tp *rowPtr = &(((_Tp*)(img->ptr(startRow)))[startCol]);
+
+    for (dm = 0; dm < height; ++dm)
+    {
+        for (dn = 0; dn < width; ++dn)
+        {
+            if (rowPtr[dn] >= lowThreshold)
+            {
+                val = rowPtr[dn] - lowThreshold;
+                sumva += val;
+                sumMv += val * dm;
+                sumNv += val * dn;
+                area += 1;
+            }
+        }
+        rowPtr += step_Tp;
+    }
+
+    if (sumva != 0)
+    {
+        rowSubPix = (ito::float32)startRow + ((ito::float32)sumMv / (ito::float32)sumva);
+        colSubPix = (ito::float32)startCol + ((ito::float32)sumNv / (ito::float32)sumva);
+    }
+    else
+    {
+        rowSubPix = std::numeric_limits<ito::float32>::quiet_NaN();
+        colSubPix = std::numeric_limits<ito::float32>::quiet_NaN();
+    }
+}
+
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObjectArithmetic::~DataObjectArithmetic()
 {
@@ -2284,6 +2855,8 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
 
     filter = new FilterDef(autoFocusEstimate, autoFocusEstimateParams, autoFocusEstimateDoc);
     m_filterList.insert("autofocusEstimate", filter);
+
+    m_filterList.insert("findMultiSpots", new FilterDef(findMultiSpots, findMultiSpotsParams, findMultiSpotsDoc));
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
