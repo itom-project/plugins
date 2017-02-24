@@ -2568,24 +2568,22 @@ template <typename _Tp> void DataObjectArithmetic::findMultiSpots1D(const _Tp *l
     else if (params.mode & 0x04)
     {
         int idx = 0;
-        int mode = 0; //0: no peak in sight yet, 1: peak started
+        int mode = 0; //0: no peak in sight yet, 1: peak started, 2: maximum reached, check the falling edge
         _Tp peakStartVal = lineData[0]; //first, left potential value of a peak
         _Tp peakPeakVal = lineData[0]; //value of the potential maximum of the peak
         int peakPeakCol = 0; //col index of the potential peak
-        int peakPeakColTemp = 0; //col index of the potential peak (if the peak is a plateau, this index is always the begin of the plateau)
         int diff;
 
         for (int c = 0; c <= cols - params.searchStepSizeWidth; c += params.searchStepSizeWidth)
         {
-            if (mode == 0)
+            if (mode == 0) //below background
             {
                 //search for start of raising flank of peak
-
-                diff = lineData[c] - peakStartVal;
-                if ((diff > params.backgroundNoise) && lineData[c] >= (params.maxBackgroundLevel + params.minPeakHeight))
+                if (lineData[c] >= params.maxBackgroundLevel)
                 {
                     peakPeakVal = lineData[c];
-                    peakPeakCol = peakPeakColTemp = c;
+                    peakStartVal = lineData[c];
+                    peakPeakCol = c;
                     mode = 1;
                 }
                 else
@@ -2593,40 +2591,36 @@ template <typename _Tp> void DataObjectArithmetic::findMultiSpots1D(const _Tp *l
                     peakStartVal = lineData[c];
                 }
             }
-            else
+            else if (mode == 1) //raising edge
             {
-                //search for falling flank of peak
-
-                diff = lineData[c] - peakPeakVal;
-                if (diff > 0) //peak weiter steigend
+                if (lineData[c] < params.maxBackgroundLevel)
+                {
+                    peakStartVal = lineData[c];
+                    mode = 0;
+                }
+                else if ((lineData[c] - peakStartVal) >= params.minPeakHeight)
                 {
                     peakPeakVal = lineData[c];
-                    peakPeakCol = peakPeakColTemp = c;
+                    peakPeakCol = c;
+                    mode = 2;
                 }
-                else if (diff == 0) //stagniert
+            }
+            else if (mode == 2)
+            {
+                if (lineData[c] < params.maxBackgroundLevel)
                 {
-                    peakPeakCol = int((c + peakPeakColTemp) / 2);
+                    spots[idx].row = row;
+                    spots[idx].col = peakPeakCol;
+                    spots[idx].value = peakPeakVal;
+                    idx++;
+                    mode = 0;
+                    c = peakPeakCol + params.maxPeakDiameter;
+                    peakStartVal = lineData[c];
                 }
-                else //peak faellt, ist er schon vorbei?
+                else if (lineData[c] > peakPeakVal)
                 {
-                    if ((lineData[c] < (params.maxBackgroundLevel + params.minPeakHeight)) || ((std::abs(diff) <= params.backgroundNoise))) //peak ist vorbei, war er aber auch hoch genug?
-                    {
-                        if ((peakPeakVal - peakStartVal) >= params.minPeakHeight)
-                        {
-                            spots[idx].row = row;
-                            spots[idx].col = peakPeakCol;
-                            spots[idx].value = peakPeakVal;
-                            idx++;
-                            mode = 0;
-                            c += params.maxPeakDiameter;
-                            peakStartVal = lineData[c];
-                        }
-                        else //peak war nicht hoch genug
-                        {
-                            mode = 0;
-                            peakStartVal = lineData[c];
-                        }
-                    }
+                    peakPeakVal = lineData[c];
+                    peakPeakCol = c;
                 }
             }
         }
