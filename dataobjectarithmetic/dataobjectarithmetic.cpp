@@ -2582,7 +2582,7 @@ template <typename _Tp> void DataObjectArithmetic::findMultiSpots1D(const _Tp *l
                 //search for start of raising flank of peak
 
                 diff = lineData[c] - peakStartVal;
-                if ((diff > params.backgroundNoise) && lineData[c] >= params.minPeakHeight)
+                if ((diff > params.backgroundNoise) && lineData[c] >= (params.maxBackgroundLevel + params.minPeakHeight))
                 {
                     peakPeakVal = lineData[c];
                     peakPeakCol = peakPeakColTemp = c;
@@ -2609,9 +2609,9 @@ template <typename _Tp> void DataObjectArithmetic::findMultiSpots1D(const _Tp *l
                 }
                 else //peak faellt, ist er schon vorbei?
                 {
-                    if (lineData[c] < params.minPeakHeight || (std::abs(diff) <= params.backgroundNoise)) //peak ist vorbei, war er aber auch hoch genug?
+                    if ((lineData[c] < (params.maxBackgroundLevel + params.minPeakHeight)) || ((std::abs(diff) <= params.backgroundNoise))) //peak ist vorbei, war er aber auch hoch genug?
                     {
-                        if (peakPeakVal - peakStartVal >= params.minPeakHeight)
+                        if ((peakPeakVal - peakStartVal) >= params.minPeakHeight)
                         {
                             spots[idx].row = row;
                             spots[idx].col = peakPeakCol;
