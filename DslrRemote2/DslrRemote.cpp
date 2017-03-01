@@ -251,6 +251,18 @@ DslrRemote::DslrRemote() :
     paramVal = ito::Param("oper", ito::ParamBase::String, "", tr("Operation, if none given list is returned").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    //register exec functions
+    QVector<ito::Param> pMand = QVector<ito::Param>()
+        << ito::Param("filename", ito::ParamBase::String, "", tr("Name of file to download").toLatin1().data())
+        << ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "data of downloaded file");
+    QVector<ito::Param> pOpt = QVector<ito::Param>();
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+    registerExecFunc("getFile", pMand, pOpt, pOut, tr("download a file"));
+
+    pMand = QVector<ito::Param>();
+    pOpt = QVector<ito::Param>();
+    pOut = QVector<ito::Param>() << ito::Param("filelist", ito::ParamBase::String | ito::ParamBase::Out, "", tr("List of files on device").toLatin1().data());
+    registerExecFunc("listFiles", pMand, pOpt, pOut, tr("list all files stored on device"));
 /*
     //now create dock widget for this plugin
     DockWidgetDslrRemote *dw = new DockWidgetDslrRemote(this);
@@ -855,6 +867,60 @@ ito::RetVal DslrRemote::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DslrRemote::getFileFromCam(ito::DataObject *data, const uint32_t fhandle, const uint32_t ftype)
+{
+    ito::RetVal retval;
+    QString tmpPath = QDir::tempPath();
+    qsrand(QDateTime::currentDateTime().toTime_t());
+    QString tmpFileName;
+
+    if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1
+        && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
+    {
+        tmpFileName = tmpPath + "/" + QString::number(qrand());
+    }
+    else
+    {
+        tmpFileName = tmpPath + QString::number(qrand());
+    }
+
+    retval += m_ptp_cam->get_file(m_ptp_portnum, 0, fhandle, tmpFileName.toLatin1().data(), 1);
+
+    if (ftype == 14337)
+    {
+        QVector<ito::ParamBase> filterParamsMand(0);
+        QVector<ito::ParamBase> filterParamsOpt(0);
+        QVector<ito::ParamBase> filterParamsOut(0);
+
+        retval += apiFilterParamBase("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+        filterParamsMand[0].setVal<void*>((void*)data);
+        filterParamsMand[1].setVal<char*>(tmpFileName.toLatin1().data());
+        if (!retval.containsWarningOrError())
+        {
+            retval += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+        }
+    }
+    else if (ftype == 12288)
+    {
+        QVector<ito::ParamBase> filterParamsMand(0);
+        QVector<ito::ParamBase> filterParamsOpt(0);
+        QVector<ito::ParamBase> filterParamsOut(0);
+
+        retval += apiFilterParamBase("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+        filterParamsOpt[0].setVal<int>(0);
+        filterParamsMand[1].setVal<void*>((void*)data);
+        filterParamsMand[0].setVal<char*>(tmpFileName.toLatin1().data());
+        if (!retval.containsWarningOrError())
+        {
+            retval += apiFilterCall("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+        }
+    }
+    remove(tmpFileName.toLatin1().data());
+
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
@@ -890,59 +956,11 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
         }
 */
 
-        QString tmpPath = QDir::tempPath();
-        qsrand(QDateTime::currentDateTime().toTime_t());
-        QString tmpFileName;
-//        FILE *tmpFile = fopen(tmpFileName.toLatin1().data(), "w+");
-
-        if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1
-            && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
-        {
-             tmpFileName = tmpPath + "/" + QString::number(qrand());
-        }
-        else
-        {
-            tmpFileName = tmpPath + QString::number(qrand());
-        }
-
-//        QVector<QString> FileList;
-//        retValue += m_ptp_cam->list_files(m_ptp_portnum, 0, FileList);
         uint32_t fhandle;
         int ftype;
         retValue += m_ptp_cam->get_last_file_handle(m_ptp_portnum, 0, m_lastImgNum, fhandle, ftype, this);
         m_lastImgNum++;
-        retValue += m_ptp_cam->get_file(m_ptp_portnum, 0, fhandle, tmpFileName.toLatin1().data(), 1);
-
-        if (ftype == 14337)
-        {
-            QVector<ito::ParamBase> filterParamsMand(0);
-            QVector<ito::ParamBase> filterParamsOpt(0);
-            QVector<ito::ParamBase> filterParamsOut(0);
-
-            retValue += apiFilterParamBase("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
-            filterParamsMand[0].setVal<char*>((char*)&m_data);
-            filterParamsMand[1].setVal<char*>(tmpFileName.toLatin1().data());
-            if (!retValue.containsWarningOrError())
-            {
-                retValue += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
-            }
-        }
-        else if (ftype == 12288)
-        {
-            QVector<ito::ParamBase> filterParamsMand(0);
-            QVector<ito::ParamBase> filterParamsOpt(0);
-            QVector<ito::ParamBase> filterParamsOut(0);
-
-            retValue += apiFilterParamBase("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
-            filterParamsOpt[0].setVal<int>(0);
-            filterParamsMand[1].setVal<char*>((char*)&m_data);
-            filterParamsMand[0].setVal<char*>(tmpFileName.toLatin1().data());
-            if (!retValue.containsWarningOrError())
-            {
-                retValue += apiFilterCall("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
-            }
-        }
-        remove(tmpFileName.toLatin1().data());
+        retValue += getFileFromCam(&m_data, fhandle, ftype);
 
         if (externalDataObject)
         {
@@ -974,3 +992,57 @@ void DslrRemote::dockWidgetVisibilityChanged(bool visible)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DslrRemote::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    ito::ParamBase *param1 = NULL;
+    ito::ParamBase *param2 = NULL;
+    ito::ParamBase *param3 = NULL;
+
+    if (funcName == "listFiles")
+    {
+//        param1 = ito::getParamByName(&(*paramsMand), "filelist", &retValue);
+
+        if (!retValue.containsError())
+        {
+            QVector<QString> FileList;
+            QString filelststr;
+            retValue += m_ptp_cam->list_files(m_ptp_portnum, 0, FileList, this);
+            for (int nf = 0; nf < FileList.length(); nf++)
+            {
+                filelststr.append(FileList[nf]);
+                filelststr.append(" ");
+            }
+            (*paramsOut)[0].setVal<void*>(filelststr.toLatin1().data());
+        }
+    }
+    else if (funcName == "getFile")
+    {
+        param1 = ito::getParamByName(&(*paramsMand), "filename", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "data", &retValue);
+
+        // first try if we got a handle passed
+        uint32_t fhandle = atoi((char*)param1->getVal<void*>());
+        if (fhandle != 0)
+        {
+            uint32_t ftype;
+            retValue += getFileFromCam((ito::DataObject*)param2->getVal<void*>(), fhandle, ftype);
+        }
+        else
+        {
+            uint32_t ftype;
+            retValue += m_ptp_cam->get_filehandlebyname(m_ptp_portnum, 0, (char*)param1->getVal<void*>(), fhandle, ftype, this);
+            retValue += getFileFromCam((ito::DataObject*)param2->getVal<void*>(), fhandle, ftype);
+        }
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------

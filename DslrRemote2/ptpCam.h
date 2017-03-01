@@ -60,12 +60,13 @@ public:
     ito::RetVal nikon_direct_capture(int portnum, short force, char* filename, int overwrite);
     ito::RetVal nikon_direct_capture2(int portnum, short force, char* filename, int overwrite);
     ito::RetVal get_last_file_handle(int portnum, short force, int &imgNum, uint32_t &handle, int &fileType, DslrRemote *parentHandle);
-    ito::RetVal list_files(int portnum, short force, QVector<QString> &fileList);
+    ito::RetVal list_files(int portnum, short force, QVector<QString> &fileList, DslrRemote *parentHandle);
     ito::RetVal delete_object(int portnum, short force, uint32_t handle);
     ito::RetVal delete_all_files(int portnum, short force);
     ito::RetVal save_object(PTPParams *params, uint32_t handle, char* filename, PTPObjectInfo oi, int overwrite);
     ito::RetVal get_save_object(PTPParams *params, uint32_t handle, char* filename, int overwrite);
     ito::RetVal get_file(int portnum, short force, uint32_t handle, char* filename, int overwrite);
+    ito::RetVal get_filehandlebyname(int portnum, short force, char *camfilename, uint32_t &fhandle, uint32_t &type, DslrRemote *parentHandle);
     ito::RetVal get_all_files(int portnum, short force, int overwrite);
     ito::RetVal send_generic_request(int portnum, uint16_t reqCode, uint32_t *reqParams, uint32_t direction, char *data_file);
     ito::RetVal list_operations(int portnum, short force, QVector<QString> &operations);

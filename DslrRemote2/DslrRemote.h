@@ -79,6 +79,8 @@ class DslrRemote : public ito::AddInGrabber
         int m_ptp_portnum;
         int m_lastImgNum;
 
+        ito::RetVal getFileFromCam(ito::DataObject *data, const uint32_t fhandle, const uint32_t ftype);
+
     signals:
 
     public slots:
@@ -93,6 +95,8 @@ class DslrRemote : public ito::AddInGrabber
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

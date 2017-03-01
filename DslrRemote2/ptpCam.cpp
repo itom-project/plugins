@@ -1440,7 +1440,7 @@ ito::RetVal PtpCam::get_last_file_handle(int portnum, short force, int &imgNum, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileList)
+ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileList, DslrRemote *parentHandle)
 {
     ito::RetVal retval;
     PTPParams params;
@@ -1467,14 +1467,15 @@ ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileL
     // printf("Handler:           Size: \tCaptured:      \tname:\n");
     for (i = 0; i < params.handles.n; i++) 
     {
+        parentHandle->setAlive();
         // CR(ptp_getobjectinfo(&params, params.handles.Handler[i],
         //    &oi), "Could not get object info\n");
-        if (ptp_getobjectinfo(&params, params.handles.Handler[i], &oi))
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not get object info").toLatin1().data());
+        if (ptp_getobjectinfo(&params, params.handles.Handler[i], &oi) != PTP_RC_OK)
+            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Could not get object info").toLatin1().data());
         if (oi.ObjectFormat == PTP_OFC_Association)
             continue;
         tm = gmtime(&oi.CaptureDate);
-        fileList.append(QString("0x%1: %2\t %3 - %4 - %5 %6: %7\t%8").arg(QString::number(params.handles.Handler[i]),
+        fileList.append(QString("0x%1 %2 %3/%4/%5 %6:%7 %8;").arg(QString::number(params.handles.Handler[i]),
             QString::number(oi.ObjectCompressedSize), QString::number(tm->tm_year + 1900), 
             QString::number(tm->tm_mon + 1), QString::number(tm->tm_mday),
             QString::number(tm->tm_hour), QString::number(tm->tm_min), QString(oi.Filename)));
@@ -1698,6 +1699,50 @@ ito::RetVal PtpCam::get_save_object(PTPParams *params, uint32_t handle, char* fi
     retval += save_object(params, handle, filename, oi, overwrite);
 
 out:
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PtpCam::get_filehandlebyname(int portnum, short force, char *camfilename, uint32_t &fhandle, uint32_t &ftype, DslrRemote *parentHandle)
+{
+    ito::RetVal retval;
+    PTPParams params;
+    PTP_USB ptp_usb;
+    struct libusb_device *dev;
+    PTPObjectInfo oi;
+    int i;
+
+    retval += open_camera(portnum, force, &ptp_usb, &params, &dev);
+    if (retval.containsError())
+        return retval;
+
+    if (ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000, &params.handles) != PTP_RC_OK)
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not get object handles").toLatin1().data());
+
+    // CR(ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000,
+    //    &params.handles), "Could not get object handles\n");
+    // printf("Handler:           Size: \tCaptured:      \tname:\n");
+    for (i = 0; i < params.handles.n; i++)
+    {
+        parentHandle->setAlive();
+        // CR(ptp_getobjectinfo(&params, params.handles.Handler[i],
+        //    &oi), "Could not get object info\n");
+        if (ptp_getobjectinfo(&params, params.handles.Handler[i], &oi) != PTP_RC_OK)
+            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Could not get object info").toLatin1().data());
+        if (oi.ObjectFormat == PTP_OFC_Association)
+            continue;
+        if (stricmp(camfilename, oi.Filename) == 0)
+            break;
+    }
+
+    if (i < params.handles.n)
+    {
+        fhandle = params.handles.Handler[i];
+        ftype = oi.ObjectFormat;
+    }
+
+    retval += close_camera(&ptp_usb, &params, dev);
+
     return retval;
 }
 
