@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "dataobjectarithmetic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -53,10 +53,6 @@ class DataObjectArithmeticInterface : public ito::AddInInterfaceBase
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);   /*! <Create a new instance of FittingFilters-Class */
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*! <Destroy the loaded instance of FittingFilters-Class */
-
-    signals:
-
-    public slots:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -130,7 +126,9 @@ class DataObjectArithmetic : public ito::AddInAlgo
         static ito::RetVal autoFocusEstimateParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal autoFocusEstimate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
 
-        static int numThreads;
+        static const QString findMultiSpotsDoc;
+        static ito::RetVal findMultiSpots(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal findMultiSpotsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
     private:
         template<typename _Tp> static ito::RetVal centroidHelper(const cv::Mat *mat, const ito::float64 &lowTreshold, const ito::float64 &highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             
@@ -140,6 +138,30 @@ class DataObjectArithmetic : public ito::AddInAlgo
         template<typename _Tp> static ito::RetVal getPercentageThresholdHelper(const ito::DataObject *dObj, double percentage, double &value);
         template<typename _Tp> static bool cmpLT(_Tp i, _Tp j) { return (i<j); }
         template<typename _Tp> static bool cmpGT(_Tp i, _Tp j) { return (i>j); }
+
+        struct MultiSpotParameters
+        {
+            int backgroundNoise;
+            int minPeakHeight;
+            int maxPeakDiameter;
+            int searchStepSizeHeight;
+            int searchStepSizeWidth;
+            int maxBackgroundLevel;
+            int mode;
+        };
+
+        template <typename _Tp> struct Spot
+        {
+            Spot() : row(-1), col(0), value(0), next(NULL) {};
+            int row;
+            int col;
+            _Tp value;
+            Spot *next;
+        };
+
+        template <typename _Tp> static void findMultiSpots1D(const _Tp *lineData, const int &row, const int &cols, Spot<_Tp>* spots, const MultiSpotParameters &params);
+        template <typename _Tp> static void clusterSpots(Spot<_Tp> *spots, Spot<_Tp> **finalSpotsLast, Spot<_Tp> *tempSpotsRoot, const int rowIdx, const int &spotsSlice, const MultiSpotParameters &params);
+        template <typename _Tp> static void fastCOG(const cv::Mat *img, const int row, const int col, const int halfSize, const _Tp lowThreshold, ito::float32 &rowSubPix, ito::float32 &colSubPix, ito::uint16 &area);
 
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
