@@ -19,7 +19,9 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 #include "common/retVal.h"
+#include "DslrRemote.h"
 #include "ptpCam.h"
+
 #include <qobject.h>
 #ifdef WIN32
 #include <iostream>
@@ -204,6 +206,7 @@ ito::RetVal PtpCam::init_ptp_usb(PTPParams* params, PTP_USB* ptp_usb, struct lib
 {
     ito::RetVal retval;
     libusb_device_handle *device_handle;
+    int ret;
 
     params->write_func = ptp_write_func;
     params->read_func = ptp_read_func;
@@ -230,24 +233,39 @@ ito::RetVal PtpCam::init_ptp_usb(PTPParams* params, PTP_USB* ptp_usb, struct lib
         ptp_usb->handle = device_handle;
         struct libusb_config_descriptor *config = NULL;
 
-        if (libusb_get_config_descriptor(dev, 0, &config))
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("Error retrieving config descriptor").toLatin1().data());
+        if (ret = libusb_get_config_descriptor(dev, 0, &config))
+        {
+            if (ret == LIBUSB_ERROR_ACCESS)
+                retval += ito::RetVal(ito::retError, 9999, QObject::tr("access denied error, retrieving config descriptor, usb err: %1.\nTry changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)").arg(ret).toLatin1().data());
+            else
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Error retrieving config descriptor, usb err: %1").arg(ret).toLatin1().data());
+        }
         uint8_t iface = config->interface->altsetting->bInterfaceNumber;
         uint8_t cfg = config->bConfigurationValue;
         libusb_free_config_descriptor(config);
 
-        if (libusb_detach_kernel_driver(device_handle, iface) != 0) {
-            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("could not detach kernel driver").toLatin1().data());
+        if (libusb_detach_kernel_driver(device_handle, iface) != 0) 
+        {
+            //retval += ito::RetVal(ito::retWarning, 0, QObject::tr("could not detach kernel driver").toLatin1().data());
         }
 
         if (config)
         {
-            if (libusb_set_configuration(device_handle, cfg))
-                retval += ito::RetVal(ito::retWarning, 0, QObject::tr("error setting device configuration").toLatin1().data());
+            if (ret = libusb_set_configuration(device_handle, cfg))
+            {
+                if (ret == LIBUSB_ERROR_ACCESS)
+                    retval += ito::RetVal(ito::retWarning, 9999, QObject::tr("access denied error, setting device configuration, usb err: %1.\nTry changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)").arg(ret).toLatin1().data());
+                else
+                    retval += ito::RetVal(ito::retWarning, 0, QObject::tr("error setting device configuration, usb err: %1").arg(ret).toLatin1().data());
+            }
 
-            if (libusb_claim_interface(device_handle,
-                iface))
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("Error claiming interface").toLatin1().data());
+            if (ret = libusb_claim_interface(device_handle, iface))
+            {
+                if (ret == LIBUSB_ERROR_ACCESS)
+                    retval += ito::RetVal(ito::retError, 9999, QObject::tr("access denied error, claiming interface, usb err: %1.\nTry changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)").arg(ret).toLatin1().data());
+                else
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Error claiming interface, usb err: %1").arg(ret).toLatin1().data());
+            }
         }
     }
     else
@@ -501,7 +519,7 @@ ito::RetVal PtpCam::close_camera(PTP_USB *ptp_usb, PTPParams *params, struct lib
 {
     ito::RetVal retval;
 
-    if (!ptp_closesession(params))
+    if (ptp_closesession(params) != PTP_RC_OK)
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("ERROR: Could not close session!").toLatin1().data());
         //fprintf(stderr, "ERROR: Could not close session!");
@@ -557,8 +575,7 @@ ito::RetVal PtpCam::list_devices(short force, QMap<int, QString> &deviceList)
                         // CC(ptp_opensession(&params, 1),
                         //    "Could not open session!\n"
                         //    "Try to reset the camera.\n");
-                        retval += ptp_opensession(&params, 1);
-                        if (retval.containsError())
+                        if (ptp_opensession(&params, 1) != PTP_RC_OK)
                         {
                             retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not open session! Try to reset the camera.").toLatin1().data());
                         }
@@ -581,8 +598,8 @@ ito::RetVal PtpCam::list_devices(short force, QMap<int, QString> &deviceList)
                             //                        CC(ptp_closesession(&params),
                             //                            "Could not close session!\n");
                         }
-                        retval += ptp_closesession(&params);
-                        if (retval.containsError())
+
+                        if (ptp_closesession(&params) != PTP_RC_OK)
                         {
                             retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not close session!").toLatin1().data());
                         }
@@ -1351,6 +1368,78 @@ out:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PtpCam::get_last_file_handle(int portnum, short force, int &imgNum, uint32_t &handle, int &fileType, DslrRemote *parentHandle)
+{
+    ito::RetVal retval;
+    PTP_USB ptp_usb;
+    PTPParams params;
+    struct libusb_device *dev;
+    PTPObjectInfo oiF, oiF1, oiL;
+
+    retval += open_camera(portnum, force, &ptp_usb, &params, &dev);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    if (ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000, &params.handles) != PTP_RC_OK)
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not get object handles").toLatin1().data());
+
+    if (imgNum < 0 || imgNum >= params.handles.n)
+    {
+        int found = 0, lastF = params.handles.n - 1;
+        handle = 0;
+        while (!found && lastF >= 0)
+        {
+            if (parentHandle)
+                parentHandle->setAlive();
+            ptp_getobjectinfo(&params, params.handles.Handler[lastF], &oiL);
+            if (oiL.ObjectFormat == 14337 || oiL.ObjectFormat == 12288)
+            {
+                break;
+            }
+            lastF--;
+        }
+        found = 0;
+        int firstF = 0;
+        ptp_getobjectinfo(&params, params.handles.Handler[firstF], &oiF);
+        while (!found && firstF < params.handles.n - 1)
+        {
+            if (parentHandle)
+                parentHandle->setAlive();
+            ptp_getobjectinfo(&params, params.handles.Handler[firstF + 1], &oiF1);
+            if (oiF.ObjectFormat == 14337 || oiF.ObjectFormat == 12288 && oiF.CaptureDate > oiF1.CaptureDate)
+            {
+                break;
+            }
+            oiF = oiF1;
+            firstF++;
+        }
+        if (oiF.CaptureDate > oiL.CaptureDate)
+        {
+            handle = params.handles.Handler[firstF];
+            fileType = oiF.ObjectFormat;
+            imgNum = firstF;
+        }
+        else
+        {
+            handle = params.handles.Handler[lastF];
+            fileType = oiL.ObjectFormat;
+            imgNum = lastF;
+        }
+    }
+    else
+    {
+        handle = params.handles.Handler[imgNum];
+        ptp_getobjectinfo(&params, params.handles.Handler[imgNum], &oiL);
+        fileType = oiL.ObjectFormat;
+    }
+    retval += close_camera(&ptp_usb, &params, dev);
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileList)
 {
     ito::RetVal retval;
@@ -1370,7 +1459,7 @@ ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileL
     // if (open_camera(busn, devn, force, &ptp_usb, &params, &dev)<0)
     //    return;
     // printf("Camera: %s\n", params.deviceinfo.Model);
-    if (ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000, &params.handles))
+    if (ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000, &params.handles) != PTP_RC_OK)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not get object handles").toLatin1().data());
 
     // CR(ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000,
@@ -1841,7 +1930,7 @@ ito::RetVal PtpCam::list_properties(int portnum, short force, QVector<QString> &
             params.deviceinfo.DevicePropertiesSupported[i]);
         if (propname != NULL)
         {
-            properties.append(QString("0x%1: %2").arg(QString::number(params.deviceinfo.DevicePropertiesSupported[i]), QString(propname)));
+            properties.append(QString("0x%1: %2").arg((ushort)params.deviceinfo.DevicePropertiesSupported[i], 4, 16, QChar('0')).arg(QString(propname)));
 //            printf("  0x%04x: %s\n",
 //                params.deviceinfo.DevicePropertiesSupported[i],
 //                propname);
@@ -1947,7 +2036,7 @@ ito::RetVal PtpCam::set_property(PTPParams* params, uint16_t property, const cha
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //void getset_property_internal(PTPParams* params, uint16_t property, const char* value, short force);
-ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t property, const char* value, short force)
+ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t property, char** value, short force)
 {
     ito::RetVal retval;
     PTPDevicePropDesc dpd;
@@ -1970,11 +2059,42 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
     propdesc = ptp_prop_getdesc(params, &dpd, NULL);
     propname = ptp_prop_getname(params, property);
 
-    if (value == NULL) 
+    if (*value == NULL) 
     { 
+        *value = (char*)calloc(1024, sizeof(unsigned char));
         // property GET
         if (!m_verbose) 
         { 
+            switch (dpd.DataType)
+            {
+                case PTP_DTC_INT8:
+                    _snprintf(*value, 1024, "%hhi", *(char*)dpd.CurrentValue);
+                break;
+                case PTP_DTC_UINT8:
+                    _snprintf(*value, 1024, "%hhu", *(unsigned char*)dpd.CurrentValue);
+                break;
+                case PTP_DTC_INT16:
+                    _snprintf(*value, 1024, "%hi", *(int16_t*)dpd.CurrentValue);
+                break;
+                case PTP_DTC_UINT16:
+                    if (dpd.FormFlag == PTP_DPFF_Enumeration)
+                        _snprintf(*value, 1024, "0x%04hX (%hi)", *(uint16_t*)dpd.CurrentValue, *(uint16_t*)dpd.CurrentValue);
+                    else
+                        _snprintf(*value, 1024, "%hi", *(uint16_t*)dpd.CurrentValue);
+                break;
+                case PTP_DTC_INT32:
+                    _snprintf(*value, 1024, "%li", (long int)*(int32_t*)dpd.CurrentValue);
+                break;
+                case PTP_DTC_UINT32:
+                    if (dpd.FormFlag == PTP_DPFF_Enumeration)
+                        _snprintf(*value, 1024, "0x%08lX (%lu)", (long unsigned)*(uint32_t*)dpd.CurrentValue,
+                        (long unsigned)*(uint32_t*)dpd.CurrentValue);
+                    else
+                        _snprintf(*value, 1024, "%lu", (long unsigned)*(uint32_t*)dpd.CurrentValue);
+                break;
+                case PTP_DTC_STR:
+                    _snprintf(*value, 1024, "%s", (char *)dpd.CurrentValue);
+            }
             // short output, default
             // printf("'%s' is set to: ", propname == NULL ? "UNKNOWN" : propname);
 /*
@@ -2072,7 +2192,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
         }
         printf("\n");
 */
-        propdesc = ptp_prop_getdescbystring(params, &dpd, value);
+        propdesc = ptp_prop_getdescbystring(params, &dpd, *value);
         /*
         if (propdesc==NULL) 
         {
@@ -2083,7 +2203,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
         */
 //        printf("Changing property value to %s [%s] ",
 //            value, propdesc);
-        retval += set_property(params, property, value, dpd.DataType);
+        retval += set_property(params, property, *value, dpd.DataType);
         if (retval.containsError())
         {
             // printf("FAILED!!!\n");
@@ -2103,7 +2223,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // void getset_propertybyname(int busn, int devn, char* property, char* value, short force);
-ito::RetVal PtpCam::getset_propertybyname(int portnum, char* property, char* value, short force)
+ito::RetVal PtpCam::getset_propertybyname(int portnum, char* property, char** value, short force)
 {
     ito::RetVal retval;
     PTPParams params;
@@ -2172,18 +2292,18 @@ ito::RetVal PtpCam::getset_propertybyname(int portnum, char* property, char* val
     if (value != NULL)
     {
 #ifdef WIN32
-        while ((p = strchr(value, '-')) != NULL) 
+        while ((p = strchr(*value, '-')) != NULL) 
 #else
-        while ((p = index(value, '-')) != NULL) 
+        while ((p = index(*value, '-')) != NULL) 
 #endif
         {
             *p = ' ';
         }
-        propval = ptp_prop_getvalbyname(&params, value, dpc);
-        if (propval == NULL) propval = value;
+        propval = ptp_prop_getvalbyname(&params, *value, dpc);
+        if (propval == NULL) propval = *value;
     }
 
-    retval += getset_property_internal(&params, dpc, propval, force);
+    retval += getset_property_internal(&params, dpc, (char**)&propval, force);
     retval += close_camera(&ptp_usb, &params, dev);
 
     return retval;
@@ -2191,7 +2311,7 @@ ito::RetVal PtpCam::getset_propertybyname(int portnum, char* property, char* val
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //void getset_property(int busn, int devn, uint16_t property, char* value, short force);
-ito::RetVal PtpCam::getset_property(int portnum, uint16_t property, char* value, short force)
+ito::RetVal PtpCam::getset_property(int portnum, uint16_t property, char** value, short force)
 {
     ito::RetVal retval;
     PTPParams params;
@@ -2226,7 +2346,7 @@ ito::RetVal PtpCam::getset_property(int portnum, uint16_t property, char* value,
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //void getset_property_value(int busn, int devn, uint16_t property, char* value, short force);
-ito::RetVal PtpCam::getset_property_value(int portnum, uint16_t property, char* value, short force)
+ito::RetVal PtpCam::getset_property_value(int portnum, uint16_t property, char** value, short force)
 {
     ito::RetVal retval;
     PTPParams params;

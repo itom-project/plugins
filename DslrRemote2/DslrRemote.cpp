@@ -218,7 +218,8 @@ DslrRemote::DslrRemote() :
     m_ptp_params(NULL),
     m_ptp_dev(NULL),
     m_ptp_portnum(0),
-    m_waittime(3000)
+    m_waittime(3000),
+    m_lastImgNum(-1)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DslrRemote", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
@@ -245,9 +246,9 @@ DslrRemote::DslrRemote() :
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("bitdepth of images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("listProperties", ito::ParamBase::String, "", tr("List of Properties").toLatin1().data());
+    paramVal = ito::Param("prop", ito::ParamBase::String, "", tr("Property, if none given list is returned").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("listOperations", ito::ParamBase::String, "", tr("List of Properties").toLatin1().data());
+    paramVal = ito::Param("oper", ito::ParamBase::String, "", tr("Operation, if none given list is returned").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
 /*
@@ -287,65 +288,53 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
 
     QMap<int, QString> devList;
     m_ptp_cam = new PtpCam();
-    m_ptp_cam->list_devices(0, devList);
+    retVal += m_ptp_cam->list_devices(0, devList);
     // currently simply use first found device
-    m_ptp_portnum = devList.firstKey();
-
-
-    /*
-    gp_camera_new(&m_camera);
-    m_context = gp_context_new();
-
-    // set callbacks for camera messages
-    gp_context_set_error_func(m_context, (GPContextErrorFunc)(DslrRemote::error_func), NULL);
-    gp_context_set_message_func(m_context, (GPContextMessageFunc)(DslrRemote::message_func), NULL);
-
-    //This call will autodetect cameras, take the first one from the list and use it
-    ////printf("Camera init. Can take more than 10 seconds depending on the "
-    ////    "memory card's contents (remove card from camera to speed up).\n");
-
-    int ret = gp_camera_init(m_camera, m_context);
-    if (ret < GP_OK) 
+    if (devList.size() > 0)
+        m_ptp_portnum = devList.firstKey();
+    else
     {
-        fprintf(stderr, "No camera auto detected.\n");
-        gp_camera_free(m_camera);
-        retVal += ito::RetVal(ito::retWarning, 0, tr("No camera auto detected\n").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, "camera list is empty");
+        goto end;
+    } 
+
+    int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
+    m_params["bpp"].setVal<int>(bpp);
+
+    // try getting image size, property 0x5003
+    char *tmpVal = NULL;
+    retVal += m_ptp_cam->getset_property(m_ptp_portnum, 20483, &tmpVal, 0);
+    int sizeX = 1, sizeY = 1;
+    if (tmpVal)
+    {
+        char *tok = strtok(tmpVal, "x");
+        sizeX = atoi(tok);
+        tok = strtok(NULL, "x");
+        sizeY = atoi(tok);
     }
-*/
-    int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
-    int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
-    if (sizeY > 1 && sizeY % 4 != 0)
+
+    m_params["sizex"].setVal<int>(sizeX);
+    m_params["sizex"].setMeta(new ito::IntMeta(4, sizeX, 4), true);
+
+    m_params["sizey"].setVal<int>(sizeY);
+    if (sizeY == 1)
     {
-        retVal += ito::RetVal(ito::retError, 0, "maxYSize must be 1 or dividable by 4");
+        m_params["sizey"].setMeta(new ito::IntMeta(1, 1, 1), true);
     }
     else
     {
-        int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
-        m_params["bpp"].setVal<int>(bpp);
+        m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
+    }
 
-        m_params["sizex"].setVal<int>(sizeX);
-        m_params["sizex"].setMeta(new ito::IntMeta(4, sizeX, 4), true);
-
-        m_params["sizey"].setVal<int>(sizeY);
-        if (sizeY == 1)
-        {
-            m_params["sizey"].setMeta(new ito::IntMeta(1, 1, 1), true);
-        }
-        else
-        {
-            m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
-        }
-
-        int roi[] = {0, 0, sizeX, sizeY};
-        m_params["roi"].setVal<int*>(roi, 4);
-        if (sizeY == 1)
-        {
-            m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
-        }
-        else
-        {
-            m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY - 1, 4,  4, sizeY, 4)), true);
-        }
+    int roi[] = {0, 0, sizeX, sizeY};
+    m_params["roi"].setVal<int*>(roi, 4);
+    if (sizeY == 1)
+    {
+        m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
+    }
+    else
+    {
+        m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY - 1, 4,  4, sizeY, 4)), true);
     }
 
     if (!retVal.containsError())
@@ -357,13 +346,14 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
 
     setIdentifier(QString::number(getID()));
 
+    setInitialized(true); //init method has been finished (independent on retval)
+end:
     if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();
     }
 
-    setInitialized(true); //init method has been finished (independent on retval)
     return retVal;
 }
 
@@ -384,13 +374,7 @@ ito::RetVal DslrRemote::close(ItomSharedSemaphore *waitCond)
         m_ptp_cam->close_camera(m_ptp_usb, m_ptp_params, m_ptp_dev);
         delete m_ptp_cam;
     }
-/*
-    if (m_context)
-    {
-        gp_context_unref(m_context);
-        m_context = NULL;
-    }
-*/
+
     if (m_timerID > 0)
     {
         killTimer(m_timerID);
@@ -442,29 +426,47 @@ ito::RetVal DslrRemote::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
     if (!retValue.containsError())
     {
         //first check parameters that influence the size or data type of m_data
-        if (key == "listProperties")
+        if (key == "prop")
         {            
-            QVector<QString> properties;
-            QString propStr;
-            retValue += m_ptp_cam->list_properties(m_ptp_portnum, 0, properties);
-            for (int np = 0; np < properties.length(); np++)
+            if (suffix == "")
             {
-                propStr.append(properties[np]);
-                propStr.append(" ");
+                QVector<QString> properties;
+                QString propStr;
+                retValue += m_ptp_cam->list_properties(m_ptp_portnum, 0, properties);
+                for (int np = 0; np < properties.length(); np++)
+                {
+                    propStr.append(properties[np]);
+                    propStr.append(" ");
+                    *val = ito::Param("Properties", ito::Param::String, propStr.length(), propStr.toLatin1().data(), "");
+                }
             }
-            *val = ito::Param("Properties", ito::Param::String, propStr.length(), propStr.toLatin1().data(), "");
+            else
+            {
+                char *tmpVal = NULL;
+                retValue += m_ptp_cam->getset_property(m_ptp_portnum, suffix.toInt(NULL, 16), &tmpVal, 0);
+                *val = ito::Param("prop", ito::ParamBase::String, tmpVal, "");
+                // tmpVal is borrowed memory, need to free it here
+                free(tmpVal);
+            }
         }
-        else if (key == "listOperations")
+        else if (key == "oper")
         {
-            QVector<QString> operations;
-            QString operStr;
-            retValue += m_ptp_cam->list_operations(m_ptp_portnum, 0, operations);
-            for (int np = 0; np < operations.length(); np++)
+            if (suffix == "")
             {
-                operStr.append(operations[np]);
-                operStr.append(" ");
+                QVector<QString> operations;
+                QString operStr;
+                retValue += m_ptp_cam->list_operations(m_ptp_portnum, 0, operations);
+                for (int np = 0; np < operations.length(); np++)
+                {
+                    operStr.append(operations[np]);
+                    operStr.append(" ");
+                }
+                *val = ito::Param("Operations", ito::Param::String, operStr.length(), operStr.toLatin1().data(), "");
             }
-            *val = ito::Param("Operations", ito::Param::String, operStr.length(), operStr.toLatin1().data(), "");
+            else
+            {
+
+            }
         }
         else
         {
@@ -550,6 +552,7 @@ ito::RetVal DslrRemote::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
                 }
             }
+/*
             else if (key == "binning")
             {
                 int oldval = it->getVal<int>();
@@ -595,6 +598,7 @@ ito::RetVal DslrRemote::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     }
                 }
             }
+*/
 
             retValue += checkData(); //check if image must be reallocated
 
@@ -602,6 +606,21 @@ ito::RetVal DslrRemote::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             {
                 retValue += startDevice(NULL);
                 setGrabberStarted(running);
+            }
+        }
+        else if (key == "prop")
+        {
+            if (suffix != "")
+            {
+                char *tmpVal = val->getVal<char*>();
+                retValue += m_ptp_cam->getset_property(m_ptp_portnum, suffix.toInt(NULL, 16), &tmpVal, 0);
+            }
+        }
+        else if (key == "oper")
+        {
+            if (suffix != "")
+            {
+
             }
         }
         else
@@ -739,7 +758,6 @@ ito::RetVal DslrRemote::acquire(const int /*trigger*/, ItomSharedSemaphore *wait
     else
     {
         m_isgrabbing = true;
-//		m_isgrabbing = false;
     }
 
     return retValue;
@@ -842,7 +860,8 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
     ito::RetVal retValue(ito::retOk);
     int gpret = 0;
 
-    if (m_isgrabbing == false)
+//    if (m_isgrabbing == false)
+    if (0)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("image could not be obtained since no image has been acquired.").toLatin1().data());
     }
@@ -886,24 +905,15 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
             tmpFileName = tmpPath + QString::number(qrand());
         }
 
-        m_ptp_cam->get_file(m_ptp_portnum, 0, 0, tmpFileName.toLatin1().data(), 1);
-/*
-        if (finfo.file.type == "image/x-raw")
-        {
-            QVector<ito::ParamBase> filterParamsMand(0);
-            QVector<ito::ParamBase> filterParamsOpt(0);
-            QVector<ito::ParamBase> filterParamsOut(0);
+//        QVector<QString> FileList;
+//        retValue += m_ptp_cam->list_files(m_ptp_portnum, 0, FileList);
+        uint32_t fhandle;
+        int ftype;
+        retValue += m_ptp_cam->get_last_file_handle(m_ptp_portnum, 0, m_lastImgNum, fhandle, ftype, this);
+        m_lastImgNum++;
+        retValue += m_ptp_cam->get_file(m_ptp_portnum, 0, fhandle, tmpFileName.toLatin1().data(), 1);
 
-            filterParamsOpt[0].setVal<int>(0);
-            retValue += apiFilterParamBase("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
-            filterParamsMand[0].setVal<char*>((char*)&m_data);
-            filterParamsMand[1].setVal<char*>(tmpFileName.toLatin1().data());
-            if (!retValue.containsWarningOrError())
-            {
-                retValue += apiFilterCall("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
-            }
-        }
-        else
+        if (ftype == 14337)
         {
             QVector<ito::ParamBase> filterParamsMand(0);
             QVector<ito::ParamBase> filterParamsOpt(0);
@@ -917,9 +927,22 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
                 retValue += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
             }
         }
-*/
-        remove(tmpFileName.toLatin1().data());
+        else if (ftype == 12288)
+        {
+            QVector<ito::ParamBase> filterParamsMand(0);
+            QVector<ito::ParamBase> filterParamsOpt(0);
+            QVector<ito::ParamBase> filterParamsOut(0);
 
+            retValue += apiFilterParamBase("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+            filterParamsOpt[0].setVal<int>(0);
+            filterParamsMand[1].setVal<char*>((char*)&m_data);
+            filterParamsMand[0].setVal<char*>(tmpFileName.toLatin1().data());
+            if (!retValue.containsWarningOrError())
+            {
+                retValue += apiFilterCall("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+            }
+        }
+        remove(tmpFileName.toLatin1().data());
 
         if (externalDataObject)
         {

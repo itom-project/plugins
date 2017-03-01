@@ -35,6 +35,8 @@ struct _PTP_USB {
     int intep;
 };
 
+class DslrRemote; // forward declaration
+
 class PtpCam
 {
 public:
@@ -57,6 +59,7 @@ public:
     ito::RetVal nikon_initiate_dc(int portnum, short force);
     ito::RetVal nikon_direct_capture(int portnum, short force, char* filename, int overwrite);
     ito::RetVal nikon_direct_capture2(int portnum, short force, char* filename, int overwrite);
+    ito::RetVal get_last_file_handle(int portnum, short force, int &imgNum, uint32_t &handle, int &fileType, DslrRemote *parentHandle);
     ito::RetVal list_files(int portnum, short force, QVector<QString> &fileList);
     ito::RetVal delete_object(int portnum, short force, uint32_t handle);
     ito::RetVal delete_all_files(int portnum, short force);
@@ -68,10 +71,10 @@ public:
     ito::RetVal list_operations(int portnum, short force, QVector<QString> &operations);
     ito::RetVal list_properties(int portnum, short force, QVector<QString> &properties);
     ito::RetVal set_property(PTPParams* params, uint16_t property, const char* value, uint16_t datatype);
-    ito::RetVal getset_property_internal(PTPParams* params, uint16_t property, const char* value, short force);
-    ito::RetVal getset_propertybyname(int portnum, char* property, char* value, short force);
-    ito::RetVal getset_property(int portnum, uint16_t property, char* value, short force);
-    ito::RetVal getset_property_value(int portnum, uint16_t property, char* value, short force);
+    ito::RetVal getset_property_internal(PTPParams* params, uint16_t property, char** value, short force);
+    ito::RetVal getset_propertybyname(int portnum, char* property, char** value, short force);
+    ito::RetVal getset_property(int portnum, uint16_t property, char** value, short force);
+    ito::RetVal getset_property_value(int portnum, uint16_t property, char** value, short force);
     ito::RetVal show_all_properties(int portnum, short force, int unknown, QMap<QString, QString> &properties);
     int usb_ptp_get_device_status(PTP_USB* ptp_usb, uint16_t* devstatus);
 

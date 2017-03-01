@@ -77,6 +77,7 @@ class DslrRemote : public ito::AddInGrabber
         PTPParams *m_ptp_params;
         struct libusb_device *m_ptp_dev;
         int m_ptp_portnum;
+        int m_lastImgNum;
 
     signals:
 
