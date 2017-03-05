@@ -225,6 +225,12 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, fillGeometricDoc);
     m_filterList.insert("fillObject", filter);
 
+    filter = new FilterDef(BasicFilters::labeling, BasicFilters::labelingParams, labelingFilterDoc);
+    m_filterList.insert("labeling", filter);
+
+    filter = new FilterDef(BasicFilters::findEllipses, BasicFilters::findEllipsesParams, findEllipsesFilterDoc);
+    m_filterList.insert("findEllipses", filter);
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
