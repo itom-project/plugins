@@ -994,7 +994,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
     xsize = dObjSrc->getSize(dObjSrc->getDims() - 1);
     ysize = dObjSrc->getSize(dObjSrc->getDims() - 2);
 
-    retval += ito::dObjHelper::verify3DDataObject(dObjSrc, "sourceImageStack", 2, 256,  ysize, ysize, xsize, xsize, 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    retval += ito::dObjHelper::verify3DDataObject(dObjSrc, "sourceImageStack", 2, std::numeric_limits<int>::max(),  ysize, ysize, xsize, xsize, 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
     if (retval.containsError())
     {
         return retval;
