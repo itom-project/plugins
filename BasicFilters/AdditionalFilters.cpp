@@ -28,6 +28,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "BasicFilters.h"
+#include "DataObject/dataObjectFuncs.h"
 
 #include <opencv/cv.h>
 #if CV_MAJOR_VERSION >= 3
@@ -45,7 +46,8 @@ extern int NTHREADS;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString BasicFilters::labelingFilterDoc = QObject::tr("Finds connected areas in an image an assigns a label to them. \n\
-                                                           \n");
+                                                             In the input image according found regions get painted with the according label.\n\
+                                                             The returned list has the format x0,y0,x1,y1 for each label.\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString BasicFilters::findEllipsesFilterDoc = QObject::tr("Filter for detecting the centers of ellipses with subpixel accuracy. \n\
@@ -57,6 +59,15 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
     ito::int32 xsize = img->getSize(1);
     ito::int32 ysize = img->getSize(0);
     _Tp value, u = 0;
+    ito::float64 minValue, maxValue;
+    ito::uint32 minPos[3], maxPos[3];
+
+    ito::dObjHelper::minMaxValue(img, minValue, minPos, maxValue, maxPos, 1);
+    if (maxValue >= 1 || minValue < 0)
+    {
+        *img -= minValue;
+        *img *= 1.0 / (maxValue - minValue + 1);
+    }
     _Tp *pixPtr = (_Tp*)(((cv::Mat *)img->get_mdata()[img->seekMat(0)])->data);
     ito::int32 xmin = 0, ymin = 0, lbl = 1, lbl1 = 1;
     ito::int32 **labelPtr = NULL;
@@ -188,36 +199,39 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
-    numLabels++;
-    ito::DataObject *labelList = new ito::DataObject(numLabels, 4, ito::tInt32);
-    ito::int32 *labelListPtr = (ito::int32*)(((cv::Mat *)labelList->get_mdata()[0])->data);
-
-    for (ito::int32 n = 0; n < numLabels; n++)
+//    numLabels++;
+    if (numLabels > 0)
     {
-        labelListPtr[n * 4] = xsize + 10;
-        labelListPtr[n * 4 + 1] = ysize + 10;
-    }
+        ito::DataObject *labelList = new ito::DataObject(numLabels, 4, ito::tInt32);
+        ito::int32 *labelListPtr = (ito::int32*)(((cv::Mat *)labelList->get_mdata()[0])->data);
 
-    for (ito::int32 y = 0; y < ysize; y++)
-    {
-        for (ito::int32 x = 0; x < xsize; x++)
+        for (ito::int32 n = 0; n < numLabels; n++)
         {
-            if ((value = pixPtr[y * xsize + x]) >= 1)
+            labelListPtr[n * 4] = xsize + 10;
+            labelListPtr[n * 4 + 1] = ysize + 10;
+        }
+
+        for (ito::int32 y = 0; y < ysize; y++)
+        {
+            for (ito::int32 x = 0; x < xsize; x++)
             {
-                if (x < labelListPtr[((ito::int32)value - 1) * 4])
-                    labelListPtr[((ito::int32)value - 1) * 4] = x;
-                if (x > labelListPtr[((ito::int32)value - 1) * 4 + 2])
-                    labelListPtr[((ito::int32)value - 1) * 4 + 2] = x;
-                if (y < labelListPtr[((ito::int32)value - 1) * 4 + 1])
-                    labelListPtr[((ito::int32)value - 1) * 4 + 1] = y;
-                if (y > labelListPtr[((ito::int32)value - 1) * 4 + 3])
-                    labelListPtr[((ito::int32)value - 1) * 4 + 3] = y;
+                if ((value = pixPtr[y * xsize + x]) >= 1)
+                {
+                    if (x < labelListPtr[((ito::int32)value - 1) * 4])
+                        labelListPtr[((ito::int32)value - 1) * 4] = x;
+                    if (x > labelListPtr[((ito::int32)value - 1) * 4 + 2])
+                        labelListPtr[((ito::int32)value - 1) * 4 + 2] = x;
+                    if (y < labelListPtr[((ito::int32)value - 1) * 4 + 1])
+                        labelListPtr[((ito::int32)value - 1) * 4 + 1] = y;
+                    if (y > labelListPtr[((ito::int32)value - 1) * 4 + 3])
+                        labelListPtr[((ito::int32)value - 1) * 4 + 3] = y;
+                }
             }
         }
-    }
 
-    *labelTable = *labelList;
-    delete labelList;
+        *labelTable = *labelList;
+        delete labelList;
+    }
 
     if (labelPtr)
         delete labelPtr;
