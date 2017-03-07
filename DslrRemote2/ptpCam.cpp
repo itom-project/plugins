@@ -691,20 +691,21 @@ ito::RetVal PtpCam::capture_image(int portnum, short force)
     {
         PTPDevicePropDesc dpd;
         memset(&dpd, 0, sizeof(dpd));
-        retval += ptp_getdevicepropdesc(&params, PTP_DPC_ExposureTime, &dpd);
-        //if (ret == PTP_RC_OK) 
-        if (!retval.containsError())
+        ret = ptp_getdevicepropdesc(&params, PTP_DPC_ExposureTime, &dpd);
+        if (ret == PTP_RC_OK)
             ExposureTime = (*(int32_t*)(dpd.CurrentValue)) / 10;
+        else
+            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Could not read exposure time.").toLatin1().data());
     }
 
     // adjust USB timeout
     if (ExposureTime > USB_TIMEOUT) m_ptpcam_usb_timeout = ExposureTime;
 
     //CR(ptp_initiatecapture(&params, 0x0, 0), "Could not capture.\n");
-    retval += ptp_initiatecapture(&params, 0x0, 0);
-    if (retval.containsError())
+    if (ret = ptp_initiatecapture(&params, 0x0, 0) != PTP_RC_OK)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not capture.").toLatin1().data());
-
+    /*
+    // wait for event is currently not working
     ret = ptp_usb_event_wait(&params, &event);
     if (ret != PTP_RC_OK) 
         goto err;
@@ -740,6 +741,7 @@ ito::RetVal PtpCam::capture_image(int portnum, short force)
             goto out;
         }
     }
+    */
 
 err:
     // printf("Events receiving error. Capture status unknown.\n");
