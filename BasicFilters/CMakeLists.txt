@@ -26,7 +26,7 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIR
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Core Widgets UiTools Xml LinguistTools Designer)
 find_package(VisualLeakDetector QUIET)
-find_package(OpenCV COMPONENTS core imgproc calib3d REQUIRED)
+find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)

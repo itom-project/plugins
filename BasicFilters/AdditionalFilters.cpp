@@ -33,7 +33,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <opencv/cv.h>
 #if CV_MAJOR_VERSION >= 3
 #include <opencv2/imgproc.hpp>
-#include <opencv2/calib3d.hpp>
+//#include <opencv2/calib3d.hpp>
 #endif
 
 #ifdef USEOPENMP
