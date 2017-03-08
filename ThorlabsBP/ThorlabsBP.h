@@ -90,7 +90,7 @@ class ThorlabsBP : public ito::AddInActuator
         char m_serialNo[16];
         QSharedPointer<QVector<double> > m_dummyValues;
 
-        void updateRangesAndSlewRates();
+        void updateRanges();
 
 		static QList<QByteArray> openedDevices;
 

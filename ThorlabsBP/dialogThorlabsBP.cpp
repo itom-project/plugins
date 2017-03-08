@@ -74,9 +74,6 @@ void DialogThorlabsBP::parametersChanged(QMap<QString, ito::Param> params)
     ui.spinTimeout->setValue(params["timeout"].getVal<int>());
     ui.spinTimeout->setMaximum(params["timeout"].getMax());
 
-    ui.spinSlewRateOpenLoop->setMaximum(((ito::DoubleArrayMeta*)params["slewRateOpenLoop"].getMeta())->getMax());
-    ui.spinSlewRateClosedLoop->setMaximum(((ito::DoubleArrayMeta*)params["slewRateClosedLoop"].getMeta())->getMax());
-
     if (numaxis > 0)
     {
         ui.comboAxisSelector->setCurrentIndex(0);
@@ -114,16 +111,6 @@ ito::RetVal DialogThorlabsBP::applyParameters()
     if (m_currentParameters["controlMode"] != temporaryParams["controlMode"])
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["controlMode"])));
-    }
-
-    if (m_currentParameters["slewRateOpenLoop"] != temporaryParams["slewRateOpenLoop"])
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["slewRateOpenLoop"])));
-    }
-
-    if (m_currentParameters["slewRateClosedLoop"] != temporaryParams["slewRateClosedLoop"])
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["slewRateClosedLoop"])));
     }
 
     if (m_currentParameters["maximumVoltage"] != temporaryParams["maximumVoltage"])
@@ -192,8 +179,6 @@ void DialogThorlabsBP::currentAxisChanged(int newAxis)
     {
         temporaryParams["enabled"].getVal<int*>()[m_currentAxis] = ui.checkEnabled->isChecked() ? 1 : 0;
         temporaryParams["controlMode"].getVal<int*>()[m_currentAxis] = ui.checkControlMode->isChecked() ? 1 : 0;
-        temporaryParams["slewRateOpenLoop"].getVal<double*>()[m_currentAxis] = ui.spinSlewRateOpenLoop->value();
-        temporaryParams["slewRateClosedLoop"].getVal<double*>()[m_currentAxis] = ui.spinSlewRateClosedLoop->value();
         switch (ui.comboMaximumVoltage->currentIndex())
         {
         case 0:
@@ -211,8 +196,6 @@ void DialogThorlabsBP::currentAxisChanged(int newAxis)
     ui.checkEnabled->setChecked(temporaryParams["enabled"].getVal<int*>()[newAxis] > 0);
     ui.checkControlMode->setChecked(temporaryParams["controlMode"].getVal<int*>()[newAxis] > 0);
     ui.checkControlMode->setEnabled(temporaryParams["hasFeedback"].getVal<int*>()[newAxis] > 0);
-    ui.spinSlewRateOpenLoop->setValue(temporaryParams["slewRateOpenLoop"].getVal<double*>()[newAxis]);
-    ui.spinSlewRateClosedLoop->setValue(temporaryParams["slewRateClosedLoop"].getVal<double*>()[newAxis]);
     switch (temporaryParams["maximumVoltage"].getVal<int*>()[newAxis])
     {
     case 75:
