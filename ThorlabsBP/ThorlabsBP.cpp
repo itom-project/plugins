@@ -139,9 +139,7 @@ ThorlabsBP::ThorlabsBP() :
     m_params.insert("controlMode", ito::Param("controlMode", ito::ParamBase::IntArray, NULL, tr("Open loop (0), closed loop (1)").toLatin1().data()));
     m_params.insert("maximumTravelRange", ito::Param("maximumTravelRange", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Maximum travel range for each axis in mm. This requires an actuator with built in position sensing. These values might not be correct if the motor is in open loop mode.").toLatin1().data()));
     m_params.insert("maximumVoltage", ito::Param("maximumVoltage", ito::ParamBase::IntArray, NULL, tr("Maximum output voltage (75, 100 or 150 V).").toLatin1().data()));
-    m_params.insert("slewRateOpenLoop", ito::Param("slewRateOpenLoop", ito::ParamBase::DoubleArray, NULL, tr("Speed limit (slew rate) of each axis in V/ms. 0 (default) disables the limit and let the controller decide to move with the ideal speed.").toLatin1().data()));
-    m_params.insert("slewRateClosedLoop", ito::Param("slewRateClosedLoop", ito::ParamBase::DoubleArray, NULL, tr("Speed limit (slew rate) of each axis in V/ms. 0 (default) disables the limit and let the controller decide to move with the ideal speed.").toLatin1().data()));
-
+    
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
 
     m_currentPos.fill(0.0, 1);
@@ -391,7 +389,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         Sleep(160);
         QSharedPointer<QVector<int> > status(new QVector<int>(m_numChannels, 0));
         retval += getStatus(status, NULL);
-        updateRangesAndSlewRates();
+        updateRanges();
     }
     
     if (waitCond)
@@ -405,13 +403,10 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-void ThorlabsBP::updateRangesAndSlewRates()
+void ThorlabsBP::updateRanges()
 {
     int *vals = new int[m_numChannels];
     ito::float64 *values = new ito::float64[m_numChannels];
-    ito::float64 *values2 = new ito::float64[m_numChannels];
-    ito::float64 *values3 = new ito::float64[m_numChannels];
-    PZ_SlewRates slewRates;
     for (int i = 0; i < m_numChannels; ++i)
     {
         values[i] = (ito::float64)PBC_GetMaximumTravel(m_serialNo, m_channelIndices[i]) / 10000.0;
@@ -424,26 +419,8 @@ void ThorlabsBP::updateRangesAndSlewRates()
     }
     m_params["maximumVoltage"].setVal<int*>(vals, m_numChannels);
 
-    for (int i = 0; i < m_numChannels; ++i)
-    {
-        if (PBC_GetSlewRates(m_serialNo, m_channelIndices[i], &slewRates) == 0)
-        {
-            values2[i] = slewRates.openModeRate * vals[i] / 19000.0;
-            values3[i] = slewRates.closedModeRate * vals[i] / 19000.0;
-        }
-        else
-        {
-            values2[i] = 0.0;
-            values3[i] = 0.0;
-        }
-    }
-    m_params["slewRateOpenLoop"].setVal<ito::float64*>(values2, m_numChannels);
-    m_params["slewRateClosedLoop"].setVal<ito::float64*>(values3, m_numChannels);
-
     DELETE_AND_SET_NULL_ARRAY(vals);
     DELETE_AND_SET_NULL_ARRAY(values);
-    DELETE_AND_SET_NULL_ARRAY(values2);
-    DELETE_AND_SET_NULL_ARRAY(values3);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -689,7 +666,7 @@ ito::RetVal ThorlabsBP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
             Sleep(160);
 
-            updateRangesAndSlewRates(); //if control mode becomes closed loop, the maximum travel range can be changed!
+            updateRanges(); //if control mode becomes closed loop, the maximum travel range can be changed!
 
             QVector<int> allAxes;
             for (int i = 0; i < m_numChannels; ++i)
@@ -754,7 +731,7 @@ ito::RetVal ThorlabsBP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
             Sleep(160);
 
-            updateRangesAndSlewRates();
+            updateRanges();
 
             QVector<int> allAxes;
             for (int i = 0; i < m_numChannels; ++i)
@@ -766,58 +743,6 @@ ito::RetVal ThorlabsBP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
             QSharedPointer<QVector<int> > status(new QVector<int>(m_numChannels, 0));
             retValue += getStatus(status, NULL);
-        }
-        else if (key == "slewRateOpenLoop")
-        {
-            PZ_SlewRates slewRates;
-            const int* maxVoltage = m_params["maximumVoltage"].getVal<int*>();
-
-            if (hasIndex)
-            {
-                PBC_GetSlewRates(m_serialNo, m_channelIndices[index], &slewRates);
-                slewRates.openModeRate = qRound(val->getVal<double>() * 19000.0 / maxVoltage[index]);
-                retValue += checkError(PBC_SetSlewRates(m_serialNo, m_channelIndices[index], &slewRates), "set slew rates");
-            }
-            else
-            {
-                double *values = val->getVal<double*>(); //are always m_numChannels values due to meta information
-                for (int i = 0; i < m_numChannels; ++i)
-                {
-                    PBC_GetSlewRates(m_serialNo, m_channelIndices[i], &slewRates);
-                    slewRates.openModeRate = qRound(values[i] * 19000.0 / maxVoltage[i]);
-                    retValue += checkError(PBC_SetSlewRates(m_serialNo, m_channelIndices[i], &slewRates), "set slew rates");
-                }
-            }
-
-            Sleep(160);
-
-            updateRangesAndSlewRates();
-        }
-        else if (key == "slewRateClosedLoop")
-        {
-            PZ_SlewRates slewRates;
-            const int* maxVoltage = m_params["maximumVoltage"].getVal<int*>();
-
-            if (hasIndex)
-            {
-                PBC_GetSlewRates(m_serialNo, m_channelIndices[index], &slewRates);
-                slewRates.closedModeRate = qRound(val->getVal<double>() * 19000.0 / maxVoltage[index]);
-                retValue += checkError(PBC_SetSlewRates(m_serialNo, m_channelIndices[index], &slewRates), "set slew rates");
-            }
-            else
-            {
-                double *values = val->getVal<double*>(); //are always m_numChannels values due to meta information
-                for (int i = 0; i < m_numChannels; ++i)
-                {
-                    PBC_GetSlewRates(m_serialNo, m_channelIndices[i], &slewRates);
-                    slewRates.closedModeRate = qRound(values[i] * 19000.0 / maxVoltage[i]);
-                    retValue += checkError(PBC_SetSlewRates(m_serialNo, m_channelIndices[i], &slewRates), "set slew rates");
-                }
-            }
-
-            Sleep(160);
-
-            updateRangesAndSlewRates();
         }
 
         //---------------------------
