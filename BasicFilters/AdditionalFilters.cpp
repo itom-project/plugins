@@ -202,7 +202,8 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
 //    numLabels++;
     if (numLabels > 0)
     {
-        ito::DataObject *labelList = new ito::DataObject(numLabels, 4, ito::tInt32);
+        ito::DataObject *labelList = new ito::DataObject();
+        labelList->zeros(numLabels, 4, ito::tInt32);
         ito::int32 *labelListPtr = (ito::int32*)(((cv::Mat *)labelList->get_mdata()[0])->data);
 
         for (ito::int32 n = 0; n < numLabels; n++)
