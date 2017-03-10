@@ -127,7 +127,7 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     ThorlabsPowerMeter::ThorlabsPowerMeter() : AddInDataIO(), m_isgrabbing(false),
     m_instrument(VI_NULL)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsPowerMeter", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsPowerMeter", tr("name of the device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("manufacturer_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("manufacturer name").toLatin1().data());
@@ -172,7 +172,7 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     QVector<ito::Param> pMand;
     QVector<ito::Param> pOpt;
     QVector<ito::Param> pOut;
-    registerExecFunc("zero_device", pMand, pOpt, pOut, tr("method to the zero value the device").toLatin1().data());
+    registerExecFunc("zero_device", pMand, pOpt, pOut, tr("function to set the zero value of the device").toLatin1().data());
 
 
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
