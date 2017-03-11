@@ -297,8 +297,11 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     ItomSharedSemaphoreLocker locker(waitCond);
 
     ito::RetVal retVal;
-
+    int bpp = 16;
     QMap<int, QString> devList;
+    char *tmpVal = NULL;
+    int sizeX = 1, sizeY = 1;
+    int roi[] = {0, 0, sizeX, sizeY};
     m_ptp_cam = new PtpCam();
     retVal += m_ptp_cam->list_devices(0, devList);
     // currently simply use first found device
@@ -310,13 +313,11 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
         goto end;
     } 
 
-    int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
+    bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
     m_params["bpp"].setVal<int>(bpp);
 
     // try getting image size, property 0x5003
-    char *tmpVal = NULL;
     retVal += m_ptp_cam->getset_property(m_ptp_portnum, 20483, &tmpVal, 0);
-    int sizeX = 1, sizeY = 1;
     if (tmpVal)
     {
         char *tok = strtok(tmpVal, "x");
@@ -338,7 +339,7 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
         m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
     }
 
-    int roi[] = {0, 0, sizeX, sizeY};
+    roi[2] = sizeX; roi[3] = sizeY;
     m_params["roi"].setVal<int*>(roi, 4);
     if (sizeY == 1)
     {

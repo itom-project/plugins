@@ -29,12 +29,8 @@ find_package(VisualLeakDetector QUIET)
 find_package(LibUSB QUIET)
 
 IF(LibUSB_INCLUDE_DIRS)
-
-IF(WIN32)
     ADD_SUBDIRECTORY(libptp2-1.2.0)
-ENDIF(WIN32)
 
-IF (WIN32)
     IF (BUILD_UNICODE)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
     ENDIF (BUILD_UNICODE)
@@ -53,14 +49,14 @@ IF (WIN32)
 
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-	LINK_DIRECTORIES(
-		${LIBUSB_API_DIR}/lib
-	)	
-	
+        LINK_DIRECTORIES(
+                ${LIBUSB_API_DIR}/lib
+        )
+
     INCLUDE_DIRECTORIES(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/libptp2
+                ${CMAKE_CURRENT_SOURCE_DIR}/libptp2
         ${LibUSB_INCLUDE_DIRS}
         ${ITOM_SDK_INCLUDE_DIRS}
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -75,7 +71,7 @@ IF (WIN32)
     set(plugin_UI
     )
 
-    set(plugin_SOURCES 
+    set(plugin_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/ptpCam.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
     )
@@ -106,19 +102,20 @@ IF (WIN32)
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
     #handle translations END STEP 1
 
-IF (WIN32)
-    SET(PTPLIB optimized ./libptp2-1.2.0/$(Configuration)/libptp2 debug ./libptp2-1.2.0/$(Configuration)/libptp2d)
-ELSE (WIN32)
-    SET(PTPLIB libptp2)
-ENDIF (WIN32)
+    IF (WIN32)
+        SET(PTPLIB optimized ./libptp2-1.2.0/$(Configuration)/libptp2 debug ./libptp2-1.2.0/$(Configuration)/libptp2d)
+    ELSE (WIN32)
+        SET(PTPLIB libptp2)
+    ENDIF (WIN32)
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-IF (WIN32)
-    TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${PTPLIB} ${LibUSB_LIBRARY})
-ELSE(WIN32)
-    TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${PTPLIB} ${LibUSB_LIBRARY})
-ENDIF(WIN32)
+    IF (WIN32)
+        TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${PTPLIB} ${LibUSB_LIBRARY})
+    ELSE(WIN32)
+        TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${PTPLIB} ${LibUSB_LIBRARY})
+    ENDIF(WIN32)
+
     if (QT5_FOUND)
         qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
     endif (QT5_FOUND)
@@ -138,7 +135,7 @@ ENDIF(WIN32)
     ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ENDIF (WIN32)
+
 ELSE (LibUSB_INCLUDE_DIRS)
     message(WARNING "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
 ENDIF (LibUSB_INCLUDE_DIRS)

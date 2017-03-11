@@ -33,11 +33,15 @@
 
 
 #ifndef PTP_EXPORT //DATAOBJ_EXPORT has not be defined yet
-#ifdef PTP_DLL
-#define PTP_EXPORT __declspec(dllexport)
-#else
-#define PTP_EXPORT __declspec(dllimport)
-#endif
+    #if WIN32
+        #ifdef PTP_DLL
+            #define PTP_EXPORT __declspec(dllexport)
+        #else
+            #define PTP_EXPORT __declspec(dllimport)
+        #endif
+    #else
+        #define PTP_EXPORT
+    #endif
 #endif
 
 /* PTP request/response/event general PTP container (transport independent) */

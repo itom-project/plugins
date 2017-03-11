@@ -40,7 +40,7 @@ class DslrRemote; // forward declaration
 class PtpCam
 {
 public:
-    PtpCam() {};
+    PtpCam() : m_globalparams(NULL), m_pdev(NULL) {};
     ~PtpCam() {};
 
     ito::RetVal init_ptp_usb(PTPParams* params, PTP_USB* ptp_usb, struct libusb_device* dev);
@@ -101,6 +101,7 @@ private:
     PTPParams *m_globalparams; //!> we need it for a proper signal handling :/
     static int m_ptpcam_usb_timeout;
     static int m_verbose;
+    libusb_device *m_pdev; //> we need this if we want to maintain the sigkill functionality in linux
 };
 
 #endif //PTPCAM_H

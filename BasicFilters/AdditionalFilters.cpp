@@ -815,7 +815,7 @@ ito::RetVal BasicFilters::findEllipses(QVector<ito::ParamBase> *paramsMand, QVec
         }
 
         // allocate memory for the lines and columns used within subpixel border detection
-        ito::float64 (*StartEndX)[2] = (0, 0), (*StartEndY)[2] = (0, 0);
+        ito::float64 (*StartEndX)[2], (*StartEndY)[2];
         StartEndX = (ito::float64 (*)[2])calloc(maxM - minM + 1, sizeof(ito::float64[2]));
         StartEndY = (ito::float64 (*)[2])calloc(maxN - minN + 1, sizeof(ito::float64[2]));
 
