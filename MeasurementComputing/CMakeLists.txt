@@ -47,10 +47,10 @@ IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-FIND_PATH(MeasurementComputing_DAQ_SDK_DIR cbw.h PATHS "C:/Users/Public/Documents/Measurement Computing/DAQ/C" DOC "Directory of the DAQ C library, must contain the file cbw.h (e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C)")
+FIND_PATH(MeasurementComputing_DAQ_C_SDK_DIR cbw.h PATHS "C:/Users/Public/Documents/Measurement Computing/DAQ/C" DOC "Directory of the DAQ C library, must contain the file cbw.h (e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C)")
 FIND_FILE(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" "C:/Program Files (x86)/Measurement Computing/DAQ" DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")
 
-IF(MeasurementComputing_DAQ_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
+IF(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
 
 	# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 	IF (DEFINED CMAKE_BUILD_TYPE)
@@ -68,12 +68,12 @@ IF(MeasurementComputing_DAQ_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
 		${CMAKE_CURRENT_SOURCE_DIR}
 		${ITOM_SDK_INCLUDE_DIRS}
 		${VISUALLEAKDETECTOR_INCLUDE_DIR}
-		${MeasurementComputing_DAQ_SDK_DIR}
+		${MeasurementComputing_DAQ_C_SDK_DIR}
 	)
 
 	LINK_DIRECTORIES(
 		${USBADDA_LIB_DIR}
-		${MeasurementComputing_DAQ_SDK_DIR}
+		${MeasurementComputing_DAQ_C_SDK_DIR}
 	)
 
 	set(plugin_HEADERS

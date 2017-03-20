@@ -8,8 +8,6 @@
 #include <QtCore/QtPlugin>
 #include <qset.h>
 
-
-#include "cbw.h"            // include cbw 
 #include "common/helperCommon.h"
 #include "DataObject/dataobj.h"
 #include "common/typeDefs.h"
