@@ -815,7 +815,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
             //calc time
             double cur_speed = m_params["speed"].getVal<double>(); //mm/s  * m_scale;
             if (cur_speed==0) cur_speed = 0.01;
-            double durationMS = (m_distance / cur_speed)*1000;
+            double durationMS = abs(m_distance / cur_speed * 1000);
 
             ito::RetVal temp = waitForDone(durationMS,axis); //drops into timeout
             if (temp.containsError() && temp.errorCode() != 9999) //anything else besides timeout
@@ -927,12 +927,12 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
                         if (m_currentPos[axis[naxis]] > limitHigh[axis[naxis]])
                         {
                             m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitHigh[axis[naxis]];
-                            setStatus(axis, ito::actuatorMoving, ito::actuatorRightEndSwitch | ito::actStatusMask);
+                            setStatus(axis, ito::actuatorAtTarget, ito::actuatorRightEndSwitch | ito::actStatusMask);
                         }
                         else if (m_currentPos[axis[naxis]] < limitLow[axis[naxis]])
                         {
                             m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitLow[axis[naxis]];
-                            setStatus(axis, ito::actuatorMoving, ito::actuatorLeftEndSwitch | ito::actStatusMask);
+                            setStatus(axis, ito::actuatorAtTarget, ito::actuatorLeftEndSwitch | ito::actStatusMask);
                         }
                     }
                 }
@@ -950,13 +950,13 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
                         {
                             m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitHigh[axis[naxis]];
                             timeout = true;
-                            setStatus(axis, ito::actuatorMoving, ito::actuatorRightEndSwitch | ito::actStatusMask);
+                            setStatus(axis, ito::actuatorAtTarget, ito::actuatorRightEndSwitch | ito::actStatusMask);
                         }
                         else if (m_currentPos[axis[naxis]] < limitLow[axis[naxis]])
                         {
                             m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] = limitLow[axis[naxis]];
                             timeout = true;
-                            setStatus(axis, ito::actuatorMoving, ito::actuatorLeftEndSwitch | ito::actStatusMask);
+                            setStatus(axis, ito::actuatorAtTarget, ito::actuatorLeftEndSwitch | ito::actStatusMask);
                         }
                     }
                 }
