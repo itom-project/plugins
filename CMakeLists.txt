@@ -474,3 +474,9 @@ OPTION(PLUGIN_x3pio "Build with this plugin." ON)
 if (PLUGIN_x3pio)
     ADD_SUBDIRECTORY(x3pio)
 endif (PLUGIN_x3pio)
+
+# NITWidySWIR
+OPTION(PLUGIN_NITWidySWIR "Build with this plugin." ON)
+if (PLUGIN_NITWidySWIR)
+    ADD_SUBDIRECTORY(NITWidySWIR)
+endif (PLUGIN_NITWidySWIR)

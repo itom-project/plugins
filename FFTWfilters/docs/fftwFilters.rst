@@ -30,3 +30,7 @@ Detailed overview about all defined filters:
 .. pluginfilterlist::
     :plugin: fftwFilters
 
+Changelog
+=========
+
+* itom setup 2.2.1: This plugin has been compiled using the FFTW 3.6

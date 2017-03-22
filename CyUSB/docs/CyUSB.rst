@@ -87,3 +87,5 @@ In order to run a device via the CyUSB plugin, you also need to install the driv
 Changelog
 =========
 
+* itom setup 2.2.1: This plugin has been compiled using the Cypress CyAPI 1.1
+* itom setup 2.2.1: This plugin has been compiled using the Cypress CyAPI 1.3.3
