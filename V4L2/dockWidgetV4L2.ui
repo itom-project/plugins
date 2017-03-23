@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>273</width>
+    <height>266</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,14 +20,14 @@
       <enum>QTabWidget::South</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_ctrl">
       <attribute name="title">
        <string>Control</string>
       </attribute>
-      <layout class="QVBoxLayout" name="layout_tab1">
-       <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
         <widget class="QScrollArea" name="scroll_area_ctrltab">
          <property name="widgetResizable">
           <bool>true</bool>
@@ -37,8 +37,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>358</width>
-            <height>229</height>
+            <width>294</width>
+            <height>258</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="ctrltab_layout">
@@ -60,8 +60,8 @@
       <attribute name="title">
        <string>Info</string>
       </attribute>
-      <layout class="QVBoxLayout" name="layout_tab2">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
         <widget class="QScrollArea" name="scroll_area_infotab">
          <property name="widgetResizable">
           <bool>true</bool>
@@ -71,55 +71,94 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>358</width>
-            <height>229</height>
+            <width>229</width>
+            <height>203</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="infotab_layout">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
             <widget class="QGroupBox" name="gb_general">
              <property name="title">
               <string>General Information</string>
              </property>
-             <layout class="QVBoxLayout" name="layout_general">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_general">
                 <property name="text">
                  <string>label_general</string>
                 </property>
                </widget>
               </item>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </widget>
            </item>
-           <item>
+           <item row="1" column="0">
             <widget class="QGroupBox" name="gb_image">
              <property name="title">
               <string>Image Information</string>
              </property>
-             <layout class="QVBoxLayout" name="layout_image">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_image">
                 <property name="text">
                  <string>label_image</string>
                 </property>
                </widget>
               </item>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </widget>
            </item>
-           <item>
+           <item row="2" column="0">
             <widget class="QGroupBox" name="gb_media">
              <property name="title">
               <string>Media Information</string>
              </property>
-             <layout class="QVBoxLayout" name="layout_media">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_media">
                 <property name="text">
                  <string>label_media</string>
                 </property>
                </widget>
+              </item>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </widget>

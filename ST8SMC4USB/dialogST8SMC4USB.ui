@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>421</width>
+    <width>426</width>
     <height>309</height>
    </rect>
   </property>
@@ -202,12 +202,6 @@
         </item>
         <item row="2" column="1">
          <widget class="QComboBox" name="cb_microSteps">
-          <property name="minimumSize">
-           <size>
-            <width>73</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="currentIndex">
            <number>0</number>
           </property>

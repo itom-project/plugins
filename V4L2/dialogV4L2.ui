@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>345</width>
+    <width>350</width>
     <height>199</height>
    </rect>
   </property>
@@ -21,8 +21,8 @@
        <property name="title">
         <string>Color Mode</string>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
          <widget class="QComboBox" name="comboColorMode">
           <property name="editable">
            <bool>false</bool>
