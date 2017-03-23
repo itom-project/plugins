@@ -6,21 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>405</height>
+    <width>391</width>
+    <height>401</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>400</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>700</width>
-    <height>1024</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -31,14 +19,8 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -71,12 +53,6 @@
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="combo_baud">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -249,12 +225,6 @@
           </item>
           <item row="0" column="4">
            <widget class="QComboBox" name="combo_parity">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -287,12 +257,6 @@
           </item>
           <item row="1" column="1">
            <widget class="QComboBox" name="combo_bits">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>3</number>
             </property>
@@ -320,18 +284,6 @@
           </item>
           <item row="1" column="2">
            <widget class="QLabel" name="label">
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="text">
              <string/>
             </property>
@@ -346,12 +298,6 @@
           </item>
           <item row="1" column="4">
            <widget class="QSpinBox" name="spinBox_timeout">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="suffix">
              <string>ms</string>
             </property>
@@ -390,12 +336,6 @@
           </item>
           <item row="2" column="1">
            <widget class="QComboBox" name="combo_endline">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -435,12 +375,6 @@
           </item>
           <item row="2" column="4">
            <widget class="QSpinBox" name="spinBox_sendDelay">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="suffix">
              <string>ms</string>
             </property>
@@ -466,12 +400,6 @@
           </item>
           <item row="3" column="1">
            <widget class="QComboBox" name="combo_stopbits">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -529,12 +457,6 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QLabel" name="label_flow_xonxoff">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -553,12 +475,6 @@
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="combo_flow_xonxoff">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -576,18 +492,6 @@
           </item>
           <item row="0" column="2">
            <widget class="QLabel" name="label_2">
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="text">
              <string/>
             </property>
@@ -625,12 +529,6 @@
           </item>
           <item row="1" column="1">
            <widget class="QComboBox" name="combo_flow_cts">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -713,12 +611,6 @@
           </item>
           <item row="2" column="1">
            <widget class="QComboBox" name="combo_flow_dsr">
-            <property name="minimumSize">
-             <size>
-              <width>73</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -843,12 +735,6 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="lineWrapMode">
           <enum>QTextEdit::NoWrap</enum>
          </property>
@@ -892,12 +778,6 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>45</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="text">
               <string>ASCII</string>
              </property>
@@ -914,12 +794,6 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>53</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="text">
               <string>Decimal</string>
              </property>
@@ -930,12 +804,6 @@
            </item>
            <item>
             <widget class="QRadioButton" name="RBHex">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="text">
               <string>Hexadecimal</string>
              </property>
@@ -943,12 +811,6 @@
            </item>
            <item>
             <widget class="QRadioButton" name="RBBin">
-             <property name="minimumSize">
-              <size>
-               <width>48</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="text">
               <string>Binary</string>
              </property>

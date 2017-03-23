@@ -37,12 +37,6 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
      <property name="title">
       <string>General Information</string>
      </property>
@@ -180,18 +174,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <property name="title">
         <string>Positioning</string>
        </property>
@@ -254,18 +236,6 @@
           </property>
           <item>
            <widget class="QPushButton" name="btnUp">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="text">
              <string>Up</string>
             </property>
@@ -273,18 +243,6 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnDown">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="text">
              <string>Down</string>
             </property>
@@ -297,18 +255,6 @@
      </item>
      <item>
       <widget class="QGroupBox" name="groupBoxMode">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <property name="title">
         <string>Joystick Mode</string>
        </property>
@@ -354,18 +300,6 @@
     <widget class="QGroupBox" name="groupBox_3">
      <property name="enabled">
       <bool>true</bool>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
      </property>
      <property name="title">
       <string>Absolut Positioning</string>

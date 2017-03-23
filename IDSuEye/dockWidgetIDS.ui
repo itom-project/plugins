@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>338</width>
-    <height>360</height>
+    <width>613</width>
+    <height>345</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,18 +21,6 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
      </property>
      <property name="title">
       <string>Camera Data</string>
@@ -124,12 +112,6 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
      <property name="title">
       <string>Image Properties</string>
      </property>
@@ -160,12 +142,6 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>13</height>
-         </size>
-        </property>
         <property name="text">
          <string>Width:</string>
         </property>
@@ -179,12 +155,6 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>13</height>
-         </size>
-        </property>
         <property name="text">
          <string>Height:</string>
         </property>
@@ -197,12 +167,6 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>13</height>
-         </size>
         </property>
         <property name="text">
          <string>Bit depth:</string>
