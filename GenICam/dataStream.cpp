@@ -400,6 +400,19 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 
 	if (!retval.containsError())
 	{
+		if ((pixelformatNamespace == GenTL::PIXELFORMAT_NAMESPACE_UNKNOWN) || (pixelformat == 0))
+		{
+			//try to guess right pixelformat
+			if (dobj.getType() == ito::tUInt16 && size >= (sizeof(ito::uint16) * (width * height)))
+			{
+				pixelformat = PFNC_Mono16;
+			}
+			else if (dobj.getType() == ito::tUInt8 && size >= (sizeof(ito::uint8) * (width * height)))
+			{
+				pixelformat = PFNC_Mono8;
+			}
+		}
+
 		switch (pixelformat)
 		{
 		case PFNC_Mono8:

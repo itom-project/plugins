@@ -182,8 +182,11 @@ ito::RetVal GCIntType::update(bool valueOnly /*= true*/)
 
 	if (!valueOnly)
 	{
-        intMetaFromInteger(m_sharedPtr, (*m_paramMap)[m_name].getMetaT<ito::IntMeta>());
-        (*m_paramMap)[m_name].setFlags(flagsFromAccessMode(m_sharedPtr->GetNode()->GetAccessMode()));
+		if (!(flags & ito::ParamBase::NotAvailable))
+		{
+			intMetaFromInteger(m_sharedPtr, (*m_paramMap)[m_name].getMetaT<ito::IntMeta>());
+		}
+        (*m_paramMap)[m_name].setFlags(flags);
 	}
 
 	return retval;
@@ -312,8 +315,11 @@ ito::RetVal GCFloatType::update(bool valueOnly /*= true*/)
 
 	if (!valueOnly)
 	{
-		doubleMetaFromFloat(m_sharedPtr, (*m_paramMap)[m_name].getMetaT<ito::DoubleMeta>());
-		(*m_paramMap)[m_name].setFlags(flagsFromAccessMode(m_sharedPtr->GetNode()->GetAccessMode()));
+		if (!(flags & ito::ParamBase::NotAvailable))
+		{
+			doubleMetaFromFloat(m_sharedPtr, (*m_paramMap)[m_name].getMetaT<ito::DoubleMeta>());
+		}
+		(*m_paramMap)[m_name].setFlags(flags);
 	}
 
 	return retval;
@@ -367,7 +373,7 @@ ito::RetVal GCStringType::update(bool valueOnly /*= true*/)
 
 	if (!valueOnly)
 	{
-		(*m_paramMap)[m_name].setFlags(flagsFromAccessMode(m_sharedPtr->GetNode()->GetAccessMode()));
+		(*m_paramMap)[m_name].setFlags(flags);
 	}
 
 	return retval;
@@ -517,7 +523,10 @@ ito::RetVal GCEnumerationType::update(bool valueOnly /*= true*/)
 
 	if (!valueOnly)
 	{
-		stringMetaFromEnumeration(m_sharedPtr, (*m_paramMap)[m_name].getMetaT<ito::StringMeta>());
+		if (!(flags & ito::ParamBase::NotAvailable))
+		{
+			stringMetaFromEnumeration(m_sharedPtr, (*m_paramMap)[m_name].getMetaT<ito::StringMeta>());
+		}
 		(*m_paramMap)[m_name].setFlags(flags);
 	}
 	
