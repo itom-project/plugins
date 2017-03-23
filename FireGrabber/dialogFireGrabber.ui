@@ -6,21 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>329</height>
+    <width>592</width>
+    <height>440</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>16777215</width>
-    <height>16777215</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -78,12 +66,6 @@
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="2">
          <widget class="SliderWidget" name="sliderOffset">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>1</number>
           </property>
@@ -106,12 +88,6 @@
         </item>
         <item row="1" column="2">
          <widget class="SliderWidget" name="sliderGain">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>1</number>
           </property>
@@ -153,12 +129,6 @@
         </item>
         <item row="2" column="2">
          <widget class="SliderWidget" name="sliderIntegrationTime">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -175,12 +145,6 @@
         </item>
         <item row="3" column="2">
          <widget class="SliderWidget" name="sliderFrameTime">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -230,12 +194,6 @@
           </item>
           <item row="0" column="1">
            <widget class="RangeWidget" name="rangeX01">
-            <property name="maximumSize">
-             <size>
-              <width>265</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="maximum">
              <number>2048</number>
             </property>
@@ -278,12 +236,6 @@
           </item>
           <item row="1" column="1">
            <widget class="RangeWidget" name="rangeY01">
-            <property name="maximumSize">
-             <size>
-              <width>265</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="singleStep">
              <number>2</number>
             </property>
