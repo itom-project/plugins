@@ -143,6 +143,12 @@ if (PLUGIN_FringeProj)
     ADD_SUBDIRECTORY(FringeProj)
 endif (PLUGIN_FringeProj)
 
+# GenICam
+OPTION(PLUGIN_GenICam "Build with this plugin." ON)
+if (PLUGIN_GenICam)
+    ADD_SUBDIRECTORY(GenICam)
+endif (PLUGIN_GenICam)
+
 # glDisplay
 OPTION(PLUGIN_GLDisplay "Build with this plugin." ON)
 if (PLUGIN_GLDisplay)
