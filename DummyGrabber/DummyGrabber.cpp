@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -43,6 +43,7 @@
 
 #include "pluginVersion.h"
 #include "common/helperCommon.h"
+#include "common/paramMeta.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -225,32 +226,57 @@ DummyGrabber::DummyGrabber() :
     m_totalBinning(1),
     m_lineCamera(false)
 {
+    ito::DoubleMeta *dm;
+
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyGrabber", "GrabberName");
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("frame_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum time between the start of two consecutive acquisitions [s], default: 0.0.").toLatin1().data());
+    dm = paramVal.getMetaT<ito::DoubleMeta>();
+    dm->setCategory("AcquisitionControl");
+    dm->setUnit("s");
+    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum integration time for an acquisition [s], default: 0.0 (as fast as possible).").toLatin1().data());
+    dm = paramVal.getMetaT<ito::DoubleMeta>();
+    dm->setCategory("AcquisitionControl");
+    dm->setUnit("s");
+    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
+    dm = paramVal.getMetaT<ito::DoubleMeta>();
+    dm->setCategory("AcquisitionControl");
+    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual offset").toLatin1().data());
+    dm = paramVal.getMetaT<ito::DoubleMeta>();
+    dm->setCategory("AcquisitionControl");
+    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel, binning = x-factor * 100 + y-factor").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in x (cols) [px]").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 4096, tr("size in y (rows) [px]").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
     m_params.insert(paramVal.getName(), paramVal);
 
     int roi[] = {0, 0, 2048, 2048};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1), "ImageFormatControl");
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("bitdepth of images").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2, "ImageFormatControl"), tr("bitdepth of images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())

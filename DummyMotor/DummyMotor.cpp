@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -45,6 +45,7 @@
 #include "pluginVersion.h"
 
 #include "common/helperCommon.h"
+#include "common/paramMeta.h"
 
 #ifdef WIN32
     #include <windows.h>
@@ -153,7 +154,8 @@ DummyMotor::DummyMotor() :
     m_scale(1),
     m_distance(0)
 {
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
+    ito::IntMeta* imeta;
+    ito::DoubleMeta* dmeta;
 
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("AxisNumber", ito::ParamBase::Int, 0, new ito::IntMeta(0,10), tr("Axis number to plot").toLatin1().data());
@@ -176,26 +178,47 @@ DummyMotor::DummyMotor() :
     //end register exec functions
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMotor", "name of the plugin");    // Set up the parameter list
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 6, 1, tr("Number of Axis attached to this stage").toLatin1().data());
+
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 6, 1, tr("Number of axes attached to this stage").toLatin1().data());
+    imeta = paramVal.getMetaT<ito::IntMeta>();
+    imeta->setCategory("General");
+    imeta->setRepresentation(ito::ParamMeta::PureNumber); //numaxis should be a spin box and no slider in any generic GUI
     m_params.insert(paramVal.getName(), paramVal);
     m_numaxis = paramVal.getVal<int>();
 
     paramVal = ito::Param("speed", ito::ParamBase::Double, 0.1, 100000.0, 1.0, tr("Speed of the axis between 0.1 and 100000 mm/s").toLatin1().data());
+    dmeta = paramVal.getMetaT<ito::DoubleMeta>();
+    dmeta->setCategory("Motion");
+    dmeta->setUnit("mm/s");
+    dmeta->setRepresentation(ito::ParamMeta::Linear); //linear slider, if possible
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("accel", ito::ParamBase::Double, 1.0, 10.0, 1.0, tr("Acceleration in mm/s^2, currently not implemented").toLatin1().data());
+    dmeta = paramVal.getMetaT<ito::DoubleMeta>();
+    dmeta->setUnit("mm/s^2");
+    dmeta->setCategory("Motion");
+    dmeta->setRepresentation(ito::ParamMeta::Linear); //linear slider, if possible
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("General");
     m_params.insert(paramVal.getName(), paramVal);
 
     ito::int32 values[6] = { 0, 0, 0, 0, 0, 0 };
     paramVal = ito::Param("useLimits", ito::ParamBase::IntArray, 6, values, new ito::IntArrayMeta(0, 6, 1, 6, 6), tr("Use axes limits and limit switches").toLatin1().data());
+    paramVal.getMetaT<ito::ParamMeta>()->setCategory("Limits");
     m_params.insert(paramVal.getName(), paramVal);
+
     ito::float64 dvaluesp[6] = { 1.0e208, 1.0e208, 1.0e208, 1.0e208, 1.0e208, 1.0e208 };
     ito::float64 dvaluesn[6] = { -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208 };
     paramVal = ito::Param("limitPos", ito::ParamBase::DoubleArray, 6, dvaluesp, new ito::DoubleArrayMeta(-1.0e208, 1.0e208, 0, 6, 6), tr("positive limits of axes").toLatin1().data());
+    paramVal.getMetaT<ito::ParamMeta>()->setCategory("Limits");
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("limitNeg", ito::ParamBase::DoubleArray, 6, dvaluesn, new ito::DoubleArrayMeta(-1.0e208, 1.0e208, 0, 6, 6), tr("negative limits of axes").toLatin1().data());
+    paramVal.getMetaT<ito::ParamMeta>()->setCategory("Limits");
     m_params.insert(paramVal.getName(), paramVal);
 
     /*paramVal = ito::Param("array", ito::ParamBase::IntArray, NULL, tr("test").toLatin1().data());
