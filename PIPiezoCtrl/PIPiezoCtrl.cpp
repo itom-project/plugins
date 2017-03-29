@@ -85,9 +85,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_useOnTarget(true)
 {
 #ifdef GCS2
-    ito::Param paramVal("name", ito::ParamBase::String, "PI GCS2", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PI GCS2", NULL);
 #else
-    ito::Param paramVal("name", ito::ParamBase::String, "PIPiezoCtrl", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PIPiezoCtrl", NULL);
 #endif
     m_params.insert(paramVal.getName(), paramVal);
     

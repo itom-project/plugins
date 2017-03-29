@@ -230,7 +230,7 @@ FileGrabber::FileGrabber() :
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
 
-    ito::Param paramVal("name", ito::ParamBase::String, "FileGrabber", "GrabberName");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "FileGrabber", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.005, 100.0, 12.5, tr("Integrationtime of CCD programmed in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
