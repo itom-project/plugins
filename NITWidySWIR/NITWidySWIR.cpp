@@ -1261,7 +1261,7 @@ ito::RetVal NITWidySWIR::loadNUCFile(const QString &filePath, double integration
             m_GainMap = gain;
 
             nucFile.release();
-            cout << "loaded NUC file name: " << absPath << " for the interation time of: " << integrationTime << "mikroseconds \n" << endl;
+            //cout << "loaded NUC file name: " << absPath << " for the interation time of: " << integrationTime << "mikroseconds \n" << endl;
         }
         else
         {
