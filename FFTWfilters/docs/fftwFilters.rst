@@ -34,3 +34,4 @@ Changelog
 =========
 
 * itom setup 2.2.1: This plugin has been compiled using the FFTW 3.6
+* itom setup 3.0.0: This plugin has been compiled using the FFTW 3.6
