@@ -484,7 +484,7 @@ const ito::RetVal LeicaMotorFocus::LMFStatus(int &status)
 //----------------------------------------------------------------------------------------------------------------------------------
 LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)/*, m_posrequestlisteners(0)*/
 {
-    ito::Param paramVal("name", ito::ParamBase::String, "LeicaMotorFocus", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "LeicaMotorFocus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     
     m_scale = 1e3; // Leica is Programmes in mu m, this evil Programm sent in mm
