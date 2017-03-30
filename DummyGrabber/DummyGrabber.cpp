@@ -279,6 +279,28 @@ DummyGrabber::DummyGrabber() :
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2, "ImageFormatControl"), tr("bitdepth of images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("demoRegexpString", ito::ParamBase::String, "", tr("matches strings without whitespaces").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "^\\S+$", "DemoParameters"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("demoWildcardString", ito::ParamBase::String, "test.bmp", tr("dummy filename of a bmp file, pattern: *.bmp").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*.bmp", "DemoParameters"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("demoEnumString", ito::ParamBase::String, "mode 1", tr("enumeration string (mode 1, mode 2, mode 3)").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "mode 1", "DemoParameters");
+    sm->addItem("mode 2");
+    sm->addItem("mode 3");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("demoArbitraryString", ito::ParamBase::String, "any string", tr("any string allowed").toLatin1().data());
+    sm = new ito::StringMeta(ito::StringMeta::String);
+    sm->setCategory("DemoParameters");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
