@@ -4,7 +4,7 @@
 <context>
     <name>DialogSuperlumBS</name>
     <message>
-        <location filename="../dialogSuperlumBS.ui" line="+26"/>
+        <location filename="../dialogSuperlumBS.ui" line="+14"/>
         <source>Superlum BroadSweeper</source>
         <translation type="unfinished"></translation>
     </message>
@@ -14,43 +14,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
-        <location line="+78"/>
-        <location line="+39"/>
-        <location line="+113"/>
+        <location line="+18"/>
+        <location line="+48"/>
+        <location line="+27"/>
+        <location line="+116"/>
         <location line="+14"/>
-        <location line="+313"/>
+        <location line="+431"/>
         <location line="+14"/>
-        <location line="+281"/>
+        <location line="+128"/>
         <location line="+17"/>
         <location line="+17"/>
-        <location line="+125"/>
+        <location line="+134"/>
         <location line="+17"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1015"/>
+        <location line="-956"/>
         <source>serial Nr.: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+7"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+20"/>
         <source>COM Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+7"/>
         <source>Remote:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+26"/>
         <source>remote</source>
         <translation type="unfinished"></translation>
     </message>
@@ -60,7 +60,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
         <source>MAN</source>
         <translation type="unfinished"></translation>
     </message>
@@ -70,19 +70,19 @@
         <location line="+23"/>
         <location line="+105"/>
         <location line="+36"/>
-        <location line="+130"/>
-        <location line="+36"/>
+        <location line="+98"/>
+        <location line="+150"/>
         <source> nm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-452"/>
-        <location line="+377"/>
+        <location line="-534"/>
+        <location line="+527"/>
         <source>Full tuning range: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-370"/>
+        <location line="-520"/>
         <source>Wavelength steps: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -98,12 +98,12 @@
     </message>
     <message>
         <location line="+19"/>
-        <location line="+327"/>
+        <location line="+445"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-284"/>
+        <location line="-402"/>
         <source>AUTO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -142,22 +142,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+29"/>
         <source>Wavelength 1:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+20"/>
         <source>Wavelength 2:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="-43"/>
         <source>Modulation frequency:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+57"/>
         <source>0.1 Hz</source>
         <extracomment>0.1</extracomment>
         <translation type="unfinished"></translation>
@@ -235,12 +235,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+121"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+18"/>
         <source>Booster Control</source>
         <translation type="unfinished"></translation>
     </message>
@@ -250,7 +250,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+75"/>
         <source>Power:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -275,7 +275,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-941"/>
+        <location line="-918"/>
         <source>local</source>
         <translation type="unfinished"></translation>
     </message>
@@ -288,7 +288,7 @@
 <context>
     <name>DockWidgetSuperlumBS</name>
     <message>
-        <location filename="../dockWidgetSuperlumBS.ui" line="+20"/>
+        <location filename="../dockWidgetSuperlumBS.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -298,49 +298,49 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+18"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
-        <location line="+20"/>
-        <location line="+20"/>
-        <location line="+20"/>
-        <location line="+177"/>
         <location line="+14"/>
-        <location line="+313"/>
         <location line="+14"/>
-        <location line="+227"/>
+        <location line="+14"/>
+        <location line="+156"/>
+        <location line="+14"/>
+        <location line="+261"/>
+        <location line="+14"/>
+        <location line="+204"/>
         <location line="+17"/>
         <location line="+17"/>
-        <location line="+125"/>
+        <location line="+115"/>
         <location line="+17"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-968"/>
+        <location line="-850"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>serial Nr.: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>COM Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+14"/>
         <source>Remote:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+14"/>
         <source>local</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,7 +355,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
         <source>MAN</source>
         <translation type="unfinished"></translation>
     </message>
@@ -363,21 +363,21 @@
         <location line="+6"/>
         <location line="+141"/>
         <location line="+23"/>
-        <location line="+105"/>
+        <location line="+79"/>
         <location line="+36"/>
-        <location line="+130"/>
+        <location line="+104"/>
         <location line="+36"/>
         <source> nm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-452"/>
-        <location line="+377"/>
+        <location line="-400"/>
+        <location line="+325"/>
         <source>Full tuning range: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-370"/>
+        <location line="-318"/>
         <source>Wavelength steps: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -393,36 +393,36 @@
     </message>
     <message>
         <location line="+19"/>
-        <location line="+327"/>
+        <location line="+275"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-284"/>
+        <location line="-232"/>
         <source>AUTO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
-        <location line="+128"/>
+        <location line="+102"/>
         <source>Start wavelength: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-105"/>
-        <location line="+141"/>
+        <location line="-79"/>
+        <location line="+115"/>
         <source>Stop wavelength: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-105"/>
-        <location line="+128"/>
+        <location line="-79"/>
+        <location line="+102"/>
         <source>Sweep speed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-121"/>
-        <location line="+128"/>
+        <location line="-95"/>
+        <location line="+102"/>
         <source> nm/s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -432,7 +432,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+134"/>
+        <location line="+108"/>
         <source>MOD</source>
         <translation type="unfinished"></translation>
     </message>
@@ -452,7 +452,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>0.1 Hz</source>
         <extracomment>0.1</extracomment>
         <translation type="unfinished"></translation>
@@ -530,12 +530,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+31"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+18"/>
         <source>Booster Control</source>
         <translation type="unfinished"></translation>
     </message>
@@ -545,7 +545,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+29"/>
         <source>Power:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -560,12 +560,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+87"/>
         <source>Master Key:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-41"/>
         <source>Remote Interlock: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -699,7 +699,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -871,7 +871,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
 <context>
     <name>SuperlumBSInterface</name>
     <message>
-        <location line="-1257"/>
+        <location line="-1260"/>
         <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>

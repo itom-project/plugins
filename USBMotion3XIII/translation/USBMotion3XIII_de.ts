@@ -4,12 +4,12 @@
 <context>
     <name>DialogUSBMotion3XIII</name>
     <message>
-        <location filename="../dialogUSBMotion3XIII.ui" line="+26"/>
+        <location filename="../dialogUSBMotion3XIII.ui" line="+6"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
@@ -412,88 +412,88 @@
 <context>
     <name>DockWidgetUSBMotion3XIII</name>
     <message>
-        <location filename="../dockWidgetUSBMotion3XIII.ui" line="+32"/>
+        <location filename="../dockWidgetUSBMotion3XIII.ui" line="+12"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+12"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>Axis:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[Axis]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+16"/>
         <source>Relative Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+26"/>
         <source>Step Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
-        <location line="+284"/>
+        <location line="+176"/>
         <location line="+43"/>
-        <location line="+43"/>
-        <location line="+50"/>
-        <location line="+43"/>
-        <location line="+46"/>
+        <location line="+31"/>
+        <location line="+38"/>
+        <location line="+31"/>
+        <location line="+34"/>
         <source> °</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-468"/>
+        <location line="-316"/>
         <source>axis 1 +</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+14"/>
+        <source>axis 2 - </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-21"/>
         <source>axis 2 +</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="-7"/>
         <source>axis 3 +</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+21"/>
         <source>axis 1 -</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>axis 2 -</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+19"/>
+        <location line="+14"/>
         <source>axis 3 -</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+18"/>
         <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -503,17 +503,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>axis 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>axis 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>axis 3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -523,12 +523,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+127"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+146"/>
+        <location line="+110"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
@@ -747,7 +747,7 @@ If you change any parameters like speed or acceleration, set the values and then
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+34"/>
         <source>DLL USB3xIII.dll not loaded</source>
         <translation type="unfinished"></translation>
     </message>
@@ -959,7 +959,7 @@ If you change any parameters like speed or acceleration, set the values and then
 <context>
     <name>USBMotion3XIIIInterface</name>
     <message>
-        <location line="-1688"/>
+        <location line="-1691"/>
         <source>serial number or string of the device to open, or &apos;auto&apos; if next unused device should be opened or &apos;0&apos;,&apos;1&apos;... to indicate the index of the device to open.</source>
         <translation type="unfinished"></translation>
     </message>

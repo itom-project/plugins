@@ -187,7 +187,7 @@
 <context>
     <name>MeasurementComputing</name>
     <message>
-        <location filename="../MeasurementComputing.cpp" line="+98"/>
+        <location filename="../MeasurementComputing.cpp" line="+96"/>
         <source>name of itom plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -426,7 +426,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+57"/>
         <source>Instance with board number %i already initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -480,7 +480,7 @@
 <context>
     <name>MeasurementComputingInterface</name>
     <message>
-        <location line="-1379"/>
+        <location line="-1366"/>
         <source>MeasurementComputing Digital-Analog Converter Plugin.</source>
         <translation type="unfinished"></translation>
     </message>

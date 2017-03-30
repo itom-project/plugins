@@ -4,7 +4,7 @@
 <context>
     <name>DialogPGRFlyCapture</name>
     <message>
-        <location filename="../dialogPGRFlyCapture.ui" line="+26"/>
+        <location filename="../dialogPGRFlyCapture.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -121,12 +121,12 @@
 <context>
     <name>DockWidgetPGRFlyCapture</name>
     <message>
-        <location filename="../dockWidgetPGRFlyCapture.ui" line="+20"/>
+        <location filename="../dockWidgetPGRFlyCapture.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,7 +286,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2175"/>
+        <location line="+2178"/>
         <source>Bitdepth of %i bit is not supported by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -346,7 +346,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1585"/>
+        <location line="-1588"/>
         <source>name of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -411,7 +411,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+70"/>
         <source>suffix &apos;%s&apos; could not be interpreted as hex number</source>
         <translation type="unfinished"></translation>
     </message>
@@ -551,7 +551,7 @@
 <context>
     <name>PGRFlyCaptureInterface</name>
     <message>
-        <location line="-2016"/>
+        <location line="-2019"/>
         <source>colorMode: &apos;gray&apos; (default) or &apos;color&apos; if color camera. In color mode, bpp is limited to 8 per color.</source>
         <translation type="unfinished"></translation>
     </message>

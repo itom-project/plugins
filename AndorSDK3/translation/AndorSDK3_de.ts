@@ -4,7 +4,7 @@
 <context>
     <name>AndorSDK3</name>
     <message>
-        <location filename="../AndorSDK3.cpp" line="+60"/>
+        <location filename="../AndorSDK3.cpp" line="+64"/>
         <source>Exposure time of chip (in seconds).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -119,7 +119,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+693"/>
+        <location line="+699"/>
         <source>StopDevice of AndorSDK3 can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -187,7 +187,7 @@ by the Windows path environment variable (e.g. append &quot;C:/Program Files/And
 <context>
     <name>DialogAndorSDK3</name>
     <message>
-        <location filename="../DialogAndorSDK3.ui" line="+26"/>
+        <location filename="../DialogAndorSDK3.ui" line="+20"/>
         <source>Andor SDK3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -340,7 +340,7 @@ by the Windows path environment variable (e.g. append &quot;C:/Program Files/And
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+12"/>
         <source>Camera Data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -375,29 +375,29 @@ by the Windows path environment variable (e.g. append &quot;C:/Program Files/And
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Image Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+12"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+26"/>
-        <location line="+26"/>
+        <location line="+20"/>
+        <location line="+20"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-33"/>
+        <location line="-27"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+20"/>
         <source>Bit depth:</source>
         <translation type="unfinished"></translation>
     </message>

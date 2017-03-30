@@ -4,12 +4,12 @@
 <context>
     <name>DialogIDS</name>
     <message>
-        <location filename="../dialogIDS.ui" line="+26"/>
+        <location filename="../dialogIDS.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+11"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -98,7 +98,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+36"/>
         <location line="+6"/>
         <source>Trigger</source>
         <translation type="unfinished"></translation>
@@ -183,7 +183,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+12"/>
         <source>Camera Data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -218,22 +218,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Image Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+30"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>Bit depth:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -296,6 +296,9 @@
 * UI337xCP-C (colored, USB3) 
 * UI318xCP-M (monochrome, USB3) 
 * UI318xCP-C (colored, USB3) 
+* UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL 
+
+(Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU). 
 
 The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. 
 
@@ -305,7 +308,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -433,13 +436,13 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1958"/>
+        <location line="+1996"/>
         <location line="+5"/>
         <source>Warning framerate is out of bounds, set to closest value possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1985"/>
+        <location line="-2023"/>
         <source>Model identifier of the attached camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -469,7 +472,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+906"/>
+        <location line="+909"/>
         <source>StopDevice of IDSuEye can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -494,7 +497,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+719"/>
+        <location line="+754"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -507,7 +510,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="-53"/>
+        <location filename="../IDSInterface.cpp" line="-56"/>
         <source>IDS uEye grabber.</source>
         <translation type="unfinished"></translation>
     </message>

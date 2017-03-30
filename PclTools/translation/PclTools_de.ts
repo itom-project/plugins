@@ -4,7 +4,7 @@
 <context>
     <name>PclTools</name>
     <message>
-        <location filename="../pclTools.cpp" line="+4476"/>
+        <location filename="../pclTools.cpp" line="+4495"/>
         <source>saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -111,7 +111,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4373"/>
+        <location line="-4389"/>
         <source>point cloud to save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -147,12 +147,12 @@
     </message>
     <message>
         <location line="+81"/>
-        <location line="+189"/>
+        <location line="+196"/>
         <source>ply-support is not compiled in this version (since this is not supported in PCL1.5.1 or lower</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-130"/>
+        <location line="-137"/>
         <source>pointCloud could not be saved: %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -162,7 +162,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+30"/>
         <source>loaded pointcloud</source>
         <translation type="unfinished"></translation>
     </message>
@@ -172,12 +172,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>type (&apos;pcd&apos;,&apos;ply&apos;,&apos;vtk&apos;,&apos;auto&apos; [default, check suffix of filename])</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+44"/>
+        <location line="+46"/>
         <source>filename &apos;%s&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,28 +183,23 @@
     </message>
     <message>
         <location line="+26"/>
-        <location line="+557"/>
+        <location line="+566"/>
         <source>file &apos;%s&apos; could not be opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-538"/>
-        <source>file &apos;%s&apos; does not contain point cloud data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="-537"/>
         <source>vtk file format cannot be loaded (not supported)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+550"/>
+        <location line="+559"/>
         <source>unsupported format &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-426"/>
+        <location line="-435"/>
         <source>The loaded point cloud has an uncompatible format.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -260,7 +250,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+150"/>
         <source>polygon mesh to save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -290,7 +280,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>loaded polygon mesh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -315,12 +305,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
-        <source>file &apos;%s&apos; does not contain polygon mesh data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
+        <location line="+51"/>
         <source>error while loading polygon mesh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1275,7 +1260,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3139"/>
+        <location line="-3845"/>
+        <source>type (&apos;xyz&apos;, &apos;pcd&apos;,&apos;ply&apos;,&apos;vtk&apos;,&apos;auto&apos; [default, check suffix of filename])</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+94"/>
+        <source>file &apos;%s&apos; does not contain valid point cloud data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+566"/>
+        <source>file &apos;%s&apos; does not contain valid polygon mesh data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <source>Resulting, transformed point cloud (inplace possible)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1393,7 +1393,7 @@
 <context>
     <name>PclToolsInterface</name>
     <message>
-        <location line="-4441"/>
+        <location line="-4460"/>
         <source>Filters and methods for pointClouds and polygonMeshes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1428,11 +1428,7 @@ by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <location line="+228"/>
-        <location line="+482"/>
-        <location line="+95"/>
-        <location line="+380"/>
+        <location line="+1227"/>
         <location line="+296"/>
         <location line="+119"/>
         <location line="+386"/>
@@ -1458,14 +1454,67 @@ by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3623"/>
+        <location line="-3632"/>
         <source>saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image
 
 This file format allows displaying volume data from the given 3D data object for instance using ParaView.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+419"/>
+        <location line="-516"/>
+        <source>save an itom.pointCloud object to a file
+
+The supported file formats are: 
+
+* pcd (point cloud data file format from the point cloud library, binary or ascii mode possible depending on optional parameter &apos;mode&apos;) 
+* ply (polygon file format or stanford triangle format, binary or ascii mode possible depending on optional parameter &apos;mode&apos;) 
+* vtk (VTK point cloud format) 
+* xyz (ascii text format where each line contains a whitespace separated list of the X, Y and Z coordinate of each point. The decimal sign is a dot, the real number precision is 6.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+231"/>
+        <source>This filter loads point cloud data files to an itom.pointCloud object
+
+The following file formats are supported:
+
+* pcd (point cloud data file format provided from the point cloud library 
+* ply (polygon file format also known under stanford triangle format - be careful ply can also contain polygon mesh data which is loaded using &apos;loadPolygonMesh&apos;). Both ascii and binary formats are supported. 
+* vtk (point cloud format from the vtk library
+* xyz (a whitespace separated ascii text file where each line contains the x, y and z coordinate of a point, e.g.: 2.546 -4.345 0.001) 
+
+Usually the file format is automatically detected by the suffix of the filename. However it is also possible to indicate the 
+type by the optional string parameter &apos;type&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+489"/>
+        <source>save an itom.polygonMesh object to a file
+
+The following file formats are currently supported: 
+
+* obj (wavefront obj file format) 
+* ply (polygon file format or stanford triangle format - binary file format only) 
+* vtk (VTK file format) 
+* stl (Stereolithography file format) 
+
+Usually the format is guessed from the suffix of the given file name. Else use the optional parameter &apos;type&apos; to indicate the desired file format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+100"/>
+        <source>This filter loads polygon mesh data files to an itom.polygonMesh object
+
+The following file formats are supported:
+
+* ply (polygon file format also known under stanford triangle format - be careful ply can also contain point cloud data only which is loaded using &apos;loadPointCloud&apos;). Both ascii and binary formats are supported. 
+* vtk (point cloud format from the vtk library
+* obj (wavefront OBJ file format) 
+* stl (Stereolithography file format)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+124"/>
         <source>Applies an affine coordinate transform to the input pointCloud 
 
 The transformed point cloud is saved in &apos;pointCloudOut&apos; (inplace possible). The transformation matrix has to be a 4x4 homogeneous transformation matrix given by a 4x4 real dataObject (uint8, int8, uint16, int16, uint32, int32 or float32 allowed). Every point P_in in the input cloud is transformed by P_out = transform * P_in. Independent on the type of the transformation matrix, the matrix multiplication is done with float32 precision.</source>

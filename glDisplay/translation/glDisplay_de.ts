@@ -4,7 +4,7 @@
 <context>
     <name>DialogGLDisplay</name>
     <message>
-        <location filename="../dialogGLDisplay.ui" line="+26"/>
+        <location filename="../dialogGLDisplay.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -102,12 +102,12 @@
 <context>
     <name>DockWidgetGLDisplay</name>
     <message>
-        <location filename="../dockWidgetGLDisplay.ui" line="+20"/>
+        <location filename="../dockWidgetGLDisplay.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -230,7 +230,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+146"/>
+        <location line="+149"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -288,7 +288,7 @@
 <context>
     <name>GLDisplayInterface</name>
     <message>
-        <location line="-725"/>
+        <location line="-728"/>
         <source>Frameless window to display images using OpenGL</source>
         <translation type="unfinished"></translation>
     </message>

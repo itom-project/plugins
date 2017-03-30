@@ -4,12 +4,12 @@
 <context>
     <name>DockWidgetQCam</name>
     <message>
-        <location filename="../dockWidgetQCam.ui" line="+20"/>
+        <location filename="../dockWidgetQCam.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -97,7 +97,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+67"/>
         <source>the first 10 connected cameras are already opened.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -335,7 +335,7 @@
 <context>
     <name>QCamInterface</name>
     <message>
-        <location line="-1093"/>
+        <location line="-1096"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -361,7 +361,7 @@
 <context>
     <name>dialogQCam</name>
     <message>
-        <location filename="../dialogQCam.ui" line="+26"/>
+        <location filename="../dialogQCam.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -371,27 +371,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+49"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-7"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="-36"/>
         <source>Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+82"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+6"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
@@ -401,42 +401,42 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+75"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+72"/>
         <source>X0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="-27"/>
         <source>Size X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+41"/>
         <source>Set X Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+17"/>
         <source>Y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-7"/>
         <source>Size Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="-44"/>
         <source>Set Y Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+86"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -449,7 +449,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+1001"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+1036"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

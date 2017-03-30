@@ -302,57 +302,57 @@
 <context>
     <name>DockWidgetAerotechA3200</name>
     <message>
-        <location filename="../dockWidgetAerotechA3200.ui" line="+32"/>
+        <location filename="../dockWidgetAerotechA3200.ui" line="+20"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>Axis:</source>
         <translation>Achsen:</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[Axis]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Relative Positioning</source>
         <translation>Relative Positionierung</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+21"/>
         <source>Step Size</source>
         <translation>Schrittweite</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+163"/>
         <source>Actual</source>
         <translation>Aktuell</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-38"/>
         <source>Target</source>
         <translation>Ziel</translation>
     </message>
     <message>
-        <location line="+133"/>
+        <location line="+49"/>
         <source>Start</source>
         <translation></translation>
     </message>
@@ -362,36 +362,36 @@
         <translation>Abbruch</translation>
     </message>
     <message>
-        <location line="-201"/>
-        <location line="+102"/>
-        <location line="+40"/>
+        <location line="-168"/>
+        <location line="+60"/>
+        <location line="+71"/>
         <location filename="../dockWidgetAerotechA3200.cpp" line="+128"/>
         <location line="+13"/>
         <source>mm</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-99"/>
+        <location line="-100"/>
         <source>Positioning</source>
         <translation>Positionierung</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+64"/>
         <source>Name 1</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+10"/>
         <source>+</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="-23"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+106"/>
         <source>Refresh</source>
         <translation>Aktualisierung</translation>
     </message>
@@ -438,12 +438,12 @@ For details please check C:\A3200\MANUAL.</source>
 <context>
     <name>dialogAerotechA3200</name>
     <message>
-        <location filename="../dialogAerotechA3200.ui" line="+26"/>
+        <location filename="../dialogAerotechA3200.ui" line="+14"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+8"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
@@ -458,32 +458,32 @@ For details please check C:\A3200\MANUAL.</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+21"/>
         <source>Axis</source>
         <translation>Achsen</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+21"/>
         <source>Enable A</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-10"/>
         <source>Enable X</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+19"/>
         <source>Calibrate</source>
         <translation>Kalibrieren</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+17"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>

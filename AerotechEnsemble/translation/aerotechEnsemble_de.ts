@@ -14,7 +14,7 @@
         <translation>Geschwindigkeit jeder Achse</translation>
     </message>
     <message>
-        <location line="+457"/>
+        <location line="+448"/>
         <source>any axis is moving. Parameters cannot be set</source>
         <translation>Eine Achse verfährt gerade. Die Einstellungen konnten nicht geändert werden</translation>
     </message>
@@ -226,7 +226,7 @@
 <context>
     <name>AerotechEnsembleInterface</name>
     <message>
-        <location line="-1221"/>
+        <location line="-1212"/>
         <source>list of axes IDs that are enabled (0..9). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
         <translation>Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden]</translation>
     </message>
@@ -241,57 +241,57 @@
 <context>
     <name>DockWidgetAerotechEnsemble</name>
     <message>
-        <location filename="../dockWidgetAerotechEnsemble.ui" line="+32"/>
+        <location filename="../dockWidgetAerotechEnsemble.ui" line="+20"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>Axis:</source>
         <translation>Achsen:</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[Axis]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Relative Positioning</source>
         <translation>Relative Positionierung</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+18"/>
         <source>Step Size</source>
         <translation>Schrittweite</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+102"/>
         <source>Actual</source>
         <translation>Aktuell</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-38"/>
         <source>Target</source>
         <translation>Ziel</translation>
     </message>
     <message>
-        <location line="+133"/>
+        <location line="+104"/>
         <source>Start</source>
         <translation></translation>
     </message>
@@ -301,36 +301,36 @@
         <translation>Abbruch</translation>
     </message>
     <message>
-        <location line="-201"/>
-        <location line="+102"/>
-        <location line="+40"/>
+        <location line="-162"/>
+        <location line="+70"/>
+        <location line="+35"/>
         <location filename="../dockWidgetAerotechEnsemble.cpp" line="+125"/>
         <location line="+13"/>
         <source>mm</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-99"/>
+        <location line="-74"/>
         <source>Positioning</source>
         <translation>Positionierung</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+96"/>
         <source>Name 1</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+17"/>
         <source>+</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="-7"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+45"/>
         <source>Refresh</source>
         <translation>Aktualisierung</translation>
     </message>
@@ -383,12 +383,12 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
 <context>
     <name>dialogAerotechEnsemble</name>
     <message>
-        <location filename="../dialogAerotechEnsemble.ui" line="+26"/>
+        <location filename="../dialogAerotechEnsemble.ui" line="+20"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+8"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
@@ -403,7 +403,7 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
         <translation></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+21"/>
         <source>Axis</source>
         <translation>Achsen</translation>
     </message>
@@ -423,12 +423,12 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
         <translation>Kalibrieren</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+17"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>

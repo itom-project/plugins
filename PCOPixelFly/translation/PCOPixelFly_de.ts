@@ -4,12 +4,12 @@
 <context>
     <name>DialogPCOPixelFly</name>
     <message>
-        <location filename="../dialogPCOPixelFly.ui" line="+26"/>
+        <location filename="../dialogPCOPixelFly.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+11"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -165,7 +165,7 @@
 <context>
     <name>DockWidgetPCOPixelFly</name>
     <message>
-        <location filename="../dockWidgetPCOPixelFly.ui" line="+20"/>
+        <location filename="../dockWidgetPCOPixelFly.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -315,7 +315,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+56"/>
         <source>Could not load library &quot;pccam.dll&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -504,7 +504,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1737"/>
+        <location line="-1739"/>
         <source>PCO Pixelfly cameras</source>
         <translation type="unfinished"></translation>
     </message>
@@ -526,7 +526,7 @@ Please install first the necessary drivers for the camera and grabber board from
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+443"/>
+        <location line="+445"/>
         <source>no Error</source>
         <translation type="unfinished"></translation>
     </message>

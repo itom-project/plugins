@@ -77,7 +77,7 @@ dialogAerotechA3200::dialogAerotechA3200(ito::AddInActuator *motor, QStringList 
         diaEnabled->setChecked(true);
         diaEnabled->setText(tr("Enable") + " " + axisNames[i]);
         m_pDialogEnabled.append(diaEnabled);
-        ui.gridLayout_2->addWidget(diaEnabled, (i / 2) + 1, (i % 2), 1, 1);
+//        ui.gridLayout_2->addWidget(diaEnabled, (i / 2) + 1, (i % 2), 1, 1);
     }
 
     delete ui.labelSpeed;

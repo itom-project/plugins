@@ -99,7 +99,7 @@
         <translation type="obsolete">Höhe [px]:</translation>
     </message>
     <message>
-        <location line="+105"/>
+        <location line="+87"/>
         <source>Camera Properties</source>
         <translation>Kameraeigenschaften</translation>
     </message>
@@ -108,17 +108,17 @@
         <translation type="obsolete">Belichtung (s):</translation>
     </message>
     <message>
-        <location line="-69"/>
+        <location line="-57"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>Bit depth:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -163,10 +163,10 @@
         <translation>SVS Vistek GigE Grabber.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+2"/>
         <source>itom plugin for GigE cameras from SVS Vistek. Every camera is simply initialized by the serial number of the connected SVS Vistek camera. (see camera housing). 
 
-Some files of the SVGigE SDK are shipped within this plugin (currently 1.4.24). Please check the SVS Vistek website for newer versions of the SDK and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the official SDK of SVS Vistek. 
+Some files of the SVGigE SDK are shipped within this plugin (currently 1.5.2). Please check the SVS Vistek website for newer versions of the SDK and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the official SDK of SVS Vistek. 
 
 This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version and make these libraries available for itom (PATH environment variable, system directory...). 
 
@@ -244,7 +244,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+550"/>
+        <location line="+553"/>
         <source>acquisition not possible, since Vistek camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -258,7 +258,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="obsolete">Binning der unterschiedlichen Pixel</translation>
     </message>
     <message>
-        <location line="-619"/>
+        <location line="-622"/>
         <source>Width of current camera frame</source>
         <translation>Breite des aktuellen Kamerabilds</translation>
     </message>
@@ -302,7 +302,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>set log level</source>
         <translation type="unfinished"></translation>
     </message>
@@ -654,7 +654,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
 <context>
     <name>dialogVistek</name>
     <message>
-        <location filename="../dialogVistek.ui" line="+26"/>
+        <location filename="../dialogVistek.ui" line="+14"/>
         <source>Dialog</source>
         <translation></translation>
     </message>

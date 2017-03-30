@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
+<context>
+    <name>DockWidgetGenicam</name>
+    <message>
+        <location filename="../dockWidgetGenicam.ui" line="+20"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>General Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>[Identifier]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Identifier:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 <context>
     <name>FittingFilters</name>
     <message>
@@ -16,171 +39,98 @@
         <translation type="obsolete">Fittet eine Ebene im 2D-Datenobjekt und subtrahiert diese Ebene vom Datenobjekt -&gt; dies ist eine Kombination von &apos;fitPlane&apos; und &apos;subtractPlane&apos;</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="+978"/>
         <source>fits 2D-polynomial in 2D-dataObject and returns a double-DataObject with the fitted surface as well as an error value sigma</source>
-        <translation>Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
+        <translation type="vanished">Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
     </message>
+</context>
+<context>
+    <name>GenICamClass</name>
     <message>
-        <location filename="../polyfit2d.cpp" line="+18"/>
-        <source>uninitialized vector for mandatory, optional or output parameters!</source>
+        <location filename="../genicam.cpp" line="+126"/>
+        <source>width of ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-866"/>
-        <location line="+75"/>
-        <location line="+109"/>
-        <location filename="../polyfit2d.cpp" line="+7"/>
-        <source>source image data object</source>
+        <location line="+4"/>
+        <source>height of ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-107"/>
-        <source>Parameter A of regression plane z = A + Bx + Cy, which is subtracted</source>
+        <location line="+4"/>
+        <source>bitdepth in bits per pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Parameter B of regression plane z = A + Bx + Cy, which is subtracted</source>
+        <location line="+8"/>
+        <source>integration time in seconds (this parameter is mapped to the GenICam standard parameter &apos;ExposureTime&apos; (in ms))</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Parameter C of regression plane z = A + Bx + Cy, which is subtracted</source>
+        <location line="+4"/>
+        <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-57"/>
-        <location line="+74"/>
-        <location filename="../polyfit2d.cpp" line="+34"/>
-        <source>Error: source image must be two-dimensional.</source>
+        <location line="+8"/>
+        <source>Timeout for acquisition in seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-94"/>
-        <location line="+185"/>
-        <source>fitting method (leastSquareFit [default], leastSquareFitSVD)</source>
+        <location line="+539"/>
+        <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-183"/>
-        <source>Parameter A of regression plane z = A + Bx + Cy</source>
+        <location line="+28"/>
+        <source>Acquisition failed since device has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Parameter B of regression plane z = A + Bx + Cy</source>
+        <location line="+13"/>
+        <source>AcquisitionMode &apos;multiFrame&apos; not yet supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Parameter C of regression plane z = A + Bx + Cy</source>
+        <location line="+55"/>
+        <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+74"/>
-        <location filename="../polyfit2d.cpp" line="+5"/>
-        <source>source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64</source>
+        <location line="+71"/>
+        <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-69"/>
-        <source>the chosen method is unknown</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+44"/>
-        <location line="+109"/>
-        <source>destination image data object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-79"/>
-        <location filename="../polyfit2d.cpp" line="+5"/>
-        <source>destination matrix is NULL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+60"/>
-        <source>Substracted plane with A = %1, B = %2, C = %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+170"/>
-        <source>Generated object via polyVal with order X = %1, Y = %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+218"/>
-        <source>Caluclated polynomical coeffs along z-direction with order Z = %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../polyfit2d.cpp" line="+42"/>
-        <source>2D polynomical fit with order x = %1 and y = %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-83"/>
-        <source>destination data object with fitted values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>number of polynoms in x-direction</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>number of polynoms in y-direction</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>if 0 infinite values in input image will be copied to output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Variance value *sigma* of polynomial fit.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+151"/>
-        <source>2:  gradX und gradY =0, Funktion abgebrochen</source>
+        <location line="+81"/>
+        <source>The transport layer file &apos;%1&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>3:  gradX und/oder gradY zu gross</source>
+        <source>Producer must be empty or indicate a filename that ends with &apos;.cti&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
-        <source>5:  Fehler bei Speicherzuweisung fuer Rekursionskoeffizienten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+26"/>
-        <source>6:  Fehler bei Speicherzuweisung fuer Werte, NormX, NormY oder Sum</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>7:  Fehler bei Speicherzuweisung fuer ZeilenSumme</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+186"/>
-        <source>error while allocating memory</source>
+        <location line="+22"/>
+        <source>No valid *.cti file could be found in any search directory</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>FittingFiltersInterface</name>
+    <name>GenICamInterface</name>
     <message>
-        <location filename="../fittingfilters.cpp" line="-620"/>
-        <source>plugin-instance cannot be converted to class FittingFilters. Close operation failed</source>
+        <location line="-878"/>
+        <source>Indicate either a string containing the vendor and model name separated with a semicolon (e.g. &apos;XIMEA GmbH.;xiApi&apos;) or the path to a cti file (GenICam GenTL transport layer) with the file suffix .cti of the respective camera driver. If nothing is indicated, a list of all auto-detected vendors and models is returned.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty string to get a list of all possible interfaces for the chosen transport layer. Default: &apos;auto&apos; opens the first supported interface of the chosen transport layer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -191,13 +141,13 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Plugin with fitting algorithms.</source>
+        <location line="-37"/>
+        <source>Camera control of devices that support the GenICam standard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>licensed under LPGL</source>
+        <location line="+23"/>
+        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -205,102 +155,126 @@
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
-        <source>Constructor must be overwritten</source>
+        <location filename="../deviceContainer.cpp" line="+164"/>
+        <source>cti file &apos;%1&apos; does not export all necessary methods of the GenTL standard.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
+        <location line="+248"/>
+        <location filename="../dataStream.cpp" line="+63"/>
+        <location filename="../device.cpp" line="+71"/>
+        <source>cti file does not export all functions of the GenTL protocol.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
-        <source>uninitialized vector for mandatory parameters!</source>
+        <location filename="../gccommon.cpp" line="+48"/>
+        <source>%1 general error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>uninitialized vector for optional parameters!</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_NOT_INITIALIZED</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_NOT_IMPLEMENTED</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_RESOURCE_IN_USE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_ACCESS_DENIED</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_INVALID_HANDLE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_INVALID_ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_NO_DATA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_INVALID_PARAMETER</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_IO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
+        <location line="+2"/>
+        <source>%1 GC_ERR_TIMEOUT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_ABORT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_INVALID_BUFFER</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_NOT_AVAILABLE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_INVALID_ADDRESS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_BUFFER_TOO_SMALL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_INVALID_INDEX</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_PARSING_CHUNK_DATA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_INVALID_VALUE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_RESOURCE_EXHAUSTED</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GC_ERR_OUT_OF_MEMORY</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 unknown error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

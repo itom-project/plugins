@@ -16,7 +16,7 @@
         <translation type="obsolete">Läd 1D und 2D Datenobjekte aus gängigen Bildformaten (bmp, png, jpg, pgm...)</translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+141"/>
+        <location filename="../DataObjectIO.cpp" line="+142"/>
         <source>Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -67,12 +67,13 @@
     </message>
     <message>
         <location line="+3"/>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Raw-XML (*.ido *.idh)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-3"/>
+        <location line="+6"/>
         <source>ASCII Data (*.txt *.csv *.tsv)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -109,12 +110,12 @@
         <location line="+65"/>
         <location line="+74"/>
         <location line="+1305"/>
-        <location line="+654"/>
+        <location line="+1114"/>
         <source>Destination filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4679"/>
+        <location line="-5139"/>
         <source>Format of the Image according to QImage: [&apos;QImage::Format_Mono&apos;, &apos;QImage::Format_MonoLSB&apos;, &apos;QImage::Format_Indexed8&apos;, &apos;QImage::Format_RGB32&apos;, &apos;QImage::Format_ARGB32&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -182,20 +183,20 @@
         <location line="+2"/>
         <location line="+2924"/>
         <location line="+411"/>
-        <location line="+104"/>
+        <location line="+529"/>
         <source>Source file name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3401"/>
+        <location line="-3826"/>
         <location line="+713"/>
         <location line="+2267"/>
-        <location line="+473"/>
+        <location line="+901"/>
         <source>The file &apos;%s&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3449"/>
+        <location line="-3877"/>
         <source>The file &apos;%s&apos; is no readable image file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -216,7 +217,7 @@
     </message>
     <message>
         <location line="+74"/>
-        <location line="+3821"/>
+        <location line="+4281"/>
         <source>The file &apos;%s&apos; is no writeable file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -237,18 +238,19 @@
     </message>
     <message>
         <location line="+18"/>
-        <location filename="../DataObjectIO.cpp" line="-3314"/>
+        <location filename="../DataObjectIO.cpp" line="-3774"/>
         <source>Dataobject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../DataObjectIO.cpp" line="+8"/>
-        <location line="+2740"/>
+        <location line="+2985"/>
+        <location line="+183"/>
         <source>The file &apos;%s&apos; is no readable file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1435"/>
+        <location line="-1863"/>
         <source>2D-DataObject of anytype</source>
         <translation type="unfinished"></translation>
     </message>
@@ -279,12 +281,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2723"/>
+        <location line="-2726"/>
         <source>Images (*.xpm *.xbm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+27"/>
         <source>MicroProf FRT (*.frt)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -316,18 +318,18 @@
     </message>
     <message>
         <location line="+6"/>
-        <location line="+3577"/>
+        <location line="+4037"/>
         <source>Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3568"/>
-        <location line="+3577"/>
+        <location line="-4028"/>
+        <location line="+4037"/>
         <source>Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3413"/>
+        <location line="-3873"/>
         <source>The file &apos;%s&apos; does not contain an &apos;aNIST-1.0&apos;, &apos;aISO-1.0&apos; or &apos;aBCR-1.0&apos;-header.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -481,7 +483,58 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+295"/>
+        <source>dataObject holding data to save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Destination file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>(1) save values as list of points (x, y, z).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>(1) ignore scale and offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses this as the separator between elements. Default is space &quot; &quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses this as the separator between lines of a matrix. Default is \r\n.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses this as the separator between matrix planes. Default is \r\n.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses this as the sign for decimal numbers. If &lt;guess&gt;, default is system default.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+181"/>
+        <source>encoding of text file, e.g. UTF-8, UTF-16, ISO 8859-1... Default: empty string -&gt; the encoding is guessed due to a auto-detection of the first 64 bytes in the text file (using the BOM (Byte Order Mark)).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-59"/>
+        <source>data format not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <source>Empty dataObject</source>
         <translation type="unfinished"></translation>
     </message>
@@ -496,17 +549,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-176"/>
+        <location line="+183"/>
         <source>Sometimes numbers are wrapped by a sign (.e.g &apos;2.3&apos; or &quot;4.5&quot;). If so, indicate the character(s) that wrap the numbers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="-147"/>
+        <location line="+179"/>
         <source>DataObject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+130"/>
         <source>The decimal sign must be &apos;&lt;guess&gt;&apos;, &apos;.&apos; or &apos;,&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -522,7 +577,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+73"/>
         <source>The separator was specified as (.) but other separator signs are also possible.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -552,7 +607,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+81"/>
         <source>Line %i contains more elements than the first analyzed line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -616,7 +671,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1993"/>
+        <location line="-2453"/>
         <location line="+379"/>
         <source>DataObject-Type could not be converted to unsigned int 8-bit.</source>
         <translation type="unfinished"></translation>
@@ -696,7 +751,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+502"/>
         <source>Ignore the first n-lines.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -706,14 +761,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+114"/>
+        <location line="+153"/>
         <location line="+10"/>
-        <location line="+257"/>
+        <location line="+253"/>
         <source>Unexpected end of file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3666"/>
+        <location line="-4126"/>
         <source>Number of decimal signs (default: 3). For MountainsMaps reduce total number of digits to 5</source>
         <translation type="unfinished"></translation>
     </message>
@@ -737,7 +792,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="-983"/>
+        <location filename="../DataObjectIO.cpp" line="-986"/>
         <source>import or export dataObject from/to several file formats.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -765,7 +820,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+112"/>
         <source>saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1073,7 +1128,14 @@ can be reload using `loadIDO`.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+71"/>
+        <source>saves data to an ascii-based file like txt, csv, tsv or space separated values.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+429"/>
         <source>loads an ascii-based data file like txt, csv, tsv or space separated values. 
 
 The text file is loaded line by line and tried to be interpreted as an array. It is possible to ignore the first n lines (optional parameter ignoreLines). 
@@ -1081,7 +1143,7 @@ The full content of these ignored lines is then saved in the tag &apos;ignoredLi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+579"/>
+        <location line="+614"/>
         <source>saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).
 
 The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, _m, nm) is given in the axis unit tag, an automatic conversion is applied. Else a 

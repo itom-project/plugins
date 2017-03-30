@@ -320,12 +320,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Set the input pin modes for all available gpi pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin. %1: Off, %2: trigger, %3: external signal input (not implemented by Ximea api)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Current level of all available gpi pins. (0: low level, 1: high level)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,7 +350,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+54"/>
         <source>Camera already initialized. Try another camera number.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -473,7 +468,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-870"/>
+        <location line="-873"/>
         <source>Gain in % (the percentage is mapped to the dB-values).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -503,12 +498,17 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+30"/>
+        <source>Set the input pin modes for all available gpi pins. This is a list whose lengths corresponds to the number of available pins. Use gpi_mode[i] to access the i-th pin. %1: Off, %2: trigger, %3: external signal input (not implemented by Ximea api)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+369"/>
+        <location line="+372"/>
         <source>Camera handle deleted before closing procedure</source>
         <translation type="unfinished"></translation>
     </message>

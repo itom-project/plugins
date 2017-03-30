@@ -44,22 +44,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Slew rate (open loop):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>a value of 0 disables the limit of the movement speed (default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> V/ms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slew rate (closed loop):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Maximum output voltage:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -209,10 +193,6 @@ The position values are always in mm if the corresponding axis is in closed-loop
     </message>
     <message>
         <source>Maximum output voltage (75, 100 or 150 V).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Speed limit (slew rate) of each axis in V/ms. 0 (default) disables the limit and let the controller decide to move with the ideal speed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

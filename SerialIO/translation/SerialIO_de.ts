@@ -4,22 +4,22 @@
 <context>
     <name>DockWidgetSerialIO</name>
     <message>
-        <location filename="../dockWidgetSerialIO.ui" line="+59"/>
+        <location filename="../dockWidgetSerialIO.ui" line="+44"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+41"/>
         <source>SerialIO Log</source>
         <translation>SerialIO-Protokoll</translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+43"/>
         <source>Decimal</source>
         <translation>Dezimal</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Hexadecimal</source>
         <translation>Hexadezimal</translation>
     </message>
@@ -34,27 +34,27 @@
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-188"/>
+        <location line="-155"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+92"/>
         <source>ASCII</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+56"/>
         <source>ignore empty messages</source>
         <translation>Leere Nachrichten ignorieren</translation>
     </message>
     <message>
-        <location line="-136"/>
+        <location line="-118"/>
         <source>Port:</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[Identifier]</source>
         <translation></translation>
     </message>
@@ -62,7 +62,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+268"/>
+        <location filename="../SerialIO.cpp" line="+269"/>
         <location line="+157"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>
@@ -180,7 +180,7 @@
 <context>
     <name>SerialIO</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+67"/>
+        <location filename="../SerialIO.cpp" line="+70"/>
         <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
         <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
@@ -265,7 +265,7 @@
         <translation>Löscht den Eingabe- oder Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+177"/>
         <source>Mandatory paramers are NULL</source>
         <translation>Pflichtparameter ist NULL</translation>
     </message>
@@ -295,7 +295,7 @@
         <translation>&quot;Acquire&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="-347"/>
+        <location line="-350"/>
         <source>Current baudrate in bits/s</source>
         <translation>Aktuelle Baudrate ist bits/s</translation>
     </message>
@@ -303,7 +303,7 @@
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <location line="-146"/>
+        <location line="-149"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
@@ -453,7 +453,7 @@ Beispiel
         <translation>Fehler: %1 konnte nicht interpretiert werden - nicht gesendet</translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.ui" line="+45"/>
+        <location filename="../dialogSerialIO.ui" line="+33"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
@@ -473,56 +473,56 @@ Beispiel
         <translation>Terminierung</translation>
     </message>
     <message>
-        <location line="+206"/>
-        <location line="+117"/>
+        <location line="+176"/>
+        <location line="+99"/>
         <source>&lt;none&gt;</source>
         <translation>&lt;nichts&gt;</translation>
     </message>
     <message>
-        <location line="-280"/>
+        <location line="-238"/>
         <source>Parity</source>
         <translation>Paritätsbit</translation>
     </message>
     <message>
-        <location line="+384"/>
-        <location line="+72"/>
+        <location line="+330"/>
+        <location line="+66"/>
         <location line="+32"/>
-        <location line="+56"/>
+        <location line="+50"/>
         <location line="+17"/>
         <source>disable</source>
         <translation>ausschalten</translation>
     </message>
     <message>
-        <location line="-172"/>
-        <location line="+72"/>
+        <location line="-160"/>
+        <location line="+66"/>
         <location line="+32"/>
-        <location line="+56"/>
+        <location line="+50"/>
         <location line="+17"/>
         <source>enable</source>
         <translation>einschalten</translation>
     </message>
     <message>
-        <location line="-451"/>
+        <location line="-397"/>
         <source>Time out</source>
         <translation>Timeout</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+148"/>
         <source>Debug Mode</source>
         <translation>Protokollierung</translation>
     </message>
     <message>
-        <location line="+501"/>
+        <location line="+447"/>
         <source>Read delay</source>
         <translation>Leseverzögerung</translation>
     </message>
     <message>
-        <location line="-459"/>
+        <location line="-405"/>
         <source>Flow control</source>
         <translation>Flusskontrolle</translation>
     </message>
     <message>
-        <location line="+293"/>
+        <location line="+269"/>
         <source>Send message</source>
         <translation>Nachricht versenden</translation>
     </message>
@@ -532,27 +532,27 @@ Beispiel
         <translation>Übertragung</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+69"/>
         <source>Decimal</source>
         <translation>Dezimal</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
         <source>Hexadecimal</source>
         <translation>Hexadezimal</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+7"/>
         <source>Binary</source>
         <translation>Binär</translation>
     </message>
     <message>
-        <location line="-75"/>
+        <location line="-51"/>
         <source>Send</source>
         <translation>Senden</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+60"/>
         <source>Read</source>
         <translation>Lesen</translation>
     </message>
@@ -562,17 +562,17 @@ Beispiel
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-219"/>
+        <location line="-189"/>
         <source>Use input below to send characters to the serial port. Characters will be send as their ASCII code from the character written. To directly write ASCII codes use the format $(code) or select Decimal, Hexadecimal or Binary separated by space.</source>
         <translation>Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
     </message>
     <message>
-        <location line="+229"/>
+        <location line="+199"/>
         <source>Apply</source>
         <translation>Übernehmen</translation>
     </message>
     <message>
-        <location line="-286"/>
+        <location line="-256"/>
         <source>Python Command</source>
         <translation>Python-Befehl</translation>
     </message>
@@ -582,22 +582,22 @@ Beispiel
         <translation>Erzeugen</translation>
     </message>
     <message>
-        <location line="+229"/>
+        <location line="+199"/>
         <source>Clear</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-641"/>
+        <location line="-569"/>
         <source>Send Delay</source>
         <translation>Verzögerung</translation>
     </message>
     <message>
-        <location line="-271"/>
+        <location line="-241"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+103"/>
         <source>none</source>
         <translation>keine</translation>
     </message>
@@ -627,7 +627,7 @@ Beispiel
         <translation></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>5</source>
         <translation></translation>
     </message>
@@ -647,37 +647,37 @@ Beispiel
         <translation></translation>
     </message>
     <message>
-        <location line="+40"/>
-        <location line="+61"/>
-        <location line="+612"/>
+        <location line="+34"/>
+        <location line="+49"/>
+        <location line="+546"/>
         <source>ms</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-653"/>
-        <location line="+117"/>
+        <location line="-581"/>
+        <location line="+99"/>
         <source>\r</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-112"/>
-        <location line="+117"/>
+        <location line="-94"/>
+        <location line="+99"/>
         <source>\n</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-112"/>
-        <location line="+117"/>
+        <location line="-94"/>
+        <location line="+99"/>
         <source>\r\n</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-71"/>
+        <location line="-59"/>
         <source>Stopbits</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>1</source>
         <translation></translation>
     </message>
@@ -692,17 +692,17 @@ Beispiel
         <translation>Leseterminierung</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+67"/>
         <source>Readline</source>
         <translation>Zeilenlesen</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+40"/>
         <source>Xon/Xoff</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+54"/>
         <source>rts</source>
         <translation></translation>
     </message>
@@ -712,28 +712,28 @@ Beispiel
         <translation></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+32"/>
         <source>dtr</source>
         <translation></translation>
     </message>
     <message>
         <location line="+24"/>
-        <location line="+73"/>
+        <location line="+67"/>
         <source>handshake</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-47"/>
+        <location line="-41"/>
         <source>dsr</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+177"/>
         <source>ASCII</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+111"/>
         <source>OK</source>
         <translation></translation>
     </message>

@@ -22,17 +22,17 @@
 <context>
     <name>DockWidgetVRMagic</name>
     <message>
-        <location filename="../dockWidgetVRMagic.ui" line="+26"/>
+        <location filename="../dockWidgetVRMagic.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+64"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-18"/>
+        <location line="-46"/>
         <source>General information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -40,14 +40,14 @@
         <location line="+25"/>
         <location line="+14"/>
         <location line="+14"/>
-        <location line="+34"/>
-        <location line="+28"/>
+        <location line="+61"/>
+        <location line="+7"/>
         <location line="+7"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-53"/>
+        <location line="-46"/>
         <source>Image Dimensions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -57,37 +57,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-62"/>
+        <location line="-75"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-14"/>
         <source>Serial number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+82"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+35"/>
         <source>Bits per Pixel:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+23"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+53"/>
         <source>Contrast</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+12"/>
         <source>Brightness</source>
         <translation type="unfinished"></translation>
     </message>
@@ -202,7 +202,7 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+34"/>
         <source>Update the device key list</source>
         <translation type="unfinished"></translation>
     </message>
@@ -397,7 +397,7 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-613"/>
+        <location line="-616"/>
         <source>Bit depth of the output data from camera in bpp (can differ from sensor bit depth).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -407,7 +407,7 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+542"/>
+        <location line="+545"/>
         <source>stopDevice ignored since camera was not started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -425,7 +425,7 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
 <context>
     <name>VRMagicInterface</name>
     <message>
-        <location line="-769"/>
+        <location line="-772"/>
         <source>Device number.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -443,12 +443,12 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>Serial No.: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -458,13 +458,13 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-146"/>
+        <location line="-134"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <location line="+20"/>
+        <location line="+13"/>
+        <location line="+14"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>

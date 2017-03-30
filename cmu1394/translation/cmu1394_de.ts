@@ -85,7 +85,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+41"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -266,7 +266,7 @@ time out!</source>
 <context>
     <name>CMU1394Interface</name>
     <message>
-        <location line="-1258"/>
+        <location line="-1261"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -299,12 +299,12 @@ time out!</source>
 <context>
     <name>DockWidgetCMU1394</name>
     <message>
-        <location filename="../dockWidgetcmu1394.ui" line="+20"/>
+        <location filename="../dockWidgetcmu1394.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+18"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -319,7 +319,7 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
         <source>Image Dimensions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -357,12 +357,12 @@ In order to run this plugin you also need to install the CMU1394 drivers that ca
 <context>
     <name>dialogCMU1394</name>
     <message>
-        <location filename="../dialogcmu1394.ui" line="+26"/>
+        <location filename="../dialogcmu1394.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+10"/>
         <source>Camera Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -382,27 +382,27 @@ In order to run this plugin you also need to install the CMU1394 drivers that ca
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+278"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="-258"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+37"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+26"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-155"/>
+        <location line="+25"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -412,12 +412,12 @@ In order to run this plugin you also need to install the CMU1394 drivers that ca
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+36"/>
         <source>Size X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+39"/>
         <source>Set X Max</source>
         <translation type="unfinished"></translation>
     </message>
@@ -427,12 +427,12 @@ In order to run this plugin you also need to install the CMU1394 drivers that ca
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+20"/>
         <source>Size Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+23"/>
         <source>Set Y Max</source>
         <translation type="unfinished"></translation>
     </message>
@@ -442,7 +442,7 @@ In order to run this plugin you also need to install the CMU1394 drivers that ca
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogcmu1394.ui" line="-139"/>
+        <location filename="../dialogcmu1394.ui" line="+23"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>

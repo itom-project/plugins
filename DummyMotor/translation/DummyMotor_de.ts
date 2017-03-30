@@ -12,17 +12,17 @@
 <context>
     <name>DockWidgetDummyMotor</name>
     <message>
-        <location filename="../dockWidgetDummyMotor.ui" line="+68"/>
+        <location filename="../dockWidgetDummyMotor.ui" line="+44"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+53"/>
         <source>Axis:</source>
         <translation>Achsen:</translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+23"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
@@ -62,22 +62,22 @@
         <translation>b Aktiv</translation>
     </message>
     <message>
-        <location line="-239"/>
+        <location line="-167"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+51"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+26"/>
         <source>[Axis]</source>
         <translation></translation>
     </message>
@@ -85,7 +85,7 @@
 <context>
     <name>DummyMotor</name>
     <message>
-        <location filename="../DummyMotor.cpp" line="+146"/>
+        <location filename="../DummyMotor.cpp" line="+161"/>
         <source>Axis number to plot</source>
         <translation type="unfinished">Achsennummer des Plots</translation>
     </message>
@@ -100,33 +100,32 @@
         <translation type="unfinished">Schreibt die aktuelle Position der spezifischen Achse in die Konsole</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Number of Axis attached to this stage</source>
-        <translation type="unfinished">Anzahl Achsen entsprechend des Geräts</translation>
+        <translation type="obsolete">Anzahl Achsen entsprechend des Geräts</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+27"/>
         <source>Speed of the axis between 0.1 and 100000 mm/s</source>
         <translation type="unfinished">Geschwindigkeit der Achse zwischen 0,1 und 100000 mm/s</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+7"/>
         <source>Acceleration in mm/s^2, currently not implemented</source>
         <translation type="unfinished">Beschleunigung in mm/s^2, momentan nicht implementiert</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+7"/>
         <source>Toggles if motor has to wait until end of movement (0:sync) or not (1:async)</source>
         <translation type="unfinished">Schalter um zu warten bis die Fahrt beendet wurde (0:sync) oder nicht (1:async)</translation>
     </message>
     <message>
-        <location line="+436"/>
-        <location line="+96"/>
+        <location line="+475"/>
+        <location line="+97"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+233"/>
         <source>Axis and velocity vector differ in size.</source>
         <translation type="unfinished">Achse und Geschwindigkeitsvektor unterscheiden sich in der Größe.</translation>
     </message>
@@ -136,51 +135,91 @@
         <translation type="unfinished">Eine Joystick-Bewegung schlug fehl.</translation>
     </message>
     <message>
-        <location line="-533"/>
-        <location line="+178"/>
+        <location line="-607"/>
+        <location line="+197"/>
         <source>axis index is out of bound</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
-        <location line="-158"/>
+        <location line="-446"/>
+        <source>Axis number for jogging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Maximal velocity in mm/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Duration for jogging in seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Jog for some seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Number of axes attached to this stage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Use axes limits and limit switches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>positive limits of axes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>negative limits of axes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+238"/>
         <source>function name &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Der Funktionsname &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
         <location line="+236"/>
-        <location line="+96"/>
+        <location line="+97"/>
         <source>axis number is out of boundary</source>
         <translation type="unfinished">Die Anzahl der Achsen liegt außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
-        <location line="-73"/>
-        <location line="+96"/>
+        <location line="-74"/>
+        <location line="+97"/>
         <source>Axis is out of range.</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs.</translation>
     </message>
     <message>
-        <location line="+108"/>
+        <location line="+113"/>
         <source>interrupt occurred</source>
         <translation type="unfinished">Ein Fehler ist aufgetreten</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+68"/>
         <source>timeout occurred</source>
         <translation type="unfinished">Eine Zeitüberschreitung ist aufgetreten</translation>
     </message>
     <message>
-        <location line="-447"/>
+        <location line="-499"/>
         <location line="+59"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-258"/>
         <source>any axis is moving. Parameters cannot be set</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Parameter können nicht gesetzt werden</translation>
     </message>
     <message>
-        <location line="+252"/>
+        <location line="+272"/>
         <source>axis number exceeds number of axis</source>
         <translation type="unfinished">Die Achsennummer überschreitet die Anzahl Achsen</translation>
     </message>
@@ -193,7 +232,7 @@
 <context>
     <name>DummyMotorInterface</name>
     <message>
-        <location line="-458"/>
+        <location line="-537"/>
         <source>N.A.</source>
         <translation type="unfinished">Nicht verfügbar.</translation>
     </message>
@@ -207,11 +246,26 @@
         <source>Name for this dummyMotor</source>
         <translation type="unfinished">Name dieses Dummy-Motors</translation>
     </message>
+    <message>
+        <location line="+4"/>
+        <source>Use axes limits and limit switches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>positive limits of axes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>negative limits of axes</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-20"/>
+        <location line="-31"/>
         <source>A virtual motor to test real actuators.</source>
         <translation type="unfinished">Ein virtueller Motor um echte Aktuatoren zu testen.</translation>
     </message>
@@ -233,7 +287,7 @@ Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung m
 <context>
     <name>dialogDummyMotor</name>
     <message>
-        <location filename="../dialogDummyMotor.ui" line="+89"/>
+        <location filename="../dialogDummyMotor.ui" line="+77"/>
         <source>Speed</source>
         <translation>Geschwindigkeit</translation>
     </message>

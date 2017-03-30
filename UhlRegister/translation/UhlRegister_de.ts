@@ -4,37 +4,37 @@
 <context>
     <name>DockWidgetUhl</name>
     <message>
-        <location filename="../dockWidgetUhl.ui" line="+32"/>
+        <location filename="../dockWidgetUhl.ui" line="+20"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+14"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>Axis:</source>
         <translation>Achsen:</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>[Axis]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+51"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
@@ -54,42 +54,32 @@
         <translation>z aktiv</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+25"/>
         <source>Relative Positioning</source>
         <translation>Relative Positionierung</translation>
     </message>
     <message>
-        <location line="+156"/>
+        <location line="+71"/>
+        <source>y +</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>y -</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-57"/>
-        <source>y+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-22"/>
+        <location line="-16"/>
         <source>x -</source>
         <translation></translation>
     </message>
     <message>
         <location line="+41"/>
-        <source>x+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>z+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+38"/>
         <source>z -</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-140"/>
+        <location line="-74"/>
         <source>Step Size</source>
         <translation>Schrittweite</translation>
     </message>
@@ -99,7 +89,7 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+156"/>
+        <location line="+83"/>
         <source>Absolut Positioning</source>
         <translation>Absolute Positionierung</translation>
     </message>
@@ -139,7 +129,17 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-55"/>
+        <source>x +</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>z +</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+60"/>
         <source>y axis</source>
         <translation>y Achse</translation>
     </message>
@@ -159,7 +159,7 @@
         <translation></translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-464"/>
         <source>Joystick</source>
         <translation></translation>
     </message>
@@ -172,7 +172,7 @@
 <context>
     <name>UhlRegister</name>
     <message>
-        <location filename="../UhlRegister.cpp" line="+170"/>
+        <location filename="../UhlRegister.cpp" line="+171"/>
         <source>UHL errormessage: </source>
         <translation type="unfinished">Uhl Fehlermeldung: </translation>
     </message>
@@ -253,7 +253,12 @@
         <translation type="unfinished">Der COM-Port, an dem das Gerät aktuelle angeschlossen ist. -1 bedeutet undefiniert</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+3"/>
+        <source>timeout for axes movements in seconds</source>
+        <translation type="unfinished">Zeitüberschreitung für Achsenbewegungen in Sekunden</translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Irgendeine Motorachse fährt. Der Motor ist gesperrt.</translation>
     </message>
@@ -328,12 +333,12 @@ Wenn es sich wirklich um einen Uhltisch handelt, sollte ein anderer Joystick aus
     </message>
     <message>
         <location line="+227"/>
-        <location line="+300"/>
+        <location line="+301"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Irgendeine Motorachse verfährt bereits</translation>
     </message>
     <message>
-        <location line="-123"/>
+        <location line="-124"/>
         <location line="+74"/>
         <source>Axis not exist</source>
         <translation type="unfinished">Achse existiert nicht</translation>
@@ -342,7 +347,7 @@ Wenn es sich wirklich um einen Uhltisch handelt, sollte ein anderer Joystick aus
 <context>
     <name>UhlRegisterInterface</name>
     <message>
-        <location line="-1437"/>
+        <location line="-1431"/>
         <source>DLL for old 2-3 axis Uhl-Controller</source>
         <translation>DLL für alte 2-3 achsige Uhltische</translation>
     </message>
@@ -427,23 +432,23 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Plugin-Instanz nicht definiert.</translation>
     </message>
     <message>
-        <location filename="../dialogUhl.ui" line="+49"/>
+        <location filename="../dialogUhl.ui" line="+84"/>
         <source>Speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="-53"/>
         <source>Accerlaration</source>
         <translation>Beschleunigung</translation>
     </message>
     <message>
-        <location line="-24"/>
+        <location line="+10"/>
         <source>Speed of Uhl Actuator</source>
         <translation>Geschwindigkeit des Uhltischs</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+34"/>
+        <location line="+19"/>
         <source>mm</source>
         <translation></translation>
     </message>
@@ -453,24 +458,24 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Beschleunigung des Uhltischs</translation>
     </message>
     <message>
-        <location line="+63"/>
-        <location line="+42"/>
-        <location line="+42"/>
+        <location line="+117"/>
+        <location line="+16"/>
+        <location line="+16"/>
         <source>Set current position as null position</source>
         <translation>Setzt aktuelle Position als Null-Position</translation>
     </message>
     <message>
-        <location line="-39"/>
+        <location line="-13"/>
         <source>Origin Y</source>
         <translation>Null-Pos. Y</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-16"/>
         <source>Origin Z</source>
         <translation>Null-Pos. Z</translation>
     </message>
     <message>
-        <location line="-100"/>
+        <location line="+97"/>
         <source>Change the direction of X-axis</source>
         <translation>Dreht die Fahrtrichtung der X-Achse um</translation>
     </message>
@@ -480,12 +485,12 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Invert. X</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="-68"/>
         <source>Origin X</source>
         <translation>Null-Pos. X</translation>
     </message>
     <message>
-        <location line="-29"/>
+        <location line="+13"/>
         <source>Enable or Disable the X-axis</source>
         <translation>Schaltet die X-Achse ein oder aus</translation>
     </message>
@@ -495,7 +500,7 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>X Aktiv</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+23"/>
         <source>Enable or Disable the Y-axis</source>
         <translation>Schaltet die Y-Achse ein oder aus</translation>
     </message>
@@ -505,7 +510,7 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Y Aktiv</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+36"/>
         <source>Change the direction of Y-axis</source>
         <translation>Dreht die Fahrtrichtung derYx-Achse um</translation>
     </message>
@@ -515,7 +520,7 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Invert. Y</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="-55"/>
         <source>Change the direction of Z-axis</source>
         <translation>Dreht die Fahrtrichtung der Z-Achse um</translation>
     </message>
@@ -525,7 +530,7 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Invert. Z</translation>
     </message>
     <message>
-        <location line="-16"/>
+        <location line="+23"/>
         <source>Enable or Disable the Z-axis</source>
         <translation>Schaltet die Z-Achse ein oder aus</translation>
     </message>
@@ -535,7 +540,7 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Z Aktiv</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="-106"/>
         <source>Moves all axes to their null position</source>
         <translation>Fährt alle Achsen auf deren Null-Position</translation>
     </message>
@@ -545,27 +550,27 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation>Kalibrieren</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="-48"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-28"/>
+        <location line="+16"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-261"/>
+        <location line="-118"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+6"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+135"/>
         <source>Axis</source>
         <translation>Achsen</translation>
     </message>

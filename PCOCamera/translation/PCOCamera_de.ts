@@ -4,12 +4,12 @@
 <context>
     <name>DialogPCOCamera</name>
     <message>
-        <location filename="../dialogPCOCamera.ui" line="+26"/>
+        <location filename="../dialogPCOCamera.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+11"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -119,12 +119,12 @@
 <context>
     <name>DockWidgetPCOCamera</name>
     <message>
-        <location filename="../dockWidgetPCOCamera.ui" line="+20"/>
+        <location filename="../dockWidgetPCOCamera.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -204,7 +204,7 @@
 <context>
     <name>PCOCamera</name>
     <message>
-        <location filename="../PCOCamera.cpp" line="+195"/>
+        <location filename="../PCOCamera.cpp" line="+197"/>
         <source>camera interface</source>
         <translation type="unfinished"></translation>
     </message>
@@ -279,7 +279,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+160"/>
+        <location line="+163"/>
         <source>binning in X and Y must be &gt;= 1 (&gt;= 101 in total)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -304,7 +304,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-195"/>
+        <location line="-198"/>
         <source>Desired set point temperature for cooling</source>
         <translation type="unfinished"></translation>
     </message>
@@ -319,7 +319,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+869"/>
+        <location line="+904"/>
         <source>StopDevice of PCOCamera can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -364,14 +364,14 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1408"/>
+        <location line="-1445"/>
         <source>DLL for PCO-Cameras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000. 
-This plugin has been tested with the cameras PCO.1200s, PCO.1300 and PCO.2000. 
+This plugin has been tested with the cameras PCO.1200s, PCO.1300, PCO.2000 and PCO.edge USB3. 
 
 For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. 
 The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). 

@@ -4,12 +4,12 @@
 <context>
     <name>DockWidgetGWInstekPSP</name>
     <message>
-        <location filename="../dockWidgetGWInstekPSP.ui" line="+32"/>
+        <location filename="../dockWidgetGWInstekPSP.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -19,18 +19,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+16"/>
         <source>SerialIO Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+25"/>
-        <location line="+24"/>
+        <location line="+18"/>
         <location line="+75"/>
         <source>Limit</source>
         <translation type="unfinished"></translation>
@@ -162,7 +162,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+17"/>
         <location line="+3"/>
         <source>start voltage in volt</source>
         <translation type="unfinished"></translation>
@@ -232,7 +232,7 @@
 <context>
     <name>GWInstekPSPInterface</name>
     <message>
-        <location line="-386"/>
+        <location line="-389"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -273,17 +273,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogGWInstekPSP.ui" line="+26"/>
+        <location filename="../dialogGWInstekPSP.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+14"/>
         <source>SerialIO Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+11"/>
         <source>Voltage Limit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -313,7 +313,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+38"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -348,7 +348,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+16"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -358,12 +358,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+14"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>

@@ -4,32 +4,32 @@
 <context>
     <name>DockWidgetLibUSB</name>
     <message>
-        <location filename="../dockWidgetLibUSB.ui" line="+32"/>
+        <location filename="../dockWidgetLibUSB.ui" line="+20"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+6"/>
         <source>ID:</source>
         <translation>ID:</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>USB Log</source>
         <translation>USB-Protokoll</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+27"/>
         <source>ASCII</source>
         <translation></translation>
     </message>
@@ -39,7 +39,7 @@
         <translation>Dezimal</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Hexadecimal</source>
         <translation>Hexadezimal</translation>
     </message>
@@ -138,7 +138,7 @@
         <translation type="unfinished">Endpoint-Index für Schreiboperationen. Der benutzte Index entspricht LIBUSB_ENDPOINT_OUT + endpoint_write, mit LIBUSB_ENDPOINT_OUT = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+295"/>
         <source>could not find a known device - please specify type and/or vid:pid and/or bus,dev</source>
         <translation>Das Gerät wurde nicht gefunden. Bitte den Typ, &apos;vid:pid&apos; und/oder den Bus spezifizieren</translation>
     </message>
@@ -176,7 +176,7 @@
 <context>
     <name>ItomUSBDeviceInterface</name>
     <message>
-        <location line="-675"/>
+        <location line="-678"/>
         <source>itom-plugin for a usb port communication</source>
         <translation>itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>

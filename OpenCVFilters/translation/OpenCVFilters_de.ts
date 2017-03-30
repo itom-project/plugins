@@ -16,8 +16,8 @@
     <message>
         <location line="+15"/>
         <location line="+372"/>
-        <location line="+301"/>
-        <location line="+260"/>
+        <location line="+302"/>
+        <location line="+261"/>
         <location line="+168"/>
         <location line="+153"/>
         <location line="+650"/>
@@ -27,10 +27,10 @@
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+93"/>
-        <location filename="../OpenCVFilters.cpp" line="-2066"/>
+        <location filename="../OpenCVFilters.cpp" line="-2068"/>
         <location line="+372"/>
-        <location line="+301"/>
-        <location line="+260"/>
+        <location line="+302"/>
+        <location line="+261"/>
         <location line="+168"/>
         <location line="+153"/>
         <location line="+650"/>
@@ -39,7 +39,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-2031"/>
+        <location filename="../OpenCVFilters.cpp" line="-2033"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -51,12 +51,12 @@
     <message>
         <location line="+47"/>
         <location line="+275"/>
-        <location line="+301"/>
+        <location line="+302"/>
         <source>Error: source is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-253"/>
+        <location line="-254"/>
         <source>Error: anchor should be &apos;int8&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -64,8 +64,8 @@
         <location filename="../calib3d.cpp" line="+441"/>
         <location filename="../OpenCVFilters.cpp" line="-198"/>
         <location line="+17"/>
-        <location line="+208"/>
-        <location line="+261"/>
+        <location line="+209"/>
+        <location line="+262"/>
         <location line="+312"/>
         <location line="+166"/>
         <location line="+147"/>
@@ -76,12 +76,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1679"/>
-        <source>Unknown or unexpected CV-Datatype recived.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-154"/>
+        <location filename="../OpenCVFilters.cpp" line="-1835"/>
         <source>All types except complex64 and complex128 are accepted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -176,12 +171,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>OpenCV blur-filter with (y,x) kernel(%1, %2), anchor(%3, %4), borderType %5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+5"/>
+        <location line="+264"/>
+        <source>No compatible dataObject type found for given OpenCV matrix type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+208"/>
         <location line="+168"/>
         <location line="+153"/>
         <source>Error: input object must not be empty.</source>
@@ -357,7 +358,7 @@
     </message>
     <message>
         <location line="+1"/>
-        <source>[width,height] of the camera image (in pixels)</source>
+        <source>[height,width] of the camera image (in pixels)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -692,14 +693,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1672"/>
-        <location line="+1336"/>
+        <location filename="../OpenCVFilters.cpp" line="-1673"/>
+        <location line="+1337"/>
         <location line="+170"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1389"/>
+        <location line="-1390"/>
         <source>Image of type Integer or float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -715,27 +716,22 @@
     </message>
     <message>
         <location line="+40"/>
-        <location line="+732"/>
+        <location line="+733"/>
         <source>Error: kernel must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-727"/>
+        <location line="-728"/>
         <source>Error: kernelsize &gt; 3 and object is not uint8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>OpenCV medianblur-filter with kernel size = %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Unknown or unexpected CV-Datatype received.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+203"/>
+        <location line="+209"/>
         <location line="+168"/>
         <location line="+153"/>
         <location line="+650"/>
@@ -920,7 +916,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1143"/>
+        <location filename="../OpenCVFilters.cpp" line="-1145"/>
         <source>Wrapped algorithms from OpenCV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -998,7 +994,7 @@ Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+153"/>
         <source>2D-dimentional fourier-transformation using cv::DFT.
 
 This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.The result is a complex-dataObject. The axis-scales and units are invertes and modified.
@@ -1049,7 +1045,7 @@ Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+252"/>
+        <location line="+253"/>
         <source>This filter flips the image left to right. 
 
 This filter applies the flip method cvFlip of OpenCV with the flipCode &gt; 0 to a 2D source data object. The result is contained in the destination object

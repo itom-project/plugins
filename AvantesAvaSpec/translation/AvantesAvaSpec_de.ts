@@ -103,12 +103,12 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
 <context>
     <name>DockWidgetAvantesAvaSpec</name>
     <message>
-        <location filename="../dockWidgetAvantesAvaSpec.ui" line="+20"/>
+        <location filename="../dockWidgetAvantesAvaSpec.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+19"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -174,12 +174,12 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
 <context>
     <name>dialogAS5216</name>
     <message>
-        <location filename="../dialogAvantesAvaSpec.ui" line="+26"/>
+        <location filename="../dialogAvantesAvaSpec.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+10"/>
         <source>Camera Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -199,12 +199,12 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+225"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="-205"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -214,12 +214,12 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+26"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-114"/>
+        <location line="+56"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,17 +229,17 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+36"/>
         <source>Size X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+39"/>
         <source>Set X Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-98"/>
+        <location line="+23"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
