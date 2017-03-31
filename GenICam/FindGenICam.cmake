@@ -11,19 +11,19 @@ find_path(GENICAM_ROOT GenICam.h PATHS $ENV{GENICAM_ROOT} PATH_SUFFIXES library/
 IF(WIN32)
     if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
         set( GENICAM_LIBRARY "${GENICAM_ROOT}/library/cpp/lib/win64_x64" )
-        set( GENICAM_BINARY_DIR "${GENICAM_ROOT}/bin/Win64_x64" )
+        set(GENICAM_BINARY_DIR "${GENICAM_ROOT}/bin/Win64_x64" CACHE PATH "path to the DLL files of Genicam that are copied as post built process to the itom lib folder" FORCE)
     else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
         set( GENICAM_LIBRARY "${GENICAM_ROOT}/library/cpp/lib/win32_i86" )
-        set( GENICAM_BINARY_DIR "${GENICAM_ROOT}/bin/Win32_x32" )
+        set(GENICAM_BINARY_DIR "${GENICAM_ROOT}/bin/Win32_i86" CACHE PATH "path to the DLL files of Genicam that are copied as post built process to the itom lib folder" FORCE)
     endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 ELSE(WIN32)
     IF(UNIX)
         if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
             set( GENICAM_LIBRARY "/opt/genicam/bin/Linux64_x64" )
-            set( GENICAM_BINARY_DIR "/opt/genicam/bin/Linux64_x64" )
+            set(GENICAM_BINARY_DIR "/opt/genicam/bin/Linux64_x64" CACHE PATH "path to the DLL files of Genicam that are copied as post built process to the itom lib folder" FORCE)
         else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
             set( GENICAM_LIBRARY "/opt/genicam/bin/Linux86_x86" )
-            set( GENICAM_BINARY_DIR "/opt/genicam/bin/Linux86_x86" )
+            set(GENICAM_BINARY_DIR "/opt/genicam/bin/Linux86_x86" CACHE PATH "path to the DLL files of Genicam that are copied as post built process to the itom lib folder" FORCE)
         endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     ENDIF(UNIX)
 ENDIF(WIN32)
@@ -68,6 +68,7 @@ INCLUDE(FindPackageHandleStandardArgs)
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(GENICAM DEFAULT_MSG
   GENICAM_INCLUDE_DIR
-  GENICAM_LIBRARY)
+  GENICAM_LIBRARY
+  GENICAM_BINARY_DIR)
 
-mark_as_advanced(GENICAM_INCLUDE_DIR GENICAM_LIBRARIES)
+mark_as_advanced(GENICAM_INCLUDE_DIR GENICAM_LIBRARIES GENICAM_BINARY_DIR)
