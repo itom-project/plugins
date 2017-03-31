@@ -43,6 +43,24 @@ IF (WIN32)
     endif (PLUGIN_AVTVimba)
 ENDIF (WIN32)
 
+# BasicFilters
+OPTION(PLUGIN_BasicFilters "Build with this plugin." ON)
+if (PLUGIN_BasicFilters)
+    ADD_SUBDIRECTORY(BasicFilters)
+endif (PLUGIN_BasicFilters)
+
+# BasicGPLFilters
+OPTION(PLUGIN_BasicGPLFilters "Build with this plugin." ON)
+if (PLUGIN_BasicGPLFilters)
+    ADD_SUBDIRECTORY(BasicGPLFilters)
+endif (PLUGIN_BasicGPLFilters) 
+
+# BasicGPLFilters
+OPTION(PLUGIN_HidApi "Build with this plugin." ON)
+if (PLUGIN_HidApi)
+    ADD_SUBDIRECTORY(hidapi)
+endif (PLUGIN_HidApi) 
+
 # cmu1394
 IF (WIN32)
     OPTION(PLUGIN_cmu1394 "Build with this plugin." ON)
@@ -137,18 +155,6 @@ if (PLUGIN_FireGrabber)
     ADD_SUBDIRECTORY(FireGrabber)
 endif (PLUGIN_FireGrabber)
 
-# FringeProj
-OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
-if (PLUGIN_FringeProj)
-    ADD_SUBDIRECTORY(FringeProj)
-endif (PLUGIN_FringeProj)
-
-# glDisplay
-OPTION(PLUGIN_GLDisplay "Build with this plugin." ON)
-if (PLUGIN_GLDisplay)
-    ADD_SUBDIRECTORY(glDisplay)
-endif (PLUGIN_GLDisplay)
-
 # FirgelliLAC
 IF (WIN32)
     OPTION(PLUGIN_FirgelliLAC "Build with this plugin." ON)
@@ -157,13 +163,23 @@ IF (WIN32)
     endif (PLUGIN_FirgelliLAC)
 ENDIF (WIN32)
 
+# FringeProj
+OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
+if (PLUGIN_FringeProj)
+    ADD_SUBDIRECTORY(FringeProj)
+endif (PLUGIN_FringeProj)
+
 # GenICam
-#IF (WIN32)
-#    OPTION(PLUGIN_GenICam "Build with this plugin." OFF)
-#    if (PLUGIN_GenICam)
-#        ADD_SUBDIRECTORY(GenICam)
-#    endif (PLUGIN_GenICam)
-#ENDIF (WIN32)
+OPTION(PLUGIN_GenICam "Build with this plugin." ON)
+if (PLUGIN_GenICam)
+    ADD_SUBDIRECTORY(GenICam)
+endif (PLUGIN_GenICam)
+
+# glDisplay
+OPTION(PLUGIN_GLDisplay "Build with this plugin." ON)
+if (PLUGIN_GLDisplay)
+    ADD_SUBDIRECTORY(glDisplay)
+endif (PLUGIN_GLDisplay)
 
 # GWInstekPSP
 OPTION(PLUGIN_GWInstekPSP "Build with this plugin." ON)
@@ -182,24 +198,6 @@ OPTION(PLUGIN_IDSuEye "Build with this plugin." ON)
 if (PLUGIN_IDSuEye)
     ADD_SUBDIRECTORY(IDSuEye)
 endif (PLUGIN_IDSuEye)
-
-# BasicFilters
-OPTION(PLUGIN_BasicFilters "Build with this plugin." ON)
-if (PLUGIN_BasicFilters)
-    ADD_SUBDIRECTORY(BasicFilters)
-endif (PLUGIN_BasicFilters)
-
-# BasicGPLFilters
-OPTION(PLUGIN_BasicGPLFilters "Build with this plugin." ON)
-if (PLUGIN_BasicGPLFilters)
-    ADD_SUBDIRECTORY(BasicGPLFilters)
-endif (PLUGIN_BasicGPLFilters) 
-
-# BasicGPLFilters
-OPTION(PLUGIN_HidApi "Build with this plugin." ON)
-if (PLUGIN_HidApi)
-    ADD_SUBDIRECTORY(hidapi)
-endif (PLUGIN_HidApi) 
 
 # LeicaMotorFocus
 OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
@@ -252,6 +250,12 @@ OPTION(PLUGIN_NI-DAQmx "Build with this plugin." OFF)
 if (PLUGIN_NI-DAQmx)
     ADD_SUBDIRECTORY(NI-DAQmx)
 endif (PLUGIN_NI-DAQmx)
+
+# NITWidySWIR
+OPTION(PLUGIN_NITWidySWIR "Build with this plugin." ON)
+if (PLUGIN_NITWidySWIR)
+    ADD_SUBDIRECTORY(NITWidySWIR)
+endif (PLUGIN_NITWidySWIR)
 
 # OpenCVFilters
 OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
@@ -431,14 +435,6 @@ IF (WIN32)
     endif (PLUGIN_USBMotion3XIII)
 ENDIF (WIN32)
 
-# Xeneth
-IF (WIN32)
-    OPTION(PLUGIN_Xeneth "Build with this plugin." ON)
-    if (PLUGIN_Xeneth)
-        ADD_SUBDIRECTORY(Xeneth)
-    endif (PLUGIN_Xeneth)
-ENDIF (WIN32)
-
 # V4L2
 IF (UNIX AND NOT APPLE)
     OPTION(PLUGIN_V4L2 "Build with this plugin." ON)
@@ -463,20 +459,22 @@ IF (WIN32)
     endif (PLUGIN_VRMagic)
 ENDIF (WIN32)
 
-# XIMEA
-OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
-if (PLUGIN_XIMEA)
-    ADD_SUBDIRECTORY(Ximea)
-endif (PLUGIN_XIMEA)
-
 # x3pio
 OPTION(PLUGIN_x3pio "Build with this plugin." ON)
 if (PLUGIN_x3pio)
     ADD_SUBDIRECTORY(x3pio)
 endif (PLUGIN_x3pio)
 
-# NITWidySWIR
-OPTION(PLUGIN_NITWidySWIR "Build with this plugin." ON)
-if (PLUGIN_NITWidySWIR)
-    ADD_SUBDIRECTORY(NITWidySWIR)
-endif (PLUGIN_NITWidySWIR)
+# Xeneth
+IF (WIN32)
+    OPTION(PLUGIN_Xeneth "Build with this plugin." ON)
+    if (PLUGIN_Xeneth)
+        ADD_SUBDIRECTORY(Xeneth)
+    endif (PLUGIN_Xeneth)
+ENDIF (WIN32)
+
+# XIMEA
+OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
+if (PLUGIN_XIMEA)
+    ADD_SUBDIRECTORY(Ximea)
+endif (PLUGIN_XIMEA)

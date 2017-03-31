@@ -140,7 +140,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+365"/>
         <source>given vendor- or product-ID not detected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -225,7 +225,7 @@
         <translation type="obsolete">Initialisiert den &apos;Debug&apos;-Parameter mit dem übergebenen Wert. Ist dieser &apos;True&apos;, wird die gesammte Ein- und Ausgabekommunikation im DockWidget protokolliert</translation>
     </message>
     <message>
-        <location line="-696"/>
+        <location line="-698"/>
         <source>itom-plugin for a USB port communication with Cypress Semiconductor USB chips.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -296,12 +296,12 @@ The setVal and getVal functions will write and read on the specified endpoint.
 <context>
     <name>dockWidgetItomCyUSB</name>
     <message>
-        <location filename="../dockWidgetItomCyUSB.ui" line="+32"/>
+        <location filename="../dockWidgetItomCyUSB.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+18"/>
         <source>General Information</source>
         <translation type="unfinished">Allgemeine Informationen</translation>
     </message>
@@ -311,17 +311,17 @@ The setVal and getVal functions will write and read on the specified endpoint.
         <translation type="unfinished">ID:</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>USB Log</source>
         <translation type="unfinished">USB-Protokoll</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+27"/>
         <source>ASCII</source>
         <translation type="unfinished"></translation>
     </message>

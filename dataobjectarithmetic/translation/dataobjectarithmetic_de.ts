@@ -4,7 +4,7 @@
 <context>
     <name>DataObjectArithmetic</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="+112"/>
+        <location filename="../dataobjectarithmetic.cpp" line="+109"/>
         <location line="+13"/>
         <location line="+3"/>
         <location line="+16"/>
@@ -64,7 +64,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+704"/>
+        <location line="+712"/>
         <location line="+186"/>
         <location line="+917"/>
         <source>2D source image data object (u)int8, (u)int16, int32, float32 or float64 only.</source>
@@ -141,7 +141,67 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-8"/>
+        <location line="+879"/>
+        <source>input 2D or 3D uint8 or uint16 data object (in case of 3D, every plane is analyzed independently and the resulting spot object is 3D as well. Indicate parameter &apos;maxNrOfSpots&apos; in case of 3D.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>resulting data object with spot coordinates. Every line consists of the following entries: [sub-pixel wise row (physical coordinates), sub-pixel wise column (physical coordinates), coarse intensity of the peak, area of the peak (nr of pixels brighter than background)].</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>maximum difference between two adjacent background values (used for deciding if pixel belongs to background or peak, only necessary in mode 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>minimum height of a peak (its maximum and the neighbouring background, only necessary in mode 0).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>maximum diameter of a peak (this is used to distinguish between neighbouring peaks and the determination of the sub-pixel peak position).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>step size in pixel for the coarse search of peaks (for rows and columns)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>maximum background level for subpixel determination, in mode 2 this value is the single value used to determine if value is a peak.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>implemented modes are 0, 2 or 4. Depending on each mode, the search strategy of possible points in each line is kindly different and varies in speed and accuracy.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>if &gt; 0 the resulting spots object is limited to the maximum number of spots (unsorted), else it contains as many lines as detected spots. In case of a 3D image, every plane is analyzed. Then it becomes necessary to indicate this parameter. If &apos;spots&apos; is then allocated with a bigger number of lines than detected peaks, the additional lines are filled with 0.0.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>image must be of type uint8 or uint16</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>image must have at least one plane.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>in case of a 3D input image please indicate the optional parameter &apos;maxNrOfSpots&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-940"/>
         <source>destination object for center of gravity values (in physical coordinates), float64, size: [numPlanes x sizeOfElements]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -221,7 +281,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1786"/>
+        <location line="-1794"/>
         <location line="+61"/>
         <location line="+90"/>
         <source>data type not supported</source>
@@ -243,12 +303,12 @@
         <location line="+86"/>
         <location line="+69"/>
         <location line="+35"/>
-        <location line="+60"/>
+        <location line="+68"/>
         <source>Error, object dimensions must be unequal zero</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-192"/>
+        <location line="-200"/>
         <source>Switch complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -277,7 +337,7 @@
     </message>
     <message>
         <location line="-250"/>
-        <location line="+304"/>
+        <location line="+312"/>
         <location line="+111"/>
         <location line="+7"/>
         <source>Error: source image is NULLL</source>
@@ -328,7 +388,7 @@
 <context>
     <name>DataObjectArithmeticInterface</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="-1959"/>
+        <location filename="../dataobjectarithmetic.cpp" line="-1966"/>
         <source>Arithmetic algorithms filters.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,7 +415,7 @@ This plugin does not have any unusual dependencies.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="+95"/>
         <source>This filter calculates the minimal value and its first location within the dataObject. 
 
 The result value will be Integer vor all integer types or Double for all floating point types
@@ -412,8 +472,16 @@ The filter is implemented for all data types besides RGBA32, Complex64 and Compl
     <message>
         <location line="+56"/>
         <source>The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.
-The optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)
-or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)
+
+The optinal flag to toggles if (flag==0) the deviation is calculated by 
+
+
+    \sqrt(\sum{(x-xm)^2} / (n-1))
+
+or (if flag == 1)
+
+
+    \sqrt(\sum{(x-xm)^2} / n)
 
 The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
 
@@ -421,7 +489,29 @@ The filter is implemented for all data types besides RGBA32, Complex64 and Compl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+1751"/>
+        <source>This method determines the sub-pixel peak position of multiple spots in an image. 
+
+This algorithm is implemented for 2D or 3D input images of type uint8 or uint16 only and has been developped with respect to a fast implementation. At first, the image is analyzed line-wise with a line distancen of &apos;searchStepSize&apos;. 
+In every line the coarse peak position of every 1D peak is analyzed. This can be done in two different ways (depending on the 
+parameter &apos;mode&apos; (0, 2 or 4): 
+
+In mode 0 (slightly slower) pixels belong to the background if their distance to the previous pixel (the search step size is also considered in each line) is smaller than &apos;backgroundNoise&apos;. If this is not the case, a potential peak starts. However this peak is only a true peak, if the peak&apos;s height is bigger than &apos;minPeakHeight&apos;. 
+
+In mode 2, a peak consists of a sequence of pixels whose gray-value are all &gt;= &apos;maxBackgroundLevel&apos; (fast, but requires homogeneous background and peak levels). 
+
+In mode 4, a peak can only start if a current gray-value is &gt;= &apos;minPeakHeight&apos; and if the difference to its previous pixel 
+is bigger than &apos;backgroundNoise&apos;. The peak is only finished and hence stopped if the difference between its highest gray-value 
+and the start-value has been at least &apos;minPeakHeight&apos;, checked at the moment if the gradient is currently negative and its current 
+gray value is either below &apos;minPeakHeight&apos; or its difference to the previous value is &lt;= &apos;backgroundNoise&apos;. 
+
+After all peaks in all analyzed lines have been detected, peaks in adjacent lines(step size of &apos;searchStepSize&apos;) are clustered considering the parameter &apos;maxPeakDiameter&apos;.Finally the center of gravity is determined around each local maximum using &apos;maxPeakDiameter&apos; as rectangular size of the search rectangle around the coarse maximum position.The results are stored in the data object &apos;spots&apos;. The &apos;spots&apos; object is two dimensional for a 2D input image, else 3D where the first dimension corresponds to the number of planes in &apos;input&apos;. Each line corresponds to one peak and contains its sub - pixel precise row and column as well as the coarse intensity value and the area of the peak. This value may differ from the real peak value due to the search grid size of &apos;searchStepSize&apos;. 
+
+The parameter &apos;searchStepSize&apos; is a list of two values, the first describes the vertical step size, the second the horizontal step size.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1705"/>
         <source>Check pixel-wise wether two dataObjects are equal. 
 The filter returns 1 if both objects are pixel-wise equal, else returns 0.
 

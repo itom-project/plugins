@@ -4,12 +4,12 @@
 <context>
     <name>DockWidgetHidApi</name>
     <message>
-        <location filename="../dockWidgetHidApi.ui" line="+32"/>
+        <location filename="../dockWidgetHidApi.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+30"/>
         <source>General Information</source>
         <translation type="unfinished">Allgemeine Informationen</translation>
     </message>
@@ -19,7 +19,7 @@
         <translation type="unfinished">ID:</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -122,7 +122,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+247"/>
+        <location line="+249"/>
         <source>StartDevice not necessary</source>
         <translation type="unfinished">&quot;StartDevice&quot; nicht nötig</translation>
     </message>
@@ -140,7 +140,7 @@
 <context>
     <name>ItomHidApiInterface</name>
     <message>
-        <location line="-348"/>
+        <location line="-350"/>
         <source>itom-plugin for a usb HID API communication</source>
         <translation type="unfinished"></translation>
     </message>

@@ -10,12 +10,6 @@
     <height>237</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>237</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>Thorlabs ISM</string>
   </property>
@@ -27,12 +21,6 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
      </property>
      <property name="title">
       <string>General Information</string>

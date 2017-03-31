@@ -137,7 +137,7 @@ ItomCyUSB::ItomCyUSB() : AddInDataIO(),
 	m_interruptOutEndPoint(NULL),
 	m_controlEndPoint(NULL)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomCyUSB", "name of device");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave | ito::ParamBase::Readonly, "ItomCyUSB", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s].").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);

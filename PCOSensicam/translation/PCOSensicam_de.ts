@@ -4,12 +4,12 @@
 <context>
     <name>DialogPCOSensicam</name>
     <message>
-        <location filename="../dialogPCOSensicam.ui" line="+26"/>
+        <location filename="../dialogPCOSensicam.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+11"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -30,7 +30,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+24"/>
         <source>Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
@@ -129,12 +129,12 @@
 <context>
     <name>DockWidgetPCOSensicam</name>
     <message>
-        <location filename="../dockWidgetPCOSensicam.ui" line="+20"/>
+        <location filename="../dockWidgetPCOSensicam.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -180,7 +180,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+19"/>
         <source>Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
@@ -298,17 +298,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1157"/>
+        <location line="+1160"/>
         <source>Wrong picture type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1161"/>
+        <location line="-1164"/>
         <source>bits per pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+617"/>
+        <location line="+620"/>
         <source>StopDevice of PCOSensicam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,7 +331,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1369"/>
+        <location line="-1372"/>
         <source>DLL for PCO-Sensicam cameras</source>
         <translation type="unfinished"></translation>
     </message>

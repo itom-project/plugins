@@ -12,7 +12,7 @@
 <context>
     <name>DockWidgetDummyGrabber</name>
     <message>
-        <location filename="../dockWidgetDummyGrabber.ui" line="+35"/>
+        <location filename="../dockWidgetDummyGrabber.ui" line="+38"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
@@ -63,12 +63,12 @@
         <translation></translation>
     </message>
     <message>
-        <location line="-255"/>
+        <location line="-264"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+48"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
@@ -97,32 +97,32 @@
 <context>
     <name>DummyGrabber</name>
     <message>
-        <location filename="../DummyGrabber.cpp" line="+230"/>
+        <location filename="../DummyGrabber.cpp" line="+235"/>
         <source>Minimum time between the start of two consecutive acquisitions [s], default: 0.0.</source>
         <translation type="unfinished">Mindestzeit zwischen zwei fortlaufenden Bildanforderungen [s], standard: 0,0.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+14"/>
         <source>Virtual gain</source>
         <translation type="unfinished">Virtuelles Gain</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>Virtual offset</source>
         <translation type="unfinished">Virtuelles Offset</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Binning of different pixel, binning = x-factor * 100 + y-factor</source>
         <translation type="unfinished">Binning unterschiedlicher Pixel, binning = x-factor * 100 + y-factor</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
         <translation type="unfinished">ROI (x, y, Breite, Höhe) [ersetzt die Werte x0, x1, y0, y1]</translation>
     </message>
     <message>
-        <location line="+375"/>
+        <location line="+378"/>
         <source>stopDevice of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;stopDevice&apos; des DummyGrabbers kann nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
@@ -137,27 +137,27 @@
         <translation type="unfinished">Es konnte kein Bild abgeholt werden, da keines angefordert wurde.</translation>
     </message>
     <message>
-        <location line="-648"/>
+        <location line="-654"/>
         <source>size in x (cols) [px]</source>
         <translation type="unfinished">Größe in x (Spalten) [px]</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-23"/>
         <source>Minimum integration time for an acquisition [s], default: 0.0 (as fast as possible).</source>
         <translation type="unfinished">Mindest-&apos;integration time&apos; für eine Bildanforderungen [s], standard: 0,0 (so schnell wie möglich).</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+27"/>
         <source>size in y (rows) [px]</source>
         <translation type="unfinished">Größe in y (Zeilen) [px]</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>bitdepth of images</source>
         <translation type="unfinished">Bittiefe des Images</translation>
     </message>
     <message>
-        <location line="+420"/>
+        <location line="+423"/>
         <source>Acquire of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;acquire&apos; kann vom DummyGrabber nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
@@ -175,7 +175,7 @@
 <context>
     <name>DummyGrabberInterface</name>
     <message>
-        <location line="-699"/>
+        <location line="-727"/>
         <source>N.A.</source>
         <translation>Nicht verfügbar.</translation>
     </message>
@@ -228,7 +228,7 @@ Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dien
 <context>
     <name>dialogDummyGrabber</name>
     <message>
-        <location filename="../dialogDummyGrabber.ui" line="+157"/>
+        <location filename="../dialogDummyGrabber.ui" line="+139"/>
         <source>Integration</source>
         <translation type="unfinished">Belichtung</translation>
     </message>
@@ -270,12 +270,12 @@ Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dien
         <translation type="unfinished">Y-Größe</translation>
     </message>
     <message>
-        <location line="-438"/>
+        <location line="-432"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+11"/>
         <source>Buffer</source>
         <translation type="unfinished">Puffer</translation>
     </message>

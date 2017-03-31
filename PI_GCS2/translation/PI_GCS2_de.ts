@@ -19,13 +19,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+19"/>
         <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+13"/>
+        <location line="-7"/>
+        <location line="+20"/>
         <location line="+23"/>
         <source>[unknown]</source>
         <translation type="unfinished"></translation>
@@ -77,7 +77,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+29"/>
         <source>Delay after positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -115,12 +115,12 @@
 <context>
     <name>DockWidgetPIPiezoCtrl</name>
     <message>
-        <location filename="../../PIPiezoCtrl/dockWidgetPIPiezoCtrl.ui" line="+20"/>
+        <location filename="../../PIPiezoCtrl/dockWidgetPIPiezoCtrl.ui" line="+14"/>
         <source>PI Piezo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+27"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -152,7 +152,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+49"/>
         <source>Positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -163,23 +163,23 @@
     </message>
     <message>
         <location line="+13"/>
-        <location line="+172"/>
+        <location line="+124"/>
         <location line="+35"/>
         <source> µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-175"/>
+        <location line="-139"/>
         <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+7"/>
         <source>Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+12"/>
         <source>Joystick Mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -194,7 +194,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+15"/>
         <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -292,7 +292,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+52"/>
         <source>this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0</source>
         <translation type="unfinished"></translation>
     </message>
@@ -514,12 +514,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1167"/>
+        <location line="-1170"/>
         <source>Check flags (or-combination possible): 0x01: check position boundaries before positioning and actualize current position after positioning (default: on), 0x02: check for errors when positioning (default: off), 0x04: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1233"/>
+        <location line="+1236"/>
         <location line="+49"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>

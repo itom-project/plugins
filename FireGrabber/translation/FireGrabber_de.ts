@@ -2,9 +2,17 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
+    <name>DialogFireGrabber</name>
+    <message>
+        <location filename="../dialogFireGrabber.cpp" line="+102"/>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DockWidgetFireGrabber</name>
     <message>
-        <location filename="../dockWidgetFireGrabber.ui" line="+20"/>
+        <location filename="../dockWidgetFireGrabber.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -88,7 +96,7 @@
 <context>
     <name>FireGrabber</name>
     <message>
-        <location filename="../FireGrabber.cpp" line="+160"/>
+        <location filename="../FireGrabber.cpp" line="+147"/>
         <source>vendor ID of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -118,7 +126,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+21"/>
         <source>Pixelsize in x (cols)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -134,7 +142,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-22"/>
+        <location line="-28"/>
         <source>Transmission time per frame in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -169,19 +177,24 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+4"/>
+        <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <location line="+2"/>
         <source>Stopvalue for ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+641"/>
-        <location line="+368"/>
+        <location line="+711"/>
+        <location line="+379"/>
         <source>timebase must be 1, 2, 5, 10, 20, 50, 100, 200, 500 or 1000 (timebase is only considered for AVT cameras)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-358"/>
+        <location line="-369"/>
         <source>could not load dc1394 shared library</source>
         <translation type="unfinished"></translation>
     </message>
@@ -206,7 +219,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+609"/>
+        <location line="+627"/>
         <source>timebase register of camera is not available. Timebase is set to 20 %1s per default</source>
         <translation type="unfinished"></translation>
     </message>
@@ -231,7 +244,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1450"/>
+        <location line="-1535"/>
         <source>Unknown Error Code</source>
         <translation type="unfinished"></translation>
     </message>
@@ -241,14 +254,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+74"/>
         <location line="+30"/>
         <source>only 8 and 16 bit are implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+310"/>
-        <location line="+368"/>
+        <location line="+341"/>
+        <location line="+379"/>
         <source>too much input parameters, plugin number is used</source>
         <translation type="unfinished"></translation>
     </message>
@@ -264,7 +277,7 @@
     </message>
     <message>
         <location line="-102"/>
-        <location line="+298"/>
+        <location line="+305"/>
         <source>no camera has been connected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -297,7 +310,7 @@
 <context>
     <name>FireGrabberInterface</name>
     <message>
-        <location line="-2013"/>
+        <location line="-2094"/>
         <source>specific number of the camera, don&apos;t use with cameraNumber (0 = unused) - this parameter does not exist in linux version.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,32 +368,7 @@ This plugin can only be loaded and used once the AVT FirePackage driver has been
 <context>
     <name>dialogFireGrabber</name>
     <message>
-        <location filename="../dialogFireGrabber.cpp" line="+29"/>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+402"/>
-        <source>error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Error while setting parameters (%1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Warning while setting parameters (%1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dialogFireGrabber.ui" line="+26"/>
+        <location filename="../dialogFireGrabber.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -390,12 +378,7 @@ This plugin can only be loaded and used once the AVT FirePackage driver has been
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>BitPerPix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+20"/>
         <source>8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -410,19 +393,24 @@ This plugin can only be loaded and used once the AVT FirePackage driver has been
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
-        <location line="+39"/>
-        <source>%</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-10"/>
+        <location line="+62"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="-14"/>
         <source>Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-81"/>
+        <source>Bits per Pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <location line="+22"/>
+        <source> %</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -431,74 +419,60 @@ This plugin can only be loaded and used once the AVT FirePackage driver has been
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+35"/>
-        <source>ms</source>
+        <location line="+86"/>
+        <source>x0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
+        <location line="+35"/>
+        <source>x1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>y0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>y1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>x-size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <location line="+29"/>
+        <source> px</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-16"/>
+        <source>y-size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-237"/>
         <source>Frametime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+45"/>
-        <source>X0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Y0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>X1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Y1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Set X Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>XSize</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>YSize</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+23"/>
-        <source>Set Y Max</source>
+        <location line="+16"/>
+        <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Apply</source>
+        <location line="+13"/>
+        <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

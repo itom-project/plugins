@@ -6,15 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>275</width>
-    <height>281</height>
+    <width>274</width>
+    <height>253</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>229</width>
-    <height>240</height>
-   </size>
   </property>
   <property name="contextMenuPolicy">
    <enum>Qt::NoContextMenu</enum>
@@ -106,12 +100,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="text">
            <string>10</string>
           </property>
@@ -150,12 +138,6 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_2">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
      <property name="title">
       <string>Step Size</string>
      </property>
@@ -210,12 +192,6 @@
      </property>
      <item>
       <widget class="QFrame" name="frame">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -248,18 +224,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>25</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
           </property>
           <property name="frameShape">
            <enum>QFrame::Panel</enum>
@@ -303,18 +267,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
           </property>
           <property name="frameShape">
            <enum>QFrame::Panel</enum>
@@ -368,18 +320,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="frameShape">
            <enum>QFrame::Panel</enum>
           </property>
@@ -426,18 +366,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="frameShape">
            <enum>QFrame::Panel</enum>
           </property>
@@ -477,18 +405,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>22</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>16777215</height>
-           </size>
           </property>
           <property name="frameShape">
            <enum>QFrame::Panel</enum>
@@ -535,8 +451,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>263</width>
-          <height>89</height>
+          <width>264</width>
+          <height>69</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalListLayout">

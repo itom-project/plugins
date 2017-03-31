@@ -1,15 +1,8 @@
-###################################################################
-###################################################################
-#    CMake Template for a plugin of itom
-#    
-#    You can use this template, use it in your plugins, modify it,
-#    copy it and distribute it without any license restrictions.
-###################################################################
-###################################################################
-
 SET (target_name NITWidySWIR) #->replace NITWidySWIR by the name of your plugin (one word)
 
 project(${target_name})
+
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 

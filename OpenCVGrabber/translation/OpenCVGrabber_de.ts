@@ -224,12 +224,12 @@ For some devices, an acquisition might deliver an older image. In order to get a
 <context>
     <name>dialogOpenCVGrabber</name>
     <message>
-        <location filename="../dialogOpenCVGrabber.ui" line="+26"/>
+        <location filename="../dialogOpenCVGrabber.ui" line="+14"/>
         <source>Configuration OpenCV Grabber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+20"/>
         <source>Buffer Settings</source>
         <translation type="unfinished"></translation>
     </message>

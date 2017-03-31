@@ -4,18 +4,18 @@
 <context>
     <name>BasicFilters</name>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="+3338"/>
-        <location filename="../BasicFilters.cpp" line="+253"/>
+        <location filename="../BasicSpecialFilters.cpp" line="+3345"/>
+        <location filename="../BasicFilters.cpp" line="+259"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicFilters.cpp" line="-43"/>
+        <location filename="../BasicFilters.cpp" line="-49"/>
         <source>Performs a Sobel filtering with kernelsize (3 ,3) using the generic mcpp filter engine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+51"/>
         <source>Output image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -263,7 +263,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-3142"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-3149"/>
         <location line="+139"/>
         <location line="+72"/>
         <location line="+169"/>
@@ -276,12 +276,12 @@
         <location line="+139"/>
         <location line="+77"/>
         <location line="+2137"/>
-        <location line="+403"/>
+        <location line="+410"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2751"/>
+        <location line="-2758"/>
         <source>Error: Input image must be 3D</source>
         <translation type="unfinished"></translation>
     </message>
@@ -534,7 +534,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+109"/>
         <source>Histogram can only be calculated for (u)int8, (u)int16, (u)int32, float32, float64 or rgba32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -564,7 +564,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1617"/>
+        <location line="-1624"/>
         <location line="+379"/>
         <source>value set to clipped values (default: 0.0)</source>
         <translation type="unfinished"></translation>
@@ -630,7 +630,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+634"/>
+        <location line="+641"/>
         <source>Preallocated dataObject to be filled</source>
         <translation type="unfinished"></translation>
     </message>
@@ -712,11 +712,91 @@
         <source>Error: destination object type is not suppirted for filling</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../AdditionalFilters.cpp" line="+472"/>
+        <location line="+85"/>
+        <location line="+146"/>
+        <source>image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-229"/>
+        <source>threshold for labeling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+229"/>
+        <source>list of found labels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-226"/>
+        <source>inavlid pixels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+82"/>
+        <location line="+158"/>
+        <source>image must be a 2D image!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-207"/>
+        <source>input image should be normalized float (32 or 64) object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>label id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>result, i.e. min and max of surrounding square and num of pixels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>invalid image format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+94"/>
+        <source>detected ellipses&apos; centers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>ellipses&apos; contour points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>number of pixels for border detection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>threshold for identifying a border after differentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>minimum number of pixels for ellipses center detection in x and y direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>labels must be a n x 4 2D dataObject!</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="-201"/>
+        <location filename="../BasicFilters.cpp" line="-207"/>
         <source>ITO developed filter-functions for data objects</source>
         <translation type="unfinished"></translation>
     </message>
@@ -972,15 +1052,30 @@ This filter also works inplace (same source and destination).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-816"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-823"/>
         <source>calculates histgram of real input data object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+823"/>
+        <location line="+830"/>
         <source>Calculates the mean value for radial circles with a given center point an a radius step size 
 
 The radiuses are the distances from the given center point to the physical coordinates of each pixel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AdditionalFilters.cpp" line="-697"/>
+        <source>Finds connected areas in an image an assigns a label to them. 
+                                                             In the input image according found regions get painted with the according label.
+                                                             The returned list has the format x0,y0,x1,y1 for each label.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Filter for detecting the centers of ellipses with subpixel accuracy. 
+                                                          
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

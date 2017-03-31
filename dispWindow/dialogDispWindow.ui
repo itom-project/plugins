@@ -6,21 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>426</width>
-    <height>235</height>
+    <width>602</width>
+    <height>316</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>16777215</width>
-    <height>16777215</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -128,11 +116,17 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QLabel" name="label_period">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Cosine period:</string>
             </property>
             <property name="wordWrap">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="buddy">
              <cstring>spinBox_period</cstring>
@@ -152,7 +146,7 @@
              <string># phase shifts:</string>
             </property>
             <property name="wordWrap">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="buddy">
              <cstring>comboBox_phaseshifts</cstring>
@@ -247,7 +241,7 @@
              <string>Gamma correction:</string>
             </property>
             <property name="wordWrap">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="buddy">
              <cstring>checkBox_gamma</cstring>
@@ -334,19 +328,6 @@
         <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>

@@ -4,7 +4,7 @@
 <context>
     <name>DialogDispWindow</name>
     <message>
-        <location filename="../dialogDispWindow.ui" line="+26"/>
+        <location filename="../dialogDispWindow.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -39,7 +39,7 @@
         <translation type="unfinished">Fenstereinstellungen</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Cosine period:</source>
         <translation type="unfinished">Cosinus-Periode:</translation>
     </message>
@@ -172,12 +172,12 @@
         <translation type="unfinished">Anzahl der unterschiedlichen Bilder: Phasenschiebung + Grauwert + 2</translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+229"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-271"/>
+        <location line="-274"/>
         <source>Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter &apos;lut&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -262,7 +262,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+176"/>
+        <location line="+179"/>
         <source>Currently the lut only has %i values, therefore the index must be in the range [0,%i]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -329,7 +329,7 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-967"/>
+        <location line="-970"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
@@ -387,12 +387,12 @@
 <context>
     <name>DockWidgetDispWindow</name>
     <message>
-        <location filename="../dockWidgetDispWindow.ui" line="+20"/>
+        <location filename="../dockWidgetDispWindow.ui" line="+14"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
@@ -407,7 +407,7 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Show image</source>
         <translation>Anzeigebild</translation>
     </message>

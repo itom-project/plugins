@@ -6,21 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>578</height>
+    <width>592</width>
+    <height>760</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>16777215</width>
-    <height>16777215</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -32,12 +20,6 @@
       <widget class="QGroupBox" name="groupBoxBinning">
        <property name="enabled">
         <bool>true</bool>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
        </property>
        <property name="title">
         <string>Buffer</string>
@@ -125,12 +107,6 @@
         </item>
         <item row="2" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderGain">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>2</number>
           </property>
@@ -144,12 +120,6 @@
         </item>
         <item row="7" column="1" colspan="2">
          <widget class="DoubleSpinBox" name="spinTimeout">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="suffix">
            <string> s</string>
           </property>
@@ -170,12 +140,6 @@
         </item>
         <item row="4" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderIntegrationTime">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -199,12 +163,6 @@
         </item>
         <item row="0" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderOffset">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>1</number>
           </property>
@@ -241,12 +199,6 @@
         </item>
         <item row="6" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderGamma">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="decimals">
            <number>2</number>
           </property>
@@ -266,12 +218,6 @@
      </item>
      <item>
       <widget class="QGroupBox" name="groupTrigger">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="title">
         <string>Trigger</string>
        </property>
@@ -334,12 +280,6 @@
      </item>
      <item>
       <widget class="QGroupBox" name="groupGigE">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="title">
         <string>GigE Interface Settings</string>
        </property>
@@ -413,12 +353,6 @@
           </item>
           <item row="0" column="1">
            <widget class="RangeWidget" name="rangeX01">
-            <property name="maximumSize">
-             <size>
-              <width>265</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="maximum">
              <number>2048</number>
             </property>
@@ -461,12 +395,6 @@
           </item>
           <item row="1" column="1">
            <widget class="RangeWidget" name="rangeY01">
-            <property name="maximumSize">
-             <size>
-              <width>265</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="singleStep">
              <number>2</number>
             </property>

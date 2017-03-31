@@ -989,7 +989,7 @@ ito::RetVal BasicFilters::findEllipses(QVector<ito::ParamBase> *paramsMand, QVec
 
             // again some sanity checks
             if ((TEdge == BEdge) || (TEdge == minN) || (BEdge == maxN) || (TEdge == 0) || (BEdge == 0)
-                    || (abs(TEdge - BEdge) < (maxM - minM - 10) / 2.0))
+                    || (std::abs(TEdge - BEdge) < (maxM - minM - 10) / 2.0))
             {
                 continue;
             }

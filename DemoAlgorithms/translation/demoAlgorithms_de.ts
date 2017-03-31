@@ -24,6 +24,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+3"/>
+        <source>Demo widget</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+168"/>
         <location line="+320"/>
         <source>Handle to the Motorstage</source>
@@ -124,7 +129,7 @@
 <context>
     <name>DemoAlgorithmsInterface</name>
     <message>
-        <location line="-560"/>
+        <location line="-563"/>
         <source>Fill in about dialog content</source>
         <translation type="unfinished"></translation>
     </message>

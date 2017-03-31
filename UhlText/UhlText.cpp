@@ -838,7 +838,7 @@ UhlText::UhlText() : AddInActuator(), m_spitchx(0), m_resolution(0), m_pSer(NULL
     m_jogTimer.setSingleShot(false);
     connect(&m_jogTimer, SIGNAL(timeout()), this, SLOT(triggerJogIncrement()));
 
-    ito::Param paramVal("name", ito::ParamBase::String, "UhlText", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "UhlText", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 //    paramVal = ito::tParam("getrangex", ito::ParamBase::Int, 0, 1, 0);
 //    m_params.insert(paramVal.getName(), paramVal);

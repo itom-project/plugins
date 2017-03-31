@@ -117,12 +117,12 @@
 <context>
     <name>DockWidgetLeicaMotorFocus</name>
     <message>
-        <location filename="../dockWidgetLeicaMotorFocus.ui" line="+20"/>
+        <location filename="../dockWidgetLeicaMotorFocus.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -147,7 +147,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -162,17 +162,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+26"/>
         <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+12"/>
         <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,7 +281,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+43"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -365,7 +365,7 @@
 <context>
     <name>LeicaMotorFocusInterface</name>
     <message>
-        <location line="-997"/>
+        <location line="-1000"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -398,7 +398,7 @@ For the initialization of this plugin you already need an opened serial IO port 
 <context>
     <name>dialogLeicaMotorFocus</name>
     <message>
-        <location filename="../dialogLeicaMotorFocus.ui" line="+26"/>
+        <location filename="../dialogLeicaMotorFocus.ui" line="+14"/>
         <source>Leica Motor Focus - Configuration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -408,7 +408,7 @@ For the initialization of this plugin you already need an opened serial IO port 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+23"/>
         <source>Speed:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -433,7 +433,7 @@ For the initialization of this plugin you already need an opened serial IO port 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+18"/>
         <source>move to upper reference switch</source>
         <translation type="unfinished"></translation>
     </message>
@@ -458,7 +458,7 @@ For the initialization of this plugin you already need an opened serial IO port 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+21"/>
         <source>If clicked, the current position of the actuator will be set to the origin (0.0)</source>
         <translation type="unfinished"></translation>
     </message>

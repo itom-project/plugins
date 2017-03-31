@@ -68,12 +68,12 @@
 <context>
     <name>DockWidgetMSMediaFoundation</name>
     <message>
-        <location filename="../dockWidgetMSMediaFoundation.ui" line="+20"/>
+        <location filename="../dockWidgetMSMediaFoundation.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+18"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -88,17 +88,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+16"/>
         <source>Image Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+30"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -120,7 +120,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+18"/>
         <source>Brightness:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -209,11 +209,12 @@
     </message>
     <message>
         <location line="+2"/>
+        <location line="+10"/>
         <source>gamma [0..1]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-8"/>
         <source>iris [0..1]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -228,7 +229,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+2"/>
+        <source>whiteBalance [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>auto-controlled brightness (on:1, off:0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -264,11 +270,12 @@
     </message>
     <message>
         <location line="+2"/>
+        <location line="+10"/>
         <source>auto-controlled gamma (on:1, off:0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-8"/>
         <source>auto-controlled iris (on:1, off:0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -283,7 +290,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+298"/>
+        <location line="+2"/>
+        <source>auto-controlled whiteBalance (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+300"/>
         <source>invalid cameraNumber. Only %i cameras found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -308,7 +320,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+432"/>
+        <location line="+456"/>
         <source>Timeout while acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -323,12 +335,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-957"/>
+        <location line="-981"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-149"/>
+        <location line="-157"/>
         <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -368,7 +380,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+66"/>
         <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -383,7 +395,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+237"/>
+        <location line="+261"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -441,7 +453,7 @@
 <context>
     <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-1242"/>
+        <location line="-1274"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>

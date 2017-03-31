@@ -75,7 +75,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+182"/>
+        <location line="+176"/>
         <source>invalid target device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -103,7 +103,7 @@
 <context>
     <name>LibModBusInterface</name>
     <message>
-        <location line="-370"/>
+        <location line="-364"/>
         <source>itom-plugin for a modbus communication</source>
         <translation type="unfinished"></translation>
     </message>
@@ -222,7 +222,7 @@ If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be u
         <translation>K.A.</translation>
     </message>
     <message>
-        <location line="+257"/>
+        <location line="+251"/>
         <source>Modbus-connect failed!</source>
         <translation type="unfinished"></translation>
     </message>

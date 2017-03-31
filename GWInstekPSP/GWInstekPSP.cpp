@@ -281,7 +281,7 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
 
     memset(&m_status, 0, 38);
 
-    ito::Param paramVal("name", ito::ParamBase::String, "GWInstekPSP", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GWInstekPSP", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     
     paramVal = ito::Param("status", ito::ParamBase::String | ito::ParamBase::Readonly, m_status, tr("Current status string of controller").toLatin1().data());

@@ -171,7 +171,7 @@ The return integer value will be 1 for MANual, 2 for AUTOmatic, 3 for EXTneral a
 	1
 	>>
 
-    Changelog
+Changelog
 =========
 
 * plugin type changed to dataIO

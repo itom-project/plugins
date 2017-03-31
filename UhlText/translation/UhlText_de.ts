@@ -4,37 +4,37 @@
 <context>
     <name>DockWidgetUhl</name>
     <message>
-        <location filename="../../UhlRegister/dockWidgetUhl.ui" line="+61"/>
+        <location filename="../../UhlRegister/dockWidgetUhl.ui" line="+34"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>Axis:</source>
         <translation>Achsen:</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+13"/>
         <source>[Axis]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+10"/>
         <source>Joystick</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+41"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
@@ -54,12 +54,12 @@
         <translation>z aktiv</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+25"/>
         <source>Relative Positioning</source>
         <translation>Relative Positionierung</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+29"/>
         <source>Step Size</source>
         <translation>Schrittweite</translation>
     </message>
@@ -69,37 +69,32 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+23"/>
         <source>x -</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+22"/>
-        <source>y+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>x+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>z+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+19"/>
+        <location line="+16"/>
         <source>y -</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+9"/>
+        <source>x +</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>z +</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>z -</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+19"/>
         <source>Absolut Positioning</source>
         <translation>Absolute Positionierung</translation>
     </message>
@@ -149,12 +144,17 @@
         <translation>y Achse</translation>
     </message>
     <message>
-        <location line="-525"/>
+        <location line="-353"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+539"/>
+        <location line="+268"/>
+        <source>y +</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+99"/>
         <source>Actual</source>
         <translation>Aktuell</translation>
     </message>
@@ -164,7 +164,7 @@
         <translation>Ziel</translation>
     </message>
     <message>
-        <location line="-441"/>
+        <location line="-344"/>
         <source>enable</source>
         <translation>aktiv</translation>
     </message>
@@ -172,7 +172,7 @@
 <context>
     <name>UhlText</name>
     <message>
-        <location filename="../UhlText.cpp" line="+332"/>
+        <location filename="../UhlText.cpp" line="+333"/>
         <location line="+22"/>
         <source>No signs read after 10 tries</source>
         <translation type="unfinished">Keine Antwort auch nach 10 Versuchen</translation>
@@ -268,7 +268,7 @@
         <translation type="unfinished">Schalter für asynchronen Modus des Geräts</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+39"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Ein Achsenmotor verfährt. Der Motor ist geblockt.</translation>
     </message>
@@ -309,7 +309,7 @@
         <translation type="unfinished">Typenkonflikt des Parameters</translation>
     </message>
     <message>
-        <location line="-821"/>
+        <location line="-814"/>
         <source>UHL errormessage: </source>
         <translation type="unfinished">Uhl Fehlermeldung: </translation>
     </message>
@@ -389,7 +389,12 @@
         <translation type="unfinished">Es wurde in der Antwort des Geräts ein &apos;J&apos; gefunden. (Eine Achse befindet sich im Joystick-Modus.)</translation>
     </message>
     <message>
-        <location line="+803"/>
+        <location line="+606"/>
+        <source>timeout for axes movements in seconds</source>
+        <translation type="unfinished">Zeitüberschreitung für Achsenbewegungen in Sekunden</translation>
+    </message>
+    <message>
+        <location line="+190"/>
         <source>Too small acceleration</source>
         <translation type="unfinished">Zu geringe Beschleunigung</translation>
     </message>
@@ -535,7 +540,7 @@
         <translation type="unfinished">Achse existiert nicht</translation>
     </message>
     <message>
-        <location line="+144"/>
+        <location line="+146"/>
         <source>Axis was specified twice</source>
         <translation type="unfinished">Eine Achse wurde mehrfach spezifiziert</translation>
     </message>
@@ -543,7 +548,7 @@
 <context>
     <name>UhlTextInterface</name>
     <message>
-        <location line="-2244"/>
+        <location line="-2239"/>
         <source>DLL for 2-4 axis Uhl / Lang LStep-Controller</source>
         <translation type="unfinished">DLL für 2-4 achsige Uhltische / LStep-Kontroller</translation>
     </message>
@@ -649,44 +654,44 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation>Plugin-Instanz nicht definiert.</translation>
     </message>
     <message>
-        <location filename="../../UhlRegister/dialogUhl.ui" line="+49"/>
+        <location filename="../../UhlRegister/dialogUhl.ui" line="+84"/>
         <source>Speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="-53"/>
         <source>Accerlaration</source>
         <translation>Beschleunigung</translation>
     </message>
     <message>
-        <location line="-24"/>
+        <location line="+10"/>
         <source>Speed of Uhl Actuator</source>
         <translation type="unfinished">Geschwindigkeit des Uhltischs</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+19"/>
         <source>Accerlaration of Uhl Actuator</source>
         <translation type="unfinished">Beschleunigung des Uhltischs</translation>
     </message>
     <message>
-        <location line="+63"/>
-        <location line="+42"/>
-        <location line="+42"/>
+        <location line="+117"/>
+        <location line="+16"/>
+        <location line="+16"/>
         <source>Set current position as null position</source>
         <translation type="unfinished">Setzt aktuelle Position als Null-Position</translation>
     </message>
     <message>
-        <location line="-39"/>
+        <location line="-13"/>
         <source>Origin Y</source>
         <translation type="unfinished">Null-Pos. Y</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-16"/>
         <source>Origin Z</source>
         <translation type="unfinished">Null-Pos. Z</translation>
     </message>
     <message>
-        <location line="-100"/>
+        <location line="+97"/>
         <source>Change the direction of X-axis</source>
         <translation type="unfinished">Dreht die Fahrtrichtung der X-Achse um</translation>
     </message>
@@ -696,33 +701,33 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation type="unfinished">Invert. X</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="-68"/>
         <source>Origin X</source>
         <translation type="unfinished">Null-Pos. X</translation>
     </message>
     <message>
-        <location line="-29"/>
+        <location line="+13"/>
         <source>Enable or Disable the X-axis</source>
         <translation type="unfinished">Schaltet die X-Achse ein oder aus</translation>
     </message>
     <message>
-        <location line="-104"/>
+        <location line="-211"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <location line="+34"/>
+        <location line="+30"/>
+        <location line="+19"/>
         <source>mm</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+165"/>
         <source>Enable X</source>
         <translation type="unfinished">X Aktiv</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+23"/>
         <source>Enable or Disable the Y-axis</source>
         <translation type="unfinished">Schaltet die Y-Achse ein oder aus</translation>
     </message>
@@ -732,7 +737,7 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation type="unfinished">Y Aktiv</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+36"/>
         <source>Change the direction of Y-axis</source>
         <translation type="unfinished">Dreht die Fahrtrichtung derYx-Achse um</translation>
     </message>
@@ -742,7 +747,7 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation type="unfinished">Invert. Y</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="-55"/>
         <source>Change the direction of Z-axis</source>
         <translation type="unfinished">Dreht die Fahrtrichtung der Z-Achse um</translation>
     </message>
@@ -752,12 +757,12 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation type="unfinished">Invert. Z</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="-125"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-101"/>
+        <location line="+148"/>
         <source>Enable or Disable the Z-axis</source>
         <translation type="unfinished">Schaltet die Z-Achse ein oder aus</translation>
     </message>
@@ -767,7 +772,7 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation type="unfinished">Z Aktiv</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="-106"/>
         <source>Moves all axes to their null position</source>
         <translation type="unfinished">Fährt alle Achsen auf deren Null-Position</translation>
     </message>
@@ -777,17 +782,17 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation type="unfinished">Kalibrieren</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="-32"/>
         <source>Cancel</source>
         <translation type="unfinished">Abbrechen</translation>
     </message>
     <message>
-        <location line="-249"/>
+        <location line="-112"/>
         <source>Properties</source>
         <translation type="unfinished">Eigenschaften</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+135"/>
         <source>Axis</source>
         <translation type="unfinished">Achsen</translation>
     </message>

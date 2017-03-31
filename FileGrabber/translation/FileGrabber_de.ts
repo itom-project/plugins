@@ -4,12 +4,12 @@
 <context>
     <name>DockWidgetFileGrabber</name>
     <message>
-        <location filename="../dockWidgetFileGrabber.ui" line="+20"/>
+        <location filename="../dockWidgetFileGrabber.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -148,7 +148,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+939"/>
+        <location line="+942"/>
         <source>Unable to load file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -216,7 +216,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1084"/>
+        <location line="-1087"/>
         <source>A virtual grabber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -268,7 +268,7 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+426"/>
+        <location line="+429"/>
         <source>Folder %1 does not contain any matching files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -306,12 +306,12 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogFileGrabber.ui" line="+26"/>
+        <location filename="../dialogFileGrabber.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+150"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -348,7 +348,7 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+41"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -393,7 +393,7 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="-483"/>
         <source>Buffer and Binning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -454,17 +454,17 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+382"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="-7"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+17"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>

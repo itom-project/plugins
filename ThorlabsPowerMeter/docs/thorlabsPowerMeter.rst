@@ -74,4 +74,4 @@ For using this plugin, please install the PM100x_Instrument_Driver that is shipp
 Changelog
 =========
 
-itom > 2.2.1: plugin uses the driver PM100x_Instrument_Driver in version 3.0.2
+itom 3.0.0: plugin uses the driver PM100x_Instrument_Driver in version 3.0.2

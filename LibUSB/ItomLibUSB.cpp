@@ -139,7 +139,7 @@ const ito::RetVal ItomUSBDevice::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_autoDetach(true), m_timeoutMS(4000), m_endpoint_read(1), m_endpoint_write(1)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomUSBDevice", "name of device");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "ItomUSBDevice", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);

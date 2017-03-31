@@ -42,7 +42,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+94"/>
         <source>Axis is moving. Parameters cannot be set.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -150,7 +150,7 @@
 <context>
     <name>PiezosystemJena_NV40_1Interface</name>
     <message>
-        <location line="-1087"/>
+        <location line="-1090"/>
         <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -243,7 +243,7 @@ It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
         <source>Delay after positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -266,12 +266,12 @@ It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance
 <context>
     <name>dockWidgetPiezosystemJena_NV40_1</name>
     <message>
-        <location filename="../dockWidgetPiezosystemJena_NV40_1.ui" line="+20"/>
+        <location filename="../dockWidgetPiezosystemJena_NV40_1.ui" line="+14"/>
         <source>Piezosystem Jena NV40/1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,39 +286,39 @@ It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+18"/>
         <source>Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+20"/>
         <source>Step Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
-        <location line="+139"/>
+        <location line="+112"/>
         <location line="+35"/>
         <source> µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-148"/>
+        <location line="-127"/>
         <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+7"/>
         <source>Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+12"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+21"/>
         <source>Remote</source>
         <translation type="unfinished"></translation>
     </message>
@@ -328,7 +328,7 @@ It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+15"/>
         <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>

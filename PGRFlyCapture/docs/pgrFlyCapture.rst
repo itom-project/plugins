@@ -123,6 +123,7 @@ Changelog
 * itom setup 2.0.0: This plugin has been compiled using the FlyCapture 2.7.3.18
 * itom setup 2.1.0: This plugin has been compiled using the FlyCapture 2.7.3.18
 * itom setup 2.2.0: This plugin has been compiled using the FlyCapture 2.7.3.18, under Windows it requires the Microsoft C++ Redistributable 2012
+* itom setup 3.0.0: This plugin has been compiled using the FlyCapture 2.7.3.18, under Windows it requires the Microsoft C++ Redistributable 2012
 
 Linux
 ======

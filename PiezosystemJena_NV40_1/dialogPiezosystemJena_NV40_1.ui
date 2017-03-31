@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>329</height>
+    <width>357</width>
+    <height>327</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -113,12 +113,6 @@
      </item>
      <item>
       <widget class="QGroupBox" name="group4">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="title">
         <string>Delay after positioning</string>
        </property>

@@ -4,19 +4,19 @@
 <context>
     <name>DialogSuperlumBL</name>
     <message>
-        <location filename="../dialogSuperlumBL.ui" line="+26"/>
+        <location filename="../dialogSuperlumBL.ui" line="+14"/>
         <source>Superlum BroadSweeper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+8"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+18"/>
-        <location line="+52"/>
-        <location line="+20"/>
+        <location line="+34"/>
+        <location line="+14"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
@@ -26,37 +26,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-52"/>
+        <location line="-34"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+55"/>
         <source>COM Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
+        <location line="-7"/>
         <source>Remote:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-47"/>
+        <location line="-29"/>
         <source>remote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+56"/>
         <source>Power Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+12"/>
         <source>Power:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>LOW</source>
         <translation type="unfinished"></translation>
     </message>
@@ -66,7 +66,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-191"/>
+        <location line="-92"/>
         <source>local</source>
         <translation type="unfinished"></translation>
     </message>
@@ -79,12 +79,12 @@
 <context>
     <name>DockWidgetSuperlumBL</name>
     <message>
-        <location filename="../dockWidgetSuperlumBL.ui" line="+20"/>
+        <location filename="../dockWidgetSuperlumBL.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+6"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -97,12 +97,12 @@
         <location line="+13"/>
         <location line="+20"/>
         <location line="+20"/>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-47"/>
+        <location line="-41"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -112,17 +112,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>COM Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+14"/>
         <source>Remote:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+14"/>
         <source>local</source>
         <translation type="unfinished"></translation>
     </message>
@@ -132,7 +132,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+23"/>
         <source>Power:     </source>
         <translation type="unfinished"></translation>
     </message>
@@ -213,7 +213,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -309,7 +309,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
 <context>
     <name>SuperlumBLInterface</name>
     <message>
-        <location line="-640"/>
+        <location line="-643"/>
         <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>
