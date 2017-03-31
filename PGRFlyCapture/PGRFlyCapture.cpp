@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2016, twip optical solutions GmbH
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2017, twip optical solutions GmbH
+    Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -286,8 +286,8 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
     paramVal = ito::Param("video_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toLatin1().data());
-    //m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("start_delay", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1000, 0, tr("On some computers, a blue screen sometimes occurs if the time gap between starting the camera and acquiring an image is too short. In this case, try to increase this parameter (in ms).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("cam_serial_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the connected camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1768,8 +1768,18 @@ ito::RetVal PGRFlyCapture::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 1)
     {
-        m_firstTimestamp = std::numeric_limits<double>::quiet_NaN(); //reset timer
-        retError = m_myCam.StartCapture();
+        if (m_params["start_delay"].getVal<int>() > 0)
+        {
+            Sleep(m_params["start_delay"].getVal<int>());
+            m_firstTimestamp = std::numeric_limits<double>::quiet_NaN(); //reset timer
+            retError = m_myCam.StartCapture();
+            Sleep(m_params["start_delay"].getVal<int>());
+        }
+        else
+        {
+            m_firstTimestamp = std::numeric_limits<double>::quiet_NaN(); //reset timer
+            retError = m_myCam.StartCapture();
+        }
         if (retError != FlyCapture2::PGRERROR_OK)
         {
             retValue += ito::RetVal::format(ito::retError, (int)retError.GetType(), tr("Error in startDevice-function: %s").toLatin1().data(), retError.GetDescription());
