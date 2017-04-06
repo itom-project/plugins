@@ -286,7 +286,7 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
     paramVal = ito::Param("video_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("start_delay", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1000, 0, tr("On some computers, a blue screen sometimes occurs if the time gap between starting the camera and acquiring an image is too short. In this case, try to increase this parameter (in ms).").toLatin1().data());
+    paramVal = ito::Param("start_delay", ito::ParamBase::Double, 0.0, 2.0, 0.0, tr("On some computers, a blue screen sometimes occurs if the time gap between starting the camera and acquiring an image is too short. In this case, try to increase this parameter (in s).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("cam_serial_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the connected camera").toLatin1().data());
@@ -1768,12 +1768,12 @@ ito::RetVal PGRFlyCapture::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 1)
     {
-        if (m_params["start_delay"].getVal<int>() > 0)
+        if (m_params["start_delay"].getVal<double>() > 0)
         {
-            Sleep(m_params["start_delay"].getVal<int>());
+            Sleep(m_params["start_delay"].getVal<double>() * 1000.0);
             m_firstTimestamp = std::numeric_limits<double>::quiet_NaN(); //reset timer
             retError = m_myCam.StartCapture();
-            Sleep(m_params["start_delay"].getVal<int>());
+            Sleep(m_params["start_delay"].getVal<double>() * 1000.0);
         }
         else
         {
