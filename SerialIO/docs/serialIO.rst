@@ -208,7 +208,7 @@ Sometimes, it is necessary to immediately clear all characters inside of the inp
 Get a list of available COM ports under Windows
 ===============================================
 
-In order to get a list of all available COM ports under Windows, the following python code snippet can be used. It reads the corresponding registry entries::
+In order to get a list of all available COM ports under Windows, the following python code snippet can be used. It reads the corresponding registry entries:
 
 .. code-block:: python
     
