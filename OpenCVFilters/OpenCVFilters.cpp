@@ -2199,15 +2199,16 @@ converted from an 8-bit image without any scaling, then it will have the 0..255 
 assumed by the function. So, before calling cvtColor , you need first to scale the image down\n\
 \n\
 The parameter code defines the conversion:\n\
-RGB <-> GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)\n\
-RGB <-> CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)\n\
-RGB <-> YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)\n\
-RGB <-> HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )\n\
-RGB <-> HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)\n\
-RGB <-> CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)\n\
-RGB <-> CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)\n\
-Bayer <-> RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...\n\
-                        CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)\n\
+\n\
+* RGB <-> GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)\n\
+* RGB <-> CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)\n\
+* RGB <-> YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)\n\
+* RGB <-> HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )\n\
+* RGB <-> HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)\n\
+* RGB <-> CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)\n\
+* RGB <-> CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)\n\
+* Bayer <-> RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...\n\
+    CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)\n\
 \n\
 For more details see OpenCV documentation.");
 

@@ -435,8 +435,10 @@ the values of the data object 'weights'. Values with corresponding weights <= 0 
 Depending on the orders, the fitted polynomial, whose coefficients are returned by this filter, has the following form: \n\
 \n\
     if (orderX <= orderY): \n\
+    \n\
         f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
+    \n\
         f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. \n\
@@ -504,8 +506,10 @@ All input data objects must have the same size. \n\
 Depending on the orders, the fitted polynomial, whose coefficients are returned by this filter, has the following form: \n\
 \n\
     if (orderX <= orderY): \n\
+    \n\
         z = f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
+    \n\
         z = f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. \n\
@@ -567,9 +571,12 @@ The data object is hereby converted to float64. \n\
 \n\
 The polynomial coefficients (p0, p1, ...) are those returned by the filter 'fitPolynom2D' and depend on the polynomial order in X and Y \
 direction: \n\
+\n\
     if (orderX <= orderY): \n\
+    \n\
         f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
+    \n\
         f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.");
@@ -624,9 +631,12 @@ the polynomial (given by its coefficients) is evaluated and stored in zData (flo
 \n\
 The polynomial coefficients (p0, p1, ...) are those returned by the filter 'fitPolynom2D' and depend on the polynomial order in X and Y \
 direction: \n\
+\n\
     if (orderX <= orderY): \n\
+    \n\
         f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
+    \n\
         f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.");
