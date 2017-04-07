@@ -45,6 +45,11 @@ An instance of this plugin has the following internal parameters:
 **speed**: {float seq.}
     speed of every axis
 
+Installation
+============
+
+For using this plugin you have to install Microsoft Visual C++ 2008 Redistributable.
+
 Changelog
 ==========
 
