@@ -861,7 +861,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
 {
-    qDebug() << "retrieveData: threadID:" << QThread::currentThreadId();
+    //qDebug() << "retrieveData: threadID:" << QThread::currentThreadId();
     ito::RetVal retValue = m_acquisitionRetVal;
 
     if (retValue.containsError())
