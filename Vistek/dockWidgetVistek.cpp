@@ -69,10 +69,10 @@ void DockWidgetVistek::parametersChanged(QMap<QString, ito::Param> params)
         if (params.contains("integration_time"))
         {
             ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
-            ui.sliderExposure->setMinimum(dm->getMin());
-            ui.sliderExposure->setMaximum(dm->getMax());
-            ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
-            ui.sliderExposure->setValue(params["integration_time"].getVal<double>());
+            ui.sliderExposure->setMinimum(dm->getMin() * 1000);
+            ui.sliderExposure->setMaximum(dm->getMax() * 1000);
+            ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) * 10);
+            ui.sliderExposure->setValue(params["integration_time"].getVal<double>() * 1000);
         }
 
         if (params.contains("gain"))
@@ -99,7 +99,7 @@ void DockWidgetVistek::on_sliderExposure_valueChanged(double value)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,value));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,value / 1000.0));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }

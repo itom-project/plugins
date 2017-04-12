@@ -23,18 +23,19 @@
 #include "dialogVistek.h"
 #include "Vistek.h"
 #include <qmessagebox.h>
+#include <qdialogbuttonbox.h>
+#include "common/addInInterface.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogVistek::DialogVistek(Vistek *grabber, const VistekFeatures *features) : 
-    m_Grabber(grabber), 
-    m_currentBinning(-1),
-    m_currentBpp(-1),
-    m_currentOffset(-1),
-    m_currentGain(-1.0),
-    m_currentExposure(-1.0)
-{ 
+DialogVistek::DialogVistek(Vistek *grabber, const VistekFeatures *features) :
+    AbstractAddInConfigDialog(grabber),
+    m_firstRun(true)
+{
     m_features = new VistekFeatures(*features);
-    ui.setupUi(this); 
+    ui.setupUi(this);
+
+    //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
+    enableDialog(false);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -45,41 +46,35 @@ DialogVistek::~DialogVistek()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
+void DialogVistek::parametersChanged(QMap<QString, ito::Param> params)
 {
-    setWindowTitle(QString(params["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+    m_currentParameters = params;
 
-    //file information
+    if (m_firstRun)
+    {
+        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-    if (params.contains("cameraModel"))
-    {
-        ui.lblModel->setText( params["cameraModel"].getVal<char*>() );
-    }
-        
-    if (params.contains("cameraSerialNo"))
-    {
-        ui.lblSerialNo->setText( params["cameraSerialNo"].getVal<char*>() );
-    }
+        //file information
+        ui.lblModel->setText(params["cameraModel"].getVal<char*>());
+        ui.lblSerialNo->setText(params["cameraSerialNo"].getVal<char*>());
+        ui.lblCameraIP->setText(params["cameraIP"].getVal<char*>());
+        ui.lblManufacturer->setText(params["cameraManufacturer"].getVal<char*>());
 
-    if (params.contains("cameraIP"))
-    {
-        ui.lblCameraIP->setText( params["cameraIP"].getVal<char*>() );
+        m_firstRun = false;
     }
 
-    if (params.contains("cameraManufacturer"))
-    {
-        ui.lblManufacturer->setText( params["cameraManufacturer"].getVal<char*>() );
-    }
+    ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+    ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+    ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
 
-    if (params.contains("sizex"))
-    {
-        ui.lblWidth->setText( QString("%1").arg( params["sizex"].getVal<int>()));
-    }
+    int *roi = params["roi"].getVal<int*>();
+    ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
+    ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
+    ui.rangeX01->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly));
+    ui.rangeY01->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly));
 
-    if (params.contains("sizey"))
-    {
-        ui.lblHeight->setText( QString("%1").arg( params["sizey"].getVal<int>()));
-    }
+    ui.spinSizeX->setValue(params["sizex"].getVal<int>());
+    ui.spinSizeY->setValue(params["sizey"].getVal<int>());
 
     ui.combo_bpp->clear();
     ui.combo_bpp->setEnabled(false);
@@ -87,30 +82,29 @@ void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
     if (m_features->has8bit)
     {
         ui.combo_bpp->setEnabled(true);
-        ui.combo_bpp->addItem("8bit",8);
+        ui.combo_bpp->addItem("8bit", 8);
     }
     if (m_features->has10bit)
     {
         ui.combo_bpp->setEnabled(true);
-        ui.combo_bpp->addItem("10bit",10);
+        ui.combo_bpp->addItem("10bit", 10);
     }
     if (m_features->has12bit)
     {
         ui.combo_bpp->setEnabled(true);
-        ui.combo_bpp->addItem("12bit",12);
+        ui.combo_bpp->addItem("12bit", 12);
     }
     if (m_features->has16bit)
     {
         ui.combo_bpp->setEnabled(true);
-        ui.combo_bpp->addItem("16bit",16);
+        ui.combo_bpp->addItem("16bit", 16);
     }
 
     if (params.contains("bpp"))
     {
-        m_currentBpp = params["bpp"].getVal<int>();
         for (int i = 0; i < ui.combo_bpp->count(); ++i)
         {
-            if (ui.combo_bpp->itemData(i).toInt() == m_currentBpp)
+            if (ui.combo_bpp->itemData(i).toInt() == params["bpp"].getVal<int>())
             {
                 ui.combo_bpp->setCurrentIndex(i);
                 break;
@@ -118,135 +112,152 @@ void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
         }
     }
 
-    ui.combo_binning->setEnabled( m_features->adjustBinning );
+    ui.combo_binning->setEnabled(m_features->adjustBinning);
     if (params.contains("binning"))
     {
-        m_currentBinning = params["binning"].getVal<int>();
-        ui.combo_binning->setCurrentIndex( m_currentBinning );
+        ui.combo_binning->setCurrentIndex(params["binning"].getVal<int>());
     }
 
-    ui.doubleSpinBox_integration_time->setEnabled( m_features->adjustExposureTime );
+    ui.doubleSpinBox_integration_time->setEnabled(m_features->adjustExposureTime);
     if (params.contains("integration_time"))
     {
-        m_currentExposure = params["integration_time"].getVal<double>()  * 1000.0; //ms
         ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
 
-        ui.doubleSpinBox_integration_time->setMinimum( dm->getMin() * 1000.0 );
-        ui.doubleSpinBox_integration_time->setMaximum( dm->getMax() * 1000.0 );
-        ui.doubleSpinBox_integration_time->setSingleStep( (dm->getMax() - dm->getMin()) * 10.0);
-        ui.doubleSpinBox_integration_time->setValue( m_currentExposure );
+        ui.doubleSpinBox_integration_time->setMinimum(dm->getMin() * 1000.0);
+        ui.doubleSpinBox_integration_time->setMaximum(dm->getMax() * 1000.0);
+        ui.doubleSpinBox_integration_time->setSingleStep((dm->getMax() - dm->getMin()) * 10.0);
+        ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()  * 1000.0);
     }
 
-    ui.spinBox_gain->setEnabled( m_features->adjustGain );
+    ui.spinBox_gain->setEnabled(m_features->adjustGain);
     if (params.contains("gain"))
     {
-        m_currentGain = params["gain"].getVal<double>();
-
         ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["gain"].getMeta());
 
-        ui.spinBox_gain->setMinimum( dm->getMin() );
-        ui.spinBox_gain->setMaximum( dm->getMax() );
-        ui.spinBox_gain->setSingleStep( (dm->getMax() - dm->getMin())/100.0);
-        ui.spinBox_gain->setValue( m_currentGain );
+        ui.spinBox_gain->setMinimum(dm->getMin());
+        ui.spinBox_gain->setMaximum(dm->getMax());
+        ui.spinBox_gain->setSingleStep((dm->getMax() - dm->getMin()) / 100.0);
+        ui.spinBox_gain->setValue(params["gain"].getVal<double>());
     }
 
-    ui.spinBox_offset->setEnabled( m_features->adjustOffset );
+    ui.spinBox_offset->setEnabled(m_features->adjustOffset);
     ui.horizontalSlider_offset->setEnabled(m_features->adjustOffset);
     if (params.contains("offset")) //already from 0.0 to 1.0 (in vistek driver this is 0..255)
     {
-        m_currentOffset = (int)(params["offset"].getVal<double>() * 100);
-        ui.spinBox_offset->setValue( m_currentOffset );
+        ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>() * 100));
     }
+    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
+    enableDialog(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int DialogVistek::sendParameters(void)
+ito::RetVal DialogVistek::applyParameters()
 {
-    QVector<QSharedPointer<ito::ParamBase> > outVector;
+    ito::RetVal retValue(ito::retOk);
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    bool success = false;
+
+    if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
+    {
+        int x0, x1, y0, y1;
+        ui.rangeX01->values(x0, x1);
+        ui.rangeY01->values(y0, y1);
+        int roi[] = { 0, 0, 0, 0 };
+        memcpy(roi, m_currentParameters["roi"].getVal<int*>(), 4 * sizeof(int));
+
+        if (roi[0] != x0 || roi[1] != y0 || roi[2] != (x1 - x0 + 1) || roi[3] != (y1 - y0 + 1))
+        {
+            roi[0] = x0;
+            roi[1] = y0;
+            roi[2] = x1 - x0 + 1;
+            roi[3] = y1 - y0 + 1;
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
+        }
+    }
 
     //binning
-    if (m_features->adjustBinning && ui.combo_binning->currentIndex() != m_currentBinning && ui.combo_binning->currentIndex() >= 0)
+    if (m_features->adjustBinning && ui.combo_binning->currentIndex() != m_currentParameters["binning"].getVal<int>() && ui.combo_binning->currentIndex() >= 0)
     {
-        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, ui.combo_binning->currentIndex())));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, ui.combo_binning->currentIndex())));
     }
 
     //bpp
-    if (ui.combo_bpp->count() > 0 && ui.combo_bpp->itemData( ui.combo_bpp->currentIndex() ).toInt() != m_currentBpp)
+    if (ui.combo_bpp->count() > 0 && ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt() != m_currentParameters["bpp"].getVal<int>())
     {
-        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, ui.combo_bpp->itemData( ui.combo_bpp->currentIndex() ).toInt())));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt())));
     }
 
     //offset
-    if (m_features->adjustOffset && ui.spinBox_offset->value() != m_currentOffset)
+    if (m_features->adjustOffset && ui.spinBox_offset->value() != (int)(m_currentParameters["offset"].getVal<double>() * 100))
     {
-        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, ui.spinBox_offset->value() / 100.0)));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, ui.spinBox_offset->value() / 100.0)));
     }
 
     //gain
-    if (m_features->adjustGain && qAbs(ui.spinBox_gain->value() - m_currentGain) > 0.0001)
+    if (m_features->adjustGain && qAbs(ui.spinBox_gain->value() - m_currentParameters["gain"].getVal<double>()) > 0.0001)
     {
-        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, ui.spinBox_gain->value())));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, ui.spinBox_gain->value())));
     }
 
     //integration_time
-    if (m_features->adjustExposureTime && qAbs(ui.doubleSpinBox_integration_time->value() - m_currentExposure) > 0.0001)
+    if (m_features->adjustExposureTime && qAbs(ui.doubleSpinBox_integration_time->value() - m_currentParameters["integration_time"].getVal<double>()  * 1000.0) > 0.0001)
     {
-        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, ui.doubleSpinBox_integration_time->value() / 1000.0)));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, ui.doubleSpinBox_integration_time->value() / 1000.0)));
     }
 
-    if(m_Grabber)   // Grabber exists
-    {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        bool alive = true;
-        QMetaObject::invokeMethod(m_Grabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        while (!locker.getSemaphore()->wait(5000))
-        {
-            if (!m_Grabber->isAlive())
-            {
-                alive = false;
-                break;
-            }
-        }
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
 
-        if (!alive)
-        {
-            QMessageBox msgBox;
-            msgBox.setText("Error while setting parameters");
-            msgBox.setInformativeText("The plugin does not react any more.");
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
-        }
-        else
-        {
-            ito::RetVal retval = locker.getSemaphore()->returnValue;
-
-            if(retval.containsError())
-            {
-                QString msg = "<unknown error>";
-                if (retval.hasErrorMessage()) msg = QLatin1String(retval.errorMessage());
-                QMessageBox::critical(this,tr("error"),tr("Error while setting parameters (%1)").arg(msg));
-            }
-            else if(retval.containsWarning())
-            {
-                QString msg = "<unknown warning>";
-                if (retval.hasErrorMessage()) msg = QLatin1String(retval.errorMessage());
-                QMessageBox::warning(this,tr("warning"),tr("Warning while setting parameters (%1)").arg(msg));
-            }
-        }
-    }
-    return 0;
+    return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
 
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the applyButton is clicked, the bpp and the binning of the attached camera is changed!
- *  Changes of parameters lead to a reload of all camera parameters. Other unapplied values are lost!
-*/
-void DialogVistek::on_applyButton_clicked()
+//---------------------------------------------------------------------------------------------------------------------
+void DialogVistek::on_buttonBox_clicked(QAbstractButton* btn)
 {
-    sendParameters();
+    ito::RetVal retValue(ito::retOk);
+
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
+
+    if (role == QDialogButtonBox::RejectRole)
+    {
+        reject(); //close dialog with reject
+    }
+    else if (role == QDialogButtonBox::AcceptRole)
+    {
+        accept(); //AcceptRole
+    }
+    else
+    {
+        applyParameters(); //ApplyRole
+    }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+void DialogVistek::enableDialog(bool enabled)
+{
+    ui.groupBoxBinning->setEnabled(enabled);
+    ui.groupBoxIntegration->setEnabled(enabled);
+    ui.groupBoxSize->setEnabled(enabled);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogVistek::on_rangeX01_valuesChanged(int minValue, int maxValue)
+{
+    ui.spinSizeX->setValue(maxValue - minValue + 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogVistek::on_rangeY01_valuesChanged(int minValue, int maxValue)
+{
+    ui.spinSizeY->setValue(maxValue - minValue + 1);
+}
+
+//------------------------------------------------------------------------------
+void DialogVistek::on_btnFullROI_clicked()
+{
+    if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
+    {
+        ui.rangeX01->setValues(0, m_currentParameters["sizex"].getMax());
+        ui.rangeY01->setValues(0, m_currentParameters["sizey"].getMax());
+    }
+}

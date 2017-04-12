@@ -251,13 +251,16 @@
       <item row="0" column="1">
        <widget class="SliderWidget" name="sliderExposure">
         <property name="decimals">
-         <number>5</number>
+         <number>3</number>
         </property>
         <property name="singleStep">
-         <double>0.010000000000000</double>
+         <double>1.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>10000.000000000000000</double>
         </property>
         <property name="suffix">
-         <string> s</string>
+         <string> ms</string>
         </property>
         <property name="synchronizeSiblings">
          <set>SliderWidget::NoSynchronize</set>

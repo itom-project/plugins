@@ -68,7 +68,10 @@ An instance of this plugin has the following internal parameters:
     Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)
 **logLevel**: {int}
     Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback
-    
+
+Please consider, that 12bit images have been delivered in a range between 16 and 65535 with an increment of 16 for Vistek library version <= 1.0.0.
+From version 1.1.0, this range has been adapted to the default range [0,4096).
+
 Disclaimer
 ==========
 

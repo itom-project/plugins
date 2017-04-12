@@ -76,11 +76,14 @@ class Vistek : public ito::AddInGrabber
             int packetCount;
             double transferTime;
             double timestamp;
+            bool frameCompleted;
             GVSP_PIXEL_TYPE pixelType;
             QVector<ito::uint8> buffer;
+            QMutex mutex;
         };
 
         AcquiredImage m_acquiredImage;
+        ito::RetVal m_acquisitionRetVal;
 
         // Variables that are filled during the data callback
         int TriggerViolationCount;

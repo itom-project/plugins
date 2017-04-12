@@ -1,69 +1,74 @@
 /* ********************************************************************
-    Plugin "Vistek" for itom software
-    URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+Plugin "Vistek" for itom software
+URL: http://www.bitbucket.org/itom/plugins
+Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
-    This file is part of a plugin for the measurement software itom.
-  
-    This itom-plugin is free software; you can redistribute it and/or modify it
-    under the terms of the GNU Library General Public Licence as published by
-    the Free Software Foundation; either version 2 of the Licence, or (at
-    your option) any later version.
+This file is part of a plugin for the measurement software itom.
 
-    itom and its plugins are distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
-    General Public Licence for more details.
+This itom-plugin is free software; you can redistribute it and/or modify it
+under the terms of the GNU Library General Public Licence as published by
+the Free Software Foundation; either version 2 of the Licence, or (at
+your option) any later version.
 
-    You should have received a copy of the GNU Library General Public License
-    along with itom. If not, see <http://www.gnu.org/licenses/>.
+itom and its plugins are distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+General Public Licence for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #ifndef DIALOGVISTEK_H
 #define DIALOGVISTEK_H
 
-#include "common/addInGrabber.h"
-
-#include <QtGui>
-#include <qdialog.h>
+#include "common/param.h"
+#include "common/retVal.h"
+#include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogVistek.h"
+
+#include <qstring.h>
+#include <qmap.h>
+#include <qabstractbutton.h>
+
+
+namespace ito
+{
+    class AddInBase; //forward declaration
+}
 
 class Vistek;
 class VistekFeatures;
 
-class DialogVistek : public QDialog
+class DialogVistek : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
-    public:
-        DialogVistek(Vistek *grabber, const VistekFeatures *features);
-        ~DialogVistek();
+public:
+    DialogVistek(Vistek *grabber, const VistekFeatures *features);
+    ~DialogVistek();
 
-        int sendParameters(void);
+    ito::RetVal applyParameters();
 
-    private:
-        Vistek *m_Grabber;
+private:
+    void enableDialog(bool enabled);
+    bool m_firstRun;
 
-        Ui::dialogVistek ui;
-        const VistekFeatures *m_features;
+    Ui::dialogVistek ui;
+    const VistekFeatures *m_features;
 
-        int m_currentBinning;
-        int m_currentBpp;
-        int m_currentOffset;
-        double m_currentGain;
-        double m_currentExposure;
+public slots:
+    void parametersChanged(QMap<QString, ito::Param> params);
 
-    signals:
-
-    public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
-
-    private slots:
-        void on_applyButton_clicked();    //!< Write the current settings to the internal paramsVals and sent them to the grabber
-
+private slots:
+    void on_buttonBox_clicked(QAbstractButton* btn);
+    void on_rangeX01_valuesChanged(int minValue, int maxValue);
+    void on_rangeY01_valuesChanged(int minValue, int maxValue);
+    void on_btnFullROI_clicked();
 };
 
 #endif
+
 
