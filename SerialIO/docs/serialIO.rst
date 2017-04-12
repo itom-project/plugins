@@ -115,13 +115,26 @@ parameters can be changed using *setParam*.
     Same behaviour like **endline**, however it determines the delimiter for incoming strings and is only
     used or evaluated in **readline** is 1. The user is referred to **readline**.
 **readline**: {int}
-    Per default, *readline* is set to 0. This means that the *getVal* command returns the values that are currently
-    available at the input buffer of the computer. If you call *getVal* too fast, it might be, that the full answer
-    is not available yet. Then you need to recall *getVal* again. If you set *readline* to 1, *getVal* repeatedly
-    collects values from the input buffer and checks if *endlineRead* is contained in the string. If so, *getVal* returns
-    all characters until the first appearance of *endlineRead* (without the endline character itself). Remaining characters
-    are recognized at the next call to *getVal*. If no endline characters is detected within *timeout* seconds, a timeout (error code: 256)
+    Per default, **readline** is set to 0. This means that the **getVal** command returns the values that are currently
+    available at the input buffer of the computer. If you call **getVal** too fast, it might be, that the full answer
+    is not available yet. Then you need to recall **getVal** again. 
+    If you set **readline** to 1, **getVal** collects values from the input buffer and checks if **endlineRead** is contained in the string. If so, **getVal** writes
+    all characters also those behind the first appearance of **endlineRead** into the bytearray. Neverteless the number of obtained signs returned by **getVal** 
+    just counts the signs to the first apperance of *endlineRead*.
+    Remaining characters are recognized at the next call to **getVal**. If no endline characters is detected within *timeout* seconds, a timeout (error code: 256)
     is raised.
+    The following code example demonstrates how to obtain the bytearray until the **endlineRead** sign.
+   
+   .. code-block:: python
+   
+    serial.setParam('readline', True)
+    b = bytearray(100)
+    num = serial.getVal(b)
+    signs = b[0:num]
+    print(signs)
+
+
+    
 **sendDelay**: {str}
     This value represents a delay (in ms) after each character that is send and received
 **timeout**: {double}
