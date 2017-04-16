@@ -112,7 +112,7 @@ expired.");
     m_initParamsOpt.append(paramVal);
 
     ito::int32 values[6] = { 0, 0, 0, 0, 0, 0 };
-    paramVal = ito::Param("useLimits", ito::ParamBase::IntArray, 6, values, new ito::IntArrayMeta(0, 6, 1, 6, 6), tr("Use axes limits and limit switches").toLatin1().data());
+    paramVal = ito::Param("useLimits", ito::ParamBase::IntArray, 6, values, new ito::IntArrayMeta(0, 1, 1, 6, 6), tr("Use axes limits and limit switches").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     ito::float64 dvalues[6] = { -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208 };
@@ -207,12 +207,12 @@ DummyMotor::DummyMotor() :
     m_params.insert(paramVal.getName(), paramVal);
 
     ito::int32 values[6] = { 0, 0, 0, 0, 0, 0 };
-    paramVal = ito::Param("useLimits", ito::ParamBase::IntArray, 6, values, new ito::IntArrayMeta(0, 6, 1, 6, 6), tr("Use axes limits and limit switches").toLatin1().data());
+    paramVal = ito::Param("useLimits", ito::ParamBase::IntArray, 6, values, new ito::IntArrayMeta(0, 1, 1, 6, 6), tr("Use axes limits and limit switches").toLatin1().data());
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("Limits");
     m_params.insert(paramVal.getName(), paramVal);
 
-    ito::float64 dvaluesp[6] = { 1.0e208, 1.0e208, 1.0e208, 1.0e208, 1.0e208, 1.0e208 };
-    ito::float64 dvaluesn[6] = { -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208, -1.0e208 };
+    ito::float64 dvaluesp[6] = { 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0 };
+    ito::float64 dvaluesn[6] = { -1000.0, -1000.0, -1000.0, -1000.0, -1000.0, -1000.0 };
     paramVal = ito::Param("limitPos", ito::ParamBase::DoubleArray, 6, dvaluesp, new ito::DoubleArrayMeta(-1.0e208, 1.0e208, 0, 6, 6), tr("positive limits of axes").toLatin1().data());
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("Limits");
     m_params.insert(paramVal.getName(), paramVal);
@@ -321,9 +321,34 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
         else
         {
-            //all parameters that don't need further checks can simply be assigned
-            //to the value in m_params (the rest is already checked above)
-            retValue += it->copyValueFrom( &(*val) );
+            if (!hasIndex)
+            {
+                //all parameters that don't need further checks can simply be assigned
+                //to the value in m_params (the rest is already checked above)
+                retValue += it->copyValueFrom( &(*val) );
+            }
+            else if (index < 0 || index >= it->getLen())
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, "index out of bounds [0, %i]", it->getLen()-1);
+            }
+            else
+            {
+                switch (it->getType())
+                {
+                    case ito::ParamBase::CharArray & ito::paramTypeMask:
+                        it->getVal<char*>()[index] = val->getVal<char>();
+                        break;
+                    case ito::ParamBase::IntArray & ito::paramTypeMask:
+                        it->getVal<int*>()[index] = val->getVal<int>();
+                        break;
+                    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+                        it->getVal<double*>()[index] = val->getVal<double>();
+                        break;
+                    default:
+                        retValue += ito::RetVal(ito::retError, 0, "index-based values can only be set to array types");
+                        break;
+                }
+            }
         }
     }
         
@@ -349,6 +374,26 @@ ito::RetVal DummyMotor::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
 
     m_numaxis =  (*paramsOpt)[0].getVal<int>(); // Get the number of axis
     m_params["numaxis"].setVal<int>(m_numaxis);
+
+    //limitPos, useLimits, limitNeg
+    ito::DoubleArrayMeta *dm = m_params["limitPos"].getMetaT<ito::DoubleArrayMeta>();
+    dm->setNumMin(m_numaxis);
+    dm->setNumMax(m_numaxis);
+    const ito::float64 *values = m_params["limitPos"].getVal<const ito::float64*>();
+    m_params["limitPos"].setVal<ito::float64*>((ito::float64*)values, m_numaxis);
+
+    dm = m_params["limitNeg"].getMetaT<ito::DoubleArrayMeta>();
+    dm->setNumMin(m_numaxis);
+    dm->setNumMax(m_numaxis);
+    values = m_params["limitNeg"].getVal<const ito::float64*>();
+    m_params["limitNeg"].setVal<ito::float64*>((ito::float64*)values, m_numaxis);
+
+    ito::IntArrayMeta *dm2 = m_params["useLimits"].getMetaT<ito::IntArrayMeta>();
+    dm2->setNumMin(m_numaxis);
+    dm2->setNumMax(m_numaxis);
+    const int *values2 = m_params["useLimits"].getVal<const int*>();
+    m_params["useLimits"].setVal<int*>((int*)values2, m_numaxis);
+
 
     QString name = paramsOpt->at(1).getVal<char*>();
     if (name != "")
