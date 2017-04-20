@@ -204,6 +204,7 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
                 }
                 else
                 {
+                    *val = ito::Param("PI_CMD", ito::ParamBase::String, "", "");
                     val->setVal<char*>(answerString.data(), answerString.length());
                 }
             }
