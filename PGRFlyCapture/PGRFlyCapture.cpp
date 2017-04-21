@@ -2802,7 +2802,7 @@ ito::RetVal PGRFlyCapture::flyCapSynchronizeFrameRateShutter()
 
         if (retVal != ito::retError)
         {
-            if (prop.onOff == false) //off -> extended shutter, no frame_rate
+            if (prop.onOff == false && (m_params["extended_shutter"].getVal<int>() == 1)) //off -> extended shutter, no frame_rate
             {
                 m_params["frame_time"].setFlags(ito::ParamBase::Readonly);
                 m_params["frame_time"].setVal<double>(1.0 / prop.absValue);
