@@ -68,8 +68,11 @@
 #include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
 
-#include <pcl/recognition/auxiliary.h>
-#include <pcl/recognition/ransac_based/trimmed_icp.h>
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
+	#include <pcl/recognition/auxiliary.h>
+	#include <pcl/recognition/ransac_based/trimmed_icp.h>
+#endif
+
 
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/organized_fast_mesh.h>
@@ -3500,6 +3503,7 @@ const QString PclTools::pclPCADOC = QObject::tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+
 const QString PclTools::pclTrimmedICPDOC = QObject::tr("");
 
 ito::RetVal PclTools::pclTrimmedICPParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3525,6 +3529,7 @@ ito::RetVal PclTools::pclTrimmedICPParams(QVector<ito::Param> *paramsMand, QVect
 
 ito::RetVal PclTools::pclTrimmedICP(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
     ito::RetVal retval;
     const ito::PCLPointCloud *pclTarget = (*paramsMand)[0].getVal<ito::PCLPointCloud*>();
     const ito::PCLPointCloud *pclSource = (*paramsMand)[1].getVal<ito::PCLPointCloud*>();
@@ -3574,6 +3579,9 @@ ito::RetVal PclTools::pclTrimmedICP(QVector<ito::ParamBase> *paramsMand, QVector
     }
 
     return retval;
+#else
+	return ito::RetVal(ito::retError, 0, "PCL >= 1.7.0 is required for trimmed ICP");
+#endif
 }
 
 
@@ -4608,9 +4616,10 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclGetNormalsAtCogFromMesh, PclTools::pclGetNormalsAtCogFromMeshParams, pclGetNormalsAtCogFromMeshDOC);
     m_filterList.insert("pclGetNormalsAtCogFromMesh", filter);
-    
+
     filter = new FilterDef(PclTools::pclTrimmedICP, PclTools::pclTrimmedICPParams, pclTrimmedICPDOC);
     m_filterList.insert("pclTrimmedICP", filter);
+
 #if PCLHASSURFACENURBS
     filter = new FilterDef(PclTools::pclFitTrimmedBSpline, PclTools::pclFitTrimmedBSplineParams, pclFitTrimmedBSplineDOC);
     m_filterList.insert("pclFitTrimmedBSpline", filter);
