@@ -33,7 +33,7 @@ Parameters
 These parameters are available and can be used to configure the **PGRFlyCapture** instance. Many of them are directly initialized by the
 parameters of the constructor. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable
 parameters can be changed using *setParam*. If a parameter is read-only, it is not writeable or supported by the specific camera.
-	
+
 **bpp**: {int}
     bitdepth of each pixel
 **cam_firmware_build_time**: {str}, read-only
@@ -92,7 +92,7 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
     For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)
 **video_mode**: {int}, read-only
     Current video mode, default is Mode7
-	
+
 Image Acquisition
 ===================
 
@@ -113,6 +113,16 @@ The tags are:
 
 If 'metadata' is 0 or if the camera model does not support this additional information, no tags are appended to each data object.
 Please consider, that the image information is embedded in the first pixels of each image (see https://www.ptgrey.com/tan/10563).
+
+When camera property settings take effect
+===========================================
+
+In the technical documentations of PointGrey cameras, there is a section about **when camera property settings take effect**. This
+section gives hints after how many acquired images changes in properties like integration_time, gain, etc. will be *visible* in the
+next image. With respect to this documentation, most changes will be applied to the "after next" image, if the camera is in trigger-mode.
+If the camera is in free-run mode (trigger_mode = -1), it sometimes needs up to 4 frames until changes become visible!
+
+In order not to waste time, the plugin does not execute idle grabs after every change of any parameter. This has to be done by hand.
 
 Changelog
 ==========
