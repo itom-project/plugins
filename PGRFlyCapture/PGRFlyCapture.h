@@ -134,11 +134,6 @@ class PGRFlyCapture : public ito::AddInGrabber
     signals:
 
     public slots:
-        /*ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal getParam(const char *name, QSharedPointer<double> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const char *val, const int len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const double val, ItomSharedSemaphore *waitCond = NULL);*/
-
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -150,7 +145,9 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        //ito::RetVal setVal(const void *dObj, const int length, ItomSharedSemaphore *waitCond);
+
+        //! overwrite this function if you registered exec funcs. Once the exec function is called, this method is executed.
+        virtual ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
 
 };
 

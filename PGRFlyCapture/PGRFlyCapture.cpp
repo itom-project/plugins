@@ -223,8 +223,11 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
         m_colouredOutput(false),
         m_firstTimestamp(std::numeric_limits<double>::quiet_NaN())
 {
-    //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
-    //qRegisterMetaType<ito::DataObject>("ito::DataObject");
+    //register exec functions
+    QVector<ito::Param> pMand = QVector<ito::Param>();
+    QVector<ito::Param> pOpt = QVector<ito::Param>();
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+    registerExecFunc("printParameterInfo", pMand, pOpt, pOut, tr("print all current parameters of the camera for internal checks."));
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PGRFlyCapture", tr("name of the camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -2924,4 +2927,62 @@ double PGRFlyCapture::timeStampToDouble(const FlyCapture2::TimeStamp &timestamp)
     }
 
     return secOffset + time1;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    ito::ParamBase *param1 = NULL;
+    ito::ParamBase *param2 = NULL;
+    ito::ParamBase *param3 = NULL;
+
+    if (funcName == "printParameterInfo")
+    {
+        //this is an internal test function to print out all camera parameters including their settings.
+        QMap<QByteArray, int> properties;
+        properties["SHUTTER"] = FlyCapture2::SHUTTER;
+        properties["BRIGHTNESS"] = FlyCapture2::BRIGHTNESS;
+        properties["AUTO_EXPOSURE"] = FlyCapture2::AUTO_EXPOSURE;
+        properties["SHARPNESS"] = FlyCapture2::SHARPNESS;
+        properties["WHITE_BALANCE"] = FlyCapture2::WHITE_BALANCE;
+        properties["HUE"] = FlyCapture2::HUE;
+        properties["SATURATION"] = FlyCapture2::SATURATION;
+        properties["GAMMA"] = FlyCapture2::GAMMA;
+        properties["IRIS"] = FlyCapture2::IRIS;
+        properties["FOCUS"] = FlyCapture2::FOCUS;
+        properties["ZOOM"] = FlyCapture2::ZOOM;
+        properties["PAN"] = FlyCapture2::PAN;
+        properties["TILT"] = FlyCapture2::TILT;
+        properties["SHUTTER"] = FlyCapture2::SHUTTER;
+        properties["GAIN"] = FlyCapture2::GAIN;
+        properties["TRIGGER_MODE"] = FlyCapture2::TRIGGER_MODE;
+        properties["TRIGGER_DELAY"] = FlyCapture2::TRIGGER_DELAY;
+        properties["FRAME_RATE"] = FlyCapture2::FRAME_RATE;
+        properties["TEMPERATURE"] = FlyCapture2::TEMPERATURE;
+
+        QMapIterator<QByteArray, int> i(properties);
+        while (i.hasNext()) 
+        {
+            i.next();
+
+            //get prop SHUTTER
+            FlyCapture2::Property prop;
+            prop.type = (FlyCapture2::PropertyType)i.value();
+            m_myCam.GetProperty(&prop);
+            std::cout << "Parameter " << i.key().data() << ": \n" << std::endl; 
+            std::cout << prop.absControl << " " << prop.absValue << " " << prop.autoManualMode << " " << prop.onePush \
+                << " " << prop.onOff << " " << prop.present << " " << prop.reserved << " " << prop.type << " " << prop.valueA << " " << prop.valueB << "\n" << std::endl;
+        }
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
 }
