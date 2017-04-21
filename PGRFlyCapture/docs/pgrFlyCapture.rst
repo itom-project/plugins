@@ -72,18 +72,22 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
     If 1 (default), the timestamp, frame counter and roi position (depending on the camera model) will be acquired and added into the first pixels of the image (available as tag of the data object as well), 0: metadata disabled
 **name**: {str}, read-only
     name of the camera
+**num_idle_grabs_after_param_change**: {int}
+    With some cameras, parameter changes like the exposure time or gain will only take effect x images after the change. If this parameter is set to > 0, the given number of images are acquired after changing any parameter in order to delete the intermediate images.
 **offset**: {float}
     offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)
 **packetsize**: {int}
     Packet size of current image settings
 **roi**: {int rect [x0,y0,width,height]}
     region of interest, ROI (x,y,width,height)
-**sharpness**: {int}, read-only
+**sharpness**: {int}
     Sharpness
 **sizex**: {int}, read-only
     Pixelsize in x (cols)
 **sizey**: {int}, read-only
     Pixelsize in y (rows)
+**start_delay**: {float}
+    On some computers, a blue screen sometimes occurs if the time gap between starting the camera and acquiring an image is too short. In this case, try to increase this parameter (in s).
 **timeout**: {float}
     Timeout for acquiring images in seconds
 **trigger_mode**: {int}
@@ -122,7 +126,9 @@ section gives hints after how many acquired images changes in properties like in
 next image. With respect to this documentation, most changes will be applied to the "after next" image, if the camera is in trigger-mode.
 If the camera is in free-run mode (trigger_mode = -1), it sometimes needs up to 4 frames until changes become visible!
 
-In order not to waste time, the plugin does not execute idle grabs after every change of any parameter. This has to be done by hand.
+Usually, the plugin does not acquire any idle grabs after having changed any parameter. However, if you set the parameter 'num_idle_grabs_after_param_change'
+to any value bigger than zero, the number of images are acquired. This happens at the next call of **startDevice** if the camera is currently stopped 
+or immediately at the end of the **setParam** command.
 
 Changelog
 ==========

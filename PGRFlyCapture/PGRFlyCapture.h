@@ -108,6 +108,8 @@ class PGRFlyCapture : public ito::AddInGrabber
         double m_offsetMax;
         double m_offsetMin;
 
+        bool m_pendingIdleGrabs;
+
         ExtendedShutterType m_extendedShutter;
         FlyCapture2::EmbeddedImageInfo m_embeddedInfo;
         bool m_hasFrameInfo;

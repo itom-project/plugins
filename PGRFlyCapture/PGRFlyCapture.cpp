@@ -221,7 +221,8 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
         m_offsetMin(0.0),
         m_extendedShutter(UNINITIALIZED),
         m_colouredOutput(false),
-        m_firstTimestamp(std::numeric_limits<double>::quiet_NaN())
+        m_firstTimestamp(std::numeric_limits<double>::quiet_NaN()),
+        m_pendingIdleGrabs(false)
 {
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>();
@@ -318,6 +319,9 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
 
 	paramVal = ito::Param("cam_register", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("Direct read/write of registers, use the hex-number of the register as suffix to read/write a specific register (e.g. getParam('cam_register:0xA01F'))").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("num_idle_grabs_after_param_change", ito::ParamBase::Int, 0, 20, 0, tr("With some cameras, parameter changes like the exposure time or gain will only take effect x images after the change. If this parameter is set to > 0, the given number of images are acquired after changing any parameter in order to delete the intermediate images.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())
     {
@@ -610,6 +614,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         {
             retValue += flyCapSetExtendedShutter(val->getVal<int>() > 0);
             retValue += flyCapSynchronizeFrameRateShutter();
+            m_pendingIdleGrabs = true;
         }
 		else if (key == "metadata")
 		{
@@ -663,6 +668,8 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 				{
 					it->copyValueFrom(&(*val));
 				}
+
+                m_pendingIdleGrabs = true;
 			}
 		}
         else if (key == "frame_time")
@@ -681,6 +688,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
 
             retValue += flyCapSynchronizeFrameRateShutter();
+            m_pendingIdleGrabs = true;
         }
         else if (key == "integration_time")
         {
@@ -697,7 +705,8 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 retValue += checkError(m_myCam.SetProperty(&prop));
             }
 
-            retValue += flyCapSynchronizeFrameRateShutter();            
+            retValue += flyCapSynchronizeFrameRateShutter();   
+            m_pendingIdleGrabs = true;
         }
         else if (key == "gain")
         {
@@ -709,6 +718,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 double gain = (value - m_gainMin)/(m_gainMax - m_gainMin);
                 m_params["gain"].setVal<double>(gain);
             }
+            m_pendingIdleGrabs = true;
         }
         else if (key == "offset")
         {
@@ -720,6 +730,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 double offset = (value - m_offsetMin)/(m_offsetMax - m_offsetMin);
                 m_params["offset"].setVal<double>(offset);
             }
+            m_pendingIdleGrabs = true;
         }
         else if (key == "gamma")
         {
@@ -730,6 +741,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             {
                 m_params["gamma"].setVal<int>(value);
             }
+            m_pendingIdleGrabs = true;
         }
         else if (key == "sharpness")
         {
@@ -740,7 +752,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             {
                 m_params["sharpness"].setVal<int>(value);
             }
-
+            m_pendingIdleGrabs = true;
         }
         else if (key =="exposure_ev")
         {
@@ -751,6 +763,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             {
                 m_params["exposure_ev"].setVal<int>(value);
             }
+            m_pendingIdleGrabs = true;
         }
         else if (key == "trigger_mode")
         {
@@ -919,6 +932,16 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         {
             retValue += startDevice(NULL);
             setGrabberStarted(running);
+        }
+        else if (grabberStartedCount() > 0 && m_pendingIdleGrabs)
+        {
+            for (int i = 0; i < m_params["num_idle_grabs_after_param_change"].getVal<int>(); ++i)
+            {
+                acquire(0);
+            }
+
+            m_isgrabbing = false;
+            m_pendingIdleGrabs = false;
         }
 
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
@@ -1787,6 +1810,17 @@ ito::RetVal PGRFlyCapture::startDevice(ItomSharedSemaphore *waitCond)
         {
             retValue += ito::RetVal::format(ito::retError, (int)retError.GetType(), tr("Error in startDevice-function: %s").toLatin1().data(), retError.GetDescription());
         }
+    }
+
+    if (grabberStartedCount() > 0 && m_pendingIdleGrabs)
+    {
+        for (int i = 0; i < m_params["num_idle_grabs_after_param_change"].getVal<int>(); ++i)
+        {
+            acquire(0);
+        }
+
+        m_isgrabbing = false;
+        m_pendingIdleGrabs = false;
     }
 
     if (waitCond)
