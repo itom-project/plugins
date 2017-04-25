@@ -317,6 +317,12 @@ if (PLUGIN_PGRFlyCapture)
     ADD_SUBDIRECTORY(PGRFlyCapture)
 endif (PLUGIN_PGRFlyCapture)
 
+# PIHexapodCtrl
+OPTION(PLUGIN_PIHexapodCtrl "Build with this plugin." ON)
+if (PLUGIN_PIHexapodCtrl)
+    ADD_SUBDIRECTORY(PIHexapodCtrl)
+endif (PLUGIN_PIHexapodCtrl)
+
 # PIPiezoCtrl
 OPTION(PLUGIN_PIPiezoCtrl "Build with this plugin." ON)
 if (PLUGIN_PIPiezoCtrl)
