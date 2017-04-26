@@ -98,15 +98,16 @@ Example
     print("speed:", mot.getParam("speed"))
     
     mot.setPosAbs(1, 5, 2, -5) #move y to 5mm and z to -5mm
+    print("current position of axes x, y, z:", mot.getPos(0,1,2))
     
     #in order to set pivot point, tilts must be zero:
     mot.setPosAbs(3,0,4,0,5,0)
-    print("pivot point(x,y,z):", mot.exec("getPivotPoint"))
+    print("pivot point(x,y,z):", mot.getParam("pivotPoint"))
     print("set pivot point to (2,2,2):")
-    mot.exec("setPivotPoint", 2,2,2)
+    mot.setParam("pivotPoint", (2,2,2))
 
     print("set pivot point to (0,0,0):")
-    mot.exec("setPivotPoint", 0,0,0)
+    mot.setParam("pivotPoint", (0,0,0))
 
     print("ask for last question (via PI GCS):")
     print(mot.getParam("PI_CMD:ERR?"))
