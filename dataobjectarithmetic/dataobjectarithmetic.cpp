@@ -1588,8 +1588,6 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
             dObjCogOut->setAxisUnit(1, dObjIN->getAxisUnit(dObjINDims-1, test));
             dObjCogOut->setAxisDescription(1, dObjIN->getAxisDescription(dObjINDims-1, test));
 
-            dObjCogOut->setValueUnit(dObjIN->getAxisDescription(dObjINDims - 2, test));
-
             dObjIntOut->setAxisScale(1, dObjIN->getAxisScale(dObjINDims - 1));
             dObjIntOut->setAxisOffset(1, dObjIN->getAxisOffset(dObjINDims - 1));
             dObjIntOut->setAxisUnit(1, dObjIN->getAxisUnit(dObjINDims - 1, test));
@@ -1601,8 +1599,6 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
             dObjCogOut->setAxisOffset(1,        dObjIN->getAxisOffset(dObjINDims - 2));
             dObjCogOut->setAxisUnit(1,          dObjIN->getAxisUnit(dObjINDims - 2, test));
             dObjCogOut->setAxisDescription(1,   dObjIN->getAxisDescription(dObjINDims - 2, test));
-
-            dObjCogOut->setValueUnit(dObjIN->getAxisDescription(dObjINDims - 1, test));
 
             dObjIntOut->setAxisScale(1,         dObjIN->getAxisScale(dObjINDims - 2));
             dObjIntOut->setAxisOffset(1,        dObjIN->getAxisOffset(dObjINDims - 2));
@@ -1622,9 +1618,11 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
             dObjIntOut->setAxisOffset(0,        dObjIN->getAxisOffset(dObjINDims - 3));
             dObjIntOut->setAxisUnit(0,          dObjIN->getAxisUnit(dObjINDims - 3, test));
             dObjIntOut->setAxisDescription(0,   dObjIN->getAxisDescription(dObjINDims - 3, test));
+
         }
 
-        dObjCogOut->setValueDescription("Center of Gravity");
+        dObjCogOut->setValueUnit("a. u.");
+        dObjCogOut->setValueDescription("center of gravity");
         dObjIntOut->setValueDescription("intensity");
         dObjIntOut->setValueUnit("a.u.");
 
