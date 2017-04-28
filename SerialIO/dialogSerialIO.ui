@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>429</height>
+    <width>401</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -707,6 +707,34 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_readdelay">
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Read delay</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QSpinBox" name="spinBox_readdelay">
+           <property name="suffix">
+            <string>ms</string>
+           </property>
+           <property name="maximum">
+            <number>65000</number>
+           </property>
+           <property name="singleStep">
+            <number>200</number>
+           </property>
+           <property name="value">
+            <number>1000</number>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0" colspan="2">
           <widget class="QLineEdit" name="lineEditSend">
            <property name="focusPolicy">
@@ -790,35 +818,17 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_readdelay">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
+         <item row="2" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkReadAfterSend">
            <property name="text">
-            <string>Read delay</string>
+            <string>automatically read answer after send</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox_readdelay">
-           <property name="suffix">
-            <string>ms</string>
-           </property>
-           <property name="maximum">
-            <number>65000</number>
-           </property>
-           <property name="singleStep">
-            <number>200</number>
-           </property>
-           <property name="value">
-            <number>1000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
+         <item row="3" column="2">
           <widget class="QPushButton" name="pushButton_clear">
            <property name="text">
             <string>Clear</string>
@@ -906,7 +916,6 @@
   <tabstop>spinBox_readdelay</tabstop>
   <tabstop>pushSendButton</tabstop>
   <tabstop>pushReadButton</tabstop>
-  <tabstop>pushButton_clear</tabstop>
   <tabstop>okButton</tabstop>
   <tabstop>cancelButton</tabstop>
   <tabstop>pushButtonSet</tabstop>

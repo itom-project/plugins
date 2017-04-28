@@ -747,26 +747,32 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
     //waitCond->wait(15000);
     //ItomSharedSemaphore::deleteSemaphore(waitCond);
     ret += sio->setVal(tmpChar, length, 0);
-    if (ret != ito::retError)
-    {
-        Sleep(ui.spinBox_readdelay->value());
 
-        //waitCond = new ItomSharedSemaphore();
-        //QMetaObject::invokeMethod(sio, "getVal", Q_ARG(ito::RetVal*, &ret), Q_ARG(char*, readBuf), Q_ARG(int *, &len), Q_ARG(ItomSharedSemaphore *, waitCond));
-        //waitCond->wait(15000);
-        //ItomSharedSemaphore::deleteSemaphore(waitCond);
-        ret += sio->getVal(readBuf, len, 0);
+    if (ui.checkReadAfterSend->isChecked())
+    {
+        if (!ret.containsError())
+        {
+            Sleep(ui.spinBox_readdelay->value());
+
+            //waitCond = new ItomSharedSemaphore();
+            //QMetaObject::invokeMethod(sio, "getVal", Q_ARG(ito::RetVal*, &ret), Q_ARG(char*, readBuf), Q_ARG(int *, &len), Q_ARG(ItomSharedSemaphore *, waitCond));
+            //waitCond->wait(15000);
+            //ItomSharedSemaphore::deleteSemaphore(waitCond);
+            ret += sio->getVal(readBuf, len, 0);
+        }
+
+        if (!ret.containsError())
+        {
+            ui.text_transfer->append(interpretAnswer(readBuf.data(), *len));
+        }
     }
 
-    if (!ret.containsError())
-    {
-        ui.text_transfer->append(interpretAnswer(readBuf.data(), *len));
-    }
-    else
+    if (ret.containsError())
     {
         QMessageBox msgBox;
         msgBox.setText(QLatin1String(ret.errorMessage()));
         msgBox.setInformativeText("");
+        msgBox.setIcon(QMessageBox::Critical);
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setDefaultButton(QMessageBox::Ok);
         ret = msgBox.exec();

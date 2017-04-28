@@ -1673,7 +1673,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
                 if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
                 {
                     *length = pos + len;
-                    retValue += ito::RetVal(ito::retError, 256, tr("timeout").toLatin1().data());
+                    retValue += ito::RetVal(ito::retError, 256, tr("timeout while reading from serial port.").toLatin1().data());
                 }
                 else
                 {
