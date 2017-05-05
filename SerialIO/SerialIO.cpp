@@ -548,34 +548,12 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 
     const char testBuf[3] = {0, 0, 0};
 
-    if (strcmp(params.endline, "\n") == 0)
-    {
-        m_serParams.endline[0] = '\n';
-        m_serParams.endline[1] = 0;
-        m_serParams.endline[2] = 0;
-    }
-    else if (strcmp(params.endline, "\r") == 0)
-    {
-        m_serParams.endline[0] = '\r';
-        m_serParams.endline[1] = 0;
-        m_serParams.endline[2] = 0;
-    }
-    else if (strcmp(params.endline, "\r\n") == 0)
-    {
-        m_serParams.endline[0] = '\r';
-        m_serParams.endline[1] = '\n';
-        m_serParams.endline[2] = 0;
-    }
-    else if (strcmp(params.endline, testBuf) == 0)
-    {
-        m_serParams.endline[0] = 0;
-        m_serParams.endline[1] = 0;
-        m_serParams.endline[2] = 0;
-    }
-    else
-    {
-        return ito::RetVal(ito::retError, 0, QObject::tr("invalid endline character").toLatin1().data());
-    }
+	int len = strlen(params.endline)+1;//add one for endline
+	strcpy(m_serParams.endline, params.endline);
+	while (3 - len > 0)
+	{
+		m_serParams.endline[(len++)] = 0;
+	}
 
     m_serParams.sendDelay = params.sendDelay;
 
