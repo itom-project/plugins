@@ -838,7 +838,7 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     int sendDelay = ui.spinBox_sendDelay->value();
 
     char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
-	if (endline == "\\r" || endline == "\r\n" || endline == "\n" || endline == "") //all those are standard endline characters all other wiil be displayed as hex
+	if (endline.compare("\r") || endline.compare("\r\n") || endline.compare("\n")|| endline.compare("")) //all those are standard endline characters all other wiil be displayed as hex
 	{
 		sprintf(txt,
 			"dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%.3f)",
