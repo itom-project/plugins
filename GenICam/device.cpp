@@ -269,6 +269,7 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
 
 	ito::RetVal retval;
 	QByteArray xmlFile;
+    bool isXmlNotZip = true;
 
     if (m_portHandle == GENTL_INVALID_HANDLE)
     {
@@ -313,6 +314,11 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
 
         if (regExp.indexIn(url) >= 0)
         {
+            if (regExp.cap(2).endsWith("zip", Qt::CaseInsensitive))
+            {
+                isXmlNotZip = false;
+            }
+
             bool ok;
             qulonglong addr = regExp.cap(3).toLatin1().toULongLong(&ok, 16);
             if (!ok)
@@ -342,6 +348,11 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
     {
         QFile file(url);
 
+        if (QString::fromLatin1(url).endsWith("zip", Qt::CaseInsensitive))
+        {
+            isXmlNotZip = false;
+        }
+
         if (file.exists())
         {
             if (file.open(QIODevice::ReadOnly))
@@ -366,7 +377,15 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
 
 	if (!retval.containsError())
 	{
-		m_camera._LoadXMLFromString(xmlFile.data());
+        if (isXmlNotZip)
+        {
+		    m_camera._LoadXMLFromString(xmlFile.data());
+        }
+        else
+        {
+            m_camera._LoadXMLFromZIPData(xmlFile.data(), xmlFile.size());
+        }
+
 		m_camera._Connect(this, "Device");
 		m_genApiConnected = true;
 	}
