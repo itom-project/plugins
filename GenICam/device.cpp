@@ -28,6 +28,7 @@
 #include <qdebug.h>
 #include <qset.h>
 #include <qregexp.h>
+#include <qurl.h>
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 #include <iostream>
@@ -346,29 +347,43 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
     }
     else if (url.startsWith("file"))
     {
-        QFile file(url);
+        QRegExp regExp("^file:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(.*)$");
 
-        if (QString::fromLatin1(url).endsWith("zip", Qt::CaseInsensitive))
+        if (regExp.indexIn(url) >= 0)
         {
-            isXmlNotZip = false;
-        }
+            QUrl url2("file:///" + regExp.cap(2));
+            QString url3 = url2.toLocalFile();
 
-        if (file.exists())
-        {
-            if (file.open(QIODevice::ReadOnly))
+            QFile file(url3);
+
+            if (url3.endsWith("zip", Qt::CaseInsensitive))
             {
-				xmlFile = file.readAll();
-                file.close();
+                isXmlNotZip = false;
+            }
+
+            if (file.exists())
+            {
+                if (file.open(QIODevice::ReadOnly))
+                {
+				    xmlFile = file.readAll();
+                    file.close();
+                }
+                else
+                {
+                    retval += ito::RetVal::format(ito::retError, 0, "file '%s' could not be opened", url.data());
+                }
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, "file '%s' could not be opened", url.data());
+                retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", url.data());
             }
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", url.data());
+            retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL", url.data());
         }
+
+        
     }
     else //internet resource
     {
