@@ -261,8 +261,8 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     if (retval.containsError()) return retval;
 
     paramsMand->append(ito::Param("dObjOut", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d complex output data field"));
-    paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in x-direction"));
-    paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in y-direction"));
+    paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in x-direction"));
+    paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in y-direction"));
     paramsMand->append( ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance") );
     paramsMand->append( ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation") );	
     paramsMand->append( ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation") );
