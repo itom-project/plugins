@@ -66,12 +66,14 @@ protected:
 
     GenTL::DS_HANDLE m_handle;
     GenTL::EVENT_HANDLE m_newBufferEvent;
+    GenTL::EVENT_HANDLE m_errorEvent;
 
     GenTL::PDSAllocAndAnnounceBuffer DSAllocAndAnnounceBuffer;
 	GenTL::PDSRevokeBuffer DSRevokeBuffer;
     GenTL::PGCRegisterEvent GCRegisterEvent;
     GenTL::PGCUnregisterEvent GCUnregisterEvent;
     GenTL::PEventGetData EventGetData;
+    GenTL::PEventGetDataInfo EventGetDataInfo;
     GenTL::PDSQueueBuffer DSQueueBuffer;
     GenTL::PDSFlushQueue DSFlushQueue;
     GenTL::PDSGetBufferInfo DSGetBufferInfo;

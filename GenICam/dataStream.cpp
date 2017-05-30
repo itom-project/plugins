@@ -38,6 +38,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     m_handle(handle),
     m_lib(lib),
     m_newBufferEvent(GENTL_INVALID_HANDLE),
+    m_errorEvent(GENTL_INVALID_HANDLE),
     m_acquisitionStarted(false),
 	m_payloadSize(0),
 	m_timeoutMS(0)
@@ -46,6 +47,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
     DSClose = (GenTL::PDSClose)m_lib->resolve("DSClose");
     EventGetData = (GenTL::PEventGetData)m_lib->resolve("EventGetData");
+    EventGetDataInfo = (GenTL::PEventGetDataInfo)m_lib->resolve("EventGetDataInfo");
     DSQueueBuffer = (GenTL::PDSQueueBuffer)m_lib->resolve("DSQueueBuffer");
 	DSRevokeBuffer = (GenTL::PDSRevokeBuffer)m_lib->resolve("DSRevokeBuffer");
     DSFlushQueue = (GenTL::PDSFlushQueue)m_lib->resolve("DSFlushQueue");
@@ -66,6 +68,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     if (!retval.containsError())
     {
         retval += checkGCError(GCRegisterEvent(m_handle, GenTL::EVENT_NEW_BUFFER, &m_newBufferEvent));
+        retval += checkGCError(GCRegisterEvent(m_handle, GenTL::EVENT_ERROR, &m_errorEvent));
     }
 
     if (!retval.containsError())
@@ -80,6 +83,11 @@ GenTLDataStream::~GenTLDataStream()
     if (GCUnregisterEvent && m_newBufferEvent != GENTL_INVALID_HANDLE)
     {
         GCUnregisterEvent(m_handle, GenTL::EVENT_NEW_BUFFER);
+    }
+
+    if (GCUnregisterEvent && m_errorEvent != GENTL_INVALID_HANDLE)
+    {
+        GCUnregisterEvent(m_handle, GenTL::EVENT_ERROR);
     }
 
     if (DSClose && m_handle != GENTL_INVALID_HANDLE)
@@ -229,7 +237,49 @@ ito::RetVal GenTLDataStream::checkForNewBuffer(GenTL::BUFFER_HANDLE &buffer)
     if (err == GenTL::GC_ERR_TIMEOUT)
     {
         buffer = GENTL_INVALID_HANDLE;
-        return ito::RetVal(ito::retError, 0, "timeout occured");
+
+        //check if a possible error has been signaled
+        if (m_errorEvent != GENTL_INVALID_HANDLE)
+        {
+            char bufferIn[1024];
+            size_t sizeIn = sizeof(bufferIn);
+            err = EventGetData(m_errorEvent, &bufferIn, &sizeIn, 0);
+            if (err == GenTL::GC_ERR_SUCCESS)
+            {
+                if (EventGetDataInfo)
+                {
+                    GenTL::INFO_DATATYPE piType;
+                    char bufferOut[512];
+                    size_t pSizeOut = sizeof(bufferOut);
+
+                    GenTL::DEVICE_INFO_CMD cmds[] = { GenTL::URL_INFO_URL };
+                    GenTL::GC_ERROR err2 = EventGetDataInfo(m_errorEvent, &bufferIn, sizeIn, GenTL::EVENT_DATA_VALUE, &piType, &bufferOut, &pSizeOut);
+
+                    if (err2 == GenTL::GC_ERR_SUCCESS)
+                    {
+                        if (piType == GenTL::INFO_DATATYPE_STRING)
+                        {
+                            bufferOut[511] = '\0';
+                            return ito::RetVal::format(ito::retError, 0, "Timeout occurred. Signaled error: %s.", bufferOut);
+                        }
+                        else
+                        {
+                            return ito::RetVal(ito::retError, 0, "Timeout occurred. An error has been signaled, however no more information could be fetched due to unsupported datatype returned from method 'EventGetDataInfo'");
+                        }
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "Timeout occurred. An error has been signaled, however no more information could be fetched due to error returned from method 'EventGetDataInfo'");
+                    }
+                }
+                else
+                {
+                    return ito::RetVal(ito::retError, 0, "Timeout occurred. An error has been signaled, however no more information could be fetched due to missing method 'EventGetDataInfo'");
+                }
+            }
+        }
+
+        return ito::RetVal(ito::retError, 0, "Timeout occurred.");
     }
     else if (checkGCError(err) == ito::retOk)
     {
