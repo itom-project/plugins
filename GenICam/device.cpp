@@ -309,6 +309,8 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
     }
     //
 
+    url = url.toLower();
+
     if (url.startsWith("local:"))
     {
         QRegExp regExp("^local:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(.*)$");
