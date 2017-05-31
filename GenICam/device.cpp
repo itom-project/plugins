@@ -309,11 +309,10 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
     }
     //
 
-    url = url.toLower();
-
-    if (url.startsWith("local:"))
+    if (url.toLower().startsWith("local:"))
     {
         QRegExp regExp("^local:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(.*)$");
+        regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         if (regExp.indexIn(url) >= 0)
         {
@@ -347,9 +346,10 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
             retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL", url.data());
         }
     }
-    else if (url.startsWith("file"))
+    else if (url.toLower().startsWith("file:"))
     {
         QRegExp regExp("^file:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(.*)$");
+        regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         if (regExp.indexIn(url) >= 0)
         {

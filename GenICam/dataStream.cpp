@@ -252,7 +252,6 @@ ito::RetVal GenTLDataStream::checkForNewBuffer(GenTL::BUFFER_HANDLE &buffer)
                     char bufferOut[512];
                     size_t pSizeOut = sizeof(bufferOut);
 
-                    GenTL::DEVICE_INFO_CMD cmds[] = { GenTL::URL_INFO_URL };
                     GenTL::GC_ERROR err2 = EventGetDataInfo(m_errorEvent, &bufferIn, sizeIn, GenTL::EVENT_DATA_VALUE, &piType, &bufferOut, &pSizeOut);
 
                     if (err2 == GenTL::GC_ERR_SUCCESS)
