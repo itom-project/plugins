@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>401</width>
-    <height>427</height>
+    <height>431</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -768,6 +768,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="toolTip">
+              <string>E.g. Test$(10)</string>
+             </property>
              <property name="text">
               <string>ASCII</string>
              </property>
@@ -784,6 +787,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="toolTip">
+              <string>Bytes separated by space, e.g. 255 10 13</string>
+             </property>
              <property name="text">
               <string>Decimal</string>
              </property>
@@ -794,6 +800,9 @@
            </item>
            <item>
             <widget class="QRadioButton" name="RBHex">
+             <property name="toolTip">
+              <string>Bytes separated by space, e.g. 4f a 1b</string>
+             </property>
              <property name="text">
               <string>Hexadecimal</string>
              </property>
@@ -801,6 +810,9 @@
            </item>
            <item>
             <widget class="QRadioButton" name="RBBin">
+             <property name="toolTip">
+              <string>Bytes separated by space, e.g. 1010 11111111 100</string>
+             </property>
              <property name="text">
               <string>Binary</string>
              </property>
