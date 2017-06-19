@@ -716,8 +716,8 @@ to parallely compute the approximations for each pixel.");
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object (3 dimensions).") );
-    paramsMand->append( ito::Param("polynoms", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "") );
+    paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object (3 dimensions, [z,y,x]).") );
+    paramsMand->append( ito::Param("polynoms", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "float64, size: [(order+2),y,x]. The first (order+1) planes contain the coefficients, the last plane contains the residual error for each polynomial fit.") );
     paramsMand->append( ito::Param("order", ito::ParamBase::Int | ito::ParamBase::In, 1, 7, 1, "polynomial order"));
 
     paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights (same dimensions than data)") );
@@ -830,9 +830,9 @@ to parallely compute the approximations for each pixel.");
                 coeffMats[i] = (cv::Mat*)(output->get_mdata()[ output->seekMat(i) ]);
             }
 
-            int dataSteps[] = { (int)dataMats[0]->step[0], (int)dataMats[1]->step[1] };
+            int dataSteps[] = { (int)dataMats[0]->step[0], (int)dataMats[0]->step[1] };
             int weightSteps[] = { 0, 0 };
-            int coeffSteps[] = { (int)coeffMats[0]->step[0], (int)coeffMats[1]->step[1] };
+            int coeffSteps[] = { (int)coeffMats[0]->step[0], (int)coeffMats[0]->step[1] };
 
             if (weights)
             {
