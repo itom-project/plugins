@@ -1376,7 +1376,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
                 dObjOut->setAxisUnit(axis, "");
             }
             dObjOut->setAxisScale(axis, newScale);
-            dObjOut->setAxisOffset(axis, 0.0);
+            dObjOut->setAxisOffset(axis, dObjIn->getAxisOffset(axis));
 
 #if (USEOMP)
             fftw_cleanup_threads();
