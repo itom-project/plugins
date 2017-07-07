@@ -1376,7 +1376,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
                 dObjOut->setAxisUnit(axis, "");
             }
             dObjOut->setAxisScale(axis, newScale);
-            dObjOut->setAxisOffset(axis, dObjIn->getAxisOffset(axis));
+            dObjOut->setAxisOffset(axis, 0.0);
 
 #if (USEOMP)
             fftw_cleanup_threads();
@@ -1647,7 +1647,7 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
                     dObjOut->setAxisUnit(axis, "");
                 }
                 dObjOut->setAxisScale(axis, newScale);
-                dObjOut->setAxisOffset(axis, dObjIn->getAxisOffset(axis));
+                dObjOut->setAxisOffset(axis, 0.0);
             }
 #if (USEOMP)
             fftw_cleanup_threads();
