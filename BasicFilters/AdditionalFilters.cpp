@@ -58,7 +58,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
 {
     ito::int32 xsize = img->getSize(1);
     ito::int32 ysize = img->getSize(0);
-    _Tp value, u = 0;
+    _Tp value;
     ito::float64 minValue, maxValue;
     ito::uint32 minPos[3], maxPos[3];
 
@@ -68,14 +68,16 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         *img -= minValue;
         *img *= 1.0 / (maxValue - minValue + 1);
     }
-    _Tp *pixPtr = (_Tp*)(((cv::Mat *)img->get_mdata()[img->seekMat(0)])->data);
-    ito::int32 xmin = 0, ymin = 0, lbl = 1, lbl1 = 1;
+
+    _Tp *pixPtr = (_Tp*)img->rowPtr(0, 0);
+    int lstep = img->getStep(0);
+    ito::int32 xmin = 0, ymin = 0, lbl = 0, lbl1 = 1, u = 0;
     ito::int32 **labelPtr = NULL;
     ito::int8 linehadlabel = 0, lastlinehadlabel = 0;
 
     labelPtr = new ito::int32*[2];
-    labelPtr[0] = (ito::int32*)(((cv::Mat *)labelTable->get_mdata()[labelTable->seekMat(0)])->data);
-    labelPtr[1] = (ito::int32*)(((cv::Mat *)labelTable->get_mdata()[labelTable->seekMat(1)])->data);
+    labelPtr[0] = (ito::int32*)labelTable->rowPtr(0, 0);
+    labelPtr[1] = (ito::int32*)labelTable->rowPtr(1, 0);
     for (ito::int32 nl = 0; nl < ysize * xsize; nl++)
     {
         labelPtr[0][nl] = -1;
@@ -86,40 +88,38 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
     {
         for (ito::int32 x = 0; x < xsize; x++)
         {
-            value = pixPtr[y * xsize + x];
+            value = pixPtr[y * lstep + x];
 
             if (value > thres)
             {
                 if (y > 0)
-                    u = pixPtr[(y - 1) * xsize + x];
+                    u = pixPtr[(y - 1) * lstep + x];
                 else
-                    u = thres;
+                    u = 0;
 
                 if (x > 0)
-                    lbl = pixPtr[y * xsize + x - 1];
+                    lbl = pixPtr[y * lstep + x - 1];
                 else
-                    lbl = thres;
+                    lbl = 0;
 
-                if (u > thres && !(lbl > thres))
+                if (u && !lbl)
                 {
-                    pixPtr[y * xsize + x] = u;
-
+                    pixPtr[y * lstep + x] = u;
                 }
-                else if (lbl > thres && !(u > thres))
+                else if (lbl && !u)
                 {
-                    pixPtr[y * xsize + x] = lbl;
-
+                    pixPtr[y * lstep + x] = lbl;
                 }
-                else if (lbl > thres && u > thres)
+                else if (lbl && u)
                 {
-                    pixPtr[y * xsize + x] = lbl;
+                    pixPtr[y * lstep + x] = lbl;
                     if (lbl != u)
                     {
-                        if (labelPtr[0][(ito::int32)u] < labelPtr[0][(ito::int32)lbl])
+                        if (u >= 1 && labelPtr[0][(ito::int32)u] < labelPtr[0][(ito::int32)lbl])
                             xmin = labelPtr[0][(ito::int32)u];
                         else
                             xmin = labelPtr[0][(ito::int32)lbl];
-                        if (labelPtr[1][(ito::int32)u] < labelPtr[1][(ito::int32)lbl])
+                        if (u >= 1 && labelPtr[1][(ito::int32)u] < labelPtr[1][(ito::int32)lbl])
                             ymin = labelPtr[1][(ito::int32)u];
                         else
                             ymin = labelPtr[1][(ito::int32)lbl];
@@ -130,9 +130,9 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
                             lastlinehadlabel = 0;
                             for (ito::int32 x1 = xmin; x1 < xsize; x1++)
                             {
-                                if (pixPtr[y1 * xsize + x1] == u)
+                                if (pixPtr[y1 * lstep + x1] == u)
                                 {
-                                    pixPtr[y1 * xsize + x1] = lbl;
+                                    pixPtr[y1 * lstep + x1] = lbl;
                                     lastlinehadlabel = 1;
                                 }
                             }
@@ -140,7 +140,6 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
                                 linehadlabel--;
                             if (linehadlabel < -2)
                                 break;
-
                         }
 
                         labelPtr[0][(ito::int32)u] = -1;
@@ -149,14 +148,17 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
                         labelPtr[1][(ito::int32)lbl] = ymin;
                     }
                 }
-                if (!(lbl > thres) && !(u > thres))
+                if (!lbl && !u)
                 {
+                    lbl1++;
+                    /*
                     lbl1 = 1;
                     while ((labelPtr[0][(ito::int32)lbl1] != -1) || (labelPtr[1][(ito::int32)lbl1] != -1))
                     {
                         lbl1++;
                     }
-                    pixPtr[y * xsize + x] = lbl1;
+                    */
+                    pixPtr[y * lstep + x] = lbl1;
 
                     labelPtr[0][(ito::int32)lbl1] = x;        // Label l1 als verwendet markieren
                     labelPtr[1][(ito::int32)lbl1] = y;
@@ -165,16 +167,20 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
-    ito::int32 numLabels = 0;
+    ito::int32 numLabels = 0, maxLabel = 0;
     for (ito::int32 n = 0; n < xsize * ysize; n++)
     {
         if (labelPtr[0][n] > 0)
         {
             numLabels++;
         }
+        if (labelPtr[0][n] > maxLabel)
+        {
+            maxLabel = labelPtr[0][n];
+        }
     }
 
-    for (ito::int32 n = 1; n <= numLabels; n++)
+    for (ito::int32 n = 1; n <= maxLabel; n++)
     {
         if (labelPtr[0][n] < 1)
         {
@@ -192,10 +198,18 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
             {
                 for (ito::int32 x = 0; x < xsize; x++)
                 {
-                    if (pixPtr[y * xsize + x] == m)
-                        pixPtr[y * xsize + x] = n;
+                    if (pixPtr[y * lstep + x] == m)
+                        pixPtr[y * lstep + x] = n;
                 }
             }
+        }
+    }
+
+    for (ito::int32 n = 0; n < xsize * ysize; n++)
+    {
+        if (labelPtr[0][n] > 0)
+        {
+            numLabels++;
         }
     }
 
@@ -204,7 +218,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
     {
         ito::DataObject *labelList = new ito::DataObject();
         labelList->zeros(numLabels, 4, ito::tInt32);
-        ito::int32 *labelListPtr = (ito::int32*)(((cv::Mat *)labelList->get_mdata()[0])->data);
+        ito::int32 *labelListPtr = (ito::int32*)labelList->rowPtr(0, 0);
 
         for (ito::int32 n = 0; n < numLabels; n++)
         {
@@ -216,7 +230,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         {
             for (ito::int32 x = 0; x < xsize; x++)
             {
-                if ((value = pixPtr[y * xsize + x]) >= 1)
+                if ((value = pixPtr[y * lstep + x]) >= 1)
                 {
                     if (x < labelListPtr[((ito::int32)value - 1) * 4])
                         labelListPtr[((ito::int32)value - 1) * 4] = x;
@@ -245,15 +259,16 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
 {
     ito::int32 xsize = img->getSize(1);
     ito::int32 ysize = img->getSize(0);
-    _Tp value = 0, u = 0;
-    _Tp *pixPtr = (_Tp*)(((cv::Mat *)img->get_mdata()[img->seekMat(0)])->data);
-    ito::int32 xmin = 0, ymin = 0, lbl = 1, lbl1 = 1;
+    _Tp value = 0;
+    _Tp *pixPtr = (_Tp*)img->rowPtr(0, 0);
+    int lstep = img->getStep(0);
+    ito::int32 xmin = 0, ymin = 0, lbl = 0, u = 0, lbl1 = 1;
     ito::int32 **labelPtr = NULL;
     ito::int8 linehadlabel = 0, lastlinehadlabel = 0;
 
     labelPtr = new ito::int32*[2];
-    labelPtr[0] = (ito::int32*)(((cv::Mat *)labelTable->get_mdata()[labelTable->seekMat(0)])->data);
-    labelPtr[1] = (ito::int32*)(((cv::Mat *)labelTable->get_mdata()[labelTable->seekMat(1)])->data);
+    labelPtr[0] = (ito::int32*)labelTable->rowPtr(0, 0);
+    labelPtr[1] = (ito::int32*)labelTable->rowPtr(1, 0);
     for (ito::int32 nl = 0; nl < ysize * xsize; nl++)
     {
         labelPtr[0][nl] = -1;
@@ -264,40 +279,40 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
     {
         for (ito::int32 x = 0; x < xsize; x++)
         {
-            value = pixPtr[y * xsize + x];
+            value = pixPtr[y * lstep + x];
 
             if ((!(value == invalid)) && (value > thres))
             {
                 if (y > 0)
-                    u = pixPtr[(y - 1) * xsize + x];
+                    u = pixPtr[(y - 1) * lstep + x];
                 else
-                    u = thres;
+                    u = 0;
 
                 if (u == invalid)
-                    u = thres;
+                    u = 0;
 
                 if (x > 0)
-                    lbl = pixPtr[y * xsize + x - 1];
+                    lbl = pixPtr[y * lstep + x - 1];
                 else
-                    lbl = thres;
+                    lbl = 0;
 
                 if (lbl == invalid)
-                    lbl = thres;
+                    lbl = 0;
 
-                if (u > thres && !(lbl > thres))
-                    pixPtr[y * xsize + x] = u;
-                else if (lbl > thres && !(u > thres))
-                    pixPtr[y * xsize + x] = lbl;
-                else if (lbl > thres && u > thres)
+                if (u  && !lbl)
+                    pixPtr[y * lstep + x] = u;
+                else if (lbl && !u)
+                    pixPtr[y * lstep + x] = lbl;
+                else if (lbl && u)
                 {
-                    pixPtr[y * xsize + x] = lbl;
+                    pixPtr[y * lstep + x] = lbl;
                     if (lbl != u)
                     {
-                        if (labelPtr[0][(ito::int32)u] < labelPtr[0][(ito::int32)lbl])
+                        if (u > 0 && labelPtr[0][(ito::int32)u] < labelPtr[0][(ito::int32)lbl])
                             xmin = labelPtr[0][(ito::int32)u];
                         else
                             xmin = labelPtr[0][(ito::int32)lbl];
-                        if (labelPtr[1][(ito::int32)u] < labelPtr[1][(ito::int32)lbl])
+                        if (u > 0 && labelPtr[1][(ito::int32)u] < labelPtr[1][(ito::int32)lbl])
                             ymin = labelPtr[1][(ito::int32)u];
                         else
                             ymin = labelPtr[1][(ito::int32)lbl];
@@ -308,9 +323,9 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
                             lastlinehadlabel = 0;
                             for (ito::int32 x1 = xmin; x1 < xsize; x1++)
                             {
-                                if (pixPtr[y1 * xsize + x1] == u)
+                                if (pixPtr[y1 * lstep + x1] == u)
                                 {
-                                    pixPtr[y1 * xsize + x1] = lbl;
+                                    pixPtr[y1 * lstep + x1] = lbl;
                                     lastlinehadlabel = 1;
                                 }
                             }
@@ -327,14 +342,17 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
                     }
                 }
 
-                if (!(lbl > thres) && !(u > thres))
+                if (!lbl && !u)
                 {
+                    lbl1++;
+                    /*
                     lbl1 = 1;
                     while ((labelPtr[0][(ito::int32)lbl1] != -1) || (labelPtr[1][(ito::int32)lbl1] != -1))
                         //                    while (labelPtr[0][(ito::int32)lbl1] != -1)   // Alternative: for(l1=1;labeltable[l1]!=0;l1++);
                         lbl1++;
+                    */
 
-                    pixPtr[y * xsize + x] = lbl1;
+                    pixPtr[y * lstep + x] = lbl1;
                     labelPtr[0][(ito::int32)lbl1] = x;
                     labelPtr[1][(ito::int32)lbl1] = y;
                 }
@@ -342,7 +360,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
-    ito::int32 numLabels = 0;
+    ito::int32 numLabels = 0, maxLabel = 0;
     for (ito::int32 n = 0; n < xsize * ysize; n++)
     {
         if (labelPtr[0][n] > 0)
@@ -351,7 +369,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
-    for (ito::int32 n = 1; n <= numLabels; n++)
+    for (ito::int32 n = 1; n <= maxLabel; n++)
     {
         if (labelPtr[0][n] < 1)
         {
@@ -369,16 +387,24 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
             {
                 for (ito::int32 x = 0; x < xsize; x++)
                 {
-                    if (pixPtr[y * xsize + x] == m)
-                        pixPtr[y * xsize + x] = n;
+                    if (pixPtr[y * lstep + x] == m)
+                        pixPtr[y * lstep + x] = n;
                 }
             }
         }
     }
 
-    numLabels++;
+    for (ito::int32 n = 0; n < xsize * ysize; n++)
+    {
+        if (labelPtr[0][n] > 0)
+        {
+            numLabels++;
+        }
+    }
+
+    //numLabels++;
     ito::DataObject *labelList = new ito::DataObject(numLabels, 4, ito::tInt32);
-    ito::int32 *labelListPtr = (ito::int32*)(((cv::Mat *)labelList->get_mdata()[0])->data);
+    ito::int32 *labelListPtr = (ito::int32*)labelList->rowPtr(0, 0);
     for (ito::int32 n = 0; n < numLabels; n++)
     {
         labelListPtr[n * 4] = xsize + 10;
@@ -389,7 +415,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
     {
         for (ito::int32 x = 0; x < xsize; x++)
         {
-            if ((value = pixPtr[y * xsize + x]) >= 1)
+            if ((value = pixPtr[y * lstep + x]) >= 1)
             {
                 if (x < labelListPtr[((ito::int32)value - 1) * 4])
                     labelListPtr[(ito::int32)value - 1] = x;
@@ -416,7 +442,8 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
 template<typename _Tp> ito::RetVal doFindLabel(ito::DataObject *img, double label, ito::DataObject *res)
 {
     ito::int32 xsize, ysize, x1, y1, x2 = 0, y2, numpix = 0;
-    _Tp *pixPtr = (_Tp*)((cv::Mat*)img->get_mdata()[img->seekMat(0)])->data;
+    _Tp *pixPtr = (_Tp*)img->rowPtr(0, 0);
+    int lstep = img->getStep(0);
     x1 = xsize = img->getSize(1);
     y1 = ysize = img->getSize(0);
 
@@ -424,7 +451,7 @@ template<typename _Tp> ito::RetVal doFindLabel(ito::DataObject *img, double labe
     {
         for (ito::int32 x = 0; x < xsize; x++)
         {
-            if (pixPtr[y * xsize + x] == label)
+            if (pixPtr[y * lstep + x] == label)
             {
                 numpix++;
                 if (x < x1)
@@ -500,6 +527,8 @@ ito::RetVal BasicFilters::labeling(QVector<ito::ParamBase> *paramsMand, QVector<
         return ito::RetVal(ito::retError, 0, tr("image must be a 2D image!").toLatin1().data());
     }
     double thres = (*paramsMand)[1].getVal<double>();
+    if (thres < 0)
+        thres = 0;
     ito::DataObject *dObjLabels = (ito::DataObject*)(*paramsMand)[2].getVal<void*>();
     dObjLabels->zeros(2, dObjImage->getSize(1), dObjImage->getSize(0), ito::tInt32); // ToDo Check this
 
@@ -874,7 +903,7 @@ ito::RetVal BasicFilters::findEllipses(QVector<ito::ParamBase> *paramsMand, QVec
             }
         }
 
-        void *imgPtr = ((cv::Mat*)dObjImg->get_mdata()[dObjImg->seekMat(0)])->data;
+        void *imgPtr = (void*)dObjImg->rowPtr(0, 0);
         ito::int32 PixEllX = 0;
         ito::int32 PixEllY = 0;
 
@@ -1204,7 +1233,7 @@ ito::RetVal BasicFilters::findEllipses(QVector<ito::ParamBase> *paramsMand, QVec
 
     ito::DataObject *ellCentFoundObj = new ito::DataObject();
     ellCentFoundObj->zeros(ellCentFound, 2, ito::tFloat64);
-    ito::float64 *centersFound = (ito::float64*)((cv::Mat*)ellCentFoundObj->get_mdata()[0])->data;
+    ito::float64 *centersFound = (ito::float64*)ellCentFoundObj->rowPtr(0, 0);
     ito::int32 numEll = 0;
     // we give back only the centers where the detection worked properly
     for (ito::int32 ne = 0; ne < numLabels; ne++)
