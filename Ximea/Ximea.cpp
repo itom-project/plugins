@@ -220,7 +220,7 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("buffers_queue_size", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 3, 1, tr("Number of buffers in the queue.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-#ifndef USE_OLD_API
+#ifndef USE_API_3_16
     paramVal = ito::Param("timing_mode", ito::ParamBase::Int, XI_ACQ_TIMING_MODE_FREE_RUN, XI_ACQ_TIMING_MODE_FRAME_RATE, XI_ACQ_TIMING_MODE_FREE_RUN, tr("Acquisition timing: %1: free run (default), %2: by frame rate.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
 #else
     paramVal = ito::Param("timing_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 0, 0 , tr("Acquisition timing: not available due to old Ximea API.").toLatin1().data());
@@ -438,7 +438,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 //int availableBandwidth;
                 //retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_AVAILABLE_BANDWIDTH, &availableBandwidth, &pSize, &intType), "XI_PRM_AVAILABLE_BANDWIDTH", QString::number(availableBandwidth));
                 //std::cout << "available bandwidth: " << availableBandwidth << std::endl;
-#ifndef USE_OLD_API
+#ifndef USE_API_3_16
                 if (bandwidthLimit > 0) //manually set bandwidthLimit
                 {
                     retValue += setXimeaParam(XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
@@ -930,11 +930,19 @@ ito::RetVal Ximea::LoadLib(void)
 #else
 #if _WIN64
 #if UNICODE
-        ximeaLib = LoadLibrary(L"./lib/xiapi64.dll"); //L"./lib/m3apiX64.dll");
+#if defined(USE_API_4_10) || defined(USE_API_3_16)
+    ximeaLib = LoadLibrary(L"./lib/xiapi64.dll"); //L"./lib/m3apiX64.dll");
 #else
-        ximeaLib = LoadLibrary("./lib/xiapiX64.dll"); //"./lib/m3apiX64.dll");
+    ximeaLib = LoadLibrary(L"./lib/m3apiX64.dll"); //L"./lib/m3apiX64.dll");
+#endif        
+#else
+#if defined(USE_API_4_10) || defined(USE_API_3_16)
+    ximeaLib = LoadLibrary("./lib/xiapiX64.dll"); //"./lib/m3apiX64.dll");
+#else
+    ximeaLib = LoadLibrary("./lib/m3apiX64.dll"); //"./lib/m3apiX64.dll");
+#endif  
+        
 #endif
-        //ximeaLib = LoadLibrary("./plugins/Ximea/m3apiX64.dll");
         if (!ximeaLib)
         {
 			int error = GetLastError();
@@ -942,9 +950,17 @@ ito::RetVal Ximea::LoadLib(void)
         }
 #else
 #if UNICODE
-        ximeaLib = LoadLibrary(L"./lib/xiapi64.dll");
+ #if defined(USE_API_4_10) || defined(USE_API_3_16)
+      ximeaLib = LoadLibrary(L"./lib/m3api.dll");
 #else
-        ximeaLib = LoadLibrary("./lib/xiapi64.dll");
+     ximeaLib = LoadLibrary(L"./lib/xiapi32.dll");
+ #endif 
+#else
+#if defined(USE_API_4_10) || defined(USE_API_3_16)
+     ximeaLib = LoadLibrary(L"./lib/m3api.dll");
+#else
+    ximeaLib = LoadLibrary(L"./lib/xiapi32.dll");
+#endif 
 #endif
         if (!ximeaLib)
         {
@@ -1022,24 +1038,26 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
-        /*if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
+#ifndef USE_API_4_10 || USE_API_3_16
+        if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
         if ((pCalculateShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
 
 
-        if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());
+        /*if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());*/
 
         if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD)) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
-        if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());
+        /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "mmProcessFrame")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());*/
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
+#endif
         
 #endif
     }
@@ -1278,7 +1296,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
             int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
             int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
-#ifdef USE_OLD_API
+#ifdef USE_API_3_16
             if (enable)
             {
                 integration_time += integration_time / 4;
@@ -1562,7 +1580,7 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
     name = QByteArray(paramName) + XI_PRM_INFO_MAX;
     retval += checkError(pxiGetParam(m_handle, name.data(), &max, &pSize, &pType), name);
 
-#ifndef USE_OLD_API
+#ifndef USE_API_3_16
     name = QByteArray(paramName) + XI_PRM_INFO_INCREMENT;
     retval += checkError(pxiGetParam(m_handle, name.data(), &inc, &pSize, &pType), name);
 #endif
@@ -1574,7 +1592,7 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("xiApi-Parameter '%s' is out of allowed range [%i,%i]").toLatin1().data(), paramName, min, max);
         }
-#ifndef USE_OLD_API
+#ifndef USE_API_3_16
         else if ((newValue - min) % inc != 0)
         {
             retval += ito::RetVal::format(ito::retError,0, tr("xiApi-Parameter '%s' must have an increment of %i (minimum value %i)").toLatin1().data(), paramName, inc, min);
