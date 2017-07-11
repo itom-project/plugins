@@ -336,13 +336,19 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
 
                 int serial_number;
-                /*retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get: " XI_PRM_DEVICE_SN);
                 if (!retValue.containsError())
                 {
                     QString serial_numberHex = QString::number(serial_number, 16);
                     m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data()); 
                     m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
-                }*/
+                }
+                else
+                {
+                    m_params["serial_number"].setVal<char*>("");
+                    m_identifier = QString("");
+                    retValue = ito::retOk;
+                }
 
                 strBufSize = 1024 * sizeof(char);    
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
@@ -359,12 +365,11 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
                 
                 strBufSize = 1024 * sizeof(char);    
-                /*retValue += checkError(pxiGetParam(m_handle, XI_PRM_DRV_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DRV_VERSION);
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DRV_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DRV_VERSION);
                 if (!retValue.containsError())
                 {
                     m_params["device_driver"].setVal<char*>(strBuf);
-                }*/
-
+                }
                     
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_IMAGE_IS_COLOR, &iscolor, &pSize, &intType), "get: " XI_PRM_IMAGE_IS_COLOR);
                 if (!retValue.containsError())
