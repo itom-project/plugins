@@ -38,6 +38,12 @@
 #endif
 #include "common/apiFunctionsInc.h"
 
+#if WIN32
+QString endline("\r\n");
+#else
+QString endline("\n");
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RawImportInterface::RawImportInterface()
 {
@@ -179,6 +185,70 @@ ito::RetVal RawImport::loadImageParams(QVector<ito::Param> *paramsMand, QVector<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void openExifTool(QString &filename, QProcess *&exifProc)
+{
+    QString exifCommand(QCoreApplication::applicationDirPath());
+    if (exifProc == NULL)
+    {
+        exifProc = new QProcess(NULL);
+#ifdef WIN32
+        exifCommand += QString("/lib/exiftool.exe -stay_open true -@ - ");
+#else
+        exifCommand += QString("/lib/exiftool -stay_open true -@ - ");
+#endif
+        exifProc->start(exifCommand);
+        exifProc->waitForStarted();
+        //exifProc->waitForReadyRead();
+        QString msg = exifProc->readAllStandardOutput();
+        QString err = exifProc->readAllStandardError();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void closeExifTool(QProcess *&exifProc)
+{
+    if (exifProc)
+    {
+        QString command;
+        command = "-stay_open" + endline;
+        exifProc->write(command.toLatin1().data());
+        command = "-false" + endline;
+        exifProc->write(command.toLatin1().data());
+        exifProc->waitForBytesWritten();
+        exifProc->close();
+        delete exifProc;
+        exifProc = NULL;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal readExifTag(QProcess *exifProc, QString filename, QString tagName, QString &Output, int readBinary = 1)
+{
+    QString command = "-" + tagName + endline;
+    exifProc->write(command.toLatin1().data());
+    exifProc->waitForBytesWritten();
+    if (readBinary)
+    {
+        command = "-b" + endline;
+        exifProc->write(command.toLatin1().data());
+        exifProc->waitForBytesWritten();
+    }
+    command = filename + endline;
+    exifProc->write(command.toLatin1().data());
+    exifProc->waitForBytesWritten();
+    command = "-execute" + endline;
+    exifProc->write(command.toLatin1().data());
+    exifProc->waitForBytesWritten();
+    exifProc->waitForReadyRead();
+    Output = exifProc->readAllStandardOutput();
+    if (Output.right(9) == "{ready}\r\n")
+        Output.chop(9);
+    QString err = exifProc->readAllStandardError();
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /** RawImport-filter to show how to capture a single image from a camera with an algorithm
 *    @param [in]    paramsMand    mandatory parameters
 *    @param [in]    paramsOpt    optional parameters
@@ -281,6 +351,36 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     {
         retval += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
     }
+    delete readProc;
+
+    QString exifOut;
+    QProcess *exifProc = NULL;
+    openExifTool(filename, exifProc);
+    // read some of the 'most' important tags, i.e. which usually are of interest for measurement applications
+    // list is extensible, feel free to do so
+    if (exifProc)
+    {
+        readExifTag(exifProc, filename, "Aperture", exifOut);
+        image->setTag("Aperture", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "FocalLength", exifOut);
+        image->setTag("FocalLength", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "ExposureTime", exifOut);
+        image->setTag("ExposureTime", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "SubSecDateTimeOriginal", exifOut);
+        image->setTag("DateTime", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "LensID", exifOut, 0);
+        image->setTag("LensID", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "VibrationReduction", exifOut);
+        image->setTag("VibrationReduction", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "AutoFocus", exifOut);
+        image->setTag("AutoFocus", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "AutoDistortionControl", exifOut);
+        image->setTag("AutoDistortionControl", exifOut.toLatin1().data());
+        readExifTag(exifProc, filename, "FocalLengthIn35mmFormat", exifOut);
+        image->setTag("FocalLengthIn35mmFormat", exifOut.toLatin1().data());
+        
+    }
+    closeExifTool(exifProc);
 
     if (filename.length() > 0 && QFile::exists(filename))
         QFile::remove(filename);
