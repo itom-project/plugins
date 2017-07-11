@@ -1666,7 +1666,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
     ito::uint32 pixelToEval;
     ito::uint32 cogCnt = 0;
 
-    ito::float64 sumI, sumPxI;
+    ito::float64 sumI, sumxi;
     
     const _Tp *inMatPtrFirst = inMat->ptr<_Tp>(0);
     const _Tp *pInValue = NULL;
@@ -1716,7 +1716,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
     for (ito::uint32 pixelCnt = 0; pixelCnt < pixelToEval; pixelCnt++)
     {
         sumI = 0.0; 
-        sumPxI = 0.0;
+        sumxi = 0.0;
         _Tp maxVal = typeMin;
         _Tp minVal = typeMax;
         _Tp val = 0;
@@ -1774,7 +1774,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
                     {
                         val = *pInValue - sw;
                         sumI += val;
-                        sumPxI += (ito::float64)val * (ito::float64)cogCnt;                        
+                        sumxi += (ito::float64)val * (ito::float64)cogCnt;                        
                     }
                     pInValue = pInValue + stepEvalInMat;
                 }
@@ -1786,7 +1786,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
                  {
                     val = *pInValue;
                     sumI += val;
-                    sumPxI += (ito::float64)val * (ito::float64)cogCnt;    
+                    sumxi += (ito::float64)val * (ito::float64)cogCnt;    
                     pInValue = pInValue + stepEvalInMat;
                 }
             }
@@ -1798,7 +1798,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
         //calculate and save current cog position
         if (ito::isNotZero<ito::float64>(sumI))
         {
-            outCOG[pixelCnt] = ((sumPxI / sumI) - offset) * scale; //sumPxI / sumI is in pixel-coordinates, outCOG is in physical coordinates: (px - offset) * scaling = phys
+            outCOG[pixelCnt] = ((sumxi / sumI) - offset) * scale; //sumxi / sumI is in pixel-coordinates, outCOG is in physical coordinates: (px - offset) * scaling = phys
         }
         else
         {
