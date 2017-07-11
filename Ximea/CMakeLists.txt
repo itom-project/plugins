@@ -1,4 +1,4 @@
-SET (target_name Ximea)
+SET (target_name Ximea) 
 
 project(${target_name})
 
@@ -10,7 +10,8 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-OPTION(XIMEA_BUILD_OLD_API "Build old API-Version from 2012" OFF)
+set(XIMEA_BUILD_API_VERSION "4.10" CACHE STRING "Expected API version")
+set_property(CACHE XIMEA_BUILD_API_VERSION PROPERTY STRINGS 3.16 4.10 4.15)
 OPTION(XIMEA_BUILD_INCLUDE_SHADING "Build with shading support from API-Version" OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -36,9 +37,13 @@ FIND_PATH( XIMEA_APIDIR m3Api.h DOC "XIMEA Api directory (must contain the file 
 
 IF(XIMEA_APIDIR)
 
-    IF(XIMEA_BUILD_OLD_API)
-        ADD_DEFINITIONS(-DUSE_OLD_API)
-    ENDIF(XIMEA_BUILD_OLD_API)
+    IF(XIMEA_BUILD_API_VERSION VERSION_EQUAL "3.16")
+        ADD_DEFINITIONS(-DUSE_API_3_16)
+    ELSE (XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.10")
+        ADD_DEFINITIONS(-DUSE_API_4_10)
+    ENDIF(XIMEA_BUILD_API_VERSION)
+    
+    message(STATUS "Ximea used API VERSION: ${XIMEA_BUILD_API_VERSION}" )
 
     IF(XIMEA_BUILD_INCLUDE_SHADING)
         ADD_DEFINITIONS(-DUSE_SHADING)
