@@ -336,13 +336,13 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
 
                 int serial_number;
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
+                /*retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
                 if (!retValue.containsError())
                 {
                     QString serial_numberHex = QString::number(serial_number, 16);
                     m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data()); 
                     m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
-                }
+                }*/
 
                 strBufSize = 1024 * sizeof(char);    
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
@@ -359,11 +359,11 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
                 
                 strBufSize = 1024 * sizeof(char);    
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DRV_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DRV_VERSION);
+                /*retValue += checkError(pxiGetParam(m_handle, XI_PRM_DRV_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DRV_VERSION);
                 if (!retValue.containsError())
                 {
                     m_params["device_driver"].setVal<char*>(strBuf);
-                }
+                }*/
 
                     
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_IMAGE_IS_COLOR, &iscolor, &pSize, &intType), "get: " XI_PRM_IMAGE_IS_COLOR);
@@ -925,26 +925,26 @@ ito::RetVal Ximea::LoadLib(void)
 #else
 #if _WIN64
 #if UNICODE
-        ximeaLib = LoadLibrary(L"./lib/m3apiX64.dll"); //L"./lib/m3apiX64.dll");
+        ximeaLib = LoadLibrary(L"./lib/xiapi64.dll"); //L"./lib/m3apiX64.dll");
 #else
-        ximeaLib = LoadLibrary("./lib/m3apiX64.dll"); //"./lib/m3apiX64.dll");
+        ximeaLib = LoadLibrary("./lib/xiapiX64.dll"); //"./lib/m3apiX64.dll");
 #endif
         //ximeaLib = LoadLibrary("./plugins/Ximea/m3apiX64.dll");
         if (!ximeaLib)
         {
 			int error = GetLastError();
-            return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\"). Error code: %i").toLatin1().data(), error);
+            return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"xiapiX64.dll\"). Error code: %i").toLatin1().data(), error);
         }
 #else
 #if UNICODE
-        ximeaLib = LoadLibrary(L"./lib/m3api.dll");
+        ximeaLib = LoadLibrary(L"./lib/xiapi64.dll");
 #else
-        ximeaLib = LoadLibrary("./lib/m3api.dll");
+        ximeaLib = LoadLibrary("./lib/xiapi64.dll");
 #endif
         if (!ximeaLib)
         {
 			int error = GetLastError();
-            return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\"). Error code: %i").toLatin1().data(), error);
+            return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"xiapiX64.dll\"). Error code: %i").toLatin1().data(), error);
         }
 #endif
 #endif
@@ -1017,24 +1017,24 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
-        if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
+        /*if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
         if ((pCalculateShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
 
 
-        /*if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());*/
+        if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());
 
         if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD)) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
-        /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
+        if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "mmProcessFrame")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());*/
         
 #endif
     }
