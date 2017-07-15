@@ -76,6 +76,7 @@ set(plugin_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/avantes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zygo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/nanoscopeIII.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/keyence.cpp
 )
 
 set(plugin_UI
