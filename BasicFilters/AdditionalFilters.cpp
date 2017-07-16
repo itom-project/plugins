@@ -167,16 +167,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
-    ito::int32 maxLabel = 0;
-    for (ito::int32 n = 0; n < xsize * ysize; n++)
-    {
-        if (labelPtr[0][n] > maxLabel)
-        {
-            maxLabel = labelPtr[0][n];
-        }
-    }
-
-    for (ito::int32 n = 1; n <= maxLabel; n++)
+    for (ito::int32 n = 1; n <= lbl1; n++)
     {
         if (labelPtr[0][n] < 1)
         {
@@ -201,7 +192,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
-    ito::int32 numLabels = 0;
+    ito::uint32 numLabels = 0;
     for (ito::int32 n = 0; n < xsize * ysize; n++)
     {
         if (labelPtr[0][n] > 0)
@@ -357,16 +348,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
-    ito::int32 numLabels = 0, maxLabel = 0;
-    for (ito::int32 n = 0; n < xsize * ysize; n++)
-    {
-        if (labelPtr[0][n] > 0)
-        {
-            numLabels++;
-        }
-    }
-
-    for (ito::int32 n = 1; n <= maxLabel; n++)
+    for (ito::int32 n = 1; n <= lbl1; n++)
     {
         if (labelPtr[0][n] < 1)
         {
@@ -391,6 +373,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         }
     }
 
+    ito::uint32 numLabels = 0;
     for (ito::int32 n = 0; n < xsize * ysize; n++)
     {
         if (labelPtr[0][n] > 0)
