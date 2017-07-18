@@ -1,5 +1,3 @@
-SET (target_name Ximea) 
-
 project(${target_name})
 
 message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
