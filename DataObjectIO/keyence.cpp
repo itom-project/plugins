@@ -176,14 +176,24 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
         offset = offsets.light[index];
         topoNotColor = true;
     }
+	else if (setname.startsWith("peak"))
+	{
+		offset = offsets.color_peak;
+		topoNotColor = false;
+	}
+	else if (setname.startsWith("color"))
+	{
+		offset = offsets.color_light;
+		topoNotColor = false;
+	}
+
 
     if (offset == 0)
     {
         retval += ito::RetVal::format(ito::retError, 0, "requested data '%s' could not be found in file", setname.data());
     }
-    else if (topoNotColor)
+    else
     {
-        file.seek(-file.pos());
         if (file.seek(offset))
         {
             if (topoNotColor)
@@ -213,16 +223,36 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                         datatype = ito::tUInt16;
                         break;
                     case 32:
-                        datatype = ito::tUInt32;
+                        datatype = ito::tInt32;
                         break;
                     }
 
-                    ito::DataObject temp(header.height, header.width, datatype);
-                    char* ptr = (char*)temp.rowPtr(0, 0);
-                    retval += ito::readFromDevice(&file, ptr, header.byte_size);
+					double scale = (isHeight) ? measconds.z_length_per_digit * PICOMETRE : qPow(0.5, header.bit_depth);
+                    
+					if (datatype != ito::tInt32)
+					{
+						ito::DataObject temp(header.height, header.width, datatype);
+						char* ptr = (char*)temp.rowPtr(0, 0);
+						retval += ito::readFromDevice(&file, ptr, header.byte_size);
+						retval += temp.convertTo(dataobj, ito::tFloat64, scale, 0.0);
+					}
+					else
+					{
+						//dataobject does not support uint32
+						ito::DataObject temp(header.height, header.width, ito::tFloat64);
+						ito::float64 *ptr = (ito::float64*)temp.rowPtr(0, 0);
+						char *buf = new char[header.byte_size];
+						retval += ito::readFromDevice(&file, buf, header.byte_size);
+						const ito::uint32 *buf_ = (const ito::uint32*)buf;
 
-                    double scale = (isHeight) ? measconds.z_length_per_digit * PICOMETRE : qPow(0.5, header.bit_depth);
-                    retval += temp.convertTo(dataobj, ito::tFloat64, scale, 0.0);
+						for (size_t i = 0; i < header.height * header.width; ++i)
+						{
+							ptr[i] = (ito::float64)buf_[i] * scale;
+						}
+						DELETE_AND_SET_NULL(buf);
+						dataobj = temp;
+					}
+
                     dataobj.setAxisUnit(0, "m");
                     dataobj.setAxisUnit(1, "m");
                     dataobj.setAxisScale(0, measconds.y_length_per_pixel * PICOMETRE);
@@ -251,17 +281,18 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                     ito::Rgba32* ptr = dataobj.rowPtr<ito::Rgba32>(0, 0);
                     char* buf = new char[header.byte_size];
                     retval += ito::readFromDevice(&file, buf, header.byte_size);
+					const char* buf_ = const_cast<char*>(buf); //running variable
 
                     if (!retval.containsError())
                     {
                         for (ito::uint32 i = 0; i < header.width * header.height; ++i)
                         {
                             ptr->a = 255;
-                            ptr->r = buf[0];
-                            ptr->g = buf[1];
-                            ptr->b = buf[2];
+                            ptr->r = buf_[0];
+                            ptr->g = buf_[1];
+                            ptr->b = buf_[2];
                             ++ptr;
-                            buf += 3;
+							buf_ += 3;
                         }
                     }
 
@@ -287,7 +318,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
 
 //-------------------------------------------------------------------------------------------------------
 /*static*/ const QString DataObjectIO::loadKeyenceVK4Doc = QObject::tr(\
-"Keyence VK4 profilometry images");
+"This filter loads Keyence VK4 profilometry images from Keyence devices (e.g. laser scanning microscope).");
 
 //-------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -297,11 +328,23 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
     {
         ito::Param  param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Destination dataObject").toLatin1().data());
         paramsMand->append(param);
+
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("setname", ito::ParamBase::String | ito::ParamBase::In, "height0", tr("name of data set to load, empty string prints a list of all available dataset names. Possible values are: topo0, topo1, ..., intensity0, intensity1, ..., peak, color").toLatin1().data());
+        param = ito::Param("setname", ito::ParamBase::String | ito::ParamBase::In, "topo0", tr("name of data set to load, empty string prints a list of all available dataset names. Possible values are: topo0, topo1, ..., intensity0, intensity1, ..., peak, color").toLatin1().data());
+		ito::StringMeta *smset = new ito::StringMeta(ito::StringMeta::String);
+		smset->addItem("topo0");
+		smset->addItem("topo1");
+		smset->addItem("topo2");
+		smset->addItem("intensity0");
+		smset->addItem("intensity1");
+		smset->addItem("intensity2");
+		smset->addItem("peak");
+		smset->addItem("color");
+		param.setMeta(smset, true);
         paramsOpt->append(param);
-        param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of x and y axes. MetroPro assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
+
+        param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of x and y axes. VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
         ito::StringMeta sm(ito::StringMeta::String, "mm");
         sm.addItem("cm");
         sm.addItem("mm");
@@ -310,7 +353,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
         param.setMeta(&sm, false);
         paramsOpt->append(param);
 
-        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of value axis. MetroPro assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
+        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of value axis. VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
         ito::StringMeta sm2(ito::StringMeta::String, "mm");
         sm2.addItem("cm");
         sm2.addItem("mm");
@@ -441,7 +484,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
                 }
                 else if (availableSetnames.contains(setname) == false)
                 {
-                    retval += ito::RetVal::format(ito::retError, 0, "desired data setname '%s' not contained in file. Call filter with setname = '' to get a list of available dataset names", setname.data());
+                    retval += ito::RetVal::format(ito::retError, 0, "desired data setname '%s' not contained in file. Call filter with empty setname to get a list of available dataset names", setname.data());
                 }
             }
 
@@ -543,34 +586,40 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
 
                     if (offsetTable.string_data > 0)
                     {
-                        file.seek( offsetTable.string_data - file.pos());
-                        ito::uint32 len;
-
-                        //try to read title
-                        retval += ito::readFromDevice(&file, (char*)(&len), sizeof(ito::uint32));
-                        if (!retval.containsError())
+                        if (!file.seek((qint64)(offsetTable.string_data)))
                         {
-                            ushort *title_ = new ushort[len];
-                            retval += ito::readFromDevice(&file, (char*)title_, len * sizeof(ushort));
-                            QString title = QString::fromUtf16(title_, len);
-                            dataobj.setTag("title", title.toLatin1().data());
-                            DELETE_AND_SET_NULL_ARRAY(title_);
+                            retval += ito::RetVal(ito::retWarning, 0, "Further string meta information could not be read from file");
                         }
-
-
-                        //try to read lens name
-                        if (!retval.containsError())
+                        else
                         {
+                            ito::uint32 len;
+
+                            //try to read title
                             retval += ito::readFromDevice(&file, (char*)(&len), sizeof(ito::uint32));
-                        }
+                            if (!retval.containsError() && len > 0)
+                            {
+                                ushort *title_ = new ushort[len];
+                                retval += ito::readFromDevice(&file, (char*)title_, len * sizeof(ushort));
+                                QString title = QString::fromUtf16(title_, len);
+                                dataobj.setTag("title", title.toLatin1().data());
+                                DELETE_AND_SET_NULL_ARRAY(title_);
+                            }
 
-                        if (!retval.containsError())
-                        {
-                            ushort *lensname_ = new ushort[len];
-                            retval += ito::readFromDevice(&file, (char*)lensname_, len * sizeof(ushort));
-                            QString lensname = QString::fromUtf16(lensname_, len);
-                            dataobj.setTag("lens_name", lensname.toLatin1().data());
-                            DELETE_AND_SET_NULL_ARRAY(lensname_);
+
+                            //try to read lens name
+                            if (!retval.containsError())
+                            {
+                                retval += ito::readFromDevice(&file, (char*)(&len), sizeof(ito::uint32));
+                            }
+
+                            if (!retval.containsError() && len > 0)
+                            {
+                                ushort *lensname_ = new ushort[len];
+                                retval += ito::readFromDevice(&file, (char*)lensname_, len * sizeof(ushort));
+                                QString lensname = QString::fromUtf16(lensname_, len);
+                                dataobj.setTag("lens_name", lensname.toLatin1().data());
+                                DELETE_AND_SET_NULL_ARRAY(lensname_);
+                            }
                         }
                         
                     }
@@ -582,11 +631,8 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
                 }
             }
             
-
             file.close();
-
         }
-
     }
 
     if (retval.containsError())
