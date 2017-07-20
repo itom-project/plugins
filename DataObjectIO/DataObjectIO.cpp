@@ -196,8 +196,8 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::loadZygoMetroPro, DataObjectIO::loadZygoMetroProParams, loadZygoMetroProDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Zygo MetroPro Data File (*.dat)"));
     m_filterList.insert("loadZygoMetroPro", filter);
 
-    //filter = new FilterDef(DataObjectIO::loadKeyenceVK4, DataObjectIO::loadKeyenceVK4Params, loadKeyenceVK4Doc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Keyence vk4 profilometry images (*.vk4)"));
-    //m_filterList.insert("loadKeyenceVk4", filter);
+    filter = new FilterDef(DataObjectIO::loadKeyenceVK4, DataObjectIO::loadKeyenceVK4Params, loadKeyenceVK4Doc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Keyence vk4 profilometry images (*.vk4)"));
+    m_filterList.insert("loadKeyenceVk4", filter);
 
     filter = new FilterDef(DataObjectIO::savePtbPR, DataObjectIO::savePtbPRParams, savePtbPRDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("PR Line Profile (*.pr)"));
     m_filterList.insert("savePtbPR", filter);
