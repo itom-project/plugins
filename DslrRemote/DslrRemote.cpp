@@ -44,6 +44,7 @@
 //#include "dockWidgetDslrRemote.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "common/helperCommon.h"
 
 #ifdef WIN32
@@ -129,7 +130,7 @@ This plugin can also be used as template for other grabber.");
     m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr("N.A.");      
+    m_aboutThis = tr(GITVERSION);      
     
     m_initParamsMand.clear();
 

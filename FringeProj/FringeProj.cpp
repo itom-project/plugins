@@ -32,6 +32,7 @@
 #include <QtCore/QtPlugin>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 //#include "common/helperCommon.h"
 
@@ -584,7 +585,7 @@ FringeProjInterface::FringeProjInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     NTHREADS  = QThread::idealThreadCount();
 }

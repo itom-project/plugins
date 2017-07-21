@@ -22,6 +22,7 @@
 
 #include "NanotecStepMotorInterface.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <QtCore/QtPlugin>
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -69,7 +70,7 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
 
     ito::Param param(ito::Param("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data()));
     param.setMeta(new ito::HWMeta("SerialIO"), true);

@@ -25,6 +25,7 @@
 
 #include "V4L2.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "opencv2/core/types_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "libv4lconvert.h"
@@ -76,7 +77,7 @@ to let the plugin print a list of supported formats (the plugin initialization t
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr(GITVERSION);     
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);

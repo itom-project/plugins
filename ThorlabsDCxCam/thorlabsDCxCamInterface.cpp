@@ -41,6 +41,7 @@
 
 // project-includes
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "thorlabsDCxCam.h"
 
 namespace
@@ -94,7 +95,7 @@ In order to run your camera, please install the SDK imaging software in the righ
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("Licensed under LGPL");
-    m_aboutThis = tr( "N.A." );  
+    m_aboutThis = tr(GITVERSION);  
 
     ito::Param param( "camera_id", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, tr("Camera ID of the camera to open (0: the next free camera will opened [default], 1-254: else)").toLatin1().data());
     m_initParamsOpt.append(param);

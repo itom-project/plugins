@@ -39,6 +39,7 @@
 #include "qvariant.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <QtCore/QtPlugin>
 #include <math.h>
@@ -89,7 +90,7 @@ To build this plugin you will need the libs from the fftw.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("GPL (uses FFTW licensed under GPL, too)");
-    m_aboutThis = QObject::tr("1D and 2D FFT algorithms (using the fast FFTW library)");       
+    m_aboutThis = QObject::tr(GITVERSION);       
 
     return;
 }

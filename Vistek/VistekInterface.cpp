@@ -34,6 +34,7 @@
 #include <qpushbutton.h>
 #include <qmetaobject.h>
 #include "dockWidgetVistek.h"
+#include "gitVersion.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -105,7 +106,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL, the necessary Vistek drivers, header files and libraries have their own license.");
-    m_aboutThis = QObject::tr("N.A.");  
+    m_aboutThis = QObject::tr(GITVERSION);  
     
     m_initParamsMand.clear();
     m_initParamsOpt.clear();

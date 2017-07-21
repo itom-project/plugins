@@ -35,6 +35,7 @@
 #include <qvariant.h>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <qnumeric.h>
 
 using namespace ito;
@@ -81,7 +82,7 @@ Furthermore this plugin also contains methods to finally subtract or reconstruct
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LPGL");
-    m_aboutThis = QObject::tr("N.A.");      
+    m_aboutThis = QObject::tr(GITVERSION);      
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -72,7 +72,24 @@ IF(XERCESC_FOUND AND XSD_FOUND)
          )
        ENDIF(LINUX)
     ENDIF(BUILD_SHARED_LIBS)
-
+    # HANDLE VERSION (FROM GIT)
+    UNSET(GIT_FOUND CACHE)
+    find_package(Git)
+    IF(BUILD_GIT_TAG AND GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE GITVERSION
+        RESULT_VARIABLE GITRESULT
+        ERROR_VARIABLE GITERROR
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    #uncomment to enable output to cmake console
+    #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
+    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+    ENDIF ()
+    IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+    
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+    ENDIF ()
     INCLUDE_DIRECTORIES(
         "x3plib/include"
         #"x3plib/include/opengps/cxx"
@@ -160,6 +177,7 @@ IF(XERCESC_FOUND AND XSD_FOUND)
     set(plugin_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/x3pio.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
     set(plugin_UI)

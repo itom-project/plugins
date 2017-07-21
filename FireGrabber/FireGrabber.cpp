@@ -42,6 +42,7 @@
 #include "dockWidgetFireGrabber.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 Q_DECLARE_METATYPE(ito::DataObject)
 
@@ -101,7 +102,7 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
 #else
     m_license = QObject::tr("LGPL; you need an installed AVT FirePackage driver, which requires further licenses if you are not using any AVT camera (see AVT FirePackage documentation).");
 #endif
-    m_aboutThis = QObject::tr("N.A.");
+    m_aboutThis = QObject::tr(GITVERSION);
     
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;

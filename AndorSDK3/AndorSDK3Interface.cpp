@@ -36,6 +36,7 @@
 
 // project-includes
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "AndorSDK3.h"
 
 
@@ -77,7 +78,7 @@ by the Windows path environment variable (e.g. append \"C:/Program Files/Andor S
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("Licensed under LGPL");
-    m_aboutThis = tr( "N.A." );  
+    m_aboutThis = tr(GITVERSION);  
 
     ito::Param param( "camera_idx", ito::ParamBase::Int | ito::ParamBase::In, 0, 31, 0, tr("camera index that should be opened. The first camera is 0, the second 1...").toLatin1().data());
     m_initParamsMand.append(param);

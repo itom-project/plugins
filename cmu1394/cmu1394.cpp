@@ -41,6 +41,7 @@
 #include <QtCore/QtPlugin>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #define MAX1394 5
 #define LIM(a)    (a<0?0:a>4095?4095:a)
@@ -102,7 +103,7 @@ of this plugin.");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr("N.A."); 
+    m_aboutThis         = tr(GITVERSION); 
 
    ito::Param paramVal = ito::Param("Format", ito::ParamBase::Int, 0, 2, 0, tr("Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
    m_initParamsMand.append(paramVal);

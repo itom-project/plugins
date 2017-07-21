@@ -51,6 +51,7 @@
 #include "DataObject/dataObjectFuncs.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 //#include <qdebug.h>
 //#include <qmessagebox.h>
@@ -133,7 +134,7 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsOpt.clear();
 

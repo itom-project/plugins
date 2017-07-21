@@ -25,6 +25,7 @@
 
 #include "USBMotion3XIII.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <math.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -125,7 +126,7 @@ might slightly differ from the desired values due to rounding uncertainties.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr(GITVERSION);     
     
     m_autoLoadPolicy = ito::autoLoadAlways;
     m_autoSavePolicy = ito::autoSaveAlways;

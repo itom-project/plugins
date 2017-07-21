@@ -3,6 +3,7 @@
 
 #include "UhlRegister.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
@@ -107,7 +108,7 @@ This plugin was published with the kind permission of company Walter Uhl, techni
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("LGPL");
-    m_aboutThis = tr("N.A.");
+    m_aboutThis = tr(GITVERSION);
 
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);

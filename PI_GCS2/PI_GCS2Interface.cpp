@@ -23,6 +23,7 @@
 #include "PI_GCS2Interface.h"
 #include <QtCore/QtPlugin>
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -98,7 +99,7 @@ the default baudrate 0 forces the controller to connect with a default baudrate 
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
 
     ito::Param p("connection", ito::ParamBase::String, "RS232", "type of the connection ('RS232', 'USB', 'TCPIP')");
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "RS232");

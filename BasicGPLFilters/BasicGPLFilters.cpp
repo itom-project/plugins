@@ -38,6 +38,7 @@
 #include "BasicGPLFilters.h"
 #include <QtCore/QtPlugin>
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "DataObject/dataObjectFuncs.h"
 int NTHREADS = 2;
 
@@ -69,7 +70,7 @@ This plugin does not have any unusual dependencies.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("GPL 3.0");
-    m_aboutThis = QObject::tr("N.A.");       
+    m_aboutThis = QObject::tr(GITVERSION);       
     
     NTHREADS  = QThread::idealThreadCount();
 

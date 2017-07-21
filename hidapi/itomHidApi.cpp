@@ -32,6 +32,7 @@
 #include <QtCore/QtPlugin>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomHidApiInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -70,7 +71,7 @@ The setVal and getVal functions will write and read on the output or on the feat
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("");  
+    m_aboutThis = QObject::tr(GITVERSION);  
 
     ito::Param paramVal("vendor_id", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0, tr("The vendor id of the device to connect to (0 will return a list of all devices if 'print_info_about_all_devices' is 1).").toLatin1().data());
     m_initParamsMand.append(paramVal);

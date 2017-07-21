@@ -43,6 +43,7 @@
 #include <qelapsedtimer.h>
 #include <qwaitcondition.h>
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include "common/helperCommon.h"
 #include "common/paramMeta.h"
@@ -103,7 +104,7 @@ expired.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr("N.A.");       
+    m_aboutThis = tr(GITVERSION);       
     
     ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 1, new ito::IntMeta(1,6), tr("Number of axis for this motor").toLatin1().data());
     m_initParamsOpt.append(paramVal);

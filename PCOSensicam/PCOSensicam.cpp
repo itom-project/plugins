@@ -25,6 +25,7 @@
 
 #include "PCOSensicam.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
 
@@ -115,7 +116,7 @@ Download the SDK and install it at any location. Additionally you need to instal
     m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / copyright of the external DLLs belongs to PCO");
-    m_aboutThis = QObject::tr("N.A.");      
+    m_aboutThis = QObject::tr(GITVERSION);      
     
     m_initParamsMand.clear();
     m_initParamsOpt.clear();

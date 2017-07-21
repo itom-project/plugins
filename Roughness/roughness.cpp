@@ -27,6 +27,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
 #include "common/numeric.h"
@@ -73,7 +74,7 @@ Some algorithms the plugin 'fittingFilters' for a valid execution.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL licensed");
-    m_aboutThis = QObject::tr("N.A.");   
+    m_aboutThis = QObject::tr(GITVERSION);   
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

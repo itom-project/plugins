@@ -44,6 +44,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 //#include "dockWidgetDslrRemote.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "common/helperCommon.h"
 
 #ifdef WIN32
@@ -130,7 +131,7 @@ This plugin can also be used as template for other grabber.");
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
-Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.");
+Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions."+GITVERSION);
     
     m_initParamsMand.clear();
 

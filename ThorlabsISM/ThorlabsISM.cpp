@@ -29,6 +29,7 @@
 #define NOMINMAX
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -102,7 +103,7 @@ This plugin has been tested with the cage rotator K10CR1.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("additionalGearFactor", ito::ParamBase::Double, 0.0000000001, 1.0e12, 2048.0, tr("There seems to be an additional conversion factor between device and real world units. This can be given here.").toLatin1().data()));

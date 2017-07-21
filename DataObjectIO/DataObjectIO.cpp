@@ -41,6 +41,7 @@
 #include "common/sharedStructuresGraphics.h"
 #include "common/sharedFunctionsQt.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "qimagewriter.h"
 #include <qlocale.h>
 
@@ -106,7 +107,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = "";         
+    m_aboutThis         = QObject::tr(GITVERSION);         
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

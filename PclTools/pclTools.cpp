@@ -25,6 +25,7 @@
 
 #include "pclTools.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #define EIGEN_QT_SUPPORT
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 //before we defined #define EIGEN2_SUPPORT, which also set the #define above.
@@ -164,7 +165,7 @@ by this plugin.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     PclTools::nthreads  = QThread::idealThreadCount();
 }

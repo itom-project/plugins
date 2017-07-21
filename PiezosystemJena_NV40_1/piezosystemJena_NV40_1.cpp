@@ -4,6 +4,7 @@
 #include "piezosystemJena_NV40_1.h"
 #include "dockWidgetPiezosystemJena_NV40_1.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -41,7 +42,7 @@ It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
     m_initParamsMand.append(paramVal);

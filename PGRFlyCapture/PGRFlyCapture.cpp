@@ -25,6 +25,7 @@
 
 #include "PGRFlyCapture.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
 #include <bitset>
@@ -136,7 +137,7 @@ This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folde
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("GPL / this plugin needs to link agains the FlyCapture2 SDK from Point Grey Research, that comes with its own license. The FlyCapture2 SDK contains components that are licensed under GPL.");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsMand.clear();
 

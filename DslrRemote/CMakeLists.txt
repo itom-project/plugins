@@ -49,6 +49,24 @@ IF (WIN32 OR LIBGPHOTO_FOUND)
         ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
     ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
+    # HANDLE VERSION (FROM GIT)
+    UNSET(GIT_FOUND CACHE)
+    find_package(Git)
+    IF(BUILD_GIT_TAG AND GIT_FOUND)
+        execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE GITVERSION
+        RESULT_VARIABLE GITRESULT
+        ERROR_VARIABLE GITERROR
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    #uncomment to enable output to cmake console
+    #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
+        CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+    ENDIF (BUILD_GIT_TAG AND GIT_FOUND)
+    IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+    ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+        
     # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
     IF (DEFINED CMAKE_BUILD_TYPE)
         SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
@@ -74,6 +92,7 @@ ENDIF (WIN32)
 
     set(plugin_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.h
     )
 
