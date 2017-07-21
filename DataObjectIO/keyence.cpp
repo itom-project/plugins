@@ -161,6 +161,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
     ito::uint32 offset;
     bool topoNotColor = false;
     bool isHeight = false;
+	bool considerNaN = false;
     ito::RetVal retval;
 
     if (setname.startsWith("topo"))
@@ -169,6 +170,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
         offset = offsets.height[index];
         topoNotColor = true;
         isHeight = true;
+		considerNaN = true;
     }
     else if (setname.startsWith("intensity"))
     {
@@ -235,6 +237,33 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
 						char* ptr = (char*)temp.rowPtr(0, 0);
 						retval += ito::readFromDevice(&file, ptr, header.byte_size);
 						retval += temp.convertTo(dataobj, ito::tFloat64, scale, 0.0);
+
+						if (considerNaN && datatype == ito::tUInt8)
+						{
+							const ito::uint8* source = (const ito::uint8*)temp.rowPtr(0, 0);
+							ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
+
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								if (source[i] == 0)
+								{
+									dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+								}
+							}
+						}
+						else if (considerNaN && datatype == ito::tUInt16)
+						{
+							const ito::uint16* source = (const ito::uint16*)temp.rowPtr(0, 0);
+							ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
+
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								if (source[i] == 0)
+								{
+									dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+								}
+							}
+						}
 					}
 					else
 					{
@@ -245,9 +274,19 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
 						retval += ito::readFromDevice(&file, buf, header.byte_size);
 						const ito::uint32 *buf_ = (const ito::uint32*)buf;
 
-						for (size_t i = 0; i < header.height * header.width; ++i)
+						if (considerNaN)
 						{
-							ptr[i] = (ito::float64)buf_[i] * scale;
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								ptr[i] = buf_[i] == 0 ? std::numeric_limits<ito::float64>::quiet_NaN() : (ito::float64)buf_[i] * scale;
+							}
+						}
+						else
+						{
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								ptr[i] = (ito::float64)buf_[i] * scale;
+							}
 						}
 						DELETE_AND_SET_NULL(buf);
 						dataobj = temp;
