@@ -76,7 +76,13 @@ Indicate the right interface or leave 'interface' empty, in order to get a list 
 In order to keep this plugin compatible to other camera plugins, the additional parameters 'integration_time', 'roi', 'sizex', 'sizey', \n\
 and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Width', 'Height', 'OffsetX', 'OffsetY' or 'PixelFormat'. \n\
 \n\
-Up to now the following pixel formats are supported: Mono8, Mono10, Mono12, Mono14, Mono16 and Mono12Packed.";
+Up to now the following pixel formats are supported: Mono8, Mono10, Mono12, Mono14, Mono16 and Mono12Packed. \n\
+\n\
+This plugin has been tested with the following cameras: \n\
+\n\
+* Allied Vision, Manta (Firewire) \n\
+* Ximea (USB3) \n\
+* Vistek, exo174MU3 (USB3)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";
@@ -266,20 +272,34 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 			QStringList supportedFormatsStr;
 			QVector<PfncFormat> imageFormats = m_device->supportedImageFormats(&bitdepths, &supportedFormatsStr);
 			bool found = false;
+			ito::RetVal ret_;
+			QStringList triedFormats;
+
 			for (int i = 0; i < bitdepths.size(); ++i)
 			{
 				if (bitdepths[i] == val->getVal<int>())
 				{
+					triedFormats << supportedFormatsStr[i];
 					QSharedPointer<ito::ParamBase> val(new ito::ParamBase("PixelFormat", ito::ParamBase::String, supportedFormatsStr[i].toLatin1().data()));
-					retValue += setParam(val, NULL);
-					found = true;
-					break;
+					ret_ = setParam(val, NULL);
+					if (ret_ == ito::retOk)
+					{
+						found = true;
+						break;
+					}
 				}
 			}
 
 			if (!found)
 			{
-				retValue += ito::RetVal::format(ito::retError, 0, "Unsupported bitdepth (either due to camera or due to plugin)");
+				if (triedFormats.size() > 0)
+				{
+					retValue += ito::RetVal::format(ito::retError, 0, "Unsupported bitdepth (either due to camera or due to plugin). Tried the following PixelFormats: %s.", triedFormats.join(";").toLatin1().data());
+				}
+				else
+				{
+					retValue += ito::RetVal::format(ito::retError, 0, "Unsupported bitdepth (either due to camera or due to plugin)");
+				}
 			}
 		}
 		else if (key == "roi")
@@ -671,6 +691,11 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 	else
 	{
 		retValue += ito::RetVal(ito::retError, 0, "Device could not be started since data stream is not available.");
+	}
+
+	if (retValue.containsError())
+	{
+		decGrabberStarted();
 	}
     
     if (waitCond)

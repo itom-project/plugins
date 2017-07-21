@@ -41,7 +41,8 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     m_errorEvent(GENTL_INVALID_HANDLE),
     m_acquisitionStarted(false),
 	m_payloadSize(0),
-	m_timeoutMS(0)
+	m_timeoutMS(0),
+	m_usePreAllocatedBuffer(false)
 {
     GCRegisterEvent = (GenTL::PGCRegisterEvent)m_lib->resolve("GCRegisterEvent");
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
@@ -56,6 +57,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     DSStopAcquisition = (GenTL::PDSStopAcquisition) m_lib->resolve("DSStopAcquisition");
     DSGetInfo = (GenTL::PDSGetInfo)m_lib->resolve("DSGetInfo");
 	DSAllocAndAnnounceBuffer = (GenTL::PDSAllocAndAnnounceBuffer)m_lib->resolve("DSAllocAndAnnounceBuffer");
+	DSAnnounceBuffer = (GenTL::PDSAnnounceBuffer)m_lib->resolve("DSAnnounceBuffer");
 
     if (!GCRegisterEvent || !GCUnregisterEvent || !DSClose || \
         !EventGetData || !DSQueueBuffer || !DSFlushQueue || !DSGetBufferInfo || \
@@ -67,8 +69,17 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
 
     if (!retval.containsError())
     {
-        retval += checkGCError(GCRegisterEvent(m_handle, GenTL::EVENT_NEW_BUFFER, &m_newBufferEvent));
-        retval += checkGCError(GCRegisterEvent(m_handle, GenTL::EVENT_ERROR, &m_errorEvent));
+        retval += checkGCError(GCRegisterEvent(m_handle, GenTL::EVENT_NEW_BUFFER, &m_newBufferEvent), "dataStream: register new-buffer event");
+		GenTL::GC_ERROR errorEventResult = GCRegisterEvent(m_handle, GenTL::EVENT_ERROR, &m_errorEvent);
+		if (errorEventResult == GenTL::GC_ERR_NOT_IMPLEMENTED)
+		{
+			m_errorEvent = GENTL_INVALID_HANDLE;
+		}
+		else
+		{
+			retval += ito::RetVal::format(ito::retWarning, 0, "dataStream: warning while registering error event (%i)", errorEventResult);
+			m_errorEvent = GENTL_INVALID_HANDLE;
+		}
     }
 
     if (!retval.containsError())
@@ -152,7 +163,54 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 
     for (int i = 0; i < nrOfBuffers; ++i)
     {
-        retval += checkGCError(DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle));
+		GenTL::GC_ERROR err;
+		
+		if (i > 0) //use the type of buffer (itom-allocated or camera-allocated depending on the first buffer)
+		{
+			if (m_usePreAllocatedBuffer)
+			{
+				//some cameras fail if camera-internal buffer should be allocated, therefore we try to announce pre-allocated buffer here
+				ito::uint8 *buffer = new ito::uint8[bytesPerBuffer];
+				err = DSAnnounceBuffer(m_handle, buffer, bytesPerBuffer, this, &handle);
+				if (err == GenTL::GC_ERR_SUCCESS)
+				{
+					m_usePreAllocatedBuffer = true;
+				}
+				else
+				{
+					DELETE_AND_SET_NULL_ARRAY(buffer);
+					retval += checkGCError(err, "DataStream: DSAnnounceBuffer");
+				}
+			}
+			else
+			{
+				err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
+				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer");
+			}
+		}
+		else //in the first run, guess if pre-allocated or internal-allocated memory should be used.
+		{ 
+			err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
+			if (err == GenTL::GC_ERR_INVALID_PARAMETER && DSAnnounceBuffer)
+			{
+				//some cameras fail if camera-internal buffer should be allocated, therefore we try to announce pre-allocated buffer here
+				ito::uint8 *buffer = new ito::uint8[bytesPerBuffer];
+				err = DSAnnounceBuffer(m_handle, buffer, bytesPerBuffer, this, &handle);
+				if (err == GenTL::GC_ERR_SUCCESS)
+				{
+					m_usePreAllocatedBuffer = true;
+				}
+				else
+				{
+					DELETE_AND_SET_NULL_ARRAY(buffer);
+					retval += checkGCError(err, "DataStream: DSAnnounceBuffer");
+				}
+			}
+			else
+			{
+				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer");
+			}
+		}
 
         if (!retval.containsError())
         {
@@ -160,6 +218,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         }
         else
         {
+			m_usePreAllocatedBuffer = false;
             break;
         }
     }
@@ -173,7 +232,19 @@ ito::RetVal GenTLDataStream::revokeAllBuffers()
 	ito::RetVal retval;
 	foreach(GenTL::BUFFER_HANDLE handle, m_idleBuffers)
 	{
-		retval += checkGCError(DSRevokeBuffer(m_handle, handle, NULL, NULL), "revoke buffer");
+		if (m_usePreAllocatedBuffer)
+		{
+			ito::uint8 *pBuffer = NULL;
+			retval += checkGCError(DSRevokeBuffer(m_handle, handle, (void**)&pBuffer, NULL), "revoke buffer");
+			if (pBuffer)
+			{
+				DELETE_AND_SET_NULL(pBuffer);
+			}
+		}
+		else
+		{
+			retval += checkGCError(DSRevokeBuffer(m_handle, handle, NULL, NULL), "revoke buffer");
+		}
 	}
 	m_idleBuffers.clear();
 	return retval;
@@ -356,7 +427,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 	GenTL::PIXELENDIANNESS_IDS endianess;
 	GenTL::PAYLOADTYPE_INFO_IDS payloadType;
 	GenTL::PIXELFORMAT_NAMESPACE_IDS pixelformatNamespace;
-	uint64_t pixelformat;
+	uint64_t pixelformat = 0;
 	size_t height;
 	size_t width;
 
@@ -404,9 +475,8 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 	{
 		//payload type -> only accept PAYLOAD_TYPE_IMAGE
 		pSize = sizeof(temp);
-		retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PAYLOADTYPE, &dtype, &temp, &pSize), "get payload type of image buffer");
-
-		if (!retval.containsError())
+		GenTL::GC_ERROR err = DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PAYLOADTYPE, &dtype, &temp, &pSize);
+		if (err == GenTL::GC_ERR_SUCCESS)
 		{
 			payloadType = (GenTL::PAYLOADTYPE_INFO_IDS)temp;
 
@@ -415,16 +485,32 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 				retval += ito::RetVal(ito::retError, 0, "currently only buffers that contain image data are supported");
 			}
 		}
+		else if (err == GenTL::GC_ERR_NOT_IMPLEMENTED)
+		{
+			//payload type not implemented -> no information -> hope everything is ok
+		}
+		else
+		{
+			retval += checkGCError(err, "get payload type of image buffer");
+		}
 
 		//pixelformat namespace
 		pSize = sizeof(temp64);
-		retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXELFORMAT_NAMESPACE, &dtype, &temp64, &pSize), "get pixelformat namespace of image buffer");
-
-		if (!retval.containsError())
+		err = DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXELFORMAT_NAMESPACE, &dtype, &temp64, &pSize);
+		if (err == GenTL::GC_ERR_NOT_IMPLEMENTED)
 		{
-			pixelformatNamespace = (GenTL::PIXELFORMAT_NAMESPACE_IDS)temp64;
+			pixelformatNamespace = GenTL::PIXELFORMAT_NAMESPACE_UNKNOWN;
 		}
+		else
+		{
+			retval += checkGCError(err, "get pixelformat namespace of image buffer");
 
+			if (!retval.containsError())
+			{
+				pixelformatNamespace = (GenTL::PIXELFORMAT_NAMESPACE_IDS)temp64;
+			}
+		}
+		
 		//pixelformat
 		pSize = sizeof(pixelformat);
 		retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXELFORMAT, &dtype, &pixelformat, &pSize), "get pixelformat of image buffer");
@@ -449,7 +535,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 
 	if (!retval.containsError())
 	{
-		if ((pixelformatNamespace == GenTL::PIXELFORMAT_NAMESPACE_UNKNOWN) || (pixelformat == 0))
+		if (pixelformat == 0)
 		{
 			//try to guess right pixelformat
 			if (dobj.getType() == ito::tUInt16 && size >= (sizeof(ito::uint16) * (width * height)))
@@ -475,6 +561,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 			break;
 		case GVSP_Mono12Packed: //GigE specific
 			retval += copyMono12pToDataObject(ptr, width, height, endianess == endianess, dobj);
+			break;
 		default:
 			retval += ito::RetVal::format(ito::retError, 0, "Pixel format %i (%s) is not yet supported.", pixelformat, GetPixelFormatName((PfncFormat)pixelformat));
 			break;
@@ -505,7 +592,42 @@ ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const void* ptr, const s
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void unpack12into16lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
+{
+	const ito::uint8 *end = source + n;
+	ito::uint8 b0, b1, b2;
+
+	while (source != end)
+	{
+		b0 = *source++;
+		b1 = *source++;
+		b2 = *source++;
+		
+		//byte 0: pixel 0, bit 11..4
+		//byte 1: pixel 1, bit 3..0  FOLLOWED by pixel 0, bit 3..0
+		//byte 2: pixel 1, bit 11..4
+		*dest++ = (b0 << 4) + (b1 & 0x0f);
+		*dest++ = ((b1 & 0xf0) >> 4) + (b2 << 4);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::copyMono12pToDataObject(const void* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
-	return ito::RetVal(ito::retError, 0, "data converter for mono12p or mono12packed not implemented yet.");
+	if (littleEndian)
+	{
+		if (width * height % 3 != 0)
+		{
+			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12p or mono12packed (width*height must be divisible by 3).");
+		}
+
+		ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);
+		const ito::uint8 *source = (const ito::uint8*)ptr;
+		unpack12into16lsb(dest, source, width * height * 12 / 8);
+		return ito::retOk;
+	}
+	else
+	{
+		return ito::RetVal(ito::retError, 0, "data converter for mono12p or mono12packed, most significant bit, not implemented yet.");
+	}
 }
