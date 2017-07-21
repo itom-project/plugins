@@ -22,6 +22,7 @@
 
 #include "ST8SMC4USBInterface.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <QtCore/QtPlugin>
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -77,7 +78,7 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsMand.append(ito::Param("unitsPerStep", ito::ParamBase::Double, 0.01, new ito::DoubleMeta(0.0,100000.0), tr("units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator").toLatin1().data()));
     m_initParamsMand.append(ito::Param("unit", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis, 0: degree (default), 1: mm").toLatin1().data()));

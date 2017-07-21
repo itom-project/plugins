@@ -25,6 +25,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "NITWidySWIR.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include "dockWidgetNITWidySWIR.h"
 
@@ -71,7 +72,7 @@ NITWidySWIRInterface::NITWidySWIRInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL");
-    m_aboutThis = QObject::tr("N.A.");
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("printManual", ito::ParamBase::Int, 0, 1, 0, tr("If printManual is set to 1, the parameters of the camera are printed into the itom shelf.").toLatin1().data());
     m_initParamsOpt.append(paramVal);

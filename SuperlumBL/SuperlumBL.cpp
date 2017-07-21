@@ -25,6 +25,7 @@
 
 #include "SuperlumBL.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -91,7 +92,7 @@ It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);

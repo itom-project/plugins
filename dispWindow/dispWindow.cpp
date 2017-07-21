@@ -37,6 +37,7 @@
 #endif
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 Q_DECLARE_METATYPE(QVector<unsigned char>)
 
@@ -96,7 +97,7 @@ require this library.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("LGPL");
-    m_aboutThis = tr("N.A.");
+    m_aboutThis = tr(GITVERSION);
 
     paramVal = ito::Param("x0", ito::ParamBase::Int, -4096, 4096, 0, tr("x0 position of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);

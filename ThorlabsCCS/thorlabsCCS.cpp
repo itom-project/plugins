@@ -10,6 +10,7 @@
 
 #include "thorlabsCCS.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -62,7 +63,7 @@ subdirectories like include or bin are contained.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)");
-    m_aboutThis = QObject::tr(""); 
+    m_aboutThis = QObject::tr(GITVERSION); 
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.

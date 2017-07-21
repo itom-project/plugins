@@ -27,6 +27,7 @@
 #include "OpenCVFilters.h"
 #include "itomCvConversions.h"
 #include "common/numeric.h"
+#include "gitVersion.h"
 
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
@@ -106,7 +107,7 @@ the tags and meta information and save protocol data.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr("N.A.");
+    m_aboutThis = QObject::tr(GITVERSION);
 
     NTHREADS  = QThread::idealThreadCount();
 

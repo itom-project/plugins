@@ -36,6 +36,7 @@
 
 // project-includes
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "commonVisionBlox.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +81,7 @@ CVBInterface::CVBInterface(QObject *parent)
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("Licensed under LGPL, Stemmer Common Vision Blox under its own license.");
-    m_aboutThis = tr( "N.A." );  
+    m_aboutThis = tr(GITVERSION);  
 
     ito::Param param( "scanForCameras", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1 scan for new cameras, else take the last opened camera (default). If you scan for new cameras, the configuration file (ini) created in CommonVisionBlox for GenICam or other cameras will be reset to the default values.").toLatin1().data());
     m_initParamsOpt.append(param);

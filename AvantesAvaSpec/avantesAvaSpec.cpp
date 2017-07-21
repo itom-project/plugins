@@ -31,6 +31,7 @@
 #include <qelapsedtimer.h>
 #include <QtCore/QtPlugin>
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include "dockWidgetAvantesAvaSpec.h"
 
@@ -123,7 +124,7 @@ tested with the following spectrometers: \
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr("");  
+    m_aboutThis         = tr(GITVERSION);  
 
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;

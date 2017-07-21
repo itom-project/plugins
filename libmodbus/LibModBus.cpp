@@ -35,6 +35,7 @@
 #include <qregexp.h>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 //#include "dockWidgetLibModBus.h"
 
@@ -83,7 +84,7 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");  
+    m_aboutThis = QObject::tr(GITVERSION);  
 
     ito::Param paramVal("target", ito::ParamBase::String, "127.0.0.1", tr("Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}||COM[1-9]||/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}"), true);

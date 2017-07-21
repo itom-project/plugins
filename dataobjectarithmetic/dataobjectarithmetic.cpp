@@ -37,6 +37,7 @@
 #include "DataObject/dataObjectFuncs.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #ifdef USEOPENMP
     #include <omp.h>
@@ -79,7 +80,7 @@ This plugin does not have any unusual dependencies.");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr("Arithmetic algorithms filters.");     
+    m_aboutThis         = tr(GITVERSION);     
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

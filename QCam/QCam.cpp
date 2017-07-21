@@ -31,6 +31,7 @@
 #include <QtCore/QtPlugin>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 Q_DECLARE_METATYPE(ito::DataObject)
 
@@ -65,7 +66,7 @@ QCamInterface::QCamInterface() : AddInInterfaceBase()
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr("N.A."); 
+    m_aboutThis         = tr(GITVERSION); 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

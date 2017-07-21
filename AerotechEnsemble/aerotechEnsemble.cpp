@@ -25,6 +25,7 @@
 
 #include "AerotechEnsemble.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <math.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -90,7 +91,7 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL, The Aerotech Ensemble library belongs to Aerotech under their specific license.");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr(GITVERSION);     
     
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;

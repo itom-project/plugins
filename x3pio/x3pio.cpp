@@ -27,6 +27,7 @@
 #include "DataObject/dataobj.h"
 #include "common/numeric.h"
 
+#include "gitVersion.h"
 #include "pluginVersion.h"
 #include <opengps/cxx/opengps.hxx>
 #include <opengps/iso5436_2.h>
@@ -260,7 +261,7 @@ of the library itself see www.opengps.eu");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / ISO5436-2 XML under LPGL");
-    m_aboutThis = QObject::tr("N.A.");
+    m_aboutThis = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

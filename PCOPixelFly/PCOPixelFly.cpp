@@ -25,6 +25,7 @@
 
 #include "PCOPixelFly.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "common/sharedFunctionsQt.h"
 
 #define PCO_DRIVER_V2 1 //if 1, this can handle both the dll-major version 1 and 2!, if 0: only the dll-major version 1 is supported
@@ -101,7 +102,7 @@ on 64bit Windows systems.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / the contained camera SDK belongs to PCO - Computer Optics GmbH");
-    m_aboutThis = QObject::tr("N.A.");        
+    m_aboutThis = QObject::tr(GITVERSION);        
     
     ito::Param paramVal = ito::Param("boardNumber", ito::ParamBase::Int, 0, 3, 0, NULL);
     m_initParamsOpt.append(paramVal);

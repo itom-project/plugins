@@ -27,6 +27,7 @@
 #include "FirgelliLAC.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -132,7 +133,7 @@ and cannot be changed (due to the driver of the controller board).");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsMand.append(ito::Param("spoolMax", ito::ParamBase::Double, 20.0, new ito::DoubleMeta(0.0,100000.0), tr("Maximum length of spool (mm) [default 20.0 mm]").toLatin1().data()));
 

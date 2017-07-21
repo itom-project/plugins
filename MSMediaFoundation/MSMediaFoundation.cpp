@@ -25,6 +25,7 @@
 
 #include "MSMediaFoundation.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <strmif.h>
 #include <wchar.h>
@@ -87,7 +88,7 @@ http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Wi
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("");     
+    m_aboutThis = QObject::tr(GITVERSION);     
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 255, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);

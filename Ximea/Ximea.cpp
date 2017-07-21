@@ -28,6 +28,7 @@
 #include "pluginVersion.h"
 #include "dockWidgetXimea.h"
 #include "dialogXimea.h"
+#include "gitVersion.h"
 
 #include "common/sharedFunctionsQt.h"
 
@@ -80,7 +81,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / do not copy Ximea-DLLs");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr(GITVERSION);
     
     ito::Param paramVal = ito::Param("camera Number", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");
     m_initParamsOpt.append(paramVal);

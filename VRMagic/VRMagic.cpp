@@ -24,6 +24,7 @@
 
 #include "VRMagic.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "dockWidgetVRMagic.h"
 #include "dialogVRMagic.h"
 
@@ -64,7 +65,7 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr(GITVERSION);     
     
     m_initParamsMand.clear();
 

@@ -25,6 +25,7 @@
 
 #include "genicam.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
@@ -83,7 +84,7 @@ Up to now the following pixel formats are supported: Mono8, Mono10, Mono12, Mono
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr(GITVERSION);     
     
     //m_callInitInNewThread = false; //camera must be opened in main-thread
 

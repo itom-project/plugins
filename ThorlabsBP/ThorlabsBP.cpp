@@ -29,6 +29,7 @@
 #define NOMINMAX
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -103,7 +104,7 @@ The position values are always in mm if the corresponding axis is in closed-loop
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("channels", ito::ParamBase::IntArray, NULL, tr("list of channels to connect to. If an empty list is given, all connected channels are used. The plugin axis indices are then mapped to the channels.").toLatin1().data()));

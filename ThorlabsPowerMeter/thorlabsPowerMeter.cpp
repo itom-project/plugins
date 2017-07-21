@@ -30,6 +30,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "thorlabsPowerMeter.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 
 
@@ -77,7 +78,7 @@ Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directo
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)");
-    m_aboutThis = QObject::tr(""); 
+    m_aboutThis = QObject::tr(GITVERSION); 
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.

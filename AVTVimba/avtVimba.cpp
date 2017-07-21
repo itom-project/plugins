@@ -26,6 +26,7 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 
 #include "avtVimba.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -66,7 +67,7 @@ Color formats are not supported.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL");
-    m_aboutThis = QObject::tr(""); 
+    m_aboutThis = QObject::tr(GITVERSION); 
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.

@@ -35,6 +35,7 @@
 #include <QtCore/QtPlugin>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 //#include <qdebug.h>
 //#include <qmessagebox.h>
@@ -90,7 +91,7 @@ The setVal and getVal functions will write and read on the specified endpoint.")
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel communication with USB-devices");  
+    m_aboutThis = QObject::tr(GITVERSION);  
 
     ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x1cbe, tr("The vendor id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);

@@ -26,6 +26,7 @@
 #include <math.h>
 #include "OpenCVFiltersNonFree.h"
 #include "itomCvConversions.h"
+#include "gitVersion.h"
 
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
@@ -67,7 +68,7 @@ OpenCVFiltersNonFreeInterface::OpenCVFiltersNonFreeInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr("N.A.");
+    m_aboutThis = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

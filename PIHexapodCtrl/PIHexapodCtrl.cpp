@@ -3,6 +3,7 @@
 
 #include "PIHexapodCtrl.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <QHostAddress>
 
 #ifndef WIN32
@@ -79,7 +80,7 @@ to initialize the x,y,z,u,v and w axis, respectively.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("LGPL");
-    m_aboutThis = tr("N.A.");       
+    m_aboutThis = tr(GITVERSION);       
     
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (If connected via Serial-Port).").toLatin1().data());
     m_initParamsOpt.append(paramVal);

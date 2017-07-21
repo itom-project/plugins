@@ -45,6 +45,7 @@
 
 // project-includes
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "IDSuEye.h"
 
 namespace
@@ -122,7 +123,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("Licensed under LGPL");
-    m_aboutThis = tr( "N.A." );  
+    m_aboutThis = tr(GITVERSION);  
 
     ito::Param param( "camera_id", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, tr("Camera ID (user-definable in IDS camera manager) of the camera to open (0: the next free camera will opened [default], 1-254: specific camera ID)").toLatin1().data());
     m_initParamsOpt.append(param);

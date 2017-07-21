@@ -25,6 +25,7 @@
 
 #include "PCOCamera.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
 
@@ -123,7 +124,7 @@ For GigE cameras, make sure that the PCO GigE driver is installed and that the c
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / copyright of the external DLLs belongs to PCO");
-    m_aboutThis = QObject::tr("N.A.");      
+    m_aboutThis = QObject::tr(GITVERSION);      
     
     m_initParamsMand.clear();
     m_initParamsOpt.clear();

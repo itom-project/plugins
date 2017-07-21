@@ -26,6 +26,7 @@
 #include "AerotechA3200.h"
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <string.h>
 #include <math.h>
 #include <qstring.h>
@@ -76,7 +77,7 @@ For details please check C:\\A3200\\MANUAL.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL, The Aerotech A3200 library belongs to Aerotech under their specific license (accessible by their free FTP server).");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr(GITVERSION);     
     
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;

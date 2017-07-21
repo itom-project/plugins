@@ -45,6 +45,7 @@
 #include <qapplication.h>
 
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 //#include <qdebug.h>
 //#include <qmessagebox.h>
@@ -1139,7 +1140,7 @@ Example\n\
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");
+    m_aboutThis = QObject::tr(GITVERSION);
 #ifndef WIN32
     ito::Param paramVal("port", ito::ParamBase::Int, 0, 4095, 1, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_initParamsMand.append(paramVal);

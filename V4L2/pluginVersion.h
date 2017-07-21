@@ -29,8 +29,8 @@
 #define PLUGINVERSION_H
 
 #define PLUGIN_VERSION_MAJOR 0
-#define PLUGIN_VERSION_MINOR 0
-#define PLUGIN_VERSION_PATCH 1
+#define PLUGIN_VERSION_MINOR 1
+#define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION_STRING "0.0.1"
 #define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"

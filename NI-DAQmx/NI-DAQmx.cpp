@@ -25,6 +25,7 @@
 
 #include "Ni-DAQmx.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -66,7 +67,7 @@ The installation needs the NI-DAQmx Library that can be downloaded from the NI w
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(""); 
+    m_aboutThis = QObject::tr(GITVERSION); 
     
     m_initParamsMand.clear();
 

@@ -29,6 +29,7 @@
 
 #include "DataObject/dataobj.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <QtCore/QtPlugin>
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ DemoAlgorithmsInterface::DemoAlgorithmsInterface()
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr("Fill in about dialog content");        
+    m_aboutThis         = tr(GITVERSION);        
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

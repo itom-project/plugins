@@ -36,6 +36,7 @@
 
 // project-includes
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include "Xeneth.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +61,7 @@ XenethInterface::XenethInterface(QObject *parent)
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("Licensed under LGPL");
-    m_aboutThis = tr( "N.A." );  
+    m_aboutThis = tr( "GITVERSION" );  
 
     ito::Param param( "device", ito::ParamBase::String | ito::ParamBase::In, "soft://0", tr("camera device name to be loaded.").toLatin1().data());
     m_initParamsOpt.append(param);

@@ -3,6 +3,7 @@
 
 #include "MeasurementComputing.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
 #include <QtCore/QtPlugin>
@@ -41,7 +42,7 @@ Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact 
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("LGPL").toLatin1().data();
-    m_aboutThis = tr("N.A.").toLatin1().data(); 
+    m_aboutThis = tr(GITVERSION).toLatin1().data(); 
 
     ito::Param param = ito::Param("board_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 254, 0, tr("board number of the connected device. This number must be defined by the software 'InstaCal'").toLatin1().data());
     m_initParamsMand.append(param);

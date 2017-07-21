@@ -22,6 +22,7 @@
 
 #include "PIPiezoCtrlInterface.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 #include <QtCore/QtPlugin>
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -87,7 +88,7 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
+    m_aboutThis = QObject::tr(GITVERSION);    
     
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
