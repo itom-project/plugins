@@ -81,6 +81,7 @@ protected:
     GenTL::PDSStartAcquisition DSStartAcquisition;
     GenTL::PDSStopAcquisition DSStopAcquisition;
     GenTL::PDSGetInfo DSGetInfo;
+	GenTL::PDSAnnounceBuffer DSAnnounceBuffer;
 
     QQueue<GenTL::BUFFER_HANDLE> m_idleBuffers; //buffers that can be queued for acquisition and are not locked (in announce position)
     QSet<GenTL::BUFFER_HANDLE> m_lockedBuffers; //in output buffer
@@ -89,6 +90,7 @@ protected:
     bool m_acquisitionStarted;
 	int m_payloadSize;
 	uint64_t m_timeoutMS;
+	bool m_usePreAllocatedBuffer; //false if the image buffer is allocated by the camera, true if the buffer is allocated by the itom-plugin and has to be deleted after revoking the buffer
     
 };
 
