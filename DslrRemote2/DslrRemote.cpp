@@ -131,7 +131,7 @@ This plugin can also be used as template for other grabber.");
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
-Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions."+GITVERSION);
+Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.");
     
     m_initParamsMand.clear();
 
