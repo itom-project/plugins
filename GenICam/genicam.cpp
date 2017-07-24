@@ -104,6 +104,9 @@ a list of all auto-detected vendors and models is returned.");
 
     paramVal = ito::Param("deviceID", ito::ParamBase::String, NULL, "", tr("name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
+
+	paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().data());
+	m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -563,6 +566,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 	QByteArray genTlProducerFile = paramsOpt->at(0).getVal<const char*>();
 	QByteArray interfaceType = paramsOpt->at(1).getVal<const char*>();
     QByteArray deviceID = paramsOpt->at(2).getVal<const char*>();
+	int streamIndex = paramsOpt->at(3).getVal<int>();
 
 	if (genTlProducerFile.endsWith(".cti"))
 	{
@@ -599,7 +603,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 
 	if (!retValue.containsError())
 	{
-		m_stream = m_device->getDataStream(0, true, retValue);
+		m_stream = m_device->getDataStream(streamIndex, true, retValue);
 	}
 
 	if (!retValue.containsError())

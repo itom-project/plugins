@@ -560,6 +560,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 			retval += copyMono10to16ToDataObject(ptr, width, height, endianess == endianess, dobj);
 			break;
 		case GVSP_Mono12Packed: //GigE specific
+		case PFNC_Mono12p:
 			retval += copyMono12pToDataObject(ptr, width, height, endianess == endianess, dobj);
 			break;
 		default:
