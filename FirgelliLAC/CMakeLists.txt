@@ -80,7 +80,7 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogFirgelliLAC.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFirgelliLAC.h
     ${CMAKE_CURRENT_SOURCE_DIR}/FirgelliLAC.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
