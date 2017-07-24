@@ -2,6 +2,9 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "PIHexapodCtrl.h"
+
+#define NOMINMAX
+
 #include "pluginVersion.h"
 #include "gitVersion.h"
 #include <QHostAddress>
