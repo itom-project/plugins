@@ -492,7 +492,7 @@ void GCEnumerationType::stringMetaFromEnumeration(const CEnumerationPtr &ePtr, i
 	for (size_t i = 0; i < entries.size(); ++i)
 	{
 		iee = dynamic_cast<IEnumEntry*>(entries[i]);
-		if (iee)
+		if (iee && iee->GetAccessMode() != EAccessMode::NI)
 		{
 			strMeta->addItem(iee->GetSymbolic().c_str());
 		}

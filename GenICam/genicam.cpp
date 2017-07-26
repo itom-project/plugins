@@ -76,7 +76,13 @@ Indicate the right interface or leave 'interface' empty, in order to get a list 
 In order to keep this plugin compatible to other camera plugins, the additional parameters 'integration_time', 'roi', 'sizex', 'sizey', \n\
 and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Width', 'Height', 'OffsetX', 'OffsetY' or 'PixelFormat'. \n\
 \n\
-Up to now the following pixel formats are supported: Mono8, Mono10, Mono12, Mono14, Mono16 and Mono12Packed.";
+Up to now the following pixel formats are supported: Mono8, Mono10, Mono12, Mono14, Mono16 and Mono12Packed. \n\
+\n\
+This plugin has been tested with the following cameras: \n\
+\n\
+* Allied Vision, Manta (Firewire) \n\
+* Ximea (USB3) \n\
+* Vistek, exo174MU3 (USB3)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";
@@ -99,6 +105,9 @@ a list of all auto-detected vendors and models is returned.");
 
     paramVal = ito::Param("deviceID", ito::ParamBase::String, NULL, "", tr("name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
+
+	paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().data());
+	m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -266,20 +275,34 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 			QStringList supportedFormatsStr;
 			QVector<PfncFormat> imageFormats = m_device->supportedImageFormats(&bitdepths, &supportedFormatsStr);
 			bool found = false;
+			ito::RetVal ret_;
+			QStringList triedFormats;
+
 			for (int i = 0; i < bitdepths.size(); ++i)
 			{
 				if (bitdepths[i] == val->getVal<int>())
 				{
+					triedFormats << supportedFormatsStr[i];
 					QSharedPointer<ito::ParamBase> val(new ito::ParamBase("PixelFormat", ito::ParamBase::String, supportedFormatsStr[i].toLatin1().data()));
-					retValue += setParam(val, NULL);
-					found = true;
-					break;
+					ret_ = setParam(val, NULL);
+					if (ret_ == ito::retOk)
+					{
+						found = true;
+						break;
+					}
 				}
 			}
 
 			if (!found)
 			{
-				retValue += ito::RetVal::format(ito::retError, 0, "Unsupported bitdepth (either due to camera or due to plugin)");
+				if (triedFormats.size() > 0)
+				{
+					retValue += ito::RetVal::format(ito::retError, 0, "Unsupported bitdepth (either due to camera or due to plugin). Tried the following PixelFormats: %s.", triedFormats.join(";").toLatin1().data());
+				}
+				else
+				{
+					retValue += ito::RetVal::format(ito::retError, 0, "Unsupported bitdepth (either due to camera or due to plugin)");
+				}
 			}
 		}
 		else if (key == "roi")
@@ -330,35 +353,62 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 				if (old_roi[0] >= roi[0])
 				{
 					//offset is decreased, do it first, then width
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[0] != old_roi[0])
+					{
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
+						retValue += setParam(val1, NULL);
+					}
+
+					if (roi[2] != old_roi[2])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 				else
 				{
-					//offset is increased, decrease width at first, then increase offset
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[0] != old_roi[0])
+					{
+						//offset is increased, decrease width at first, then increase offset
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
+						retValue += setParam(val1, NULL);
+					}
+
+					if (roi[2] != old_roi[2])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 
 				if (old_roi[1] >= roi[1])
 				{
-					//offset is decreased, do it first, then width
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[1] != old_roi[1])
+					{
+						//offset is decreased, do it first, then width
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
+						retValue += setParam(val1, NULL);
+					}
+
+					if (roi[3] != old_roi[3])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 				else
 				{
-					//offset is increased, decrease width at first, then increase offset
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[1] != old_roi[1])
+					{
+						//offset is increased, decrease width at first, then increase offset
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
+						retValue += setParam(val1, NULL);
+					}
+					if (roi[3] != old_roi[3])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 			}
 		}
@@ -544,6 +594,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 	QByteArray genTlProducerFile = paramsOpt->at(0).getVal<const char*>();
 	QByteArray interfaceType = paramsOpt->at(1).getVal<const char*>();
     QByteArray deviceID = paramsOpt->at(2).getVal<const char*>();
+	int streamIndex = paramsOpt->at(3).getVal<int>();
 
 	if (genTlProducerFile.endsWith(".cti"))
 	{
@@ -580,7 +631,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 
 	if (!retValue.containsError())
 	{
-		m_stream = m_device->getDataStream(0, true, retValue);
+		m_stream = m_device->getDataStream(streamIndex, true, retValue);
 	}
 
 	if (!retValue.containsError())
@@ -671,6 +722,11 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 	else
 	{
 		retValue += ito::RetVal(ito::retError, 0, "Device could not be started since data stream is not available.");
+	}
+
+	if (retValue.containsError())
+	{
+		decGrabberStarted();
 	}
     
     if (waitCond)

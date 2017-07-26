@@ -161,6 +161,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
     ito::uint32 offset;
     bool topoNotColor = false;
     bool isHeight = false;
+	bool considerNaN = false;
     ito::RetVal retval;
 
     if (setname.startsWith("topo"))
@@ -169,6 +170,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
         offset = offsets.height[index];
         topoNotColor = true;
         isHeight = true;
+		considerNaN = true;
     }
     else if (setname.startsWith("intensity"))
     {
@@ -235,6 +237,33 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
 						char* ptr = (char*)temp.rowPtr(0, 0);
 						retval += ito::readFromDevice(&file, ptr, header.byte_size);
 						retval += temp.convertTo(dataobj, ito::tFloat64, scale, 0.0);
+
+						if (considerNaN && datatype == ito::tUInt8)
+						{
+							const ito::uint8* source = (const ito::uint8*)temp.rowPtr(0, 0);
+							ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
+
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								if (source[i] == 0)
+								{
+									dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+								}
+							}
+						}
+						else if (considerNaN && datatype == ito::tUInt16)
+						{
+							const ito::uint16* source = (const ito::uint16*)temp.rowPtr(0, 0);
+							ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
+
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								if (source[i] == 0)
+								{
+									dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+								}
+							}
+						}
 					}
 					else
 					{
@@ -245,9 +274,19 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
 						retval += ito::readFromDevice(&file, buf, header.byte_size);
 						const ito::uint32 *buf_ = (const ito::uint32*)buf;
 
-						for (size_t i = 0; i < header.height * header.width; ++i)
+						if (considerNaN)
 						{
-							ptr[i] = (ito::float64)buf_[i] * scale;
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								ptr[i] = buf_[i] == 0 ? std::numeric_limits<ito::float64>::quiet_NaN() : (ito::float64)buf_[i] * scale;
+							}
+						}
+						else
+						{
+							for (size_t i = 0; i < header.height * header.width; ++i)
+							{
+								ptr[i] = (ito::float64)buf_[i] * scale;
+							}
 						}
 						DELETE_AND_SET_NULL(buf);
 						dataobj = temp;
@@ -257,7 +296,11 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                     dataobj.setAxisUnit(1, "m");
                     dataobj.setAxisScale(0, measconds.y_length_per_pixel * PICOMETRE);
                     dataobj.setAxisScale(1, measconds.x_length_per_pixel * PICOMETRE);
-                    dataobj.setValueUnit("m");
+
+					if (isHeight)
+					{
+						dataobj.setValueUnit("m");
+					}
                 }
             }
             else
@@ -353,7 +396,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
         param.setMeta(&sm, false);
         paramsOpt->append(param);
 
-        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of value axis. VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
+        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of value axis (only valid for topography data channels). VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
         ito::StringMeta sm2(ito::StringMeta::String, "mm");
         sm2.addItem("cm");
         sm2.addItem("mm");
@@ -506,7 +549,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
                     dataobj.setAxisUnit(0, xyUnit);
                     dataobj.setAxisUnit(1, xyUnit);
 
-                    if (dataobj.getType() != ito::tRGBA32)
+                    if (dataobj.getType() != ito::tRGBA32 && dataobj.getValueUnit() != "") //if valueUnit() is empty, we have intensity data
                     {
                         dataobj.setValueUnit(valueUnit);
                         if (valueScaleFactor != 1.0)

@@ -2,6 +2,9 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "PIHexapodCtrl.h"
+
+#define NOMINMAX
+
 #include "pluginVersion.h"
 #include "gitVersion.h"
 #include <QHostAddress>
@@ -1680,7 +1683,22 @@ ito::RetVal PIHexapodCtrl::PIIdentifyAndInitializeSystem(void)
 
             m_numAxis = m_axesNames.size();
             m_params["numaxis"].setVal<int>(m_numAxis);
+#if QTVERSION >= 0x050400
             m_params["axesNames"].setVal<const char*>(m_axesNames.join(";"));
+#else
+            QByteArray axesNamesJoined;
+            if (m_axesNames.size() >= 1)
+            {
+                axesNamesJoined = m_axesNames[0];
+            }
+            for (int i = 1; i < m_axesNames.size(); ++i)
+            {
+                axesNamesJoined.append(";");
+                axesNamesJoined.append(m_axesNames[i]);
+            }
+
+            m_params["axesNames"].setVal<const char*>(axesNamesJoined);
+#endif
         }
     }
 
