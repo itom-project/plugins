@@ -42,7 +42,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     m_acquisitionStarted(false),
 	m_payloadSize(0),
 	m_timeoutMS(0),
-	m_usePreAllocatedBuffer(false)
+	m_usePreAllocatedBuffer(-1)
 {
     GCRegisterEvent = (GenTL::PGCRegisterEvent)m_lib->resolve("GCRegisterEvent");
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
@@ -165,19 +165,20 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
     {
 		GenTL::GC_ERROR err;
 		
-		if (i > 0) //use the type of buffer (itom-allocated or camera-allocated depending on the first buffer)
+		if (m_usePreAllocatedBuffer >= 0) //use the type of buffer (itom-allocated or camera-allocated depending on the first buffer)
 		{
-			if (m_usePreAllocatedBuffer)
+			if (m_usePreAllocatedBuffer > 0)
 			{
 				//some cameras fail if camera-internal buffer should be allocated, therefore we try to announce pre-allocated buffer here
 				ito::uint8 *buffer = new ito::uint8[bytesPerBuffer];
 				err = DSAnnounceBuffer(m_handle, buffer, bytesPerBuffer, this, &handle);
 				if (err == GenTL::GC_ERR_SUCCESS)
 				{
-					m_usePreAllocatedBuffer = true;
+					m_usePreAllocatedBuffer = 1;
 				}
 				else
 				{
+					m_usePreAllocatedBuffer = -1;
 					DELETE_AND_SET_NULL_ARRAY(buffer);
 					retval += checkGCError(err, "DataStream: DSAnnounceBuffer");
 				}
@@ -185,6 +186,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 			else
 			{
 				err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
+				m_usePreAllocatedBuffer = 0;
 				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer");
 			}
 		}
@@ -198,16 +200,18 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 				err = DSAnnounceBuffer(m_handle, buffer, bytesPerBuffer, this, &handle);
 				if (err == GenTL::GC_ERR_SUCCESS)
 				{
-					m_usePreAllocatedBuffer = true;
+					m_usePreAllocatedBuffer = 1;
 				}
 				else
 				{
+					m_usePreAllocatedBuffer = -1;
 					DELETE_AND_SET_NULL_ARRAY(buffer);
 					retval += checkGCError(err, "DataStream: DSAnnounceBuffer");
 				}
 			}
 			else
 			{
+				m_usePreAllocatedBuffer = 0;
 				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer");
 			}
 		}
@@ -430,6 +434,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 	uint64_t pixelformat = 0;
 	size_t height;
 	size_t width;
+	float bytes_pp_transferred = 0.0;
 
 	//request mandatory parameter: size of buffer
 	pSize = sizeof(size);
@@ -440,6 +445,29 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 		{
 			retval += ito::RetVal(ito::retError, 0, "request size of image buffer: returned value is not of expected type (size_t)");
 		}
+	}
+
+	//request pixelsize
+	if (!retval.containsError())
+	{
+		//pixelformat
+		pSize = sizeof(pixelformat);
+		retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXELFORMAT, &dtype, &pixelformat, &pSize), "get pixelformat of image buffer");
+
+		if (pixelformat == 0)
+		{
+			//try to guess right pixelformat
+			if (dobj.getType() == ito::tUInt16 && size >= (sizeof(ito::uint16) * (width * height)))
+			{
+				pixelformat = PFNC_Mono16;
+			}
+			else if (dobj.getType() == ito::tUInt8 && size >= (sizeof(ito::uint8) * (width * height)))
+			{
+				pixelformat = PFNC_Mono8;
+			}
+		}
+
+		bytes_pp_transferred = (float)PFNC_PIXEL_SIZE(pixelformat) / 8.0;
 	}
 
 	//request mandatory parameter: width and height of image
@@ -464,9 +492,19 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 		pSize = sizeof(sizeFilled);
 		if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_SIZE_FILLED, &dtype, &sizeFilled, &pSize) == GenTL::GC_ERR_SUCCESS)
 		{
-			if (sizeFilled != size)
+			if (sizeFilled < size)
 			{
-				retval += ito::RetVal::format(ito::retError, 0, "returned image buffer is only partially filled.");
+				if (bytes_pp_transferred > 0.0)
+				{
+					if (sizeFilled < (width * height * bytes_pp_transferred))
+					{
+						retval += ito::RetVal::format(ito::retError, 0, "returned image buffer is only partially filled (check 2).");
+					}
+				}
+				else
+				{
+					retval += ito::RetVal::format(ito::retError, 0, "returned image buffer is only partially filled (check 1).");
+				}
 			}
 		}
 	}
@@ -511,9 +549,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 			}
 		}
 		
-		//pixelformat
-		pSize = sizeof(pixelformat);
-		retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXELFORMAT, &dtype, &pixelformat, &pSize), "get pixelformat of image buffer");
+		
 
 		//get pixel endianess
 		pSize = sizeof(temp);
@@ -535,19 +571,6 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 
 	if (!retval.containsError())
 	{
-		if (pixelformat == 0)
-		{
-			//try to guess right pixelformat
-			if (dobj.getType() == ito::tUInt16 && size >= (sizeof(ito::uint16) * (width * height)))
-			{
-				pixelformat = PFNC_Mono16;
-			}
-			else if (dobj.getType() == ito::tUInt8 && size >= (sizeof(ito::uint8) * (width * height)))
-			{
-				pixelformat = PFNC_Mono8;
-			}
-		}
-
 		switch (pixelformat)
 		{
 		case PFNC_Mono8:
@@ -617,9 +640,9 @@ ito::RetVal GenTLDataStream::copyMono12pToDataObject(const void* ptr, const size
 {
 	if (littleEndian)
 	{
-		if (width * height % 3 != 0)
+		if (width * height % 2 != 0)
 		{
-			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12p or mono12packed (width*height must be divisible by 3).");
+			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12p or mono12packed (width*height must be divisible by 2).");
 		}
 
 		ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);

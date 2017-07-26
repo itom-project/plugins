@@ -353,35 +353,62 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 				if (old_roi[0] >= roi[0])
 				{
 					//offset is decreased, do it first, then width
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[0] != old_roi[0])
+					{
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
+						retValue += setParam(val1, NULL);
+					}
+
+					if (roi[2] != old_roi[2])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 				else
 				{
-					//offset is increased, decrease width at first, then increase offset
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[0] != old_roi[0])
+					{
+						//offset is increased, decrease width at first, then increase offset
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Width", ito::ParamBase::Int, roi[2]));
+						retValue += setParam(val1, NULL);
+					}
+
+					if (roi[2] != old_roi[2])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetX", ito::ParamBase::Int, roi[0]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 
 				if (old_roi[1] >= roi[1])
 				{
-					//offset is decreased, do it first, then width
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[1] != old_roi[1])
+					{
+						//offset is decreased, do it first, then width
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
+						retValue += setParam(val1, NULL);
+					}
+
+					if (roi[3] != old_roi[3])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 				else
 				{
-					//offset is increased, decrease width at first, then increase offset
-					QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
-					QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
-					retValue += setParam(val1, NULL);
-					retValue += setParam(val2, NULL);
+					if (roi[1] != old_roi[1])
+					{
+						//offset is increased, decrease width at first, then increase offset
+						QSharedPointer<ito::ParamBase> val1(new ito::ParamBase("Height", ito::ParamBase::Int, roi[3]));
+						retValue += setParam(val1, NULL);
+					}
+					if (roi[3] != old_roi[3])
+					{
+						QSharedPointer<ito::ParamBase> val2(new ito::ParamBase("OffsetY", ito::ParamBase::Int, roi[1]));
+						retValue += setParam(val2, NULL);
+					}
 				}
 			}
 		}
