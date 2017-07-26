@@ -296,7 +296,11 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                     dataobj.setAxisUnit(1, "m");
                     dataobj.setAxisScale(0, measconds.y_length_per_pixel * PICOMETRE);
                     dataobj.setAxisScale(1, measconds.x_length_per_pixel * PICOMETRE);
-                    dataobj.setValueUnit("m");
+
+					if (isHeight)
+					{
+						dataobj.setValueUnit("m");
+					}
                 }
             }
             else
@@ -392,7 +396,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
         param.setMeta(&sm, false);
         paramsOpt->append(param);
 
-        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of value axis. VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
+        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of value axis (only valid for topography data channels). VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());
         ito::StringMeta sm2(ito::StringMeta::String, "mm");
         sm2.addItem("cm");
         sm2.addItem("mm");
@@ -545,7 +549,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
                     dataobj.setAxisUnit(0, xyUnit);
                     dataobj.setAxisUnit(1, xyUnit);
 
-                    if (dataobj.getType() != ito::tRGBA32)
+                    if (dataobj.getType() != ito::tRGBA32 && dataobj.getValueUnit() != "") //if valueUnit() is empty, we have intensity data
                     {
                         dataobj.setValueUnit(valueUnit);
                         if (valueScaleFactor != 1.0)
