@@ -255,7 +255,7 @@ ito::RetVal readExifTag(QProcess *exifProc, QString filename, QString tagName, Q
     int waited = 0;
     do
     {
-        exifProc->waitForReadyRead(100);
+        exifProc->waitForReadyRead(200);
         //Sleep(100);
         Output += exifProc->readAllStandardOutput();
         waited++;

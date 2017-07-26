@@ -565,9 +565,9 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     ito::RetVal retval = ito::retOk;
 
     const ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
-    
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();    
     ito::DataObject tempDest;
+    int isCVMat = 0;
 
     int toggleByteOrder = (int)(*paramsOpt)[0].getVal<int>();
 
@@ -582,6 +582,12 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     }
 
     int numMats = dObjSrc->getNumPlanes();
+    // check if someone tries to transform an OpenCV color image, which is of size XxYx3 or XxYx4
+    if (numMats > 4 && dObjSrc->getSize(3) <= 4)
+    {
+        numMats = dObjSrc->getSize(2);
+        isCVMat = 1;
+    }
 
     if (numMats == 3 && toggleByteOrder > 1)
     {
@@ -595,7 +601,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         return ito::RetVal(ito::retError, 0, tr("SrcImg must be three dimensional, of type uint8 and contain three or four planes.").toLatin1().data());
     }
 
-    int planeSize[2] = {dObjSrc->getSize(1), dObjSrc->getSize(2)};
+    int planeSize[2] = { dObjSrc->getSize(1 - isCVMat), dObjSrc->getSize(2 - isCVMat) }, useTmpObj = 0;
     bool check;
 
     if ((dObjSrc == dObjDst) || 
@@ -605,6 +611,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         planeSize[1] != dObjDst->getSize(1)) // Check if dimensions of new object are okay
     {
         tempDest = ito::DataObject(2, planeSize, ito::tRGBA32);
+        useTmpObj = 1;
     }
     else
     {
@@ -628,131 +635,235 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     const cv::Mat_<ito::uint8>* matA = NULL;
     cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(tempDest.getCvPlaneMat(0));
 
-    switch(toggleByteOrder)
-    {
-        case 0:
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
-            if (numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
-        break;
-        case 1:
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
-            if (numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
-        break;
-        case 2:
-            matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));  
-        break;
-        case 3:
-            matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));         
-        break;
-    }
-
     bool convertToInt32 = dObjDst->getType() != ito::tRGBA32;
-
-    if (numMats == 4 && convertToInt32)
+    if (!isCVMat)
     {
-        const ito::uint8* rowPtrR;
-        const ito::uint8* rowPtrG;
-        const ito::uint8* rowPtrB;
-        const ito::uint8* rowPtrA;
-        ito::int32* rowPtrDst;
-
-        for (int y = 0; y < planeSize[0]; y++)
+        switch (toggleByteOrder)
         {
-            rowPtrR = matR->ptr<ito::uint8>(y);
-            rowPtrG = matG->ptr<ito::uint8>(y);
-            rowPtrB = matB->ptr<ito::uint8>(y);
-            rowPtrA = matA->ptr<ito::uint8>(y);
-            rowPtrDst = matRes->ptr<ito::int32>(y);
-            for (int x = 0; x < planeSize[1]; x++)
+            case 0:
+                matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+                matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+                matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+                if (numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
+            break;
+            case 1:
+                matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+                matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+                matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+                if (numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
+            break;
+            case 2:
+                matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+                matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+                matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+                matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
+            break;
+            case 3:
+                matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+                matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+                matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+                matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
+            break;
+        }
+
+        if (numMats == 4 && convertToInt32)
+        {
+            const ito::uint8* rowPtrR;
+            const ito::uint8* rowPtrG;
+            const ito::uint8* rowPtrB;
+            const ito::uint8* rowPtrA;
+            ito::int32* rowPtrDst;
+
+            for (int y = 0; y < planeSize[0]; y++)
             {
-                rowPtrDst[x] =  (ito::int32)rowPtrR[x];
-                rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
-                rowPtrDst[x] += ((ito::int32)rowPtrB[x]) << 16;
-                rowPtrDst[x] += ((ito::int32)rowPtrA[x]) << 24;
+                rowPtrR = matR->ptr<ito::uint8>(y);
+                rowPtrG = matG->ptr<ito::uint8>(y);
+                rowPtrB = matB->ptr<ito::uint8>(y);
+                rowPtrA = matA->ptr<ito::uint8>(y);
+                rowPtrDst = matRes->ptr<ito::int32>(y);
+                for (int x = 0; x < planeSize[1]; x++)
+                {
+                    rowPtrDst[x] = (ito::int32)rowPtrR[x];
+                    rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
+                    rowPtrDst[x] += ((ito::int32)rowPtrB[x]) << 16;
+                    rowPtrDst[x] += ((ito::int32)rowPtrA[x]) << 24;
+                }
+            }
+        }
+        else if (convertToInt32)
+        {
+            const ito::uint8* rowPtrR;
+            const ito::uint8* rowPtrG;
+            const ito::uint8* rowPtrB;
+            ito::int32* rowPtrDst;
+
+            for (int y = 0; y < planeSize[0]; y++)
+            {
+                rowPtrR = matR->ptr<ito::uint8>(y);
+                rowPtrG = matG->ptr<ito::uint8>(y);
+                rowPtrB = matB->ptr<ito::uint8>(y);
+                rowPtrDst = matRes->ptr<ito::int32>(y);
+
+                for (int x = 0; x < planeSize[1]; x++)
+                {
+                    rowPtrDst[x] = (ito::int32)rowPtrR[x];
+                    rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
+                    rowPtrDst[x] += ((ito::int32)rowPtrB[x]) << 16;
+                    rowPtrDst[x] += 255 << 24; // set alpha to 255, otherwise nothing is displayed in itom
+                }
+            }
+        }
+        else if (numMats == 4)
+        {
+            const ito::uint8* rowPtrR;
+            const ito::uint8* rowPtrG;
+            const ito::uint8* rowPtrB;
+            const ito::uint8* rowPtrA;
+            ito::RgbaBase32* rowPtrDst;
+
+            for (int y = 0; y < planeSize[0]; y++)
+            {
+                rowPtrR = matR->ptr<ito::uint8>(y);
+                rowPtrG = matG->ptr<ito::uint8>(y);
+                rowPtrB = matB->ptr<ito::uint8>(y);
+                rowPtrA = matA->ptr<ito::uint8>(y);
+                rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
+                for (int x = 0; x < planeSize[1]; x++)
+                {
+                    rowPtrDst[x].a = (ito::int32)rowPtrA[x];
+                    rowPtrDst[x].b = (ito::int32)rowPtrB[x];
+                    rowPtrDst[x].g = (ito::int32)rowPtrG[x];
+                    rowPtrDst[x].r = (ito::int32)rowPtrR[x];
+                }
+            }
+        }
+        else
+        {
+            const ito::uint8* rowPtrR;
+            const ito::uint8* rowPtrG;
+            const ito::uint8* rowPtrB;
+            ito::RgbaBase32* rowPtrDst;
+
+            for (int y = 0; y < planeSize[0]; y++)
+            {
+                rowPtrR = matR->ptr<ito::uint8>(y);
+                rowPtrG = matG->ptr<ito::uint8>(y);
+                rowPtrB = matB->ptr<ito::uint8>(y);
+                rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
+                for (int x = 0; x < planeSize[1]; x++)
+                {
+                    rowPtrDst[x].b = (ito::int32)rowPtrB[x];
+                    rowPtrDst[x].g = (ito::int32)rowPtrG[x];
+                    rowPtrDst[x].r = (ito::int32)rowPtrR[x];
+                    rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
+                }
             }
         }
     }
-    else if (convertToInt32)
+    else // isCVMat
     {
-        const ito::uint8* rowPtrR;
-        const ito::uint8* rowPtrG;
-        const ito::uint8* rowPtrB;
-        ito::int32* rowPtrDst;
-
-        for (int y = 0; y < planeSize[0]; y++)
+        if (!dObjSrc->getContinuous())
         {
-            rowPtrR = matR->ptr<ito::uint8>(y);
-            rowPtrG = matG->ptr<ito::uint8>(y);
-            rowPtrB = matB->ptr<ito::uint8>(y);
-            rowPtrDst = matRes->ptr<ito::int32>(y);
+            retval += ito::RetVal(ito::retError, 0, tr("Can convert only continuous cvMat style matrices to rgb32").toLatin1().data());
+        }
+        else
+        {
+            int ofsR = 0, ofsG = 1, ofsB = 2, ofsA = 3;
+            ito::uint8 *srcPtr = (ito::uint8 *)dObjSrc->rowPtr(0, 0);
 
-            for (int x = 0; x < planeSize[1]; x++)
+            switch (toggleByteOrder)
             {
-                rowPtrDst[x] =  (ito::int32)rowPtrR[x];
-                rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
-                rowPtrDst[x] += ((ito::int32)rowPtrB[x]) << 16;
+                case 0:
+                    ofsR = 0;
+                    ofsG = 1;
+                    ofsB = 2;
+                    ofsA = 3;
+                break;
+
+                case 1:
+                    ofsR = 2;
+                    ofsG = 1;
+                    ofsB = 0;
+                    ofsA = 3;
+                break;
+
+                case 2:
+                    ofsR = 1;
+                    ofsG = 2;
+                    ofsB = 3;
+                    ofsA = 0;
+                break;
+
+                case 3:
+                    ofsR = 3;
+                    ofsG = 2;
+                    ofsB = 1;
+                    ofsA = 0;
+                break;
+            }
+
+            if (numMats == 4 && convertToInt32)
+            {
+                ito::int32* rowPtrDst = matRes->ptr<ito::int32>(0);
+                for (int y = 0; y < planeSize[0]; y++)
+                {
+                    for (int x = 0; x < planeSize[1]; x++)
+                    {
+                        rowPtrDst[y * planeSize[1] + x] = srcPtr[(y * planeSize[1] + x) * numMats + ofsR];
+                        rowPtrDst[y * planeSize[1] + x] += srcPtr[(y * planeSize[1] + x) * numMats + ofsG] << 8;
+                        rowPtrDst[y * planeSize[1] + x] += srcPtr[(y * planeSize[1] + x) * numMats + ofsB] << 16;
+                        rowPtrDst[y * planeSize[1] + x] += srcPtr[(y * planeSize[1] + x) * numMats + ofsA] << 24;
+                    }
+                }
+            }
+            else if (convertToInt32)
+            {
+                ito::int32* rowPtrDst = matRes->ptr<ito::int32>(0);
+                for (int y = 0; y < planeSize[0]; y++)
+                {
+                    for (int x = 0; x < planeSize[1]; x++)
+                    {
+                        rowPtrDst[y * planeSize[1] + x] = srcPtr[(y * planeSize[1] + x) * numMats + ofsR];
+                        rowPtrDst[y * planeSize[1] + x] += srcPtr[(y * planeSize[1] + x) * numMats + ofsG] << 8;
+                        rowPtrDst[y * planeSize[1] + x] += srcPtr[(y * planeSize[1] + x) * numMats + ofsB] << 16;
+                        rowPtrDst[y * planeSize[1] + x] += 255 << 24; // set alpha to 255, otherwise nothing is displayed in itom
+                    }
+                }
+            }
+            else if (numMats == 4)
+            {
+                ito::RgbaBase32* rowPtrDst = matRes->ptr<ito::Rgba32>(0);
+                for (int y = 0; y < planeSize[0]; y++)
+                {
+                    for (int x = 0; x < planeSize[1]; x++)
+                    {
+                        rowPtrDst[y * planeSize[1] + x].r = srcPtr[(y * planeSize[1] + x) * numMats + ofsR];
+                        rowPtrDst[y * planeSize[1] + x].g = srcPtr[(y * planeSize[1] + x) * numMats + ofsG];
+                        rowPtrDst[y * planeSize[1] + x].b = srcPtr[(y * planeSize[1] + x) * numMats + ofsB];
+                        rowPtrDst[y * planeSize[1] + x].a = srcPtr[(y * planeSize[1] + x) * numMats + ofsA];
+                    }
+                }
+            }
+            else
+            {
+                ito::RgbaBase32* rowPtrDst = matRes->ptr<ito::Rgba32>(0);
+                for (int y = 0; y < planeSize[0]; y++)
+                {
+                    for (int x = 0; x < planeSize[1]; x++)
+                    {
+                        rowPtrDst[y * planeSize[1] + x].r = srcPtr[(y * planeSize[1] + x) * numMats + ofsR];
+                        rowPtrDst[y * planeSize[1] + x].g = srcPtr[(y * planeSize[1] + x) * numMats + ofsG];
+                        rowPtrDst[y * planeSize[1] + x].b = srcPtr[(y * planeSize[1] + x) * numMats + ofsB];
+                        rowPtrDst[y * planeSize[1] + x].a = 255; // set alpha to 255, otherwise nothing is displayed in itom
+                    }
+                }
             }
         }
     }
-    else if (numMats == 4)
-    {
-        const ito::uint8* rowPtrR;
-        const ito::uint8* rowPtrG;
-        const ito::uint8* rowPtrB;
-        const ito::uint8* rowPtrA;
-        ito::RgbaBase32* rowPtrDst;
 
-        for (int y = 0; y < planeSize[0]; y++)
-        {
-            rowPtrR = matR->ptr<ito::uint8>(y);
-            rowPtrG = matG->ptr<ito::uint8>(y);
-            rowPtrB = matB->ptr<ito::uint8>(y);
-            rowPtrA = matA->ptr<ito::uint8>(y);
-            rowPtrDst = matRes->ptr<ito::Rgba32>(y);
-
-            for (int x = 0; x < planeSize[1]; x++)
-            {
-                rowPtrDst[x].a =  (ito::int32)rowPtrA[x];
-                rowPtrDst[x].b =  (ito::int32)rowPtrB[x];
-                rowPtrDst[x].g =  (ito::int32)rowPtrG[x];
-                rowPtrDst[x].r =  (ito::int32)rowPtrR[x];
-            }
-        }
-    }
-    else
-    {
-        const ito::uint8* rowPtrR;
-        const ito::uint8* rowPtrG;
-        const ito::uint8* rowPtrB;
-        ito::RgbaBase32* rowPtrDst;
-
-        for (int y = 0; y < planeSize[0]; y++)
-        {
-            rowPtrR = matR->ptr<ito::uint8>(y);
-            rowPtrG = matG->ptr<ito::uint8>(y);
-            rowPtrB = matB->ptr<ito::uint8>(y);
-            rowPtrDst = matRes->ptr<ito::Rgba32>(y);
-
-            for (int x = 0; x < planeSize[1]; x++)
-            {
-                rowPtrDst[x].b =  (ito::int32)rowPtrB[x];
-                rowPtrDst[x].g =  (ito::int32)rowPtrG[x];
-                rowPtrDst[x].r =  (ito::int32)rowPtrR[x];
-            }
-        }
-    }
-
-    if (dObjSrc == dObjDst) (*dObjDst) = tempDest;
+    if (useTmpObj) (*dObjDst) = tempDest;
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
     if (!retval.containsError())
