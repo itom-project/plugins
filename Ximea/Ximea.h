@@ -27,6 +27,7 @@
 #include "dialogXimea.h"
 #include <qsharedpointer.h>
 
+
 #include "xiApi.h"
 
 struct SoftwareShading

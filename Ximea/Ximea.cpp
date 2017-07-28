@@ -221,7 +221,7 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("buffers_queue_size", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 3, 1, tr("Number of buffers in the queue.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-#ifndef USE_API_3_16
+#ifndef defined(USE_API_3_16)
     paramVal = ito::Param("timing_mode", ito::ParamBase::Int, XI_ACQ_TIMING_MODE_FREE_RUN, XI_ACQ_TIMING_MODE_FRAME_RATE, XI_ACQ_TIMING_MODE_FREE_RUN, tr("Acquisition timing: %1: free run (default), %2: by frame rate.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
 #else
     paramVal = ito::Param("timing_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 0, 0 , tr("Acquisition timing: not available due to old Ximea API.").toLatin1().data());
@@ -328,14 +328,14 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             {
                 m_params["cam_number"].setVal<int>(icam_number);
 
-                char strBuf[1024];               
-                DWORD strBufSize = 1024 * sizeof(char);    
+                char strBuf[1024];
+                DWORD strBufSize = 1024 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_NAME, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_NAME);
                 if (!retValue.containsError())
                 {
-                    m_params["sensor_type"].setVal<char*>(strBuf); 
+                    m_params["sensor_type"].setVal<char*>(strBuf);
                 }
-#if defined(USE_API_4_10) || defined(USE_API_3_16)
+#ifndef defined(USE_API_4_10) || defined(USE_API_3_16)
                 char serial_number[20] = "";
                 DWORD strSize = 20 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &strSize, &strType), "get: " XI_PRM_DEVICE_SN);
@@ -355,7 +355,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
 #endif
 
-                strBufSize = 1024 * sizeof(char);    
+                strBufSize = 1024 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
                 if (!retValue.containsError())
                 {
@@ -938,13 +938,13 @@ ito::RetVal Ximea::LoadLib(void)
 #if defined(USE_API_4_10) || defined(USE_API_3_16)
     ximeaLib = LoadLibrary(L"./lib/xiapi64.dll"); //L"./lib/m3apiX64.dll");
 #else
-    ximeaLib = LoadLibrary(L"./lib/m3apiX64.dll"); //L"./lib/m3apiX64.dll");
+    ximeaLib = LoadLibrary(L"./lib/xiapi64.dll"); //L"./lib/m3apiX64.dll");
 #endif        
 #else
 #if defined(USE_API_4_10) || defined(USE_API_3_16)
     ximeaLib = LoadLibrary("./lib/xiapiX64.dll"); //"./lib/m3apiX64.dll");
 #else
-    ximeaLib = LoadLibrary("./lib/m3apiX64.dll"); //"./lib/m3apiX64.dll");
+    ximeaLib = LoadLibrary("./lib/xiapi64.dll"); //"./lib/m3apiX64.dll");
 #endif  
         
 #endif
