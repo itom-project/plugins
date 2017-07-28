@@ -337,22 +337,22 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
 #if defined(USE_API_4_10) || defined(USE_API_3_16)
                 char serial_number[20] = "";
-				DWORD strSize = 20 * sizeof(char);
+                DWORD strSize = 20 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &strSize, &strType), "get: " XI_PRM_DEVICE_SN);
                 if (!retValue.containsError())
                 {
-                  m_params["serial_number"].setVal<char*>(serial_number); 
-                  m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_number);
+                    m_params["serial_number"].setVal<char*>(serial_number);
+                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_number);
                 }
 #else
-				int serial_number;
-				retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
-				if (!retValue.containsError())
-				{
-					QString serial_numberHex = QString::number(serial_number, 16);
-					m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data());
-					m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
-				}
+                int serial_number;
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
+                if (!retValue.containsError())
+                {
+                    QString serial_numberHex = QString::number(serial_number, 16);
+                    m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data());
+                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
+                }
 #endif
 
                 strBufSize = 1024 * sizeof(char);    
