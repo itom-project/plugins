@@ -26,7 +26,7 @@
 #include "xiApi.h"
 //#include "xiExt.h"
 
-#ifndef USE_API_4_10 || USE_API_3_16
+#if defined(USE_API_4_10) || defined(USE_API_3_16)
     #include "m3Api.h"
 #endif
 
@@ -48,7 +48,7 @@ XI_RETURN (__cdecl *pxiGetImage)(IN HANDLE hDevice, IN DWORD timeout, OUT LPXI_I
 XI_RETURN (__cdecl *pxiSetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD size, XI_PRM_TYPE type);
 XI_RETURN (__cdecl *pxiGetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD * size, XI_PRM_TYPE * type);
 
-#ifndef USE_API_4_10 || USE_API_3_16
+#if defined(USE_API_4_10) || defined(USE_API_3_16)
     MM40_RETURN (__cdecl *pUpdateFrameShading)(IN HANDLE hDevice, IN HANDLE hFieldBuffer, IN LPMMSHADING lpSahding);
     MM40_RETURN (__cdecl *pCalculateShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite );
     MM40_RETURN (__cdecl *pCalculateShadingRaw)(INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite ); //does not exist in new API
