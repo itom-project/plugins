@@ -285,7 +285,7 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     
 
     QString filename = QString::fromLatin1((*paramsMand)[0].getVal<char*>());
-    QString filenameLoad, dcrawExt(".pgm");
+    QString filenameLoad, dcrawExt(".ppm");
     QFileInfo ofileinfo(filename);
     if (!ofileinfo.exists())
     {

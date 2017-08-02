@@ -235,6 +235,10 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
         *labelTable = *labelList;
         delete labelList;
     }
+    else 
+    {
+        *labelTable = dataObject();
+    }
 
     if (labelPtr)
         delete labelPtr;
