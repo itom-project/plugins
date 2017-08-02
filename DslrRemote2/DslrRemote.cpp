@@ -102,28 +102,19 @@ DslrRemoteInterface::DslrRemoteInterface()
 
 //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
-"The DslrRemote is a virtual camera which emulates a camera with white noise. \n\
+"The DslrRemote is a library to remote control some DSLR cameras. \n\
 \n\
-The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
-The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera \
-image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
-\n\
-You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
-\n\
-This plugin can also be used as template for other grabber.";*/
+!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
+Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.\n\";*/
 
 	m_description = QObject::tr("A virtual white noise grabber");
 //    m_detaildescription = QObject::tr(docstring);
 	m_detaildescription = QObject::tr(
-"The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
+"Library to remote control some DSLR cameras. \n\
 \n\
-The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
-The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera \
-image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
-\n\
-You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
-\n\
-This plugin can also be used as template for other grabber.");
+!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
+Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.\n\
+");
 
     m_author = "Universidade Federal de Alagoas (UFAL)";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -131,7 +122,7 @@ This plugin can also be used as template for other grabber.");
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
-Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions."+GITVERSION);
+Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.");
     
     m_initParamsMand.clear();
 

@@ -237,7 +237,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
     }
     else 
     {
-        *labelTable = dataObject();
+        *labelTable = ito::DataObject();
     }
 
     if (labelPtr)
