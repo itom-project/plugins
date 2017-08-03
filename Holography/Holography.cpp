@@ -369,7 +369,7 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     QVector<ito::ParamBase> filterParamsOpt0(0), filterParamsOpt1(0);
     QVector<ito::ParamBase> filterParamsOut0(0), filterParamsOut1(0);
 
-    if (inpObjPtr->getSize(0) == -1 && inpObjPtr->getSize(1) == -1)
+    if (!inpObjPtr || !pMasksPtr || inpObjPtr->getSize(0) == -1 && inpObjPtr->getSize(1) == -1)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("input object empty").toLatin1().data());
         goto end;
@@ -570,7 +570,7 @@ end:
     QVector<ito::ParamBase> fPOpt1(0), fPOpt2(0);
     QVector<ito::ParamBase> fPOut1(0), fPOut2(0);
 
-    if (inpObjPtr->getSize(0) == -1 && inpObjPtr->getSize(1) == -1)
+    if (!inpObjPtr || !pMasksPtr || inpObjPtr->getSize(0) == -1 && inpObjPtr->getSize(1) == -1)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("input object empty").toLatin1().data());
         goto end;
