@@ -10,7 +10,7 @@ SET(ITOM_DIR "" CACHE PATH "base path to itom")
 
 # AerotechA3200
 IF (WIN32)
-    OPTION(PLUGIN_aerotechA3200 "Build with this plugin." ON)
+    OPTION(PLUGIN_aerotechA3200 "Build with this plugin." OFF)
     if (PLUGIN_aerotechA3200)
             ADD_SUBDIRECTORY(AerotechA3200)
     endif (PLUGIN_aerotechA3200)
@@ -18,27 +18,27 @@ ENDIF (WIN32)
 
 # AerotechEnsemble
 IF (WIN32)
-    OPTION(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
+    OPTION(PLUGIN_aerotechEnsemble "Build with this plugin." OFF)
     if (PLUGIN_aerotechEnsemble)
             ADD_SUBDIRECTORY(AerotechEnsemble)
     endif (PLUGIN_aerotechEnsemble)
 ENDIF (WIN32)
 
 # AndorSDK3
-OPTION(PLUGIN_andorSDK3 "Build with this plugin." ON)
+OPTION(PLUGIN_andorSDK3 "Build with this plugin." OFF)
 if (PLUGIN_andorSDK3)
         ADD_SUBDIRECTORY(AndorSDK3)
 endif (PLUGIN_andorSDK3)
 
 # AvantesAvaSpec
-OPTION(PLUGIN_AvantesAvaSpec "Build with this plugin." ON)
+OPTION(PLUGIN_AvantesAvaSpec "Build with this plugin." OFF)
 if (PLUGIN_AvantesAvaSpec)
         ADD_SUBDIRECTORY(AvantesAvaSpec)
 endif (PLUGIN_AvantesAvaSpec)
 
 # AVTVimba
 IF (WIN32)
-    OPTION(PLUGIN_AVTVimba "Build with this plugin." ON)
+    OPTION(PLUGIN_AVTVimba "Build with this plugin." OFF)
     if (PLUGIN_AVTVimba)
             ADD_SUBDIRECTORY(AVTVimba)
     endif (PLUGIN_AVTVimba)
@@ -56,15 +56,15 @@ if (PLUGIN_BasicGPLFilters)
     ADD_SUBDIRECTORY(BasicGPLFilters)
 endif (PLUGIN_BasicGPLFilters) 
 
-# BasicGPLFilters
-OPTION(PLUGIN_HidApi "Build with this plugin." ON)
+# HidApi
+OPTION(PLUGIN_HidApi "Build with this plugin." OFF)
 if (PLUGIN_HidApi)
     ADD_SUBDIRECTORY(hidapi)
 endif (PLUGIN_HidApi) 
 
 # cmu1394
 IF (WIN32)
-    OPTION(PLUGIN_cmu1394 "Build with this plugin." ON)
+    OPTION(PLUGIN_cmu1394 "Build with this plugin." OFF)
     if (PLUGIN_cmu1394)
             ADD_SUBDIRECTORY(cmu1394)
     endif (PLUGIN_cmu1394)
@@ -97,7 +97,7 @@ if (PLUGIN_DataObjectIO)
 endif (PLUGIN_DataObjectIO)
 
 # dispWindow
-OPTION(PLUGIN_dispWindow "Build with this plugin." ON)
+OPTION(PLUGIN_dispWindow "Build with this plugin." OFF)
 if (PLUGIN_dispWindow)
     ADD_SUBDIRECTORY(dispWindow)
 endif (PLUGIN_dispWindow)
@@ -127,7 +127,7 @@ if (PLUGIN_DummyMotor)
 endif (PLUGIN_DummyMotor)
 
 # DemoAlgorithms
-OPTION(PLUGIN_DemoAlgorithms "Build with this plugin." ON)
+OPTION(PLUGIN_DemoAlgorithms "Build with this plugin." OFF)
 if (PLUGIN_DemoAlgorithms)
     ADD_SUBDIRECTORY(DemoAlgorithms)
 endif (PLUGIN_DemoAlgorithms)
@@ -151,39 +151,39 @@ if (PLUGIN_FittingFilters)
 endif (PLUGIN_FittingFilters)
 
 # FireGrabber
-OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
+OPTION(PLUGIN_FireGrabber "Build with this plugin." OFF)
 if (PLUGIN_FireGrabber)
     ADD_SUBDIRECTORY(FireGrabber)
 endif (PLUGIN_FireGrabber)
 
 # FirgelliLAC
 IF (WIN32)
-    OPTION(PLUGIN_FirgelliLAC "Build with this plugin." ON)
+    OPTION(PLUGIN_FirgelliLAC "Build with this plugin." OFF)
     if (PLUGIN_FirgelliLAC)
         ADD_SUBDIRECTORY(FirgelliLAC)
     endif (PLUGIN_FirgelliLAC)
 ENDIF (WIN32)
 
 # FringeProj
-OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
+OPTION(PLUGIN_FringeProj "Build with this plugin." OFF)
 if (PLUGIN_FringeProj)
     ADD_SUBDIRECTORY(FringeProj)
 endif (PLUGIN_FringeProj)
 
 # GenICam
-OPTION(PLUGIN_GenICam "Build with this plugin." ON)
+OPTION(PLUGIN_GenICam "Build with this plugin." OFF)
 if (PLUGIN_GenICam)
     ADD_SUBDIRECTORY(GenICam)
 endif (PLUGIN_GenICam)
 
 # glDisplay
-OPTION(PLUGIN_GLDisplay "Build with this plugin." ON)
+OPTION(PLUGIN_GLDisplay "Build with this plugin." OFF)
 if (PLUGIN_GLDisplay)
     ADD_SUBDIRECTORY(glDisplay)
 endif (PLUGIN_GLDisplay)
 
 # GWInstekPSP
-OPTION(PLUGIN_GWInstekPSP "Build with this plugin." ON)
+OPTION(PLUGIN_GWInstekPSP "Build with this plugin." OFF)
 if (PLUGIN_GWInstekPSP)
     ADD_SUBDIRECTORY(GWInstekPSP)
 endif (PLUGIN_GWInstekPSP)
@@ -191,23 +191,23 @@ endif (PLUGIN_GWInstekPSP)
 # Holography
 OPTION(PLUGIN_Holography "Build with this plugin." ON)
 if (PLUGIN_Holography)
-	ADD_SUBDIRECTORY(Holography)
+    ADD_SUBDIRECTORY(Holography)
 endif (PLUGIN_Holography)
 
 # IDSuEye
-OPTION(PLUGIN_IDSuEye "Build with this plugin." ON)
+OPTION(PLUGIN_IDSuEye "Build with this plugin." OFF)
 if (PLUGIN_IDSuEye)
     ADD_SUBDIRECTORY(IDSuEye)
 endif (PLUGIN_IDSuEye)
 
 # LeicaMotorFocus
-OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
+OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." OFF)
 if (PLUGIN_LeicaMotorFocus)
     ADD_SUBDIRECTORY(LeicaMotorFocus)
 endif (PLUGIN_LeicaMotorFocus)
 
 # libmodbus
-OPTION(PLUGIN_LibModbus "Build with this plugin." ON)
+OPTION(PLUGIN_LibModbus "Build with this plugin." OFF)
 if (PLUGIN_LibModbus)
     ADD_SUBDIRECTORY(libmodbus)
 endif (PLUGIN_LibModbus)
@@ -220,9 +220,9 @@ endif (PLUGIN_LIBUSB)
 
 # MeasurementComputing
 IF(WIN32)
-OPTION(PLUGIN_MeasurementComputing "Build with this plugin." ON)
+OPTION(PLUGIN_MeasurementComputing "Build with this plugin." OFF)
 if (PLUGIN_MeasurementComputing)
-	ADD_SUBDIRECTORY(MeasurementComputing)
+    ADD_SUBDIRECTORY(MeasurementComputing)
 endif (PLUGIN_MeasurementComputing)
 ENDIF(WIN32)
 
@@ -235,13 +235,13 @@ endif (PLUGIN_MSMediaFoundation)
 ENDIF(WIN32)
 
 # NanotecStepMotor
-OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." ON)
+OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." OFF)
 if (PLUGIN_NanotecStepMotor)
     ADD_SUBDIRECTORY(NanotecStepMotor)
 endif (PLUGIN_NanotecStepMotor)
 
 # NewportSMC100
-OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." ON)
+OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." OFF)
 if (PLUGIN_NEWPORT_SMC100)
     ADD_SUBDIRECTORY(NewportSMC100)
 endif (PLUGIN_NEWPORT_SMC100)
@@ -253,7 +253,7 @@ if (PLUGIN_NI-DAQmx)
 endif (PLUGIN_NI-DAQmx)
 
 # NITWidySWIR
-OPTION(PLUGIN_NITWidySWIR "Build with this plugin." ON)
+OPTION(PLUGIN_NITWidySWIR "Build with this plugin." OFF)
 if (PLUGIN_NITWidySWIR)
     ADD_SUBDIRECTORY(NITWidySWIR)
 endif (PLUGIN_NITWidySWIR)
@@ -284,7 +284,7 @@ endif (PLUGIN_PclTools)
 
 # PCOCamera
 IF (WIN32)
-  OPTION(PLUGIN_PCOCamera "Build with this plugin." ON)
+  OPTION(PLUGIN_PCOCamera "Build with this plugin." OFF)
   if (PLUGIN_PCOCamera)
       ADD_SUBDIRECTORY(PCOCamera)
   endif (PLUGIN_PCOCamera)
@@ -292,7 +292,7 @@ ENDIF (WIN32)
 
 # PCOSensicam
 IF (WIN32)
-  OPTION(PLUGIN_PCOSensicam "Build with this plugin." ON)
+  OPTION(PLUGIN_PCOSensicam "Build with this plugin." OFF)
   if (PLUGIN_PCOSensicam)
       ADD_SUBDIRECTORY(PCOSensicam)
   endif (PLUGIN_PCOSensicam)
@@ -300,38 +300,38 @@ ENDIF (WIN32)
 
 # PCOPixelFly
 IF (WIN32)
-  OPTION(PLUGIN_PCOPixelFly "Build with this plugin." ON)
+  OPTION(PLUGIN_PCOPixelFly "Build with this plugin." OFF)
   if (PLUGIN_PCOPixelFly)
       ADD_SUBDIRECTORY(PCOPixelFly)
   endif (PLUGIN_PCOPixelFly)
 ENDIF (WIN32)
 
 # PiezosystemJena_NV40_1
-OPTION(PLUGIN_PiezosystemJena_NV40_1 "Build with this plugin." ON)
+OPTION(PLUGIN_PiezosystemJena_NV40_1 "Build with this plugin." OFF)
 if (PLUGIN_PiezosystemJena_NV40_1)
   ADD_SUBDIRECTORY(PiezosystemJena_NV40_1)
 endif (PLUGIN_PiezosystemJena_NV40_1)
 
 # PGRFlyCapture
-OPTION(PLUGIN_PGRFlyCapture "Build with this plugin." ON)
+OPTION(PLUGIN_PGRFlyCapture "Build with this plugin." OFF)
 if (PLUGIN_PGRFlyCapture)
     ADD_SUBDIRECTORY(PGRFlyCapture)
 endif (PLUGIN_PGRFlyCapture)
 
 # PIHexapodCtrl
-OPTION(PLUGIN_PIHexapodCtrl "Build with this plugin." ON)
+OPTION(PLUGIN_PIHexapodCtrl "Build with this plugin." OFF)
 if (PLUGIN_PIHexapodCtrl)
     ADD_SUBDIRECTORY(PIHexapodCtrl)
 endif (PLUGIN_PIHexapodCtrl)
 
 # PIPiezoCtrl
-OPTION(PLUGIN_PIPiezoCtrl "Build with this plugin." ON)
+OPTION(PLUGIN_PIPiezoCtrl "Build with this plugin." OFF)
 if (PLUGIN_PIPiezoCtrl)
     ADD_SUBDIRECTORY(PIPiezoCtrl)
 endif (PLUGIN_PIPiezoCtrl)
 
 # PI_GCS2
-OPTION(PLUGIN_PI_GCS2 "Build with this plugin." ON)
+OPTION(PLUGIN_PI_GCS2 "Build with this plugin." OFF)
 if (PLUGIN_PI_GCS2)
     ADD_SUBDIRECTORY(PI_GCS2)
 endif (PLUGIN_PI_GCS2)
@@ -363,20 +363,20 @@ if (PLUGIN_SerialIO)
 endif (PLUGIN_SerialIO)
 
 # SuperlumBS
-OPTION(PLUGIN_SuperlumBS "Build with this plugin." ON)
+OPTION(PLUGIN_SuperlumBS "Build with this plugin." OFF)
 if (PLUGIN_SuperlumBS)
     ADD_SUBDIRECTORY(SuperlumBS)
 endif (PLUGIN_SuperlumBS)
 
 # SuperlumBL
-OPTION(PLUGIN_SuperlumBL "Build with this plugin." ON)
+OPTION(PLUGIN_SuperlumBL "Build with this plugin." OFF)
 if (PLUGIN_SuperlumBL)
     ADD_SUBDIRECTORY(SuperlumBL)
 endif (PLUGIN_SuperlumBL)
 
 # ST8SMC4USB
 IF (WIN32)
-    OPTION(PLUGIN_ST8SMC4USB "Build with this plugin." ON)
+    OPTION(PLUGIN_ST8SMC4USB "Build with this plugin." OFF)
     if (PLUGIN_ST8SMC4USB)
             ADD_SUBDIRECTORY(ST8SMC4USB)
     endif (PLUGIN_ST8SMC4USB)
@@ -384,7 +384,7 @@ ENDIF (WIN32)
 
 # ThorlabsBP benchtop piezo
 IF (WIN32)
-    OPTION(PLUGIN_ThorlabsBP "Build with this plugin." ON)
+    OPTION(PLUGIN_ThorlabsBP "Build with this plugin." OFF)
     if (PLUGIN_ThorlabsBP)
         ADD_SUBDIRECTORY(ThorlabsBP)
     endif (PLUGIN_ThorlabsBP)
@@ -392,7 +392,7 @@ ENDIF (WIN32)
 
 # ThorlabsCCS Spectrometer
 IF (WIN32)
-    OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." ON)
+    OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." OFF)
     if (PLUGIN_ThorlabsCCS)
         ADD_SUBDIRECTORY(ThorlabsCCS)
     endif (PLUGIN_ThorlabsCCS)
@@ -400,7 +400,7 @@ ENDIF (WIN32)
 
 # ThorlabsISM stepper motor
 IF (WIN32)
-    OPTION(PLUGIN_ThorlabsISM "Build with this plugin." ON)
+    OPTION(PLUGIN_ThorlabsISM "Build with this plugin." OFF)
     if (PLUGIN_ThorlabsISM)
         ADD_SUBDIRECTORY(ThorlabsISM)
     endif (PLUGIN_ThorlabsISM)
@@ -416,27 +416,27 @@ ENDIF (WIN32)
 
 # Thorlabs Power Meter
 IF (WIN32)
-    OPTION(PLUGIN_ThorlabsPowerMeter "Build with this plugin." ON)
+    OPTION(PLUGIN_ThorlabsPowerMeter "Build with this plugin." OFF)
     if (PLUGIN_ThorlabsPowerMeter)
         ADD_SUBDIRECTORY(ThorlabsPowerMeter)
     endif (PLUGIN_ThorlabsPowerMeter)
 ENDIF (WIN32)
 
 # UhlRegister
-OPTION(PLUGIN_UhlRegister "Build with this plugin." ON)
+OPTION(PLUGIN_UhlRegister "Build with this plugin." OFF)
 if (PLUGIN_UhlRegister)
     ADD_SUBDIRECTORY(UhlRegister)
 endif (PLUGIN_UhlRegister)
 
 # UhlText
-OPTION(PLUGIN_UhlText "Build with this plugin." ON)
+OPTION(PLUGIN_UhlText "Build with this plugin." OFF)
 if (PLUGIN_UhlText)
     ADD_SUBDIRECTORY(UhlText)
 endif (PLUGIN_UhlText)
 
 # USBMotion3XIII
 IF (WIN32)
-    OPTION(PLUGIN_USBMotion3XIII "Build with this plugin." ON)
+    OPTION(PLUGIN_USBMotion3XIII "Build with this plugin." OFF)
     if (PLUGIN_USBMotion3XIII)
         ADD_SUBDIRECTORY(USBMotion3XIII)
     endif (PLUGIN_USBMotion3XIII)
@@ -452,7 +452,7 @@ ENDIF (UNIX AND NOT APPLE)
 
 # Vistek
 IF (WIN32)
-    OPTION(PLUGIN_Vistek "Build with this plugin." ON)
+    OPTION(PLUGIN_Vistek "Build with this plugin." OFF)
     if (PLUGIN_Vistek)
         ADD_SUBDIRECTORY(Vistek)
     endif (PLUGIN_Vistek)
@@ -460,7 +460,7 @@ ENDIF (WIN32)
 
 # VRMagic
 IF (WIN32)
-    OPTION(PLUGIN_VRMagic "Build with this plugin." ON)
+    OPTION(PLUGIN_VRMagic "Build with this plugin." OFF)
     if (PLUGIN_VRMagic)
         ADD_SUBDIRECTORY(VRMagic)
     endif (PLUGIN_VRMagic)
@@ -474,14 +474,14 @@ endif (PLUGIN_x3pio)
 
 # Xeneth
 IF (WIN32)
-    OPTION(PLUGIN_Xeneth "Build with this plugin." ON)
+    OPTION(PLUGIN_Xeneth "Build with this plugin." OFF)
     if (PLUGIN_Xeneth)
         ADD_SUBDIRECTORY(Xeneth)
     endif (PLUGIN_Xeneth)
 ENDIF (WIN32)
 
 # XIMEA
-OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
+OPTION(PLUGIN_XIMEA "Build with this plugin." OFF)
 if (PLUGIN_XIMEA)
     ADD_SUBDIRECTORY(Ximea)
 endif (PLUGIN_XIMEA)
