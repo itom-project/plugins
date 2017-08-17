@@ -7,6 +7,7 @@ OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_GIT_TAG "Adds the current GIT commit tag in the about string of a plugin." OFF)
 SET(ITOM_DIR "" CACHE PATH "base path to itom") 
+load_cache(${ITOM_SDK_DIR}/../)
 
 # AerotechA3200
 IF (WIN32)
