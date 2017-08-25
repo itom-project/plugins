@@ -219,10 +219,13 @@ void closeExifTool(QProcess *&exifProc)
         QString command;
         command = "-stay_open" + endline;
         exifProc->write(command.toLatin1().data());
-        command = "-false" + endline;
+        command = "false" + endline;
         exifProc->write(command.toLatin1().data());
         exifProc->waitForBytesWritten();
         exifProc->close();
+        Sleep(10);
+        // make sure the process got killed
+        exifProc->kill();
         delete exifProc;
         exifProc = NULL;
     }
@@ -286,6 +289,7 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
 
     QString filename = QString::fromLatin1((*paramsMand)[0].getVal<char*>());
     QString filenameLoad, dcrawExt(".ppm");
+    QString filenamePath;
     QFileInfo ofileinfo(filename);
     if (!ofileinfo.exists())
     {
@@ -324,12 +328,12 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
             && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
         {
             filename = tmpPath + "/" + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
-            filenameLoad = tmpPath + "/" + ofileinfo.completeBaseName() + dcrawExt;
+            filenamePath = tmpPath + "/" + ofileinfo.completeBaseName();
         }
         else
         {
             filename = tmpPath + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
-            filenameLoad = tmpPath + ofileinfo.completeBaseName() + dcrawExt;
+            filenamePath = tmpPath + ofileinfo.completeBaseName();
         }
         QFile::copy(tmpFilename, filename);
         ofileinfo = QFileInfo(filename);
@@ -339,11 +343,11 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
         if (ofileinfo.path().lastIndexOf("/") < ofileinfo.path().length() - 1
             && ofileinfo.path().lastIndexOf("\\") < ofileinfo.path().length() - 1)
         {
-            filenameLoad = ofileinfo.path() + "/" + ofileinfo.completeBaseName() + dcrawExt;
+            filenamePath = ofileinfo.path() + "/" + ofileinfo.completeBaseName();
         }
         else
         {
-            filenameLoad = ofileinfo.path() + ofileinfo.completeBaseName() + dcrawExt;
+            filenamePath = ofileinfo.path() + ofileinfo.completeBaseName();
         }
     }
 
@@ -364,6 +368,15 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     QVector<ito::ParamBase> filterParamsMand(0);
     QVector<ito::ParamBase> filterParamsOpt(0);
     QVector<ito::ParamBase> filterParamsOut(0);
+
+
+    filenameLoad = filenamePath + dcrawExt;
+    // did not find ppm / tiff, then check pgm
+    if (!QFileInfo::exists(filenameLoad))
+    {
+        dcrawExt = ".pgm";
+        filenameLoad = filenamePath + dcrawExt;
+    }
 
     retval += apiFilterParamBase("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
     filterParamsMand[0].setVal<char*>((char*)image);
