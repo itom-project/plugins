@@ -444,7 +444,7 @@ ito::RetVal PclTools::loadPointCloudParams(QVector<ito::Param> *paramsMand, QVec
     paramsMand->append(ito::Param("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("loaded pointcloud").toLatin1().data()));
     paramsMand->append(ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("complete filename (type is read by suffix)").toLatin1().data()));
 
-    paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('xyz', 'pcd','ply','vtk','auto' [default, check suffix of filename])").toLatin1().data()));
+    paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('xyz', 'pcd','ply','auto' [default, check suffix of filename])").toLatin1().data()));
     
     return retval;
 }
@@ -546,10 +546,10 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
         retval += ito::RetVal(ito::retError, 0, tr("ply-support is not compiled in this version (since this is not supported in PCL1.5.1 or lower").toLatin1().data());
 #endif
     }
-    else if (type == "vtk")
+    /*else if (type == "vtk")
     {
         retval += ito::RetVal(ito::retError, 0, tr("vtk file format cannot be loaded (not supported)").toLatin1().data());
-    }
+    }*/
     else
     {
         retval += ito::RetVal::format(ito::retError, 0, tr("unsupported format '%s'").toLatin1().data(), type.toLatin1().data());
@@ -947,6 +947,7 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 
     ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<char*>();  //Input object
     QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
+    std::string filename_ = (*paramsMand)[1].getVal<const char*>(); //directly load the std::string from the given char* instead of extracting it from the latin1-str, since encoding errors can occur in case of special characters
     QString type = (*paramsOpt)[0].getVal<char*>();
     bool binary_mode = (paramsOpt->at(1).getVal<int>() > 0) ? true : false;
     unsigned int precision = static_cast<unsigned int>(paramsOpt->at(2).getVal<int>());
@@ -959,8 +960,6 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
         type = finfo.suffix().toLower();
         filename = finfo.absoluteFilePath();
     }
-
-    std::string filename_ = filename.toStdString();
 
     //check type
     type = type.toLower();
@@ -4503,10 +4502,10 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     AlgoWidgetDef *widget = NULL;
 
     //specify filters here, example:
-    filter = new FilterDef(PclTools::savePointCloud, PclTools::savePointCloudParams, tr("saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWritePointCloud, tr("Point Cloud (*.pcd *.ply *.vtk *.xyz)"));
+    filter = new FilterDef(PclTools::savePointCloud, PclTools::savePointCloudParams, tr("saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii))"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWritePointCloud, tr("Point Cloud (*.pcd *.ply *.vtk *.xyz)"));
     m_filterList.insert("savePointCloud", filter);
 
-    filter = new FilterDef(PclTools::loadPointCloud, PclTools::loadPointCloudParams, tr("loads pointCloud from hard drive and returns it (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadPointCloud, tr("Point Cloud (*.pcd *.ply *.vtk *.xyz)"));
+    filter = new FilterDef(PclTools::loadPointCloud, PclTools::loadPointCloudParams, tr("loads pointCloud from hard drive and returns it (format pcd(binary or ascii), ply(binary or ascii))"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadPointCloud, tr("Point Cloud (*.pcd *.ply *.xyz)"));
     m_filterList.insert("loadPointCloud", filter);
 
     filter = new FilterDef(PclTools::savePolygonMesh, PclTools::savePolygonMeshParams, tr("saves polygonMesh to hard drive (format obj[default], ply, vtk, stl)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWritePolygonMesh, tr("Polygon Mesh (*.obj *.ply *.vtk *.stl)"));
