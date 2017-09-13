@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PCLTools" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -226,6 +226,7 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 
     ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();  //Input object
     QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
+    std::string filename_ = (*paramsMand)[1].getVal<const char*>(); //directly load the std::string from the given char* instead of extracting it from the latin1-str, since encoding errors can occur in case of special characters
     QString mode = (*paramsOpt)[0].getVal<char*>();
     QString type = (*paramsOpt)[1].getVal<char*>();
     bool binary_mode = true;
@@ -238,8 +239,6 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
         type = finfo.suffix().toLower();
         filename = finfo.absoluteFilePath();
     }
-
-    std::string filename_ = filename.toStdString();
 
     //check type
     type = type.toLower();
@@ -445,7 +444,7 @@ ito::RetVal PclTools::loadPointCloudParams(QVector<ito::Param> *paramsMand, QVec
     paramsMand->append(ito::Param("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("loaded pointcloud").toLatin1().data()));
     paramsMand->append(ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("complete filename (type is read by suffix)").toLatin1().data()));
 
-    paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('xyz', 'pcd','ply','vtk','auto' [default, check suffix of filename])").toLatin1().data()));
+    paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('xyz', 'pcd','ply','auto' [default, check suffix of filename])").toLatin1().data()));
     
     return retval;
 }
@@ -455,12 +454,14 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 {
     ito::RetVal retval = ito::retOk;
 
-    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
-    QString typeString = (*paramsOpt)[0].getVal<char*>();
     ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
+    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<const char*>());
+    std::string filename_ = (*paramsMand)[1].getVal<const char*>(); //directly load the std::string from the given char* instead of extracting it from the latin1-str, since encoding errors can occur in case of special characters
+    QString typeString = (*paramsOpt)[0].getVal<char*>();
+    
     QString type;
-//    bool binary_mode = true;
     int ret = 1;
+
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
     pcl::PCLPointCloud2 pc2;
 #else
@@ -481,7 +482,6 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
     }
 
     QString filenameCanonical = finfo.canonicalFilePath();
-    std::string filename_ = filenameCanonical.toStdString();
 
     if (filenameCanonical == "")
     {
@@ -546,10 +546,10 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
         retval += ito::RetVal(ito::retError, 0, tr("ply-support is not compiled in this version (since this is not supported in PCL1.5.1 or lower").toLatin1().data());
 #endif
     }
-    else if (type == "vtk")
+    /*else if (type == "vtk")
     {
         retval += ito::RetVal(ito::retError, 0, tr("vtk file format cannot be loaded (not supported)").toLatin1().data());
-    }
+    }*/
     else
     {
         retval += ito::RetVal::format(ito::retError, 0, tr("unsupported format '%s'").toLatin1().data(), type.toLatin1().data());
@@ -934,6 +934,8 @@ ito::RetVal PclTools::savePolygonMeshParams(QVector<ito::Param> *paramsMand, QVe
     paramsMand->append(ito::Param("filename", ito::ParamBase::String, "", tr("complete filename (type is either read by suffix of filename or by parameter 'type')").toLatin1().data()));
 
     paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('obj' [default],'ply','vtk','stl')").toLatin1().data()));
+    paramsOpt->append(ito::Param("binary", ito::ParamBase::Int, 0, 1, 1, tr("If 1 (default), the file is written as binary file, else ascii. If type is 'obj', the file is always an ascii file.").toLatin1().data()));
+    paramsOpt->append(ito::Param("precision", ito::ParamBase::Int, 0, 16, 5, tr("Precision (default: 5), only valid for 'obj'-file types.").toLatin1().data()));
 
     return retval;
 }
@@ -945,8 +947,10 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 
     ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<char*>();  //Input object
     QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
+    std::string filename_ = (*paramsMand)[1].getVal<const char*>(); //directly load the std::string from the given char* instead of extracting it from the latin1-str, since encoding errors can occur in case of special characters
     QString type = (*paramsOpt)[0].getVal<char*>();
-//    bool binary_mode = true;
+    bool binary_mode = (paramsOpt->at(1).getVal<int>() > 0) ? true : false;
+    unsigned int precision = static_cast<unsigned int>(paramsOpt->at(2).getVal<int>());
     int ret = 1;
 
     //check filename
@@ -956,8 +960,6 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
         type = finfo.suffix().toLower();
         filename = finfo.absoluteFilePath();
     }
-
-    std::string filename_ = filename.toStdString();
 
     //check type
     type = type.toLower();
@@ -977,19 +979,19 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     //check point cloud
         if (type == "obj")
         {
-            ret = pcl::io::saveOBJFile(filename_, *(polygonMesh->polygonMesh()));
+            ret = pcl::io::saveOBJFile(filename_, *(polygonMesh->polygonMesh()), precision);
         }
         else if (type == "stl")
         {
-            ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()));
+            ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()), binary_mode);
         }
         else if (type == "ply")
         {
-            ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()));
+            ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()), binary_mode);
         }
         else if (type == "vtk")
         {
-            ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()));
+            ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()), binary_mode);
         }
     
 #if PCL_VERSION_COMPARE(>=,1,7,0)
@@ -1041,8 +1043,9 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 {
     ito::RetVal retval = ito::retOk;
 
-    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
     ito::PCLPolygonMesh* mesh = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<char*>();
+    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<const char*>());
+    std::string filename_ = (*paramsMand)[1].getVal<const char*>(); //directly load the std::string from the given char* instead of extracting it from the latin1-str, since encoding errors can occur in case of special characters
     QString type = (*paramsOpt)[0].getVal<char*>();
 
 //    bool binary_mode = true;
@@ -1055,8 +1058,6 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     {
         type = finfo.suffix().toLower();
     }
-
-    std::string filename_ = finfo.canonicalFilePath().toStdString();
 
     if (finfo.exists() == false)
     {
@@ -4501,10 +4502,10 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     AlgoWidgetDef *widget = NULL;
 
     //specify filters here, example:
-    filter = new FilterDef(PclTools::savePointCloud, PclTools::savePointCloudParams, tr("saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWritePointCloud, tr("Point Cloud (*.pcd *.ply *.vtk *.xyz)"));
+    filter = new FilterDef(PclTools::savePointCloud, PclTools::savePointCloudParams, tr("saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii))"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWritePointCloud, tr("Point Cloud (*.pcd *.ply *.vtk *.xyz)"));
     m_filterList.insert("savePointCloud", filter);
 
-    filter = new FilterDef(PclTools::loadPointCloud, PclTools::loadPointCloudParams, tr("loads pointCloud from hard drive and returns it (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadPointCloud, tr("Point Cloud (*.pcd *.ply *.vtk *.xyz)"));
+    filter = new FilterDef(PclTools::loadPointCloud, PclTools::loadPointCloudParams, tr("loads pointCloud from hard drive and returns it (format pcd(binary or ascii), ply(binary or ascii))"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadPointCloud, tr("Point Cloud (*.pcd *.ply *.xyz)"));
     m_filterList.insert("loadPointCloud", filter);
 
     filter = new FilterDef(PclTools::savePolygonMesh, PclTools::savePolygonMeshParams, tr("saves polygonMesh to hard drive (format obj[default], ply, vtk, stl)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWritePolygonMesh, tr("Polygon Mesh (*.obj *.ply *.vtk *.stl)"));
