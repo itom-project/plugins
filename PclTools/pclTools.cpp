@@ -934,7 +934,7 @@ ito::RetVal PclTools::savePolygonMeshParams(QVector<ito::Param> *paramsMand, QVe
     paramsMand->append(ito::Param("filename", ito::ParamBase::String, "", tr("complete filename (type is either read by suffix of filename or by parameter 'type')").toLatin1().data()));
 
     paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('obj' [default],'ply','vtk','stl')").toLatin1().data()));
-    paramsOpt->append(ito::Param("binary", ito::ParamBase::Int, 0, 1, 1, tr("If 1 (default), the file is written as binary file, else ascii. If type is 'obj', the file is always an ascii file.").toLatin1().data()));
+    paramsOpt->append(ito::Param("binary", ito::ParamBase::Int, 0, 1, 1, tr("If 1 (default), the file is written as binary file, else ascii. If type is 'obj', the file is always an ascii file. (This option is only considered for PCL > 1.8.0).").toLatin1().data()));
     paramsOpt->append(ito::Param("precision", ito::ParamBase::Int, 0, 16, 5, tr("Precision (default: 5), only valid for 'obj'-file types.").toLatin1().data()));
 
     return retval;
@@ -983,15 +983,27 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
         }
         else if (type == "stl")
         {
+#if PCL_VERSION_COMPARE(>,1,8,0)
             ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()), binary_mode);
+#else
+            ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()));
+#endif
         }
         else if (type == "ply")
         {
+#if PCL_VERSION_COMPARE(>,1,8,0)
             ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()), binary_mode);
+#else
+            ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()));
+#endif
         }
         else if (type == "vtk")
         {
+#if PCL_VERSION_COMPARE(>,1,8,0)
             ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()), binary_mode);
+#else
+            ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()));
+#endif
         }
     
 #if PCL_VERSION_COMPARE(>=,1,7,0)
