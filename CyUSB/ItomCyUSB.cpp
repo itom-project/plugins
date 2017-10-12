@@ -82,7 +82,7 @@ The setVal and getVal functions will write and read on the specified endpoint.\n
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel communication with USB-devices"+GITVERSION);  
+    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel communication with USB-devices") + GITVERSION;
 
 	ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x04B4, tr("The vendor ID of the device to connect to").toLatin1().data()); //default denselight device
     m_initParamsMand.append(paramVal);
