@@ -282,6 +282,9 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 3, -1, tr("-1: Complete free run, 0: enable standard external trigger (PtGrey mode 0), 1: Software Trigger (PtGrey mode 0, Software Source), 2: Bulb shutter external trigger (PtGrey mode 1), 3: Overlapped external trigger (PtGrey mode 14)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("grab_mode", ito::ParamBase::Int, 0, 3, 0, tr("The grab strategy employed during image transfer. 0: DROP_FRAMES: Grabs the newest image in the user buffer each time the RetrieveBuffer() function is called, 1: BUFFER_FRAMES: Images accumulate in the user buffer, 2: UNSPECIFIED_GRAB_MODE, 3: GRAB_MODE_FORCE_32BITS)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
 	paramVal = ito::Param("trigger_polarity", ito::ParamBase::Int, 0, 1, 0, tr("For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -829,6 +832,65 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             else
             {
                 m_params["trigger_mode"].setVal<int>(triggerMode);
+            }
+        }
+        else if (key == "grab_mode")
+        {
+            FlyCapture2::FC2Config pCamConfig;
+            retValue += checkError(m_myCam.GetConfiguration(&pCamConfig));
+
+            int grabmod = val->getVal<int>();
+
+            switch (grabmod)
+            {
+                case 0:
+                {
+                    if (retValue != ito::retError)
+                    {
+                        pCamConfig.grabMode = FlyCapture2::GrabMode::DROP_FRAMES;
+                        retValue += checkError(m_myCam.SetConfiguration(&pCamConfig));
+
+
+                    }
+                    break;
+                }
+                case 1:
+                {
+                    if (retValue != ito::retError)
+                    {
+                        pCamConfig.grabMode = FlyCapture2::GrabMode::BUFFER_FRAMES;
+                        retValue += checkError(m_myCam.SetConfiguration(&pCamConfig));
+
+
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    if (retValue != ito::retError)
+                    {
+                        pCamConfig.grabMode = FlyCapture2::GrabMode::UNSPECIFIED_GRAB_MODE;
+                        retValue += checkError(m_myCam.SetConfiguration(&pCamConfig));
+
+
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    if (retValue != ito::retError)
+                    {
+                        pCamConfig.grabMode = FlyCapture2::GrabMode::GRAB_MODE_FORCE_32BITS;
+                        retValue += checkError(m_myCam.SetConfiguration(&pCamConfig));
+
+
+                    }
+                    break;
+                }
+            }
+            if (retValue != ito::retError)
+            {
+                retValue += it->copyValueFrom(&(*val));
             }
         }
 		else if (key == "packetsize")

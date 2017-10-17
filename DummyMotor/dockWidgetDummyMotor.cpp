@@ -155,6 +155,8 @@ void DockWidgetDummyMotor::dockWidgetVisibilityChanged(bool visible)
         //to connect the signals
         QPointer<ito::AddInActuator> actuator(m_pActuator);
         ui.axisController->setActuator(actuator);
+        // setting higher resolution, so we can move nanometers if we want
+        ui.axisController->setDefaultDecimals(6);
     }
     else
     {

@@ -7,6 +7,13 @@ OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_GIT_TAG "Adds the current GIT commit tag in the about string of a plugin." OFF)
 SET(ITOM_DIR "" CACHE PATH "base path to itom") 
+load_cache(${ITOM_SDK_DIR}/../)
+
+if (WIN32)
+    # add /LTCG flag to remove MSVC linker warning in release build
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
+    set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
+endif (WIN32)
 
 # AerotechA3200
 IF (WIN32)

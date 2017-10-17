@@ -335,7 +335,9 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 {
                     m_params["sensor_type"].setVal<char*>(strBuf);
                 }
+
 #ifndef defined(USE_API_4_10) || defined(USE_API_3_16)
+
                 char serial_number[20] = "";
                 DWORD strSize = 20 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &strSize, &strType), "get: " XI_PRM_DEVICE_SN);
@@ -344,6 +346,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["serial_number"].setVal<char*>(serial_number);
                     m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_number);
                 }
+
 #else
                 int serial_number;
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
@@ -384,6 +387,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
 
 #if defined XI_PRM_DEVICE_MODEL_ID
+
                 int device_model_id = 0;
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_MODEL_ID, &device_model_id, &pSize, &intType), "get: " XI_PRM_DEVICE_MODEL_ID);
                 if (!retValue.containsError())
@@ -444,6 +448,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 //retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_AVAILABLE_BANDWIDTH, &availableBandwidth, &pSize, &intType), "XI_PRM_AVAILABLE_BANDWIDTH", QString::number(availableBandwidth));
                 //std::cout << "available bandwidth: " << availableBandwidth << std::endl;
 #ifndef USE_API_3_16
+
                 if (bandwidthLimit > 0) //manually set bandwidthLimit
                 {
                     retValue += setXimeaParam(XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
@@ -468,24 +473,32 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
 
                 // Merge parameter list from file to paramListXML with current mparams
-                if (!retValue.containsError())
-                {
-
-                }
+                
                 paramListXML.clear();
             }
 
             if (!retValue.containsError())
             {
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPO_SELECTOR XI_PRM_INFO_MAX, &m_numGPOPins, &pSize, &intType), "get XI_PRM_GPO_SELECTOR:max");
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPI_SELECTOR XI_PRM_INFO_MAX, &m_numGPIPins, &pSize, &intType), "get XI_PRM_GPI_SELECTOR:max");
-                int dummy[] = {0,0,0,0,0,0,0,0};
-                m_params["gpi_level"].setMeta(new ito::IntArrayMeta(0,1,1,m_numGPIPins,m_numGPIPins,1), true);
-                m_params["gpi_level"].setVal<int*>(dummy, m_numGPIPins);
-                m_params["gpi_mode"].setMeta(new ito::IntArrayMeta(0,1,1,m_numGPIPins,m_numGPIPins,1), true);
-                m_params["gpi_mode"].setVal<int*>(dummy, m_numGPIPins);
-                m_params["gpo_mode"].setMeta(new ito::IntArrayMeta(0,1,1,m_numGPOPins,m_numGPIPins,1), true);
-                m_params["gpo_mode"].setVal<int*>(dummy, m_numGPOPins);
+                ret = pxiGetParam(m_handle, XI_PRM_GPO_SELECTOR XI_PRM_INFO_MAX, &m_numGPOPins, &pSize, &intType);
+
+                if (ret == 12)
+                {
+                    m_params["gpi_level"].setFlags(ito::ParamBase::Readonly);
+                    m_params["gpi_mode"].setFlags(ito::ParamBase::Readonly);
+                    m_params["gpo_mode"].setFlags(ito::ParamBase::Readonly);
+                }
+                else
+                {
+                    retValue += checkError(ret, "get XI_PRM_GPO_SELECTOR:max");
+                    retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPI_SELECTOR XI_PRM_INFO_MAX, &m_numGPIPins, &pSize, &intType), "get XI_PRM_GPI_SELECTOR:max");
+                    int dummy[] = { 0,0,0,0,0,0,0,0 };
+                    m_params["gpi_level"].setMeta(new ito::IntArrayMeta(0, 1, 1, m_numGPIPins, m_numGPIPins, 1), true);
+                    m_params["gpi_level"].setVal<int*>(dummy, m_numGPIPins);
+                    m_params["gpi_mode"].setMeta(new ito::IntArrayMeta(0, 1, 1, m_numGPIPins, m_numGPIPins, 1), true);
+                    m_params["gpi_mode"].setVal<int*>(dummy, m_numGPIPins);
+                    m_params["gpo_mode"].setMeta(new ito::IntArrayMeta(0, 1, 1, m_numGPOPins, m_numGPIPins, 1), true);
+                    m_params["gpo_mode"].setVal<int*>(dummy, m_numGPOPins);
+                }
 
                 retValue += readCameraIntParam(XI_PRM_HDR, "hdr_enable", false);
                 retValue += readCameraIntParam(XI_PRM_HDR_T1, "hdr_it1", false);
@@ -515,19 +528,25 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 m_params["timing_mode"].setFlags(ito::ParamBase::Readonly);
 #endif
                 //check the min-max-bitdepth by changing the format and reading the data_bit_depth value
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &m_maxOutputBitDepth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
-                m_params["max_sensor_bitdepth"].setVal<int>(m_maxOutputBitDepth);
-                
-                
-
+                ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &m_maxOutputBitDepth, &pSize, &intType);
+                if (ret == 12)
+                {
+                    m_params["max_sensor_bitdepth"].setFlags(ito::ParamBase::Readonly);
+                }
+                else
+                {
+                    retValue += checkError(ret, "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
+                    m_params["max_sensor_bitdepth"].setVal<int>(m_maxOutputBitDepth);
+                }            
 
                 int bitppix = XI_MONO8;
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
                 if (!retValue.containsError())
                 {
-                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMin(8);
-                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(8);
-                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setStepSize(2);
+                    m_params["bpp"].setMeta(new ito::IntMeta(8, 8, 2), true);
+                    //static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMin(8);
+                    //static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(8);
+                    //static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setStepSize(2);
                 }
 
                 bitppix = XI_MONO16;
@@ -567,11 +586,20 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
                 
                 int badpix = 0;// bad pixel correction default = 0
-                retValue += checkError(pxiSetParam(m_handle, XI_PRM_BPC, &badpix, pSize, intType), "set XI_PRM_BPC", QString::number(badpix));
-                retValue += readCameraIntParam(XI_PRM_BPC, "bad_pixel", false);
+                ret = pxiSetParam(m_handle, XI_PRM_BPC, &badpix, pSize, intType);
+                if (ret == 12)
+                {
+                    m_params["bad_pixel"].setFlags(ito::ParamBase::Readonly);
+                }
+                else
+                {
+                    retValue += checkError(ret, "set XI_PRM_BPC", QString::number(badpix));
+                    retValue += readCameraIntParam(XI_PRM_BPC, "bad_pixel", false);
+                }
+                
 
                 //disable AEAG
-                pxiSetParam(m_handle, XI_PRM_AEAG, &badpix, pSize, intType);
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_AEAG, &badpix, pSize, intType), "set XI_PRM_AEAG", QString::number(badpix));
                 retValue += readCameraIntParam(XI_PRM_AEAG, "aeag", false);
 
                 //disable LUT

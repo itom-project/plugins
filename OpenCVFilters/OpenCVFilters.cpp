@@ -169,7 +169,6 @@ ito::RetVal OpenCVFilters::stdParams2Objects(QVector<ito::Param> *paramsMand, QV
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-
 ito::RetVal OpenCVFilters::checkInputOutputEqual(ito::DataObject * p_input, ito::DataObject * p_output, bool * unequal)
 {
     *unequal = false;
@@ -875,10 +874,14 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
         return ito::RetVal(ito::retError, 0, tr("Error: kernel must be odd").toLatin1().data());
     }
 
+    
+        
+#if (CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR > 3 && CV_VERSION_MINOR < 3))
     if (kernelsize > 5 && dObjImages->getType() != ito::tUInt8)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernelsize > 3 and object is not uint8").toLatin1().data());
     }
+#endif
 
     int z_length = dObjImages->calcNumMats();
 
