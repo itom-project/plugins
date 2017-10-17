@@ -86,6 +86,7 @@ class ThorlabsPowerMeter : public ito::AddInDataIO
         
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal checkFunctionCompatibility(bool* compatibility);
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
@@ -105,7 +106,6 @@ class ThorlabsPowerMeter : public ito::AddInDataIO
             bBandwidth = 0x0100,
             bAll = bWavelength | bAttenuation | bDarkOffset | bLineFrequency | bPowerRange | bAutoRange | bMeasurementMode | bPowerReference | bBandwidth
         };
-
         ito::RetVal synchronizeParams(int what = bAll);
 
         

@@ -144,13 +144,13 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
 
     paramVal = ito::Param("wavelength", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("wavelength [nm]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("attenuation", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("attenuation [db]").toLatin1().data());
+    paramVal = ito::Param("attenuation", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("attenuation [db]. -1 if not supported by device.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("dark_offset", ito::ParamBase::Double | ito::ParamBase::Readonly, NULL, tr("setted dark offset [unknown]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     
 
-    paramVal = ito::Param("line_frequency", ito::ParamBase::Int | ito::ParamBase::In, 50 , new ito::IntMeta(50, 60, 10), tr(" line frequency of 50Hz or 60Hz").toLatin1().data());
+    paramVal = ito::Param("line_frequency", ito::ParamBase::Int | ito::ParamBase::In, 50 , new ito::IntMeta(50, 60, 10), tr(" line frequency of 50Hz or 60Hz. -1 if not supported by device.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("power_range", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("power range [W]; will be set to the next bigger possible value").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -166,7 +166,7 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     paramVal = ito::Param("average_number", ito::ParamBase::Int | ito::ParamBase::In, 1, new ito::IntMeta(1, std::numeric_limits<ito::int32>::max()), tr("defines the number of measurements to be averaged").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bandwidth", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr("defines if the input filter state is whether High (0) or Low (1)").toLatin1().data());
+    paramVal = ito::Param("bandwidth", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr("defines if the input filter state is whether High (0) or Low (1). -1 if not supported by device.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //register exec functions
@@ -265,6 +265,8 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
                  retval += ito::RetVal::format(ito::retError, 0, tr("Device %s could not be found").toLatin1().data(), deviceName.toLatin1().data());
              }
          }
+
+		 
          if (!retval.containsError())
          {
              //status = viOpen(resMgr, deviceName.toLatin1().data(), VI_EXCLUSIVE_LOCK, 2000, &m_instrument);
@@ -276,6 +278,8 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
                  retval += checkError(status);
              }
          }
+		 ViChar name[256];
+		 status = PM100D_getRsrcName(m_instrument, 0, name);
          if (!retval.containsError())
          {
              //check if a photo diode is connected
@@ -965,39 +969,91 @@ ito::RetVal ThorlabsPowerMeter::zeroDevice(ItomSharedSemaphore *waitCond/*=NULL*
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ThorlabsPowerMeter::checkFunctionCompatibility(bool* compatibility)
+{
+    ito::RetVal retval;
+
+    ViChar manufacturer[256];
+    ViChar device[256];
+    ViChar serial[256];
+    ViChar firmware[256];
+    ViChar message[256];
+    retval += checkError(PM100D_identificationQuery(m_instrument, manufacturer, device, serial, firmware));
+
+    QString str = device;
+    //QString str = "PM100A";   //For testing purposes
+
+    if (!QString::compare(str, "PM100A", Qt::CaseInsensitive) ||
+        !QString::compare(str, "PM100D", Qt::CaseInsensitive) || 
+        !QString::compare(str, "PM100USB", Qt::CaseInsensitive) || 
+        !QString::compare(str, "PM200", Qt::CaseInsensitive) || 
+        !QString::compare(str, "PM400", Qt::CaseInsensitive))
+    {
+        *compatibility = true;
+    }
+    else
+    {
+        *compatibility = false;
+    }
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
 {
     ito::RetVal retval(ito::retOk);
-    if (what & bWavelength)
-    {
+    bool compatible = false;
 
+    if (what & bWavelength)
+    {        
         ViReal64 wavelength;
         ViReal64 min;
         ViReal64 max;
+
         retval += checkError(PM100D_getWavelength(m_instrument, PM100D_ATTR_SET_VAL, &wavelength));
         retval += checkError(PM100D_getWavelength(m_instrument, PM100D_ATTR_MIN_VAL, &min));
         retval += checkError(PM100D_getWavelength(m_instrument, PM100D_ATTR_MAX_VAL, &max));
+        
         if (!retval.containsError())
         {
             retval += m_params["wavelength"].setVal<double>(wavelength);
             m_params["wavelength"].setMeta(new ito::DoubleMeta(min, max, 0.0), true);
         }
     }
+	
+
+
     if (what & bAttenuation)
     {
+        retval = checkFunctionCompatibility(&compatible);   //Check compatibility to Sensors PM100A, PM100D, PM100USB, PM200 and PM400
 
         ViReal64 attenuation;
         ViReal64 minAttenuation;
         ViReal64 maxAttenuation;
-        retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_SET_VAL, &attenuation));
-        retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_MAX_VAL, &maxAttenuation));
-        retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_MIN_VAL, &minAttenuation));
+
+        if (compatible)
+        {
+            retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_SET_VAL, &attenuation));
+            retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_MAX_VAL, &maxAttenuation));
+            retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_MIN_VAL, &minAttenuation));
+        }
+        else
+        {
+            attenuation = -1;
+            maxAttenuation = -1;
+            minAttenuation = -1;
+            m_params["attenuation"].setFlags(ito::ParamBase::Readonly);
+        }
+
         if (!retval.containsError())
         {
             retval += m_params["attenuation"].setVal<double>(attenuation);
             m_params["attenuation"].setMeta(new ito::DoubleMeta(minAttenuation, maxAttenuation, 0.0), true);
         }
     }
+	
+
+
     if (what & bDarkOffset)
     {
         ViReal64 dark;
@@ -1008,18 +1064,33 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
             retval += m_params["dark_offset"].setVal<double>(dark);
         }
     }
+	
+
+
     if (what & bLineFrequency)
     {
+        retval = checkFunctionCompatibility(&compatible);   //Check compatibility to Sensors PM100A, PM100D, PM100USB, PM200 and PM400
 
         ViInt16 frequency;
 
+        if (compatible)
+        {
+            retval += checkError(PM100D_getLineFrequency(m_instrument, &frequency));
+        }
+        else
+        {
+            frequency = -1;
+            m_params["line_frequency"].setFlags(ito::ParamBase::Readonly);
+        }
 
-        retval += checkError(PM100D_getLineFrequency(m_instrument, &frequency));
         if (!retval.containsError())
         {
             retval += m_params["line_frequency"].setVal<int>(frequency);
         }
     }
+	
+
+
     if (what & bPowerRange)
     {
         ViReal64 powerRange;
@@ -1037,6 +1108,9 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         }
 
     }
+
+
+
     if (what & bAutoRange)
     {
         ViBoolean autoRange;
@@ -1055,6 +1129,9 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
 
         }
     }
+
+
+
     if (what & bMeasurementMode)
     {
         ViBoolean mode;
@@ -1070,6 +1147,9 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
                 retval += ito::RetVal(ito::retError, 0, tr("received invalid mode from device").toLatin1().data());
         }
     }
+
+
+
     if (what & bPowerReference)
     {
         ViReal64 refPower;
@@ -1084,10 +1164,24 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
             m_params["reference_power"].setMeta(new ito::DoubleMeta(minRefPower, maxRefPower, 0.0), true);
         }
     }
+
+
+	
     if (what & bBandwidth)
     {
+        retval = checkFunctionCompatibility(&compatible);   //Check compatibility to Sensors PM100A, PM100D, PM100USB, PM200 and PM400
+
         ViBoolean bandwidth;
-        retval += checkError(PM100D_getInputFilterState(m_instrument, &bandwidth));
+
+        if (compatible)
+        {
+            retval += checkError(PM100D_getInputFilterState(m_instrument, &bandwidth));
+        }
+        else{
+            bandwidth = -1;
+            m_params["bandwidth"].setFlags(ito::ParamBase::Readonly);
+        }
+        
         if (!retval.containsError())
         {
                retval += m_params["bandwidth"].setVal<ito::int32>(bandwidth);
