@@ -673,7 +673,43 @@ The shift is currently implemented along the x and y or one of both axes within 
     if (!retval.containsError())
     {
 
-        if (dims <= 2 && axis > 0)
+        if(dims > 2 && axis == 0) //FFT shift of 3D Object in stack axis (z)
+        {
+            switch (inField->getType())
+            {
+            case ito::tInt8:
+                calcfftshift0<ito::int8>(inField, axis, true);
+                break;
+            case ito::tUInt8:
+                calcfftshift0<ito::uint8>(inField, axis, true);
+                break;
+            case ito::tInt16:
+                calcfftshift0<ito::int16>(inField, axis, true);
+                break;
+            case ito::tUInt16:
+                calcfftshift0<ito::uint16>(inField, axis, true);
+                break;
+            case ito::tInt32:
+                calcfftshift0<ito::int32>(inField, axis, true);
+                break;
+            case ito::tUInt32:
+                calcfftshift0<ito::uint32>(inField, axis, true);
+                break;
+            case ito::tFloat32:
+                calcfftshift0<ito::float32>(inField, axis, true);
+                break;
+            case ito::tFloat64:
+                calcfftshift0<ito::float64>(inField, axis, true);
+                break;
+            case ito::tComplex64:
+                calcfftshift0<ito::complex64>(inField, axis, true);
+                break;
+            case ito::tComplex128:
+                calcfftshift0<ito::complex128>(inField, axis, true);
+                break;
+            }
+        }
+        else
         {
             for (int p = 0; p < numPlanes; ++p)
             {
@@ -711,48 +747,20 @@ The shift is currently implemented along the x and y or one of both axes within 
                     break;
                 }
             }
-        }
-        else if (dims > 2 && axis == 0)
-        {
-            switch (inField->getType())
-            {
-            case ito::tInt8:
-                calcfftshift0<ito::int8>(inField, axis, true);
-                break;
-            case ito::tUInt8:
-                calcfftshift0<ito::uint8>(inField, axis, true);
-                break;
-            case ito::tInt16:
-                calcfftshift0<ito::int16>(inField, axis, true);
-                break;
-            case ito::tUInt16:
-                calcfftshift0<ito::uint16>(inField, axis, true);
-                break;
-            case ito::tInt32:
-                calcfftshift0<ito::int32>(inField, axis, true);
-                break;
-            case ito::tUInt32:
-                calcfftshift0<ito::uint32>(inField, axis, true);
-                break;
-            case ito::tFloat32:
-                calcfftshift0<ito::float32>(inField, axis, true);
-                break;
-            case ito::tFloat64:
-                calcfftshift0<ito::float64>(inField, axis, true);
-                break;
-            case ito::tComplex64:
-                calcfftshift0<ito::complex64>(inField, axis, true);
-                break;
-            case ito::tComplex128:
-                calcfftshift0<ito::complex128>(inField, axis, true);
-                break;
-            }
-        }
+        }        
     }
 
     if (!retval.containsError())
     {
-        if (dims <= 2 && axis > 0)
+        if (dims > 2 && axis == 0)
+        {
+            int size = inField->getSize(axis);
+            double phys1 = inField->getPixToPhys(axis, 0);
+            double phys2 = inField->getPixToPhys(axis, size - 1);
+            phys1 = 0.5 * (phys1 + phys2);
+            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
+        }
+        else
         {
             //shift the axis scales of the last two axis
             int dims = inField->getDims();
@@ -772,14 +780,6 @@ The shift is currently implemented along the x and y or one of both axes within 
                     }
                 }
             }
-        }
-        else if (dims > 2 && axis == 0)
-        {
-            int size = inField->getSize(axis);
-            double phys1 = inField->getPixToPhys(axis, 0);
-            double phys2 = inField->getPixToPhys(axis, size - 1);
-            phys1 = 0.5 * (phys1 + phys2);
-            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
         }
     }
 
@@ -814,9 +814,44 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        if (dims <= 2 && axis > 0)
+        if(dims > 2 && axis == 0)
+        {
+            switch (inField->getType())
+            {
+            case ito::tInt8:
+                calcfftshift0<ito::int8>(inField, axis, false);
+                break;
+            case ito::tUInt8:
+                calcfftshift0<ito::uint8>(inField, axis, false);
+                break;
+            case ito::tInt16:
+                calcfftshift0<ito::int16>(inField, axis, false);
+                break;
+            case ito::tUInt16:
+                calcfftshift0<ito::uint16>(inField, axis, false);
+                break;
+            case ito::tInt32:
+                calcfftshift0<ito::int32>(inField, axis, false);
+                break;
+            case ito::tUInt32:
+                calcfftshift0<ito::uint32>(inField, axis, false);
+                break;
+            case ito::tFloat32:
+                calcfftshift0<ito::float32>(inField, axis, false);
+                break;
+            case ito::tFloat64:
+                calcfftshift0<ito::float64>(inField, axis, false);
+                break;
+            case ito::tComplex64:
+                calcfftshift0<ito::complex64>(inField, axis, false);
+                break;
+            case ito::tComplex128:
+                calcfftshift0<ito::complex128>(inField, axis, false);
+                break;
+            }
+        }
+        else
         { 
-
             for (int p = 0; p < numPlanes; ++p)
             {
                 switch (inField->getType())
@@ -854,47 +889,20 @@ The shift is currently implemented along the x and y or one of both axes within 
                 }
             }
         }
-        else if (dims > 2 && axis == 0)
-        {
-            switch (inField->getType())
-            {
-            case ito::tInt8:
-                calcfftshift0<ito::int8>(inField, axis, false);
-                break;
-            case ito::tUInt8:
-                calcfftshift0<ito::uint8>(inField, axis, false);
-                break;
-            case ito::tInt16:
-                calcfftshift0<ito::int16>(inField, axis, false);
-                break;
-            case ito::tUInt16:
-                calcfftshift0<ito::uint16>(inField, axis, false);
-                break;
-            case ito::tInt32:
-                calcfftshift0<ito::int32>(inField, axis, false);
-                break;
-            case ito::tUInt32:
-                calcfftshift0<ito::uint32>(inField, axis, false);
-                break;
-            case ito::tFloat32:
-                calcfftshift0<ito::float32>(inField, axis, false);
-                break;
-            case ito::tFloat64:
-                calcfftshift0<ito::float64>(inField, axis, false);
-                break;
-            case ito::tComplex64:
-                calcfftshift0<ito::complex64>(inField, axis, false);
-                break;
-            case ito::tComplex128:
-                calcfftshift0<ito::complex128>(inField, axis, false);
-                break;
-            }
-        }
+        
     }
 
     if (!retval.containsError())
     {
-        if (dims <= 2 && axis > 0)
+        if (dims > 2 && axis == 0)
+        {
+            int size = inField->getSize(axis);
+            double phys1 = inField->getPixToPhys(axis, 0);
+            double phys2 = inField->getPixToPhys(axis, size - 1);
+            phys1 = 0.5 * (phys1 + phys2);
+            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
+        }
+        else
         {
             //shift the axis scales of the last two axis
             int dims = inField->getDims();
@@ -914,14 +922,6 @@ The shift is currently implemented along the x and y or one of both axes within 
                     }
                 }
             }
-        }
-        else if (dims > 2 && axis == 0)
-        {
-            int size = inField->getSize(axis);
-            double phys1 = inField->getPixToPhys(axis, 0);
-            double phys2 = inField->getPixToPhys(axis, size - 1);
-            phys1 = 0.5 * (phys1 + phys2);
-            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
         }
     }
 
