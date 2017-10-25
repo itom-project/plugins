@@ -121,9 +121,192 @@ ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVecto
     ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128) which is shifted in-place.").toLatin1().data());
     paramsMand->append(param);
 
-    param = ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, -1, 1, -1, tr("axes over which to shift: x and y axis (-1, default), only y axis (0), only x axis (1)").toLatin1().data());
+    param = ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, -1, 2, -1, tr("shift axes: 2D DataObject: x and y axis (-1, default), only y (0), only x (1). 3D DataObject: x and y axis (-1, default), only z (0), only y(1), only x (2)").toLatin1().data());
+    
     paramsOpt->append(param);
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool forward)
+{
+    int sizeInAxisz = (*data).getSize(0);
+    int sizeInAxisy = (*data).getSize(1);
+    int sizeInAxisx = (*data).getSize(2);
+
+    int idxData, idxBuf;
+    int cntz, cnty;
+
+    _Tp *rowPtrData = NULL;
+    _Tp *rowPtrBuf1 = NULL;
+    _Tp *rowPtrBuf2 = NULL;
+
+    ito::DataObject buf1;
+    ito::DataObject buf2;
+    int bufSize = sizeof(_Tp);
+    bool even = ((sizeInAxisz % 2) == 0);
+
+    switch (ito::getDataType2<_Tp*>())
+    {
+    case ito::tUInt8:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tUInt8);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tUInt8);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt8);
+        break;
+    case ito::tInt8:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tInt8);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tInt8);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt8);
+        break;
+    case ito::tUInt16:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tUInt16);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tUInt16);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt16);
+        break;
+    case ito::tInt16:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tInt16);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tInt16);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt16);
+        break;
+    case ito::tFloat32:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tFloat32);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tFloat32);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat32);
+        break;
+    case ito::tFloat64:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tFloat64);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tFloat64);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat64);
+        break;
+    case ito::tComplex64:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex64);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex64);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tComplex64);
+        break;
+    case ito::tComplex128:
+        if (even)
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex128);
+        }
+        else
+        {
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tComplex128);
+        }
+        buf1 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex128);
+        break;
+    }
+
+    int cutSize = sizeInAxisz / 2;
+    int buf1Size = buf1.getSize(0);
+
+    for (cntz = 0; cntz < sizeInAxisz; cntz++)
+    {
+        idxData = (*data).seekMat(cntz);
+
+        if (cntz < buf1Size)
+        {
+            idxBuf = buf1.seekMat(cntz);
+        }
+        else
+        {
+            idxBuf = buf2.seekMat(cntz - cutSize);
+        }
+
+        for (cnty = 0; cnty < (*data).getSize(1); cnty++)
+        {
+            rowPtrData = data->rowPtr<_Tp>(idxData, cnty);
+
+            if (cntz < buf1Size)//first half
+            {
+                rowPtrBuf1 = buf1.rowPtr<_Tp>(idxBuf, cnty);
+                memcpy(rowPtrBuf1, rowPtrData, bufSize * sizeInAxisx);
+            }
+            else //second half
+            {
+                rowPtrBuf2 = buf2.rowPtr<_Tp>(idxBuf, cnty);
+                memcpy(rowPtrBuf2, rowPtrData, bufSize * sizeInAxisx);
+            }           
+          
+        }
+    }
+
+    for (cntz = 0; cntz < sizeInAxisz; cntz++)
+    {
+        idxData = (*data).seekMat(cntz);
+
+        if (cntz < buf1Size)
+        {
+            idxBuf = buf2.seekMat(cntz);
+        }
+        else
+        {
+            idxBuf = buf1.seekMat(cntz - cutSize);
+        }
+
+        for (cnty = 0; cnty < (*data).getSize(1); cnty++)
+        {
+            rowPtrData = data->rowPtr<_Tp>(idxData, cnty);
+           
+            if (cntz < buf1Size) //first half
+            {
+                rowPtrBuf2 = buf2.rowPtr<_Tp>(idxBuf, cnty);
+                memcpy(rowPtrData, rowPtrBuf2, bufSize * sizeInAxisx);
+            }
+            else //second half
+            {
+                rowPtrBuf1 = buf1.rowPtr<_Tp>(idxBuf, cnty);
+                memcpy(rowPtrData, rowPtrBuf1, bufSize * sizeInAxisx);
+            }
+        
+        }
+    }
+    
+
+    /*
+    free(buf);
+    buf = NULL;*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -163,7 +346,7 @@ template<typename _Tp> void calcfftshift(uchar *data, int n, int m, int lineStep
         _Tp *buf1 = (_Tp*)malloc(bufSize);
 
         if (even) //simple switch lines
-        {
+        {      
             for (int i = 0; i < p; ++i)
             {
                 //switch line i and (p+i)
@@ -478,39 +661,79 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        for (int p = 0; p < numPlanes; ++p)
+
+        if (dims <= 2)
+        {
+            for (int p = 0; p < numPlanes; ++p)
+            {
+                switch (inField->getType())
+                {
+                case ito::tInt8:
+                case ito::tUInt8:
+                    calcfftshift<ito::uint8>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                    break;
+
+                case ito::tInt16:
+                case ito::tUInt16:
+                    calcfftshift<ito::uint16>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                    break;
+
+                case ito::tInt32:
+                case ito::tUInt32:
+                    calcfftshift<ito::uint32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                    break;
+
+                case ito::tFloat32:
+                    calcfftshift<ito::float32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                    break;
+
+                case ito::tFloat64:
+                    calcfftshift<ito::float64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                    break;
+
+                case ito::tComplex64:
+                    calcfftshift<ito::complex64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                    break;
+
+                case ito::tComplex128:
+                    calcfftshift<ito::complex128>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                    break;
+                }
+            }
+        }
+        else if (dims == 3)
         {
             switch (inField->getType())
             {
             case ito::tInt8:
+                calcfftshift0<ito::int8>(inField, axis, true);
+                break;
             case ito::tUInt8:
-                calcfftshift<ito::uint8>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                calcfftshift0<ito::uint8>(inField, axis, true);
                 break;
-
             case ito::tInt16:
+                calcfftshift0<ito::int16>(inField, axis, true);
+                break;
             case ito::tUInt16:
-                calcfftshift<ito::uint16>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                calcfftshift0<ito::uint16>(inField, axis, true);
                 break;
-
             case ito::tInt32:
+                calcfftshift0<ito::int32>(inField, axis, true);
+                break;
             case ito::tUInt32:
-                calcfftshift<ito::uint32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                calcfftshift0<ito::uint32>(inField, axis, true);
                 break;
-
             case ito::tFloat32:
-                calcfftshift<ito::float32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                calcfftshift0<ito::float32>(inField, axis, true);
                 break;
-
             case ito::tFloat64:
-                calcfftshift<ito::float64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                calcfftshift0<ito::float64>(inField, axis, true);
                 break;
-
             case ito::tComplex64:
-                calcfftshift<ito::complex64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                calcfftshift0<ito::complex64>(inField, axis, true);
                 break;
-
             case ito::tComplex128:
-                calcfftshift<ito::complex128>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, true);
+                calcfftshift0<ito::complex128>(inField, axis, true);
                 break;
             }
         }
