@@ -130,6 +130,17 @@ ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVecto
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool forward)
 {
+    /*
+    size: even, forward == backward
+    |1----2,3----4|    ->  |3----4,1----2|
+
+    msize: odd, forward
+    |1----2,3---4|     ->  |3---4,1----2|
+
+    msize odd, backward
+    |1---2,3----4|     ->  |3----4,1---2|
+
+    */
     int sizeInAxisz = (*data).getSize(0);
     int sizeInAxisy = (*data).getSize(1);
     int sizeInAxisx = (*data).getSize(2);
@@ -149,7 +160,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
     switch (ito::getDataType2<_Tp*>())
     {
     case ito::tUInt8:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tUInt8);
         }
@@ -160,7 +171,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tUInt8);
         break;
     case ito::tInt8:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tInt8);
         }
@@ -171,7 +182,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tInt8);
         break;
     case ito::tUInt16:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tUInt16);
         }
@@ -182,7 +193,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tUInt16);
         break;
     case ito::tInt16:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tInt16);
         }
@@ -193,7 +204,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tInt16);
         break;
     case ito::tFloat32:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tFloat32);
         }
@@ -204,7 +215,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tFloat32);
         break;
     case ito::tFloat64:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tFloat64);
         }
@@ -215,7 +226,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tFloat64);
         break;
     case ito::tComplex64:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex64);
         }
@@ -226,7 +237,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tComplex64);
         break;
     case ito::tComplex128:
-        if (even)
+        if (even && !forward)
         {
             buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex128);
         }
@@ -271,7 +282,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
     }
 
-    if (!even)
+    if (!even && forward)
     {
         cutSize = cutSize + 1;
     }
@@ -307,10 +318,6 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
     }
     
-
-    /*
-    free(buf);
-    buf = NULL;*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -666,7 +673,7 @@ The shift is currently implemented along the x and y or one of both axes within 
     if (!retval.containsError())
     {
 
-        if (dims <= 2)
+        if (dims <= 2 && axis > 0)
         {
             for (int p = 0; p < numPlanes; ++p)
             {
@@ -705,7 +712,7 @@ The shift is currently implemented along the x and y or one of both axes within 
                 }
             }
         }
-        else if (dims == 3)
+        else if (dims > 2 && axis == 0)
         {
             switch (inField->getType())
             {
@@ -745,23 +752,34 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        //shift the axis scales of the last two axis
-        int dims = inField->getDims();
-        int size;
-        double phys1, phys2;
-        for (int d = dims - 2; d < dims; ++d)
+        if (dims <= 2 && axis > 0)
         {
-            if (d >= 0)
+            //shift the axis scales of the last two axis
+            int dims = inField->getDims();
+            int size;
+            double phys1, phys2;
+            for (int d = dims - 2; d < dims; ++d)
             {
-                size = inField->getSize(d);
-                if (size > 0)
+                if (d >= 0)
                 {
-                    phys1 = inField->getPixToPhys(d, 0);
-                    phys2 = inField->getPixToPhys(d, size - 1);
-                    phys1 = 0.5 * (phys1 + phys2);
-                    inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                    size = inField->getSize(d);
+                    if (size > 0)
+                    {
+                        phys1 = inField->getPixToPhys(d, 0);
+                        phys2 = inField->getPixToPhys(d, size - 1);
+                        phys1 = 0.5 * (phys1 + phys2);
+                        inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                    }
                 }
             }
+        }
+        else if (dims > 2 && axis == 0)
+        {
+            int size = inField->getSize(axis);
+            double phys1 = inField->getPixToPhys(axis, 0);
+            double phys2 = inField->getPixToPhys(axis, size - 1);
+            phys1 = 0.5 * (phys1 + phys2);
+            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
         }
     }
 
@@ -796,39 +814,79 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        for (int p = 0; p < numPlanes; ++p)
+        if (dims <= 2 && axis > 0)
+        { 
+
+            for (int p = 0; p < numPlanes; ++p)
+            {
+                switch (inField->getType())
+                {
+                case ito::tInt8:
+                case ito::tUInt8:
+                    calcfftshift<ito::uint8>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                    break;
+
+                case ito::tInt16:
+                case ito::tUInt16:
+                    calcfftshift<ito::uint16>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                    break;
+
+                case ito::tInt32:
+                case ito::tUInt32:
+                    calcfftshift<ito::uint32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                    break;
+
+                case ito::tFloat32:
+                    calcfftshift<ito::float32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                    break;
+
+                case ito::tFloat64:
+                    calcfftshift<ito::float64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                    break;
+
+                case ito::tComplex64:
+                    calcfftshift<ito::complex64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                    break;
+
+                case ito::tComplex128:
+                    calcfftshift<ito::complex128>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                    break;
+                }
+            }
+        }
+        else if (dims > 2 && axis == 0)
         {
             switch (inField->getType())
             {
             case ito::tInt8:
+                calcfftshift0<ito::int8>(inField, axis, false);
+                break;
             case ito::tUInt8:
-                calcfftshift<ito::uint8>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                calcfftshift0<ito::uint8>(inField, axis, false);
                 break;
-
             case ito::tInt16:
+                calcfftshift0<ito::int16>(inField, axis, false);
+                break;
             case ito::tUInt16:
-                calcfftshift<ito::uint16>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                calcfftshift0<ito::uint16>(inField, axis, false);
                 break;
-
             case ito::tInt32:
+                calcfftshift0<ito::int32>(inField, axis, false);
+                break;
             case ito::tUInt32:
-                calcfftshift<ito::uint32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                calcfftshift0<ito::uint32>(inField, axis, false);
                 break;
-
             case ito::tFloat32:
-                calcfftshift<ito::float32>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                calcfftshift0<ito::float32>(inField, axis, false);
                 break;
-
             case ito::tFloat64:
-                calcfftshift<ito::float64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                calcfftshift0<ito::float64>(inField, axis, false);
                 break;
-
             case ito::tComplex64:
-                calcfftshift<ito::complex64>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                calcfftshift0<ito::complex64>(inField, axis, false);
                 break;
-
             case ito::tComplex128:
-                calcfftshift<ito::complex128>(inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2), axis, false);
+                calcfftshift0<ito::complex128>(inField, axis, false);
                 break;
             }
         }
@@ -836,23 +894,34 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        //shift the axis scales of the last two axis
-        int dims = inField->getDims();
-        int size;
-        double phys1, phys2;
-        for (int d = dims - 2; d < dims; ++d)
+        if (dims <= 2 && axis > 0)
         {
-            if (d >= 0)
+            //shift the axis scales of the last two axis
+            int dims = inField->getDims();
+            int size;
+            double phys1, phys2;
+            for (int d = dims - 2; d < dims; ++d)
             {
-                size = inField->getSize(d);
-                if (size > 0)
+                if (d >= 0)
                 {
-                    phys1 = inField->getPixToPhys(d, 0);
-                    phys2 = inField->getPixToPhys(d, size - 1);
-                    phys1 = 0.5 * (phys1 + phys2);
-                    inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                    size = inField->getSize(d);
+                    if (size > 0)
+                    {
+                        phys1 = inField->getPixToPhys(d, 0);
+                        phys2 = inField->getPixToPhys(d, size - 1);
+                        phys1 = 0.5 * (phys1 + phys2);
+                        inField->setAxisOffset(d, phys1 / inField->getAxisScale(d));
+                    }
                 }
             }
+        }
+        else if (dims > 2 && axis == 0)
+        {
+            int size = inField->getSize(axis);
+            double phys1 = inField->getPixToPhys(axis, 0);
+            double phys2 = inField->getPixToPhys(axis, size - 1);
+            phys1 = 0.5 * (phys1 + phys2);
+            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
         }
     }
 
