@@ -155,9 +155,9 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tUInt8);
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt8);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt8);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tUInt8);
         break;
     case ito::tInt8:
         if (even)
@@ -166,9 +166,9 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tInt8);
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt8);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt8);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tInt8);
         break;
     case ito::tUInt16:
         if (even)
@@ -177,9 +177,9 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tUInt16);
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt16);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt16);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tUInt16);
         break;
     case ito::tInt16:
         if (even)
@@ -188,9 +188,9 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tInt16);
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt16);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt16);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tInt16);
         break;
     case ito::tFloat32:
         if (even)
@@ -199,9 +199,9 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tFloat32);
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat32);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat32);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tFloat32);
         break;
     case ito::tFloat64:
         if (even)
@@ -210,9 +210,9 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tFloat64);
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat64);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat64);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tFloat64);
         break;
     case ito::tComplex64:
         if (even)
@@ -221,9 +221,9 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex64);
+            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tComplex64);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tComplex64);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tComplex64);
         break;
     case ito::tComplex128:
         if (even)
@@ -234,18 +234,17 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         {
             buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tComplex128);
         }
-        buf1 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex128);
+        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tComplex128);
         break;
     }
 
-    int cutSize = sizeInAxisz / 2;
-    int buf1Size = buf1.getSize(0);
+    int cutSize = buf1.getSize(0);
 
     for (cntz = 0; cntz < sizeInAxisz; cntz++)
     {
         idxData = (*data).seekMat(cntz);
 
-        if (cntz < buf1Size)
+        if (cntz < cutSize)
         {
             idxBuf = buf1.seekMat(cntz);
         }
@@ -258,7 +257,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         {
             rowPtrData = data->rowPtr<_Tp>(idxData, cnty);
 
-            if (cntz < buf1Size)//first half
+            if (cntz < cutSize)//first half
             {
                 rowPtrBuf1 = buf1.rowPtr<_Tp>(idxBuf, cnty);
                 memcpy(rowPtrBuf1, rowPtrData, bufSize * sizeInAxisx);
@@ -272,11 +271,16 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         }
     }
 
+    if (!even)
+    {
+        cutSize = cutSize + 1;
+    }
+
     for (cntz = 0; cntz < sizeInAxisz; cntz++)
     {
         idxData = (*data).seekMat(cntz);
 
-        if (cntz < buf1Size)
+        if (cntz < cutSize)
         {
             idxBuf = buf2.seekMat(cntz);
         }
@@ -289,7 +293,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         {
             rowPtrData = data->rowPtr<_Tp>(idxData, cnty);
            
-            if (cntz < buf1Size) //first half
+            if (cntz < cutSize) //first half
             {
                 rowPtrBuf2 = buf2.rowPtr<_Tp>(idxBuf, cnty);
                 memcpy(rowPtrData, rowPtrBuf2, bufSize * sizeInAxisx);
