@@ -121,8 +121,11 @@ ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVecto
     ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128) which is shifted in-place.").toLatin1().data());
     paramsMand->append(param);
 
-    param = ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, -1, 2, -1, tr("shift axes: 2D DataObject: x and y axis (-1, default), only y (0), only x (1). 3D DataObject: x and y axis (-1, default), only z (0), only y(1), only x (2)").toLatin1().data());
+    param = ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, -1, 1, -1, tr("shift axis: x and y axis (-1, default), only y axis (0), only x axis (1)").toLatin1().data());
+    paramsOpt->append(param);
     
+    param = ito::Param("axisIndex", ito::ParamBase::Int | ito::ParamBase::In, -1, 0, tr("shift axis in the case of a > 2D dataObject. (-1, default) the axis parameter is considered, (0) the 0 axis of a 3D dataObject is shifted").toLatin1().data());
+
     paramsOpt->append(param);
     return retval;
 }
@@ -317,7 +320,8 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
         
         }
     }
-    
+    buf1 = NULL;
+    buf2 = NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -648,12 +652,15 @@ template<typename _Tp> void calcfftshift(uchar *data, int n, int m, int lineStep
 const QString FFTWFilters::fftshiftDOC = QObject::tr("Perform fftshift as known from Python, Matlab and so on, i.e. make the \n\
 zero order of diffraction appear in the center.\n\
 \n\
-The shift is currently implemented along the x and y or one of both axes within each plane (inplace).");
+The shift is implemented along the x and y or one of both axes within each plane (inplace) by using the axis parameter.\n\
+The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
+
 /*static*/ ito::RetVal FFTWFilters::fftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
     int axis = paramsOpt->at(0).getVal<int>();
+    int axisIdx = paramsOpt->at(1).getVal<int>();
 
     if (!inField)
     {
@@ -673,7 +680,7 @@ The shift is currently implemented along the x and y or one of both axes within 
     if (!retval.containsError())
     {
 
-        if(dims > 2 && axis == 0) //FFT shift of 3D Object in stack axis (z)
+        if(dims > 2 && axisIdx == 0) //FFT shift of 3D Object in stack axis (z)
         {
             switch (inField->getType())
             {
@@ -752,13 +759,13 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        if (dims > 2 && axis == 0)
+        if (dims > 2 && axisIdx == 0)
         {
-            int size = inField->getSize(axis);
-            double phys1 = inField->getPixToPhys(axis, 0);
-            double phys2 = inField->getPixToPhys(axis, size - 1);
+            int size = inField->getSize(axisIdx);
+            double phys1 = inField->getPixToPhys(axisIdx, 0);
+            double phys2 = inField->getPixToPhys(axisIdx, size - 1);
             phys1 = 0.5 * (phys1 + phys2);
-            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
+            inField->setAxisOffset(axisIdx, phys1 / inField->getAxisScale(axisIdx));
         }
         else
         {
@@ -790,12 +797,15 @@ The shift is currently implemented along the x and y or one of both axes within 
 const QString FFTWFilters::ifftshiftDOC = QObject::tr("Perform ifftshift as known from Python, Matlab and so on, i.e. move the \n\
 zero order of diffraction back to the corner to run the inverse fft correctly.\n\
 \n\
-The shift is currently implemented along the x and y or one of both axes within each plane (inplace).");
+The shift is implemented along the x and y or one of both axes within each plane (inplace) by using the axis parameter.\n\
+The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
+
 /*static*/ ito::RetVal FFTWFilters::ifftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
     int axis = paramsOpt->at(0).getVal<int>();
+    int axisIdx = paramsOpt->at(1).getVal<int>();
 
     if (!inField)
     {
@@ -814,7 +824,7 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        if(dims > 2 && axis == 0)
+        if(dims > 2 && axisIdx == 0)
         {
             switch (inField->getType())
             {
@@ -894,13 +904,13 @@ The shift is currently implemented along the x and y or one of both axes within 
 
     if (!retval.containsError())
     {
-        if (dims > 2 && axis == 0)
+        if (dims > 2 && axisIdx == 0)
         {
-            int size = inField->getSize(axis);
-            double phys1 = inField->getPixToPhys(axis, 0);
-            double phys2 = inField->getPixToPhys(axis, size - 1);
+            int size = inField->getSize(axisIdx);
+            double phys1 = inField->getPixToPhys(axisIdx, 0);
+            double phys2 = inField->getPixToPhys(axisIdx, size - 1);
             phys1 = 0.5 * (phys1 + phys2);
-            inField->setAxisOffset(axis, phys1 / inField->getAxisScale(axis));
+            inField->setAxisOffset(axisIdx, phys1 / inField->getAxisScale(axisIdx));
         }
         else
         {
