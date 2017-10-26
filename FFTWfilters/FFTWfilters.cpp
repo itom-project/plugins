@@ -131,7 +131,7 @@ ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVecto
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool forward)
+template<typename _Tp> void calcfftshift0(ito::DataObject *data, bool forward)
 {
     /*
     size: even, forward == backward
@@ -144,9 +144,14 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
     |1---2,3----4|     ->  |3----4,1---2|
 
     */
-    int sizeInAxisz = (*data).getSize(0);
-    int sizeInAxisy = (*data).getSize(1);
-    int sizeInAxisx = (*data).getSize(2);
+    int dims = (*data).getDims();
+    int axis0 = dims - 3;
+    int axis1 = dims - 2;
+    int axis2 = dims - 1;
+
+    int sizeInAxisz = (*data).getSize(axis0);
+    int sizeInAxisy = (*data).getSize(axis1);
+    int sizeInAxisx = (*data).getSize(axis2);
 
     int idxData, idxBuf;
     int cntz, cnty;
@@ -165,90 +170,90 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, int axis, bool 
     case ito::tUInt8:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tUInt8);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 , data->getSize(axis1), data->getSize(axis2), ito::tUInt8);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt8);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tUInt8);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tUInt8);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tUInt8);
         break;
     case ito::tInt8:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tInt8);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 , data->getSize(axis1), data->getSize(axis2), ito::tInt8);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt8);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tInt8);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tInt8);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tInt8);
         break;
     case ito::tUInt16:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tUInt16);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 , data->getSize(axis1), data->getSize(axis2), ito::tUInt16);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tUInt16);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tUInt16);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tUInt16);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tUInt16);
         break;
     case ito::tInt16:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tInt16);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 , data->getSize(axis1), data->getSize(axis2), ito::tInt16);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tInt16);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tInt16);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tInt16);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tInt16);
         break;
     case ito::tFloat32:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tFloat32);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 , data->getSize(axis1), data->getSize(axis2), ito::tFloat32);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat32);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tFloat32);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tFloat32);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tFloat32);
         break;
     case ito::tFloat64:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 , data->getSize(1), data->getSize(2), ito::tFloat64);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 , data->getSize(axis1), data->getSize(axis2), ito::tFloat64);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tFloat64);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tFloat64);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tFloat64);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tFloat64);
         break;
     case ito::tComplex64:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex64);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2, data->getSize(axis1), data->getSize(axis2), ito::tComplex64);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tComplex64);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tComplex64);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tComplex64);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tComplex64);
         break;
     case ito::tComplex128:
         if (even && !forward)
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2, data->getSize(1), data->getSize(2), ito::tComplex128);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2, data->getSize(axis1), data->getSize(axis2), ito::tComplex128);
         }
         else
         {
-            buf2 = ito::DataObject(data->getSize(0) / 2 + 1, data->getSize(1), data->getSize(2), ito::tComplex128);
+            buf2 = ito::DataObject(data->getSize(axis0) / 2 + 1, data->getSize(axis1), data->getSize(axis2), ito::tComplex128);
         }
-        buf1 = ito::DataObject(data->getSize(0) - buf2.getSize(0), data->getSize(1), data->getSize(2), ito::tComplex128);
+        buf1 = ito::DataObject(data->getSize(axis0) - buf2.getSize(0), data->getSize(axis1), data->getSize(axis2), ito::tComplex128);
         break;
     }
 
@@ -677,6 +682,11 @@ The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
         retval += ito::RetVal(ito::retError, 0, "source must have at least two dimensions");
     }
 
+    if (dims > 3)
+    {
+        retval += ito::RetVal(ito::retError, 0, "source must have at least maximum 3 dimensions");
+    }
+
     if (!retval.containsError())
     {
 
@@ -685,34 +695,34 @@ The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
             switch (inField->getType())
             {
             case ito::tInt8:
-                calcfftshift0<ito::int8>(inField, axis, true);
+                calcfftshift0<ito::int8>(inField, true);
                 break;
             case ito::tUInt8:
-                calcfftshift0<ito::uint8>(inField, axis, true);
+                calcfftshift0<ito::uint8>(inField, true);
                 break;
             case ito::tInt16:
-                calcfftshift0<ito::int16>(inField, axis, true);
+                calcfftshift0<ito::int16>(inField, true);
                 break;
             case ito::tUInt16:
-                calcfftshift0<ito::uint16>(inField, axis, true);
+                calcfftshift0<ito::uint16>(inField, true);
                 break;
             case ito::tInt32:
-                calcfftshift0<ito::int32>(inField, axis, true);
+                calcfftshift0<ito::int32>(inField, true);
                 break;
             case ito::tUInt32:
-                calcfftshift0<ito::uint32>(inField, axis, true);
+                calcfftshift0<ito::uint32>(inField, true);
                 break;
             case ito::tFloat32:
-                calcfftshift0<ito::float32>(inField, axis, true);
+                calcfftshift0<ito::float32>(inField, true);
                 break;
             case ito::tFloat64:
-                calcfftshift0<ito::float64>(inField, axis, true);
+                calcfftshift0<ito::float64>(inField, true);
                 break;
             case ito::tComplex64:
-                calcfftshift0<ito::complex64>(inField, axis, true);
+                calcfftshift0<ito::complex64>(inField, true);
                 break;
             case ito::tComplex128:
-                calcfftshift0<ito::complex128>(inField, axis, true);
+                calcfftshift0<ito::complex128>(inField, true);
                 break;
             }
         }
@@ -822,6 +832,11 @@ The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
         retval += ito::RetVal(ito::retError, 0, "source must have at least two dimensions");
     }
 
+    if (dims > 3)
+    {
+        retval += ito::RetVal(ito::retError, 0, "source must have at least maximum 3 dimensions");
+    }
+
     if (!retval.containsError())
     {
         if(dims > 2 && axisIdx == 0)
@@ -829,34 +844,34 @@ The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
             switch (inField->getType())
             {
             case ito::tInt8:
-                calcfftshift0<ito::int8>(inField, axis, false);
+                calcfftshift0<ito::int8>(inField, false);
                 break;
             case ito::tUInt8:
-                calcfftshift0<ito::uint8>(inField, axis, false);
+                calcfftshift0<ito::uint8>(inField, false);
                 break;
             case ito::tInt16:
-                calcfftshift0<ito::int16>(inField, axis, false);
+                calcfftshift0<ito::int16>(inField, false);
                 break;
             case ito::tUInt16:
-                calcfftshift0<ito::uint16>(inField, axis, false);
+                calcfftshift0<ito::uint16>(inField, false);
                 break;
             case ito::tInt32:
-                calcfftshift0<ito::int32>(inField, axis, false);
+                calcfftshift0<ito::int32>(inField, false);
                 break;
             case ito::tUInt32:
-                calcfftshift0<ito::uint32>(inField, axis, false);
+                calcfftshift0<ito::uint32>(inField, false);
                 break;
             case ito::tFloat32:
-                calcfftshift0<ito::float32>(inField, axis, false);
+                calcfftshift0<ito::float32>(inField, false);
                 break;
             case ito::tFloat64:
-                calcfftshift0<ito::float64>(inField, axis, false);
+                calcfftshift0<ito::float64>(inField, false);
                 break;
             case ito::tComplex64:
-                calcfftshift0<ito::complex64>(inField, axis, false);
+                calcfftshift0<ito::complex64>(inField, false);
                 break;
             case ito::tComplex128:
-                calcfftshift0<ito::complex128>(inField, axis, false);
+                calcfftshift0<ito::complex128>(inField, false);
                 break;
             }
         }
