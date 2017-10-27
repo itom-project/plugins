@@ -332,10 +332,6 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, bool forward)
     rowPtrData = NULL;
     rowPtrBuf1 = NULL;
     rowPtrBuf2 = NULL;
-
-    delete rowPtrBuf1;
-    delete rowPtrBuf2;
-    delete rowPtrData;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
