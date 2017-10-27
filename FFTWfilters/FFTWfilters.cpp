@@ -1346,7 +1346,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
     unsigned int flags = (plan_select == 0) ? FFTW_ESTIMATE : FFTW_MEASURE;
     int axis = (*paramsOpt)[1].getVal<int>();
     QByteArray norm = paramsOpt->at(2).getVal<char*>();
-    unsigned int planForwardBackWard = forward ? FFTW_FORWARD : FFTW_BACKWARD;
+    int planForwardBackWard = forward ? FFTW_FORWARD : FFTW_BACKWARD;
 
     retval += ito::dObjHelper::verifyDataObjectType(dObjIn, "source", 9, ito::tInt8, ito::tUInt8,
         ito::tInt16, ito::tUInt16,
@@ -1447,7 +1447,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
                         fftw_execute_dft(plan, in, out);
                     }
 
-                    for (int z = 1; z < numPlanes; z++)
+                    for (int z = 0; z < numPlanes; z++)
                     {
                         out = (fftw_complex*)(dObjOut->get_mdata()[dObjOut->seekMat(z, numPlanes)])->ptr<ito::complex128>(0);
                         in = (fftw_complex*)(dObjIn->get_mdata()[dObjIn->seekMat(z, numPlanes)])->ptr<ito::complex128>(0);
@@ -1775,7 +1775,7 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
     int plan_select = (*paramsOpt)[0].getVal<int>();  //plan selection string for fftw
     unsigned int flags = (plan_select == 0) ? FFTW_ESTIMATE : FFTW_MEASURE;
     QByteArray norm = paramsOpt->at(1).getVal<char*>();
-    unsigned int planForwardBackWard = forward ? FFTW_FORWARD : FFTW_BACKWARD;
+    int planForwardBackWard = forward ? FFTW_FORWARD : FFTW_BACKWARD;
     int sizeX, sizeY;
     int dims;
 
