@@ -1447,7 +1447,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
                         fftw_execute_dft(plan, in, out);
                     }
 
-                    for (int z = 0; z < numPlanes; z++)
+                    for (int z = 1; z < numPlanes; z++)
                     {
                         out = (fftw_complex*)(dObjOut->get_mdata()[dObjOut->seekMat(z, numPlanes)])->ptr<ito::complex128>(0);
                         in = (fftw_complex*)(dObjIn->get_mdata()[dObjIn->seekMat(z, numPlanes)])->ptr<ito::complex128>(0);
