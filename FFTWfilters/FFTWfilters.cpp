@@ -326,8 +326,8 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, bool forward)
         }
     }
 
-    buf1 = NULL;
-    buf2 = NULL;
+    buf1 = ito::DataObject();
+    buf2 = ito::DataObject();
 
     rowPtrData = NULL;
     rowPtrBuf1 = NULL;
