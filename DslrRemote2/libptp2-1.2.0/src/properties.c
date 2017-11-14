@@ -20,15 +20,18 @@
 #ifndef CMAKE
 #include <config.h>
 #endif
-#ifdef WIN32
-#define snprintf _snprintf
-#define strncasecmp _strnicmp
-#endif
 
 #include "ptp.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef WIN32
+#ifndef snprintf
+#define snprintf _snprintf
+#endif
+#define strncasecmp _strnicmp
+#endif
 
 #ifdef ENABLE_NLS
 #  include <libintl.h>
