@@ -1392,7 +1392,11 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         {
             int integration_time = secToMusec(val->getVal<double>());   
             retValue += checkError(pxiSetParam(m_handle, XI_PRM_EXPOSURE XI_PRMM_DIRECT_UPDATE, &integration_time, sizeof(int), xiTypeInteger), "set XI_PRM_EXPOSURE", QString("%1 ms").arg(integration_time));
-
+            int timeout = secToMusec(m_params["timeout"].getVal<double>());
+            if (timeout < integration_time)
+            {
+                m_params["timeout"].setVal<double>(musecToSec(integration_time + 1000000));
+            }
             retValue += synchronizeCameraSettings(sExposure | sFrameRate | sGain);
         }
         else if (QString::compare(key, "sharpness", Qt::CaseInsensitive) == 0)
