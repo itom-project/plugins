@@ -1,4 +1,4 @@
-project(itom_plugins)
+project(itom_plugins) 
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -343,6 +343,12 @@ OPTION(PLUGIN_PI_GCS2 "Build with this plugin." OFF)
 if (PLUGIN_PI_GCS2)
     ADD_SUBDIRECTORY(PI_GCS2)
 endif (PLUGIN_PI_GCS2)
+
+# PmdPico
+OPTION(PLUGIN_PMD_PICO "Build with this plugin." OFF)
+if(PLUGIN_PMD_PICO)
+    ADD_SUBDIRECTORY(PmdPico)
+endif (PLUGIN_PMD_PICO)
 
 # QCam
 IF (WIN32)
