@@ -33,7 +33,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qmessagebox.h>
 #include <iostream>
 
-//#include "dockWidgetPmdPico.h"
+#include "dockWidgetPmdPico.h"
 #include "dialogPmdPico.h"
 
 
@@ -245,7 +245,7 @@ PmdPico::PmdPico() : AddInGrabber(), m_isgrabbing(false), m_exposureListener(), 
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 16, 16, tr("bpp of gray value image").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("integration time of [sec]").toLatin1().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.00001, tr("integration time of [sec]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("cam_number", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("index of the camera device.").toLatin1().data());
@@ -264,14 +264,14 @@ PmdPico::PmdPico() : AddInGrabber(), m_isgrabbing(false), m_exposureListener(), 
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("data_mode", ito::ParamBase::Int, 0, 2, 0, tr("indicates whether depth data (0), gray value (1) or confidence map (2) is transfered when using copyVal, getVal or the live image").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    //DockWidgetPmdPico *dw = new DockWidgetPmdPico(this);
+
+    DockWidgetPmdPico *dw = new DockWidgetPmdPico(this);
     
 
 
-    //Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    //QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    //createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
     QVector<ito::Param> pMand;
     pMand << ito::Param("xCoordinate", ito::ParamBase::DObjPtr | ito::ParamBase::In| ito::ParamBase::Out, NULL,tr("x-coordinate map of the same shape as the current image").toLatin1().data());
     pMand << ito::Param("yCoordinate", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL,tr("y-coordinate map of the same shape as the current image").toLatin1().data());
@@ -350,6 +350,7 @@ ito::RetVal PmdPico::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
                         {
                             m_params["serial_number"].setVal<const char*>(id.data());
                             m_identifier = QString("%1 (SN:%2)").arg(name.data()).arg(id.data());
+                            setIdentifier(m_identifier);
                             qDebug() << QString("%1 (SN:%2)").arg(name.data()).arg(id.data());
                             retValue += synchronizeCameraSettings();
                             if (!retValue.containsError())
@@ -541,7 +542,7 @@ ito::RetVal PmdPico::synchronizeCameraSettings(const int &paramMask /*=sAll*/)
             if (!retValue.containsError())
             {
                 m_params["integration_time"].setMeta(new ito::DoubleMeta(musecToSec(limits.first), musecToSec(limits.second)), true);
-                m_params["integration_time"].setVal<int>(m_exposureListener.getIntegrationTime());
+                m_params["integration_time"].setVal<double>(musecToSec(m_exposureListener.getIntegrationTime()));
             }
         }
         if (paramMask & sAutoExposure)
@@ -550,7 +551,15 @@ ito::RetVal PmdPico::synchronizeCameraSettings(const int &paramMask /*=sAll*/)
             retValue += getErrStr(m_cameraDevice->getExposureMode(mode));
             if (!retValue.containsError())
             {
-                m_params["auto_exposure"].setVal<int>((int)mode);
+                if (mode == royale::ExposureMode::MANUAL)
+                {
+                    m_params["auto_exposure"].setVal<int>(0);
+                }
+                else 
+                {
+                    m_params["auto_exposure"].setVal<int>(1);
+                }
+
             }
         }
         if (paramMask & sFrameRate)
@@ -654,7 +663,7 @@ ito::RetVal PmdPico::close(ItomSharedSemaphore *waitCond)
             m_cameraDevice->isConnected(connected);
             if (connected)
             {
-                retValue += getErrStr(m_cameraDevice->stopCapture());
+                retValue += setCapturingState(false);
                 retValue += getErrStr(m_cameraDevice->unregisterDepthImageListener());
                 retValue += getErrStr(m_cameraDevice->unregisterExposureListener());
                 delete m_cameraDevice;
@@ -695,6 +704,14 @@ ito::RetVal PmdPico::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 
     if (!retValue.containsError())
     {
+        if (key == "integration_time")
+        {
+            retValue += synchronizeCameraSettings(sExposure);
+        }
+        if (key == "framerate")
+        {
+            retValue += synchronizeCameraSettings(sFrameRate);
+        }
         //put your switch-case.. for getting the right value here
 
         //finally, save the desired value in the argument val (this is a shared pointer!)
@@ -746,8 +763,19 @@ ito::RetVal PmdPico::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             if (!m_params["auto_exposure"].getVal<int>())
             {
                 retValue += it->copyValueFrom(&(*val));
-                retValue += getErrStr(m_cameraDevice->setExposureTime(secToMusec(it->getVal<double>())));
+                uint32_t time = secToMusec(it->getVal<double>());
+                bool cap;
+                m_cameraDevice->isCapturing(cap);
+                if (!cap) //the camera can only set the integration time if capturing
+                {
+                    retValue +=setCapturingState(true);
+                }
+                retValue += getErrStr(m_cameraDevice->setExposureTime(time));
+                
+                m_exposureListener.onNewExposure(time,0); //set this value to the listener since a manuel set does not call the onNewExposure
+
                 synchronizeCameraSettings(sExposure);
+
             }
             else
             {
@@ -766,6 +794,12 @@ ito::RetVal PmdPico::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         else if (key == "framerate")
         {
             retValue += it->copyValueFrom(&(*val));
+            bool cap;
+            m_cameraDevice->isCapturing(cap);
+            if (!cap) //the camera can only set the framerate if capturing
+            {
+                retValue += setCapturingState(true);
+            }
             retValue += getErrStr(m_cameraDevice->setFrameRate(it->getVal<int>()));
             synchronizeCameraSettings(sFrameRate);
         }
@@ -1319,7 +1353,6 @@ template<typename _Tp> void copyDataToImageBufferFunc(const royale::DepthData* s
     uint32_t nrPts = src->height * src->width;
     long num = 0;
     _Tp* rowPtr;
-    _Tp val;
     cv::Mat* mat = dst->getCvPlaneMat(0);
 
 

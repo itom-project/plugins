@@ -36,23 +36,21 @@ class DockWidgetPmdPico : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
-    public:
-        DockWidgetPmdPico(ito::AddInDataIO *grabber);
-        ~DockWidgetPmdPico() {};
+public:
+    DockWidgetPmdPico(ito::AddInDataIO *grabber);
+    ~DockWidgetPmdPico() {};
 
-    private:
-        Ui::DockWidgetPmdPico ui;
-        bool m_inEditing;
-        bool m_firstRun;
+private:
+    Ui::DockWidgetPmdPico ui;
+    bool m_inEditing;
+    bool m_firstRun;
 
     public slots:
-        void parametersChanged(QMap<QString, ito::Param> params);
-        void identifierChanged(const QString &identifier);
+    void identifierChanged(const QString &identifier);
+    void parametersChanged(QMap<QString, ito::Param> params) {}
 
-    private slots:
-        //add here slots connected to changes of any widget
-        //example:
-        //void on_contrast_valueChanged(int i);
+
 };
 
 #endif
+

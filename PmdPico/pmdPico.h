@@ -147,7 +147,7 @@ class PmdPico : public ito::AddInGrabber
         ito::RetVal switchDataObj();
 
         inline double musecToSec(double musec) { return (double)musec * 1.0e-6; }
-        inline uint32_t secToMusec(double sec) { return (uint32_t)sec * 1.0e6; }
+        inline uint32_t secToMusec(double sec) { return (uint32_t)(sec * 1.0e6); }
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
         royale::ICameraDevice* m_cameraDevice;

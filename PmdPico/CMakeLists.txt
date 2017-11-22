@@ -67,7 +67,7 @@ IF (PmdPico_ROYALE_INCLUDE_DIR)
 # - itomWidgets (further widgets) (may be used in dock widget...)
 # - pointcloud (pointCloud, point, polygonMesh...) (optional)
 # if no components are indicated, all components above are used
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake") #include this mandatory macro file (important)
 #find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
 #       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
