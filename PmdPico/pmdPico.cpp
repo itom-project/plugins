@@ -245,7 +245,7 @@ PmdPico::PmdPico() : AddInGrabber(), m_isgrabbing(false), m_exposureListener(), 
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 16, 16, tr("bpp of gray value image").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.00001, tr("integration time of [sec]").toLatin1().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double , 0.0, 1.0, 0.0, tr("integration time of [sec]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("cam_number", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("index of the camera device.").toLatin1().data());
@@ -383,6 +383,7 @@ ito::RetVal PmdPico::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         if (!retValue.containsError())
         {
             mutex.lock();
+            synchronizeCameraSettings(sExposure);
             retValue += checkData();
             switchDataObj();
         }
@@ -541,7 +542,9 @@ ito::RetVal PmdPico::synchronizeCameraSettings(const int &paramMask /*=sAll*/)
             retValue += getErrStr(m_cameraDevice->getExposureLimits(limits));
             if (!retValue.containsError())
             {
-                m_params["integration_time"].setMeta(new ito::DoubleMeta(musecToSec(limits.first), musecToSec(limits.second)), true);
+                ito::DoubleMeta* meta = new ito::DoubleMeta (musecToSec(limits.first), musecToSec(limits.second));
+                meta->setDisplayPrecision(6);
+                m_params["integration_time"].setMeta(meta, true);
                 m_params["integration_time"].setVal<double>(musecToSec(m_exposureListener.getIntegrationTime()));
             }
         }
