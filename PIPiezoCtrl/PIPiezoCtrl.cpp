@@ -1620,7 +1620,12 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         retval += PISendCommand("SVO A 1"); //activates servo
         m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
-        m_params["posLimitHigh"].setVal<double>(100.0 / 1000.0);
+
+        retval += PISendCommand("MOV A 1000"); //dummy drive to get max pos
+        //double pos;
+        //retval += PISendQuestionWithAnswerDouble(m_PosQust, pos, 200);
+
+        m_params["posLimitHigh"].setVal<double>(300.0 / 1000.0);
 
         m_params["ctrlName"].setVal<char*>(answer.data(),answer.length());
         answer = "unknown";
