@@ -81,7 +81,10 @@ It has been tested with different Piefocs and Piezo-stages. This system needs a 
 The parameters of the serial port (besides port number) are set automatically during initialization. \n\
 \n\
 WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding \
-PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination.");
+PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination. \n\
+\n\
+WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum avaiable position.\
+In the case of a higher maximum position, set the plugin parameter \"posLimitHigh\". ");
 
     m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

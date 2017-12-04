@@ -1625,7 +1625,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         //double pos;
         //retval += PISendQuestionWithAnswerDouble(m_PosQust, pos, 200);
 
-        m_params["posLimitHigh"].setVal<double>(300.0 / 1000.0);
+        m_params["posLimitHigh"].setVal<double>(100.0 / 1000.0);
 
         m_params["ctrlName"].setVal<char*>(answer.data(),answer.length());
         answer = "unknown";
