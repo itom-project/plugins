@@ -1,8 +1,8 @@
 /*****************************************************************************/
 /*! \file    ueye.h
-*   \author  (c) 2004-2016 by Imaging Development Systems GmbH
-*   \date    Date: 2016/09/20
-*   \version PRODUCTVERSION: 4.81
+*   \author  (c) 2004-2017 by Imaging Development Systems GmbH
+*   \date    Date: 2017/11/09
+*   \version PRODUCTVERSION: 4.90
 *
 *   \brief   Library interface for IDS uEye - camera family.
 *            definition of exported API functions and constants
@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 81, 0)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 90, 3)
 #endif
 
 
@@ -226,6 +226,27 @@ extern "C" {
 #define IS_SENSOR_UI1130LE_M        0x023C      // SVGA global shutter, monochrome
 #define IS_SENSOR_UI1130LE_C        0x023D      // SVGA global shutter, color
 
+#define IS_SENSOR_UI1290_M          0x023E      // 8.9MP global shutter, monochrome
+#define IS_SENSOR_UI1290_C          0x023F      // 8.9MP global shutter, color
+
+#define IS_SENSOR_UI1090_M          0x0240      // 8.9MP global shutter, monochrome
+#define IS_SENSOR_UI1090_C          0x0241      // 8.9MP global shutter, color
+
+#define IS_SENSOR_UI1000_M          0x0242      // 12.3MP global shutter, monochrome
+#define IS_SENSOR_UI1000_C          0x0243      // 12.3MP global shutter, color
+
+#define IS_SENSOR_UI1200_M          0x0244      // 12.3MP global shutter, monochrome
+#define IS_SENSOR_UI1200_C          0x0245      // 12.3MP global shutter, color
+
+#define IS_SENSOR_UI1040_M          0x0246      // 1.6MP global shutter, monochrome
+#define IS_SENSOR_UI1040_C          0x0247      // 1.6MP global shutter, color
+
+#define IS_SENSOR_UI1180_M_S2       0x0248      // 5.3MP global shutter, monochrome
+#define IS_SENSOR_UI1180_C_S2       0x0249      // 5.3MP global shutter, color
+
+#define IS_SENSOR_UI1160_M_S2       0x024A      // 2.3MP global shutter, monochrome
+#define IS_SENSOR_UI1160_C_S2       0x024B      // 2.3MP global shutter, color
+
 // CCD Sensors
 #define IS_SENSOR_UI223X_M          0x0080      // Sony CCD sensor - XGA monochrome
 #define IS_SENSOR_UI223X_C          0x0081      // Sony CCD sensor - XGA color
@@ -257,10 +278,28 @@ extern "C" {
 #define IS_SENSOR_UI228X_M          0x009C      // Sony CCD sensor - QXGA monochrome
 #define IS_SENSOR_UI228X_C          0x009D      // Sony CCD sensor - QXGA color
 
+#define IS_SENSOR_UI223X_M_R3       0x0180      // Sony CCD sensor - XGA monochrome
+#define IS_SENSOR_UI223X_C_R3       0x0181      // Sony CCD sensor - XGA color
+
 #define IS_SENSOR_UI241X_M_R2       0x0182      // Sony CCD sensor - VGA monochrome
 #define IS_SENSOR_UI251X_M          0x0182      // Sony CCD sensor - VGA monochrome
 #define IS_SENSOR_UI241X_C_R2       0x0183      // Sony CCD sensor - VGA color
 #define IS_SENSOR_UI251X_C          0x0183      // Sony CCD sensor - VGA color
+
+#define IS_SENSOR_UI234X_M_R3       0x0184      // Sony CCD sensor - SXGA+ monochrome
+#define IS_SENSOR_UI234X_C_R3       0x0185      // Sony CCD sensor - SXGA+ color
+
+#define IS_SENSOR_UI221X_M_R3       0x0188      // Sony CCD sensor - VGA monochrome
+#define IS_SENSOR_UI221X_C_R3       0x0189      // Sony CCD sensor - VGA color
+
+#define IS_SENSOR_UI222X_M_R3       0x0192      // Sony CCD sensor - CCIR monochrome
+#define IS_SENSOR_UI222X_C_R3       0x0193      // Sony CCD sensor - PAL/D1 color
+
+#define IS_SENSOR_UI224X_M_R3       0x0196      // Sony CCD sensor - SXGA monochrome
+#define IS_SENSOR_UI224X_C_R3       0x0197      // Sony CCD sensor - SXGA color
+
+#define IS_SENSOR_UI225X_M_R3       0x0198      // Sony CCD sensor - UXGA monochrome
+#define IS_SENSOR_UI225X_C_R3       0x0199      // Sony CCD sensor - UXGA color
 
 #define IS_SENSOR_UI2130_M          0x019E      // Sony CCD sensor - WXGA monochrome
 #define IS_SENSOR_UI2130_C          0x019F      // Sony CCD sensor - WXGA color
@@ -475,6 +514,7 @@ extern "C" {
 #define IS_ERROR_CPU_IDLE_STATES_CONFIGURATION      204   // The setting of the CPU idle state configuration failed
 #define IS_DEVICE_BUSY                              205   // The device is busy. The operation must be executed again later.
 #define IS_SENSOR_INITIALIZATION_FAILED             206   // The sensor initialization failed
+#define IS_IMAGE_BUFFER_NOT_DWORD_ALIGNED           207   // The image buffer is not DWORD-aligned
 
 
 // ----------------------------------------------------------------------------
@@ -1069,6 +1109,34 @@ extern "C" {
 #define IS_HOTPIXEL_SAVE_SOFTWARE_USER_LIST_UNICODE     0x8111
 #define IS_HOTPIXEL_LOAD_SOFTWARE_USER_LIST_UNICODE     0x8112
 
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_ENABLE              0x8113
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_ENABLE_DEFAULT      0x8114
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_SET_ENABLE              0x8115
+
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_MODE                0x8116
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_MODE_DEFAULT        0x8117
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_SET_MODE                0x8118
+
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_SENSITIVITY         0x8119
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_SENSITIVITY_DEFAULT 0x8120
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_SENSITIVITY_MIN     0x8121
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_SENSITIVITY_MAX     0x8122
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_SET_SENSITIVITY         0x8123
+
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_RESET_DETECTION         0x8124
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_NUMBER_DETECTED     0x8125
+
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_RESET_DETECTION_CLUSTER     0x8126
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_GET_NUMBER_DETECTED_CLUSTER 0x8127
+
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_DISABLE                 0
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_ENABLE                  1
+
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_DETECT_ONCE             0x0000
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_DETECT_DYNAMIC          0x0001
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_DETECT_ONCE_CLUSTER     0x0002
+#define IS_HOTPIXEL_ADAPTIVE_CORRECTION_DETECT_DYNAMIC_CLUSTER  0x0004
+
 // ----------------------------------------------------------------------------
 // color correction definitions
 // ----------------------------------------------------------------------------
@@ -1348,6 +1416,7 @@ extern "C" {
 #define IS_BOARD_TYPE_UEYE_USB_XS           (IS_INTERFACE_TYPE_USB + 0x03)  // 0x43
 #define IS_BOARD_TYPE_UEYE_USB_ML           (IS_INTERFACE_TYPE_USB + 0x05)  // 0x45
 
+#define IS_BOARD_TYPE_UEYE_USB3_SE          IS_INTERFACE_TYPE_USB3          // 0x60
 #define IS_BOARD_TYPE_UEYE_USB3_LE          (IS_INTERFACE_TYPE_USB3 + 0x02) // 0x62
 #define IS_BOARD_TYPE_UEYE_USB3_XC          (IS_INTERFACE_TYPE_USB3 + 0x03) // 0x63
 #define IS_BOARD_TYPE_UEYE_USB3_CP          (IS_INTERFACE_TYPE_USB3 + 0x04) // 0x64
@@ -1363,6 +1432,9 @@ extern "C" {
 #define IS_BOARD_TYPE_UEYE_ETH_REP          IS_BOARD_TYPE_UEYE_ETH_SEP      // 0x86
 #define IS_BOARD_TYPE_UEYE_ETH_LEET         (IS_INTERFACE_TYPE_ETH + 0x07)  // 0x87
 #define IS_BOARD_TYPE_UEYE_ETH_TE           (IS_INTERFACE_TYPE_ETH + 0x08)  // 0x88
+#define IS_BOARD_TYPE_UEYE_ETH_FA           (IS_INTERFACE_TYPE_ETH + 0x0A)  // 0x8A
+#define IS_BOARD_TYPE_UEYE_ETH_SE_R4        (IS_INTERFACE_TYPE_ETH + 0x0B)  // 0x8B
+#define IS_BOARD_TYPE_UEYE_ETH_CP_R2        (IS_INTERFACE_TYPE_ETH + 0x0C)  // 0x8C
 
 // ----------------------------------------------------------------------------
 // Camera type defines
@@ -1375,7 +1447,7 @@ extern "C" {
 #define IS_CAMERA_TYPE_UEYE_USB_ML      IS_BOARD_TYPE_UEYE_USB_ML
 
 #define IS_CAMERA_TYPE_UEYE_USB3_LE     IS_BOARD_TYPE_UEYE_USB3_LE
-#define IS_CAMERA_TYPE_UEYE_USB3_XC        IS_BOARD_TYPE_UEYE_USB3_XC
+#define IS_CAMERA_TYPE_UEYE_USB3_XC     IS_BOARD_TYPE_UEYE_USB3_XC
 #define IS_CAMERA_TYPE_UEYE_USB3_CP     IS_BOARD_TYPE_UEYE_USB3_CP
 #define IS_CAMERA_TYPE_UEYE_USB3_ML     IS_BOARD_TYPE_UEYE_USB3_ML
 
@@ -1389,6 +1461,9 @@ extern "C" {
 #define IS_CAMERA_TYPE_UEYE_ETH_REP     IS_BOARD_TYPE_UEYE_ETH_REP
 #define IS_CAMERA_TYPE_UEYE_ETH_LEET    IS_BOARD_TYPE_UEYE_ETH_LEET
 #define IS_CAMERA_TYPE_UEYE_ETH_TE      IS_BOARD_TYPE_UEYE_ETH_TE
+#define IS_CAMERA_TYPE_UEYE_ETH_CP_R2   IS_BOARD_TYPE_UEYE_ETH_CP_R2
+#define IS_CAMERA_TYPE_UEYE_ETH_FA      IS_BOARD_TYPE_UEYE_ETH_FA
+#define IS_CAMERA_TYPE_UEYE_ETH_SE_R4   IS_BOARD_TYPE_UEYE_ETH_SE_R4
 #define IS_CAMERA_TYPE_UEYE_PMC         (IS_INTERFACE_TYPE_PMC + 0x01)
 
 
@@ -1575,9 +1650,6 @@ extern "C" {
 
         #include <unistd.h>
         #include <wchar.h>
-
-        #define Sleep(n)       usleep(n)
-
         #include <stdint.h>
 
         // aliases for common Win32 types
@@ -3198,7 +3270,13 @@ typedef enum E_DEVICE_FEATURE_CMD
     IS_DEVICE_FEATURE_CMD_EXTENDED_AWB_LIMITS_SET                               = 101,
     IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_ENABLE_SUPPORTED                      = 102,
     IS_DEVICE_FEATURE_CMD_SET_SPI_TARGET                                        = 103,
-    IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_IS_CALIBRATED                      = 104
+    IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_IS_CALIBRATED                      = 104,
+    IS_DEVICE_FEATURE_CMD_SET_FPN_CORRECTION_DATA_LOADING                       = 105,
+    IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_DATA_LOADING                       = 106,
+    IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_BUFFER_LIMIT                          = 107,
+    IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_BUFFER_LIMIT_DEFAULT                  = 108,
+    IS_DEVICE_FEATURE_CMD_SET_MEMORY_MODE_BUFFER_LIMIT                          = 109,
+    IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_DATA_LOADING_DEFAULT               = 110
 } DEVICE_FEATURE_CMD;
 
 
@@ -3333,6 +3411,19 @@ typedef enum E_FPN_CORRECTION_MODES
     IS_FPN_CORRECTION_MODE_HARDWARE = 1
 
 } FPN_CORRECTION_MODES;
+
+
+/*!
+* \brief Enumeration of FPN persistent modes.
+*
+* \sa is_DeviceFeature
+*/
+typedef enum E_FPN_CORRECTION_DATA_LOADING
+{
+    IS_FPN_CORRECTION_DATA_LOADING_OFF = 0,
+    IS_FPN_CORRECTION_DATA_LOADING_ON = 1
+
+} FPN_CORRECTION_DATA_LOADING;
 
 
 /*!
@@ -3761,195 +3852,6 @@ typedef enum E_IS_DEVICE_INFO_CMD
  * \since uEye SDK 4.00.
  */
 IDSEXP is_DeviceInfo(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
-
-
-/*! \brief Enumeration of commands supported by the callback functionality access function \ref is_Callback().
- *
- * \sa is_Callback()
- *
- * \since uEye SDK 4.20.
- */
-typedef enum E_IS_CALLBACK_CMD
-{
-    /*!
-     * \brief Install a callback.
-     *        Type of data: \ref IS_CALLBACK_INSTALLATION_DATA.
-     */
-    IS_CALLBACK_CMD_INSTALL     = 0x00000001,
-
-    /*!
-     * \brief Uninstall a callback.
-     *        Type of data: \ref HIDS_CALLBACK.
-     */
-    IS_CALLBACK_CMD_UNINSTALL   = 0x00000002,
-
-} IS_CALLBACK_CMD;
-
-/*! \brief Enumeration of events supported by the callback functionality access function \ref is_Callback().
- *
- * \sa is_Callback()
- *
- * \since uEye SDK 4.20.
- */
-typedef enum E_IS_CALLBACK_EVENT
-{
-    /*!
-     * \brief The callback will be executed before the postprocessing of an acquired image starts.
-     *
-     * This %Callback event requires objects of types \ref IS_CALLBACK_EVCTX_IMAGE_PROCESSING
-     * and \ref IS_CALLBACK_FDBK_IMAGE_PROCESSING to be processed in the callback function.
-     *
-     * \sa IS_CALLBACK_EVCTX_IMAGE_PROCESSING, IS_CALLBACK_FDBK_IMAGE_PROCESSING
-     */
-    IS_CALLBACK_EV_IMGPOSTPROC_START = 0x00000001
-
-} IS_CALLBACK_EVENT;
-
-/*! \brief %Callback event context for data processing callbacks.
- *
- * For data processing callbacks a pointer to this data is provided to the %Callback function as the second argument.
- *
- * \sa IS_CALLBACK_FUNC
- *
- * \since uEye SDK 4.20.
- */
-typedef struct S_IS_CALLBACK_EVCTX_DATA_PROCESSING
-{
-    /*! \brief Memory address of the source data. */
-    const void* const   pSrcBuf;
-
-    /*! \brief Size of the source data in units number of bytes. */
-    const UINT          cbSrcBuf;
-
-    /*! \brief Memory address of the destination buffer. */
-    void* const         pDestBuf;
-
-    /*! \brief Size of the destination buffer in units number of bytes. */
-    const UINT          cbDestBuf;
-
-} IS_CALLBACK_EVCTX_DATA_PROCESSING;
-
-/*! \brief %Callback event context for image processing callbacks.
- *
- * For image processing callbacks a pointer to this data is provided to the %Callback function as the second argument.
- *
- * This type is used for the following callback events:
- * \li \ref IS_CALLBACK_EV_IMGPOSTPROC_START
- *
- * \sa IS_CALLBACK_FUNC, IS_CALLBACK_EVCTX_DATA_PROCESSING,
- *     IS_CALLBACK_EV_IMGPOSTPROC_START
- *
- * \since uEye SDK 4.20.
- */
-typedef struct S_IS_CALLBACK_EVCTX_IMAGE_PROCESSING
-{
-    /*! brief Indication of the related memory buffers. */
-    IS_CALLBACK_EVCTX_DATA_PROCESSING   bufferInfo;
-
-    /*! \todo what else do we need here ?
-     * - Memory ID?
-     * - Source width?
-     * - Source pixelformat?
-     * - ...?
-     */
-
-} IS_CALLBACK_EVCTX_IMAGE_PROCESSING;
-
-/*! \brief %Callback feedback for image processing callbacks.
- *
- * For image processing callbacks a pointer to this data is provided to the %Callback function as the third argument.
- * The callback function is required to fill provide this information to the API.
- *
- * This type is used for the following callback events:
- * \li IS_CALLBACK_EV_IMGPOSTPROC_START
- *
- * \sa IS_CALLBACK_FUNC,
- *     IS_CALLBACK_EV_IMGPOSTPROC_START
- *
- * \since uEye SDK 4.20.
- */
-typedef struct S_IS_CALLBACK_FDBK_IMAGE_PROCESSING
-{
-    /*! \todo what do we need here ? */
-    UINT    nDummy;
-
-} IS_CALLBACK_FDBK_IMAGE_PROCESSING;
-
-/*! \brief %Callback function for the callback funcionality \ref is_Callback().
- *
- * Params: \li User context pointer.
- *         \li Pointer to the %Callback event context.
- *         \li Feedback pointer.
- * Return: Success code: \li 0 for success.
- *                       \li 32-bit positive value for special indications.
- *
- * \attention The range of negative 32-bit values is reserved and must not be used as a return value!
- * \attention It is crucial for the system performance that you return from you callback function
- *            as soon as possible. The callback functions are called in blocking mode!
- *
- * \sa IS_CALLBACK_INSTALLATION_DATA
- *
- * \since uEye SDK 4.20.
- */
-typedef INT (__cdecl *IS_CALLBACK_FUNC)(void*, void*, void*);
-
-/*! \brief Handle type for the callback functionality.
- *
- * \sa IS_CALLBACK_INSTALLATION_DATA
- *
- * \since uEye SDK 4.20.
- */
-typedef HIDS HIDS_CALLBACK;
-
-/*! \brief %Callback installation data.
- *
- * This data is to be passed to is_Callback for the command \ref IS_CALLBACK_CMD_INSTALL.
- *
- * \since uEye SDK 4.20.
- */
-typedef struct S_IS_CALLBACK_INSTALLATION_DATA
-{
-    /*! \name User input */
-    ///@{
-
-    /*! \brief The event to install the callback for. One from \ref IS_CALLBACK_EVENT enumeration. */
-    UINT nEvent;
-
-    /*! \brief The callback function to be called on the specified event. */
-    IS_CALLBACK_FUNC pfFunc;
-
-    /*! \brief The user context pointer to be passed to the callback function. */
-    void* pUserContext;
-
-    ///@}
-
-    /*! \name API output */
-    ///@{
-
-    /*! \brief The handle to the installed callback.
-     *
-     * The handle value is generated by \ref is_Callback().
-     *
-     * \note Pass this handle value to \ref is_Callback for to uninstall the callback.
-     */
-    HIDS_CALLBACK hCallback;
-
-    ///@}
-
-} IS_CALLBACK_INSTALLATION_DATA;
-
-/*! \brief Generic interface to the callback functionality.
- *
- * \param   hCam            valid device handle.
- * \param   nCommand        code, indicates requested access, one from \ref IS_CALLBACK_CMD enumeration.
- * \param   pParam          input or output storage for the I/O data.
- * \param   cbSizeOfParam   size of *pParam.
- * \return  error code
- *
- * \since uEye SDK 4.20.
- */
-IDSEXP is_Callback(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
-
 
 
 typedef enum E_IS_OPTIMAL_CAMERA_TIMING_CMD
@@ -4670,6 +4572,23 @@ typedef struct
 }AES_PEAK_WHITE_CONFIGURATION;
 
 /*!
+* \brief AES peak configuration used by is_AutoParameter, \ref is_AutoParameter.
+*/
+typedef struct
+{
+    IS_RECT rectUserAOI;
+    UINT nFrameSkip;
+    UINT nHysteresis;
+    UINT nReference;
+    UINT nChannel;
+    double f64Maximum;
+    double f64Minimum;
+    UINT nMode;
+    UINT nGranularity;
+
+}AES_PEAK_CONFIGURATION;
+
+/*!
  * \brief AES peak white configuration range used by is_AutoParameter, \ref is_AutoParameter.
  */
 typedef struct
@@ -4683,7 +4602,18 @@ typedef struct
 }AES_PEAK_WHITE_CONFIGURATION_RANGE;
 
 /*!
- * \brief AES peak white channel enumeration used by is_AutoParameter, \ref is_AutoParameter.
+* \brief AES peak configuration range used by is_AutoParameter, \ref is_AutoParameter.
+*/
+typedef struct
+{
+    IS_RANGE_S32 rangeFrameSkip;
+    IS_RANGE_S32 rangeHysteresis;
+    IS_RANGE_S32 rangeReference;
+
+}AES_PEAK_CONFIGURATION_RANGE;
+
+/*!
+ * \brief AES channel enumeration used by is_AutoParameter, \ref is_AutoParameter.
  */
 typedef enum E_AES_CHANNEL
 {
@@ -4693,6 +4623,28 @@ typedef enum E_AES_CHANNEL
     IS_AES_CHANNEL_BLUE = 0x04
 
 }AES_CHANNEL;
+
+/*!
+* \brief AES peak channel mode enumeration used by AES_PEAK_CONFIGURATION, \ref AES_PEAK_CONFIGURATION.
+*/
+typedef enum E_AES_PEAK_MODE
+{
+    IS_AES_PEAK_MODE_SELECTED_CHANNELS = 0x00,
+    IS_AES_PEAK_MODE_LEADING_CHANNEL = 0x01,
+    IS_AES_PEAK_MODE_ACCUMULATED_CHANNELS = 0x02
+
+}AES_PEAK_MODE;
+
+/*!
+* \brief AES peak granularity enumeration used by AES_PEAK_CONFIGURATION, \ref AES_PEAK_CONFIGURATION.
+*/
+typedef enum E_AES_GRANULARITY
+{
+    IS_AES_GRANULARITY_PER_100 = 0x00,
+    IS_AES_GRANULARITY_PER_1000 = 0x01,
+    IS_AES_GRANULARITY_PER_10000 = 0x02
+
+}AES_GRANULARITY;
 
 /*!
  * \brief Defines used by is_AutoParameter, \ref is_AutoParameter.
@@ -5422,7 +5374,13 @@ typedef enum E_SEQUENCER_CMD
      *  Param: out Int32
      *  Size : sizeof(Int32)
      */
-    IS_SEQUENCER_PATH_MAX_COUNT_GET         = 30
+    IS_SEQUENCER_PATH_MAX_COUNT_GET         = 30,
+
+    /*! Receives a bitmask with the supported sequencer trigger sources
+    *  Param: out Int32 (1 trigger source is supported, 0 trigger source is not supported)
+    *  Size: sizeof(Int32)
+    */
+    IS_SEQUENCER_TRIGGER_SOURCE_SUPPORTED_GET = 31
 
 }IS_SEQUENCER_CMD;
 
@@ -5454,9 +5412,20 @@ typedef struct
 }IS_SEQUENCER_GAIN_CONFIGURATION;
 
 /*!
+* \brief Sequencer flash configuration for the flash feature
+*/
+typedef struct
+{
+    UINT u32Mode;
+    UINT u32Duration;
+    UINT u32Delay;
+
+}IS_SEQUENCER_FLASH_CONFIGURATION;
+
+/*!
  * \brief Sequencer features
  *
- * Specifies the sequencer features that can be part of a device sequencer set. Allthe device's sequencer
+ * Specifies the sequencer features that can be part of a device sequencer set. All the device's sequencer
  * sets have the same features.
  */
 typedef enum E_IS_SEQUENCER_FEATURE
@@ -5479,7 +5448,12 @@ typedef enum E_IS_SEQUENCER_FEATURE
     /*! AOI offset y position
      * Value type: int32
      */
-    IS_FEATURE_AOI_OFFSET_Y = 0x08
+    IS_FEATURE_AOI_OFFSET_Y = 0x08,
+
+    /*! Flash parameter
+     * Value type: IS_SEQUENCER_FLASH_CONFIGURATION
+     */
+    IS_FEATURE_FLASH        = 0x10
 
 } IS_SEQUENCER_FEATURE;
 
@@ -5493,7 +5467,11 @@ typedef enum E_IS_SEQUENCER_TRIGGER_SOURCE
     /*! Disables the sequencer trigger source */
     IS_TRIGGER_SOURCE_OFF       = 0,
     /*! Starts with the reception of the Frame End. */
-    IS_TRIGGER_SOURCE_FRAME_END = 0x01
+    IS_TRIGGER_SOURCE_FRAME_END = 0x01,
+    /*! Starts with the reception of the Frame Start. */
+    IS_TRIGGER_SOURCE_FRAME_START = 0x02,
+    /*! Starts with the end of exposure. */
+    IS_TRIGGER_SOURCE_EXPOSURE_END = 0x04
 
 } E_IS_SEQUENCER_TRIGGER_SOURCE;
 
@@ -5513,24 +5491,24 @@ IDSEXP is_Sequencer( HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParams
 * \brief Structure for read/write of persistent camera memories (EEPROM, Flash)
 */
 typedef struct {
-	UINT u32Offset;
-	UINT u32Count;
-	INT  s32Option;
-	char* pu8Memory;
+    UINT u32Offset;
+    UINT u32Count;
+    INT  s32Option;
+    char* pu8Memory;
 } IS_PERSISTENT_MEMORY;
 
 
 typedef enum E_PERSISTENT_MEMORY_CMD
 {
-	IS_PERSISTENT_MEMORY_READ_USER_EXTENDED			= 1,
-	IS_PERSISTENT_MEMORY_WRITE_USER_EXTENDED		= 2,
-	IS_PERSISTENT_MEMORY_GET_SIZE_USER_EXTENDED		= 3,
-	IS_PERSISTENT_MEMORY_READ_USER					= 4,
-	IS_PERSISTENT_MEMORY_WRITE_USER					= 5,
-	IS_PERSISTENT_MEMORY_GET_SIZE_USER				= 6,
-	IS_PERSISTENT_MEMORY_READ_USER_PROTECTED		= 7,
-	IS_PERSISTENT_MEMORY_WRITE_USER_PROTECTED		= 8,
-	IS_PERSISTENT_MEMORY_GET_SIZE_USER_PROTECTED	= 9
+    IS_PERSISTENT_MEMORY_READ_USER_EXTENDED         = 1,
+    IS_PERSISTENT_MEMORY_WRITE_USER_EXTENDED        = 2,
+    IS_PERSISTENT_MEMORY_GET_SIZE_USER_EXTENDED     = 3,
+    IS_PERSISTENT_MEMORY_READ_USER                  = 4,
+    IS_PERSISTENT_MEMORY_WRITE_USER                 = 5,
+    IS_PERSISTENT_MEMORY_GET_SIZE_USER              = 6,
+    IS_PERSISTENT_MEMORY_READ_USER_PROTECTED        = 7,
+    IS_PERSISTENT_MEMORY_WRITE_USER_PROTECTED       = 8,
+    IS_PERSISTENT_MEMORY_GET_SIZE_USER_PROTECTED    = 9
 
 } IS_PERSISTENT_MEMORY_CMD;
 
@@ -5545,6 +5523,38 @@ typedef enum E_PERSISTENT_MEMORY_CMD
 */
 IDSEXP is_PersistentMemory(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
+/*!
+* \brief Power delivery
+*
+* \param hCam              Camera handle.
+* \param u32Command        Power delivery command.
+* \param pParam            I/O parameter, depends on the command.
+* \param cbSizeOfParams    Size of *pParam.
+* \return Status of the execution.
+*/
+IDSEXP is_PowerDelivery(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParams);
+
+/* Command list for is_PowerDelivery() */
+typedef enum E_POWER_DELIVERY_CMD
+{
+    IS_POWER_DELIVERY_CMD_GET_SUPPORTED             = 1,
+    IS_POWER_DELIVERY_CMD_GET_PROFILE               = 2,
+    IS_POWER_DELIVERY_CMD_GET_SUPPORTED_PROFILES    = 3,
+    IS_POWER_DELIVERY_CMD_SET_PROFILE               = 4
+} POWER_DELIVERY_CMD;
+
+
+/*! Supported voltages for power delivery */
+typedef enum E_POWER_DELIVERY_PROFILES
+{
+    IS_POWER_DELIVERY_PROFILE_INVALID       = 0x00000000,
+    IS_POWER_DELIVERY_PROFILE_5V_LOW_POWER  = 0x00000001,
+    IS_POWER_DELIVERY_PROFILE_5V_HIGH_POWER = 0x00000002,
+    IS_POWER_DELIVERY_PROFILE_9V            = 0x00000004,
+    IS_POWER_DELIVERY_PROFILE_12V           = 0x00000008,
+    IS_POWER_DELIVERY_PROFILE_14V8          = 0x00000010,
+    IS_POWER_DELIVERY_PROFILE_15V           = 0x00000020
+} POWER_DELIVERY_PROFILES;
 
 
 #ifdef __cplusplus

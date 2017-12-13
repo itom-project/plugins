@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: http://www.bitbucket.org/itom/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   

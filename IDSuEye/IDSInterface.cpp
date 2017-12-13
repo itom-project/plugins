@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: http://www.bitbucket.org/itom/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -108,6 +108,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 * UI337xCP-C (colored, USB3) \n\
 * UI318xCP-M (monochrome, USB3) \n\
 * UI318xCP-C (colored, USB3) \n\
+* UI148xLE-M (monochrome, USB2) \n\
 * UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL \n\
 \n\
 (Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU). \n\
