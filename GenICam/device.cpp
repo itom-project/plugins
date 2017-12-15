@@ -731,7 +731,7 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
 					}
 				}
 			}
-			catch (GenericException &ex)
+			catch (GenericException & /*ex*/)
 			{
 				//
 			}

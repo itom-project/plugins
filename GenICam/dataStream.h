@@ -50,6 +50,7 @@ public:
 
     ito::RetVal queueOneBufferForAcquisition();
     ito::RetVal unlockBuffer(GenTL::BUFFER_HANDLE buffer);
+	ito::RetVal unqueueAllBuffersFromInputQueue();
     ito::RetVal checkForNewBuffer(GenTL::BUFFER_HANDLE &buffer);
     ito::RetVal startAcquisition(GenTL::ACQ_START_FLAGS startFlags = GenTL::ACQ_START_FLAGS_DEFAULT);
     ito::RetVal stopAcquisition(GenTL::ACQ_STOP_FLAGS stopFlags = GenTL::ACQ_STOP_FLAGS_DEFAULT);
@@ -91,6 +92,7 @@ protected:
 	int m_payloadSize;
 	uint64_t m_timeoutMS;
 	ito::int8 m_usePreAllocatedBuffer; //0 if the image buffer is allocated by the camera, 1 if the buffer is allocated by the itom-plugin and has to be deleted after revoking the buffer, -1 if not decided yet
+	bool m_endianessChanged;
     
 };
 

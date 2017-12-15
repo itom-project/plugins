@@ -340,9 +340,14 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 				{
 					id = getInterfaceInfo(GenTL::INTERFACE_INFO_ID, sIfaceID, retval);
 					displayname = getInterfaceInfo(GenTL::INTERFACE_INFO_DISPLAYNAME, sIfaceID, retval);
-					std::cout << (i + 1) << ". " << sIfaceID << " (name: " << displayname.data() << ", transport layer type: " << tltype.data() << ")\n" << std::endl;
+					std::cout << (i + 1) << ". ID: " << sIfaceID << ", name: " << displayname.data() << ", transport layer type: " << tltype.data() << "\n" << std::endl;
 				}
             }
+
+			if (interfaceID == "")
+			{
+				std::cout << "----------------------------------------\nUse the 'ID' value as interface parameter\n" << std::endl;
+			}
         }
 
 		if (interfaceID == "")
@@ -522,7 +527,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             }
 
             GenTL::DEV_HANDLE devHandle;
-            retval += checkGCError(IFOpenDevice(m_handle, sDeviceID, GenTL::DEVICE_ACCESS_CONTROL, &devHandle));
+            retval += checkGCError(IFOpenDevice(m_handle, sDeviceID, GenTL::DEVICE_ACCESS_CONTROL, &devHandle), "Opening device");
 
             if (!retval.containsError())
             {

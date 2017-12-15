@@ -42,7 +42,8 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     m_acquisitionStarted(false),
 	m_payloadSize(0),
 	m_timeoutMS(0),
-	m_usePreAllocatedBuffer(-1)
+	m_usePreAllocatedBuffer(-1),
+	m_endianessChanged(true)
 {
     GCRegisterEvent = (GenTL::PGCRegisterEvent)m_lib->resolve("GCRegisterEvent");
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
@@ -71,14 +72,18 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     {
         retval += checkGCError(GCRegisterEvent(m_handle, GenTL::EVENT_NEW_BUFFER, &m_newBufferEvent), "dataStream: register new-buffer event");
 		GenTL::GC_ERROR errorEventResult = GCRegisterEvent(m_handle, GenTL::EVENT_ERROR, &m_errorEvent);
-		if (errorEventResult == GenTL::GC_ERR_NOT_IMPLEMENTED)
+
+		switch (errorEventResult)
 		{
+		case GenTL::GC_ERR_SUCCESS:
+			break;
+		case GenTL::GC_ERR_NOT_IMPLEMENTED:
 			m_errorEvent = GENTL_INVALID_HANDLE;
-		}
-		else
-		{
+			break;
+		default:
 			retval += ito::RetVal::format(ito::retWarning, 0, "dataStream: warning while registering error event (%i)", errorEventResult);
 			m_errorEvent = GENTL_INVALID_HANDLE;
+			break;
 		}
     }
 
@@ -103,6 +108,10 @@ GenTLDataStream::~GenTLDataStream()
 
     if (DSClose && m_handle != GENTL_INVALID_HANDLE)
     {
+		//to be sure, only
+		unqueueAllBuffersFromInputQueue();
+		revokeAllBuffers();
+
         if (m_acquisitionStarted)
         {
             stopAcquisition(GenTL::ACQ_STOP_FLAGS_KILL);
@@ -227,6 +236,8 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         }
     }
 
+	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+
     return retval;
 }
 
@@ -251,24 +262,39 @@ ito::RetVal GenTLDataStream::revokeAllBuffers()
 		}
 	}
 	m_idleBuffers.clear();
+
+	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+
+	return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::unqueueAllBuffersFromInputQueue()
+{
+	ito::RetVal retval;
+
+	if (m_queuedBuffers.size() > 0) //there are still queued and unhandled items
+	{
+		retval += checkGCError(DSFlushQueue(m_handle, GenTL::ACQ_QUEUE_ALL_DISCARD), "discard all buffers in input and ouput buffers");
+
+		QSet<GenTL::BUFFER_HANDLE>::iterator it = m_queuedBuffers.begin();
+		while (it != m_queuedBuffers.end())
+		{
+			m_idleBuffers.enqueue(*it);
+			it++;
+		}
+		m_queuedBuffers.clear();
+	}
+
+	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+
 	return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::queueOneBufferForAcquisition()
 {
-    if (m_queuedBuffers.size() > 0) //there are still queued and unhandled items
-    {
-        DSFlushQueue(m_handle, GenTL::ACQ_QUEUE_ALL_DISCARD);
-
-        QSet<GenTL::BUFFER_HANDLE>::iterator it = m_queuedBuffers.begin();
-        while ( it != m_queuedBuffers.end())
-        {
-            m_idleBuffers.enqueue(*it);
-			it++;
-        }
-        m_queuedBuffers.clear();
-    }
+	unqueueAllBuffersFromInputQueue(); //if there are still some queued images
 
 	if (m_idleBuffers.size() == 0)
 	{
@@ -285,20 +311,28 @@ ito::RetVal GenTLDataStream::queueOneBufferForAcquisition()
     {
         m_idleBuffers.enqueue(buffer);
     }
+
+	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::unlockBuffer(GenTL::BUFFER_HANDLE buffer)
 {
+	ito::RetVal retval;
+
     if (m_lockedBuffers.contains(buffer))
     {
-		DSFlushQueue(m_handle, GenTL::ACQ_QUEUE_ALL_DISCARD);
+		retval = checkGCError(DSFlushQueue(m_handle, GenTL::ACQ_QUEUE_ALL_DISCARD), "flush from locked to idle");
 
         m_lockedBuffers.remove(buffer);
         m_idleBuffers.enqueue(buffer);
     }
-    return ito::retOk;
+
+	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -362,6 +396,8 @@ ito::RetVal GenTLDataStream::checkForNewBuffer(GenTL::BUFFER_HANDLE &buffer)
         m_lockedBuffers.insert(buffer); //lock the buffer that is passed to the caller by reference until unlockBuffer has been called
         return ito::retOk;
     }
+
+	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
 
     return ito::retError;
 }
@@ -456,6 +492,10 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 
 		if (pixelformat == 0)
 		{
+			int dims = dobj.getDims();
+			width = dobj.getSize(dims - 1);
+			height = dobj.getSize(dims - 2);
+
 			//try to guess right pixelformat
 			if (dobj.getType() == ito::tUInt16 && size >= (sizeof(ito::uint16) * (width * height)))
 			{
@@ -552,20 +592,33 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 		
 
 		//get pixel endianess
-		pSize = sizeof(temp);
-		if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXEL_ENDIANNESS, &dtype, &temp, &pSize) != GenTL::GC_ERR_SUCCESS)
+		if (pixelformat != PFNC_Mono8)
 		{
-			endianess = GenTL::PIXELENDIANNESS_LITTLE; //default
+			pSize = sizeof(temp);
+			if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXEL_ENDIANNESS, &dtype, &temp, &pSize) != GenTL::GC_ERR_SUCCESS)
+			{
+				endianess = GenTL::PIXELENDIANNESS_LITTLE; //default
+				m_endianessChanged = false;
+			}
+			else
+			{
+				endianess = (GenTL::PIXELENDIANNESS_IDS)temp;
+
+				if (endianess == GenTL::PIXELENDIANNESS_UNKNOWN)
+				{
+					if (m_endianessChanged)
+					{
+						retval += ito::RetVal(ito::retWarning, 0, "camera does not provide the pixel endianess: little endian is assumed.");
+					}
+					endianess = GenTL::PIXELENDIANNESS_LITTLE; //default
+					m_endianessChanged = false;
+				}
+			}
 		}
 		else
 		{
-			endianess = (GenTL::PIXELENDIANNESS_IDS)temp;
-
-			if (endianess == GenTL::PIXELENDIANNESS_UNKNOWN)
-			{
-				retval += ito::RetVal(ito::retWarning, 0, "endianess of image buffer is assumed to be little endian");
-				endianess = GenTL::PIXELENDIANNESS_LITTLE; //default
-			}
+			endianess = GenTL::PIXELENDIANNESS_LITTLE; //default
+			m_endianessChanged = false;
 		}
 	}
 

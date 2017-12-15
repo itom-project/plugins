@@ -748,13 +748,18 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
     if(grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("the grabber already had zero users.").toLatin1().data());
+
+		//to be sure, only
+		retValue += m_stream->unqueueAllBuffersFromInputQueue();
+		retValue += m_stream->revokeAllBuffers();
+
         setGrabberStarted(0);
     }
-
-	if (grabberStartedCount() == 0)
+	else if (grabberStartedCount() == 0)
 	{
 		retValue += m_stream->stopAcquisition();
 		retValue += m_device->invokeCommandNode("AcquisitionStop", ito::retWarning);
+		retValue += m_stream->unqueueAllBuffersFromInputQueue();
 		retValue += m_stream->revokeAllBuffers();
 	}
 
@@ -772,6 +777,7 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
 	ItomSharedSemaphoreLocker locker(waitCond);
 	ito::RetVal retValue(ito::retOk);
 	bool RetCode = false;
+	bool queued = false;
 
 	if (grabberStartedCount() <= 0)
 	{
@@ -780,6 +786,10 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
 	else
 	{
 		retValue += m_stream->queueOneBufferForAcquisition();
+		if (!retValue.containsError())
+		{
+			queued = true;
+		}
 	}
 
 	if (m_acquisitionCache.mode == AcquisitionCache::SingleFrame)
@@ -818,7 +828,13 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
 			m_newImageAvailable = true;
 		}
 
-		m_stream->unlockBuffer(buffer);
+		m_acquisitionRetVal += m_stream->unlockBuffer(buffer); //move buffer from output buffer to idle buffer
+		queued = false;
+	}
+
+	if (queued)
+	{
+		m_acquisitionRetVal += m_stream->unqueueAllBuffersFromInputQueue(); //move buffer from input buffer (unhandled) to idle buffer
 	}
 
     return retValue;
