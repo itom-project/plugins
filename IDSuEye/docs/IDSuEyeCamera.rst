@@ -127,3 +127,4 @@ Changelog
 * itom setup 2.1.0: This plugin has been compiled using the uEye SDK 4.61
 * itom setup 2.2.0, 2.2.1: This plugin has been compiled using the uEye SDK 4.80 (In order to use newer USB3 cameras with the USB2 port, install the 4.81 driver)
 * itom setup 3.0.0: This plugin has been compiled using the uEye SDK 4.81
+* itom setup 3.1.0: This plugin has been compiled using the uEye SDK 4.90.3
