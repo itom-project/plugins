@@ -147,6 +147,8 @@ ito::RetVal GenTLDevice::printPortInfo(ito::uint32 index) const
                 break;
             }
         }
+
+		std::cout << "-----------------------------------------------\n" << std::endl;
     }
 
     return retval;
@@ -286,6 +288,8 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
         retval += ito::RetVal::format(ito::retError, 0, "port index for xml description file out of range [0,%i]", numURLS - 1);
 		return retval;
     }
+
+	std::cout << "Connecting to port index " << portIndex << "\n" << std::endl;
 
     //get URL
     QByteArray url;
@@ -692,7 +696,7 @@ QVector<PfncFormat> GenTLDevice::supportedImageFormats(QVector<int> *bitdepths /
 }
 
 //--------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &params)
+ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &params, int visibilityLevel /*= GenApi::Guru*/)
 {
 	ito::RetVal retval;
 	ito::RetVal tempRetVal;
@@ -713,8 +717,9 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
 
 		QByteArray name = node->GetName().c_str();
 		const char* d = name.data();
+		visibility = node->GetVisibility();
 
-		if (node->GetVisibility() != GenApi::Invisible)
+		if ((visibility != GenApi::Invisible) && (visibility <= visibilityLevel))
 		{
 			try
 			{
@@ -750,7 +755,7 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
 		QByteArray name = node->GetName().c_str();
 		const char* d = name.data();
 
-		if (visibility != GenApi::Invisible)
+		if ((visibility != GenApi::Invisible) && (visibility <= visibilityLevel))
 		{
 
 			category = categoryMap.contains(node) ? categoryMap[node] : ito::ByteArray();

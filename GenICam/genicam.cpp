@@ -108,6 +108,12 @@ a list of all auto-detected vendors and models is returned.");
 
 	paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().data());
 	m_initParamsOpt.append(paramVal);
+
+	paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Guru, GenApi::Guru, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).toLatin1().data());
+	m_initParamsOpt.append(paramVal);
+
+	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("verbose level (currently, this parameter is used for expert testings, ignore it).").toLatin1().data());
+	m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -595,6 +601,8 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 	QByteArray interfaceType = paramsOpt->at(1).getVal<const char*>();
     QByteArray deviceID = paramsOpt->at(2).getVal<const char*>();
 	int streamIndex = paramsOpt->at(3).getVal<int>();
+	int visibilityLevel = paramsOpt->at(4).getVal<int>();
+	int verbose = paramsOpt->at(5).getVal<int>(); //temporarily, verbose is used as port index
 
 	if (genTlProducerFile.endsWith(".cti"))
 	{
@@ -626,7 +634,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 
 	if (!retValue.containsError())
 	{
-		retValue += m_device->connectToGenApi(0);
+		retValue += m_device->connectToGenApi(verbose);
 	}
 
 	if (!retValue.containsError())
@@ -640,7 +648,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 		retValue += m_device->syncImageParameters(m_params);
 		m_stream->setTimeoutSec(m_params["timeout"].getVal<double>());
 		m_stream->setPayloadSize(m_device->getPayloadSize());
-		retValue += m_device->createParamsFromDevice(m_params);
+		retValue += m_device->createParamsFromDevice(m_params, visibilityLevel);
 
 		//synchronize some default parameters
 		//1. integration_time <-> ExposureTime

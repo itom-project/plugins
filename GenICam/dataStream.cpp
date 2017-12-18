@@ -538,12 +538,12 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 				{
 					if (sizeFilled < (width * height * bytes_pp_transferred))
 					{
-						retval += ito::RetVal::format(ito::retError, 0, "returned image buffer is only partially filled (check 2).");
+						retval += ito::RetVal::format(ito::retWarning, 0, "returned image buffer is only partially filled."); //this message has a dot at the end (in order to distinguish it from the message below)
 					}
 				}
 				else
 				{
-					retval += ito::RetVal::format(ito::retError, 0, "returned image buffer is only partially filled (check 1).");
+					retval += ito::RetVal::format(ito::retWarning, 0, "returned image buffer is only partially filled"); //no dot here (see comment above)
 				}
 			}
 		}

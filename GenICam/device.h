@@ -72,7 +72,7 @@ public:
 
 	QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL);
 
-	ito::RetVal createParamsFromDevice(QMap<QString, ito::Param> &params);
+	ito::RetVal createParamsFromDevice(QMap<QString, ito::Param> &params, int visibilityLevel = GenApi::Guru);
 
 	bool isDeviceParam(const ParamMapIterator &it) const; //returns true if p is managed by device and therefore mapped to INode, else false
 	ito::RetVal setDeviceParam(QSharedPointer<ito::ParamBase> newVal, ParamMapIterator it);
