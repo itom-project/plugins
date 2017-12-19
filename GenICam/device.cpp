@@ -121,7 +121,7 @@ ito::RetVal GenTLDevice::printPortInfo(ito::uint32 index) const
 
         GenTL::DEVICE_INFO_CMD cmds[] = { GenTL::URL_INFO_URL };
 
-        const char* names[] = { "URL:" };
+        const char*  names[] = { "URL: " };
 
         std::cout << "Port information for port " << index << "\n-------------------------------------------\n" << std::endl;
 
@@ -311,11 +311,16 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
         retval += ito::RetVal(ito::retError, 0, "URL_INFO_URL of port does not return a string for the required xml address.");
 		return retval;
     }
-    //
+    
+	//examples for URLs
+	//url = "File:///C|\\Program Files\\Active Silicon\\GenICam_XML_File\\CXP_MC258xS11.xml?SchemaVersion=1.1.0";
+	//url = "File:///C:\\Program Files\\Active Silicon\\GenICam_XML_File\\CXP_MC258xS11.xml?SchemaVersion=1.1.0";
+	//url = "local:tlguru_system_rev1.xml;F0F00000;3BF?SchemaVersion=1.0.0";
+	//url = "Local:Mikrotron_GmbH_MC258xS11_Rev1_25_0.zip;8001000;273A?SchemaVersion=1.1.0";
 
     if (url.toLower().startsWith("local:"))
     {
-        QRegExp regExp("^local:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(.*)$");
+        QRegExp regExp("^local:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?schemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         if (regExp.indexIn(url) >= 0)
@@ -329,13 +334,13 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
             qulonglong addr = regExp.cap(3).toLatin1().toULongLong(&ok, 16);
             if (!ok)
             {
-                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as hex address", regExp.cap(3).toLatin1().data());
+                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as hex address", regExp.cap(3).toLatin1().constData());
             }
 
             int size = regExp.cap(4).toLatin1().toInt(&ok, 16);
             if (!ok)
             {
-                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as size", regExp.cap(4).toLatin1().data());
+                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as size", regExp.cap(4).toLatin1().constData());
             }
 
             if (!retval.containsError())
@@ -347,17 +352,24 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL", url.data());
+            retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL", url.constData());
         }
     }
     else if (url.toLower().startsWith("file:"))
     {
-        QRegExp regExp("^file:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(.*)$");
+        QRegExp regExp("^file:(///)?([a-zA-Z0-9._:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         if (regExp.indexIn(url) >= 0)
         {
-            QUrl url2("file:///" + regExp.cap(2));
+			QString url1 = regExp.cap(2);
+#ifdef WIN32
+			if (url1.size() >= 2 && url1[1] == '|')
+			{
+				url1[1] = ':';
+			}
+#endif
+            QUrl url2("file:///" + url1);
             QString url3 = url2.toLocalFile();
 
             QFile file(url3);
@@ -376,35 +388,35 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
                 }
                 else
                 {
-                    retval += ito::RetVal::format(ito::retError, 0, "file '%s' could not be opened", url.data());
+                    retval += ito::RetVal::format(ito::retError, 0, "file '%s' could not be opened (local filename: '%s').", url.data(), url3.toLatin1().constData());
                 }
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", url.data());
+                retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist (local filename: '%s').", url.data(), url3.toLatin1().constData());
             }
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL", url.data());
+            retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL.", url.constData());
         }
 
         
     }
     else //internet resource
     {
-        retval += ito::RetVal::format(ito::retError, 0 , "xml description file '%s' seems to be an internet resource. Cannot get this", url.data());
+        retval += ito::RetVal::format(ito::retError, 0 , "xml description file '%s' seems to be an internet resource. Cannot get this.", url.constData());
     }
 
 	if (!retval.containsError())
 	{
         if (isXmlNotZip)
         {
-		    m_camera._LoadXMLFromString(xmlFile.data());
+		    m_camera._LoadXMLFromString(xmlFile.constData());
         }
         else
         {
-            m_camera._LoadXMLFromZIPData(xmlFile.data(), xmlFile.size());
+            m_camera._LoadXMLFromZIPData(xmlFile.constData(), xmlFile.size());
         }
 
 		m_camera._Connect(this, "Device");
