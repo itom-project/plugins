@@ -73,6 +73,8 @@ the corresponding option in the setup of CodeSynthesis.
 If there is a problem with the compilation, saying that the option cxx-tree is not available within xsd.exe, then you should check the variable XSD_EXECUTABLE.
 This should point to xsd.exe within the bin folder of CodeSynthesis, not to any windows directory.
 
+If xsd could not be found, set XSD_ROOT_DIR to the base directory of CodeSynthesis, hence the same value than XERCESC_ROOT_DIR.
+
 Bugfix for CodeSynthesis XSD 4.0.0
 =====================================
 
