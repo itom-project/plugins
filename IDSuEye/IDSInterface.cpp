@@ -108,6 +108,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 * UI337xCP-C (colored, USB3) \n\
 * UI318xCP-M (monochrome, USB3) \n\
 * UI318xCP-C (colored, USB3) \n\
+* UI306xCP-M (monochrome, USB3) \n\
 * UI148xLE-M (monochrome, USB2) \n\
 * UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL \n\
 \n\
@@ -117,7 +118,9 @@ The plugin has been compiled using the IDS library version %1.%2. You can run it
 \n\
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. \n\
 \n\
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.").arg(major).arg(minor).arg(major).arg(minor / 10);
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart. \n\
+\n\
+Note on supported sensor bit depths on monochrome cameras: The plugin may list a supported bit depth of 16 bit even if the camera explicitly does not support 16 bit color mode. The returned 16 bit images are most probably a MSB-Aligned representation of the maximum supported bit depth. (See IDS uEye handbook, appendix Color- and Dataformat)").arg(major).arg(minor).arg(major).arg(minor / 10);
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
@@ -180,8 +183,8 @@ ito::RetVal IDSInterface::checkVersionConsistency()
     if ((get<24,8>(dllVersion) != get<24,8>(libVersion)) || (static_cast<int>(get<16,8>(dllVersion) / 10) != static_cast<int>(get<16,8>(libVersion) / 10)))
     {
         return ito::RetVal::format(ito::retWarning, 0, "The IDS driver used at this computer is version %i.%i.xx. However, the IDSuEye plugin has been compiled with version %i.%i.xx. This mismatch can lead to errors during the operation.", \
-            get<24,8>(libVersion), get<16,8>(libVersion), \
-            get<24,8>(dllVersion), get<16,8>(dllVersion));
+            get<24,8>(dllVersion), get<16,8>(dllVersion), \
+            get<24,8>(libVersion), get<16,8>(libVersion));
     }
 
     return ito::retOk;

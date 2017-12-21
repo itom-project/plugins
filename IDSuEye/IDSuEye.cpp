@@ -267,27 +267,31 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         if (!retVal.containsError())
         {
             //try to set different color modes in order to check if they are supported
+			//crosscheck if intented color mode lies in range of supported bit depths of the sensor if get_supported_sensor_bid_depths is supported
+			UINT bitDepths = 0;
+			is_DeviceFeature(m_camera, IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_SENSOR_BIT_DEPTHS, (void*)&bitDepths, sizeof(bitDepths));
+            
             int minBpp = 100;
             int maxBpp = 0;
             int maxMonochrome = IS_CM_MONO8;
-            if (is_SetColorMode(m_camera, IS_CM_MONO8) == IS_SUCCESS)
+            if (is_SetColorMode(m_camera, IS_CM_MONO8) == IS_SUCCESS && (bitDepths & IS_SENSOR_BIT_DEPTH_8_BIT || bitDepths==0))
             {
                 minBpp = std::min(minBpp,8);
                 maxBpp = std::max(maxBpp,8);
             }
-            if (is_SetColorMode(m_camera, IS_CM_MONO10) == IS_SUCCESS)
+            if (is_SetColorMode(m_camera, IS_CM_MONO10) == IS_SUCCESS && (bitDepths & IS_SENSOR_BIT_DEPTH_10_BIT || bitDepths==0))
             {
                 minBpp = std::min(minBpp,10);
                 maxBpp = std::max(maxBpp,10);
                 maxMonochrome = IS_CM_MONO10;
             }
-            if (is_SetColorMode(m_camera, IS_CM_MONO12) == IS_SUCCESS)
+            if (is_SetColorMode(m_camera, IS_CM_MONO12) == IS_SUCCESS && (bitDepths & IS_SENSOR_BIT_DEPTH_12_BIT|| bitDepths==0))
             {
                 minBpp = std::min(minBpp,12);
                 maxBpp = std::max(maxBpp,12);
                 maxMonochrome = IS_CM_MONO12;
             }
-            if (is_SetColorMode(m_camera, IS_CM_MONO16) == IS_SUCCESS)
+            if (is_SetColorMode(m_camera, IS_CM_MONO16) == IS_SUCCESS && bitDepths == 0) // IS_SENSOR_BIT_DEPTH_16_BIT not supported by IDS API
             {
                 minBpp = std::min(minBpp,16);
                 maxBpp = std::max(maxBpp,16);
@@ -1781,10 +1785,12 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             }
             else
             {
-                is_DeviceFeature(m_camera, IS_DEVICE_FEATURE_CMD_GET_SENSOR_BIT_DEPTH, (void*)&uintVal, sizeof(uintVal));
+                //is_DeviceFeature(m_camera, IS_DEVICE_FEATURE_CMD_GET_SENSOR_BIT_DEPTH, (void*)&uintVal, sizeof(uintVal));
                 int min = 8;
                 int max = 8;
                 int step = 4;
+				int current = 8;
+				int colorMode = is_SetColorMode(m_camera, IS_GET_COLOR_MODE);
                 if (bitDepths & IS_SENSOR_BIT_DEPTH_10_BIT)
                 {
                     max = 10;
@@ -1794,9 +1800,25 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
                 {
                     max = 12;
                 }
+			if (colorMode == IS_CM_MONO8)
+                {
+                    current = 8;
+                }
+                else if (colorMode == IS_CM_MONO10)
+                {
+					current=10;
+                }
+                else if (colorMode == IS_CM_MONO12)
+                {
+                    current=12;
+                }
+                else if (colorMode == IS_CM_MONO16)
+                {
+                    current=16;
+                }
                 it->setMeta(new ito::IntMeta(min,max,step), true);
-                m_bitspixel = (uintVal == 8) ? 8 : 16;
-                it->setVal<int>(uintVal);
+                m_bitspixel = (current == 8) ? 8 : 16;
+                it->setVal<int>(current);
             }
 
             m_colouredOutput = false;
