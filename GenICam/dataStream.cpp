@@ -131,9 +131,30 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
     bool definesPayloadsize = false;
     size_t size;
     size_t payloadSize = 0;
+	size_t bufAnnounceMin = 1;
     
     if (bytesPerBuffer == 0) //estimate payload
     {
+		size = sizeof(bufAnnounceMin);
+		GenTL::GC_ERROR ret = DSGetInfo(m_handle, GenTL::STREAM_INFO_BUF_ANNOUNCE_MIN, &type, &bufAnnounceMin, &size);
+		if (ret == GenTL::GC_ERR_SUCCESS)
+		{
+			if (type != GenTL::INFO_DATATYPE_SIZET)
+			{
+				retval += ito::RetVal(ito::retWarning, 0, "Data stream returns wrong data type for STREAM_INFO_BUF_ANNOUNCE_MIN. A minimum number of 1 buffer is assumed.");
+				bufAnnounceMin = 1;
+			}
+		}
+		else if (ret == GenTL::GC_ERR_NOT_AVAILABLE)
+		{
+			bufAnnounceMin = 1;
+		}
+		else
+		{
+			retval += ito::RetVal(ito::retWarning, 0, "Data stream returns error for STREAM_INFO_BUF_ANNOUNCE_MIN. A minimum number of 1 buffer is assumed.");
+			bufAnnounceMin = 1;
+		}
+
         size = sizeof(definesPayloadsize);
         if (DSGetInfo(m_handle, GenTL::STREAM_INFO_DEFINES_PAYLOADSIZE, &type, &definesPayloadsize, &size) == GenTL::GC_ERR_SUCCESS)
         {
@@ -164,6 +185,12 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 		if (payloadSize == 0)
 		{
 			retval += ito::RetVal(ito::retError, 0, "could not get a valid payload size.");
+			return retval;
+		}
+
+		if (bufAnnounceMin > nrOfBuffers)
+		{
+			retval += ito::RetVal::format(ito::retError, 0, "the number of announced buffer is below the minimum number of buffers (%i), required for data acquisition by the specific device. Use the parameter 'numBuffers' to increase the number of buffers.", bufAnnounceMin);
 			return retval;
 		}
 

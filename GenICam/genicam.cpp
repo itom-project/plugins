@@ -170,6 +170,10 @@ GenICamClass::GenICamClass() : AddInGrabber(),
 	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 10.0, dm, tr("Timeout for acquisition in seconds.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
+	ito::IntMeta *im = new ito::IntMeta(1, 1e6, 1, "AcquisitionControl");
+	paramVal = ito::Param("numBuffers", ito::ParamBase::Int | ito::ParamBase::In, 1, im, tr("Number of buffers allocated at startDevice().").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -309,6 +313,23 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 				{
 					retValue += ito::RetVal::format(ito::retError, 0, "Unsupported bitdepth (either due to camera or due to plugin)");
 				}
+			}
+		}
+		else if (key == "numBuffers")
+		{
+			if (it->getVal<int>() != val->getVal<int>())
+			{
+				if (grabberStartedCount() > 0)
+				{
+					//not yet stopped
+					setGrabberStarted(1);
+					retValue += stopDevice(NULL);
+					restartNecessary = true;
+				}
+
+				//redirect set param to device
+				retValue += it->copyValueFrom(&(*val));
+				retValue += checkData();
 			}
 		}
 		else if (key == "roi")
@@ -716,7 +737,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 		if (grabberStartedCount() == 1)
 		{
 			//first time to be started
-			retValue += m_stream->allocateAndAnnounceBuffers(1, 0);
+			retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), 0);
 			if (!retValue.containsError())
 			{
 				retValue += m_stream->startAcquisition();
