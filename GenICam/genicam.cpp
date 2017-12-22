@@ -89,7 +89,7 @@ This plugin has been tested with the following cameras: \n\
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_license = QObject::tr("licensed under LGPL, this plugin is based on GenICam licensed under the GenICam license 1.5 (see GenICam_License.txt)");
     m_aboutThis = QObject::tr(GITVERSION);     
     
     //m_callInitInNewThread = false; //camera must be opened in main-thread
