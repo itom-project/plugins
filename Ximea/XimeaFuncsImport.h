@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2018, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -26,9 +26,9 @@
 #include "xiApi.h"
 //#include "xiExt.h"
 
-#ifndef USE_API_4_10 || USE_API_3_16
+#if !defined(USE_API_4_10) && !defined(USE_API_3_16)
     #include "m3Api.h"
-#endif
+#endif //!defined(USE_API_4_10) && !defined(USE_API_3_16)
 
 
 //#ifdef USE_API_3_16
@@ -48,13 +48,13 @@ XI_RETURN (__cdecl *pxiGetImage)(IN HANDLE hDevice, IN DWORD timeout, OUT LPXI_I
 XI_RETURN (__cdecl *pxiSetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD size, XI_PRM_TYPE type);
 XI_RETURN (__cdecl *pxiGetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD * size, XI_PRM_TYPE * type);
 
-#ifndef USE_API_4_10 || USE_API_3_16
+#if !defined(USE_API_4_10) && !defined(USE_API_3_16)
     MM40_RETURN (__cdecl *pUpdateFrameShading)(IN HANDLE hDevice, IN HANDLE hFieldBuffer, IN LPMMSHADING lpSahding);
     MM40_RETURN (__cdecl *pCalculateShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite );
     MM40_RETURN (__cdecl *pCalculateShadingRaw)(INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite ); //does not exist in new API
     MM40_RETURN (__cdecl *pInitializeShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, WORD wOff, WORD wMul);
     MM40_RETURN (__cdecl *pProcessFrame)(IN HANDLE hDevice);
     //MM40_RETURN (__cdecl *pSetShadingRaw)(IN LPMMSHADING lpSahding); //does not exist in new API
-#endif
+#endif //!defined(USE_API_4_10) && !defined(USE_API_3_16)
 
 #endif

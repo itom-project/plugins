@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-	Copyright (C) 2013, Institut fuer Technische Optik, Universitaet Stuttgart
+	Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -394,10 +394,13 @@ ito::RetVal DialogXimea::applyParameters()
 //------------------------------------------------------------------------------
 void DialogXimea::on_btnFullROI_clicked()
 {
-    if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
+    if (m_currentParameters.contains("roi"))
     {
-        ui.rangeX->setValues(0, m_currentParameters["sizex"].getMax());
-        ui.rangeY->setValues(0, m_currentParameters["sizey"].getMax());
+        ito::RectMeta *rm = static_cast<ito::RectMeta*>(m_currentParameters["roi"].getMeta());
+        const ito::RangeMeta &height = rm->getHeightRangeMeta();
+        const ito::RangeMeta &width = rm->getWidthRangeMeta();
+        ui.rangeX->setValues(width.getMin(), width.getMax());
+        ui.rangeY->setValues(height.getMin(), height.getMax());
     }
 }
 

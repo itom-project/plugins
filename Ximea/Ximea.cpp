@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2015, twip optical solutions GmbH
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -221,7 +221,7 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("buffers_queue_size", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 3, 1, tr("Number of buffers in the queue.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-#ifndef defined(USE_API_3_16)
+#if !defined(USE_API_3_16)
     paramVal = ito::Param("timing_mode", ito::ParamBase::Int, XI_ACQ_TIMING_MODE_FREE_RUN, XI_ACQ_TIMING_MODE_FRAME_RATE, XI_ACQ_TIMING_MODE_FREE_RUN, tr("Acquisition timing: %1: free run (default), %2: by frame rate.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
 #else
     paramVal = ito::Param("timing_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 0, 0 , tr("Acquisition timing: not available due to old Ximea API.").toLatin1().data());
@@ -336,7 +336,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["sensor_type"].setVal<char*>(strBuf);
                 }
 
-#ifndef defined(USE_API_4_10) || defined(USE_API_3_16)
+#if defined(USE_API_4_10) || defined(USE_API_3_16)
 
                 char serial_number[20] = "";
                 DWORD strSize = 20 * sizeof(char);
@@ -356,7 +356,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data());
                     m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
                 }
-#endif
+#endif //defined(USE_API_4_10) || defined(USE_API_3_16)
 
                 strBufSize = 1024 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
@@ -386,7 +386,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["gammaColor"].setFlags(iscolor ? 0 : ito::ParamBase::Readonly);
                 }
 
-#if defined XI_PRM_DEVICE_MODEL_ID
+#if defined(XI_PRM_DEVICE_MODEL_ID)
 
                 int device_model_id = 0;
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_MODEL_ID, &device_model_id, &pSize, &intType), "get: " XI_PRM_DEVICE_MODEL_ID);
@@ -576,7 +576,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 // reset timestamp for MQ and MD cameras
                 if (m_family == familyMD || m_family == familyMQ)
                 {
-#if defined XI_TS_RST_SRC_SW && defined XI_TS_RST_ARM_ONCE
+#if defined(XI_TS_RST_SRC_SW) && defined(XI_TS_RST_ARM_ONCE)
                     // reset camera timestamp
                     int val = XI_TS_RST_SRC_SW;
                     pxiSetParam(m_handle, XI_PRM_TS_RST_SOURCE, &val, pSize, intType);
@@ -1029,7 +1029,7 @@ ito::RetVal Ximea::LoadLib(void)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
 
-#ifndef USE_API_4_10 || USE_API_3_16
+#if !defined(USE_API_4_10) && !defined(USE_API_3_16)
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) dlsym(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
@@ -1048,9 +1048,9 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) dlsym(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
-#endif
+#endif //!defined(USE_API_4_10) && !defined(USE_API_3_16)
 
-#else
+#else //#linux
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) GetProcAddress(ximeaLib, "xiGetNumberDevices")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
 
@@ -1075,7 +1075,7 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
-#ifndef USE_API_4_10 || USE_API_3_16
+#if !defined(USE_API_4_10) && !defined(USE_API_3_16)
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
@@ -1094,9 +1094,9 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
-#endif
+#endif //!defined(USE_API_4_10) && !defined(USE_API_3_16)
         
-#endif
+#endif //linux
     }
 
     if ((retValue != ito::retOk))
@@ -2111,7 +2111,27 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         if (triggermode == XI_TRG_SOFTWARE)
         {
             int val = 1;
-            retValue += checkError(pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger), XI_PRM_TRG_SOFTWARE);
+            XI_RETURN ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger);
+            if (ret == XI_DEVICE_NOT_READY) //in frame burst mode, the camera sometimes needs some delay before acquiring the next series (especially for very small integration times)
+            {
+                for (int c = 1; c <= 10; ++c)
+                {
+                    Sleep(c * 25);
+                    ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger);
+
+                    if (ret != XI_DEVICE_NOT_READY)
+                    {
+                        break;
+                    }
+                }
+
+                retValue += checkError(ret, XI_PRM_TRG_SOFTWARE, "(no success after 10 tries)");
+            }
+            else
+            {
+                retValue += checkError(ret, XI_PRM_TRG_SOFTWARE);
+            }
+
             if (retValue != ito::retOk)
             {
                 m_isgrabbing = false;
