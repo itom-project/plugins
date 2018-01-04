@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut für Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -27,6 +27,10 @@
 #include <qstring.h>
 
 #include "GenTL_v1_5.h"
+
+#define VERBOSE_ERROR 1
+#define VERBOSE_WARNING 2
+#define VERBOSE_DEBUG 3
 
 ito::RetVal checkGCError(const GenTL::GC_ERROR &error, const QString &suffix = "");
 

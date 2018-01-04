@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -98,7 +98,8 @@ GenTLSystem::GenTLSystem() :
     m_initialized(false),
     m_systemInit(false),
     m_systemOpened(false),
-    m_handle(GENTL_INVALID_HANDLE)
+    m_handle(GENTL_INVALID_HANDLE),
+    m_verbose(0)
 {
     m_lib = QSharedPointer<QLibrary>(new QLibrary());
 }
@@ -129,18 +130,18 @@ ito::RetVal GenTLSystem::init(const QString &filename)
 
     if (!info.exists())
     {
-        retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", filename.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", filename.toLatin1().constData());
     }
     else if (filename.endsWith(".cti") == false)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "file '%s' is no *.cti file", filename.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, "file '%s' is no *.cti file", filename.toLatin1().constData());
     }
     else
     {
         m_lib->setFileName(filename);
         if (!m_lib->load())
         {
-            retval += ito::RetVal::format(ito::retError, 0, "error loading library '%s' (%s)", filename.toLatin1().data(), m_lib->errorString().toLatin1().data());
+            retval += ito::RetVal::format(ito::retError, 0, "error loading library '%s' (%s)", filename.toLatin1().constData(), m_lib->errorString().toLatin1().constData());
         }
         else
         {
@@ -161,7 +162,7 @@ ito::RetVal GenTLSystem::init(const QString &filename)
                 TLClose == NULL || TLOpen == NULL || !TLUpdateInterfaceList || \
                 !TLGetNumInterfaces || !TLGetInterfaceID || !TLGetInterfaceInfo || !TLOpenInterface)
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file '%1' does not export all necessary methods of the GenTL standard.").arg(filename).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file '%1' does not export all necessary methods of the GenTL standard.").arg(filename).toLatin1().constData());
             }
 
             
@@ -311,7 +312,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
         if (!retval.containsError())
         {
-			if (interfaceID == "")
+			if (interfaceID == "" || m_verbose >= VERBOSE_DEBUG)
 			{
 				std::cout << "Available interfaces\n----------------------------------------\n" << std::endl;
 			}
@@ -336,11 +337,11 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 				tlretval = ito::retOk;
 				tltype = getInterfaceInfo(GenTL::INTERFACE_INFO_TLTYPE, sIfaceID, tlretval);
 
-				if (interfaceID == "")
+				if (interfaceID == "" || m_verbose >= VERBOSE_DEBUG)
 				{
 					id = getInterfaceInfo(GenTL::INTERFACE_INFO_ID, sIfaceID, retval);
 					displayname = getInterfaceInfo(GenTL::INTERFACE_INFO_DISPLAYNAME, sIfaceID, retval);
-					std::cout << (i + 1) << ". ID: " << sIfaceID << ", name: " << displayname.data() << ", transport layer type: " << tltype.data() << "\n" << std::endl;
+					std::cout << (i + 1) << ". ID: " << sIfaceID << ", name: " << displayname.constData() << ", transport layer type: " << tltype.constData() << "\n" << std::endl;
 				}
             }
 
@@ -357,23 +358,44 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
         if (!retval.containsError())
         {
+            if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "Trying to open interface '" << interfaceIDToOpen.constData() << "'...";
+            }
+
             GenTL::IF_HANDLE ifHandle;
-			retval += checkGCError(TLOpenInterface(m_handle, interfaceIDToOpen.data(), &ifHandle), QString("Error opening interface '%1'").arg(QLatin1String(interfaceIDToOpen)));
+			retval += checkGCError(TLOpenInterface(m_handle, interfaceIDToOpen.constData(), &ifHandle), QString("Error opening interface '%1'").arg(QLatin1String(interfaceIDToOpen)));
 
             if (!retval.containsError())
             {
-				GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, interfaceIDToOpen, retval);
+                
+
+				GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, interfaceIDToOpen, m_verbose, retval);
                 if (!retval.containsError())
                 {
+                    if (m_verbose >= VERBOSE_DEBUG)
+                    {
+                        std::cout << "OK\n" << std::endl;
+                    }
+
 					QSharedPointer<GenTLInterface> sharedPtr(gtli);
 					m_interfaces.append(sharedPtr.toWeakRef());
                     return sharedPtr;
                 }
                 else
                 {
+                    if (m_verbose >= VERBOSE_DEBUG)
+                    {
+                        std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
+                    }
+
                     delete gtli;
                     gtli = NULL;
                 }
+            }
+            else if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
             }
         }
         else
@@ -393,7 +415,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-GenTLInterface::GenTLInterface(QSharedPointer<QLibrary> lib, GenTL::IF_HANDLE ifHandle, QByteArray ifID, ito::RetVal &retval) :
+GenTLInterface::GenTLInterface(QSharedPointer<QLibrary> lib, GenTL::IF_HANDLE ifHandle, QByteArray ifID, int verbose, ito::RetVal &retval) :
     m_lib(lib),
     m_handle(ifHandle),
     m_IfaceID(ifID),
@@ -402,7 +424,8 @@ GenTLInterface::GenTLInterface(QSharedPointer<QLibrary> lib, GenTL::IF_HANDLE if
     IFGetDeviceInfo(NULL),
     IFGetDeviceID(NULL),
     IFUpdateDeviceList(NULL),
-    IFGetNumDevices(NULL)
+    IFGetNumDevices(NULL),
+    m_verbose(verbose)
 {
     IFOpenDevice = (GenTL::PIFOpenDevice)m_lib->resolve("IFOpenDevice");
     IFClose = (GenTL::PIFClose)m_lib->resolve("IFClose");
@@ -414,11 +437,11 @@ GenTLInterface::GenTLInterface(QSharedPointer<QLibrary> lib, GenTL::IF_HANDLE if
     if (IFGetDeviceID == NULL || IFGetDeviceInfo == NULL || IFClose == NULL || \
         IFOpenDevice == NULL || !IFUpdateDeviceList || !IFGetNumDevices)
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file does not export all functions of the GenTL protocol.").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file does not export all functions of the GenTL protocol.").toLatin1().constData());
     }
     else
     {
-        retval += ito::RetVal(IFUpdateDeviceList(m_handle, NULL, 5000 /*timeout in ms*/));
+        retval += checkGCError(IFUpdateDeviceList(m_handle, NULL, 5000 /*timeout in ms*/), "Interface: Update device list");
     }
 }
 
@@ -435,7 +458,7 @@ GenTLInterface::~GenTLInterface()
 /*
 \param deviceID: ID of device to be opened, if empty, the first available device is used.
 */
-QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID, bool printInfoAboutAllDevices, ito::RetVal &retval)
+QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID, ito::RetVal &retval)
 {
     if (!IFGetDeviceInfo)
     {
@@ -448,13 +471,13 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
         //check if already exists, this time, this is an error
         for (int i = 0; i < m_devices.size(); ++i)
         {
-            if (m_devices[i].isNull() == false)    //m_devices[i].data()->getDeviceID() == deviceID)
+            if (m_devices[i].isNull() == false)
             {
                 usedDeviceIDs.insert(m_devices[i].data()->getDeviceID());
 
                 if (m_devices[i].data()->getDeviceID() == deviceID)
                 {
-                    retval += ito::RetVal::format(ito::retError,0,"device '%s' already in use", deviceID.data());
+                    retval += ito::RetVal::format(ito::retError,0,"device '%s' already in use", deviceID.constData());
                 }
             }
         }
@@ -467,6 +490,11 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
         if (!retval.containsError())
         {
+            if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "Detected devices: " << piNumDevices << "\n" << std::endl;
+            }
+
 			if (piNumDevices == 0)
 			{
 				retval += ito::RetVal(ito::retError, 0, "no devices detected for given vendor and interface type");
@@ -492,24 +520,26 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
                 if (!retval.containsError())
                 {
-                    if (printInfoAboutAllDevices)
-                    {
-                        retval += printDeviceInfo(sDeviceID);
-                    }
-
                     if (sDeviceID == "" && usedDeviceIDs.contains(sDeviceID)) //open next free device
                     {
                         found = true;
-                        break;
                     }
                     else if (deviceID == "" && accessStatus == GenTL::DEVICE_ACCESS_STATUS_READWRITE)
                     {
                         found = true;
-                        break;
                     }
                     else if (deviceID == sDeviceID)
                     {
                         found = true;
+                    }
+
+                    if ((found && m_verbose >= VERBOSE_ERROR) || (m_verbose >= VERBOSE_DEBUG) )
+                    {
+                        retval += printDeviceInfo(sDeviceID);
+                    }
+
+                    if (found)
+                    {
                         break;
                     }
                 }
@@ -522,8 +552,13 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             {
                 //try to open the interface with the given interfaceID
                 sDeviceID[0] = '\0';
-                memcpy(sDeviceID, deviceID.data(), sizeof(char) * std::min(deviceID.size(),(int)piSize));
+                memcpy(sDeviceID, deviceID.constData(), sizeof(char) * std::min(deviceID.size(),(int)piSize));
                 sDeviceID[piSize-1] = '\0';
+            }
+
+            if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "Trying to open the device '" << sDeviceID << "'...";
             }
 
             GenTL::DEV_HANDLE devHandle;
@@ -539,7 +574,12 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 					identifier = "unknown camera";
 				}
 
-                GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, identifier, retval);
+                else if (m_verbose >= VERBOSE_DEBUG)
+                {
+                    std::cout << "OK. Device '" << identifier.constData() << "' opened.\n" << std::endl;
+                }
+
+                GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, identifier, m_verbose, retval);
                 if (!retval.containsError())
                 {
                     return QSharedPointer<GenTLDevice>( gtld );
@@ -548,6 +588,10 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 {
                     DELETE_AND_SET_NULL(gtld);
                 }
+            }
+            else if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
             }
         }
     }
@@ -644,7 +688,7 @@ ito::RetVal GenTLInterface::printDeviceInfo(const char* sDeviceID) const
             }
         }
 
-		std::cout << "Interface: " << m_IfaceID.data() << "\n" << std::endl;
+		std::cout << "Interface: " << m_IfaceID.constData() << "\n" << std::endl;
     }
 
     return retval;

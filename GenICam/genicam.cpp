@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "OpenCV-Grabber" for itom software
+    Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -37,6 +37,8 @@
 #include <qdir.h>
 #include <qprocess.h>
 #include <PFNC.h>
+
+#include "gccommon.h"
 
 #include "dockWidgetGenicam.h"
 
@@ -97,22 +99,25 @@ This plugin has been tested with the following cameras: \n\
 	QString description = tr("Indicate either a string containing the vendor and model name separated with a semicolon (e.g. 'XIMEA GmbH.;xiApi') or \
 the path to a cti file (GenICam GenTL transport layer) with the file suffix .cti of the respective camera driver. If nothing is indicated, \
 a list of all auto-detected vendors and models is returned.");
-	ito::Param paramVal = ito::Param("GenTLProducer", ito::ParamBase::String, NULL, "C:\\XIMEA\\GenTL Producer\\x64\\ximea.gentlX64.cti", description.toLatin1().data());
+	ito::Param paramVal = ito::Param("GenTLProducer", ito::ParamBase::String, NULL, "C:\\XIMEA\\GenTL Producer\\x64\\ximea.gentlX64.cti", description.toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("interface", ito::ParamBase::String, NULL, "auto", tr("interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty string to get a list of all possible interfaces for the chosen transport layer. Default: 'auto' opens the first supported interface of the chosen transport layer.").toLatin1().data());
+	paramVal = ito::Param("interface", ito::ParamBase::String, NULL, "auto", tr("interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty string to get a list of all possible interfaces for the chosen transport layer. Default: 'auto' opens the first supported interface of the chosen transport layer.").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("deviceID", ito::ParamBase::String, NULL, "", tr("name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.").toLatin1().data());
+    paramVal = ito::Param("deviceID", ito::ParamBase::String, NULL, "", tr("name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().data());
+	paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Guru, GenApi::Guru, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).toLatin1().data());
+	paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Guru, GenApi::Guru, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("verbose level (currently, this parameter is used for expert testings, ignore it).").toLatin1().data());
+    paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());
+	m_initParamsOpt.append(paramVal);
+
+	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_DEBUG, VERBOSE_ERROR, tr("verbose level (0: only display errors, 1: display errors and warnings, 2: display all).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 }
 
@@ -139,15 +144,15 @@ GenICamClass::GenICamClass() : AddInGrabber(),
 
 	paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 2048, \
         new ito::IntMeta(1, 2048, 1, "ImageFormatControl"), \
-        tr("width of ROI").toLatin1().data());
+        tr("width of ROI").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 2048, \
         new ito::IntMeta(1, 2048, 1, "ImageFormatControl"), \
-        tr("height of ROI").toLatin1().data());
+        tr("height of ROI").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, \
         new ito::IntMeta(8, 24, 2, "ImageFormatControl"), \
-        tr("bitdepth in bits per pixel").toLatin1().data());
+        tr("bitdepth in bits per pixel").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
 
     ito::DoubleMeta *dm = new ito::DoubleMeta(0.0000001, std::numeric_limits<double>::max(), 0.0, "AcquisitionControl");
@@ -155,11 +160,11 @@ GenICamClass::GenICamClass() : AddInGrabber(),
     dm->setRepresentation(ito::ParamMeta::Linear);
     dm->setUnit("s");
 	paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.5, \
-        dm, tr("integration time in seconds (this parameter is mapped to the GenICam standard parameter 'ExposureTime' (in ms))").toLatin1().data());
+        dm, tr("integration time in seconds (this parameter is mapped to the GenICam standard parameter 'ExposureTime' (in ms))").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
 
 	int roi[] = { 0, 0, 2048, 2048 };
-	paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height)").toLatin1().data());
+	paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height)").toLatin1().constData());
 	ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[2] - 1), ito::RangeMeta(roi[1], roi[3] - 1), "ImageFormatControl"); //RangeMeta includes the last value, therefore -1
 	paramVal.setMeta(rm, true);
 	m_params.insert(paramVal.getName(), paramVal);
@@ -167,12 +172,19 @@ GenICamClass::GenICamClass() : AddInGrabber(),
     dm = new ito::DoubleMeta(0.000010, 3600.0, 0.0, "AcquisitionControl");
     dm->setDisplayPrecision(1);
     dm->setUnit("s");
-	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 10.0, dm, tr("Timeout for acquisition in seconds.").toLatin1().data());
+	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 10.0, dm, tr("Timeout for acquisition in seconds.").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
 
 	ito::IntMeta *im = new ito::IntMeta(1, 1e6, 1, "AcquisitionControl");
-	paramVal = ito::Param("numBuffers", ito::ParamBase::Int | ito::ParamBase::In, 1, im, tr("Number of buffers allocated at startDevice().").toLatin1().data());
+	paramVal = ito::Param("numBuffers", ito::ParamBase::Int | ito::ParamBase::In, 1, im, tr("Number of buffers allocated at startDevice().").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
+
+
+    QVector<ito::Param> pMand = QVector<ito::Param>();
+    QVector<ito::Param> pOpt = QVector<ito::Param>();
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+    registerExecFunc("resyncAllParameters", pMand, pOpt, pOut, tr("Forces a resychroniziation of all camera parameters."));
+
 
     if (hasGuiSupport())
     {
@@ -293,7 +305,7 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 				if (bitdepths[i] == val->getVal<int>())
 				{
 					triedFormats << supportedFormatsStr[i];
-					QSharedPointer<ito::ParamBase> val(new ito::ParamBase("PixelFormat", ito::ParamBase::String, supportedFormatsStr[i].toLatin1().data()));
+					QSharedPointer<ito::ParamBase> val(new ito::ParamBase("PixelFormat", ito::ParamBase::String, supportedFormatsStr[i].toLatin1().constData()));
 					ret_ = setParam(val, NULL);
 					if (ret_ == ito::retOk)
 					{
@@ -448,7 +460,7 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 				m_device->supportedImageFormats(NULL, &supportedFormatsStr);
 				if (!supportedFormatsStr.contains(val->getVal<const char*>(), Qt::CaseInsensitive))
 				{
-					retValue += ito::RetVal::format(ito::retError, 0, "This plugin currently only supports the following pixel formats: %s", supportedFormatsStr.join("; ").toLatin1().data());
+					retValue += ito::RetVal::format(ito::retError, 0, "This plugin currently only supports the following pixel formats: %s", supportedFormatsStr.join("; ").toLatin1().constData());
 				}
 				else
 				{
@@ -623,11 +635,12 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     QByteArray deviceID = paramsOpt->at(2).getVal<const char*>();
 	int streamIndex = paramsOpt->at(3).getVal<int>();
 	int visibilityLevel = paramsOpt->at(4).getVal<int>();
-	int verbose = paramsOpt->at(5).getVal<int>(); //temporarily, verbose is used as port index
+    int portIndex = paramsOpt->at(5).getVal<int>();
+	int verbose = paramsOpt->at(6).getVal<int>(); //temporarily, verbose is used as port index
 
 	if (genTlProducerFile.endsWith(".cti"))
 	{
-		retValue += searchGenTLProducer(genTlProducerFile.data(), "", "");
+		retValue += searchGenTLProducer(genTlProducerFile.constData(), "", "");
 	}
 	else
 	{
@@ -644,23 +657,24 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     
     if (!retValue.containsError())
     {
+        m_system->setVerbose(verbose);
 		m_interface = m_system->getInterface(interfaceType, retValue);
     }
 
     if (!retValue.containsError())
     {
-        m_device = m_interface->getDevice(deviceID, true, retValue);
+        m_device = m_interface->getDevice(deviceID, retValue);
 		
     }
 
 	if (!retValue.containsError())
 	{
-		retValue += m_device->connectToGenApi(verbose);
+		retValue += m_device->connectToGenApi(portIndex);
 	}
 
 	if (!retValue.containsError())
 	{
-		m_stream = m_device->getDataStream(streamIndex, true, retValue);
+		m_stream = m_device->getDataStream(streamIndex, retValue);
 	}
 
 	if (!retValue.containsError())
@@ -776,7 +790,7 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("the grabber already had zero users.").toLatin1().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("the grabber already had zero users.").toLatin1().constData());
 
 		//to be sure, only
 		retValue += m_stream->unqueueAllBuffersFromInputQueue();
@@ -810,7 +824,7 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
 
 	if (grabberStartedCount() <= 0)
 	{
-		retValue += ito::RetVal(ito::retError, 0, tr("Acquisition failed since device has not been started.").toLatin1().data());
+		retValue += ito::RetVal(ito::retError, 0, tr("Acquisition failed since device has not been started.").toLatin1().constData());
 	}
 	else
 	{
@@ -827,7 +841,7 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
 	}
 	else if (m_acquisitionCache.mode == AcquisitionCache::MultiFrame)
 	{
-		retValue += ito::RetVal(ito::retError, 0, tr("AcquisitionMode 'multiFrame' not yet supported").toLatin1().data());
+		retValue += ito::RetVal(ito::retError, 0, tr("AcquisitionMode 'multiFrame' not yet supported").toLatin1().constData());
 	}
 
 	if (!retValue.containsError())
@@ -888,7 +902,7 @@ ito::RetVal GenICamClass::retrieveData(ito::DataObject *externalDataObject)
 
 		if (m_newImageAvailable == false)
 		{
-			retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
+			retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().constData());
 		}
 		else
 		{
@@ -959,7 +973,7 @@ ito::RetVal GenICamClass::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().constData());
     }
 
     if(!retValue.containsError())
@@ -1040,12 +1054,12 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
             }
             else
             {
-				retval += ito::RetVal(ito::retError, 0, tr("The transport layer file '%1' does not exist.").arg(producer).toLatin1().data());
+				retval += ito::RetVal(ito::retError, 0, tr("The transport layer file '%1' does not exist.").arg(producer).toLatin1().constData());
             }
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Producer must be empty or indicate a filename that ends with '.cti'").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Producer must be empty or indicate a filename that ends with '.cti'").toLatin1().constData());
         }
     }
     else //search for all cti files in searchPathes
@@ -1080,7 +1094,7 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
 
 		if (producer == "" && vendor == "" && model == "")
 		{
-			std::cout << "Detected GenICam transport layers:\n-------------------------------------\n" << std::endl;
+			std::cout << "Detected GenICam transport layers:\n----------------------------------------\n" << std::endl;
 		}
 
 		foreach(const QString &file, ctiFiles)
@@ -1150,7 +1164,7 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
 				if (producer == "" && vendor == "" && model == "")
 				{
 					i++;
-					std::cout << i << ". Unloadable cti-file: " << file.toLatin1().data() << "\n" << std::endl;
+					std::cout << i << ". Unloadable cti-file: " << file.toLatin1().constData() << "\n" << std::endl;
 				}
 
 				tempRetVal += libRetVal;
@@ -1176,7 +1190,7 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
 		{
 			m_system = GenTLOrganizer::instance()->getSystem(filteredCtiFiles[0], retval);
 			retval += m_system->openSystem();
-			retval += ito::RetVal::format(ito::retWarning, 0, "more than one possible *.cti transport layer file is available. The first '%s' has been opened.", filteredCtiFiles[0].toLatin1().data());
+			retval += ito::RetVal::format(ito::retWarning, 0, "more than one possible *.cti transport layer file is available. The first '%s' has been opened.", filteredCtiFiles[0].toLatin1().constData());
 		}
 		else
 		{
@@ -1185,4 +1199,33 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
     }
 
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenICamClass::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    ito::ParamBase *param1 = NULL;
+    ito::ParamBase *param2 = NULL;
+    ito::ParamBase *param3 = NULL;
+    QVector<QPair<int, QByteArray> > lastError;
+
+    if (funcName == "resyncAllParameters")
+    {
+        m_device->resyncAllParameters();
+    }
+    else
+    {
+        retValue += ito::RetVal::format(ito::retError, 0, tr("function name '%s' does not exist").toLatin1().data(), funcName.toLatin1().constData());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
+
+    return retValue;
 }

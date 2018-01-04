@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut für Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -34,7 +34,7 @@
 #include "PFNC.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE handle, ito::RetVal &retval) :
+GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE handle, int verbose, ito::RetVal &retval) :
     m_handle(handle),
     m_lib(lib),
     m_newBufferEvent(GENTL_INVALID_HANDLE),
@@ -43,7 +43,8 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
 	m_payloadSize(0),
 	m_timeoutMS(0),
 	m_usePreAllocatedBuffer(-1),
-	m_endianessChanged(true)
+	m_endianessChanged(true),
+    m_verbose(verbose)
 {
     GCRegisterEvent = (GenTL::PGCRegisterEvent)m_lib->resolve("GCRegisterEvent");
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
@@ -65,7 +66,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
 		!DSStopAcquisition || !DSStartAcquisition || !DSGetInfo || !DSAllocAndAnnounceBuffer || \
 		!DSRevokeBuffer)
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file does not export all functions of the GenTL protocol.").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file does not export all functions of the GenTL protocol.").toLatin1().constData());
     }
 
     if (!retval.containsError())
@@ -80,11 +81,20 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
 		case GenTL::GC_ERR_NOT_IMPLEMENTED:
 			m_errorEvent = GENTL_INVALID_HANDLE;
 			break;
+        case GenTL::GC_ERR_RESOURCE_IN_USE:
+			retval += ito::RetVal::format(ito::retWarning, errorEventResult, "dataStream: error event could not be registered (%i: GC_ERR_RESOURCE_IN_USE)", errorEventResult);
+			m_errorEvent = GENTL_INVALID_HANDLE;
+			break;
 		default:
-			retval += ito::RetVal::format(ito::retWarning, 0, "dataStream: warning while registering error event (%i)", errorEventResult);
+			retval += ito::RetVal::format(ito::retWarning, errorEventResult, "dataStream: error event could not be registered (code: %i)", errorEventResult);
 			m_errorEvent = GENTL_INVALID_HANDLE;
 			break;
 		}
+    }
+
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        std::cout << "Registered dataStream events: \nnew buffer event: " << m_newBufferEvent << "\nerror event: " << m_errorEvent << "\n" << std::endl;
     }
 
     if (!retval.containsError())
@@ -132,29 +142,10 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
     size_t size;
     size_t payloadSize = 0;
 	size_t bufAnnounceMin = 1;
+    int payloadType = 0;
     
     if (bytesPerBuffer == 0) //estimate payload
     {
-		size = sizeof(bufAnnounceMin);
-		GenTL::GC_ERROR ret = DSGetInfo(m_handle, GenTL::STREAM_INFO_BUF_ANNOUNCE_MIN, &type, &bufAnnounceMin, &size);
-		if (ret == GenTL::GC_ERR_SUCCESS)
-		{
-			if (type != GenTL::INFO_DATATYPE_SIZET)
-			{
-				retval += ito::RetVal(ito::retWarning, 0, "Data stream returns wrong data type for STREAM_INFO_BUF_ANNOUNCE_MIN. A minimum number of 1 buffer is assumed.");
-				bufAnnounceMin = 1;
-			}
-		}
-		else if (ret == GenTL::GC_ERR_NOT_AVAILABLE)
-		{
-			bufAnnounceMin = 1;
-		}
-		else
-		{
-			retval += ito::RetVal(ito::retWarning, 0, "Data stream returns error for STREAM_INFO_BUF_ANNOUNCE_MIN. A minimum number of 1 buffer is assumed.");
-			bufAnnounceMin = 1;
-		}
-
         size = sizeof(definesPayloadsize);
         if (DSGetInfo(m_handle, GenTL::STREAM_INFO_DEFINES_PAYLOADSIZE, &type, &definesPayloadsize, &size) == GenTL::GC_ERR_SUCCESS)
         {
@@ -172,13 +163,17 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
                 if (type != GenTL::INFO_DATATYPE_SIZET)
                 {
                     payloadSize = 0;
+                    retval += ito::RetVal(ito::retWarning, 0, "Payload size given by data stream has an invalid format. Use the payload size from the device parameter instead.");
                 }
+
+                payloadType = 1;
             }
         }
 
         if (payloadSize == 0)
         {
 			payloadSize = m_payloadSize;
+            payloadType = 2;
             //has to be obtained by node... TODO
         }
 
@@ -188,13 +183,53 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 			return retval;
 		}
 
-		if (bufAnnounceMin > nrOfBuffers)
-		{
-			retval += ito::RetVal::format(ito::retError, 0, "the number of announced buffer is below the minimum number of buffers (%i), required for data acquisition by the specific device. Use the parameter 'numBuffers' to increase the number of buffers.", bufAnnounceMin);
-			return retval;
-		}
-
         bytesPerBuffer = payloadSize;
+    }
+
+    size = sizeof(bufAnnounceMin);
+	GenTL::GC_ERROR ret = DSGetInfo(m_handle, GenTL::STREAM_INFO_BUF_ANNOUNCE_MIN, &type, &bufAnnounceMin, &size);
+	if (ret == GenTL::GC_ERR_SUCCESS)
+	{
+		if (type != GenTL::INFO_DATATYPE_SIZET)
+		{
+			retval += ito::RetVal(ito::retWarning, 0, "Data stream returns wrong data type for STREAM_INFO_BUF_ANNOUNCE_MIN. A minimum number of 1 buffer is assumed.");
+			bufAnnounceMin = 1;
+		}
+	}
+	else if (ret == GenTL::GC_ERR_NOT_AVAILABLE || ret == GenTL::GC_ERR_NOT_IMPLEMENTED)
+	{
+		bufAnnounceMin = 1;
+	}
+	else
+	{
+		retval += ito::RetVal(ito::retWarning, 0, "Data stream returns error for STREAM_INFO_BUF_ANNOUNCE_MIN. A minimum number of 1 buffer is assumed.");
+		bufAnnounceMin = 1;
+	}
+
+    if (bufAnnounceMin > nrOfBuffers)
+	{
+		retval += ito::RetVal::format(ito::retError, 0, "the number of announced buffer is below the minimum number of buffers (%i), required for data acquisition by the specific device. Use the parameter 'numBuffers' to increase the number of buffers.", bufAnnounceMin);
+		return retval;
+	}
+
+    //get aligment (optional)
+    size_t alignment = 1;
+    size = sizeof(alignment);
+    ret = DSGetInfo(m_handle, GenTL::STREAM_INFO_BUF_ALIGNMENT, &type, &alignment, &size);
+    if (ret != GenTL::GC_ERR_SUCCESS)
+    {
+        alignment = 1;
+    }
+
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        std::cout << "Buffer allocation and announce:\n--------------------------------------------\n" << std::endl;
+        std::cout << "* Number of buffers: " << nrOfBuffers << "\n" << std::endl;
+        std::cout << "* Minimum number of required buffers: " << bufAnnounceMin << "\n" << std::endl;
+        std::cout << "* Buffer alignment: " << alignment << " byte(s)\n" << std::endl;
+        std::cout << "* Source for buffer size: " << (payloadType == 0 ? "Manually set" : ((payloadType == 1) ? "Given from data stream info" : "Given by device parameter")) << "\n" << std::endl;
+        std::cout << "* Payload size: " << bytesPerBuffer << " bytes\n" << std::endl;
+        std::cout << "* Guess allocation type: " << ((m_usePreAllocatedBuffer == -1) ? "Yes" : "No") << "\n" << std::endl;
     }
 
     for (int i = 0; i < nrOfBuffers; ++i)
@@ -231,6 +266,11 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 			err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
 			if (err == GenTL::GC_ERR_INVALID_PARAMETER && DSAnnounceBuffer)
 			{
+                if (alignment != 1)
+                {
+                    retval += ito::RetVal::format(ito::retWarning, 0, "DataStream: an alignment of %i bytes is requested. However this is currently not implemented", alignment);
+                }
+
 				//some cameras fail if camera-internal buffer should be allocated, therefore we try to announce pre-allocated buffer here
 				ito::uint8 *buffer = new ito::uint8[bytesPerBuffer];
 				err = DSAnnounceBuffer(m_handle, buffer, bytesPerBuffer, this, &handle);
@@ -258,9 +298,18 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         }
         else
         {
-			m_usePreAllocatedBuffer = false;
+			m_usePreAllocatedBuffer = -1;
             break;
         }
+    }
+
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        
+        std::cout << "* Allocation type: " << ((m_usePreAllocatedBuffer == 0) ? "camera internal" : "allocated by itom") << "\n" << std::endl;
+        std::cout << "* Number of idle buffers " << m_idleBuffers.size() << "\n" << std::endl;
+        std::cout << "* Success: " << (retval.containsError() ? "Error" : "OK") << "\n" << std::endl;
+        std::cout << "--------------------------------------------\n" << std::endl;
     }
 
 	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
@@ -490,7 +539,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 	size_t size;
 	size_t temp;
 	uint64_t temp64;
-	void* ptr;
+	char* ptr;
 	GenTL::PIXELENDIANNESS_IDS endianess;
 	GenTL::PAYLOADTYPE_INFO_IDS payloadType;
 	GenTL::PIXELFORMAT_NAMESPACE_IDS pixelformatNamespace;
@@ -542,6 +591,23 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 	retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_WIDTH, &dtype, &width, &pSize), "request width of image buffer");
 	pSize = sizeof(height);
 	retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_HEIGHT, &dtype, &height, &pSize), "request height of image buffer");
+
+    size_t buffer_offset = 0;
+
+    //request optional parameter: buffer offset
+    pSize = sizeof(buffer_offset);
+    if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_IMAGEOFFSET, &dtype, &buffer_offset, &pSize) != GenTL::GC_ERR_SUCCESS)
+    {
+        buffer_offset = 0;
+    }
+    else
+    {
+        if (dtype != GenTL::INFO_DATATYPE_SIZET)
+        {
+            buffer_offset = 0;
+            retval += ito::RetVal(ito::retError, 0, "request offset of image in buffer: returned value is not of expected type (size_t)");
+        }
+    }
 
 	//request mandatory parameter: base pointer
 	pSize = sizeof(ptr);
@@ -654,17 +720,17 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 		switch (pixelformat)
 		{
 		case PFNC_Mono8:
-			retval += copyMono8ToDataObject(ptr, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+			retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
 			break;
 		case PFNC_Mono10:
 		case PFNC_Mono12:
 		case PFNC_Mono14:
 		case PFNC_Mono16:
-			retval += copyMono10to16ToDataObject(ptr, width, height, endianess == endianess, dobj);
+			retval += copyMono10to16ToDataObject(ptr + buffer_offset, width, height, endianess == endianess, dobj);
 			break;
 		case GVSP_Mono12Packed: //GigE specific
 		case PFNC_Mono12p:
-			retval += copyMono12pToDataObject(ptr, width, height, endianess == endianess, dobj);
+			retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == endianess, dobj);
 			break;
 		default:
 			retval += ito::RetVal::format(ito::retError, 0, "Pixel format %i (%s) is not yet supported.", pixelformat, GetPixelFormatName((PfncFormat)pixelformat));
@@ -676,14 +742,14 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyMono8ToDataObject(const void* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
 	//little or big endian is idle for mono8:
 	return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, height);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const void* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
 	if (littleEndian)
 	{
@@ -716,7 +782,7 @@ void unpack12into16lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyMono12pToDataObject(const void* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+ito::RetVal GenTLDataStream::copyMono12pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
 	if (littleEndian)
 	{

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -45,13 +45,13 @@ class GenTLInterface
 {
 
 public:
-    GenTLInterface(QSharedPointer<QLibrary> lib, GenTL::IF_HANDLE ifHandle, QByteArray ifID, ito::RetVal &retval);
+    GenTLInterface(QSharedPointer<QLibrary> lib, GenTL::IF_HANDLE ifHandle, QByteArray ifID, int verbose, ito::RetVal &retval);
     ~GenTLInterface();
 
     GenTL::IF_HANDLE getHandle() const { return m_handle; }
     QByteArray getIfaceID() const { return m_IfaceID; }
 
-	QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, bool printInfoAboutAllDevices, ito::RetVal &retval);
+	QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, ito::RetVal &retval);
 
 protected:
 	ito::RetVal printDeviceInfo(const char* sDeviceID) const;
@@ -67,6 +67,8 @@ protected:
     GenTL::PIFGetNumDevices IFGetNumDevices;
 
     QList<QWeakPointer<GenTLDevice> > m_devices;
+
+    int m_verbose;
 
 private:
     QSharedPointer<QLibrary> m_lib;
@@ -90,6 +92,8 @@ public:
     GenTL::TL_HANDLE getHandle() const { return m_handle; }
 
     QSharedPointer<GenTLInterface> getInterface(const QByteArray &interfaceID, ito::RetVal &retval);
+
+    void setVerbose(int verbose) { m_verbose = verbose; }
     
 
 protected:
@@ -111,6 +115,7 @@ protected:
     bool m_initialized;
     bool m_systemInit;
     bool m_systemOpened;
+    int m_verbose;
 
     QList<QWeakPointer<GenTLInterface> > m_interfaces;
 

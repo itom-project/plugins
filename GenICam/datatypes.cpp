@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -53,16 +53,16 @@ int GCType::flagsFromAccessMode(const GenApi::EAccessMode &accessMode) const
 	int flag = 0;
 	switch (accessMode)
 	{
-	case EAccessMode::NA:
+	case NA:
 		flag = ito::ParamBase::Readonly | ito::ParamBase::NotAvailable;
 		break;
-	case EAccessMode::RO:
+	case RO:
 		flag = ito::ParamBase::Readonly;
 		break;
-	case EAccessMode::RW:
+	case RW:
 		flag = 0;
 		break;
-	case EAccessMode::WO:
+	case WO:
 		flag = 0; //todo: good?
 		break;
 	default:
@@ -121,13 +121,13 @@ void GCIntType::intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMet
 		intMeta->setMax(std::numeric_limits<int>::max());
 		intMeta->setStepSize(1);
 	}
-	else if (iPtr->GetIncMode() == EIncMode::noIncrement)
+	else if (iPtr->GetIncMode() == noIncrement)
 	{
 		intMeta->setMin(minimum);
 		intMeta->setMax(maximum);
 		intMeta->setStepSize(1);
 	}
-	else if (iPtr->GetIncMode() == EIncMode::fixedIncrement)
+	else if (iPtr->GetIncMode() == fixedIncrement)
 	{
 		intMeta->setMin(minimum);
 		intMeta->setMax(maximum);
@@ -240,13 +240,13 @@ void GCFloatType::doubleMetaFromFloat(const CFloatPtr &fPtr, ito::DoubleMeta *db
 		dblMeta->setMax(std::numeric_limits<ito::float64>::max());
 		dblMeta->setStepSize(0.0);
 	}
-	else if (fPtr->GetIncMode() == EIncMode::noIncrement)
+	else if (fPtr->GetIncMode() == noIncrement)
 	{
 		dblMeta->setMin(minimum);
 		dblMeta->setMax(maximum);
 		dblMeta->setStepSize(0.0);
 	}
-	else if (fPtr->GetIncMode() == EIncMode::fixedIncrement)
+	else if (fPtr->GetIncMode() == fixedIncrement)
 	{
 		dblMeta->setMin(minimum);
 		dblMeta->setMax(maximum);
@@ -492,7 +492,11 @@ void GCEnumerationType::stringMetaFromEnumeration(const CEnumerationPtr &ePtr, i
 	for (size_t i = 0; i < entries.size(); ++i)
 	{
 		iee = dynamic_cast<IEnumEntry*>(entries[i]);
-		if (iee && iee->GetAccessMode() != EAccessMode::NI)
+        if (iee)
+        {
+            qDebug() << "Param:" << ePtr->GetNode()->GetName().c_str() << ", " << iee->GetSymbolic().c_str() << "::" << iee->GetAccessMode();
+        }
+		if (iee && iee->GetAccessMode() != NI)
 		{
 			strMeta->addItem(iee->GetSymbolic().c_str());
 		}

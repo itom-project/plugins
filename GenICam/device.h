@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut für Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -56,7 +56,7 @@ using namespace GENAPI_NAMESPACE;
 class GenTLDevice : public IPort
 {
 public:
-	GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHandle, QByteArray deviceID, const QByteArray &identifier, ito::RetVal &retval);
+	GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHandle, QByteArray deviceID, const QByteArray &identifier, int verbose, ito::RetVal &retval);
     ~GenTLDevice();
 
 	virtual EAccessMode GetAccessMode() const; //overloaded from IPort: if the driver is open, return RW (= read/write), otherwise NA (= not available)
@@ -65,7 +65,7 @@ public:
 
     QByteArray getDeviceID() const { return m_deviceID; }
 	ito::RetVal connectToGenApi(ito::uint32 portIndex);
-	QSharedPointer<GenTLDataStream> getDataStream(ito::int32 streamIndex, bool printInfoAboutAllStreams, ito::RetVal &retval);
+	QSharedPointer<GenTLDataStream> getDataStream(ito::int32 streamIndex, ito::RetVal &retval);
 
 	ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params); //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
 	int getPayloadSize() const;
@@ -79,6 +79,8 @@ public:
 	ito::RetVal invokeCommandNode(const gcstring &name, ito::tRetValue errorLevel = ito::retError);
 	bool autoUpdateDependentNodes(); //check all nodes for a change in their access mode and return true if any node including the corresponding ito::Param has been updated, else false
 	QByteArray deviceName() const { return m_deviceName; }
+
+    void resyncAllParameters();
 
 	void setCallbackParameterChangedReceiver(QObject* receiver);
 	void callbackParameterChanged_(INode *pNode); //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
@@ -121,6 +123,7 @@ protected:
 	QSharedPointer<QLibrary> m_lib;
     QByteArray m_deviceID;
 	bool m_genApiConnected;
+    int m_verbose;
 
 	QByteArray m_deviceName;
 	CNodeMapRef m_camera;
