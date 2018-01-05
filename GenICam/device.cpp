@@ -79,7 +79,7 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
         ito::uint32 numURLS;
         GCGetNumPortURLs(m_portHandle, &numURLS);
 
-        if (m_verbose >= VERBOSE_DEBUG)
+        if (m_verbose >= VERBOSE_INFO)
         {
             std::cout << "Available loations for XML parameter description\n----------------------------------------\n";
 
@@ -185,7 +185,7 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
 
         if (!retval.containsError())
         {
-            if (m_verbose >= VERBOSE_DEBUG)
+            if (m_verbose >= VERBOSE_INFO)
             {
                 std::cout << "Stream information of device\n----------------------------------------\n" << std::endl;
             }
@@ -200,14 +200,14 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
                         streamIdToOpen = QByteArray(dataStreamID);
                     }
 
-                    if (m_verbose >= VERBOSE_DEBUG)
+                    if (m_verbose >= VERBOSE_INFO)
                     {
                         std::cout << i << ". Name: " << dataStreamID << "\n" << std::endl;
                     }
                 }
             }
 
-            if (m_verbose >= VERBOSE_DEBUG)
+            if (m_verbose >= VERBOSE_INFO)
             {
                 std::cout << "----------------------------------------\n" << std::endl;
             }
@@ -221,7 +221,7 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
             }
             else
             {
-                if (m_verbose >= VERBOSE_DEBUG)
+                if (m_verbose >= VERBOSE_INFO)
                 {
                     std::cout << "Trying to open stream '" << streamIdToOpen.constData() << "'...";
                 }
@@ -231,7 +231,7 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
 
                 if (!retval.containsError())
                 {
-                    if (m_verbose >= VERBOSE_DEBUG)
+                    if (m_verbose >= VERBOSE_INFO)
                     {
                         std::cout << "OK\n" << std::endl;
                     }
@@ -242,7 +242,7 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
                         stream.clear();
                     }
                 }
-                else if (m_verbose >= VERBOSE_DEBUG)
+                else if (m_verbose >= VERBOSE_INFO)
                 {
                     std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
                 }
@@ -319,7 +319,7 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
 		return retval;
     }
 
-    if (m_verbose >= VERBOSE_DEBUG)
+    if (m_verbose >= VERBOSE_INFO)
     {
         std::cout << "Number of available ports for configuration files: " << numURLS << "\n" << std::endl;
         std::cout << "Trying to connect to port index " << portIndex << "...";
@@ -333,7 +333,7 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
     retval += checkGCError(GCGetPortURLInfo(m_portHandle, portIndex, GenTL::URL_INFO_URL, &piType, &pBuffer, &piSize), "get xml description url");
     if (retval.containsError())
     {
-        if (m_verbose >= VERBOSE_DEBUG)
+        if (m_verbose >= VERBOSE_INFO)
         {
             std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
         }
@@ -351,7 +351,7 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
     {
         retval += ito::RetVal(ito::retError, 0, "URL_INFO_URL of port does not return a string for the required xml address.");
 
-        if (m_verbose >= VERBOSE_DEBUG)
+        if (m_verbose >= VERBOSE_INFO)
         {
             std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
         }
@@ -484,12 +484,12 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
 		m_camera._Connect(this, "Device");
 		m_genApiConnected = true;
 
-        if (m_verbose >= VERBOSE_DEBUG)
+        if (m_verbose >= VERBOSE_INFO)
         {
             std::cout << "OK: \n " << infoString.toLatin1().constData() << "\n" << std::endl;
         }
 	}
-    else if (m_verbose >= VERBOSE_DEBUG)
+    else if (m_verbose >= VERBOSE_INFO)
     {
         std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
     }

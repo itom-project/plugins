@@ -117,7 +117,7 @@ a list of all auto-detected vendors and models is returned.");
     paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_DEBUG, VERBOSE_ERROR, tr("verbose level (0: only display errors, 1: display errors and warnings, 2: display all).").toLatin1().constData());
+	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_DEBUG, VERBOSE_ERROR, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 }
 

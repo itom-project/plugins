@@ -92,7 +92,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
 		}
     }
 
-    if (m_verbose >= VERBOSE_DEBUG)
+    if (m_verbose >= VERBOSE_INFO)
     {
         std::cout << "Registered dataStream events: \nnew buffer event: " << m_newBufferEvent << "\nerror event: " << m_errorEvent << "\n" << std::endl;
     }
@@ -221,7 +221,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         alignment = 1;
     }
 
-    if (m_verbose >= VERBOSE_DEBUG)
+    if (m_verbose >= VERBOSE_INFO)
     {
         std::cout << "Buffer allocation and announce:\n--------------------------------------------\n" << std::endl;
         std::cout << "* Number of buffers: " << nrOfBuffers << "\n" << std::endl;
@@ -303,7 +303,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         }
     }
 
-    if (m_verbose >= VERBOSE_DEBUG)
+    if (m_verbose >= VERBOSE_INFO)
     {
         
         std::cout << "* Allocation type: " << ((m_usePreAllocatedBuffer == 0) ? "camera internal" : "allocated by itom") << "\n" << std::endl;

@@ -312,7 +312,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
         if (!retval.containsError())
         {
-			if (interfaceID == "" || m_verbose >= VERBOSE_DEBUG)
+			if (interfaceID == "" || m_verbose >= VERBOSE_INFO)
 			{
 				std::cout << "Available interfaces\n----------------------------------------\n" << std::endl;
 			}
@@ -337,7 +337,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 				tlretval = ito::retOk;
 				tltype = getInterfaceInfo(GenTL::INTERFACE_INFO_TLTYPE, sIfaceID, tlretval);
 
-				if (interfaceID == "" || m_verbose >= VERBOSE_DEBUG)
+				if (interfaceID == "" || m_verbose >= VERBOSE_INFO)
 				{
 					id = getInterfaceInfo(GenTL::INTERFACE_INFO_ID, sIfaceID, retval);
 					displayname = getInterfaceInfo(GenTL::INTERFACE_INFO_DISPLAYNAME, sIfaceID, retval);
@@ -358,7 +358,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
         if (!retval.containsError())
         {
-            if (m_verbose >= VERBOSE_DEBUG)
+            if (m_verbose >= VERBOSE_INFO)
             {
                 std::cout << "Trying to open interface '" << interfaceIDToOpen.constData() << "'...";
             }
@@ -373,7 +373,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 				GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, interfaceIDToOpen, m_verbose, retval);
                 if (!retval.containsError())
                 {
-                    if (m_verbose >= VERBOSE_DEBUG)
+                    if (m_verbose >= VERBOSE_INFO)
                     {
                         std::cout << "OK\n" << std::endl;
                     }
@@ -384,7 +384,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
                 }
                 else
                 {
-                    if (m_verbose >= VERBOSE_DEBUG)
+                    if (m_verbose >= VERBOSE_INFO)
                     {
                         std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
                     }
@@ -393,7 +393,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
                     gtli = NULL;
                 }
             }
-            else if (m_verbose >= VERBOSE_DEBUG)
+            else if (m_verbose >= VERBOSE_INFO)
             {
                 std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
             }
@@ -490,7 +490,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
         if (!retval.containsError())
         {
-            if (m_verbose >= VERBOSE_DEBUG)
+            if (m_verbose >= VERBOSE_INFO)
             {
                 std::cout << "Detected devices: " << piNumDevices << "\n" << std::endl;
             }
@@ -533,7 +533,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                         found = true;
                     }
 
-                    if ((found && m_verbose >= VERBOSE_ERROR) || (m_verbose >= VERBOSE_DEBUG) )
+                    if ((found && m_verbose >= VERBOSE_ERROR) || (m_verbose >= VERBOSE_INFO) )
                     {
                         retval += printDeviceInfo(sDeviceID);
                     }
@@ -556,7 +556,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 sDeviceID[piSize-1] = '\0';
             }
 
-            if (m_verbose >= VERBOSE_DEBUG)
+            if (m_verbose >= VERBOSE_INFO)
             {
                 std::cout << "Trying to open the device '" << sDeviceID << "'...";
             }
@@ -574,7 +574,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 					identifier = "unknown camera";
 				}
 
-                else if (m_verbose >= VERBOSE_DEBUG)
+                else if (m_verbose >= VERBOSE_INFO)
                 {
                     std::cout << "OK. Device '" << identifier.constData() << "' opened.\n" << std::endl;
                 }
@@ -589,7 +589,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                     DELETE_AND_SET_NULL(gtld);
                 }
             }
-            else if (m_verbose >= VERBOSE_DEBUG)
+            else if (m_verbose >= VERBOSE_INFO)
             {
                 std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
             }
