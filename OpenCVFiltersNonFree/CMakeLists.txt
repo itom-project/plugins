@@ -29,7 +29,7 @@ FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(VisualLeakDetector QUIET)
 
 IF(${OpenCV_VERSION_MAJOR} STRGREATER "2")
-    find_package(OpenCV COMPONENTS core xfeatures2d REQUIRED)
+    find_package(OpenCV COMPONENTS core features2d REQUIRED)
 ELSE()
     find_package(OpenCV COMPONENTS core nonfree features2d REQUIRED)
 ENDIF()
