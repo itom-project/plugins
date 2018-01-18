@@ -658,12 +658,6 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     
     if (!retValue.containsError())
     {
-		if (verbose > 0)
-		{
-			setAlive();
-			Sleep(2000);
-		}
-
         m_system->setVerbose(verbose);
 		m_interface = m_system->getInterface(interfaceType, retValue);
     }
