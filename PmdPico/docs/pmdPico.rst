@@ -15,7 +15,7 @@ Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MyGrabber
+    :plugin: PmdPico
 
 Initialization
 ==============
