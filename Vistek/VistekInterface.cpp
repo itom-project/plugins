@@ -99,7 +99,10 @@ official SDK of SVS Vistek. \n\
 This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version \
 and make these libraries available for itom (PATH environment variable, system directory...). \n\
 \n\
-For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter.");
+For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter. \n\
+\n\
+Please notice: Currently, this plugin only works for Vistek drivers up to version 1.5.2. If you want to use a 2.x series of the Vistek drivers, \
+use the GenICam plugin of itom that is able to communicate with Vistek USB3 and GigE cameras.");
 
     m_author = "H. Gilbergs, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

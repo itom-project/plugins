@@ -84,7 +84,8 @@ This plugin has been tested with the following cameras: \n\
 \n\
 * Allied Vision, Manta (Firewire) \n\
 * Ximea (USB3) \n\
-* Vistek, exo174MU3 (USB3)";
+* Vistek, exo174MU3 (USB3) \n\
+* Vistek, exo174MGE (GigE)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";
@@ -657,6 +658,12 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     
     if (!retValue.containsError())
     {
+		if (verbose > 0)
+		{
+			setAlive();
+			Sleep(2000);
+		}
+
         m_system->setVerbose(verbose);
 		m_interface = m_system->getInterface(interfaceType, retValue);
     }
