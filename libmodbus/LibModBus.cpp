@@ -83,7 +83,7 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_license = QObject::tr("licensed under GPL, since the libmodbus is also licensed under GPL");
     m_aboutThis = QObject::tr(GITVERSION);  
 
     ito::Param paramVal("target", ito::ParamBase::String, "127.0.0.1", tr("Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)").toLatin1().data());
