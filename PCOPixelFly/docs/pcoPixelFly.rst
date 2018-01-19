@@ -62,3 +62,8 @@ An instance of this plugin has the following internal parameters:
     Number of this board
 **driver_version**: {str}, read-only
     driver version
+
+Changelog
+=========
+
+* itom setup 3.1.0: This plugin has been compiled using the pco SDK 1.23

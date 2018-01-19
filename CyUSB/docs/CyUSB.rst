@@ -90,3 +90,4 @@ Changelog
 * itom setup 2.2.0: This plugin has been compiled using the Cypress CyAPI 1.1
 * itom setup 2.2.1: This plugin has been compiled using the Cypress CyAPI 1.3.3
 * itom setup 3.0.0: This plugin has been compiled using the Cypress CyAPI 1.3.3
+* itom setup 3.1.0: This plugin has been compiled using the Cypress CyAPI 1.3.3

@@ -51,3 +51,7 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: AerotechA3200
 
+Changelog
+=========
+
+* itom setup 3.1.0: This plugin has been compiled

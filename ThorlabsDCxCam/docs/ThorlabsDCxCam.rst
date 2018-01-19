@@ -94,5 +94,6 @@ with the right acquisition parameters.
 Changelog
 ==========
 
-* itom setup 2.2.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.60
-* itom setup 3.0.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.60
+* itom setup 2.2.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20
+* itom setup 3.0.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20
+* itom setup 3.1.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20

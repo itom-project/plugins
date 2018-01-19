@@ -92,4 +92,8 @@ If you get a compiler error telling that DOMDocument is an ambigious symbol (con
     
 The maintainer from XSD promised in a forum that this bug will be fixed in the 4.1 release.
 
+Changelog
+=========
+
+* itom setup 3.1.0: This plugin has been compiled using the XSD 4.0
 

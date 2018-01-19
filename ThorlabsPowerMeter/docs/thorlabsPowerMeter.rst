@@ -75,3 +75,4 @@ Changelog
 =========
 
 itom 3.0.0: plugin uses the driver PM100x_Instrument_Driver in version 3.0.2
+itom 3.1.0: plugin uses the driver PM100x_Instrument_Driver in version 1.0.2 (Thorlabs has changed the Version the 1 again)

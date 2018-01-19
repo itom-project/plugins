@@ -54,3 +54,8 @@ An instance of this plugin has the following internal parameters:
     instrument driver revision
 **wavelength_data**: {float seq.}, read-only
     wavelength in nm (air) for each pixel
+	
+Changelog
+=========
+
+* itom setup 3.1.0: This plugin has been compiled using the ThorlabsOSASW SDK 2.80

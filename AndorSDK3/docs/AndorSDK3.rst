@@ -78,4 +78,10 @@ An instance of this plugin has the following internal parameters:
     current temperature of sensor in °C (inf if not implemented)
 **sensor_cooling**: {int}
     state of the sensor cooling. Cooling is disabled (0) by default at power up and must be enabled (1) for the camera to achieve its target temperature
+	
+
+Changelog
+==========
+
+* itom setup 3.1.0: This plugin has been compiled using the Andor SDK 3.8.30007.0
     

@@ -107,3 +107,7 @@ XSDe        XSDe License.pdf        NA
 Last but not least GenICam redistributes the C/C++ runtime DLLs of the
 Microsoft Visual C++ compiler in the version 12.0
 
+Changelog
+=========
+
+* itom setup 3.1.0: This plugin has been compiled using the GeniCam 3.0.2

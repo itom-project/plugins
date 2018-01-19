@@ -139,3 +139,8 @@ Known Issues
 - Digital and Counter tasks, channels, etc are not implemented yet.
 
 - After the analog input task is done and the data read, the task is erased from the memory. So it´s not possible to start that task again. The task must be recreated using plugin.setParam("aiTaskParams", "20000,100,0"). 
+
+Changelog
+=========
+
+* itom setup 3.1.0: This plugin has been compiled using the NI-DAQmx 17.6.0

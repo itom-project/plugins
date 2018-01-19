@@ -80,3 +80,4 @@ Changelog
 * This plugin is part of itom with version > 2.1.0.
 * itom setup 2.2.0: This plugin has been compiled with Thorlabs Kinesis 1.7.0; it requires the Microsoft C++ Redistributable 2012
 * itom setup 3.0.0: This plugin has been compiled with Thorlabs Kinesis 1.9.3; it requires the Microsoft C++ Redistributable 2012
+* itom setup 3.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.5; it requires the Microsoft C++ Redistributable 2012

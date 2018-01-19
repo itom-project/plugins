@@ -73,3 +73,8 @@ correction. There are three types of dark correction (parameter dark_correction)
 * Dynamic (2): Only choose this mode, if the software AvaSpec provides dynamic dark correction for the sensor (see sensor configuration >> checkbox 'dynamic dark correction'
   must be enabled. In this case, odd and even pixels have different dark correction values (they are probably read by different electronics). Choose this mode to
   subtract different mean values for even and odd pixels. The tag 'dark' still contains the mean of both mean values (0.5 * (mean_even + mean_odd)).
+  
+Changelog
+=========
+
+* itom setup 3.1.0: This plugin has been compiled using the libUSB Plugin
