@@ -533,7 +533,6 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 
 		if (restartNecessary && started > 0)
 		{
-			std::cout << "restart necessary\n" << std::endl;
 			if (grabberStartedCount() > 0)
 			{
 				//not yet stopped
