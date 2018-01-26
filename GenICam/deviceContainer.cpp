@@ -138,6 +138,38 @@ ito::RetVal GenTLSystem::init(const QString &filename)
     }
     else
     {
+#ifdef WIN32
+	#ifdef _WIN64
+		if (filename.contains("sv_gev_tl_x64.cti", Qt::CaseInsensitive))
+		{
+			//hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
+			QString filename_cl = filename;
+			filename_cl.replace("sv_gev_tl_x64.cti", "sv_cl_tl_x64.cti", Qt::CaseInsensitive);
+			if (QFileInfo(filename_cl).exists())
+			{
+				QLibrary lib;
+				lib.setFileName(filename_cl);
+				lib.load();
+			}
+		}
+	#else
+		if (filename.contains("sv_cl_tl.cti", Qt::CaseInsensitive))
+		{
+			//hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
+			QString filename_cl = filename;
+			filename_cl.replace("sv_gev_tl.cti", "sv_cl_tl.cti", Qt::CaseInsensitive);
+			if (QFileInfo(filename_cl).exists())
+			{
+				QLibrary lib;
+				lib.setFileName(filename_cl);
+				lib.load();
+			}
+		}
+	#endif
+#endif
+
+
+
         m_lib->setFileName(filename);
         if (!m_lib->load())
         {
@@ -545,6 +577,11 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 }
             }
         }
+
+		if (!retval.containsError() && !found && deviceID == "")
+		{
+			retval += ito::RetVal(ito::retError, 0, "No free camera devices detected for this interface.");
+		}
 
         if (!retval.containsError())
         {

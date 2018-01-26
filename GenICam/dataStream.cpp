@@ -28,6 +28,7 @@
 #include <qdebug.h>
 #include <qset.h>
 #include <qregexp.h>
+#include <qthread.h>
 #include "common/sharedStructures.h"
 #include <iostream>
 #define PFNC_INCLUDE_HELPERS
@@ -251,14 +252,23 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 				{
 					m_usePreAllocatedBuffer = -1;
 					DELETE_AND_SET_NULL_ARRAY(buffer);
-					retval += checkGCError(err, "DataStream: DSAnnounceBuffer");
+					retval += checkGCError(err, "DataStream: DSAnnounceBuffer (a)");
 				}
 			}
 			else
 			{
 				err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
+
+				if (err == GenTL::GC_ERR_RESOURCE_IN_USE)
+				{
+#if QT_VERSION >= 0x050000
+					QThread::msleep(50);
+#endif
+					err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
+					retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer (a2)");
+				}
 				m_usePreAllocatedBuffer = 0;
-				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer");
+				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer (a)");
 			}
 		}
 		else //in the first run, guess if pre-allocated or internal-allocated memory should be used.
@@ -282,13 +292,13 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 				{
 					m_usePreAllocatedBuffer = -1;
 					DELETE_AND_SET_NULL_ARRAY(buffer);
-					retval += checkGCError(err, "DataStream: DSAnnounceBuffer");
+					retval += checkGCError(err, "DataStream: DSAnnounceBuffer (b)");
 				}
 			}
 			else
 			{
 				m_usePreAllocatedBuffer = 0;
-				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer");
+				retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer (b)");
 			}
 		}
 
@@ -308,7 +318,14 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         
         std::cout << "* Allocation type: " << ((m_usePreAllocatedBuffer == 0) ? "camera internal" : "allocated by itom") << "\n" << std::endl;
         std::cout << "* Number of idle buffers " << m_idleBuffers.size() << "\n" << std::endl;
-        std::cout << "* Success: " << (retval.containsError() ? "Error" : "OK") << "\n" << std::endl;
+		if (retval.containsError())
+		{
+			std::cout << "* Success: Error (" << retval.errorMessage() << ")\n" << std::endl;
+		}
+		else
+		{
+			std::cout << "* Success: OK" << "\n" << std::endl;
+		}
         std::cout << "--------------------------------------------\n" << std::endl;
     }
 

@@ -108,6 +108,13 @@ Last but not least GenICam redistributes the C/C++ runtime DLLs of the
 Microsoft Visual C++ compiler in the version 12.0
 
 Changelog
-=========
+==========
 
-* itom setup 3.1.0: This plugin has been compiled using the GeniCam 3.0.2
+* itom setup 3.1.0: This plugin has been compiled using GenICam 3.0.2
+
+Workaround
+==========
+
+* Vistek, GigE, Windows: It seems that the Camera Link transport layer library (cti-file) has to be loaded by itom before the GigE transport layer is loaded.
+  This is implicitely done, if a vistek cti file is loaded. It is either possible to load the CL cti file using a load library command in Python.
+

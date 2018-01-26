@@ -78,6 +78,7 @@ IF (GENICAM_FOUND)
     set(plugin_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/genicam.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGenicam.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogGenicam.h
         ${CMAKE_CURRENT_SOURCE_DIR}/gccommon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/device.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dataStream.h
@@ -91,11 +92,13 @@ IF (GENICAM_FOUND)
 
     set(plugin_UI
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGenicam.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogGenicam.ui
     )
 
     set(plugin_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/genicam.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGenicam.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogGenicam.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gccommon.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/device.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dataStream.cpp

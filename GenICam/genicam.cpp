@@ -41,6 +41,7 @@
 #include "gccommon.h"
 
 #include "dockWidgetGenicam.h"
+#include "dialogGenicam.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenICamInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -112,7 +113,7 @@ a list of all auto-detected vendors and models is returned.");
 	paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Guru, GenApi::Guru, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).toLatin1().constData());
+	paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Guru, GenApi::Expert, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());
@@ -203,6 +204,12 @@ GenICamClass::~GenICamClass()
    m_params.clear();
 }
 
+
+//----------------------------------------------------------------------------------------
+const ito::RetVal GenICamClass::showConfDialog(void)
+{
+	return apiShowConfigurationDialog(this, new DialogGenicam(this));
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -465,20 +472,36 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 				}
 				else
 				{
+					if (grabberStartedCount() > 0 && (*it != *val))
+					{
+						//not yet stopped
+						setGrabberStarted(1);
+						retValue += stopDevice(NULL);
+						restartNecessary = true;
+					}
+
 					//redirect set param to device
 					retValue += m_device->setDeviceParam(val, it);
 					retValue += m_device->syncImageParameters(m_params);
-					restartNecessary = m_stream->setPayloadSize(m_device->getPayloadSize());
+					m_stream->setPayloadSize(m_device->getPayloadSize());
 					retValue += checkData();
 				}
 			}
 			else if (key == "BinningHorizontal" || key == "BinningVertical" \
 				|| key == "DecimationHorizontal" || key == "DecimationVertical")
 			{
+				if (grabberStartedCount() > 0 && (*it != *val))
+				{
+					//not yet stopped
+					setGrabberStarted(1);
+					retValue += stopDevice(NULL);
+					restartNecessary = true;
+				}
+
 				//redirect set param to device
 				retValue += m_device->setDeviceParam(val, it);
 				retValue += m_device->syncImageParameters(m_params);
-				restartNecessary = m_stream->setPayloadSize(m_device->getPayloadSize());
+				m_stream->setPayloadSize(m_device->getPayloadSize());
 				retValue += checkData();
 			}
 			else if (key == "OffsetX" || key == "OffsetY" || key == "Width" || key == "Height")
@@ -510,6 +533,7 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 
 		if (restartNecessary && started > 0)
 		{
+			std::cout << "restart necessary\n" << std::endl;
 			if (grabberStartedCount() > 0)
 			{
 				//not yet stopped
@@ -744,6 +768,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+	bool revertAllocateIfError = false;
     
     incGrabberStarted();
 
@@ -751,15 +776,22 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 	{
 		if (grabberStartedCount() == 1)
 		{
+			m_stream->setPayloadSize(m_device->getPayloadSize());
+
 			//first time to be started
 			retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), 0);
 			if (!retValue.containsError())
 			{
+				revertAllocateIfError = true;
 				retValue += m_stream->startAcquisition();
 			}
 			if (!retValue.containsError())
 			{
 				retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+			}
+			else if (revertAllocateIfError)
+			{
+				m_stream->revokeAllBuffers();
 			}
 		}
 	}
@@ -798,6 +830,10 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
 		retValue += m_stream->revokeAllBuffers();
 
         setGrabberStarted(0);
+
+#if QT_VERSION >= 0x050000
+		QThread::msleep(100);
+#endif
     }
 	else if (grabberStartedCount() == 0)
 	{
@@ -805,6 +841,10 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
 		retValue += m_device->invokeCommandNode("AcquisitionStop", ito::retWarning);
 		retValue += m_stream->unqueueAllBuffersFromInputQueue();
 		retValue += m_stream->revokeAllBuffers();
+
+#if QT_VERSION >= 0x050000
+		QThread::msleep(100);
+#endif
 	}
 
     if (waitCond)

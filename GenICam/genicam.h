@@ -57,8 +57,8 @@ class GenICamClass : public ito::AddInGrabber
         friend class GenICamInterface;
 		friend class GenTLDevice; //to access parameterChangedTimerFired
 
-        //const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
-        int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
+        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
         QSharedPointer<GenTLSystem> m_system;
