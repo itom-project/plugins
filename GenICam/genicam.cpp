@@ -181,6 +181,10 @@ GenICamClass::GenICamClass() : AddInGrabber(),
 	paramVal = ito::Param("numBuffers", ito::ParamBase::Int | ito::ParamBase::In, 1, im, tr("Number of buffers allocated at startDevice().").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
 
+	ito::IntMeta *im2 = new ito::IntMeta(0, 1e10, 1, "AcquisitionControl");
+	paramVal = ito::Param("userDefinedPayloadSize", ito::ParamBase::Int | ito::ParamBase::In, 0, im2, tr("Size of each image buffer in bytes (0: use value provided by camera - default).").toLatin1().constData());
+	m_params.insert(paramVal.getName(), paramVal);
+
 
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -336,6 +340,23 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 			}
 		}
 		else if (key == "numBuffers")
+		{
+			if (it->getVal<int>() != val->getVal<int>())
+			{
+				if (grabberStartedCount() > 0)
+				{
+					//not yet stopped
+					setGrabberStarted(1);
+					retValue += stopDevice(NULL);
+					restartNecessary = true;
+				}
+
+				//redirect set param to device
+				retValue += it->copyValueFrom(&(*val));
+				retValue += checkData();
+			}
+		}
+		else if (key == "userDefinedPayloadSize")
 		{
 			if (it->getVal<int>() != val->getVal<int>())
 			{
@@ -778,7 +799,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 			m_stream->setPayloadSize(m_device->getPayloadSize());
 
 			//first time to be started
-			retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), 0);
+			retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), m_params["userDefinedPayloadSize"].getVal<int>());
 			if (!retValue.containsError())
 			{
 				revertAllocateIfError = true;

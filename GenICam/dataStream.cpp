@@ -186,6 +186,10 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 
         bytesPerBuffer = payloadSize;
     }
+	else
+	{
+		payloadType = 3; //given by plugin parameter 'payloadSize'
+	}
 
     size = sizeof(bufAnnounceMin);
 	GenTL::GC_ERROR ret = DSGetInfo(m_handle, GenTL::STREAM_INFO_BUF_ANNOUNCE_MIN, &type, &bufAnnounceMin, &size);
@@ -228,7 +232,25 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         std::cout << "* Number of buffers: " << nrOfBuffers << "\n" << std::endl;
         std::cout << "* Minimum number of required buffers: " << bufAnnounceMin << "\n" << std::endl;
         std::cout << "* Buffer alignment: " << alignment << " byte(s)\n" << std::endl;
-        std::cout << "* Source for buffer size: " << (payloadType == 0 ? "Manually set" : ((payloadType == 1) ? "Given from data stream info" : "Given by device parameter")) << "\n" << std::endl;
+		switch (payloadType)
+		{
+		case 0:
+			std::cout << "* Source for buffer size: " << "Manually set" << "\n" << std::endl;
+			break;
+		case 1:
+			std::cout << "* Source for buffer size: " << "Given from data stream info" << "\n" << std::endl;
+			break;
+		case 2:
+			std::cout << "* Source for buffer size: " << "Given by device parameter" << "\n" << std::endl;
+			break;
+		case 3:
+			std::cout << "* Source for buffer size: " << "Given by plugin parameter 'userDefinedPayloadSize'" << "\n" << std::endl;
+			break;
+		default:
+			std::cout << "* Source for buffer size: " << "Unknown" << "\n" << std::endl;
+			break;
+
+		}
         std::cout << "* Payload size: " << bytesPerBuffer << " bytes\n" << std::endl;
         std::cout << "* Guess allocation type: " << ((m_usePreAllocatedBuffer == -1) ? "Yes" : "No") << "\n" << std::endl;
     }
