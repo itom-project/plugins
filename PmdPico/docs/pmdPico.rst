@@ -81,5 +81,5 @@ For using this plugin, please install the Royale software that is shipped with y
 Changelog
 =========
 
-* itom setup 3.1.0: plugin uses the Royale SDK in version 3.11.0.42
+* itom setup 3.1.0: plugin uses the Royale SDK in version 3.12.0.44
         
