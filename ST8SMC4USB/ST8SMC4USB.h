@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "Standa ST8SMC4USB" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
