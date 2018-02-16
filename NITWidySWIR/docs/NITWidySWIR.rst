@@ -116,8 +116,6 @@ Installation
 *Windows:*
 
 * The USB2 **NITWidySWIR** driver is installed automatically by Windows after the first connection. 
-* The **NITLIBRARY SDK** need OpenCV 2.49, whose dll- and lib-files can be downloaded from sourceforge: https://sourceforge.net/projects/itom/files/all-in-one-build-setup/Optional-3rdParty/
- 
 
 Compilation
 ===========
@@ -125,12 +123,6 @@ Compilation
 In order to compile the **NITWidySWIR** plugin, get the **SDK C++**, which will be deliverd together with the camera on a USB stick or contact the company (http://www.new-imaging-technologies.com). 
 Then set the CMake variable **NITLIBRARY_INCLUDE_DIR** to the directory: **...\\SDK C++\\NITLIBRARY 1.5\\include++**. 
 CMake will find all necessary files. 
-
-    .. note:: 
-
-        **NITLibrary** needs OpenCV 2.49 for the data acquisition. Set the CMake variable **OPENCV249_BUILD_DIR** to the OpenCV directory. 
-        OpenCV download: https://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.4.9/ 
-
 
 Changelog
 =========
