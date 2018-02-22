@@ -398,7 +398,14 @@ void VideoDevice::closeDevice()
 		{
 			vd_pImGrTh->stop();
 
-			Sleep(500);
+			if (vd_pImGrTh->runMutex.tryLock(3000))
+			{
+				vd_pImGrTh->runMutex.unlock();
+			}
+			else
+			{
+				Sleep(500);
+			}
 
 			delete vd_pImGrTh;
 		}

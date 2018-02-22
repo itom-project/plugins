@@ -3,8 +3,11 @@
 #include <mfapi.h>
 #include <mfidl.h>
 #include <mfobjects.h>
+#include <Mferror.h>
 #include <Shlwapi.h>
 #include <stdio.h>
+
+#include <qdebug.h>
 
 
 #include "ImageGrabber.h"
@@ -192,10 +195,17 @@ done:
 
 void ImageGrabber::stopGrabbing()
 {
-	if(ig_pSession)
-		ig_pSession->Stop();
+	if (ig_pSession)
+	{
+		HRESULT hr = ig_pSession->Stop();
+		if (hr != S_OK)
+		{
+			qDebug() << "could not stop";
+		}
 
-	
+		m_stopTimer.start();
+	}
+
 
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
 	
@@ -212,6 +222,7 @@ HRESULT ImageGrabber::startGrabbing(void)
     PropVariantInit(&var);
 
     HRESULT hr = S_OK;
+
     CHECK_HR(hr = ig_pSession->SetTopology(0, ig_pTopology));
     CHECK_HR(hr = ig_pSession->Start(&GUID_NULL, &var));
 
@@ -223,12 +234,27 @@ HRESULT ImageGrabber::startGrabbing(void)
         HRESULT hrStatus = S_OK;
         MediaEventType met;
 
-		if(!ig_pSession) break;
-        hr = ig_pSession->GetEvent(0, &pEvent);
+		if (!ig_pSession)
+		{
+			break;
+		}
+        hr = ig_pSession->GetEvent(MF_EVENT_FLAG_NO_WAIT, &pEvent);
+
+		if (hr == MF_E_NO_EVENTS_AVAILABLE)
+		{
+			if (m_stopTimer.isValid() == true && m_stopTimer.elapsed() > 2000)
+			{
+				qDebug() << "MSMediaFoundation MediaSession did not sent a stop event. Stopping is forced...";
+				hr = S_OK;
+				goto done;
+			}
+
+			continue;
+		}
+
 		if(!SUCCEEDED(hr))
 		{
 			hr = S_OK;
-
 			goto done;
 		}
 
@@ -236,7 +262,6 @@ HRESULT ImageGrabber::startGrabbing(void)
 		if(!SUCCEEDED(hr))
 		{
 			hr = S_OK;
-
 			goto done;
 		}
 
@@ -244,7 +269,7 @@ HRESULT ImageGrabber::startGrabbing(void)
 		if(!SUCCEEDED(hr))
 		{
 			hr = S_OK;
-
+			
 			goto done;
 		}
 
@@ -253,14 +278,12 @@ HRESULT ImageGrabber::startGrabbing(void)
 			DPO->printOut(L"IMAGEGRABBER VideoDevice %i: MESessionEnded \n", ig_DeviceID);
 
 			ig_pSession->Stop();
-
             break;
         }
 
 		if (met == MESessionStopped)
         {
 			DPO->printOut(L"IMAGEGRABBER VideoDevice %i: MESessionStopped \n", ig_DeviceID);
-			
             break;
         }
 
@@ -283,6 +306,7 @@ done:
 	SafeRelease(&ig_pSession);
 
 	SafeRelease(&ig_pTopology);
+
     return hr;
 }
 

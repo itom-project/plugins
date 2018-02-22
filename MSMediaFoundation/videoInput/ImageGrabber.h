@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mfidl.h>
+#include <qelapsedtimer.h>
 
 struct IMFMediaSource;
 
@@ -44,6 +45,8 @@ private:
 	RawImage *ig_RISecond;
 
 	RawImage *ig_RIOut;
+
+	QElapsedTimer m_stopTimer;
 			
 	ImageGrabber(unsigned int deviceID);
 			

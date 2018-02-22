@@ -6,6 +6,8 @@
 #include "ImageGrabber.h"
 #include "DebugPrintOut.h"
 
+#include <qdebug.h>
+
 
 //----------------------------------------------------------------------------------------
 DWORD WINAPI MainThreadFunction( LPVOID lpParam )
@@ -37,7 +39,7 @@ HRESULT ImageGrabberThread::CreateInstance(ImageGrabberThread **ppIGT, IMFMediaS
 }
 
 //----------------------------------------------------------------------------------------
-ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID): igt_Handle(NULL), igt_stop(false)
+ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID): igt_Handle(NULL), igt_stop(false), igt_pImageGrabber(NULL)
 {
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
 
@@ -73,6 +75,7 @@ ImageGrabberThread::~ImageGrabberThread(void)
 	DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Destroing ImageGrabberThread\n", igt_DeviceID);
 
 	delete igt_pImageGrabber;
+	igt_pImageGrabber = NULL;
 }
 
 //----------------------------------------------------------------------------------------
@@ -118,7 +121,11 @@ void ImageGrabberThread::run()
 	{
 		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Thread for grabbing images is started\n", igt_DeviceID);
 
+		runMutex.lock();
+		
 		HRESULT hr = igt_pImageGrabber->startGrabbing();
+
+		runMutex.unlock();
 
 		if(!SUCCEEDED(hr))		
 		{

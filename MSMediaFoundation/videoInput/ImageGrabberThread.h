@@ -1,6 +1,7 @@
 #pragma once
 
 #include <windows.h>
+#include <qmutex.h>
 
 DWORD WINAPI MainThreadFunction( LPVOID lpParam );
 
@@ -27,6 +28,8 @@ public:
 	void setEmergencyStopEvent(void *userData, void(*func)(int, void *));
 
 	ImageGrabber *getImageGrabber();
+
+	QMutex runMutex;
 
 protected:
 
