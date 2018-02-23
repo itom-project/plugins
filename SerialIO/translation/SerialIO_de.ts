@@ -62,7 +62,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+269"/>
+        <location filename="../SerialIO.cpp" line="+270"/>
         <location line="+157"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>
@@ -96,12 +96,11 @@
         <translation>Fehler beim Setzten des Timeouts</translation>
     </message>
     <message>
-        <location line="+31"/>
         <source>invalid endline character</source>
-        <translation>Ungültiges Terminierungszeichen</translation>
+        <translation type="vanished">Ungültiges Terminierungszeichen</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+86"/>
         <location line="+25"/>
         <location line="+15"/>
         <location line="+20"/>
@@ -162,12 +161,11 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>N.A.</source>
-        <translation>K.A.</translation>
+        <translation type="vanished">K.A.</translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="+523"/>
+        <location filename="../dialogSerialIO.cpp" line="+522"/>
         <source>Char token not closed correctly or number to big.</source>
         <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
@@ -180,7 +178,7 @@
 <context>
     <name>SerialIO</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+70"/>
+        <location filename="../SerialIO.cpp" line="+71"/>
         <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
         <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
@@ -276,8 +274,12 @@
     </message>
     <message>
         <location line="+225"/>
+        <source>timeout while reading from serial port.</source>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen vom Serial-Port.</translation>
+    </message>
+    <message>
         <source>timeout</source>
-        <translation>Zeitüberschreitung</translation>
+        <translation type="vanished">Zeitüberschreitung</translation>
     </message>
     <message>
         <location line="-138"/>
@@ -443,12 +445,12 @@ Beispiel
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+145"/>
         <source>Error: malformed command string - not send</source>
         <translation>Fehler: Syntaxfehler- nicht gesendet</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+109"/>
         <source>Error: &apos;%1&apos; could not be interpreted - not send</source>
         <translation>Fehler: %1 konnte nicht interpretiert werden - nicht gesendet</translation>
     </message>
@@ -512,12 +514,12 @@ Beispiel
         <translation>Protokollierung</translation>
     </message>
     <message>
-        <location line="+447"/>
+        <location line="+364"/>
         <source>Read delay</source>
         <translation>Leseverzögerung</translation>
     </message>
     <message>
-        <location line="-405"/>
+        <location line="-322"/>
         <source>Flow control</source>
         <translation>Flusskontrolle</translation>
     </message>
@@ -532,47 +534,47 @@ Beispiel
         <translation>Übertragung</translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+103"/>
         <source>Decimal</source>
         <translation>Dezimal</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+13"/>
         <source>Hexadecimal</source>
         <translation>Hexadezimal</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Binary</source>
         <translation>Binär</translation>
     </message>
     <message>
-        <location line="-51"/>
+        <location line="-63"/>
         <source>Send</source>
         <translation>Senden</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+72"/>
         <source>Read</source>
         <translation>Lesen</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+61"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-189"/>
+        <location line="-211"/>
         <source>Use input below to send characters to the serial port. Characters will be send as their ASCII code from the character written. To directly write ASCII codes use the format $(code) or select Decimal, Hexadecimal or Binary separated by space.</source>
         <translation>Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+221"/>
         <source>Apply</source>
         <translation>Übernehmen</translation>
     </message>
     <message>
-        <location line="-256"/>
+        <location line="-278"/>
         <source>Python Command</source>
         <translation>Python-Befehl</translation>
     </message>
@@ -582,12 +584,12 @@ Beispiel
         <translation>Erzeugen</translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+221"/>
         <source>Clear</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-591"/>
         <source>Send Delay</source>
         <translation>Verzögerung</translation>
     </message>
@@ -649,12 +651,12 @@ Beispiel
     <message>
         <location line="+34"/>
         <location line="+49"/>
-        <location line="+546"/>
+        <location line="+463"/>
         <source>ms</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-581"/>
+        <location line="-498"/>
         <location line="+99"/>
         <source>\r</source>
         <translation></translation>
@@ -728,12 +730,37 @@ Beispiel
         <translation></translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+205"/>
+        <source>E.g. Test$(10)</source>
+        <translation type="unfinished">z. B. Test$(10)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>ASCII</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+16"/>
+        <source>Bytes separated by space, e.g. 255 10 13</source>
+        <translation type="unfinished">Bytes getrennt durch ein Leerzeichen, z. B. 255 10 13</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Bytes separated by space, e.g. 4f a 1b</source>
+        <translation type="unfinished">Bytes getrennt durch ein Leerzeichen, z. B. 4f a 1b</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Bytes separated by space, e.g. 1010 11111111 100</source>
+        <translation type="unfinished">Bytes getrennt durch ein Leerzeichen, z. B. 1010 11111111 100</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>automatically read answer after send</source>
+        <translation type="unfinished">Automatisches Lesen nach dem Senden</translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>OK</source>
         <translation></translation>
     </message>

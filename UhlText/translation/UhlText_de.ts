@@ -172,7 +172,7 @@
 <context>
     <name>UhlText</name>
     <message>
-        <location filename="../UhlText.cpp" line="+333"/>
+        <location filename="../UhlText.cpp" line="+334"/>
         <location line="+22"/>
         <source>No signs read after 10 tries</source>
         <translation type="unfinished">Keine Antwort auch nach 10 Versuchen</translation>
@@ -591,12 +591,11 @@ Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie G
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>N.A.</source>
-        <translation>Nicht verfügbar.</translation>
+        <translation type="vanished">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished">Eine initialisierte SerialIO-Instanz</translation>
     </message>

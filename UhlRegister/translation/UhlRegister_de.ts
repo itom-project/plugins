@@ -172,7 +172,7 @@
 <context>
     <name>UhlRegister</name>
     <message>
-        <location filename="../UhlRegister.cpp" line="+171"/>
+        <location filename="../UhlRegister.cpp" line="+172"/>
         <source>UHL errormessage: </source>
         <translation type="unfinished">Uhl Fehlermeldung: </translation>
     </message>
@@ -379,12 +379,11 @@ Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskop
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>N.A.</source>
-        <translation>Nicht verfügbar.</translation>
+        <translation type="vanished">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>An initialized SerialIO</source>
         <translation>Eine initialisierte SerialIO-Instanz</translation>
     </message>

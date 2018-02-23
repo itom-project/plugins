@@ -97,7 +97,7 @@
 <context>
     <name>DummyGrabber</name>
     <message>
-        <location filename="../DummyGrabber.cpp" line="+235"/>
+        <location filename="../DummyGrabber.cpp" line="+236"/>
         <source>Minimum time between the start of two consecutive acquisitions [s], default: 0.0.</source>
         <translation type="unfinished">Mindestzeit zwischen zwei fortlaufenden Bildanforderungen [s], standard: 0,0.</translation>
     </message>
@@ -122,7 +122,27 @@
         <translation type="unfinished">ROI (x, y, Breite, Höhe) [ersetzt die Werte x0, x1, y0, y1]</translation>
     </message>
     <message>
-        <location line="+378"/>
+        <location line="+8"/>
+        <source>matches strings without whitespaces</source>
+        <translation type="unfinished">Vergleicht Stings ohne Leerzeichen</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>dummy filename of a bmp file, pattern: *.bmp</source>
+        <translation type="unfinished">Dummy-Dateiname der BMP-Datei, Endung: *.bmp</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>enumeration string (mode 1, mode 2, mode 3)</source>
+        <translation type="unfinished">Aufzählungs-String (Mode 1, Mode 2, Mode 3)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>any string allowed</source>
+        <translation type="unfinished">Jeder String erlaubt</translation>
+    </message>
+    <message>
+        <location line="+377"/>
         <source>stopDevice of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;stopDevice&apos; des DummyGrabbers kann nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
@@ -137,7 +157,7 @@
         <translation type="unfinished">Es konnte kein Bild abgeholt werden, da keines angefordert wurde.</translation>
     </message>
     <message>
-        <location line="-654"/>
+        <location line="-676"/>
         <source>size in x (cols) [px]</source>
         <translation type="unfinished">Größe in x (Spalten) [px]</translation>
     </message>
@@ -157,7 +177,7 @@
         <translation type="unfinished">Bittiefe des Images</translation>
     </message>
     <message>
-        <location line="+423"/>
+        <location line="+445"/>
         <source>Acquire of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;acquire&apos; kann vom DummyGrabber nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
@@ -175,12 +195,11 @@
 <context>
     <name>DummyGrabberInterface</name>
     <message>
-        <location line="-727"/>
         <source>N.A.</source>
-        <translation>Nicht verfügbar.</translation>
+        <translation type="vanished">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-745"/>
         <source>Width of virtual sensor chip</source>
         <translation type="unfinished">Breite des virtuellen Sensors</translation>
     </message>

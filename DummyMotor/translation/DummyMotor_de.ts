@@ -85,7 +85,7 @@
 <context>
     <name>DummyMotor</name>
     <message>
-        <location filename="../DummyMotor.cpp" line="+161"/>
+        <location filename="../DummyMotor.cpp" line="+162"/>
         <source>Axis number to plot</source>
         <translation type="unfinished">Achsennummer des Plots</translation>
     </message>
@@ -119,7 +119,7 @@
         <translation type="unfinished">Schalter um zu warten bis die Fahrt beendet wurde (0:sync) oder nicht (1:async)</translation>
     </message>
     <message>
-        <location line="+475"/>
+        <location line="+520"/>
         <location line="+97"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
@@ -141,47 +141,47 @@
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
-        <location line="-446"/>
+        <location line="-491"/>
         <source>Axis number for jogging</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Anzahl Achsen für das Rütteln</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Maximal velocity in mm/s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maximale Geschwindigkeit in mm/s</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Duration for jogging in seconds</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Rüttelzeit in Sekunden</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Jog for some seconds</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Für einige Sekunden Rütteln</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Number of axes attached to this stage</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Anzahl der an den Motor angeschlossenen Achsen</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Use axes limits and limit switches</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Obergrenze von Achsen und Schalter</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>positive limits of axes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Positive Obergrenze der Achsen</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>negative limits of axes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Negative Obergrenzen der Achsen</translation>
     </message>
     <message>
-        <location line="+238"/>
+        <location line="+283"/>
         <source>function name &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Der Funktionsname &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -214,12 +214,12 @@
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>
     </message>
     <message>
-        <location line="-258"/>
+        <location line="-303"/>
         <source>any axis is moving. Parameters cannot be set</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Parameter können nicht gesetzt werden</translation>
     </message>
     <message>
-        <location line="+272"/>
+        <location line="+317"/>
         <source>axis number exceeds number of axis</source>
         <translation type="unfinished">Die Achsennummer überschreitet die Anzahl Achsen</translation>
     </message>
@@ -232,12 +232,11 @@
 <context>
     <name>DummyMotorInterface</name>
     <message>
-        <location line="-537"/>
         <source>N.A.</source>
-        <translation type="unfinished">Nicht verfügbar.</translation>
+        <translation type="obsolete">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-580"/>
         <source>Number of axis for this motor</source>
         <translation type="unfinished">Anzahl der Achsen des Motors</translation>
     </message>
@@ -249,17 +248,17 @@
     <message>
         <location line="+4"/>
         <source>Use axes limits and limit switches</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Obergrenze für Achsen und Schalter</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>positive limits of axes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Positive Obergrenze für Achsen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>negative limits of axes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Negative Obergrenze für Achsen</translation>
     </message>
 </context>
 <context>

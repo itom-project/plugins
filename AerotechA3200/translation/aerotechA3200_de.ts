@@ -4,7 +4,7 @@
 <context>
     <name>AerotechA3200</name>
     <message>
-        <location filename="../aerotechA3200.cpp" line="+131"/>
+        <location filename="../aerotechA3200.cpp" line="+132"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -430,9 +430,8 @@ For details please check C:\A3200\MANUAL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>N.A.</source>
-        <translation>K.A.</translation>
+        <translation type="vanished">K.A.</translation>
     </message>
 </context>
 <context>

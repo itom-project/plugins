@@ -4,7 +4,7 @@
 <context>
     <name>AerotechEnsemble</name>
     <message>
-        <location filename="../aerotechEnsemble.cpp" line="+149"/>
+        <location filename="../aerotechEnsemble.cpp" line="+150"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -375,9 +375,8 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>N.A.</source>
-        <translation>K.A.</translation>
+        <translation type="vanished">K.A.</translation>
     </message>
 </context>
 <context>
