@@ -29,13 +29,32 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
 #include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
 #include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>
+#include <pcl/sample_consensus/impl/sac_model_parallel_plane.hpp>
+#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
+#include <pcl/sample_consensus/impl/sac_model_perpendicular_plane.hpp>
+
+PCL_INSTANTIATE_SampleConsensusModelParallelPlane(struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelParallelPlane(struct pcl::PointXYZINormal)
+PCL_INSTANTIATE_SampleConsensusModelParallelPlane(struct pcl::PointXYZRGBNormal)
+
+PCL_INSTANTIATE_SampleConsensusModelPlane(struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelPlane(struct pcl::PointXYZINormal)
+
+PCL_INSTANTIATE_SampleConsensusModelPerpendicularPlane(struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelPerpendicularPlane(struct pcl::PointXYZINormal)
 
 PCL_INSTANTIATE_SampleConsensusModelNormalPlane(struct pcl::PointNormal, struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelNormalPlane(struct pcl::PointNormal, struct pcl::Normal)
 PCL_INSTANTIATE_SampleConsensusModelNormalPlane(struct pcl::PointXYZINormal, struct pcl::PointXYZINormal)
 PCL_INSTANTIATE_SampleConsensusModelNormalPlane(struct pcl::PointXYZRGBNormal, struct pcl::PointXYZRGBNormal)
+PCL_INSTANTIATE_SampleConsensusModelNormalPlane(struct pcl::PointXYZRGBNormal, struct pcl::Normal)
+PCL_INSTANTIATE_SampleConsensusModelNormalPlane(struct pcl::PointXYZINormal, struct pcl::Normal)
 
 PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(struct pcl::PointNormal, struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(struct pcl::PointNormal, struct pcl::Normal)
 PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(struct pcl::PointXYZINormal, struct pcl::PointXYZINormal)
 PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(struct pcl::PointXYZRGBNormal, struct pcl::PointXYZRGBNormal)
+PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(struct pcl::PointXYZRGBNormal, struct pcl::Normal)
+PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(struct pcl::PointXYZINormal, struct pcl::Normal)
 
 #endif

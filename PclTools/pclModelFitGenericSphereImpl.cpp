@@ -29,9 +29,14 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
 
 #include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
+#include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
 
 PCL_INSTANTIATE_SampleConsensusModelNormalSphere(struct pcl::PointNormal, struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelNormalSphere(struct pcl::PointNormal, struct pcl::Normal)
 PCL_INSTANTIATE_SampleConsensusModelNormalSphere(struct pcl::PointXYZINormal, struct pcl::PointXYZINormal)
+PCL_INSTANTIATE_SampleConsensusModelNormalSphere(struct pcl::PointXYZINormal, struct pcl::Normal)
 PCL_INSTANTIATE_SampleConsensusModelNormalSphere(struct pcl::PointXYZRGBNormal, struct pcl::PointXYZRGBNormal)
+PCL_INSTANTIATE_SampleConsensusModelNormalSphere(struct pcl::PointXYZRGBNormal, struct pcl::Normal)
+PCL_INSTANTIATE_SampleConsensusModelSphere(struct pcl::PointNormal)
 
 #endif

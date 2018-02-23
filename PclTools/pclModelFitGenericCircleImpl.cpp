@@ -29,9 +29,14 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
 
 #include <pcl/sample_consensus/impl/sac_model_circle3d.hpp>
+#include <pcl/sample_consensus/impl/sac_model_circle.hpp>
 
 PCL_INSTANTIATE_SampleConsensusModelCircle3D(struct pcl::PointNormal)
 PCL_INSTANTIATE_SampleConsensusModelCircle3D(struct pcl::PointXYZINormal)
 PCL_INSTANTIATE_SampleConsensusModelCircle3D(struct pcl::PointXYZRGBNormal)
+
+PCL_INSTANTIATE_SampleConsensusModelCircle2D(struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelCircle2D(struct pcl::PointXYZINormal)
+PCL_INSTANTIATE_SampleConsensusModelCircle2D(struct pcl::PointXYZRGBNormal)
 
 #endif

@@ -33,18 +33,20 @@
 
 #include <pcl/filters/project_inliers.h>
 #include <pcl/filters/impl/project_inliers.hpp>
-#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
+
+//all other impl includes are in the pclModelFitGeneric...Impl.cpp files in order to prevent too big obj files during compilation
+//#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
 #include <pcl/sample_consensus/impl/sac_model_line.hpp>
-#include <pcl/sample_consensus/impl/sac_model_circle.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_circle.hpp>
 #include <pcl/sample_consensus/impl/sac_model_cone.hpp>
-#include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
-#include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
 #include <pcl/sample_consensus/impl/sac_model_parallel_line.hpp>
-#include <pcl/sample_consensus/impl/sac_model_parallel_plane.hpp>
-#include <pcl/sample_consensus/impl/sac_model_perpendicular_plane.hpp>
-#include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>
-#include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
-#include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_parallel_plane.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_perpendicular_plane.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
+//#include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
 
 //------------------------------------------------------------------------------------------------------------------------------
 const QString PclTools::pclProjectOnModelDOC = QObject::tr("\n\

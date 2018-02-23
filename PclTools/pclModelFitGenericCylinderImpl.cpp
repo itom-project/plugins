@@ -31,7 +31,10 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
 
 PCL_INSTANTIATE_SampleConsensusModelCylinder(struct pcl::PointNormal, struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelCylinder(struct pcl::PointNormal, struct pcl::Normal)
 PCL_INSTANTIATE_SampleConsensusModelCylinder(struct pcl::PointXYZINormal, struct pcl::PointXYZINormal)
+PCL_INSTANTIATE_SampleConsensusModelCylinder(struct pcl::PointXYZINormal, struct pcl::Normal)
 PCL_INSTANTIATE_SampleConsensusModelCylinder(struct pcl::PointXYZRGBNormal, struct pcl::PointXYZRGBNormal)
+PCL_INSTANTIATE_SampleConsensusModelCylinder(struct pcl::PointXYZRGBNormal, struct pcl::Normal)
 
 #endif
