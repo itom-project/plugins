@@ -54,7 +54,8 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
 	m_genApiConnected(false),
 	m_deviceName(identifier),
 	m_pCallbackParameterChangedReceiver(NULL),
-    m_verbose(verbose)
+    m_verbose(verbose),
+    m_errorEvent(GENTL_INVALID_HANDLE)
 {
     DevClose = (GenTL::PDevClose)m_lib->resolve("DevClose");
     DevGetNumDataStreams = (GenTL::PDevGetNumDataStreams)m_lib->resolve("DevGetNumDataStreams");
@@ -96,11 +97,6 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
 //----------------------------------------------------------------------------------------------------------------------------------
 GenTLDevice::~GenTLDevice()
 {
-    if (m_lib->isLoaded() && DevClose)
-    {
-        DevClose(m_handle);
-    }
-
 	QHash<QString, GCType*>::iterator it = m_paramMapping.begin();
 	while (it != m_paramMapping.end())
 	{
@@ -367,7 +363,7 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
 
     if (url.toLower().startsWith("local:"))
     {
-        QRegExp regExp("^local:(///)?([a-zA-Z0-9._]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?schemaVersion=.+)?$");
+        QRegExp regExp("^local:(///)?([a-zA-Z0-9._\\-]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?schemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         infoString += QString("* XML file location: Camera device\n");
@@ -408,7 +404,7 @@ ito::RetVal GenTLDevice::connectToGenApi(ito::uint32 portIndex)
     {
         infoString += QString("* XML file location: File system\n");
 
-        QRegExp regExp("^file:(///)?([a-zA-Z0-9._:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
+        QRegExp regExp("^file:(///)?([a-zA-Z0-9._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         if (regExp.indexIn(url) >= 0)
@@ -726,8 +722,8 @@ QVector<PfncFormat> GenTLDevice::supportedImageFormats(QVector<int> *bitdepths /
 {
 	if (m_supportedFormats.size() == 0)
 	{
-		m_supportedFormats << Mono8 << Mono10 << Mono12 << Mono14 << Mono16 << Mono12Packed;
-		m_supportedFormatsBpp << 8 << 10 << 12 << 14 << 16 << 12;
+		m_supportedFormats << Mono8 << Mono10 << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16;
+		m_supportedFormatsBpp << 8 << 10 << 12 << 12 << 12 << 14 << 16;
 
 		for (int i = 0; i < m_supportedFormats.size(); ++i)
 		{
@@ -837,6 +833,9 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
                                 std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Port, V:" << child->GetVisibility() << ")\n";
                                 break;
                             }
+
+
+                            //std::cout << "        " << (child->GetAlias() ? child->GetAlias()->GetName() : "no alias") << child->IsFeature() << child->IsStreamable() <<" - " << nodeList.size() << (nodeList.size() > 0 ? nodeList[0]->GetName() : "") << "\n";
 	                    }
 					}
 				}
@@ -896,12 +895,17 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
 				case GenApi::intfICommand:
 					m_commandNodes.insert(node->GetName(), CCommandPtr(node));
 					qDebug() << "Command " << node->GetName() << " (" << interfaceType << "): " << (int)node->GetAccessMode();
+                    if (m_verbose >= VERBOSE_DEBUG)
+                    {
+                        addIt = true;
+                    }
 					break;
 				case GenApi::intfICategory:
 					//
 					break;
 				default:
 					qDebug() << "Property " << node->GetName() << " (" << interfaceType << "): " << (int)node->GetAccessMode();
+                    addIt = true;
 					break;
 				}
 
@@ -934,12 +938,32 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
 //--------------------------------------------------------------------------------------------------------
 void GenTLDevice::callbackParameterChanged_(INode *pNode)
 {
-	/*std::cout << "The node '" << pNode->GetName() << "' has been invalidated\n";
 	CValuePtr ptrValue = pNode;
-	if (ptrValue.IsValid())
-	{
-		std::cout << "Value = " << ptrValue->ToString() << ", access: " << ptrValue->GetAccessMode() << "\n" << std::endl;
-	}*/
+    
+    if (m_verbose >= VERBOSE_ALL)
+    {
+		try
+		{
+			std::cout << "The node '" << pNode->GetName() << "' changed (" << pNode->GetAccessMode() << ")\n";
+			qDebug() << "The node '" << pNode->GetName() << "' changed (" << pNode->GetAccessMode() << ")";
+
+			if (ptrValue.IsValid())
+			{
+				if (pNode->GetAccessMode() & (RO | RW))
+				{
+					std::cout << "New value = " << ptrValue->ToString() << ", access: " << ptrValue->GetAccessMode() << "\n" << std::endl;
+				}
+				else
+				{
+					std::cout << "New value not readable. No read access. Access: " << ptrValue->GetAccessMode() << "\n" << std::endl;
+				}
+			}
+		}
+		catch (GenericException ex)
+		{
+			qDebug() << ex.GetDescription() << ex.what();
+		}
+    }
 
 	if (m_callbackParameterChangedTimer.isNull())
 	{
@@ -964,7 +988,14 @@ void GenTLDevice::resyncAllParameters()
     QHash<INode*, GCType*>::const_iterator i = m_paramMapping2.constBegin();
     while (i != m_paramMapping2.constEnd()) 
     {
-        i.value()->update(false);
+        try
+        {
+            i.value()->update(false);
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Error updating parameter '" << i.key()->GetName() << "': " << ex.GetDescription() << "\n" << std::endl;
+        }
         ++i;
     }
 
@@ -1317,7 +1348,16 @@ ito::RetVal GenTLDevice::invokeCommandNode(const gcstring &name, ito::tRetValue 
 	{
 		try
 		{
-			m_commandNodes[name]->Execute();
+			GenApi::CCommandPtr &command = m_commandNodes[name];
+
+#ifdef _DEBUG
+			if (m_verbose >= VERBOSE_ALL && command->GetNode())
+			{
+				qDebug() << command->GetNode()->GetAccessMode() << command->GetNode()->GetName() << command->GetAccessMode();
+			}
+#endif
+
+			command->Execute();
 		}
 		catch (GenericException &ex)
 		{
@@ -1334,6 +1374,15 @@ ito::RetVal GenTLDevice::invokeCommandNode(const gcstring &name, ito::tRetValue 
 	}
 	else
 	{
-		return ito::RetVal::format(ito::retError, 0, "command '%s' not available", name.c_str());
+		if (errorLevel == ito::retError)
+		{
+			return ito::RetVal::format(ito::retError, 0, "command '%s' not available", name.c_str());
+		}
+		else if (errorLevel == ito::retWarning)
+		{
+			return ito::RetVal::format(ito::retWarning, 0, "command '%s' not available", name.c_str());
+		}
+
+		return ito::retOk;
 	}
 }

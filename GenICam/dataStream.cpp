@@ -75,22 +75,26 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
         retval += checkGCError(GCRegisterEvent(m_handle, GenTL::EVENT_NEW_BUFFER, &m_newBufferEvent), "dataStream: register new-buffer event");
 		GenTL::GC_ERROR errorEventResult = GCRegisterEvent(m_handle, GenTL::EVENT_ERROR, &m_errorEvent);
 
-		switch (errorEventResult)
-		{
-		case GenTL::GC_ERR_SUCCESS:
-			break;
-		case GenTL::GC_ERR_NOT_IMPLEMENTED:
-			m_errorEvent = GENTL_INVALID_HANDLE;
-			break;
-        case GenTL::GC_ERR_RESOURCE_IN_USE:
-			retval += ito::RetVal::format(ito::retWarning, errorEventResult, "dataStream: error event could not be registered (%i: GC_ERR_RESOURCE_IN_USE)", errorEventResult);
-			m_errorEvent = GENTL_INVALID_HANDLE;
-			break;
-		default:
-			retval += ito::RetVal::format(ito::retWarning, errorEventResult, "dataStream: error event could not be registered (code: %i)", errorEventResult);
-			m_errorEvent = GENTL_INVALID_HANDLE;
-			break;
-		}
+        if (m_verbose >= VERBOSE_WARNING)
+        {
+		    switch (errorEventResult)
+		    {
+		    case GenTL::GC_ERR_SUCCESS:
+			    break;
+		    case GenTL::GC_ERR_NOT_IMPLEMENTED:
+            case GenTL::GC_ERR_NOT_AVAILABLE:
+			    m_errorEvent = GENTL_INVALID_HANDLE;
+			    break;
+            case GenTL::GC_ERR_RESOURCE_IN_USE:
+			    std::cerr << "dataStream: error event could not be registered (" << errorEventResult << ": GC_ERR_RESOURCE_IN_USE)\n" << std::endl;
+			    m_errorEvent = GENTL_INVALID_HANDLE;
+			    break;
+		    default:
+			    std::cerr << "dataStream: error event could not be registered (code: " << errorEventResult << ")\n" << std::endl;
+			    m_errorEvent = GENTL_INVALID_HANDLE;
+			    break;
+		    }
+        }
     }
 
     if (m_verbose >= VERBOSE_INFO)
@@ -120,7 +124,7 @@ GenTLDataStream::~GenTLDataStream()
     if (DSClose && m_handle != GENTL_INVALID_HANDLE)
     {
 		//to be sure, only
-		unqueueAllBuffersFromInputQueue();
+		flushBuffers(GenTL::ACQ_QUEUE_ALL_DISCARD);
 		revokeAllBuffers();
 
         if (m_acquisitionStarted)
@@ -326,7 +330,9 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 
         if (!retval.containsError())
         {
-            m_idleBuffers.append(handle);
+            //directly queue allocated buffer
+            retval += checkGCError(DSQueueBuffer(m_handle, handle));
+            m_buffers.insert(handle);
         }
         else
         {
@@ -339,7 +345,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
     {
         
         std::cout << "* Allocation type: " << ((m_usePreAllocatedBuffer == 0) ? "camera internal" : "allocated by itom") << "\n" << std::endl;
-        std::cout << "* Number of idle buffers " << m_idleBuffers.size() << "\n" << std::endl;
+        std::cout << "* Number of buffers " << m_buffers.size() << "\n" << std::endl;
 		if (retval.containsError())
 		{
 			std::cout << "* Success: Error (" << retval.errorMessage() << ")\n" << std::endl;
@@ -351,8 +357,6 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         std::cout << "--------------------------------------------\n" << std::endl;
     }
 
-	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
-
     return retval;
 }
 
@@ -360,7 +364,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 ito::RetVal GenTLDataStream::revokeAllBuffers()
 {
 	ito::RetVal retval;
-	foreach(GenTL::BUFFER_HANDLE handle, m_idleBuffers)
+	foreach(GenTL::BUFFER_HANDLE handle, m_buffers)
 	{
 		if (m_usePreAllocatedBuffer)
 		{
@@ -376,145 +380,319 @@ ito::RetVal GenTLDataStream::revokeAllBuffers()
 			retval += checkGCError(DSRevokeBuffer(m_handle, handle, NULL, NULL), "revoke buffer");
 		}
 	}
-	m_idleBuffers.clear();
-
-	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+	m_buffers.clear();
 
 	return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::unqueueAllBuffersFromInputQueue()
+ito::RetVal GenTLDataStream::flushBuffers(GenTL::ACQ_QUEUE_TYPE queueType /*= GenTL::ACQ_QUEUE_ALL_DISCARD*/)
 {
 	ito::RetVal retval;
 
-	if (m_queuedBuffers.size() > 0) //there are still queued and unhandled items
-	{
-		retval += checkGCError(DSFlushQueue(m_handle, GenTL::ACQ_QUEUE_ALL_DISCARD), "discard all buffers in input and ouput buffers");
+    if (queueType == GenTL::ACQ_QUEUE_ALL_DISCARD)
+    {
+        GenTL::INFO_DATATYPE type;
+        bool acquiring;
+        size_t pSize = sizeof(acquiring);
+        bool busy;
 
-		QSet<GenTL::BUFFER_HANDLE>::iterator it = m_queuedBuffers.begin();
-		while (it != m_queuedBuffers.end())
-		{
-			m_idleBuffers.enqueue(*it);
-			it++;
-		}
-		m_queuedBuffers.clear();
-	}
+        do
+        {
+            busy = false;
 
-	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+            foreach (GenTL::BUFFER_HANDLE buf, m_buffers)
+            {
+	            if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buf, GenTL::BUFFER_INFO_IS_ACQUIRING, &type, &acquiring, &pSize))
+                {
+                    if (type == GenTL::INFO_DATATYPE_BOOL8 && acquiring)
+                    {
+                        busy = true;
+                    }
+                }
+            }
+        } while (busy);
+    }
+
+    retval += checkGCError(DSFlushQueue(m_handle, queueType), "discard all buffers in input and ouput buffers");
+                   
 
 	return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::queueOneBufferForAcquisition()
-{
-	unqueueAllBuffersFromInputQueue(); //if there are still some queued images
 
-	if (m_idleBuffers.size() == 0)
+//----------------------------------------------------------------------------------------------------------------------------------
+void GenTLDataStream::printBufferInfo(const char* prefix, GenTL::BUFFER_HANDLE buffer)
+{
+	GenTL::INFO_DATATYPE type;
+	bool boolValue;
+	size_t sizetValue;
+    uint64 uint64value;
+	size_t pSize = sizeof(boolValue);
+
+    std::cout << prefix;
+
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_IS_ACQUIRING, &type, &boolValue, &pSize))
 	{
-		return ito::RetVal(ito::retError, 0, "no free buffers available to queue for new acquisition.");
+		std::cout << "acquiring:" << boolValue;
 	}
 
-    GenTL::BUFFER_HANDLE buffer = m_idleBuffers.dequeue();
-    ito::RetVal retval = checkGCError(DSQueueBuffer(m_handle, buffer));
-    if (!retval.containsError())
-    {
-        m_queuedBuffers.insert(buffer);
-    }
-    else //error: redo all
-    {
-        m_idleBuffers.enqueue(buffer);
-    }
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_IS_QUEUED, &type, &boolValue, &pSize))
+	{
+		std::cout << ", queued:" << boolValue;
+	}
 
-	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_NEW_DATA, &type, &boolValue, &pSize))
+	{
+		std::cout << ", newdata:" << boolValue;
+	}
 
-    return retval;
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_IS_INCOMPLETE, &type, &boolValue, &pSize))
+	{
+		std::cout << ", incomplete:" << boolValue;
+	}
+
+	pSize = sizeof(sizetValue);
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_SIZE_FILLED, &type, &sizetValue, &pSize))
+	{
+		std::cout << ", size-filled:" << sizetValue;
+	}
+
+    pSize = sizeof(uint64value);
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_FRAMEID, &type, &uint64value, &pSize))
+	{
+		std::cout << ", id:" << uint64value;
+	}
+
+    pSize = sizeof(sizetValue);
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_WIDTH, &type, &sizetValue, &pSize))
+	{
+		std::cout << ", size:" << sizetValue;
+	}
+
+    pSize = sizeof(sizetValue);
+	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_HEIGHT, &type, &sizetValue, &pSize))
+	{
+		std::cout << " x " << sizetValue;
+	}
+
+    std::cout << "\n" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::unlockBuffer(GenTL::BUFFER_HANDLE buffer)
+ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 {
-	ito::RetVal retval;
+    ito::RetVal retval;
+    GenTL::S_EVENT_NEW_BUFFER latestBuffer;
+    GenTL::S_EVENT_NEW_BUFFER nextBuffer;
+    size_t pSize = sizeof(latestBuffer);
+    bool newData = false;
+    GenTL::INFO_DATATYPE type;
+    bool value;
+    size_t valueSize = sizeof(value);
 
-    if (m_lockedBuffers.contains(buffer))
+    QSet<GenTL::BUFFER_HANDLE> handlesToQueueAgain;
+
+	GenTL::GC_ERROR err;
+
+    if (m_verbose >= VERBOSE_ALL)
     {
-		retval = checkGCError(DSFlushQueue(m_handle, GenTL::ACQ_QUEUE_ALL_DISCARD), "flush from locked to idle");
-
-        m_lockedBuffers.remove(buffer);
-        m_idleBuffers.enqueue(buffer);
+        std::cout << "Buffer info before new-buffer-event:\n" << std::endl;
+	    foreach(const GenTL::BUFFER_HANDLE &buf, m_buffers)
+	    {
+		    printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
+	    }
     }
+    
+    while (!newData)
+    {
+        newData = true;
+        err = EventGetData(m_newBufferEvent, &latestBuffer, &pSize, m_timeoutMS);
 
-	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
+        if (err == GenTL::GC_ERR_SUCCESS)
+        {
+            if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, latestBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
+            {
+                if (type == GenTL::INFO_DATATYPE_BOOL8)
+                {
+                    newData = value;
 
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::checkForNewBuffer(GenTL::BUFFER_HANDLE &buffer)
-{
-    GenTL::S_EVENT_NEW_BUFFER newBuffer;
-    size_t pSize = sizeof(newBuffer);
-
-	GenTL::GC_ERROR err = EventGetData(m_newBufferEvent, &newBuffer, &pSize, m_timeoutMS);
+                    if (!newData)
+                    {
+                        handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+                    }
+                }
+            }
+        }
+    }
 
     if (err == GenTL::GC_ERR_TIMEOUT)
     {
-        buffer = GENTL_INVALID_HANDLE;
+		foreach(GenTL::BUFFER_HANDLE buf, m_buffers)
+		{
+			handlesToQueueAgain.insert(buf);
+		}
+        //flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
 
-        //check if a possible error has been signaled
-        if (m_errorEvent != GENTL_INVALID_HANDLE)
+        if (checkForErrorEvent(retval, "Timeout occurred"))
         {
-            char bufferIn[1024];
-            size_t sizeIn = sizeof(bufferIn);
-            err = EventGetData(m_errorEvent, &bufferIn, &sizeIn, 0);
-            if (err == GenTL::GC_ERR_SUCCESS)
+            //return retval;
+        }
+        else
+        {
+            retval +=  ito::RetVal(ito::retError, 0, "Timeout occurred.");
+        }
+    }
+    else if (checkGCError(err) == ito::retOk)
+    {
+        while (1)
+        {
+            //check for further newBufferEvents (no timeout) to be sure to get latest buffer
+            pSize = sizeof(nextBuffer);
+            err = EventGetData(m_newBufferEvent, &nextBuffer, &pSize, 0);
+            if (GenTL::GC_ERR_SUCCESS == err)
             {
-                if (EventGetDataInfo)
+                newData = true;
+                if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, nextBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
                 {
-                    GenTL::INFO_DATATYPE piType;
-                    char bufferOut[512];
-                    size_t pSizeOut = sizeof(bufferOut);
-
-                    GenTL::GC_ERROR err2 = EventGetDataInfo(m_errorEvent, &bufferIn, sizeIn, GenTL::EVENT_DATA_VALUE, &piType, &bufferOut, &pSizeOut);
-
-                    if (err2 == GenTL::GC_ERR_SUCCESS)
+                    if (type == GenTL::INFO_DATATYPE_BOOL8)
                     {
-                        if (piType == GenTL::INFO_DATATYPE_STRING)
-                        {
-                            bufferOut[511] = '\0';
-                            return ito::RetVal::format(ito::retError, 0, "Timeout occurred. Signaled error: %s.", bufferOut);
-                        }
-                        else
-                        {
-                            return ito::RetVal(ito::retError, 0, "Timeout occurred. An error has been signaled, however no more information could be fetched due to unsupported datatype returned from method 'EventGetDataInfo'");
-                        }
+                        newData = value;
+
+                        
+                    }
+                }
+
+                if (latestBuffer.BufferHandle == nextBuffer.BufferHandle)
+                {
+                    //something strange, but happens
+                }
+                else if (!newData)
+                {
+                    handlesToQueueAgain.insert(nextBuffer.BufferHandle);
+                }
+                else
+                {
+                    handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+                    latestBuffer = nextBuffer;
+                }
+            }
+            else if (err != GenTL::GC_ERR_TIMEOUT)
+            {
+                retval += checkGCError(err);
+            }
+            else //timeout
+            {
+                break;
+            }
+        }
+
+        if (m_verbose >= VERBOSE_ALL)
+        {
+            std::cout << "Buffer info after new-buffer-event\n" << std::endl;
+	        foreach(const GenTL::BUFFER_HANDLE &buf, m_buffers)
+	        {
+                if (buf == latestBuffer.BufferHandle)
+                {
+                    printBufferInfo(QString("* buffer 0x%1 (latest) ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
+                }
+                else
+                {
+		            printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
+                }
+	        }
+        }
+
+        retval += copyBufferToDataObject(latestBuffer.BufferHandle, destination);
+
+        //queue buffer again
+        handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+    }
+    else
+    {
+        handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+    }
+
+    
+
+	ito::RetVal queueRetVal;
+
+    foreach (const GenTL::BUFFER_HANDLE &bufferHandle, handlesToQueueAgain)
+    {
+        //queue buffer again
+		queueRetVal += checkGCError(DSQueueBuffer(m_handle, bufferHandle));
+    }
+
+    if (m_verbose >= VERBOSE_ALL)
+    {
+        std::cout << "Buffer info after queuing buffers\n" << std::endl;
+	    foreach(const GenTL::BUFFER_HANDLE &buf, handlesToQueueAgain)
+	    {
+            printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
+	    }
+    }
+
+	if (queueRetVal.containsError())
+	{
+		std::cout << "Error queuing buffers: " << queueRetVal.errorMessage() << "\n" << std::endl;
+	}
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool GenTLDataStream::checkForErrorEvent(ito::RetVal &retval, const QString &errorPrefix)
+{
+    //check if a possible error has been signaled
+    if (m_errorEvent != GENTL_INVALID_HANDLE)
+    {
+        char bufferIn[1024];
+        size_t sizeIn = sizeof(bufferIn);
+        GenTL::GC_ERROR err = EventGetData(m_errorEvent, &bufferIn, &sizeIn, 0);
+        if (err == GenTL::GC_ERR_SUCCESS)
+        {
+            QString errPrefix = (errorPrefix.isEmpty() ? "" : errorPrefix + ". ");
+            if (EventGetDataInfo)
+            {
+                GenTL::INFO_DATATYPE piType;
+                char bufferOut[512];
+                size_t pSizeOut = sizeof(bufferOut);
+
+                GenTL::GC_ERROR err2 = EventGetDataInfo(m_errorEvent, &bufferIn, sizeIn, GenTL::EVENT_DATA_VALUE, &piType, &bufferOut, &pSizeOut);
+
+                if (err2 == GenTL::GC_ERR_SUCCESS)
+                {
+                    if (piType == GenTL::INFO_DATATYPE_STRING)
+                    {
+                        bufferOut[511] = '\0';
+                        retval += ito::RetVal::format(ito::retError, 0, "%sSignaled error: %s.", bufferOut, errPrefix.toLatin1().constData());
                     }
                     else
                     {
-                        return ito::RetVal(ito::retError, 0, "Timeout occurred. An error has been signaled, however no more information could be fetched due to error returned from method 'EventGetDataInfo'");
+                        retval += ito::RetVal::format(ito::retError, 0, "%sAn error has been signaled, however no more information could be fetched due to unsupported datatype returned from method 'EventGetDataInfo'", errPrefix.toLatin1().constData());
                     }
                 }
                 else
                 {
-                    return ito::RetVal(ito::retError, 0, "Timeout occurred. An error has been signaled, however no more information could be fetched due to missing method 'EventGetDataInfo'");
+                    retval += ito::RetVal::format(ito::retError, 0, "%sAn error has been signaled, however no more information could be fetched due to error returned from method 'EventGetDataInfo'", errPrefix.toLatin1().constData());
                 }
             }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "%sAn error has been signaled, however no more information could be fetched due to missing method 'EventGetDataInfo'", errPrefix.toLatin1().constData());
+            }
+
+            return true;
         }
-
-        return ito::RetVal(ito::retError, 0, "Timeout occurred.");
+        else
+        {
+            return false;
+        }
     }
-    else if (checkGCError(err) == ito::retOk)
+    else
     {
-        buffer = newBuffer.BufferHandle;
-        m_queuedBuffers.remove(buffer);
-        m_lockedBuffers.insert(buffer); //lock the buffer that is passed to the caller by reference until unlockBuffer has been called
-        return ito::retOk;
+        return false;
     }
-
-	//std::cout << "Idle: " << m_idleBuffers.size() << ", Queued: " << m_queuedBuffers.size() << ", Locked: " << m_lockedBuffers.size() << "\n" << std::endl;
-
-    return ito::retError;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

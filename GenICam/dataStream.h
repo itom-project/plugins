@@ -48,10 +48,8 @@ public:
     ito::RetVal allocateAndAnnounceBuffers(int nrOfBuffers, size_t bytesPerBuffer = 0); //bytesPerBuffer = 0 means that the payload for each buffer should be automatically detected
 	ito::RetVal revokeAllBuffers();
 
-    ito::RetVal queueOneBufferForAcquisition();
-    ito::RetVal unlockBuffer(GenTL::BUFFER_HANDLE buffer);
-	ito::RetVal unqueueAllBuffersFromInputQueue();
-    ito::RetVal checkForNewBuffer(GenTL::BUFFER_HANDLE &buffer);
+	ito::RetVal flushBuffers(GenTL::ACQ_QUEUE_TYPE queueType = GenTL::ACQ_QUEUE_ALL_DISCARD);
+    ito::RetVal waitForNewestBuffer(ito::DataObject &destination);
     ito::RetVal startAcquisition(GenTL::ACQ_START_FLAGS startFlags = GenTL::ACQ_START_FLAGS_DEFAULT);
     ito::RetVal stopAcquisition(GenTL::ACQ_STOP_FLAGS stopFlags = GenTL::ACQ_STOP_FLAGS_DEFAULT);
 
@@ -64,6 +62,10 @@ protected:
 	ito::RetVal copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
 	ito::RetVal copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
 	ito::RetVal copyMono12pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+
+    bool checkForErrorEvent(ito::RetVal &retval, const QString &errorPrefix); //return true, if error event is available and has been reported, else false
+
+	void printBufferInfo(const char *prefix, GenTL::BUFFER_HANDLE buffer);
 
     GenTL::DS_HANDLE m_handle;
     GenTL::EVENT_HANDLE m_newBufferEvent;
@@ -84,9 +86,7 @@ protected:
     GenTL::PDSGetInfo DSGetInfo;
 	GenTL::PDSAnnounceBuffer DSAnnounceBuffer;
 
-    QQueue<GenTL::BUFFER_HANDLE> m_idleBuffers; //buffers that can be queued for acquisition and are not locked (in announce position)
-    QSet<GenTL::BUFFER_HANDLE> m_lockedBuffers; //in output buffer
-    QSet<GenTL::BUFFER_HANDLE> m_queuedBuffers; //in input buffer
+    QSet<GenTL::BUFFER_HANDLE> m_buffers; //all allocated buffers
     QSharedPointer<QLibrary> m_lib;
     bool m_acquisitionStarted;
 	int m_payloadSize;

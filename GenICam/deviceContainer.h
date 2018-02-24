@@ -50,6 +50,7 @@ public:
 
     GenTL::IF_HANDLE getHandle() const { return m_handle; }
     QByteArray getIfaceID() const { return m_IfaceID; }
+    int getNumDevices() const;
 
 	QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, ito::RetVal &retval);
 

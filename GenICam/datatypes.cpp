@@ -466,9 +466,29 @@ ito::RetVal GCEnumerationType::setValue(const ito::ParamBase *value)
 	{
 		const char* val = value->getVal<const char*>();
 		IEnumEntry *iee = m_sharedPtr->GetEntryByName(val);
-		if (iee)
+		//qDebug() << iee->GetValue() << iee->GetNumericValue() << iee->GetSymbolic() << iee->GetAccessMode() << m_sharedPtr->GetAccessMode();
+		
+        if (iee)
 		{
-			m_sharedPtr->SetIntValue(iee->GetValue());
+			try
+			{
+				*m_sharedPtr = iee->GetSymbolic();
+			}
+			catch (GenericException & /*ex*/)
+			{
+#ifdef _DEBUG
+				GenApi::NodeList_t entries;
+				m_sharedPtr->GetEntries(entries);
+				for (size_t i = 0; i < entries.size(); ++i)
+				{
+					iee = dynamic_cast<IEnumEntry*>(entries[i]);
+					if (iee)
+					{
+						qDebug() << "Param:" << m_sharedPtr->GetNode()->GetName().c_str() << ", " << iee->GetSymbolic().c_str() << "::" << iee->GetAccessMode() << " Int-Value: " << iee->GetValue();
+					}
+				}
+#endif
+			}
 		}
 		else
 		{
@@ -492,11 +512,11 @@ void GCEnumerationType::stringMetaFromEnumeration(const CEnumerationPtr &ePtr, i
 	for (size_t i = 0; i < entries.size(); ++i)
 	{
 		iee = dynamic_cast<IEnumEntry*>(entries[i]);
-        if (iee)
+        /*if (iee)
         {
             qDebug() << "Param:" << ePtr->GetNode()->GetName().c_str() << ", " << iee->GetSymbolic().c_str() << "::" << iee->GetAccessMode();
-        }
-		if (iee && iee->GetAccessMode() != NI)
+        }*/
+		if (iee && iee->GetAccessMode() > NA)
 		{
 			strMeta->addItem(iee->GetSymbolic().c_str());
 		}
@@ -511,9 +531,39 @@ ito::RetVal GCEnumerationType::update(bool valueOnly /*= true*/)
 	if (!(flags & ito::ParamBase::NotAvailable))
 	{
 		IEnumEntry *iee = m_sharedPtr->GetCurrentEntry();
+		
 		if (iee)
 		{
-			retval += (*m_paramMap)[m_name].setVal<const char*>(iee->GetSymbolic().c_str());
+			if (iee->GetAccessMode() > NA)
+			{
+				retval += (*m_paramMap)[m_name].setVal<const char*>(iee->GetSymbolic().c_str());
+			}
+			else
+			{
+				//maybe there is another value with the same integer-key but another string, which is readable (that really happens!!!)
+				int64_t value = m_sharedPtr->GetIntValue();
+
+				GenApi::NodeList_t entries;
+				IEnumEntry *iee2;
+				m_sharedPtr->GetEntries(entries);
+				bool found = false;
+
+				for (size_t i = 0; i < entries.size(); ++i)
+				{
+					iee2 = dynamic_cast<IEnumEntry*>(entries[i]);
+					if (iee2 && iee2->GetAccessMode() > NA && iee2->GetNumericValue() == value)
+					{
+						retval += (*m_paramMap)[m_name].setVal<const char*>(iee2->GetSymbolic().c_str());
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					retval += (*m_paramMap)[m_name].setVal<const char*>(iee->GetSymbolic().c_str());
+				}
+			}
 		}
 		else
 		{

@@ -32,6 +32,7 @@
 #define VERBOSE_WARNING 2
 #define VERBOSE_INFO 3
 #define VERBOSE_DEBUG 4
+#define VERBOSE_ALL 5
 
 ito::RetVal checkGCError(const GenTL::GC_ERROR &error, const QString &suffix = "");
 

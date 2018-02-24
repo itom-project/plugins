@@ -355,15 +355,22 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
 				if (interfaceIDToOpen == "auto")
 				{
-					if (piNumIfaces == 1)
-					{
-						interfaceIDToOpen = sIfaceID;
-					}
-					else if (i == 0)
-					{
-						interfaceIDToOpen = sIfaceID;
-						retval += ito::RetVal::format(ito::retWarning, 0, "The transport layer supports more than one interface. The first interface '%s' has been automatically selected.", sIfaceID);
-					}
+                    GenTL::IF_HANDLE ifHandle;
+                    ito::RetVal retvalIFace;
+			        if (checkGCError(TLOpenInterface(m_handle, sIfaceID, &ifHandle), QString("Error opening interface '%1'").arg(QLatin1String(sIfaceID))) == ito::retOk)
+                    {
+                        GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, sIfaceID, m_verbose, retvalIFace);
+
+                        if (gtli && retvalIFace == ito::retOk)
+                        {
+                            if (gtli->getNumDevices() > 0)
+                            {
+                                interfaceIDToOpen = sIfaceID;
+                            }
+                        }
+
+                        DELETE_AND_SET_NULL(gtli);
+                    }
 				}
 
 				tlretval = ito::retOk;
@@ -385,8 +392,12 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
 		if (interfaceID == "")
 		{
-			retval += ito::RetVal(ito::retError, 0, "no valid interface chosen");
+			retval += ito::RetVal(ito::retError, 0, "No valid interface chosen");
 		}
+        else if (interfaceIDToOpen == "auto")
+        {
+            retval += ito::RetVal(ito::retError, 0, "No devices could be automatically detected. Set the interface parameter to an empty string in order to get a list of all detected devices");
+        }
 
         if (!retval.containsError())
         {
@@ -483,6 +494,20 @@ GenTLInterface::~GenTLInterface()
     if (m_lib->isLoaded() && IFClose)
     {
         IFClose(m_handle);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int GenTLInterface::getNumDevices() const
+{
+    uint32_t piNumDevices = 0;
+    if (IFGetNumDevices(m_handle, &piNumDevices) == GenTL::GC_ERR_SUCCESS)
+    {
+        return piNumDevices;
+    }
+    else
+    {
+        return -1;
     }
 }
 
@@ -599,7 +624,19 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             }
 
             GenTL::DEV_HANDLE devHandle;
-            retval += checkGCError(IFOpenDevice(m_handle, sDeviceID, GenTL::DEVICE_ACCESS_CONTROL, &devHandle), "Opening device");
+			GenTL::DEVICE_ACCESS_FLAGS deviceAccess = GenTL::DEVICE_ACCESS_CONTROL;
+			GenTL::GC_ERROR err = IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle);
+			if (err == GenTL::GC_ERR_ACCESS_DENIED)
+			{
+				deviceAccess = GenTL::DEVICE_ACCESS_EXCLUSIVE;
+				std::cout << "The access to the device was denied with the flag GenTL::DEVICE_ACCESS_CONTROL. Retry with an exclusive access...\n" << std::endl;
+				retval += checkGCError(IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle), "Opening device in exclusive mode");
+			}
+			else
+			{
+				retval += checkGCError(err, "Opening device");
+			}
+            
 
             if (!retval.containsError())
             {

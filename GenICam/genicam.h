@@ -26,6 +26,7 @@
 #include "common/addInGrabber.h"
 
 #include <qsharedpointer.h>
+#include <qmutex.h>
 #include <qtimer.h>
 
 #include "GenTL_v1_5.h"

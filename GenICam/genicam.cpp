@@ -85,6 +85,7 @@ This plugin has been tested with the following cameras: \n\
 \n\
 * Allied Vision, Manta (Firewire) \n\
 * Ximea (USB3) \n\
+* Baumer TXG12 (GigE) \n\
 * Vistek, exo174MU3 (USB3) \n\
 * Vistek, exo174MGE (GigE)";
     m_detaildescription = QObject::tr(docstring);
@@ -119,7 +120,7 @@ a list of all auto-detected vendors and models is returned.");
     paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_DEBUG, VERBOSE_ERROR, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug).").toLatin1().constData());
+	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states)).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 }
 
@@ -139,7 +140,8 @@ GenICamInterface::~GenICamInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GenICamClass::GenICamClass() : AddInGrabber(),
-	m_hasTriggerSource(false)
+	m_hasTriggerSource(false),
+    m_newImageAvailable(false)
 {
 	ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "GenICam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -767,6 +769,12 @@ ito::RetVal GenICamClass::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+
+    if (grabberStartedCount() >= 1)
+    {
+        setGrabberStarted(1);
+        retValue += stopDevice(NULL);
+    }
     
 	m_stream.clear();
 	m_device.clear();
@@ -789,41 +797,64 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 	bool revertAllocateIfError = false;
+
+    try
+    {
     
-    incGrabberStarted();
+        incGrabberStarted();
 
-	if (m_stream.isNull() == false)
-	{
-		if (grabberStartedCount() == 1)
-		{
-			m_stream->setPayloadSize(m_device->getPayloadSize());
+	    if (m_stream.isNull() == false)
+	    {
+		    if (grabberStartedCount() == 1)
+		    {
+			    m_stream->setPayloadSize(m_device->getPayloadSize());
 
-			//first time to be started
-			retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), m_params["userDefinedPayloadSize"].getVal<int>());
-			if (!retValue.containsError())
-			{
-				revertAllocateIfError = true;
-				retValue += m_stream->startAcquisition();
-			}
-			if (!retValue.containsError())
-			{
-				retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
-			}
-			else if (revertAllocateIfError)
-			{
-				m_stream->revokeAllBuffers();
-			}
-		}
-	}
-	else
-	{
-		retValue += ito::RetVal(ito::retError, 0, "Device could not be started since data stream is not available.");
-	}
+			    //first time to be started
+			    retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), m_params["userDefinedPayloadSize"].getVal<int>());
 
-	if (retValue.containsError())
-	{
-		decGrabberStarted();
-	}
+                //stop acquisition (in case the camera is already running)
+                if (!retValue.containsError())
+			    {
+
+				    retValue += m_device->invokeCommandNode("AcquisitionAbort", ito::retOk); //never produces an error or warning
+				    retValue += m_device->invokeCommandNode("AcquisitionStop", ito::retOk); //never produces an error or warning
+			    }
+
+			    if (!retValue.containsError())
+			    {
+				    revertAllocateIfError = true;
+				    retValue += m_stream->startAcquisition();
+			    }
+
+			    if (!retValue.containsError())
+			    {
+				    retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+			    }
+			    else if (revertAllocateIfError)
+			    {
+				    m_stream->revokeAllBuffers();
+			    }
+		    }
+	    }
+	    else
+	    {
+		    retValue += ito::RetVal(ito::retError, 0, "Device could not be started since data stream is not available.");
+	    }
+
+	    if (retValue.containsError())
+	    {
+		    decGrabberStarted();
+	    }
+
+    }
+    catch (GenericException &ex)
+    {
+        std::cout << "Exception in startDevice: " << ex.GetDescription() << "\n" << std::endl;
+    }
+    catch(...)
+    {
+        std::cout << "exception in startDevice\n" << std::endl;
+    }
     
     if (waitCond)
     {
@@ -839,33 +870,49 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    decGrabberStarted();
-
-    if(grabberStartedCount() < 0)
+    try
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("the grabber already had zero users.").toLatin1().constData());
 
-		//to be sure, only
-		retValue += m_stream->unqueueAllBuffersFromInputQueue();
-		retValue += m_stream->revokeAllBuffers();
+        decGrabberStarted();
 
-        setGrabberStarted(0);
+        if(grabberStartedCount() < 0)
+        {
+            retValue += ito::RetVal(ito::retWarning, 0, tr("the grabber already had zero users.").toLatin1().constData());
+
+		    //to be sure, only
+		    retValue += m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_DISCARD);
+		    retValue += m_stream->revokeAllBuffers();
+
+            setGrabberStarted(0);
 
 #if QT_VERSION >= 0x050000
-		QThread::msleep(100);
+		    QThread::msleep(100);
 #endif
+        }
+	    else if (grabberStartedCount() == 0)
+	    {
+		    retValue += m_stream->stopAcquisition();
+
+		    retValue += m_device->invokeCommandNode("AcquisitionAbort", ito::retOk); //never produces an error or warning
+
+		    retValue += m_device->invokeCommandNode("AcquisitionStop", ito::retWarning);
+		    retValue += m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_DISCARD);
+		    retValue += m_stream->revokeAllBuffers();
+
+#if QT_VERSION >= 0x050000
+		    QThread::msleep(100);
+#endif
+	    }
+
     }
-	else if (grabberStartedCount() == 0)
-	{
-		retValue += m_stream->stopAcquisition();
-		retValue += m_device->invokeCommandNode("AcquisitionStop", ito::retWarning);
-		retValue += m_stream->unqueueAllBuffersFromInputQueue();
-		retValue += m_stream->revokeAllBuffers();
-
-#if QT_VERSION >= 0x050000
-		QThread::msleep(100);
-#endif
-	}
+    catch (GenericException &ex)
+    {
+        std::cout << "Exception in stopDevice: " << ex.GetDescription() << "\n" << std::endl;
+    }
+    catch(...)
+    {
+        std::cout << "exception in stopDevice\n" << std::endl;
+    }
 
     if (waitCond)
     {
@@ -883,63 +930,86 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
 	bool RetCode = false;
 	bool queued = false;
 
-	if (grabberStartedCount() <= 0)
-	{
-		retValue += ito::RetVal(ito::retError, 0, tr("Acquisition failed since device has not been started.").toLatin1().constData());
-	}
-	else
-	{
-		retValue += m_stream->queueOneBufferForAcquisition();
-		if (!retValue.containsError())
-		{
-			queued = true;
-		}
-	}
-
-	if (m_acquisitionCache.mode == AcquisitionCache::SingleFrame)
-	{
-		retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
-	}
-	else if (m_acquisitionCache.mode == AcquisitionCache::MultiFrame)
-	{
-		retValue += ito::RetVal(ito::retError, 0, tr("AcquisitionMode 'multiFrame' not yet supported").toLatin1().constData());
-	}
-
-	if (!retValue.containsError())
-	{
-		if (m_hasTriggerSource && \
-			m_acquisitionCache.triggerMode == true && \
-			m_acquisitionCache.triggerSource == "Software")
-		{
-			retValue += m_device->invokeCommandNode("TriggerSoftware", ito::retError);
-		}
-	}
-
-    if (waitCond)
+    try
     {
-        waitCond->returnValue = retValue;
-        waitCond->release();  
+
+	    if (grabberStartedCount() <= 0)
+	    {
+		    retValue += ito::RetVal(ito::retError, 0, tr("Acquisition failed since device has not been started.").toLatin1().constData());
+	    }
+        else
+        {
+            if (!m_hasTriggerSource || !m_acquisitionCache.triggerMode)
+            {
+                //flush all pending buffers (already acquired, but not delivered to this plugin) and put them back to queued buffer
+                //retValue += m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+            }
+
+            switch (m_acquisitionCache.mode)
+            {
+            case AcquisitionCache::Continuous:
+                break;
+            case AcquisitionCache::SingleFrame:
+                retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+                break;
+            default:
+                retValue += ito::RetVal(ito::retError, 0, tr("AcquisitionMode 'multiFrame' (or other than 'Continous' and 'SingleFrame') not supported, yet.").toLatin1().constData());
+                break;
+            }
+        }
+
+	    if (!retValue.containsError())
+	    {
+		    if (m_hasTriggerSource && \
+			    m_acquisitionCache.triggerMode && \
+			    (m_acquisitionCache.triggerSource == "Software" || m_acquisitionCache.triggerSource == "SoftwareTrigger"))
+		    {
+			    retValue += m_device->invokeCommandNode("TriggerSoftware", ito::retError);
+		    }
+	    }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();  
+        }
+
+	    if (!retValue.containsError())
+	    {
+		    m_acquisitionRetVal = m_stream->waitForNewestBuffer(m_data);
+
+		    if (!m_acquisitionRetVal.containsError())
+		    {
+			    m_newImageAvailable = true;
+		    }
+	    }
     }
+    catch (GenericException &ex)
+    {
+        std::cout << "Exception in acquire: " << ex.GetDescription() << "\n" << std::endl;
+    } 
+    catch (const std::overflow_error& e) 
+    {
+        std::cout << "Exception in acquire (overflow):" << e.what() << "\n" << std::endl;
+    // this executes if f() throws std::overflow_error (same type rule)
 
-	if (!retValue.containsError())
-	{
-		GenTL::BUFFER_HANDLE buffer;
-		m_acquisitionRetVal = m_stream->checkForNewBuffer(buffer);
+    } 
+    catch (const std::runtime_error& e) 
+    {
+        std::cout << "Exception in acquire (runtime):" << e.what() << "\n" << std::endl;
+    // this executes if f() throws std::underflow_error (base class rule)
 
-		if (!m_acquisitionRetVal.containsError())
-		{
-			m_acquisitionRetVal += m_stream->copyBufferToDataObject(buffer, m_data);
-			m_newImageAvailable = true;
-		}
+    } 
+    catch (const std::exception& e) 
+    {
+        std::cout << "Exception in acquire (exception):" << e.what() << "\n" << std::endl;
+    // this executes if f() throws std::logic_error (base class rule)
 
-		m_acquisitionRetVal += m_stream->unlockBuffer(buffer); //move buffer from output buffer to idle buffer
-		queued = false;
-	}
-
-	if (queued)
-	{
-		m_acquisitionRetVal += m_stream->unqueueAllBuffersFromInputQueue(); //move buffer from input buffer (unhandled) to idle buffer
-	}
+    } 
+    catch(...)
+    {
+        std::cout << "Exception in acquire\n" << std::endl;
+    }
 
     return retValue;
 }
@@ -975,7 +1045,7 @@ ito::RetVal GenICamClass::retrieveData(ito::DataObject *externalDataObject)
 
 			if (!retValue.containsError() && copyExternal)
 			{
-				retValue += externalDataObject->deepCopyPartial(m_data);
+				retValue += m_data.deepCopyPartial(*externalDataObject);
 			}
 
 			m_newImageAvailable = false;
@@ -989,6 +1059,7 @@ ito::RetVal GenICamClass::retrieveData(ito::DataObject *externalDataObject)
 ito::RetVal GenICamClass::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
+
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
@@ -1029,6 +1100,7 @@ ito::RetVal GenICamClass::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 ito::RetVal GenICamClass::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
+
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 

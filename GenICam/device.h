@@ -130,6 +130,8 @@ protected:
 	QVector<PfncFormat> m_supportedFormats;
 	QStringList m_supportedFormatsNames;
 	QVector<int> m_supportedFormatsBpp; //bitdepths that correspond to m_supportedFormats
+
+    GenTL::EVENT_HANDLE m_errorEvent;
 };
 
 #endif // DEVICE_H
