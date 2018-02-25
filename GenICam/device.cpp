@@ -722,8 +722,8 @@ QVector<PfncFormat> GenTLDevice::supportedImageFormats(QVector<int> *bitdepths /
 {
 	if (m_supportedFormats.size() == 0)
 	{
-		m_supportedFormats << Mono8 << Mono10 << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16;
-		m_supportedFormatsBpp << 8 << 10 << 12 << 12 << 12 << 14 << 16;
+		m_supportedFormats << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16;
+		m_supportedFormatsBpp << 8 << 10 << 10 << 10 << 12 << 12 << 12 << 14 << 16;
 
 		for (int i = 0; i < m_supportedFormats.size(); ++i)
 		{

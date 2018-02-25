@@ -24,6 +24,87 @@ The following parameters are mandatory or optional for initializing an instance 
     
     .. plugininitparams::
         :plugin: GenICam
+
+Starting a device
+==================
+
+In order to better understand how a device is opened by this plugin, it is necessary to shortly explain the architecture of
+a GenICam compliant device:
+
+* Each camera manufacturer provides access to the parameterization and the image acquisition and transfer between the camera and the computer
+  by a so-called GenICam transport layer producer (GenTLProducer). Therefore, the manufacturer has to provide one or multiple transport layer drivers that usually have the file suffix **cti**.
+* The technology, how a camera is connected to the computer (e.g. GigE, USB3, CoaxPress, Firewire...), is called an **interface**. Sometimes, every **interface**
+  is supported by a distinct **cti** file, sometimes one **cti** file can support multiple **interfaces**.
+* Every connected camera is represented by a **device**, that is opened by its corresponding **interface**.
+* A device provides different sets of cameras. The entire set of parameters and their descriptions and meta information, is stored in a xml- or zip-file.
+  This file can either be stored on the camera itself (default) or on the harddrive. In order to parameterize a camera using a specific xml- or zip-file,
+  a certain port is opened to the camera.
+* A camera can provide multiple data streams. Usually, a standard camera has exactly one stream that delivers image data. However, it might be possible
+  to access devices that deliver different type of output data, e.g. image data or point clouds...
+
+The initialization parameters of a GenICam plugin mostly represent the different items of the connection architecture, as listed above.
+It is possible to receive a list of detected transport layers, interfaces or devices if you leave the level, which you are currently interested in, empty.
+For instance, if you don't indicate a GenTLProducer, a list of all detected producers is printed to the command line.
+
+If you indicated a certain GenTLProducer, you can leave the 'interface' parameter empty, to get a list of all supported interfaces of this producer. If you
+chose 'auto', the first interface with at least one connected camera device will be chosen.
+
+In order to precisely select a device, e.g. based on its name or serial number, indicate the GenTLProducer and the interface, but leave the deviceID empty in order to
+get a list of all currently connected devices.
+
+Information about possible ports and streams can be obtained by choosing a high verbosity level as initialization parameter 'verbose'.
+
+Parameters
+===========
+
+An instance of the GenICam plugin contains both parameters, that are directly redirected to the parameter set of the camera
+as well as some parameters, that are always available and are created by the plugin itself. Usually, the original parameters
+from the transport layer of the camera start with a capital letter, while plugin parameters have a small letter as first character.
+
+The set of parameters, that is exposed from the device-specific set, announced by the transport layer, depend on the
+initialization parameter 'paramVisibilityLevel'. In general, device parameters are categorized into the three visibility categories
+'Beginner (0)', 'Expert (1)' or 'Guru (2)'. Depending on the 'paramVisibilityLevel', only parameters are loaded and created in the plugin instance,
+whose visibility level is lower or equal than the selected limit. Usually, the 'Guru' level is only necessary for special parameterizations of
+the plugin.
+
+The following list contains all parameters, that are related to the GenICam plugin in itom itself:
+
+**name**: {str}, read-only
+    name of the plugin: 'GenICam'
+**sizex**: {int}, read-only
+    Current width of the acquired image; this parameter is sychronized with the standard parameter 'Width' of the GenICam transport layer.
+    This parameter is a mandatory parameter for dataIO-instances in itom.
+**sizey**: {int}, read-only
+    Current height of the acquired image; this parameter is sychronized with the standard parameter 'Height' of the GenICam transport layer.
+    This parameter is a mandatory parameter for dataIO-instances in itom.
+**bpp**: {int}, read-only
+    Current bitdepth per pixel; this parameter is derived from the 'PixelFormat' standard parameter of the GenICam transport layer.
+    This parameter is a mandatory parameter for dataIO-instances in itom.
+**integration_time**: {float}
+    Integration or exposure time in seconds. This parameter is mapped to the standard parameter 'ExposureTime' (in ms).
+**roi**: {int rect [x0,y0,width,height]}
+    Current region of interest of the image. Changes in this parameter influence the standard parameters 'OffsetX', 'OffsetY', 'Width' and 'Height'.
+**timeout**: {float}
+    Timeout (in s) for waiting for the arrival of a new image after the acquire command. This parameter is only used within the itom GenICam plugin.
+**numBuffers**: {int}, default: 1
+    Number of image buffers that should be created in the 'startDevice' command. Some devices indicate a minimum number of image buffers. Use this
+    parameter to set this number before starting the device. This parameter is only used within the itom GenICam plugin.
+**userDefinedPayloadSize**: {int}, default: 0
+    Usually, the ideal size of an image buffer is returned by the transport layer of GenICam or by the standard parameter 'PayloadSize'. However,
+    if you set this parameter to a value bigger than 0, a user-defined buffer size in bytes can be selected. Usually, it is not necessary to change this parameter.
+    
+Verbose level
+=============
+
+During the initialization of a GenICam camera instance, it is possible to select a certain verbose level. The higher the number, the more information,
+warning or error messages will be printed to the command line of itom. The different verbose levels are:
+
+* 0: nothing is printed to the command line
+* 1: error: only severe errors are displayed
+* 2: warning: errors and warnings are displayed
+* 3: info: errors, warnings and few information are displayed
+* 4: debug: this level contains all levels above including detailed information about the startup process as well as detected parameters of the device
+* 5: all: all information is printed including details about the state of all image buffers and reported changes in device-specific parameters.
         
 Compilation
 ===========
@@ -116,5 +197,5 @@ Workaround
 ==========
 
 * Vistek, GigE, Windows: It seems that the Camera Link transport layer library (cti-file) has to be loaded by itom before the GigE transport layer is loaded.
-  This is implicitely done, if a vistek cti file is loaded. It is either possible to load the CL cti file using a load library command in Python.
+  This is implicitely done, if a vistek cti file is loaded. It is also possible to load the CL cti file using a load library command in Python.
 

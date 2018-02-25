@@ -943,11 +943,19 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 		case PFNC_Mono12:
 		case PFNC_Mono14:
 		case PFNC_Mono16:
-			retval += copyMono10to16ToDataObject(ptr + buffer_offset, width, height, endianess == endianess, dobj);
+			retval += copyMono10to16ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
 			break;
 		case GVSP_Mono12Packed: //GigE specific
+            retval += copyMono12PackedToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
 		case PFNC_Mono12p:
-			retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == endianess, dobj);
+			retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+			break;
+        case GVSP_Mono10Packed: //GigE specific
+            retval += copyMono10PackedToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
+		case PFNC_Mono10p:
+			retval += copyMono10pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
 			break;
 		default:
 			retval += ito::RetVal::format(ito::retError, 0, "Pixel format %i (%s) is not yet supported.", pixelformat, GetPixelFormatName((PfncFormat)pixelformat));
@@ -979,8 +987,9 @@ ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const s
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void unpack12into16lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
+void unpack_12Packed_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
 {
+    //http://softwareservices.ptgrey.com/BFS-PGE-16S2/latest/Model/public/ImageFormatControl.html
 	const ito::uint8 *end = source + n;
 	ito::uint8 b0, b1, b2;
 
@@ -999,22 +1008,153 @@ void unpack12into16lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void unpack_12p_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
+{
+    //http://softwareservices.ptgrey.com/BFS-PGE-16S2/latest/Model/public/ImageFormatControl.html
+	const ito::uint8 *end = source + n;
+	ito::uint8 b0, b1, b2;
+
+	while (source != end)
+	{
+		b0 = *source++;
+		b1 = *source++;
+		b2 = *source++;
+		
+		//byte 0: pixel 0, bit 7..0
+		//byte 1: pixel 1, bit 3..0  FOLLOWED by pixel 0, bit 11..8
+		//byte 2: pixel 1, bit 11..4
+		*dest++ = (b0) + ((b1 & 0x0f)<<8);
+		*dest++ = ((b1 & 0xf0) >> 4) + (b2 << 4);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void unpack_10Packed_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
+{
+    //http://softwareservices.ptgrey.com/BFS-PGE-16S2/latest/Model/public/ImageFormatControl.html
+	const ito::uint8 *end = source + n;
+	ito::uint8 b0, b1, b2;
+
+	while (source != end)
+	{
+		b0 = *source++;
+		b1 = *source++;
+		b2 = *source++;
+		
+		//byte 0: pixel 0, bit 9..2
+		//byte 1: bits 0..1 -> pixel 1, bit 0..1; bits 2..3 -> unused; bits 4..5 -> pixel 0, bit 0..1; bits 6..7 -> unused
+		//byte 2: pixel 1, bit 9..2
+		*dest++ = (b0 << 2) + (b1 & 0x03);
+		*dest++ = ((b1 & 0x30) >> 4) + (b2 << 2);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void unpack_10p_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, size_t n)
+{
+    //http://softwareservices.ptgrey.com/BFS-PGE-16S2/latest/Model/public/ImageFormatControl.html
+	const ito::uint8 *end = source + n;
+	ito::uint8 b0, b1, b2, b3, b4;
+
+	while (source != end)
+	{
+		b0 = *source++;
+		b1 = *source++;
+		b2 = *source++;
+        b3 = *source++;
+		b4 = *source++;
+		
+		*dest++ = ((b0 & 0xff) << 0) + ((b1 & 0x03) << 8); //black in link above
+        *dest++ = ((b1 & 0xfc) >> 2) + ((b2 & 0x0f) << 6); //gray in link above
+        *dest++ = ((b2 & 0xf0) >> 4) + ((b3 & 0x3f) << 4); //red in link above
+        *dest++ = ((b3 & 0xc0) >> 6) + ((b4 & 0xff) << 2); //blue in link above
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::copyMono12pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
+    //https://www.ptgrey.com/Content/Images/Uploaded/Downloads/TRM/2016/BFS-U3-32S4/html/Model/public/ImageFormatControl.html
 	if (littleEndian)
 	{
 		if (width * height % 2 != 0)
 		{
-			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12p or mono12packed (width*height must be divisible by 2).");
+			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12p (width*height must be divisible by 2).");
 		}
 
 		ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);
 		const ito::uint8 *source = (const ito::uint8*)ptr;
-		unpack12into16lsb(dest, source, width * height * 12 / 8);
+		unpack_12p_into_16_lsb(dest, source, width * height * 12 / 8);
 		return ito::retOk;
 	}
 	else
 	{
-		return ito::RetVal(ito::retError, 0, "data converter for mono12p or mono12packed, most significant bit, not implemented yet.");
+		return ito::RetVal(ito::retError, 0, "data converter for mono12p, most significant bit, not implemented yet.");
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyMono12PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+{
+    //https://www.ptgrey.com/Content/Images/Uploaded/Downloads/TRM/2016/BFS-U3-32S4/html/Model/public/ImageFormatControl.html
+    if (littleEndian)
+	{
+		if (width * height % 2 != 0)
+		{
+			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12Packed or (width*height must be divisible by 2).");
+		}
+
+		ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);
+		const ito::uint8 *source = (const ito::uint8*)ptr;
+		unpack_12Packed_into_16_lsb(dest, source, width * height * 12 / 8);
+		return ito::retOk;
+	}
+	else
+	{
+		return ito::RetVal(ito::retError, 0, "data converter for mono12Packed, most significant bit, not implemented yet.");
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyMono10pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+{
+    //https://www.ptgrey.com/Content/Images/Uploaded/Downloads/TRM/2016/BFS-U3-32S4/html/Model/public/ImageFormatControl.html
+	if (littleEndian)
+	{
+		if (width * height % 4 != 0)
+		{
+			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono10p (width*height must be divisible by 4).");
+		}
+
+		ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);
+		const ito::uint8 *source = (const ito::uint8*)ptr;
+		unpack_10p_into_16_lsb(dest, source, width * height * 10 / 8);
+		return ito::retOk;
+	}
+	else
+	{
+		return ito::RetVal(ito::retError, 0, "data converter for mono10p, most significant bit, not implemented yet.");
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyMono10PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+{
+    //https://www.ptgrey.com/Content/Images/Uploaded/Downloads/TRM/2016/BFS-U3-32S4/html/Model/public/ImageFormatControl.html
+    if (littleEndian)
+	{
+		if (width * height % 2 != 0)
+		{
+			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono10Packed (width*height must be divisible by 2).");
+		}
+
+		ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);
+		const ito::uint8 *source = (const ito::uint8*)ptr;
+		unpack_10Packed_into_16_lsb(dest, source, width * height * 12 / 8);
+		return ito::retOk;
+	}
+	else
+	{
+		return ito::RetVal(ito::retError, 0, "data converter for mono10Packed, most significant bit, not implemented yet.");
 	}
 }
