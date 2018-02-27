@@ -79,7 +79,7 @@ Indicate the right interface or leave 'interface' empty, in order to get a list 
 In order to keep this plugin compatible to other camera plugins, the additional parameters 'integration_time', 'roi', 'sizex', 'sizey', \n\
 and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Width', 'Height', 'OffsetX', 'OffsetY' or 'PixelFormat'. \n\
 \n\
-Up to now the following pixel formats are supported: Mono8, Mono10, Mono12, Mono14, Mono16 and Mono12Packed. \n\
+Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14 and Mono16. \n\
 \n\
 This plugin has been tested with the following cameras: \n\
 \n\
@@ -114,7 +114,7 @@ a list of all auto-detected vendors and models is returned.");
 	paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Guru, GenApi::Expert, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).toLatin1().constData());
+	paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Invisible, GenApi::Expert, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru, %4: Invisible).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).arg(GenApi::Invisible).toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());

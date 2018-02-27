@@ -772,7 +772,7 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
 		QByteArray name = node->GetName().c_str();
 		visibility = node->GetVisibility();
 
-		if ((visibility != GenApi::Invisible) && (visibility <= visibilityLevel))
+		if (visibility <= visibilityLevel)
 		{
 			try
 			{
@@ -863,7 +863,7 @@ ito::RetVal GenTLDevice::createParamsFromDevice(QMap<QString, ito::Param> &param
 
 		QByteArray name = node->GetName().c_str();
 
-		if ((visibility != GenApi::Invisible) && (visibility <= visibilityLevel))
+		if (visibility <= visibilityLevel)
 		{
 
 			category = categoryMap.contains(node) ? categoryMap[node] : ito::ByteArray();
