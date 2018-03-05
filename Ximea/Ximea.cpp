@@ -1763,7 +1763,7 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             }
 
             it->setVal<double>(musecToSec(integration_time));
-            it->setMeta(new ito::DoubleMeta(musecToSec(integration_min + integration_step), musecToSec(integration_max - integration_step), musecToSec(integration_step)), true);
+            it->setMeta(new ito::DoubleMeta(musecToSec(integration_min), musecToSec(integration_max), musecToSec(integration_step)), true);
             it->setFlags(0);
         }
         else
