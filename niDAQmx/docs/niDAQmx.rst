@@ -1,14 +1,14 @@
 ===================
- NI-DAQmx
+ niDAQmx
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`NI-DAQmx`
-**Type**:       :plugintype:`NI-DAQmx`
-**License**:    :pluginlicense:`NI-DAQmx`
+**Summary**:    :pluginsummary:`niDAQmx`
+**Type**:       :plugintype:`niDAQmx`
+**License**:    :pluginlicense:`niDAQmx`
 **Platforms**:  Windows, Linux
 **Devices**:    NI-ADDA Converter
-**Author**:     :pluginauthor:`Martin Hoppe`
+**Author**:     :pluginauthor:`niDAQmx`
 **Requires**:   NI-DAQmx Lib and DLL
 =============== ========================================================================================================
  
@@ -18,7 +18,7 @@ Overview
 The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. The installation needs the NI-DAQmx Library that can be downloaded from the NI website (http://www.ni.com/download/ni-daqmx-14.2/5046/en/)
 
 .. pluginsummaryextended::
-    :plugin: NI-DAQmx
+    :plugin: niDAQmx
 
 Initialization
 ==============
@@ -26,12 +26,12 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: NI-DAQmx
+        :plugin: niDAQmx
         
 Parameters
 ==========
 
-These parameters are available and can be used to configure the **NI-DAQmx** instance. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable
+These parameters are available and can be used to configure the **niDAQmx** instance. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable
 parameters can be changed using *setParam*. In general the string returned is a semicolon comma separated string. Groups are separated by semicolon, elements inside groups with a comma. 
 Example: the answer of taskStatus => "ai,0;ao,0;ci,-1;co,-1;di,-1;do,-1"
 
@@ -143,4 +143,4 @@ Known Issues
 Changelog
 =========
 
-* itom setup 3.1.0: This plugin has been compiled using the NI-DAQmx 17.6.0
+* itom setup 3.1.0: This plugin has been compiled using the niDAQmx 17.6.0

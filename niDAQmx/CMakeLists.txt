@@ -7,7 +7,7 @@
 ###################################################################
 ###################################################################
 
-SET (target_name NI-DAQmx) #->replace PCI6115 by the name of your plugin (one word)
+SET (target_name niDAQmx) #->replace PCI6115 by the name of your plugin (one word)
 
 project(${target_name})
 
@@ -287,7 +287,7 @@ IF(NIDAQMX_FOUND)
 	# 
 	# PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 	#################################################################
-	PLUGIN_DOCUMENTATION(${target_name} NI-DAQmx)
+	PLUGIN_DOCUMENTATION(${target_name} niDAQmx)
 
 	#################################################################
 	# Post-Build Copy Operations

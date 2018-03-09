@@ -254,11 +254,11 @@ if (PLUGIN_NEWPORT_SMC100)
     ADD_SUBDIRECTORY(NewportSMC100)
 endif (PLUGIN_NEWPORT_SMC100)
 
-# NI-DAQmx
-OPTION(PLUGIN_NI-DAQmx "Build with this plugin." OFF)
-if (PLUGIN_NI-DAQmx)
-    ADD_SUBDIRECTORY(NI-DAQmx)
-endif (PLUGIN_NI-DAQmx)
+# niDAQmx
+OPTION(PLUGIN_niDAQmx "Build with this plugin." OFF)
+if (PLUGIN_niDAQmx)
+    ADD_SUBDIRECTORY(niDAQmx)
+endif (PLUGIN_niDAQmx)
 
 # NITWidySWIR
 OPTION(PLUGIN_NITWidySWIR "Build with this plugin." OFF)
