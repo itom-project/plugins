@@ -58,7 +58,7 @@ ThorlabsPowerMeterInterface::ThorlabsPowerMeterInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This plugin can be used to control any Thorlabs PM100x Power Console with a connected photodiode power sensors. Other sensors like thermal or pyroelectric sensors \
+"This plugin can be used to control any Thorlabs PM100x, PM200 or PM400 Power Console with a connected photodiode power sensors. Other sensors like thermal or pyroelectric sensors \
 are currently not supported by this plugin.\n\
 If you start the plugin without further parameters (device=''), the first connected device is opened. \n\
 Set device = '<scan>' in order to get a printed list of detected devices. Use the device string or the desired \n\
@@ -82,7 +82,7 @@ Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directo
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
-    m_initParamsMand.append(ito::Param("device", ito::ParamBase::String, "", tr("device name that should be opened, an empty string opens the first device that is found. Pass '<scan>' for displaying all devices").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("device", ito::ParamBase::String, "", tr("device name that should be opened, an empty string opens the first device that is found (default). Pass '<scan>' for displaying all detected devices.").toLatin1().data()));
 
 
 }
@@ -146,7 +146,7 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("attenuation", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("attenuation [db]. -1 if not supported by device.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("dark_offset", ito::ParamBase::Double | ito::ParamBase::Readonly, NULL, tr("setted dark offset [unknown]").toLatin1().data());
+    paramVal = ito::Param("dark_offset", ito::ParamBase::Double | ito::ParamBase::Readonly, NULL, tr("dark offset, read-out from the device [unit unknown]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     
 
@@ -158,8 +158,13 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     paramVal = ito::Param("auto_range", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr(" shows if the auto power range is wether on (1) or off(2) ").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("measurement_mode", ito::ParamBase::String | ito::ParamBase::In, NULL , tr("absolute or relative").toLatin1().data());
+    paramVal = ito::Param("measurement_mode", ito::ParamBase::String | ito::ParamBase::In, NULL , tr("Get / set the current measurement mode (values 'absolute' or 'relative')").toLatin1().data());
+	ito::StringMeta measurement_mode_meta(ito::StringMeta::String);
+	measurement_mode_meta.addItem("absolute");
+	measurement_mode_meta.addItem("relative");
+	paramVal.setMeta(&measurement_mode_meta, false);
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("reference_power", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("reference power for relative measurements").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -536,7 +541,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("could not identify given string").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("invalid value, 'absolute' or 'relative' required.").toLatin1().data());
             }
 
         }
@@ -1138,13 +1143,18 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM100D_getPowerRefState(m_instrument, &mode));
         if (!retval.containsError())
         {
-            if (mode == PM100D_POWER_REF_ON)
-                retval += m_params["measurement_mode"].setVal<char*>("relative");
-            else if (mode == PM100D_POWER_REF_OFF)
-
-                retval += m_params["measurement_mode"].setVal<char*>("absolute");
-            else
-                retval += ito::RetVal(ito::retError, 0, tr("received invalid mode from device").toLatin1().data());
+			if (mode == PM100D_POWER_REF_ON)
+			{
+				retval += m_params["measurement_mode"].setVal<char*>("relative");
+			}
+			else if (mode == PM100D_POWER_REF_OFF)
+			{
+				retval += m_params["measurement_mode"].setVal<char*>("absolute");
+			}
+			else
+			{
+				retval += ito::RetVal(ito::retError, 0, tr("received invalid mode from device").toLatin1().data());
+			}
         }
     }
 

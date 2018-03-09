@@ -65,15 +65,55 @@ Additional functions (exec functions)
 
 .. py:function::  instance.exec('zero_device', )
 
-    function to set the zero value of the device    
-	
+    function to set the zero value of the device
+
 Installation
 ============
 
 For using this plugin, please install the PM100x_Instrument_Driver that is shipped with the Thorlabs power meter.
-        
+
+
+Exemplary usage from Python
+============================
+
+In the following script, the first detectable power meter is connected and a oscilloscope-like
+plot is opened that displays a moving graph of recent intensity values:
+
+.. code-block:: python
+	
+	if not "pmXXX" in globals():
+    pmXXX = dataIO("ThorlabsPowerMeter", "")
+    
+	numPoints = 1000
+	image = dataObject.zeros([1,numPoints],'float64')
+	[i,plot_handle] = plot1(image)
+
+	def timeout():
+		global timer_id
+		d = dataObject()
+		pmXXX.acquire() #acquire new intensity value
+		
+		image[0,0:numPoints-1] = image[0,1:] #shift pixels to the left by one...
+		
+		pmXXX.getVal(d) #get the recently acquired value
+		image.copyMetaInfo(d)
+		image[0,numPoints-1] = d[0,0] #...append new value to the end of image
+		
+		if plot_handle.exists():
+			try:
+				plot_handle["source"] = image #update the displayed image
+			except:
+				pass
+		else:
+			print("Figure has been closed. Stop acquisition...")
+			timer_id.stop()
+			del timer_id
+
+	timer_id = timer(50, timeout) #call timeout every 50ms
+
+       
 Changelog
 =========
 
 itom 3.0.0: plugin uses the driver PM100x_Instrument_Driver in version 3.0.2
-itom 3.1.0: plugin uses the driver PM100x_Instrument_Driver in version 1.0.2 (Thorlabs has changed the Version the 1 again)
+itom 3.1.0: plugin uses the driver PM100x_Instrument_Driver in version 1.0.2 (Thorlabs has changed the major version number again)
