@@ -56,6 +56,10 @@ public:
 	bool setPayloadSize(int payloadSize); //use this method to signal payload size from GenApi XML., returns true if payloadSize is different than before
 	void setTimeoutSec(double timeout);
 
+    QByteArray getInfoString(GenTL::STREAM_INFO_CMD cmd, int maxSize, const QByteArray &defaultValue, GenTL::GC_ERROR *returnCode = NULL) const;
+
+    QByteArray getTLType(ito::RetVal *retval = NULL) const;
+
 	ito::RetVal copyBufferToDataObject(const GenTL::BUFFER_HANDLE buffer, ito::DataObject &dobj);
 
 protected:

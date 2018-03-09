@@ -515,7 +515,7 @@ int GenTLInterface::getNumDevices() const
 /*
 \param deviceID: ID of device to be opened, if empty, the first available device is used.
 */
-QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID, ito::RetVal &retval)
+QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID, GenTL::DEVICE_ACCESS_FLAGS deviceAccess, ito::RetVal &retval)
 {
     if (!IFGetDeviceInfo)
     {
@@ -624,12 +624,27 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             }
 
             GenTL::DEV_HANDLE devHandle;
-			GenTL::DEVICE_ACCESS_FLAGS deviceAccess = GenTL::DEVICE_ACCESS_CONTROL;
 			GenTL::GC_ERROR err = IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle);
 			if (err == GenTL::GC_ERR_ACCESS_DENIED)
 			{
-				deviceAccess = GenTL::DEVICE_ACCESS_EXCLUSIVE;
-				std::cout << "The access to the device was denied with the flag GenTL::DEVICE_ACCESS_CONTROL. Retry with an exclusive access...\n" << std::endl;
+				
+                switch (deviceAccess)
+                {
+                case GenTL::DEVICE_ACCESS_EXCLUSIVE:
+                    std::cout << "The access to the device was denied with the flag GenTL::DEVICE_ACCESS_EXCLUSIVE. Retry with an exclusive access...\n" << std::endl;
+                    break;
+                case GenTL::DEVICE_ACCESS_CONTROL:
+                    std::cout << "The access to the device was denied with the flag GenTL::DEVICE_ACCESS_CONTROL. Retry with an exclusive access...\n" << std::endl;
+                    break;
+                case GenTL::DEVICE_ACCESS_READONLY:
+                    std::cout << "The access to the device was denied with the flag GenTL::DEVICE_ACCESS_READONLY. Retry with an exclusive access...\n" << std::endl;
+                    break;
+                default:
+                    std::cout << "The access to the device was denied. Retry with an exclusive access...\n" << std::endl;
+                    break;
+                }
+
+                deviceAccess = GenTL::DEVICE_ACCESS_EXCLUSIVE;
 				retval += checkGCError(IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle), "Opening device in exclusive mode");
 			}
 			else

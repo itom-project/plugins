@@ -81,6 +81,8 @@ IF (GENICAM_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogGenicam.h
         ${CMAKE_CURRENT_SOURCE_DIR}/gccommon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/device.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/framegrabber.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/basePort.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dataStream.h
         ${CMAKE_CURRENT_SOURCE_DIR}/deviceContainer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/datatypes.h
@@ -101,6 +103,8 @@ IF (GENICAM_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogGenicam.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gccommon.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/device.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/framegrabber.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/basePort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dataStream.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/deviceContainer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/datatypes.cpp

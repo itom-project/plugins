@@ -20,11 +20,12 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef FRAMEGRABBER_H
+#define FRAMEGRABBER_H
 
 #define NOMINMAX
 
+#include <qlibrary.h>
 #include <qstring.h>
 #include <qpointer.h>
 #include <qsharedpointer.h>
@@ -37,8 +38,7 @@
 
 #include "common/param.h"
 #include "common/retVal.h"
-#include "dataStream.h"
-#include "framegrabber.h"
+#include "datatypes.h"
 #include "basePort.h"
 
 #include "GenApi/GenApi.h"
@@ -53,55 +53,20 @@ using namespace GENAPI_NAMESPACE;
 ////////////////////////////////////////////////////////////////////////////////////////////
 /*
 */
-class GenTLDevice : public BasePort
+class GenTLFramegrabber : public BasePort
 {
 public:
-	GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHandle, QByteArray deviceID, const QByteArray &identifier, int verbose, ito::RetVal &retval);
-    ~GenTLDevice();
-
-    QByteArray getDeviceID() const { return m_deviceID; }
-	
-	QSharedPointer<GenTLDataStream> getDataStream(ito::int32 streamIndex, ito::RetVal &retval);
-
-	ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params); //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
-	int getPayloadSize() const;
-
-	QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL);
-
-	
-
-	
-	
-	QByteArray getIdentifier() const { return m_identifier; }
+	GenTLFramegrabber(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE framegrabberHandle, int verbose, ito::RetVal &retval);
+    ~GenTLFramegrabber();
 
     void resyncAllParameters();
 
-	
-	virtual void callbackParameterChanged_(INode *pNode); //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
-
-    QSharedPointer<GenTLFramegrabber> getFramegrabber(ito::RetVal &retval);
-
+    virtual void callbackParameterChanged_(INode *pNode); //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
 protected:
 
-	void intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta) const;
+    GenTL::DEV_HANDLE m_framegrabberHandle;
 
-	
-	QSharedPointer<QTimer> m_callbackParameterChangedTimer;
-	
-
-    GenTL::DEV_HANDLE m_cameraHandle;
-    
-	
-
-    QByteArray m_deviceID;
-
-	QByteArray m_identifier;
-	
-	QVector<PfncFormat> m_supportedFormats;
-	QStringList m_supportedFormatsNames;
-	QVector<int> m_supportedFormatsBpp; //bitdepths that correspond to m_supportedFormats
-
-    GenTL::EVENT_HANDLE m_errorEvent;
+    QSharedPointer<QTimer> m_callbackParameterChangedTimer;
 };
 
-#endif // DEVICE_H
+#endif // FRAMEGRABBER_H

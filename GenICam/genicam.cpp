@@ -122,6 +122,9 @@ a list of all auto-detected vendors and models is returned.");
 
 	paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states)).").toLatin1().constData());
 	m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param("accessLevel", ito::ParamBase::Int, GenTL::DEVICE_ACCESS_READONLY, GenTL::DEVICE_ACCESS_EXCLUSIVE, GenTL::DEVICE_ACCESS_EXCLUSIVE, tr("Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).").arg(GenTL::DEVICE_ACCESS_READONLY).arg(GenTL::DEVICE_ACCESS_CONTROL).arg(GenTL::DEVICE_ACCESS_EXCLUSIVE).toLatin1().constData());
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -545,8 +548,22 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 			}
 			else
 			{
-				//redirect set param to device
-				retValue += m_device->setDeviceParam(val, it);
+                if (!m_framegrabber)
+                {
+				    //redirect set param to device
+				    retValue += m_device->setDeviceParam(val, it);
+                }
+                else
+                {
+                    if (key.startsWith(FRAMEGRABBER_PREFIX))
+                    {
+                        retValue += m_framegrabber->setDeviceParam(val, it);
+                    }
+                    else
+                    {
+                        retValue += m_device->setDeviceParam(val, it);
+                    }
+                }
 			}
 		}
 		else
@@ -593,7 +610,6 @@ void GenICamClass::parameterChangedTimerFired()
 	//such that this method is only called after a slight delay of the last called
 	//onParameterChanged callback.
 	//std::cout << "fired\n" << std::endl;
-    bool changed = false;
 
 	/*update dependent parameters*/
 	if (m_params.contains("ExposureTime"))
@@ -603,7 +619,6 @@ void GenICamClass::parameterChangedTimerFired()
         if (!qFuzzyCompare(newVal, p.getVal<double>()))
         {
             p.setVal<double>(newVal);
-            changed = true;
         }
 	}
 	
@@ -623,10 +638,13 @@ void GenICamClass::parameterChangedTimerFired()
 
 	cacheAcquisitionParameters();
 
-    if (changed)
-    {
-        emit parametersChanged(m_params);
-    }
+    emit parametersChanged(m_params);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void GenICamClass::parameterChangedTimerFiredFramegrabber()
+{
+    emit parametersChanged(m_params);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -683,76 +701,149 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 	int streamIndex = paramsOpt->at(3).getVal<int>();
 	int visibilityLevel = paramsOpt->at(4).getVal<int>();
     int portIndex = paramsOpt->at(5).getVal<int>();
-	int verbose = paramsOpt->at(6).getVal<int>(); //temporarily, verbose is used as port index
+	int verbose = paramsOpt->at(6).getVal<int>();
+    int accessLevel_ = paramsOpt->at(7).getVal<int>();
 
-	if (genTlProducerFile.endsWith(".cti"))
-	{
-		retValue += searchGenTLProducer(genTlProducerFile.constData(), "", "");
-	}
-	else
-	{
-		QList<QByteArray> splits = genTlProducerFile.split(';');
-		if (splits.size() > 1)
-		{
-			retValue += searchGenTLProducer("", splits[0], splits[1]);
-		}
-		else
-		{
-			retValue += searchGenTLProducer("", splits[0], "");
-		}
-	}
+    try
+    {
+	    if (genTlProducerFile.endsWith(".cti"))
+	    {
+		    retValue += searchGenTLProducer(genTlProducerFile.constData(), "", "");
+	    }
+	    else
+	    {
+		    QList<QByteArray> splits = genTlProducerFile.split(';');
+		    if (splits.size() > 1)
+		    {
+			    retValue += searchGenTLProducer("", splits[0], splits[1]);
+		    }
+		    else
+		    {
+			    retValue += searchGenTLProducer("", splits[0], "");
+		    }
+	    }
     
-    if (!retValue.containsError())
-    {
-        m_system->setVerbose(verbose);
-		m_interface = m_system->getInterface(interfaceType, retValue);
-    }
+        if (!retValue.containsError())
+        {
+            m_system->setVerbose(verbose);
+		    m_interface = m_system->getInterface(interfaceType, retValue);
+        }
 
-    if (!retValue.containsError())
-    {
-        m_device = m_interface->getDevice(deviceID, retValue);
+        if (!retValue.containsError())
+        {
+            GenTL::DEVICE_ACCESS_FLAGS deviceAccess = (GenTL::DEVICE_ACCESS_FLAGS_LIST)accessLevel_;
+            m_device = m_interface->getDevice(deviceID, deviceAccess, retValue);
 		
+        }
+
+	    if (!retValue.containsError())
+	    {
+		    retValue += m_device->connectToGenApi(portIndex);
+	    }
+
+	    if (!retValue.containsError())
+	    {
+		    m_stream = m_device->getDataStream(streamIndex, retValue);
+	    }
+
+        if (!retValue.containsError())
+        {
+            ito::RetVal streamRetVal;
+            QByteArray streamTlType = m_stream->getTLType(&streamRetVal);
+            if (streamRetVal.containsError() && (verbose >= VERBOSE_DEBUG))
+            {
+                std::cerr << streamRetVal.errorMessage() << "\n" << std::endl;
+            }
+
+            if (streamTlType == "" || streamRetVal.containsError())
+            {
+                streamTlType = m_system->getInterfaceInfo(GenTL::INTERFACE_INFO_TLTYPE, m_interface->getIfaceID(), retValue);
+
+                if (verbose >= VERBOSE_DEBUG)
+                {
+                    std::cout << "Interface: TLType: " << streamTlType.constData() << "\n" << std::endl;
+                }
+            }
+
+            if (streamTlType == TLTypeCXPName || streamTlType == TLTypeCLName || streamTlType == TLTypeCLHSName)
+            {
+                m_framegrabber = m_device->getFramegrabber(retValue);
+
+                if (!retValue.containsError())
+                {
+                    retValue += m_framegrabber->connectToGenApi(0);
+                }
+            }
+        }
+
+	    if (!retValue.containsError())
+	    {
+		    m_device->setCallbackParameterChangedReceiver(this);
+		    retValue += m_device->syncImageParameters(m_params);
+		    m_stream->setTimeoutSec(m_params["timeout"].getVal<double>());
+		    m_stream->setPayloadSize(m_device->getPayloadSize());
+		    retValue += m_device->createParamsFromDevice(m_params, visibilityLevel);
+
+            if (m_framegrabber)
+            {
+                m_framegrabber->setCallbackParameterChangedReceiver(this);
+                retValue += m_framegrabber->createParamsFromDevice(m_params, visibilityLevel);
+            }
+
+		    //synchronize some default parameters
+		    //1. integration_time <-> ExposureTime
+		    if (m_params.contains("ExposureTime"))
+		    {
+			    ParamMapIterator it1 = m_params.find("ExposureTime");
+			    ParamMapIterator it2 = m_params.find("integration_time");
+			    ito::DoubleMeta *dm = it2->getMetaT<ito::DoubleMeta>();
+			    dm->setMin(it1->getMin() * 1.e-6);
+			    dm->setMax(it1->getMax() * 1.e-6);
+			    it2->setVal<double>(it1->getVal<double>() * 1.e-6);
+		    }
+	    }
+
+	    if (!retValue.containsError())
+	    {
+            m_hasTriggerSource = (m_params.contains("TriggerSource") && m_params.contains("TriggerMode"));
+            setIdentifier(m_device->getIdentifier());
+
+            retValue += checkData();
+            cacheAcquisitionParameters();
+	    }
+
+        if (!retValue.containsError())
+        {
+            QList<gcstring> cmds = m_device->getCommandNames();
+            foreach (const gcstring &str, cmds)
+            {
+                m_commandNames.append(QLatin1String(str.c_str()));
+            }
+
+            if (m_framegrabber)
+            {
+                cmds = m_framegrabber->getCommandNames();
+                foreach (const gcstring &str, cmds)
+                {
+                    m_commandNames.append(QLatin1String(str.c_str()));
+                }
+            }
+
+            QVector<ito::Param> pMand = QVector<ito::Param>();
+            QVector<ito::Param> pOpt = QVector<ito::Param>();
+            QVector<ito::Param> pOut = QVector<ito::Param>();
+
+            foreach (const QString &cmd, m_commandNames)
+            {
+                registerExecFunc(cmd, pMand, pOpt, pOut, tr("Invokes the command '%1'").arg(cmd));
+            }
+        }
+
     }
-
-	if (!retValue.containsError())
-	{
-		retValue += m_device->connectToGenApi(portIndex);
-	}
-
-	if (!retValue.containsError())
-	{
-		m_stream = m_device->getDataStream(streamIndex, retValue);
-	}
-
-	if (!retValue.containsError())
-	{
-		m_device->setCallbackParameterChangedReceiver(this);
-		retValue += m_device->syncImageParameters(m_params);
-		m_stream->setTimeoutSec(m_params["timeout"].getVal<double>());
-		m_stream->setPayloadSize(m_device->getPayloadSize());
-		retValue += m_device->createParamsFromDevice(m_params, visibilityLevel);
-
-		//synchronize some default parameters
-		//1. integration_time <-> ExposureTime
-		if (m_params.contains("ExposureTime"))
-		{
-			ParamMapIterator it1 = m_params.find("ExposureTime");
-			ParamMapIterator it2 = m_params.find("integration_time");
-			ito::DoubleMeta *dm = it2->getMetaT<ito::DoubleMeta>();
-			dm->setMin(it1->getMin() * 1.e-6);
-			dm->setMax(it1->getMax() * 1.e-6);
-			it2->setVal<double>(it1->getVal<double>() * 1.e-6);
-		}
-	}
-
-	if (!retValue.containsError())
-	{
-		m_hasTriggerSource = (m_params.contains("TriggerSource") && m_params.contains("TriggerMode"));
-		setIdentifier(m_device->deviceName());
-
-		retValue += checkData();
-		cacheAcquisitionParameters();
-	}
+    catch (GenericException &ex)
+    {
+        retValue += ito::RetVal::format(ito::retError, 0, "GenTL Exception: %s (init)", ex.what());
+    }
     
     if (waitCond)
     {
@@ -776,6 +867,7 @@ ito::RetVal GenICamClass::close(ItomSharedSemaphore *waitCond)
         retValue += stopDevice(NULL);
     }
     
+    m_framegrabber.clear();
 	m_stream.clear();
 	m_device.clear();
 	m_interface.clear();
@@ -807,6 +899,13 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 	    {
 		    if (grabberStartedCount() == 1)
 		    {
+                if (m_framegrabber)
+                {
+                    m_framegrabber->setParamsLocked(1);
+                }
+
+                m_device->setParamsLocked(1);
+
 			    m_stream->setPayloadSize(m_device->getPayloadSize());
 
 			    //first time to be started
@@ -885,6 +984,8 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
 
             setGrabberStarted(0);
 
+            m_device->setParamsLocked(0);
+
 #if QT_VERSION >= 0x050000
 		    QThread::msleep(100);
 #endif
@@ -902,6 +1003,13 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
 #if QT_VERSION >= 0x050000
 		    QThread::msleep(100);
 #endif
+            
+            m_device->setParamsLocked(0);
+
+            if (m_framegrabber)
+            {
+                m_framegrabber->setParamsLocked(0);
+            }
 	    }
 
     }
@@ -1346,6 +1454,22 @@ ito::RetVal GenICamClass::execFunc(const QString funcName, QSharedPointer<QVecto
     if (funcName == "resyncAllParameters")
     {
         m_device->resyncAllParameters();
+
+        if (m_framegrabber)
+        {
+            m_framegrabber->resyncAllParameters();
+        }
+    }
+    else if (m_commandNames.contains(funcName))
+    {
+        if (funcName.startsWith(FRAMEGRABBER_PREFIX))
+        {
+            retValue += m_framegrabber->invokeCommandNode(funcName.toLatin1().constData(), ito::retError);
+        }
+        else
+        {
+            retValue += m_device->invokeCommandNode(funcName.toLatin1().constData(), ito::retError);
+        }
     }
     else
     {

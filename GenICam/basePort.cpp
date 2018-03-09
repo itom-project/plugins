@@ -1,0 +1,1013 @@
+/* ********************************************************************
+    Plugin "GenICam" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of a plugin for the measurement software itom.
+  
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+#include "basePort.h"
+
+#include "gccommon.h"
+
+#include <qfileinfo.h>
+#include <qdebug.h>
+#include <qset.h>
+#include <qregexp.h>
+#include <qurl.h>
+#include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
+#include <iostream>
+
+#include <Base/GCBase.h>
+#include <GenApi/GenApi.h>
+
+
+using namespace GENAPI_NAMESPACE;
+using namespace GENICAM_NAMESPACE;
+
+/*static*/ QHash<INode*, BasePort*> BasePort::nodeDeviceHash;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+BasePort::BasePort(QSharedPointer<QLibrary> lib, PortType deviceType, int verbose, ito::RetVal &retval) :
+    m_lib(lib),
+    m_portType(deviceType),
+    m_verbose(verbose),
+    DevClose(NULL),
+    DevGetNumDataStreams(NULL),
+    DevGetDataStreamID(NULL),
+    GCGetPortInfo(NULL),
+    m_portHandle(GENTL_INVALID_HANDLE),
+    m_genApiConnected(false),
+    m_pCallbackParameterChangedReceiver(NULL)
+{
+
+    switch (m_portType)
+    {
+    case TypeCamera:
+        m_deviceName = "Camera";
+        m_paramPrefix = "";
+        break;
+    case TypeFramegrabber:
+        m_deviceName = "Framegrabber";
+        m_paramPrefix = FRAMEGRABBER_PREFIX;
+        break;
+    }
+    
+
+    DevClose = (GenTL::PDevClose)m_lib->resolve("DevClose");
+    DevGetNumDataStreams = (GenTL::PDevGetNumDataStreams)m_lib->resolve("DevGetNumDataStreams");
+    DevGetDataStreamID = (GenTL::PDevGetDataStreamID)m_lib->resolve("DevGetDataStreamID");
+    DevGetPort = (GenTL::PDevGetPort)m_lib->resolve("DevGetPort");
+    GCReadPort = (GenTL::PGCReadPort)m_lib->resolve("GCReadPort");
+	GCWritePort = (GenTL::PGCWritePort)m_lib->resolve("GCWritePort");
+    DevOpenDataStream = (GenTL::PDevOpenDataStream)m_lib->resolve("DevOpenDataStream");
+    GCGetNumPortURLs = (GenTL::PGCGetNumPortURLs)m_lib->resolve("GCGetNumPortURLs");
+    GCGetPortURLInfo = (GenTL::PGCGetPortURLInfo)m_lib->resolve("GCGetPortURLInfo");
+    GCGetPortInfo = (GenTL::PGCGetPortInfo)m_lib->resolve("GCGetPortInfo");
+
+    
+
+    if (!DevClose || !DevGetNumDataStreams || !DevGetDataStreamID || \
+        !DevGetPort || !GCReadPort || !DevOpenDataStream || !GCGetNumPortURLs \
+		|| !GCGetPortURLInfo || !GCWritePort || !GCGetPortInfo)
+    {
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file does not export all functions of the GenTL protocol.").toLatin1().constData());
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+BasePort::~BasePort()
+{
+    QHash<QString, GCType*>::iterator it = m_paramMapping.begin();
+	while (it != m_paramMapping.end())
+	{
+		delete it.value();
+		++it;
+	}
+	m_paramMapping.clear();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+EAccessMode BasePort::GetAccessMode() const // if the driver is open, return RW (= read/write), otherwise NA (= not available)
+{
+	if (m_genApiConnected && m_portHandle != GENTL_INVALID_HANDLE)
+	{
+		return RW; //read/write
+	}
+	else
+	{
+		return NA; //not available
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BasePort::Read(void *pBuffer, int64_t Address, int64_t Length) //overloded from IPort
+{
+	// Fetch <Length> bytes starting as <Address> from the device
+	// and copy them to <pBuffer>
+	if (m_portHandle != GENTL_INVALID_HANDLE)
+	{
+		size_t piSize = Length;
+		GCReadPort(m_portHandle, Address, pBuffer, &piSize);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BasePort::Write(const void *pBuffer, int64_t Address, int64_t Length) //overloded from IPort
+{
+	// Copy <Length> bytes from <pBuffer> to the device
+	// starting as <Address>
+	if (m_portHandle != GENTL_INVALID_HANDLE)
+	{
+		size_t piSize = Length;
+		GCWritePort(m_portHandle, Address, pBuffer, &piSize);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
+{
+	if (m_genApiConnected)
+	{
+		m_device._Destroy();
+		m_genApiConnected = false;
+	}
+
+	ito::RetVal retval;
+	QByteArray xmlFile;
+    bool isXmlNotZip = true;
+    QString infoString;
+
+    if (m_portHandle == GENTL_INVALID_HANDLE)
+    {
+        retval += ito::RetVal(ito::retError, 0, "no port handle defined");
+		return retval;
+    }
+
+    ito::uint32 numURLS;
+    GCGetNumPortURLs(m_portHandle, &numURLS);
+
+    if (portIndex >= numURLS)
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "port index for xml description file out of range [0,%i]", numURLS - 1);
+		return retval;
+    }
+
+    if (m_verbose >= VERBOSE_INFO)
+    {
+        std::cout << "Number of available ports for configuration files: " << numURLS << "\n" << std::endl;
+        std::cout << "Trying to connect to port index " << portIndex << "...";
+    }
+
+    //get URL
+    QByteArray url;
+    GenTL::INFO_DATATYPE piType;
+    char pBuffer[512];
+    size_t piSize = sizeof(pBuffer);
+    retval += checkGCError(GCGetPortURLInfo(m_portHandle, portIndex, GenTL::URL_INFO_URL, &piType, &pBuffer, &piSize), "get xml description url");
+    if (retval.containsError())
+    {
+        if (m_verbose >= VERBOSE_INFO)
+        {
+            std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
+        }
+
+		return retval;
+        
+    }
+
+    
+
+    if (piType == GenTL::INFO_DATATYPE_STRING)
+    {
+        url = pBuffer;
+        infoString += QString("* XML URL: %1\n").arg(QLatin1String(url));
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "URL_INFO_URL of port does not return a string for the required xml address.");
+
+        if (m_verbose >= VERBOSE_INFO)
+        {
+            std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
+        }
+
+		return retval;
+    }
+    
+	//examples for URLs
+	//url = "File:///C|\\Program Files\\Active Silicon\\GenICam_XML_File\\CXP_MC258xS11.xml?SchemaVersion=1.1.0";
+	//url = "File:///C:\\Program Files\\Active Silicon\\GenICam_XML_File\\CXP_MC258xS11.xml?SchemaVersion=1.1.0";
+	//url = "local:tlguru_system_rev1.xml;F0F00000;3BF?SchemaVersion=1.0.0";
+	//url = "Local:Mikrotron_GmbH_MC258xS11_Rev1_25_0.zip;8001000;273A?SchemaVersion=1.1.0";
+
+    if (url.toLower().startsWith("local:"))
+    {
+        QRegExp regExp("^local:(///)?([a-zA-Z0-9._\\-]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?schemaVersion=.+)?$");
+        regExp.setCaseSensitivity(Qt::CaseInsensitive);
+
+        infoString += QString("* XML file location: %1 device\n").arg(QLatin1String(m_deviceName));
+
+        if (regExp.indexIn(url) >= 0)
+        {
+            if (regExp.cap(2).endsWith("zip", Qt::CaseInsensitive))
+            {
+                isXmlNotZip = false;
+            }
+
+            bool ok;
+            qulonglong addr = regExp.cap(3).toLatin1().toULongLong(&ok, 16);
+            if (!ok)
+            {
+                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as hex address", regExp.cap(3).toLatin1().constData());
+            }
+
+            int size = regExp.cap(4).toLatin1().toInt(&ok, 16);
+            if (!ok)
+            {
+                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as size", regExp.cap(4).toLatin1().constData());
+            }
+
+            if (!retval.containsError())
+            {
+				xmlFile.resize(size);
+				size_t size_ = size;
+				retval += checkGCError(GCReadPort(m_portHandle, addr, xmlFile.data(), &size_));
+            }
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL", url.constData());
+        }
+    }
+    else if (url.toLower().startsWith("file:"))
+    {
+        infoString += QString("* XML file location: File system\n");
+
+        QRegExp regExp("^file:(///)?([a-zA-Z0-9._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
+        regExp.setCaseSensitivity(Qt::CaseInsensitive);
+
+        if (regExp.indexIn(url) >= 0)
+        {
+			QString url1 = regExp.cap(2);
+#ifdef WIN32
+			if (url1.size() >= 2 && url1[1] == '|')
+			{
+				url1[1] = ':';
+			}
+#endif
+            QUrl url2("file:///" + url1);
+            QString url3 = url2.toLocalFile();
+
+            QFile file(url3);
+
+            if (url3.endsWith("zip", Qt::CaseInsensitive))
+            {
+                isXmlNotZip = false;
+            }
+
+            if (file.exists())
+            {
+                if (file.open(QIODevice::ReadOnly))
+                {
+				    xmlFile = file.readAll();
+                    file.close();
+                }
+                else
+                {
+                    retval += ito::RetVal::format(ito::retError, 0, "file '%s' could not be opened (local filename: '%s').", url.constData(), url3.toLatin1().constData());
+                }
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist (local filename: '%s').", url.constData(), url3.toLatin1().constData());
+            }
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL.", url.constData());
+        }
+
+        
+    }
+    else //internet resource
+    {
+        infoString += QString("* XML file location: Internet resource (??)\n");
+
+        retval += ito::RetVal::format(ito::retError, 0 , "xml description file '%s' seems to be an internet resource. Cannot get this.", url.constData());
+    }
+
+    if (isXmlNotZip)
+    {
+        infoString += QString("* XML file type: Ascii XML\n");
+    }
+    else
+    {
+        infoString += QString("* XML file type: Zipped XML\n");
+    }
+
+	if (!retval.containsError())
+	{
+        if (isXmlNotZip)
+        {
+		    m_device._LoadXMLFromString(xmlFile.constData());
+        }
+        else
+        {
+            m_device._LoadXMLFromZIPData(xmlFile.constData(), xmlFile.size());
+        }
+
+        ito::RetVal retval_temp;
+        QByteArray portname = getPortInfoString(GenTL::PORT_INFO_PORTNAME, retval_temp);
+        if (retval_temp.containsError() || (portname == ""))
+        {
+            portname = "Device";
+        }
+
+		m_device._Connect(this, portname.constData());
+		m_genApiConnected = true;
+
+        if (m_verbose >= VERBOSE_INFO)
+        {
+            std::cout << "OK: \n " << infoString.toLatin1().constData() << "\n" << std::endl;
+
+            ito::RetVal retval_;
+
+            if (m_verbose >= VERBOSE_INFO)
+            {
+                std::cout << "Port Information\n----------------------------------------\n";
+                std::cout << "* ID: " << getPortInfoString(GenTL::PORT_INFO_ID, retval_).constData() << "\n";
+                std::cout << "* Vendor: " << getPortInfoString(GenTL::PORT_INFO_VENDOR, retval_).constData() << "\n";
+                std::cout << "* Model: " << getPortInfoString(GenTL::PORT_INFO_MODEL, retval_).constData() << "\n";
+                std::cout << "* TLType: " << getPortInfoString(GenTL::PORT_INFO_TLTYPE, retval_).constData() << "\n";
+                std::cout << "* Module: " << getPortInfoString(GenTL::PORT_INFO_MODULE, retval_).constData() << "\n";
+                std::cout << "* Version: " << getPortInfoString(GenTL::PORT_INFO_VERSION, retval_).constData() << "\n";
+                std::cout << "* Portname: " << getPortInfoString(GenTL::PORT_INFO_PORTNAME, retval_).constData() << "\n";
+            }
+        }
+	}
+    else if (m_verbose >= VERBOSE_INFO)
+    {
+        std::cout << "Error: " << retval.errorMessage() << "\n" << std::endl;
+    }
+
+    return retval;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::printPortInfo(ito::uint32 index) const
+{
+    ito::RetVal retval;
+
+    if (!GCGetPortURLInfo)
+    {
+        retval += ito::RetVal(ito::retError, 0, "System not initialized");
+    }
+    else
+    {
+        GenTL::INFO_DATATYPE piType;
+        char pBuffer[512];
+        size_t piSize;
+
+        GenTL::DEVICE_INFO_CMD cmds[] = { GenTL::URL_INFO_URL };
+
+        const char*  names[] = { "URL: " };
+
+        std::cout << "* " << m_deviceName.constData() << "-Port " << index << ":\n" << std::endl;
+
+        for (int i = 0; i < sizeof(cmds) / sizeof(GenTL::DEVICE_INFO_CMD); ++i)
+        {
+            piSize = sizeof(pBuffer);
+            GenTL::GC_ERROR err = GCGetPortURLInfo(m_portHandle, index, cmds[i], &piType, &pBuffer, &piSize);
+
+            if (err == GenTL::GC_ERR_SUCCESS)
+            {
+                if (piType == GenTL::INFO_DATATYPE_STRING)
+                {
+                    std::cout << "    - " << names[i] << pBuffer << "\n" << std::endl;
+                }
+                else if (piType == GenTL::INFO_DATATYPE_INT32)
+                {
+                    std::cout << "    - " << names[i] << ((ito::int32*)(pBuffer))[0] << "\n" << std::endl;
+                }
+            }
+            else if (err == GenTL::GC_ERR_INVALID_HANDLE || err == GenTL::GC_ERR_NOT_INITIALIZED)
+            {
+                retval += checkGCError(err, QString("%1: Device Info").arg(QLatin1String(m_deviceName)));
+                break;
+            }
+        }
+    }
+
+    if (retval.containsError())
+    {
+        retval = ito::RetVal(ito::retWarning, retval.errorCode(), retval.errorMessage());
+    }
+
+    return retval;
+}
+
+
+//--------------------------------------------------------------------------------------------------------
+bool BasePort::isDeviceParam(const ParamMapIterator &it) const
+{
+	return m_paramMapping.contains(it->getName());
+}
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::setDeviceParam(QSharedPointer<ito::ParamBase> newVal, ParamMapIterator it)
+{
+	QHash<QString, GCType*>::iterator mapit = m_paramMapping.find(it->getName());
+	if (mapit == m_paramMapping.end())
+	{
+		return ito::RetVal(ito::retError, 0, "parameter not available in device parameters");
+	}
+	else
+	{
+		ito::RetVal retval;
+		try
+		{
+			retval += mapit.value()->setValue(newVal.data());
+		}
+		catch (GenericException &ex)
+		{
+			retval += ito::RetVal::format(ito::retError, 0, "Error setting parameter '%s': %s", it->getName(), ex.GetDescription());
+		}
+		return retval;
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------
+void BasePort::setParamsLocked(bool locked)
+{
+    try
+    {
+        CIntegerPtr pInt = m_device._GetNode("TLParamsLocked");
+        if (pInt.IsValid())
+        {
+            *pInt = (locked ? 1 : 0);
+            if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "Set TLParamsLocked (of " << m_deviceName.constData() << ") to " << *pInt() << "\n" << std::endl;
+            }
+        }
+    }
+    catch (GenericException & ex)
+    {
+        if (m_verbose >= VERBOSE_DEBUG)
+        {
+            std::cout << "Error setting TLParamsLocked (of device): " << ex.GetDescription() << "\n" << std::endl;
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------------
+void BasePort::setCallbackParameterChangedReceiver(QObject* receiver)
+{
+	m_pCallbackParameterChangedReceiver = receiver;
+}
+
+//--------------------------------------------------------------------------------------------------------
+/*static*/ void BasePort::callbackParameterChanged(INode *pNode)
+{
+	QHash<INode*, BasePort*>::iterator it = nodeDeviceHash.find(pNode);
+	if (it != nodeDeviceHash.end())
+	{
+		it.value()->callbackParameterChanged_(pNode);
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::createParamsFromDevice(QMap<QString, ito::Param> &params, int visibilityLevel /*= GenApi::Guru*/)
+{
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        std::cout << "Parameter scan of " << m_deviceName.constData() << "\n----------------------------------------\n" << std::endl;
+	}
+
+	ito::RetVal retval;
+	ito::RetVal tempRetVal;
+	GenApi::NodeList_t nodes;
+	m_device._GetNodes(nodes);
+	GenApi::INode *node;
+	GenApi::EInterfaceType interfaceType;
+	GenApi::EVisibility visibility;
+	bool addIt = false;
+	QMap<GenApi::INode*, ito::ByteArray> categoryMap;
+	ito::ByteArray category;
+
+	//at first look for all categories:
+	for (int i = 0; i < nodes.size(); ++i)
+	{
+		node = nodes[i];
+		interfaceType = node->GetPrincipalInterfaceType();
+
+		QByteArray name = m_paramPrefix + node->GetName().c_str();
+		visibility = node->GetVisibility();
+
+		if (visibility <= visibilityLevel)
+		{
+			try
+			{
+				if (interfaceType == GenApi::intfICategory)
+				{
+					GenApi::CCategoryPtr categoryPtr(node);
+					GenApi::FeatureList_t features;
+					categoryPtr->GetFeatures(features);
+                    if (m_verbose >= VERBOSE_DEBUG)
+                    {
+                        std::cout << "Category " << name.constData() << " (Access: " << (int)node->GetAccessMode() << ")\n" << std::endl;
+	                }
+
+					for (int i = 0; i < features.size(); ++i)
+					{
+						categoryMap[features[i]->GetNode()] = name;
+
+                        if (m_verbose >= VERBOSE_DEBUG)
+                        {
+                            const INode *child = features[i]->GetNode();
+
+                            switch (child->GetPrincipalInterfaceType())
+                            {
+                            case intfIValue:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Value, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIBase:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Integer, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIInteger:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Integer, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIBoolean:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Boolean, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfICommand:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Command, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIFloat:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Float, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIString:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:String, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfICategory:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Category, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIRegister:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Register, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIEnumeration:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Enumeration, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIEnumEntry:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:EnumEntry, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            case intfIPort:
+                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Port, V:" << child->GetVisibility() << ")\n";
+                                break;
+                            }
+
+
+                            //std::cout << "        " << (child->GetAlias() ? child->GetAlias()->GetName() : "no alias") << child->IsFeature() << child->IsStreamable() <<" - " << nodeList.size() << (nodeList.size() > 0 ? nodeList[0]->GetName() : "") << "\n";
+	                    }
+					}
+				}
+			}
+			catch (GenericException & ex)
+			{
+				//
+                if (m_verbose >= VERBOSE_ALL)
+                {
+                    std::cerr << name.constData() << "::" << ex.what() << "\n" << std::endl;
+                }
+			}
+		}
+	}
+
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        std::cout << "----------------------------------------\n" << std::endl;
+	}
+
+
+	//now scan for all the rest
+	for (int i = 0; i < nodes.size(); ++i)
+	{
+		node = nodes[i];
+		interfaceType = node->GetPrincipalInterfaceType();
+		visibility = node->GetVisibility();
+		addIt = false;
+
+		QByteArray name = m_paramPrefix + node->GetName().c_str();
+
+		if (visibility <= visibilityLevel)
+		{
+
+			category = categoryMap.contains(node) ? categoryMap[node] : ito::ByteArray();
+
+			try
+			{
+				switch (interfaceType)
+				{
+				case GenApi::intfIInteger:
+					tempRetVal += createIntParamFromDevice(node, params, category);
+					addIt = true;
+					break;
+				case GenApi::intfIFloat:
+					tempRetVal += createFloatParamFromDevice(node, params, category);
+					addIt = true;
+					break;
+				case GenApi::intfIString:
+					tempRetVal += createStringParamFromDevice(node, params, category);
+					addIt = true;
+					break;
+				case GenApi::intfIBoolean:
+					tempRetVal += createBoolParamFromDevice(node, params, category);
+					addIt = true;
+					break;
+				case GenApi::intfIEnumeration:
+					tempRetVal += createEnumParamFromDevice(node, params, category);
+					addIt = true;
+					break;
+				case GenApi::intfICommand:
+                    {
+					    m_commandNodes.insert(name.constData(), CCommandPtr(node));
+					    qDebug() << "Command " << node->GetName() << " (" << interfaceType << "): " << (int)node->GetAccessMode();
+                        if (m_verbose >= VERBOSE_DEBUG)
+                        {
+                            addIt = true;
+                        }
+                    }
+					break;
+				case GenApi::intfICategory:
+					//
+					break;
+				default:
+					qDebug() << "Property " << name << " (" << interfaceType << "): " << (int)node->GetAccessMode();
+                    addIt = true;
+					break;
+				}
+
+				if (addIt)
+				{
+					nodeDeviceHash[node] = this;
+					Register(node, &callbackParameterChanged);
+				}
+			}
+			catch (GenericException &ex)
+			{
+				retval += ito::RetVal::format(ito::retWarning, 0, "Error parsing parameter '%s': %s", name.constData(), ex.GetDescription());
+			}
+		}
+	}
+
+	return retval;
+}
+
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::createIntParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category)
+{
+	QString name = QLatin1String(m_paramPrefix) + node->GetName().c_str();
+	ParamMapIterator it = params.find(name);
+	QByteArray description = node->GetDescription().c_str();
+	GenApi::EAccessMode accessMode = node->GetAccessMode();
+
+	if (accessMode == GenApi::RO || accessMode == GenApi::RW || accessMode == GenApi::NA) //Write-only is also not allowed
+	{
+		if (it == params.end())
+		{
+			it = params.insert(name, ito::Param(name.toLatin1().constData(), ito::ParamBase::Int | ito::ParamBase::In, NULL, description.constData()));
+			ito::IntMeta *meta = new ito::IntMeta(0, 0, 1);
+			meta->setCategory(category);
+			it->setMeta(meta, true);
+		}
+
+        if (!m_paramMapping.contains(name))
+		{
+			GenApi::CIntegerPtr enumPtr(node);
+            m_paramMapping[name] = new GCIntType(&params, name, enumPtr);
+            m_paramMapping2[node] = m_paramMapping[name];
+		}
+        GCType *gctype = m_paramMapping[name];
+		gctype->update(false);
+	}
+	else
+	{
+		if (it != params.end())
+		{
+			//remove it
+			params.erase(it);
+
+            if (m_paramMapping.contains(name))
+			{
+                delete m_paramMapping[name]; //deletes the GCIntType
+                m_paramMapping.remove(name);
+			}
+			if (m_paramMapping2.contains(node))
+			{
+				m_paramMapping2.remove(node);
+			}
+		}
+	}
+
+	return ito::retOk;
+}
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::createFloatParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category)
+{
+	QString name = QLatin1String(m_paramPrefix) + node->GetName().c_str();
+	ParamMapIterator it = params.find(name);
+	QByteArray description = node->GetDescription().c_str();
+	GenApi::EAccessMode accessMode = node->GetAccessMode();
+
+	if (accessMode == GenApi::RO || accessMode == GenApi::RW || accessMode == GenApi::NA) //Write-only is also not allowed
+	{
+		if (it == params.end())
+		{
+			it = params.insert(name, ito::Param(name.toLatin1().constData(), ito::ParamBase::Double | ito::ParamBase::In, NULL, description.constData()));
+			it->setMeta(new ito::DoubleMeta(0.0, 0.0, 0.0, category), true);
+		}
+
+		
+		if (!m_paramMapping.contains(name))
+		{
+			GenApi::CFloatPtr enumPtr(node);
+            m_paramMapping[name] = new GCFloatType(&params, name, enumPtr);
+            m_paramMapping2[node] = m_paramMapping[name];
+		}
+        GCType *gctype = m_paramMapping[name];
+		gctype->update(false);
+	}
+	else
+	{
+		if (it != params.end())
+		{
+			//remove it
+			params.erase(it);
+
+			
+            if (m_paramMapping.contains(name))
+			{
+                delete m_paramMapping[name]; //deletes the GCFloatType
+                m_paramMapping.remove(name);
+			}
+			if (m_paramMapping2.contains(node))
+			{
+				m_paramMapping2.remove(node);
+			}
+		}
+	}
+
+	return ito::retOk;
+}
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::createStringParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category)
+{
+	QString name = QLatin1String(m_paramPrefix) + node->GetName().c_str();
+	ParamMapIterator it = params.find(name);
+	QByteArray description = node->GetDescription().c_str();
+	GenApi::EAccessMode accessMode = node->GetAccessMode();
+
+	if (accessMode == GenApi::RO || accessMode == GenApi::RW || accessMode == GenApi::NA) //Write-only is also not allowed
+	{
+		if (it == params.end())
+		{
+			it = params.insert(name, ito::Param(name.toLatin1().constData(), ito::ParamBase::String | ito::ParamBase::In, NULL, description.constData()));
+			ito::StringMeta *meta = new ito::StringMeta(ito::StringMeta::Wildcard, "*", category);
+			it->setMeta(meta, true);
+		}
+
+		
+        if (!m_paramMapping.contains(name))
+		{
+			GenApi::CStringPtr enumPtr(node);
+            m_paramMapping[name] = new GCStringType(&params, name, enumPtr);
+            m_paramMapping2[node] = m_paramMapping[name];
+		}
+        GCType *gctype = m_paramMapping[name];
+		gctype->update(false);
+	}
+	else
+	{
+		if (it != params.end())
+		{
+			//remove it
+			params.erase(it);
+
+			
+            if (m_paramMapping.contains(name))
+			{
+                delete m_paramMapping[name]; //deletes the GCStringType
+                m_paramMapping.remove(name);
+			}
+			if (m_paramMapping2.contains(node))
+			{
+				m_paramMapping2.remove(node);
+			}
+		}
+	}
+
+	return ito::retOk;
+}
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::createBoolParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category)
+{
+	QString name = QLatin1String(m_paramPrefix) + node->GetName().c_str();
+	ParamMapIterator it = params.find(name);
+	QByteArray description = node->GetDescription().c_str();
+	GenApi::EAccessMode accessMode = node->GetAccessMode();
+
+	if (accessMode == GenApi::RO || accessMode == GenApi::RW || accessMode == GenApi::NA) //Write-only is also not allowed
+	{
+		if (it == params.end())
+		{
+			it = params.insert(name, ito::Param(name.toLatin1().constData(), ito::ParamBase::Int | ito::ParamBase::In, NULL, description.constData()));
+			ito::IntMeta *meta = new ito::IntMeta(0, 1, 1);
+			meta->setRepresentation(ito::ParamMeta::Boolean);
+			meta->setCategory(category);
+			it->setMeta(meta, true);
+		}
+
+		
+        if (!m_paramMapping.contains(name))
+		{
+			GenApi::CBooleanPtr enumPtr(node);
+            m_paramMapping[name] = new GCBoolType(&params, name, enumPtr);
+            m_paramMapping2[node] = m_paramMapping[name];
+		}
+        GCType *gctype = m_paramMapping[name];
+		gctype->update(false);
+	}
+	else
+	{
+		if (it != params.end())
+		{
+			//remove it
+			params.erase(it);
+
+			
+            if (m_paramMapping.contains(name))
+			{
+                delete m_paramMapping[name]; //deletes the GCBoolType
+                m_paramMapping.remove(name);
+			}
+			if (m_paramMapping2.contains(node))
+			{
+				m_paramMapping2.remove(node);
+			}
+		}
+	}
+
+	return ito::retOk;
+}
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::createEnumParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category)
+{
+	QString name = QLatin1String(m_paramPrefix) + node->GetName().c_str();
+	ParamMapIterator it = params.find(name);
+	QByteArray description = node->GetDescription().c_str();
+	GenApi::EAccessMode accessMode = node->GetAccessMode();
+
+	if (accessMode == GenApi::RO || accessMode == GenApi::RW || accessMode == GenApi::NA) //Write-only is also not allowed
+	{
+		if (it == params.end())
+		{
+			it = params.insert(name, ito::Param(name.toLatin1().constData(), ito::ParamBase::String | ito::ParamBase::In, NULL, description.constData()));
+			it->setMeta(new ito::StringMeta(ito::StringMeta::String, NULL, category), true);
+		}
+
+		
+        if (!m_paramMapping.contains(name))
+		{
+			GenApi::CEnumerationPtr enumPtr(node);
+            m_paramMapping[name] = new GCEnumerationType(&params, name, enumPtr);
+            m_paramMapping2[node] = m_paramMapping[name];
+		}
+        GCType *gctype = m_paramMapping[name];
+		gctype->update(false);
+	}
+	else
+	{
+		if (it != params.end())
+		{
+			//remove it
+			params.erase(it);
+
+			
+            if (m_paramMapping.contains(name))
+			{
+                delete m_paramMapping[name]; //deletes the GCBoolType
+                m_paramMapping.remove(name);
+			}
+			if (m_paramMapping2.contains(node))
+			{
+				m_paramMapping2.remove(node);
+			}
+		}
+	}
+
+	return ito::retOk;
+}
+
+QByteArray BasePort::getPortInfoString(GenTL::PORT_INFO_CMD_LIST cmd, ito::RetVal &retval) const
+{
+
+    if (!GCGetPortInfo)
+    {
+        retval += ito::RetVal(ito::retError, 0, "System not initialized or method GCGetInfo in transport layer not available.");
+    }
+    else
+    {
+        GenTL::INFO_DATATYPE piType;
+        char pBuffer[512];
+        size_t piSize = 512;
+        retval += checkGCError(GCGetPortInfo(m_portHandle, cmd, &piType, &pBuffer, &piSize));
+
+        if (!retval.containsError())
+        {
+            if (piType == GenTL::INFO_DATATYPE_STRING)
+            {
+                return QByteArray(pBuffer);
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "info type is no string");
+            }
+        }
+    }
+
+    return QByteArray();
+}
+
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal BasePort::invokeCommandNode(const gcstring &name, ito::tRetValue errorLevel /*=ito::retError*/)
+{
+	if (m_commandNodes.contains(name))
+	{
+		try
+		{
+			GenApi::CCommandPtr &command = m_commandNodes[name];
+
+#ifdef _DEBUG
+			if (m_verbose >= VERBOSE_ALL && command->GetNode())
+			{
+                std::cout << m_deviceName.constData() << ": invoke command " << command->GetNode()->GetName() << ", access: " << command->GetNode()->GetAccessMode() << " (" << command->GetAccessMode() << ")\n" << std::endl;
+			}
+#endif
+
+			command->Execute();
+		}
+		catch (GenericException &ex)
+		{
+			if (errorLevel == ito::retError)
+			{
+				return ito::RetVal::format(ito::retError, 0, "%s: Error invoking command '%s': %s", m_deviceName.constData(), name.c_str(), ex.GetDescription());
+			}
+			else if (errorLevel == ito::retWarning)
+			{
+				return ito::RetVal::format(ito::retWarning, 0, "%s: Warning invoking command '%s': %s", m_deviceName.constData(), name.c_str(), ex.GetDescription());
+			}
+		}
+		return ito::retOk;
+	}
+	else
+	{
+		if (errorLevel == ito::retError)
+		{
+			return ito::RetVal::format(ito::retError, 0, "%s: Command '%s' not available", m_deviceName.constData(), name.c_str());
+		}
+		else if (errorLevel == ito::retWarning)
+		{
+			return ito::RetVal::format(ito::retWarning, 0, "%s: Command '%s' not available", m_deviceName.constData(), name.c_str());
+		}
+
+		return ito::retOk;
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------
+QList<gcstring> BasePort::getCommandNames() const
+{
+    return m_commandNodes.keys();
+}

@@ -52,7 +52,7 @@ public:
     QByteArray getIfaceID() const { return m_IfaceID; }
     int getNumDevices() const;
 
-	QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, ito::RetVal &retval);
+	QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, GenTL::DEVICE_ACCESS_FLAGS deviceAccess, ito::RetVal &retval);
 
 protected:
 	ito::RetVal printDeviceInfo(const char* sDeviceID) const;
@@ -96,10 +96,10 @@ public:
 
     void setVerbose(int verbose) { m_verbose = verbose; }
     
-
-protected:
     QByteArray getInterfaceInfo(GenTL::INTERFACE_INFO_CMD_LIST cmd, const char *sIfaceID, ito::RetVal &retval) const;
 
+protected:
+    
     GenTL::PGCInitLib GCInitLib;
     GenTL::PGCCloseLib GCCloseLib;
     GenTL::PGCGetInfo GCGetInfo;

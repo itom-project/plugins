@@ -34,6 +34,8 @@
 #define VERBOSE_DEBUG 4
 #define VERBOSE_ALL 5
 
+#define FRAMEGRABBER_PREFIX "Fg_"
+
 ito::RetVal checkGCError(const GenTL::GC_ERROR &error, const QString &suffix = "");
 
 #endif // GCCOMMON_H

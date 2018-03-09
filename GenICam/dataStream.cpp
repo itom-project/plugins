@@ -95,6 +95,8 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
 			    break;
 		    }
         }
+
+        
     }
 
     if (m_verbose >= VERBOSE_INFO)
@@ -135,6 +137,72 @@ GenTLDataStream::~GenTLDataStream()
         DSClose(m_handle);
         m_handle = GENTL_INVALID_HANDLE;
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QByteArray GenTLDataStream::getInfoString(GenTL::STREAM_INFO_CMD cmd, int maxSize, const QByteArray &defaultValue, GenTL::GC_ERROR *returnCode /*= NULL*/) const
+{
+    QByteArray output = defaultValue;
+
+    GenTL::INFO_DATATYPE piType;
+    char pBuffer[256];
+    size_t piSize = 256;
+
+    if (maxSize > 256)
+    {
+        if (returnCode)
+        {
+            *returnCode = GenTL::GC_ERR_CUSTOM_ID - 1;
+            return output;
+        }
+    }
+
+    GenTL::INFO_DATATYPE type = GenTL::INFO_DATATYPE_STRING;
+    GenTL::GC_ERROR err = DSGetInfo(m_handle, cmd, &piType, &pBuffer, &piSize);
+    
+    if (err == GenTL::GC_ERR_SUCCESS)
+    {
+        if (piType == GenTL::INFO_DATATYPE_STRING)
+        {
+            output = QByteArray(pBuffer).left(piSize);
+        }
+        else
+        {
+            err = GenTL::GC_ERR_CUSTOM_ID;
+        }
+    }
+    
+    if (returnCode)
+    {
+        *returnCode = err;
+    }
+
+    return output;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QByteArray GenTLDataStream::getTLType(ito::RetVal *retval /*= NULL*/) const
+{
+    GenTL::GC_ERROR errorInfo;
+    QByteArray tlType = getInfoString(GenTL::STREAM_INFO_TLTYPE, 16, "", &errorInfo);
+
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        if (errorInfo == GenTL::GC_ERR_SUCCESS)
+        {
+            std::cout << "DataStream: TLType: " << tlType.constData() << "\n" << std::endl;
+        }
+        else
+        {
+            if (retval)
+            {
+                *retval += checkGCError(errorInfo, "DataStream: Get Transport layer type");
+            }
+            std::cout << "DataStream: TLType not detectable. Error code: " << errorInfo << "\n" << std::endl;
+        }
+    }
+
+    return tlType;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
