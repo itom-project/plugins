@@ -37,7 +37,7 @@ The following parameters are mandatory or optional for initializing an instance 
 **integration_time**: {float}
     integration time of [sec]
 **name**: {str}, read-only
-    
+    PmdPico
 **sensor_name**: {str}, read-only
     sensor name of the attached camera
 **serial_number**: {str}, read-only
@@ -82,4 +82,4 @@ Changelog
 =========
 
 * itom setup 3.1.0: plugin uses the Royale SDK in version 3.12.0.44
-        
+

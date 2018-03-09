@@ -31,8 +31,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "Your Company Name"
-#define PLUGIN_AUTHOR         "Robin Hahn, Institut fuer Technische Optik, Universität Stuttgart"
+#define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
+#define PLUGIN_AUTHOR         "Robin Hahn"
 #define PLUGIN_COPYRIGHT      "(C) 2017, ITO, University Stuttgart"
 #define PLUGIN_NAME           "PmdPico"
 
