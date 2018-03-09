@@ -9,14 +9,16 @@
 #define PLUGINVERSION_H
 
 #define PLUGIN_VERSION_MAJOR 0
-#define PLUGIN_VERSION_MINOR 2
+#define PLUGIN_VERSION_MINOR 1
 #define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
-#define PLUGIN_VERSION_STRING "0.2.0"
-#define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_AUTHOR         "Martin Hoppe (ITO University Stuttgart)"
-#define PLUGIN_COPYRIGHT      "(C) 2018, ITO University Stuttgart"
-#define PLUGIN_NAME           "niDAQmx"
+
+#define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_COMPANY        "ITO Uni Stuttgart"
+#define PLUGIN_AUTHOR         "M. Hoppe (ITO Uni Stuttgart)"
+#define PLUGIN_COPYRIGHT      "(C) 2014, ITO Uni Stuttgart"
+#define PLUGIN_NAME           "NI-DAQmx"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
