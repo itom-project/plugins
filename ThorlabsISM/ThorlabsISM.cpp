@@ -106,7 +106,7 @@ This plugin has been tested with the cage rotator K10CR1.");
     m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
-    m_initParamsOpt.append(ito::Param("additionalGearFactor", ito::ParamBase::Double, 0.0000000001, 1.0e12, 2048.0, tr("There seems to be an additional conversion factor between device and real world units. This can be given here.").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("additionalGearFactor", ito::ParamBase::Double, 0.0000000001, 1.0e12, 1.0, tr("There seems to be an additional conversion factor for some devices between device and real world units. This can be given here.").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ ThorlabsISM::ThorlabsISM() :
 AddInActuator(),
 m_async(0),
 m_opened(false),
-m_unitToRealWorldFactor(1.0)
+m_additionalFactor(1.0)
 {
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsISM", tr("Name of the plugin").toLatin1().data()));
     m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("number of axes (channels)").toLatin1().data()));
@@ -302,22 +302,36 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         double gearBoxRatio;
         double pitch;
         retval += checkError(ISC_GetMotorParamsExt(m_serialNo, &stepsPerRev, &gearBoxRatio, &pitch), "get motor parameters");
-        m_unitToRealWorldFactor = additionalGearFactor * stepsPerRev * gearBoxRatio / pitch;
+        m_additionalFactor = additionalGearFactor;
 
         m_params["travelMode"].setVal<int>(ISC_GetMotorTravelMode(m_serialNo));
 
         int accel, speed;
+
+
+        if (deviceInfo.typeID == 49)
+        {
+            retval += checkError(ISC_SetButtonParams(m_serialNo, MOT_JogMode, 1, 1),"set button params");
+            retval += checkError(ISC_SetVelParams(m_serialNo, realWorldUnit2DeviceUnit(8,2), realWorldUnit2DeviceUnit(3, 1)), "set speed and acceleration");
+            retval += checkError(ISC_SetJogVelParams(m_serialNo, realWorldUnit2DeviceUnit(8, 2), realWorldUnit2DeviceUnit(3, 1)), "set jog velocity and acceleration");
+            retval += checkError(ISC_SetJogStepSize(m_serialNo, realWorldUnit2DeviceUnit(1, 0)), "set jog step size");
+        }
+        
+
         retval += checkError(ISC_GetVelParams(m_serialNo, &accel, &speed), "get speed and acceleration");
-        m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed));
-        m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel));
+        m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed,1));
+        m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel,2));
+
+
+
 
         MOT_PowerParameters powerParams;
         retval += checkError(ISC_GetPowerParams(m_serialNo, &powerParams), "get motor power parameters");
         m_params["restCurrent"].setVal<int>(powerParams.restPercentage);
         m_params["moveCurrent"].setVal<int>(powerParams.movePercentage);
 
-        m_params["stagePosMax"].setVal<double>(deviceUnit2RealWorldUnit(ISC_GetStageAxisMaxPos(m_serialNo)));
-        m_params["stagePosMin"].setVal<double>(deviceUnit2RealWorldUnit(ISC_GetStageAxisMinPos(m_serialNo)));
+        m_params["stagePosMax"].setVal<double>(deviceUnit2RealWorldUnit(ISC_GetStageAxisMaxPos(m_serialNo),0));
+        m_params["stagePosMin"].setVal<double>(deviceUnit2RealWorldUnit(ISC_GetStageAxisMinPos(m_serialNo),0));
     }
 
     if (!retval.containsError())
@@ -443,6 +457,7 @@ ito::RetVal ThorlabsISM::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
     QVector<QPair<int, QByteArray> > lastitError;
+    double realValue;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -492,19 +507,18 @@ ito::RetVal ThorlabsISM::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             {
                 if (key == "speed")
                 {
-                    speed = realWorldUnit2DeviceUnit(val->getVal<double>());
+                    speed = realWorldUnit2DeviceUnit(val->getVal<double>(), 1);
                 }
                 else
                 {
-                    accel = realWorldUnit2DeviceUnit(val->getVal<double>());
+                    accel = realWorldUnit2DeviceUnit(val->getVal<double>(), 2);
                 }
 
                 retValue += checkError(ISC_SetVelParams(m_serialNo, accel, speed), "set speed and acceleration");
                 retValue += checkError(ISC_GetVelParams(m_serialNo, &accel, &speed), "get current speed and acceleration");
             }
-
-            m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed));
-            m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel));
+            m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed,1));
+            m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel,2));
         }
         else if (key == "moveCurrent" || key == "restCurrent")
         {
@@ -552,15 +566,19 @@ ito::RetVal ThorlabsISM::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-double ThorlabsISM::deviceUnit2RealWorldUnit(int deviceUnit)
+double ThorlabsISM::deviceUnit2RealWorldUnit(int deviceUnit, int mode)
 {
-    return (double)deviceUnit / m_unitToRealWorldFactor;
+    double realValue;
+    ISC_GetRealValueFromDeviceUnit(m_serialNo, deviceUnit, &realValue, mode);
+    return (double)realValue / m_additionalFactor;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int ThorlabsISM::realWorldUnit2DeviceUnit(double realWorldUnit)
+int ThorlabsISM::realWorldUnit2DeviceUnit(double realWorldUnit, int mode)
 {
-    return qRound(realWorldUnit * m_unitToRealWorldFactor);
+    int deviceUnit;
+    ISC_GetDeviceUnitFromRealValue(m_serialNo, realWorldUnit, &deviceUnit, mode);
+    return qRound(deviceUnit * m_additionalFactor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -588,6 +606,7 @@ ito::RetVal ThorlabsISM::calib(const int axis, ItomSharedSemaphore *waitCond)
     }
     else
     {
+        ISC_ClearMessageQueue(m_serialNo);
         retval += checkError(ISC_Home(m_serialNo), "start homing");
     }
 
@@ -631,8 +650,8 @@ ito::RetVal ThorlabsISM::calib(const int axis, ItomSharedSemaphore *waitCond)
 
         int accel, speed;
         retval += checkError(ISC_GetVelParams(m_serialNo, &accel, &speed), "get speed and acceleration");
-        m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed));
-        m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel));
+        m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed,1));
+        m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel,2));
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
 
@@ -778,8 +797,7 @@ ito::RetVal ThorlabsISM::getPos(const int axis, QSharedPointer<double> pos, Itom
     }
     else
     {
-        int posDeviceUnit = ISC_GetPosition(m_serialNo);
-        *pos = deviceUnit2RealWorldUnit(posDeviceUnit);
+        *pos = deviceUnit2RealWorldUnit(ISC_GetPosition(m_serialNo),0);
         m_currentPos[0] = *pos;
         sendStatusUpdate(false);
     }
@@ -872,10 +890,9 @@ ito::RetVal ThorlabsISM::setPosAbs(const int axis, const double pos, ItomSharedS
         {
             m_targetPos[0] = newPosition;
             sendTargetUpdate();
+            int systemPos = realWorldUnit2DeviceUnit(pos,0);
 
-            newPosition = realWorldUnit2DeviceUnit(newPosition); //move to device unit
-
-            retval += checkError(ISC_SetMoveAbsolutePosition(m_serialNo, newPosition), "set move absolute position");
+            retval += checkError(ISC_SetMoveAbsolutePosition(m_serialNo, systemPos), "set move absolute position");
 
             if (!retval.containsError())
             {
@@ -1004,9 +1021,7 @@ ito::RetVal ThorlabsISM::setPosRel(const int axis, const double pos, ItomSharedS
             m_targetPos[0] = m_currentPos[0] + newRelPosition;
             sendTargetUpdate();
 
-            newRelPosition = realWorldUnit2DeviceUnit(newRelPosition); //move to device unit
-
-            retval += checkError(ISC_SetMoveRelativeDistance(m_serialNo, newRelPosition), "set move relative position");
+            retval += checkError(ISC_SetMoveRelativeDistance(m_serialNo, realWorldUnit2DeviceUnit(newRelPosition,0)), "set move relative position");
 
             if (!retval.containsError())
             {
@@ -1125,6 +1140,7 @@ ito::RetVal ThorlabsISM::waitForDone(const int timeoutMS, const QVector<int> axi
     timer.start();
     qint64 lastTime = timer.elapsed();
 
+
     while (!done && !retval.containsWarningOrError())
     {   
         if (isInterrupted())
@@ -1167,7 +1183,7 @@ ito::RetVal ThorlabsISM::waitForDone(const int timeoutMS, const QVector<int> axi
             {   // Position reached and movement done
                 replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
                 sendStatusUpdate(true);
-                m_currentPos[0] = deviceUnit2RealWorldUnit(ISC_GetPosition(m_serialNo));
+                m_currentPos[0] = deviceUnit2RealWorldUnit(ISC_GetPosition(m_serialNo),0);
                 sendStatusUpdate(false);
                 break;
             }
@@ -1175,7 +1191,7 @@ ito::RetVal ThorlabsISM::waitForDone(const int timeoutMS, const QVector<int> axi
             {
                 if ((timer.elapsed() - lastTime) > 250.0)
                 {
-                    m_currentPos[0] = deviceUnit2RealWorldUnit(ISC_GetPosition(m_serialNo));
+                    m_currentPos[0] = deviceUnit2RealWorldUnit(ISC_GetPosition(m_serialNo),0);
                     sendStatusUpdate(false);
                     lastTime = timer.elapsed();
                 }

@@ -91,10 +91,10 @@ class ThorlabsISM : public ito::AddInActuator
 
         static QList<QByteArray> openedDevices;
 
-        double m_unitToRealWorldFactor;
+        double m_additionalFactor;
 
-        double deviceUnit2RealWorldUnit(int deviceUnit);
-        int realWorldUnit2DeviceUnit(double realWorldUnit);
+        double deviceUnit2RealWorldUnit(int deviceUnit, int mode);//mode: 0:distance, 1:velocity, 2:acceleration
+        int realWorldUnit2DeviceUnit(double realWorldUnit, int mode); //mode: 0:distance, 1:velocity, 2:acceleration
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
         ito::RetVal checkError(short value, const char *message);
