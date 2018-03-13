@@ -205,7 +205,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     ito::RetVal retval(ito::retOk);
 
     m_isgrabbing = false;
-    QString deviceName = paramsMand->at(0).getVal<char*>();
+    QString deviceName = paramsOpt->at(0).getVal<char*>();
     QList<QByteArray> foundDevices;
     ViSession	defaultRM = VI_NULL;
     ViSession  resMgr = VI_NULL;      //resource manager
