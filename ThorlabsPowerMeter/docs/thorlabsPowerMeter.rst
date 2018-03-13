@@ -66,6 +66,7 @@ Additional functions (exec functions)
 .. py:function::  instance.exec('zero_device', )
 
     function to set the zero value of the device    
+	
 Installation
 ============
 

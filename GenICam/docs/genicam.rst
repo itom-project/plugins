@@ -157,10 +157,11 @@ The development version comes under the GenICam license (see below).
 
 GenICam uses the following 3rd party software packages:
 
+==========  ==============  =============================================
 Package     License         Internet
-==================================================================================
+==========  ==============  =============================================
 Mathparser  LGPL            http://kirya.narod.ru/mathparser.html
-                            http://www.sama.ru/~despair/ccalc/
+--			--  			http://www.sama.ru/~despair/ccalc/
 Log4Cpp     LGPL            http://log4cpp.sourceforge.net
 CppUnit     LGPL            http://cppunit.sourceforge.net
 CLSerAll    NI              http://sourceforge.net/projects/clallserial
@@ -168,6 +169,7 @@ xs3p        DSTC            http://xml.fiforms.org/xs3p/index.html
 xxhash      New BSD         https://code.google.com/p/xxhash/
 XSLTProc    MIT license     http://xmlsoft.org/XSLT/xsltproc2.html
 XSDe        Proprietary     NA
+==========  ==============  =============================================
 
 Note that the XSDe license was purchased by one of the members of the committee but 
 allows all members to re-compile the parser as long as only the GenApi XML vocabulary is used.
@@ -175,8 +177,9 @@ allows all members to re-compile the parser as long as only the GenApi XML vocab
 All license texts come as part of the GenICam distribution in the licenses
 subdiretory. If not, you can download them from the internet.
 
+==========  ======================  ================================================
 License     File                    Where to find the license texts
-====================================================================================
+==========  ======================  ================================================
 LGPL        LGPL.txt                http://www.gnu.org/licenses/lgpl.html
 GenICam     GenICam_License.pdf     http://www.genicam.org
 CLSerAll    CLSerAll_LICENSE.txt    http://sourceforge.net/projects/clallserial
@@ -184,6 +187,7 @@ xs3p        xs3p_License.mht        http://xml.fiforms.org/xs3p/index.html
 xxhash      xxhash_License.txt      http://opensource.org/licenses/BSD-3-Clause
 XSLTProc    MIT_License.txt         http://opensource.org/licenses/mit-license.html
 XSDe        XSDe License.pdf        NA  
+==========  ======================  ================================================
 
 Last but not least GenICam redistributes the C/C++ runtime DLLs of the
 Microsoft Visual C++ compiler in the version 12.0

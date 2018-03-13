@@ -55,7 +55,7 @@ parameters can be changed using *setParam*.
 **microSteps**: {seq. of int}
     micro steps for motor [1, 2, 4, 5, 8, 10, 16, 32, 64]
 **name**: {str}, read-only
-    
+    NanotecStepMotor
 **numaxis**: {int}, read-only
     Number of axis
 **speed**: {seq. of int}

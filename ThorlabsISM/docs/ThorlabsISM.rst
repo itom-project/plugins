@@ -47,7 +47,7 @@ parameters can be changed using *setParam*.
 **moveCurrent**: {int}
     Percentage of full power to give while moving.
 **name**: {str}, read-only
-    
+    ThorlabsISM
 **numaxis**: {int}, read-only
     number of axes (channels)
 **restCurrent**: {int}

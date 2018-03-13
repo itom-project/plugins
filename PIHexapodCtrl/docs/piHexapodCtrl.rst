@@ -40,9 +40,9 @@ parameters can be changed using *setParam*.
 **axesNames**: {str}, read-only
     semicolon-separated list of the names of all connected axes
 **identifier**: {str}, read-only
-    Identifier string of device (*idn?)
+    Identifier string of device (\*idn?)
 **name**: {str}, read-only
-    
+    PIHexapodCtrl
 **numaxis**: {int}, read-only
     Number of axes attached to this stage (see axesNames for names of axes)
 **pivotPoint**: {seq. of float}
