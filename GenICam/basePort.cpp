@@ -32,6 +32,7 @@
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 #include <iostream>
+#include <qfile.h>
 
 #include <Base/GCBase.h>
 #include <GenApi/GenApi.h>
@@ -123,7 +124,35 @@ void BasePort::Read(void *pBuffer, int64_t Address, int64_t Length) //overloded 
 	if (m_portHandle != GENTL_INVALID_HANDLE)
 	{
 		size_t piSize = Length;
-		GCReadPort(m_portHandle, Address, pBuffer, &piSize);
+		GenTL::GC_ERROR err = GCReadPort(m_portHandle, Address, pBuffer, &piSize);
+
+		if (m_verbose >= VERBOSE_ALL)
+		{
+			QByteArray data((const char*)pBuffer, piSize);
+
+			if (data.size() <= 64)
+			{
+				data = data.toHex();
+			}
+			else
+			{
+				data = data.left(64).toHex() + "...";
+			}
+
+			if (err == GenTL::GC_ERR_SUCCESS)
+			{
+				std::cout << m_deviceName.constData() << ": Reading from port " << Address << ": Hex " << data.constData() << " (" << " Bytes).\n" << std::endl;
+			}
+			else
+			{
+				std::cerr << m_deviceName.constData() << ": Error reading from port " << Address << ": Hex " << data.constData() << " (" << " Bytes), Code " << err << ".\n" << std::endl;
+			}
+		}
+
+	}
+	else if (m_verbose >= VERBOSE_ALL)
+	{
+		std::cerr << m_deviceName.constData() << ": Error reading from port " << Address << ": port handle not available.\n" << std::endl;
 	}
 }
 
@@ -135,7 +164,34 @@ void BasePort::Write(const void *pBuffer, int64_t Address, int64_t Length) //ove
 	if (m_portHandle != GENTL_INVALID_HANDLE)
 	{
 		size_t piSize = Length;
-		GCWritePort(m_portHandle, Address, pBuffer, &piSize);
+		GenTL::GC_ERROR err = GCWritePort(m_portHandle, Address, pBuffer, &piSize);
+
+		if (m_verbose >= VERBOSE_ALL)
+		{
+			QByteArray data((const char*)pBuffer, Length);
+
+			if (data.size() <= 64)
+			{
+				data = data.toHex();
+			}
+			else
+			{
+				data = data.left(64).toHex() + "...";
+			}
+
+			if (err == GenTL::GC_ERR_SUCCESS)
+			{
+				std::cout << m_deviceName.constData() << ": Writing to port " << Address << ": Hex " << data.constData() << " (" << " Bytes).\n" << std::endl;
+			}
+			else
+			{
+				std::cerr << m_deviceName.constData() << ": Error writing to port " << Address << ": Hex " << data.constData() << " (" << " Bytes), Code " << err << ".\n" << std::endl;
+			}
+		}
+	}
+	else if (m_verbose >= VERBOSE_ALL)
+	{
+		std::cerr << m_deviceName.constData() << ": Error writing to port " << Address << ": port handle not available.\n" << std::endl;
 	}
 }
 
@@ -326,10 +382,44 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
         if (isXmlNotZip)
         {
 		    m_device._LoadXMLFromString(xmlFile.constData());
+
+			if (m_verbose >= VERBOSE_ALL)
+			{
+				QString filename = QString::fromLatin1(m_deviceName) + QLatin1String("_parameters.xml");
+				QFile dump(filename);
+				if (dump.open(QIODevice::WriteOnly | QIODevice::Text))
+				{
+					dump.write(xmlFile);
+					dump.close();
+					std::cerr << m_deviceName.constData() << ": XML data saved for debugging in '" << QFileInfo(filename).absoluteFilePath().toLatin1().constData() << "'.\n" << std::endl;
+				}
+				else
+				{
+					std::cerr << m_deviceName.constData() << ": Error opening file '" << QFileInfo(filename).absoluteFilePath().toLatin1().constData() << "' for saving xml file for debugging reasons.\n" << std::endl;
+				}
+
+			}
         }
         else
         {
             m_device._LoadXMLFromZIPData(xmlFile.constData(), xmlFile.size());
+
+			if (m_verbose >= VERBOSE_ALL)
+			{
+				QString filename = QString::fromLatin1(m_deviceName) + QLatin1String("_parameters.zip");
+				QFile dump(filename);
+				if (dump.open(QIODevice::WriteOnly | QIODevice::Text))
+				{
+					dump.write(xmlFile);
+					dump.close();
+					std::cerr << m_deviceName.constData() << ": Zipped xml data saved for debugging in '" << QFileInfo(filename).absoluteFilePath().toLatin1().constData() << "'.\n" << std::endl;
+				}
+				else
+				{
+					std::cerr << m_deviceName.constData() << ": Error opening file '" << QFileInfo(filename).absoluteFilePath().toLatin1().constData() << "' for saving zipped xml file for debugging reasons.\n" << std::endl;
+				}
+
+			}
         }
 
         ito::RetVal retval_temp;
