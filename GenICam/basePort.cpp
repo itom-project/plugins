@@ -141,11 +141,11 @@ void BasePort::Read(void *pBuffer, int64_t Address, int64_t Length) //overloded 
 
 			if (err == GenTL::GC_ERR_SUCCESS)
 			{
-				std::cout << m_deviceName.constData() << ": Reading from port " << Address << ": Hex " << data.constData() << " (" << " Bytes).\n" << std::endl;
+				std::cout << m_deviceName.constData() << ": Reading from port " << Address << ": Hex " << data.constData() << " (" << piSize << " Bytes).\n" << std::endl;
 			}
 			else
 			{
-				std::cerr << m_deviceName.constData() << ": Error reading from port " << Address << ": Hex " << data.constData() << " (" << " Bytes), Code " << err << ".\n" << std::endl;
+				std::cerr << m_deviceName.constData() << ": Error reading from port " << Address << ": Hex " << data.constData() << " (" << piSize << " Bytes), Code " << err << ".\n" << std::endl;
 			}
 		}
 
@@ -181,11 +181,11 @@ void BasePort::Write(const void *pBuffer, int64_t Address, int64_t Length) //ove
 
 			if (err == GenTL::GC_ERR_SUCCESS)
 			{
-				std::cout << m_deviceName.constData() << ": Writing to port " << Address << ": Hex " << data.constData() << " (" << " Bytes).\n" << std::endl;
+				std::cout << m_deviceName.constData() << ": Writing to port " << Address << ": Hex " << data.constData() << " (" << Length << " Bytes).\n" << std::endl;
 			}
 			else
 			{
-				std::cerr << m_deviceName.constData() << ": Error writing to port " << Address << ": Hex " << data.constData() << " (" << " Bytes), Code " << err << ".\n" << std::endl;
+				std::cerr << m_deviceName.constData() << ": Error writing to port " << Address << ": Hex " << data.constData() << " (" << Length << " Bytes), Code " << err << ".\n" << std::endl;
 			}
 		}
 	}
@@ -890,6 +890,11 @@ ito::RetVal BasePort::createStringParamFromDevice(GenApi::INode *node, QMap<QStr
         if (!m_paramMapping.contains(name))
 		{
 			GenApi::CStringPtr enumPtr(node);
+
+            if (m_verbose >= VERBOSE_ALL)
+            {
+                std::cout << "String parameter " << name.toLatin1().constData() << ": MaxLength:" << enumPtr->GetMaxLength() << ", Current value: " << enumPtr->GetValue(false, true) << "\n" << std::endl;
+            }
             m_paramMapping[name] = new GCStringType(&params, name, enumPtr);
             m_paramMapping2[node] = m_paramMapping[name];
 		}
