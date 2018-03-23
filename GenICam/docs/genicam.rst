@@ -105,6 +105,24 @@ warning or error messages will be printed to the command line of itom. The diffe
 * 3: info: errors, warnings and few information are displayed
 * 4: debug: this level contains all levels above including detailed information about the startup process as well as detected parameters of the device
 * 5: all: all information is printed including details about the state of all image buffers and reported changes in device-specific parameters.
+
+In verbose level 5, both the zipper or unzipped xml configuration file of the camera (and framegrabber, if available) are saved to files on the harddrive.
+The filenames are printed to the command line of itom.
+
+CoaXPress or Camera Link
+========================
+
+If cameras are connected via CoaXPress or Camera Link to the computer, the image from the camera is transferred to the framegrabber at first. The
+framegrabber can then transform the image another time and this GenICam plugin obtains the image from the framegrabber. The real size and format of
+the image is then read from the framegrabber.
+
+Both the camera and the framegrabber, which might come from different manufacturers, provide a set of parameters. In order to distinguish between both,
+all parameters of the framegrabber will have the prefix **Fg_**. Please remark, that some framegrabbers need to be properly parameterized before starting
+the device.
+
+In the example of an Active Silicon CoaXPress framegrabber, you have to set the parameters **Fg_IncomingWidth** to the **Width** of the camera,
+**Fg_IncomingHeight** to the **Height** of the camera and **Fg_IncomingPixelFormat** to the current pixel format of the camera. Then adjust the
+values **Fg_Width**, **Fg_Height** and **Fg_PixelFormat** to suitable values, since these values are read by itom to configure a proper image acquisition.
         
 Compilation
 ===========

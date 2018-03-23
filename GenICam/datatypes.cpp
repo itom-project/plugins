@@ -31,6 +31,8 @@
 #include <GenApi/GenApi.h>
 #include "PFNC.h"
 
+#define DO_NOT_USE_SETVALUE 1 //uncomment this line to use the setValue method of GenApi to set parameters
+
 //###########################################################################
 //###########################################################################
 //---------------------------------------------------------------------------
@@ -103,7 +105,11 @@ ito::RetVal GCIntType::setValue(const ito::ParamBase *value)
 	}
 	else
 	{
+#ifdef DO_NOT_USE_SETVALUE
+        *m_sharedPtr = value->getVal<int>();
+#else
 		m_sharedPtr->SetValue(value->getVal<int>());
+#endif
 		return update(true);
 	}
 }
@@ -223,7 +229,11 @@ ito::RetVal GCFloatType::setValue(const ito::ParamBase *value)
 	}
 	else
 	{
+#ifdef DO_NOT_USE_SETVALUE
+        *m_sharedPtr = value->getVal<ito::float64>();
+#else
 		m_sharedPtr->SetValue(value->getVal<ito::float64>());
+#endif
 		return update(true);
 	}
 }
@@ -356,7 +366,11 @@ ito::RetVal GCStringType::setValue(const ito::ParamBase *value)
 	}
 	else
 	{
+#ifdef DO_NOT_USE_SETVALUE
+        *m_sharedPtr = value->getVal<const char*>();
+#else
 		m_sharedPtr->SetValue(value->getVal<const char*>());
+#endif
 		return update(true);
 	}
 }
@@ -410,7 +424,11 @@ ito::RetVal GCBoolType::setValue(const ito::ParamBase *value)
 	}
 	else
 	{
+#ifdef DO_NOT_USE_SETVALUE
+        *m_sharedPtr = (value->getVal<int>() ? true : false);
+#else
 		m_sharedPtr->SetValue(value->getVal<int>() ? true : false);
+#endif
 		return update(true);
 	}
 }

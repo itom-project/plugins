@@ -79,6 +79,10 @@ public:
 
     ito::RetVal invokeCommandNode(const gcstring &name, ito::tRetValue errorLevel = ito::retError);
 
+    ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params); //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
+
+    QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL);
+
     void setCallbackParameterChangedReceiver(QObject* receiver);
     virtual void callbackParameterChanged_(INode *pNode) = 0; //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
 
@@ -91,6 +95,8 @@ protected:
 	ito::RetVal createStringParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
 	ito::RetVal createBoolParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
 	ito::RetVal createEnumParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
+
+    void intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta) const;
 
     static void callbackParameterChanged(INode *pNode);
     QObject *m_pCallbackParameterChangedReceiver;
@@ -121,6 +127,10 @@ protected:
 
     QHash<QString, GCType*> m_paramMapping; //the first parameter is the iterator to the corresponding ito::Param*, GCType* is owned by this map and has to be deleted at destroy-time
 	QHash<INode*, GCType*> m_paramMapping2; //the first parameter is the INode* pointer (for speed reasons there are two look-up tables), the second is the GCType*. It must not be destroyed since this is done via m_paramMapping.
+
+    QVector<PfncFormat> m_supportedFormats;
+	QStringList m_supportedFormatsNames;
+	QVector<int> m_supportedFormatsBpp; //bitdepths that correspond to m_supportedFormats
 
     static QHash<INode*, BasePort*> nodeDeviceHash;
 };

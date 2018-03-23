@@ -45,8 +45,7 @@
 
 #include "GenTL_v1_5.h"
 
-#define PFNC_INCLUDE_HELPERS
-#include "PFNC.h"
+
 
 using namespace GENAPI_NAMESPACE;
 
@@ -63,44 +62,23 @@ public:
 	
 	QSharedPointer<GenTLDataStream> getDataStream(ito::int32 streamIndex, ito::RetVal &retval);
 
-	ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params); //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
 	int getPayloadSize() const;
 
-	QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL);
-
 	
 
-	
-	
 	QByteArray getIdentifier() const { return m_identifier; }
 
     void resyncAllParameters();
 
-	
 	virtual void callbackParameterChanged_(INode *pNode); //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
 
     QSharedPointer<GenTLFramegrabber> getFramegrabber(ito::RetVal &retval);
 
 protected:
-
-	void intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta) const;
-
-	
 	QSharedPointer<QTimer> m_callbackParameterChangedTimer;
-	
-
     GenTL::DEV_HANDLE m_cameraHandle;
-    
-	
-
     QByteArray m_deviceID;
-
 	QByteArray m_identifier;
-	
-	QVector<PfncFormat> m_supportedFormats;
-	QStringList m_supportedFormatsNames;
-	QVector<int> m_supportedFormatsBpp; //bitdepths that correspond to m_supportedFormats
-
     GenTL::EVENT_HANDLE m_errorEvent;
 };
 

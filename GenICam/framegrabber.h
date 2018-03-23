@@ -61,6 +61,8 @@ public:
 
     void resyncAllParameters();
 
+    ito::RetVal special(int num);
+
     virtual void callbackParameterChanged_(INode *pNode); //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
 protected:
 

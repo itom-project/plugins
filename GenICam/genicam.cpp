@@ -80,12 +80,15 @@ In order to keep this plugin compatible to other camera plugins, the additional 
 and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Width', 'Height', 'OffsetX', 'OffsetY' or 'PixelFormat'. \n\
 \n\
 Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14 and Mono16. \n\
+In order to operate framegrabber-based cameras (CoaXPress, Camera Link) with this plugin, please read the additional information in the \n\
+documenation of this plugin. \n\
 \n\
 This plugin has been tested with the following cameras: \n\
 \n\
 * Allied Vision, Manta (Firewire) \n\
 * Ximea (USB3) \n\
 * Baumer TXG12 (GigE) \n\
+* Mikrotron (CoaXPress) with Active Silicon Framegrabber (FireBird) \n\
 * Vistek, exo174MU3 (USB3) \n\
 * Vistek, exo174MGE (GigE)";
     m_detaildescription = QObject::tr(docstring);
@@ -195,6 +198,9 @@ GenICamClass::GenICamClass() : AddInGrabber(),
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("resyncAllParameters", pMand, pOpt, pOut, tr("Forces a resychroniziation of all camera parameters."));
+
+    //registerExecFunc("special1", pMand, pOpt, pOut, tr("Test for CoaXPress camera with Active Silicon FireBird."));
+    //registerExecFunc("special2", pMand, pOpt, pOut, tr("Test for CoaXPress camera with Active Silicon FireBird."));
 
 
     if (hasGuiSupport())
@@ -492,7 +498,7 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 				//check if format is among the supported formats
 				QStringList supportedFormatsStr;
 				m_device->supportedImageFormats(NULL, &supportedFormatsStr);
-				if (!supportedFormatsStr.contains(val->getVal<const char*>(), Qt::CaseInsensitive))
+				if (m_framegrabber.isNull() && !supportedFormatsStr.contains(val->getVal<const char*>(), Qt::CaseInsensitive))
 				{
 					retValue += ito::RetVal::format(ito::retError, 0, "This plugin currently only supports the following pixel formats: %s", supportedFormatsStr.join("; ").toLatin1().constData());
 				}
@@ -508,7 +514,14 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 
 					//redirect set param to device
 					retValue += m_device->setDeviceParam(val, it);
-					retValue += m_device->syncImageParameters(m_params);
+                    if (m_framegrabber.isNull())
+                    {
+					    retValue += m_device->syncImageParameters(m_params);
+                    }
+                    else
+                    {
+                        retValue += m_framegrabber->syncImageParameters(m_params);
+                    }
 					m_stream->setPayloadSize(m_device->getPayloadSize());
 					retValue += checkData();
 				}
@@ -526,7 +539,14 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 
 				//redirect set param to device
 				retValue += m_device->setDeviceParam(val, it);
-				retValue += m_device->syncImageParameters(m_params);
+				if (m_framegrabber.isNull())
+                {
+					retValue += m_device->syncImageParameters(m_params);
+                }
+                else
+                {
+                    retValue += m_framegrabber->syncImageParameters(m_params);
+                }
 				m_stream->setPayloadSize(m_device->getPayloadSize());
 				retValue += checkData();
 			}
@@ -542,30 +562,94 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 
 				//redirect set param to device
 				retValue += m_device->setDeviceParam(val, it);
-				retValue += m_device->syncImageParameters(m_params);
+				if (m_framegrabber.isNull())
+                {
+					retValue += m_device->syncImageParameters(m_params);
+                }
+                else
+                {
+                    retValue += m_framegrabber->syncImageParameters(m_params);
+                }
 				m_stream->setPayloadSize(m_device->getPayloadSize());
 				retValue += checkData();
 			}
 			else
 			{
-                if (!m_framegrabber)
-                {
-				    //redirect set param to device
-				    retValue += m_device->setDeviceParam(val, it);
-                }
-                else
-                {
-                    if (key.startsWith(FRAMEGRABBER_PREFIX))
-                    {
-                        retValue += m_framegrabber->setDeviceParam(val, it);
-                    }
-                    else
-                    {
-                        retValue += m_device->setDeviceParam(val, it);
-                    }
-                }
+                retValue += m_device->setDeviceParam(val, it);
 			}
 		}
+        else if (m_framegrabber.isNull() == false && m_framegrabber->isDeviceParam(it))
+        {
+            if (key == (QLatin1String(FRAMEGRABBER_PREFIX) + "PixelFormat"))
+			{
+				//check if format is among the supported formats
+				QStringList supportedFormatsStr;
+				m_device->supportedImageFormats(NULL, &supportedFormatsStr);
+				if (!supportedFormatsStr.contains(val->getVal<const char*>(), Qt::CaseInsensitive))
+				{
+					retValue += ito::RetVal::format(ito::retError, 0, "This plugin currently only supports the following pixel formats: %s", supportedFormatsStr.join("; ").toLatin1().constData());
+				}
+				else
+				{
+					if (grabberStartedCount() > 0 && (*it != *val))
+					{
+						//not yet stopped
+						setGrabberStarted(1);
+						retValue += stopDevice(NULL);
+						restartNecessary = true;
+					}
+
+					//redirect set param to device
+					retValue += m_framegrabber->setDeviceParam(val, it);
+                    retValue += m_framegrabber->syncImageParameters(m_params);
+					m_stream->setPayloadSize(m_device->getPayloadSize());
+					retValue += checkData();
+				}
+			}
+			else if (key == (QLatin1String(FRAMEGRABBER_PREFIX) + "BinningHorizontal") || \
+                     key == (QLatin1String(FRAMEGRABBER_PREFIX) + "BinningVertical") || \
+				     key == (QLatin1String(FRAMEGRABBER_PREFIX) + "DecimationHorizontal") || \
+                     key == (QLatin1String(FRAMEGRABBER_PREFIX) + "DecimationVertical"))
+			{
+				if (grabberStartedCount() > 0 && (*it != *val))
+				{
+					//not yet stopped
+					setGrabberStarted(1);
+					retValue += stopDevice(NULL);
+					restartNecessary = true;
+				}
+
+				//redirect set param to device
+				retValue += m_framegrabber->setDeviceParam(val, it);
+				retValue += m_framegrabber->syncImageParameters(m_params);
+				m_stream->setPayloadSize(m_device->getPayloadSize());
+				retValue += checkData();
+			}
+			else if (key == (QLatin1String(FRAMEGRABBER_PREFIX) + "OffsetX") || \
+                    key == (QLatin1String(FRAMEGRABBER_PREFIX) + "OffsetY") || \
+                    key == (QLatin1String(FRAMEGRABBER_PREFIX) + "Width") || \
+                    key == (QLatin1String(FRAMEGRABBER_PREFIX) + "Height"))
+			{
+				if (grabberStartedCount() > 0)
+				{
+					//not yet stopped
+					setGrabberStarted(1);
+					retValue += stopDevice(NULL);
+					restartNecessary = true;
+				}
+
+				//redirect set param to device
+				retValue += m_framegrabber->setDeviceParam(val, it);
+				retValue += m_framegrabber->syncImageParameters(m_params);
+				m_stream->setPayloadSize(m_device->getPayloadSize());
+				retValue += checkData();
+			}
+			else
+			{
+                retValue += m_framegrabber->setDeviceParam(val, it);
+			}
+            
+        }
 		else
 		{
 			it->copyValueFrom(&(*val));
@@ -622,19 +706,22 @@ void GenICamClass::parameterChangedTimerFired()
         }
 	}
 	
-	if (m_params.contains("OffsetX") && m_params.contains("Width"))
-	{
-		int* roi = m_params["roi"].getVal<int*>();
-		roi[0] = m_params["OffsetX"].getVal<int>();
-		roi[2] = m_params["Width"].getVal<int>();
-	}
+    if (!m_framegrabber)
+    {
+	    if (m_params.contains("OffsetX") && m_params.contains("Width"))
+	    {
+		    int* roi = m_params["roi"].getVal<int*>();
+		    roi[0] = m_params["OffsetX"].getVal<int>();
+		    roi[2] = m_params["Width"].getVal<int>();
+	    }
 	
-	if (m_params.contains("OffsetY") && m_params.contains("Height"))
-	{
-		int* roi = m_params["roi"].getVal<int*>();
-		roi[1] = m_params["OffsetY"].getVal<int>();
-		roi[3] = m_params["Height"].getVal<int>();
-	}
+	    if (m_params.contains("OffsetY") && m_params.contains("Height"))
+	    {
+		    int* roi = m_params["roi"].getVal<int*>();
+		    roi[1] = m_params["OffsetY"].getVal<int>();
+		    roi[3] = m_params["Height"].getVal<int>();
+	    }
+    }
 
 	cacheAcquisitionParameters();
 
@@ -644,6 +731,21 @@ void GenICamClass::parameterChangedTimerFired()
 //----------------------------------------------------------------------------------------------------------------------------------
 void GenICamClass::parameterChangedTimerFiredFramegrabber()
 {
+    QString prefix(FRAMEGRABBER_PREFIX);
+    if (m_params.contains(prefix + "OffsetX") && m_params.contains(prefix + "Width"))
+	{
+		int* roi = m_params["roi"].getVal<int*>();
+		roi[0] = m_params[prefix + "OffsetX"].getVal<int>();
+		roi[2] = m_params[prefix + "Width"].getVal<int>();
+	}
+	
+	if (m_params.contains(prefix + "OffsetY") && m_params.contains(prefix + "Height"))
+	{
+		int* roi = m_params["roi"].getVal<int*>();
+		roi[1] = m_params[prefix + "OffsetY"].getVal<int>();
+		roi[3] = m_params[prefix + "Height"].getVal<int>();
+	}
+
     emit parametersChanged(m_params);
 }
 
@@ -779,7 +881,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 	    if (!retValue.containsError())
 	    {
 		    m_device->setCallbackParameterChangedReceiver(this);
-		    retValue += m_device->syncImageParameters(m_params);
+		    
 		    m_stream->setTimeoutSec(m_params["timeout"].getVal<double>());
 		    m_stream->setPayloadSize(m_device->getPayloadSize());
 		    retValue += m_device->createParamsFromDevice(m_params, visibilityLevel);
@@ -788,6 +890,11 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
             {
                 m_framegrabber->setCallbackParameterChangedReceiver(this);
                 retValue += m_framegrabber->createParamsFromDevice(m_params, visibilityLevel);
+                retValue += m_framegrabber->syncImageParameters(m_params);
+            }
+            else
+            {
+                retValue += m_device->syncImageParameters(m_params);
             }
 
 		    //synchronize some default parameters
@@ -1460,6 +1567,20 @@ ito::RetVal GenICamClass::execFunc(const QString funcName, QSharedPointer<QVecto
             m_framegrabber->resyncAllParameters();
         }
     }
+    /*else if (funcName == "special1")
+    {
+        if (m_framegrabber)
+        {
+            retValue += m_framegrabber->special(1);
+        }
+    }
+    else if (funcName == "special2")
+    {
+        if (m_framegrabber)
+        {
+            retValue += m_framegrabber->special(2);
+        }
+    }*/
     else if (m_commandNames.contains(funcName))
     {
         if (funcName.startsWith(FRAMEGRABBER_PREFIX))

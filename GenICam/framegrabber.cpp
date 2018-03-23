@@ -141,4 +141,99 @@ void GenTLFramegrabber::resyncAllParameters()
 }
 
 
+//----------------------------------------------------------------------------------
+ito::RetVal GenTLFramegrabber::special(int num)
+{
+    if (num == 1)
+    {
+        try
+        {
+            CIntegerPtr CIncomingWidthHost = m_device._GetNode("IncomingWidth");
+            *CIncomingWidthHost = 5120;
+            std::cout << "Special 1: IncomingWidth: " << *CIncomingWidthHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }
+        try
+        {
+            CIntegerPtr CIncomingHeightHost = m_device._GetNode("IncomingHeight");
+            *CIncomingHeightHost       = 5120;
+            std::cout << "Special 1: IncomingHeight: " << *CIncomingHeightHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }
+        try
+        {
+            CIntegerPtr CWidthHost = m_device._GetNode("Width");
+            *CWidthHost = 5120;
+            std::cout << "Special 1: Width: " << *CWidthHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }
+        try
+        {
+            CIntegerPtr CHeightHost = m_device._GetNode("Height");
+            *CHeightHost = 5120;
+            std::cout << "Special 1: Height: " << *CHeightHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }       
+    }
+    else if (num == 2)
+    {
+        try
+        {
+            unsigned int value = 5120;
+            Write(&value, 0x0000600 + 0x0014, 4);
+            CIntegerPtr CIncomingWidthHost = m_device._GetNode("IncomingWidth");
+            std::cout << "Special 2: IncomingWidth: " << *CIncomingWidthHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }
+        try
+        {
+            unsigned int value = 5120;
+            Write(&value, 0x0000600 + 0x0018, 4);
+            CIntegerPtr CIncomingHeightHost = m_device._GetNode("IncomingHeight");
+            std::cout << "Special 2: IncomingHeight: " << *CIncomingHeightHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }
+        try
+        {
+            unsigned int value = 5120;
+            Write(&value, 0x0000600 + 0x0004, 4);
+            CIntegerPtr CWidthHost = m_device._GetNode("Width");
+            std::cout << "Special 2: WidthHost: " << *CWidthHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }
+        try
+        {
+            unsigned int value = 5120;
+            Write(&value, 0x0000600 + 0x000c, 4);
+            CIntegerPtr CHeightHost = m_device._GetNode("Height");
+            std::cout << "Special 2: HeightHost: " << *CHeightHost() << "\n" << std::endl;
+        }
+        catch (GenericException& ex)
+        {
+            std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
+        }       
+    }
 
+    return ito::retOk;
+}
