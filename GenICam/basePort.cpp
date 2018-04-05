@@ -1303,7 +1303,7 @@ void BasePort::intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta
 	{
 		intMeta->setMin(minimum);
 		intMeta->setMax(maximum);
-		intMeta->setStepSize(iPtr->GetInc());
+		intMeta->setStepSize(qMax((int64_t)1, iPtr->GetInc()));
 	}
 	else
 	{
