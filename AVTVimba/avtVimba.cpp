@@ -1645,6 +1645,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
                 }
             }
         }
+		else
+		{
+			m_params["gain_auto"].setFlags(ito::ParamBase::Readonly);
+			ret_ = ito::retOk;
+		}
         retval += ret_;
 
         double gain, gainMax, gainMin;
@@ -1655,6 +1660,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             ((ito::DoubleMeta*)(m_params["gain"].getMeta()))->setMax(gainMax);
             m_params["gain"].setVal<double>(gain);
         }
+		else
+		{
+			m_params["gain"].setFlags(ito::ParamBase::Readonly);
+			ret_ = ito::retOk;
+		}
         retval += ret_;
     }
 
@@ -1669,6 +1679,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             ((ito::DoubleMeta*)(it->getMeta()))->setMax(offsetMax);
             it->setVal<double>(offset);
         }
+		else
+		{
+			m_params["offset"].setFlags(ito::ParamBase::Readonly);
+			ret_ = ito::retOk;
+		}
         retval += ret_;
     }
 
@@ -1683,6 +1698,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             ((ito::DoubleMeta*)(it->getMeta()))->setMax(offsetMax);
             it->setVal<double>(offset);
         }
+		else
+		{
+			m_params["gamma"].setFlags(ito::ParamBase::Readonly);
+			ret_ = ito::retOk;
+		}
         retval += ret_;
     }
 
