@@ -86,6 +86,7 @@ documenation of this plugin. \n\
 This plugin has been tested with the following cameras: \n\
 \n\
 * Allied Vision, Manta (Firewire) \n\
+* Allied Vision, Goldeye G-008 SWIR (GigE) \n\
 * Ximea (USB3) \n\
 * Baumer TXG12 (GigE) \n\
 * Mikrotron (CoaXPress) with Active Silicon Framegrabber (FireBird) \n\
@@ -147,7 +148,8 @@ GenICamInterface::~GenICamInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 GenICamClass::GenICamClass() : AddInGrabber(),
 	m_hasTriggerSource(false),
-    m_newImageAvailable(false)
+    m_newImageAvailable(false),
+	m_acquisitionStartCommandByStartDevice(false)
 {
 	ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "GenICam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -182,7 +184,7 @@ GenICamClass::GenICamClass() : AddInGrabber(),
     dm = new ito::DoubleMeta(0.000010, 3600.0, 0.0, "AcquisitionControl");
     dm->setDisplayPrecision(1);
     dm->setUnit("s");
-	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 10.0, dm, tr("Timeout for acquisition in seconds.").toLatin1().constData());
+	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 4.0, dm, tr("Timeout for acquisition in seconds.").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
 
 	ito::IntMeta *im = new ito::IntMeta(1, 1e6, 1, "AcquisitionControl");
@@ -1035,6 +1037,11 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 			    if (!retValue.containsError())
 			    {
 				    retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+					if (!retValue.containsWarning())
+					{
+						m_acquisitionStartCommandByStartDevice = true;
+						m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+					}
 			    }
 			    else if (revertAllocateIfError)
 			    {
@@ -1165,12 +1172,19 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
             case AcquisitionCache::Continuous:
                 break;
             case AcquisitionCache::SingleFrame:
-                retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+			{
+				if (!m_acquisitionStartCommandByStartDevice)
+				{
+					retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+				}
+			}
                 break;
             default:
                 retValue += ito::RetVal(ito::retError, 0, tr("AcquisitionMode 'multiFrame' (or other than 'Continous' and 'SingleFrame') not supported, yet.").toLatin1().constData());
                 break;
             }
+
+			m_acquisitionStartCommandByStartDevice = false;
         }
 
 	    if (!retValue.containsError())

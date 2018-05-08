@@ -145,11 +145,16 @@ ito::RetVal GenTLSystem::init(const QString &filename)
 			//hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
 			QString filename_cl = filename;
 			filename_cl.replace("sv_gev_tl_x64.cti", "sv_cl_tl_x64.cti", Qt::CaseInsensitive);
+			filename_cl.replace("TLGigE", "TLCL", Qt::CaseSensitive);
 			if (QFileInfo(filename_cl).exists())
 			{
 				QLibrary lib;
 				lib.setFileName(filename_cl);
 				lib.load();
+			}
+			else
+			{
+				retval += ito::RetVal::format(ito::retWarning, 0, "It seems, that a SVS Vistek, GigE camera should be loaded. Due to unknown reasons, the library sv_cl_tl_x64.cti has to be loaded first. However, the path '%s' could not be found.", filename_cl.toLatin1().constData());
 			}
 		}
 	#else
@@ -158,11 +163,16 @@ ito::RetVal GenTLSystem::init(const QString &filename)
 			//hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
 			QString filename_cl = filename;
 			filename_cl.replace("sv_gev_tl.cti", "sv_cl_tl.cti", Qt::CaseInsensitive);
+			filename_cl.replace("TLGigE", "TLCL", Qt::CaseSensitive);
 			if (QFileInfo(filename_cl).exists())
 			{
 				QLibrary lib;
 				lib.setFileName(filename_cl);
 				lib.load();
+			}
+			else
+			{
+				retval += ito::RetVal::format(ito::retWarning, 0, "It seems, that a SVS Vistek, GigE camera should be loaded. Due to unknown reasons, the library sv_cl_tl.cti has to be loaded first. However, the path '%s' could not be found.", filename_cl.toLatin1().constData());
 			}
 		}
 	#endif
@@ -655,18 +665,66 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
             if (!retval.containsError())
             {
+				GenTL::INFO_DATATYPE piType;
+				QByteArray id(200, '\0');
+				piSize = id.size();
+				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_ID, &piType, id.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+				{
+					id = "";
+				}
+				else
+				{
+					id = id.left(piSize);
+				}
+
+				QByteArray vendor(200, '\0');
+				piSize = vendor.size();
+				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_VENDOR, &piType, vendor.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+				{
+					vendor = "";
+				}
+				else
+				{
+					vendor = vendor.left(piSize);
+				}
+
+				QByteArray model(200, '\0');
+				piSize = model.size();
+				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_MODEL, &piType, model.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+				{
+					model = "";
+				}
+				else
+				{
+					model = model.left(piSize);
+				}
+
 				QByteArray identifier(200, '\0');
 				piSize = identifier.size();
-				GenTL::INFO_DATATYPE piType;
 				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_DISPLAYNAME, &piType, identifier.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
 				{
 					identifier = "unknown camera";
 				}
+				else
+				{
+					identifier = identifier.left(piSize);
+					if (m_verbose >= VERBOSE_INFO)
+					{
+						std::cout << "OK. Device '" << identifier.constData() << "' opened.\n" << std::endl;
+					}
+				}
 
-                else if (m_verbose >= VERBOSE_INFO)
-                {
-                    std::cout << "OK. Device '" << identifier.constData() << "' opened.\n" << std::endl;
-                }
+				if (vendor != "" && model != "")
+				{
+					identifier = (QLatin1String(vendor) + " " + QLatin1String(model)).toLatin1();
+					if (id != "")
+					{
+						identifier += " (" + QString::fromLatin1(id).toLatin1() + ")";
+					}
+				}
+
+				qDebug() << id << vendor << model << identifier;
+
 
                 GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, identifier, m_verbose, retval);
                 if (!retval.containsError())

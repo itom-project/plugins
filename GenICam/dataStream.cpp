@@ -513,6 +513,9 @@ void GenTLDataStream::printBufferInfo(const char* prefix, GenTL::BUFFER_HANDLE b
 	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_NEW_DATA, &type, &boolValue, &pSize))
 	{
 		std::cout << ", newdata:" << boolValue;
+#if _DEBUG
+		qDebug() << buffer << "newdata: " << boolValue;
+#endif
 	}
 
 	if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_IS_INCOMPLETE, &type, &boolValue, &pSize))
@@ -555,7 +558,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
     GenTL::S_EVENT_NEW_BUFFER nextBuffer;
     size_t pSize = sizeof(latestBuffer);
     bool newData = false;
-    GenTL::INFO_DATATYPE type;
+    GenTL::INFO_DATATYPE type = GenTL::INFO_DATATYPE_BOOL8;
     bool value;
     size_t valueSize = sizeof(value);
 
@@ -571,36 +574,57 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 		    printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
 	    }
     }
+
+	bool trustNewBufferEvent = false; //for Vistek: enable this!
     
     while (!newData)
     {
         newData = true;
         err = EventGetData(m_newBufferEvent, &latestBuffer, &pSize, m_timeoutMS);
 
+		if (err == GenTL::GC_ERR_TIMEOUT)
+		{
+			for (int i = 0; i < 100; ++i)
+			{
+				err = EventGetData(m_newBufferEvent, &latestBuffer, &pSize, 5);
+				if (err != GenTL::GC_ERR_TIMEOUT)
+				{
+					break;
+				}
+			}
+		}
+
         if (err == GenTL::GC_ERR_SUCCESS)
         {
-            if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, latestBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
-            {
-                if (type == GenTL::INFO_DATATYPE_BOOL8)
-                {
-                    newData = value;
+			if (!trustNewBufferEvent)
+			{
+				if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, latestBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
+				{
+					if (type == GenTL::INFO_DATATYPE_BOOL8)
+					{
+						newData = value;
 
-                    if (!newData)
-                    {
-                        handlesToQueueAgain.insert(latestBuffer.BufferHandle);
-                    }
-                }
-            }
+						if (!newData)
+						{
+							handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+						}
+					}
+				}
+			}
+			else
+			{
+				int i = 1;
+			}
         }
     }
 
     if (err == GenTL::GC_ERR_TIMEOUT)
     {
-		foreach(GenTL::BUFFER_HANDLE buf, m_buffers)
+		/*foreach(GenTL::BUFFER_HANDLE buf, m_buffers)
 		{
 			handlesToQueueAgain.insert(buf);
-		}
-        //flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+		}*/
+        flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
 
         if (checkForErrorEvent(retval, "Timeout occurred"))
         {
@@ -621,15 +645,21 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
             if (GenTL::GC_ERR_SUCCESS == err)
             {
                 newData = true;
-                if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, nextBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
-                {
-                    if (type == GenTL::INFO_DATATYPE_BOOL8)
-                    {
-                        newData = value;
 
-                        
-                    }
-                }
+				if (!trustNewBufferEvent)
+				{
+					if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, nextBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
+					{
+						if (type == GenTL::INFO_DATATYPE_BOOL8)
+						{
+							newData = value;
+						}
+					}
+				}
+				else
+				{
+					int i = 1;
+				}
 
                 if (latestBuffer.BufferHandle == nextBuffer.BufferHandle)
                 {
@@ -688,7 +718,12 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
     foreach (const GenTL::BUFFER_HANDLE &bufferHandle, handlesToQueueAgain)
     {
         //queue buffer again
-		queueRetVal += checkGCError(DSQueueBuffer(m_handle, bufferHandle));
+		queueRetVal = checkGCError(DSQueueBuffer(m_handle, bufferHandle));
+
+		if (queueRetVal.containsError())
+		{
+			std::cout << "Error queuing buffer " << QString("0x%1").arg((size_t)bufferHandle,0,16).toLatin1().constData() << ": " << queueRetVal.errorMessage() << "\n" << std::endl;
+		}
     }
 
     if (m_verbose >= VERBOSE_ALL)
@@ -700,10 +735,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 	    }
     }
 
-	if (queueRetVal.containsError())
-	{
-		std::cout << "Error queuing buffers: " << queueRetVal.errorMessage() << "\n" << std::endl;
-	}
+	
 
     return retval;
 }
