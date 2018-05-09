@@ -707,14 +707,22 @@ void GenICamClass::parameterChangedTimerFired()
             p.setVal<double>(newVal);
         }
 	}
+
+	if (m_params.contains("PixelFormat"))
+	{
+		m_params["bpp"].setFlags(m_params["PixelFormat"].getFlags());
+	}
 	
     if (!m_framegrabber)
     {
+		int roi_flags = 0;
 	    if (m_params.contains("OffsetX") && m_params.contains("Width"))
 	    {
 		    int* roi = m_params["roi"].getVal<int*>();
 		    roi[0] = m_params["OffsetX"].getVal<int>();
 		    roi[2] = m_params["Width"].getVal<int>();
+			roi_flags |= m_params["OffsetX"].getFlags();
+			roi_flags |= m_params["Width"].getFlags();
 	    }
 	
 	    if (m_params.contains("OffsetY") && m_params.contains("Height"))
@@ -722,7 +730,11 @@ void GenICamClass::parameterChangedTimerFired()
 		    int* roi = m_params["roi"].getVal<int*>();
 		    roi[1] = m_params["OffsetY"].getVal<int>();
 		    roi[3] = m_params["Height"].getVal<int>();
+			roi_flags |= m_params["OffsetY"].getFlags();
+			roi_flags |= m_params["Height"].getFlags();
 	    }
+
+		m_params["roi"].setFlags(roi_flags);
     }
 
 	cacheAcquisitionParameters();

@@ -561,6 +561,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
     GenTL::INFO_DATATYPE type = GenTL::INFO_DATATYPE_BOOL8;
     bool value;
     size_t valueSize = sizeof(value);
+	bool flushAllToQueuedAtTheEnd = false;
 
     QSet<GenTL::BUFFER_HANDLE> handlesToQueueAgain;
 
@@ -574,56 +575,43 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 		    printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
 	    }
     }
-
-	bool trustNewBufferEvent = false; //for Vistek: enable this!
     
     while (!newData)
     {
-        newData = true;
         err = EventGetData(m_newBufferEvent, &latestBuffer, &pSize, m_timeoutMS);
-
-		if (err == GenTL::GC_ERR_TIMEOUT)
-		{
-			for (int i = 0; i < 100; ++i)
-			{
-				err = EventGetData(m_newBufferEvent, &latestBuffer, &pSize, 5);
-				if (err != GenTL::GC_ERR_TIMEOUT)
-				{
-					break;
-				}
-			}
-		}
 
         if (err == GenTL::GC_ERR_SUCCESS)
         {
-			if (!trustNewBufferEvent)
+			newData = true;
+			/*
+			//The following block would enable a double check if the reported new buffer really contains new data, however this is not robustly announced by all cameras (e.g. Vistek)
+			newData = true;
+			if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, latestBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
 			{
-				if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, latestBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
+				if (type == GenTL::INFO_DATATYPE_BOOL8)
 				{
-					if (type == GenTL::INFO_DATATYPE_BOOL8)
-					{
-						newData = value;
+					newData = value;
 
-						if (!newData)
+					if (!newData)
+					{
+						if (m_verbose >= VERBOSE_DEBUG)
 						{
-							handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+							std::cout << "New buffer event reported a new image buffer, however the BUFFER_INFO_NEW_DATA flag of this buffer is false.\n" << std::endl;
 						}
+						handlesToQueueAgain.insert(latestBuffer.BufferHandle);
 					}
 				}
-			}
-			else
-			{
-				int i = 1;
-			}
+			}*/
         }
+		else
+		{
+			newData = false;
+			break;
+		}
     }
 
     if (err == GenTL::GC_ERR_TIMEOUT)
     {
-		/*foreach(GenTL::BUFFER_HANDLE buf, m_buffers)
-		{
-			handlesToQueueAgain.insert(buf);
-		}*/
         flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
 
         if (checkForErrorEvent(retval, "Timeout occurred"))
@@ -644,22 +632,21 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
             err = EventGetData(m_newBufferEvent, &nextBuffer, &pSize, 0);
             if (GenTL::GC_ERR_SUCCESS == err)
             {
-                newData = true;
+				newData = true;
 
-				if (!trustNewBufferEvent)
+				/*
+				//The following block would enable a double check if the reported new buffer really contains new data, however this is not robustly announced by all cameras (e.g. Vistek)
+				if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, nextBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
 				{
-					if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, nextBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
+					if (type == GenTL::INFO_DATATYPE_BOOL8)
 					{
-						if (type == GenTL::INFO_DATATYPE_BOOL8)
-						{
-							newData = value;
-						}
+						newData = value;
 					}
 				}
 				else
 				{
-					int i = 1;
-				}
+					newData = false;
+				}*/
 
                 if (latestBuffer.BufferHandle == nextBuffer.BufferHandle)
                 {
@@ -709,6 +696,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
     else
     {
         handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+		flushAllToQueuedAtTheEnd = true;
     }
 
     
@@ -726,6 +714,11 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 		}
     }
 
+	if (flushAllToQueuedAtTheEnd)
+	{
+		flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+	}
+
     if (m_verbose >= VERBOSE_ALL)
     {
         std::cout << "Buffer info after queuing buffers\n" << std::endl;
@@ -734,8 +727,6 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
             printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
 	    }
     }
-
-	
 
     return retval;
 }

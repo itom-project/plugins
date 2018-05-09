@@ -64,8 +64,6 @@ public:
 
 	int getPayloadSize() const;
 
-	
-
 	QByteArray getIdentifier() const { return m_identifier; }
 
     void resyncAllParameters();

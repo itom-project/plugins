@@ -1121,6 +1121,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     int height = 0;
     int offsetX = 0;
     int offsetY = 0;
+	bool roi_readonly = false;
 
 	//SensorWidth
 	it = params.find("sizex");
@@ -1131,7 +1132,15 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 		intMeta->setMin(0);
 		intMeta->setMax(pInt->GetValue());
 		sensorWidth = pInt->GetValue();
-		it->setFlags(ito::ParamBase::Readonly);
+
+		if (pInt->GetAccessMode() & RW)
+		{
+			it->setFlags(0);
+		}
+		else
+		{
+			it->setFlags(ito::ParamBase::Readonly);
+		}
 	}
     else
     {
@@ -1142,7 +1151,15 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 		    intMeta->setMin(0);
 		    intMeta->setMax(pInt->GetValue());
 		    sensorWidth = pInt->GetValue();
-            it->setFlags(ito::ParamBase::Readonly);
+            
+			if (pInt->GetAccessMode() & RW)
+			{
+				it->setFlags(0);
+			}
+			else
+			{
+				it->setFlags(ito::ParamBase::Readonly);
+			}
 	    }
     }
 
@@ -1154,6 +1171,8 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 		intMetaFromInteger(pInt, &widthMeta);
 		it->setVal<ito::int32>(pInt->GetValue());
 		width = pInt->GetValue();
+
+		roi_readonly |= (pInt->GetAccessMode() != RW);
 	}
 	
 	//SensorHeight
@@ -1166,7 +1185,15 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 		intMeta->setMin(0);
 		intMeta->setMax(pInt->GetValue());
 		sensorHeight = pInt->GetValue();
-        it->setFlags(ito::ParamBase::Readonly);
+        
+		if (pInt->GetAccessMode() & RW)
+		{
+			it->setFlags(0);
+		}
+		else
+		{
+			it->setFlags(ito::ParamBase::Readonly);
+		}
 	}
     else
     {
@@ -1177,7 +1204,15 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 		    intMeta->setMin(0);
 		    intMeta->setMax(pInt->GetValue());
 		    sensorHeight = pInt->GetValue();
-            it->setFlags(ito::ParamBase::Readonly);
+
+			if (pInt->GetAccessMode() & RW)
+			{
+				it->setFlags(0);
+			}
+			else
+			{
+				it->setFlags(ito::ParamBase::Readonly);
+			}
 	    }
     }
 
@@ -1189,6 +1224,8 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 		intMetaFromInteger(pInt, &heightMeta);
 		height = pInt->GetValue();
 		it->setVal<ito::int32>(pInt->GetValue());
+
+		roi_readonly |= (pInt->GetAccessMode() != RW);
 	}
 
 	//roi
@@ -1199,6 +1236,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 	{
 		offsetX = pInt->GetValue();
 		intMetaFromInteger(pInt, &offsetXMeta);
+		roi_readonly |= (pInt->GetAccessMode() != RW);
 	}
 
 	pInt = m_device._GetNode("OffsetY");
@@ -1206,6 +1244,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 	{
 		offsetY = pInt->GetValue();
 		intMetaFromInteger(pInt, &offsetYMeta);
+		roi_readonly |= (pInt->GetAccessMode() != RW);
 	}
 	
 
@@ -1215,6 +1254,14 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 	rectMeta->setWidthRangeMeta(ito::RangeMeta(offsetXMeta.getMin(), offsetX + widthMeta.getMax() - 1, offsetXMeta.getStepSize(), widthMeta.getMin(), offsetX + widthMeta.getMax(), widthMeta.getStepSize()));
 	int roi[] = {offsetX, offsetY, width, height}; //x,y,w,h
 	it->setVal<int*>(roi, 4);
+	if (roi_readonly)
+	{
+		it->setFlags(ito::ParamBase::Readonly);
+	}
+	else
+	{
+		it->setFlags(0);
+	}
 
 	//bpp
 	it = params.find("bpp");
@@ -1227,6 +1274,15 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 	}
 	else
 	{
+		if (pEnum->GetAccessMode() & RW)
+		{
+			it->setFlags(0);
+		}
+		else
+		{
+			it->setFlags(ito::ParamBase::Readonly);
+		}
+
 		//check if current PixelFormat is within supportedImageFormats
 		supportedImageFormats();
 		int idx = -1;

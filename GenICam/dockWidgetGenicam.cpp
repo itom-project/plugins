@@ -34,7 +34,12 @@ DockWidgetGenicam::DockWidgetGenicam(ito::AddInDataIO *grabber) :
     ui.setupUi(this);
 
     QPointer<ito::AddInBase> plugin(grabber);
-	ui.editorWidget->setCollapsed(true);
+
+	if (ui.editorWidget->property("collapsed").isValid())
+	{
+		ui.editorWidget->setProperty("collapsed", true);
+	}
+
     ui.editorWidget->setPlugin(plugin);
 }
 
