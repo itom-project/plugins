@@ -361,6 +361,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
             for (uint32_t i = 0; i < piNumIfaces; ++i)
             {
+				piSize = 512;
                 retval += checkGCError(TLGetInterfaceID(m_handle, i, sIfaceID, &piSize));
 
 				if (interfaceIDToOpen == "auto")
