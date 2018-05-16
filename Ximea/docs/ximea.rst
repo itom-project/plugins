@@ -208,3 +208,4 @@ Changelog
 * itom setup 2.2.0: This plugin has been compiled using the Ximea API 4.10.0
 * itom setup 3.0.0: This plugin has been compiled using the Ximea API 4.10.2
 * itom setup 3.1.0: This plugin has been compiled using the Ximea API 4.15
+* itom setup >3.1.0: This plugin has been compiled using the Ximea API 4.16
