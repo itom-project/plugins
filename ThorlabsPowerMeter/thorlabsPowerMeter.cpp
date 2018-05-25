@@ -181,12 +181,15 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     registerExecFunc("zero_device", pMand, pOpt, pOut, tr("function to set the zero value of the device").toLatin1().data());
 
 
-    //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
-    
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+	if (hasGuiSupport())
+	{
+		//the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
+		DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
+
+		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -612,7 +615,6 @@ ito::RetVal ThorlabsPowerMeter::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->deleteSemaphore();
     }
     return retval;
-    return ito::retOk;
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
