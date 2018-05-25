@@ -404,6 +404,14 @@ IF (WIN32)
     endif (PLUGIN_ThorlabsBP)
 ENDIF (WIN32)
 
+# ThorlabsKCubePA KCube position aligner
+IF (WIN32)
+    OPTION(PLUGIN_ThorlabsKCubePA "Build with this plugin." OFF)
+    if (PLUGIN_ThorlabsKCubePA)
+        ADD_SUBDIRECTORY(ThorlabsKCubePA)
+    endif (PLUGIN_ThorlabsKCubePA)
+ENDIF (WIN32)
+
 # ThorlabsCCS Spectrometer
 IF (WIN32)
     OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." OFF)
