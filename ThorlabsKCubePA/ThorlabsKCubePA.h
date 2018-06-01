@@ -81,7 +81,7 @@ class ThorlabsKCubePA : public ito::AddInDataIO
         friend class ThorlabsKCubePAInterface;
 
         const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
-        int hasConfDialog(void) { return 0; } //!< indicates that this plugin has got a configuration dialog
+        int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
 
     private:
         bool m_async;

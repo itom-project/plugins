@@ -84,17 +84,7 @@ ThorlabsKCubePAInterface::ThorlabsKCubePAInterface()
     setObjectName("ThorlabsKCubePA");
 
     m_description = QObject::tr("ThorlabsKCubePA");
-    m_detaildescription = QObject::tr("ThorlabsKCubePA is an acutator plugin to control the following integrated devices from Thorlabs: \n\
-\n\
-* Long Travel Stage (e.g. LTS150 and LTS300) \n\
-* Lab Jack (e.g. MLJ050) \n\
-* Cage Rotator (K10CR1) \n\
-\n\
-It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.IntegratedStepperMotors.\n\
-\n\
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. \n\
-\n\
-This plugin has been tested with the cage rotator K10CR1.");
+    m_detaildescription = QObject::tr("ThorlabsKCubePA");
 
     m_author = "M. Gronle, TRUMPF Laser- & Systemtechnik GmbH";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -121,7 +111,6 @@ ThorlabsKCubePA::ThorlabsKCubePA() :
 	m_isgrabbing(false)
 {
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsKCubePA", tr("Name of the plugin").toLatin1().data()));
-    m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("number of axes (channels)").toLatin1().data()));
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Description of the device").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
 
@@ -136,6 +125,12 @@ ThorlabsKCubePA::ThorlabsKCubePA() :
     }
 
     memset(m_serialNo, '\0', sizeof(m_serialNo));
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal ThorlabsKCubePA::showConfDialog(void)
+{
+	return apiShowConfigurationDialog(this, new DialogThorlabsKCubePA(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -266,16 +261,18 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded.");
         }
-        if (!QD_StartPolling(m_serialNo, 50))
-        {
-            retval += ito::RetVal(ito::retError, 0, "error starting position and status polling.");
-        }
 
-		//QD_SetOperatingMode(m_serialNo, QD_OperatingMode::QD_OpenLoop);
+
+		retval += checkError(QD_SetOperatingMode(m_serialNo, QD_OperatingMode::QD_OpenLoop), "Set operating mode to open loop");
 		QD_Position demandPosition;
 		demandPosition.x = 0;
 		demandPosition.y = 0;
-		QD_SetPosition(m_serialNo, &demandPosition);
+		retval += checkError(QD_SetPosition(m_serialNo, &demandPosition), "Set demanded position to (0,0)");
+
+		if (!QD_StartPolling(m_serialNo, 50))
+		{
+			retval += ito::RetVal(ito::retError, 0, "error starting position and status polling.");
+		}
 
 
     }
@@ -290,11 +287,7 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal ThorlabsKCubePA::showConfDialog(void)
-{
-    return apiShowConfigurationDialog(this, new DialogThorlabsKCubePA(this));
-}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail close method which is called before that this instance is deleted by the ThorlabsKCubePAInterface
@@ -536,30 +529,19 @@ ito::RetVal ThorlabsKCubePA::stopDevice(ItomSharedSemaphore *waitCond)
 ito::RetVal ThorlabsKCubePA::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
 	ito::RetVal retval(ito::retOk);
-	/*ito::int32 num = m_params["average_number"].getVal<ito::int32>();
-	if (num == 1)
-	{
-		retval += checkError(PM100D_measPower(m_instrument, (ViPReal64)&m_data.at<ito::float64>(0, 0)));
+	m_isgrabbing = false;
 
-	}
-	else
-	{
-		ito::float64 sum(0);
-		ViReal64 val;
-		for (int i(0); i < num; ++i)
-		{
-			retval += checkError(PM100D_measPower(m_instrument, &val));
-			sum += val;
-			AddInBase::setAlive();
-		}
-		m_data.at<ito::float64>(0, 0) = sum / num;
-	}
+	QD_Readings readPosition = { 0,0 };
+	retval += checkError(QD_GetReading(m_serialNo, &readPosition), "get current position");
+
 	if (!retval.containsError())
 	{
 		m_isgrabbing = true;
-		m_data.setValueUnit("W");
-	}*/
+		ito::float64 *ptr = m_data.rowPtr<ito::float64>(0, 0);
+		ptr[0] = readPosition.posDifference.x;
+		ptr[1] = readPosition.posDifference.y;
 
+	}
 
 	if (waitCond)
 	{

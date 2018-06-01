@@ -18,84 +18,31 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "DockWidgetThorlabsKCubePA.h"
+#include "dockWidgetThorlabsKCubePA.h"
 
-#include "common/addInInterface.h"
+#include <qmetaobject.h>
 
-#include "motorAxisController.h"
-#include <qlayout.h>
-#include <qpointer.h>
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetThorlabsKCubePA::DockWidgetThorlabsKCubePA(ito::AddInDataIO *plugin) : ito::AbstractAddInDockWidget(plugin),
-    m_firstRun(true),
-	m_pPlugin(plugin)
+//----------------------------------------------------------------------------------------------------------------------------------
+DockWidgetThorlabsKCubePA::DockWidgetThorlabsKCubePA(ito::AddInDataIO *grabber) :
+    AbstractAddInDockWidget(grabber),
+    m_inEditing(false),
+    m_firstRun(true)
 {
-    ui.setupUi(this); 
-    
-    enableWidget(true);
+    ui.setupUi(this);
+
+    QPointer<ito::AddInBase> plugin(grabber);
+
+	if (ui.editorWidget->property("collapsed").isValid())
+	{
+		ui.editorWidget->setProperty("collapsed", true);
+	}
+
+    ui.editorWidget->setPlugin(plugin);
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsKCubePA::parametersChanged(QMap<QString, ito::Param> params)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetThorlabsKCubePA::identifierChanged(const QString &identifier)
 {
-    ui.lblDevice->setText(params["deviceName"].getVal<char*>());
-    ui.lblSerial->setText(params["serialNumber"].getVal<char*>());
-    //ui.motorAxisController->setNumAxis(params["numaxis"].getVal<int>());
-
-    if (m_firstRun)
-    {
-        /*if (params["travelMode"].getVal<int>() == MOT_Rotational)
-        {
-            for (int i = 0; i < ui.motorAxisController->numAxis(); ++i)
-            {
-                ui.motorAxisController->setAxisType(i, MotorAxisController::TypeRotational);
-                ui.motorAxisController->setAxisUnit(i, MotorAxisController::UnitDeg);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < ui.motorAxisController->numAxis(); ++i)
-            {
-                ui.motorAxisController->setAxisType(i, MotorAxisController::TypeLinear);
-                ui.motorAxisController->setAxisUnit(i, MotorAxisController::UnitMm);
-            }
-        }*/
-
-        m_firstRun = false;
-    }
-
-    /*ui.motorAxisController->setEnabled(params["enabled"].getVal<int>() > 0);
-
-    if (params["homed"].getVal<int>() > 0)
-    {
-        ui.lblHomed->setText("The device is homed.");
-    }
-    else
-    {
-        ui.lblHomed->setText("The device is currently not homed.");
-    }*/
+    ui.label_Identifier->setText(identifier);
+    ui.editorWidget->refresh();
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsKCubePA::enableWidget(bool enabled)
-{
-    //ui.motorAxisController->setEnabled(enabled);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsKCubePA::dockWidgetVisibilityChanged(bool visible)
-{
-    //if (visible)
-    //{
-    //    //to connect the signals
-    //    QPointer<ito::AddInActuator> actuator(m_pPlugin);
-    //    ui.motorAxisController->setActuator(actuator);
-    //}
-    //else
-    //{
-    //    ui.motorAxisController->setActuator(QPointer<ito::AddInActuator>());
-    //}
-}
-
-

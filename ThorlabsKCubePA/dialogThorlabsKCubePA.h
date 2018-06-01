@@ -21,23 +21,17 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #ifndef DIALOGTHORLABSISM_H
 #define DIALOGTHORLABSISM_H
 
-#include "common/sharedStructures.h"
+#include "common/param.h"
+#include "common/retVal.h"
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
-#include "common/addInInterface.h"
 
 #include "ui_dialogThorlabsKCubePA.h"
 
-#include <qdialog.h>
 #include <qstring.h>
 #include <qmap.h>
 #include <qabstractbutton.h>
-#include <qvector.h>
-#include <qsharedpointer.h>
-#include <qcombobox.h>
-#include <qsignalmapper.h>
-#include <qcommandlinkbutton.h>
-#include <qspinbox.h>
+
 
 namespace ito
 {
@@ -49,26 +43,23 @@ class DialogThorlabsKCubePA : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-        DialogThorlabsKCubePA(ito::AddInDataIO *plugin);
-        ~DialogThorlabsKCubePA();
+		DialogThorlabsKCubePA(ito::AddInBase *grabber);
+        ~DialogThorlabsKCubePA() {};
 
         ito::RetVal applyParameters();
 
     private:
         void enableDialog(bool enabled);
+        bool m_firstRun;
 
         Ui::DialogThorlabsKCubePA ui;
-        bool m_firstRun;
-        ito::AddInDataIO *m_pPlugin;
+		QPointer<ito::AddInBase> m_pluginPointer;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
-        void on_btnCalib_clicked();
-		void on_btnCalibInterrupt_clicked();
-
 };
 
 #endif
