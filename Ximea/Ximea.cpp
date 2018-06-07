@@ -496,7 +496,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["gpi_level"].setVal<int*>(dummy, m_numGPIPins);
                     m_params["gpi_mode"].setMeta(new ito::IntArrayMeta(0, 1, 1, m_numGPIPins, m_numGPIPins, 1), true);
                     m_params["gpi_mode"].setVal<int*>(dummy, m_numGPIPins);
-                    m_params["gpo_mode"].setMeta(new ito::IntArrayMeta(0, 1, 1, m_numGPOPins, m_numGPIPins, 1), true);
+                    m_params["gpo_mode"].setMeta(new ito::IntArrayMeta(0, 12, 1, m_numGPOPins, m_numGPIPins, 1), true);
                     m_params["gpo_mode"].setVal<int*>(dummy, m_numGPOPins);
                 }
 
