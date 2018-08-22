@@ -186,7 +186,7 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             bool found = false;
             for (int i = 0; i < serialNumbers.size(); ++i)
             {
-                if (!openedDevices.contains(serialNumbers[i]))
+                if (serialNumbers[i] != "" && !openedDevices.contains(serialNumbers[i]))
                 {
                     serial = serialNumbers[i];
                     found = true;
@@ -262,8 +262,8 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded.");
         }
 
-
-		retval += checkError(QD_SetOperatingMode(m_serialNo, QD_OperatingMode::QD_OpenLoop), "Set operating mode to open loop");
+		QD_OperatingMode operatingMode = QD_GetOperatingMode(m_serialNo);
+		retval += checkError(QD_SetOperatingMode(m_serialNo, QD_OperatingMode::QD_OpenLoop, true), "Set operating mode to open loop");
 		QD_Position demandPosition;
 		demandPosition.x = 0;
 		demandPosition.y = 0;
@@ -273,9 +273,12 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 		{
 			retval += ito::RetVal(ito::retError, 0, "error starting position and status polling.");
 		}
-
-
     }
+
+	if (!retval.containsError())
+	{
+		checkData();
+	}
     
     if (waitCond)
     {
@@ -387,7 +390,6 @@ ito::RetVal ThorlabsKCubePA::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
     QVector<QPair<int, QByteArray> > lastitError;
-    double realValue;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -538,8 +540,8 @@ ito::RetVal ThorlabsKCubePA::acquire(const int trigger, ItomSharedSemaphore *wai
 	{
 		m_isgrabbing = true;
 		ito::float64 *ptr = m_data.rowPtr<ito::float64>(0, 0);
-		ptr[0] = readPosition.posDifference.x;
-		ptr[1] = readPosition.posDifference.y;
+		ptr[0] = (10.0 * (ito::int16)readPosition.posDifference.x) / std::numeric_limits<ito::int16>::max();
+		ptr[1] = (10.0 * (ito::int16)readPosition.posDifference.y) / std::numeric_limits<ito::int16>::max();
 
 	}
 
