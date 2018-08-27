@@ -248,6 +248,12 @@ if (PLUGIN_NanotecStepMotor)
     ADD_SUBDIRECTORY(NanotecStepMotor)
 endif (PLUGIN_NanotecStepMotor)
 
+# Newport2936
+OPTION(PLUGIN_NEWPORT_2936 "Build with this plugin." OFF)
+if (PLUGIN_NEWPORT_2936)
+    ADD_SUBDIRECTORY(Newport2936)
+endif (PLUGIN_NEWPORT_2936)
+
 # NewportSMC100
 OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." OFF)
 if (PLUGIN_NEWPORT_SMC100)
