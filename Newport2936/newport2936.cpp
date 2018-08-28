@@ -45,7 +45,7 @@ For compiling this plugin, you need to install the Newport USB Driver V 4.2.2";
     m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL, uses royale software and driver (not covered by LPGL)");
+    m_license = QObject::tr("LPGL, uses Newport USB Driver software and driver (not covered by LPGL)");
     m_aboutThis = QObject::tr(GITVERSION); 
 
     //add mandatory and optional parameters for the initialization here.
