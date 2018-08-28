@@ -424,7 +424,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
-    }
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
