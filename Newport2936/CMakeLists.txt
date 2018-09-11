@@ -7,13 +7,20 @@
 ###################################################################
 ###################################################################
 
-SET (target_name ThorlabsPowerMeter) #->replace MyGrabber by the name of your plugin (one word)
+SET (target_name Newport2936) #->replace MyGrabber by the name of your plugin (one word)
 
 project(${target_name})
 
 message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 cmake_minimum_required(VERSION 2.8)
+
+#CMAKE Policies
+if (POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
+ENDIF (POLICY CMP0028)
+
+message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
@@ -25,39 +32,18 @@ OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WA
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
-SET (THORLABS_PM100D_VISA_DIR "" CACHE PATH "path to the install directory of Thorlabs PM100D VISA (e.g. C:/Program Files/IVI Foundation/VISA/Win64 for x64)")
-set(THORLABS_POWER_METER_API_VERSION "1.02" CACHE STRING "Expected API version")
-set_property(CACHE THORLABS_POWER_METER_API_VERSION PROPERTY STRINGS 1.02 3.02)
+SET (NEWPORT_POWER_METER_DIR "" CACHE PATH "path to the install directory of Newport Power Meter Application (e.g. C:/Program Files/Newport/Newport Power Meter Application")
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-IF(THORLABS_PM100D_VISA_DIR)
+IF(NEWPORT_POWER_METER_DIR)
     IF(WIN32)
-        find_path( THORLABS_PM100D_VISA_INCLUDE_DIR NAMES "PM100D.h" "TLPM.h" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "Include")
-        IF (BUILD_TARGET64)
-            IF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-                find_library (THORLABS_TLPM_VISA_LIBRARY "TLPM_64" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "Lib_x64/msc")
-            ELSE(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-                find_library (THORLABS_PM100D_VISA_LIBRARY "PM100D_64" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "Lib_x64/msc")
-                find_library(THORLABS_VISA_LIBRARY "visa64" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "Lib_x64/msc")
-            ENDIF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-        ELSE (BUILD_TARGET64)
-            IF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-                find_library (THORLABS_TLPM_VISA_LIBRARY "TLPM_32" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "lib/msc")
-            ELSE(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-                find_library (THORLABS_PM100D_VISA_LIBRARY "PM100D_32" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "lib/msc")
-                find_library(THORLABS_VISA_LIBRARY "visa32" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "lib/msc")
-            ENDIF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-        ENDIF (BUILD_TARGET64)
+        find_path(NEWPORT_NEWPDLL_INCLUDE_DIR "NewpDll.h" PATHS ${NEWPORT_POWER_METER_DIR} PATH_SUFFIXES "Samples/C++/UseDeviceKey/UseDeviceKey")
+        find_library (NEWPORT_USBDLL_LIBRARY "usbdll" PATHS ${NEWPORT_POWER_METER_DIR} PATH_SUFFIXES "Bin")
     ENDIF(WIN32)
-ENDIF(THORLABS_PM100D_VISA_DIR)
+ENDIF(NEWPORT_POWER_METER_DIR)
 
-IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
-    IF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-        ADD_DEFINITIONS(-DUSE_API_1_02)
-    ELSE (THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-        ADD_DEFINITIONS(-DUSE_API_3_02)
-    ENDIF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
+IF(NEWPORT_NEWPDLL_INCLUDE_DIR)
     #################################################################
     # Automatic package detection
     #   add here find_package commands for searching for 3rd party
@@ -87,7 +73,7 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
     #usage of FIND_PACKAGE_QT(automoc component1, component2, ...)
     # automoc is ON or OFF and only relevant for Qt5, usually set it to ON
     # possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
-    FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
+    FIND_PACKAGE_QT(ON Core Widgets LinguistTools)
 
     #################################################################
     # General settings and preprocessor settings
@@ -108,7 +94,8 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
         ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
     ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-    # HANDLE VERSION (FROM GIT)
+    #HANDLE VERSION (FROM GIT). This will replace the @GITVERSION@ in gitVersion.h.in with your current git tag.
+    # If you don't use git the @GITVERSION@ will be replaced with an empty string
     UNSET(GIT_FOUND CACHE)
     find_package(Git)
     IF(BUILD_GIT_TAG AND GIT_FOUND)
@@ -121,13 +108,12 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
     #uncomment to enable output to cmake console
     #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
         CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+    ELSE(BUILD_GIT_TAG AND GIT_FOUND)
+        IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+            CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+        ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     ENDIF (BUILD_GIT_TAG AND GIT_FOUND)
-    IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
-
-    
     # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
     IF (DEFINED CMAKE_BUILD_TYPE)
         SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
@@ -148,8 +134,7 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
         ${OpenCV_DIR}/include       #include directory of OpenCV
         ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
         ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
-        ${THORLABS_PM100D_VISA_INCLUDE_DIR}
-        #add further include directories here
+        ${NEWPORT_NEWPDLL_INCLUDE_DIR}
     )
 
     #################################################################
@@ -181,20 +166,18 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
     #
     #################################################################
     set(plugin_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/thorlabsPowerMeter.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsPowerMeter.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsPowerMeter.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/newport2936.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogNewport2936.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNewport2936.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #${CMAKE_CURRENT_SOURCE_DIR}/PM100source.h
         #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(plugin_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsPowerMeter.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsPowerMeter.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/thorlabsPowerMeter.cpp
-        #${CMAKE_CURRENT_SOURCE_DIR}/PM100source.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogNewport2936.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNewport2936.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/newport2936.cpp
         #add further source files here
     )
 
@@ -205,8 +188,8 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
     endif(MSVC)
 
     set(plugin_UI
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsPowerMeter.ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsPowerMeter.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogNewport2936.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNewport2936.ui
     )
 
     set(plugin_RCC
@@ -260,14 +243,10 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
     #
     # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
     # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
-    IF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${THORLABS_TLPM_VISA_LIBRARY})
-    ELSE(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${THORLABS_VISA_LIBRARY} ${THORLABS_PM100D_VISA_LIBRARY})
-    ENDIF(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.02")
 
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${NEWPORT_USBDLL_LIBRARY})
     IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-        qt5_use_modules(${target_name} ${QT_COMPONENTS})
+        qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5 and older CMake versions
     ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
     #################################################################
@@ -295,7 +274,7 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
     # 
     # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
     #################################################################
-    PLUGIN_DOCUMENTATION(${target_name} thorlabsPowerMeter)
+        PLUGIN_DOCUMENTATION(${target_name} newport2936)
 
     #################################################################
     # Post-Build Copy Operations
@@ -333,6 +312,6 @@ IF (THORLABS_PM100D_VISA_INCLUDE_DIR)
     # the itom build directory, use the following macro:
     #
     # POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target}, ${listOfFiles})
-ELSE(THORLABS_PM100D_VISA_INCLUDE_DIR)
-    message(WARNING "PM100D.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_PM100D_VISA_DIR.")
-ENDIF(THORLABS_PM100D_VISA_INCLUDE_DIR)
+ELSE(NEWPORT_NEWPDLL_INCLUDE_DIR)
+    message(WARNING "NewpDll.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate Newport_NEWPDLL_INCLUDE_DIR.")
+ENDIF(NEWPORT_NEWPDLL_INCLUDE_DIR)

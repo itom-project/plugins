@@ -1268,7 +1268,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 	pEnum = m_device._GetNode("PixelFormat");
 	intMeta = it->getMetaT<ito::IntMeta>();
 
-	if (pEnum.IsValid() == false || !(pInt->GetAccessMode() & (RO | RW)))
+	if (pEnum.IsValid() == false || !(pEnum->GetAccessMode() & (RO | RW)))
 	{
 		retval += ito::RetVal(ito::retError, 0, "mandatory property 'PixelFormat' not contained in GenApi xml file");
 	}

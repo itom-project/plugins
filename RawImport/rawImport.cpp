@@ -195,7 +195,7 @@ ito::RetVal openExifTool(QString &filename, QProcess *&exifProc)
     {
         exifProc = new QProcess(NULL);
 #ifdef WIN32
-        exifCommand += QString("/lib/exiftool.exe -stay_open true -@ - ");
+        exifCommand = "\"" + exifCommand + QString("/lib/exiftool.exe\" -stay_open true -@ - ");
 #else
         exifCommand += QString("/lib/exiftool -stay_open true -@ - ");
 #endif
@@ -267,7 +267,7 @@ ito::RetVal readExifTag(QProcess *exifProc, QString filename, QString tagName, Q
         Output.chop(readyStr.length());
     QString err = exifProc->readAllStandardError();
     if (err.length() > 0 || waited >= 10)
-        return ito::RetVal(ito::retError, 0, (QObject::tr("Error reading exif-tag %1: %2").arg(tagName).arg(err)).toLatin1().data());
+        return ito::RetVal(ito::retWarning, 0, (QObject::tr("Error reading exif-tag %1: %2").arg(tagName).arg(err)).toLatin1().data());
 
     return ito::retOk;
 }
@@ -354,11 +354,11 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     QProcess *readProc = new QProcess(NULL);
     QString command(QCoreApplication::applicationDirPath());
 #ifdef WIN32
-    command += QString("/lib/dcraw.exe ") + arguments + " " + filename;
+    command = "\"" + command + QString("/lib/dcraw.exe\" ") + arguments + " " + filename;
 #else
         command += QString("/lib/dcraw ") + arguments + " " + filename;
 #endif
-    readProc->start(command);
+	readProc->start(command);
 
 //    readProc->setReadChannel(QProcess::StandardOutput);
 
@@ -370,19 +370,20 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     QVector<ito::ParamBase> filterParamsOut(0);
 
 
-    filenameLoad = filenamePath + dcrawExt;
     // did not find ppm / tiff, then check pgm
+	filenameLoad = filenamePath + dcrawExt;
     if (!QFileInfo::exists(filenameLoad))
     {
         dcrawExt = ".pgm";
         filenameLoad = filenamePath + dcrawExt;
     }
 
+
     retval += apiFilterParamBase("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
-    filterParamsMand[0].setVal<char*>((char*)image);
-    filterParamsMand[1].setVal<char*>(filenameLoad.toLatin1().data());
     if (!retval.containsWarningOrError())
     {
+		filterParamsMand[0].setVal<char*>((char*)image);
+		filterParamsMand[1].setVal<char*>(filenameLoad.toLatin1().data());
         retval += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
     }
     delete readProc;

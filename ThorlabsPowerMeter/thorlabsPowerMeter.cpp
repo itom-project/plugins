@@ -42,7 +42,13 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QElapsedTimer> 
 
 #include "dockWidgetThorlabsPowerMeter.h"
-#include <PM100D.h>
+#if defined(USE_API_3_02) 
+    #include <PM100D.h>
+#define PM(name) PM100D_##name
+#else
+    #include <TLPM.h>
+    #define PM(name) TLPM_##name
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
@@ -210,151 +216,191 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     m_isgrabbing = false;
     QString deviceName = paramsOpt->at(0).getVal<char*>();
     QList<QByteArray> foundDevices;
+    QList<QString> deviceInfo;
     ViSession	defaultRM = VI_NULL;
     ViSession  resMgr = VI_NULL;      //resource manager
     ViUInt32   count = 0;            //counts found devices
+    ViStatus status;
+
+#if defined(USE_API_3_02) 
     ViChar     rscStr[VI_FIND_BUFLEN]; // resource string
     ViFindList findList;
 
-    ViStatus status = viOpenDefaultRM(&resMgr);
+    status = viOpenDefaultRM(&resMgr);
     if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
     {
         retval += checkError(status);
 
     }
     retval += checkError(viFindRsrc(resMgr, PMxxx_FIND_PATTERN, &findList, &count, rscStr));
-     if (retval == ito::retOk)
+    if (retval == ito::retOk)
         foundDevices.append(rscStr);
-     for (ViUInt32 c = 1; c < count; ++c)
-     {
-         retval += checkError(viFindNext(findList, rscStr));
-         if (retval == ito::retOk) foundDevices.append(rscStr);
-     }
-     viClose(findList);
-     
-     if (!retval.containsError())
-     {
-         if (deviceName == "<scan>")
-         {
-             std::cout << "Thorlabs power meter devices \n" << std::endl;
-             for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
-             {
-                 std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
-             }
+    for (ViUInt32 c = 1; c < count; ++c)
+    {
+        retval += checkError(viFindNext(findList, rscStr));
+        if (retval == ito::retOk) foundDevices.append(rscStr);
+    }
+    viClose(findList);
+#else
+    ViBoolean available;
+    ViChar name[TLPM_BUFFER_SIZE], sernr[TLPM_BUFFER_SIZE];
+    ViChar rsrcDescr[TLPM_BUFFER_SIZE];
+    retval += checkError(PM(findRsrc)(0, &count));
+    if (!retval.containsError())
+    {
+        for (int i = 0; i < count; ++i)
+        {
+            retval += checkError(PM(getRsrcInfo)(i, 0, name, sernr, VI_NULL, &available));
+            retval += checkError(PM(getRsrcName)(i, 0, rsrcDescr));
+            if (!retval.containsError())
+            {
+                foundDevices.append(rsrcDescr);
+                deviceInfo.append(QString("%1 (%2): S/N%3\t%4\tadress: %5\n").arg(i + 1).arg((available) ? "FREE" : "LOCK").arg(sernr).arg(name).arg(rsrcDescr));
+            }
 
-             retval += ito::RetVal(ito::retError, 0, tr("The initialization is terminated since only a list of found devices has been requested ('<scan>')").toLatin1().data());
-         }
-         else if (deviceName == "")
-         {
-             if (foundDevices.size() == 0)
-             {
-                 retval += ito::RetVal(ito::retError, 0, tr("no devices found").toLatin1().data());
-             }
-             else
-             {
-                 deviceName = foundDevices[0];
-             }
-         }
-         else
-         {
-             bool gotIt(false);
-             
-             foreach(const QByteArray &string, foundDevices)
-             {
-                 if (QString::compare(deviceName, string, Qt::CaseInsensitive) == 0)
-                 {
-                     deviceName = string;
-                     gotIt = true;
-                     break;
-                 }
-             }
-             if (!gotIt)
-             {
-                 retval += ito::RetVal::format(ito::retError, 0, tr("Device %s could not be found").toLatin1().data(), deviceName.toLatin1().data());
-             }
-         }
-
-		 
-         if (!retval.containsError())
-         {
-             //status = viOpen(resMgr, deviceName.toLatin1().data(), VI_EXCLUSIVE_LOCK, 2000, &m_instrument);
-
-             //try to open device
-             status = PM100D_init(deviceName.toLatin1().data(), VI_OFF, VI_OFF, &m_instrument);
-             if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
-             {
-                 retval += checkError(status);
-             }
-         }
-		 ViChar name[256];
-		 status = PM100D_getRsrcName(m_instrument, 0, name);
-         if (!retval.containsError())
-         {
-             //check if a photo diode is connected
-             ViChar name[256];
-             ViChar snr[256];
-             ViChar message[256];
-             ViInt16 pType;
-             ViInt16 pStype;
-             ViInt16 pFlags;
-
-             retval += checkError(PM100D_getSensorInfo(m_instrument, name, snr, message, &pType, &pStype, &pFlags));
-             if (retval.containsError())
-             {
-                 switch (pType)
-                 {
-                 case SENSOR_TYPE_PD_SINGLE:
-                     break;
-                 case SENSOR_TYPE_THERMO:
-                     retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Thermal Sensor was detected.").toLatin1().data());
-                     break;
-                 case SENSOR_TYPE_PYRO:
-                     retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Pyroelectric Sensors was detected.").toLatin1().data());
-                     break;
-                 case SENSOR_TYPE_NONE:
-                     retval += ito::RetVal(ito::retError, 0, tr("There is no detector connected to the device.").toLatin1().data());
-                 }
-             }
-         }
-         if (!retval.containsError())
-         {
-             ViChar manufacturer[256];
-             ViChar device[256];
-             ViChar serial[256];
-             ViChar firmware[256];
-             ViChar message[256];
-             retval += checkError(PM100D_identificationQuery(m_instrument, manufacturer, device, serial, firmware));
-
-             if (!retval.containsError())
-             {
-                 setIdentifier(QString("%1 (%2)").arg(device).arg(manufacturer));
-                 m_params["device_name"].setVal<char*>(device);
-                 m_params["manufacturer_name"].setVal<char*>(manufacturer);
-                 m_params["serial_number"].setVal<char*>(serial);
-                 m_params["firmware_revision"].setVal<char*>(firmware);
+        }
+    }
 
 
-                 retval += checkError(PM100D_getCalibrationMsg(m_instrument, message));
-                 if (!retval.containsError())
-                 {
-                     m_params["calibration_message"].setVal<char*>(message);
-                 }
+#endif
+    if (!retval.containsError())
+    {
+        if (deviceName == "<scan>")
+        {
+            std::cout << "Thorlabs power meter devices \n" << std::endl;
 
-                 
-             }
-         }
-         if (!retval.containsError())
-         {
-             m_data = ito::DataObject(1, 1, ito::tFloat64);
-         }
-         if (!retval.containsError())
-         {
-             //get all changing parameters of the plugin
-             retval += synchronizeParams(bAll);
-         }
+            for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
+            {
+#if defined(USE_API_3_02)
+                std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
+#else
+                std::cout << deviceInfo[i].toLatin1().data() << std::endl;
+#endif
+            }
 
-         
-     }
+
+
+            retval += ito::RetVal(ito::retError, 0, tr("The initialization is terminated since only a list of found devices has been requested ('<scan>')").toLatin1().data());
+        }
+        else if (deviceName == "")
+        {
+            if (foundDevices.size() == 0)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("no devices found").toLatin1().data());
+            }
+            else
+            {
+                deviceName = foundDevices[0];
+            }
+        }
+        else
+        {
+            bool gotIt(false);
+
+            foreach(const QByteArray &string, foundDevices)
+            {
+                if (QString::compare(deviceName, string, Qt::CaseInsensitive) == 0)
+                {
+                    deviceName = string;
+                    gotIt = true;
+                    break;
+                }
+            }
+            if (!gotIt)
+            {
+                retval += ito::RetVal::format(ito::retError, 0, tr("Device %s could not be found").toLatin1().data(), deviceName.toLatin1().data());
+            }
+        }
+
+
+        if (!retval.containsError())
+        {
+            //status = viOpen(resMgr, deviceName.toLatin1().data(), VI_EXCLUSIVE_LOCK, 2000, &m_instrument);
+
+            //try to open device
+            status = PM(init)(deviceName.toLatin1().data(), VI_OFF, VI_OFF, &m_instrument);
+#if defined(USE_API_3_02)
+            if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
+            {
+                retval += checkError(status);
+            }
+#else
+            if (status != VI_SUCCESS)
+            {
+                retval += checkError(status);
+            }
+        }
+#endif
+
+        ViChar name[256];
+        status = PM(getRsrcName)(m_instrument, 0, name);
+        if (!retval.containsError())
+        {
+            //check if a photo diode is connected
+            ViChar name[256];
+            ViChar snr[256];
+            ViChar message[256];
+            ViInt16 pType;
+            ViInt16 pStype;
+            ViInt16 pFlags;
+
+            retval += checkError(PM(getSensorInfo)(m_instrument, name, snr, message, &pType, &pStype, &pFlags));
+            if (retval.containsError())
+            {
+                switch (pType)
+                {
+                case SENSOR_TYPE_PD_SINGLE:
+                    break;
+                case SENSOR_TYPE_THERMO:
+                    retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Thermal Sensor was detected.").toLatin1().data());
+                    break;
+                case SENSOR_TYPE_PYRO:
+                    retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Pyroelectric Sensors was detected.").toLatin1().data());
+                    break;
+                case SENSOR_TYPE_NONE:
+                    retval += ito::RetVal(ito::retError, 0, tr("There is no detector connected to the device.").toLatin1().data());
+                }
+            }
+        }
+        if (!retval.containsError())
+        {
+            ViChar manufacturer[256];
+            ViChar device[256];
+            ViChar serial[256];
+            ViChar firmware[256];
+            ViChar message[256];
+            retval += checkError(PM(identificationQuery)(m_instrument, manufacturer, device, serial, firmware));
+
+            if (!retval.containsError())
+            {
+                setIdentifier(QString("%1 (%2)").arg(device).arg(manufacturer));
+                m_params["device_name"].setVal<char*>(device);
+                m_params["manufacturer_name"].setVal<char*>(manufacturer);
+                m_params["serial_number"].setVal<char*>(serial);
+                m_params["firmware_revision"].setVal<char*>(firmware);
+
+
+                retval += checkError(PM(getCalibrationMsg)(m_instrument, message));
+                if (!retval.containsError())
+                {
+                    m_params["calibration_message"].setVal<char*>(message);
+                }
+
+
+            }
+        }
+        if (!retval.containsError())
+        {
+            m_data = ito::DataObject(1, 1, ito::tFloat64);
+        }
+        if (!retval.containsError())
+        {
+            //get all changing parameters of the plugin
+            retval += synchronizeParams(bAll);
+        }
+
+
+        }
 
     //steps todo:
     // - get all initialization parameters
@@ -365,14 +411,14 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-    
 
-    
+
+
     if (!retval.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -381,6 +427,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -395,7 +442,7 @@ ito::RetVal ThorlabsPowerMeter::close(ItomSharedSemaphore *waitCond)
     
     if (m_instrument != NULL)
     {
-        PM100D_close(m_instrument);
+        PM(close)(m_instrument);
         m_instrument = VI_NULL;
     }
 
@@ -480,7 +527,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         if (key == "wavelength")
         {
             ViReal64 wavelength = val->getVal<double>();
-            retValue += checkError(PM100D_setWavelength(m_instrument, wavelength));
+            retValue += checkError(PM(setWavelength)(m_instrument, wavelength));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bWavelength);
@@ -489,7 +536,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         else if (key == "attenuation")
         {
             ViReal64 atten = val->getVal<double>();
-            retValue += checkError(PM100D_setAttenuation(m_instrument, atten));
+            retValue += checkError(PM(setAttenuation)(m_instrument, atten));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bAttenuation | bPowerRange); //update the power range since the attenuation influences the  power_range boundaries
@@ -499,7 +546,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         else if (key == "line_frequency")
         {
             ViInt16 freq(val->getVal<int>());
-            retValue += checkError(PM100D_setLineFrequency(m_instrument, freq));
+            retValue += checkError(PM(setLineFrequency)(m_instrument, freq));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bLineFrequency);
@@ -508,7 +555,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         else if (key == "power_range")
         {
             ViReal64 range(val->getVal<ito::float64>());
-            retValue += checkError(PM100D_setPowerRange(m_instrument, range));
+            retValue += checkError(PM(setPowerRange)(m_instrument, range));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bPowerRange);
@@ -517,7 +564,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         else if (key == "auto_range")
         {
             ViBoolean autoRange(val->getVal<ito::int32>());
-            retValue += checkError(PM100D_setPowerAutoRange(m_instrument, autoRange));
+            retValue += checkError(PM(setPowerAutoRange)(m_instrument, autoRange));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bAutoRange | bPowerRange);//also update power range to obtain the last range
@@ -528,7 +575,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
             QString mode = val->getVal<char*>();
             if (!QString::compare(mode, "absolute", Qt::CaseInsensitive))
             {
-                retValue += checkError(PM100D_setPowerRefState(m_instrument, PM100D_POWER_REF_OFF));
+                retValue += checkError(PM(setPowerRefState)(m_instrument, PM(POWER_REF_OFF)));
                 if (!retValue.containsError())
                 {
                     retValue += synchronizeParams(bMeasurementMode);
@@ -536,7 +583,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
             }
             else if (!QString::compare(mode, "relative", Qt::CaseInsensitive))
             {
-                retValue += checkError(PM100D_setPowerRefState(m_instrument, PM100D_POWER_REF_ON));
+                retValue += checkError(PM(setPowerRefState)(m_instrument, PM(POWER_REF_ON)));
                 if (!retValue.containsError())
                 {
                     retValue += synchronizeParams(bMeasurementMode);
@@ -551,7 +598,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         else if (key == "reference_power")
         {
             ViReal64  valRef(val->getVal<ito::float64>());
-            retValue += checkError(PM100D_setPowerRef(m_instrument, valRef));
+            retValue += checkError(PM(setPowerRef)(m_instrument, valRef));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bPowerReference);
@@ -560,7 +607,7 @@ ito::RetVal ThorlabsPowerMeter::setParam(QSharedPointer<ito::ParamBase> val, Ito
         else if (key == "bandwidth")
         {
             ViInt16 bandwidth(val->getVal<ito::int32>());
-            retValue += checkError(PM100D_setInputFilterState(m_instrument, bandwidth));
+            retValue += checkError(PM(setInputFilterState)(m_instrument, bandwidth));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParams(bBandwidth);
@@ -624,7 +671,7 @@ ito::RetVal ThorlabsPowerMeter::acquire(const int trigger, ItomSharedSemaphore *
     ito::int32 num = m_params["average_number"].getVal<ito::int32>();
     if (num == 1)
     {
-        retval += checkError(PM100D_measPower(m_instrument, (ViPReal64) &m_data.at<ito::float64>(0, 0)));
+        retval += checkError(PM(measPower)(m_instrument, (ViPReal64) &m_data.at<ito::float64>(0, 0)));
 
     }
     else
@@ -633,7 +680,7 @@ ito::RetVal ThorlabsPowerMeter::acquire(const int trigger, ItomSharedSemaphore *
         ViReal64 val;
         for (int i(0); i < num; ++i)
         {
-            retval += checkError(PM100D_measPower(m_instrument, &val));
+            retval += checkError(PM(measPower)(m_instrument, &val));
             sum += val;
             AddInBase::setAlive();
         }
@@ -858,9 +905,9 @@ ito::RetVal ThorlabsPowerMeter::checkError(ViStatus err)
 {
     if (err)
     {
-        ViChar msg[PM100D_ERR_DESCR_BUFFER_SIZE];
-        memset(msg, 0, sizeof(ViChar) * PM100D_ERR_DESCR_BUFFER_SIZE);
-        PM100D_errorMessage(m_instrument, err, msg);
+        ViChar msg[PM(ERR_DESCR_BUFFER_SIZE)];
+        memset(msg, 0, sizeof(ViChar) * PM(ERR_DESCR_BUFFER_SIZE));
+        PM(errorMessage)(m_instrument, err, msg);
 
         return ito::RetVal(ito::retError, 0, msg);
     }
@@ -881,7 +928,7 @@ ito::RetVal ThorlabsPowerMeter::acquireAutograbbing(QSharedPointer<double> value
     ito::int32 num = m_params["average_number"].getVal<ito::int32>();
     if (num == 1)
     {
-        retval += checkError(PM100D_measPower(m_instrument, (ViPReal64) (value.data())));
+        retval += checkError(PM(measPower)(m_instrument, (ViPReal64) (value.data())));
 
     }
     else
@@ -890,7 +937,7 @@ ito::RetVal ThorlabsPowerMeter::acquireAutograbbing(QSharedPointer<double> value
         ViReal64 val;
         for (int i(0); i < num; ++i)
         {
-            retval += checkError(PM100D_measPower(m_instrument, &val));
+            retval += checkError(PM(measPower)(m_instrument, &val));
             sum += val;
             AddInBase::setAlive();
         }
@@ -952,13 +999,13 @@ ito::RetVal ThorlabsPowerMeter::execFunc(const QString funcName, QSharedPointer<
 ito::RetVal ThorlabsPowerMeter::zeroDevice(ItomSharedSemaphore *waitCond/*=NULL*/)
 {
     ito::RetVal retval(ito::retOk);
-    retval += checkError(PM100D_startDarkAdjust(m_instrument));
-    ViInt16 state = PM100D_STAT_DARK_ADJUST_RUNNING;
+    retval += checkError(PM(startDarkAdjust)(m_instrument));
+    ViInt16 state = PM(STAT_DARK_ADJUST_RUNNING);
     QElapsedTimer timer;
     timer.start();
-    while (state == PM100D_STAT_DARK_ADJUST_RUNNING && timer.elapsed() < 10000)
+    while (state == PM(STAT_DARK_ADJUST_RUNNING) && timer.elapsed() < 10000)
     {
-        retval += checkError(PM100D_getDarkAdjustState(m_instrument, &state));
+        retval += checkError(PM(getDarkAdjustState)(m_instrument, &state));
     }
     if (timer.elapsed() > 10000)
     {
@@ -985,7 +1032,7 @@ ito::RetVal ThorlabsPowerMeter::checkFunctionCompatibility(bool* compatibility)
     ViChar serial[256];
     ViChar firmware[256];
     ViChar message[256];
-    retval += checkError(PM100D_identificationQuery(m_instrument, manufacturer, device, serial, firmware));
+    retval += checkError(PM(identificationQuery)(m_instrument, manufacturer, device, serial, firmware));
 
     QString str = device;
     //QString str = "PM100A";   //For testing purposes
@@ -1017,9 +1064,9 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         ViReal64 min;
         ViReal64 max;
 
-        retval += checkError(PM100D_getWavelength(m_instrument, PM100D_ATTR_SET_VAL, &wavelength));
-        retval += checkError(PM100D_getWavelength(m_instrument, PM100D_ATTR_MIN_VAL, &min));
-        retval += checkError(PM100D_getWavelength(m_instrument, PM100D_ATTR_MAX_VAL, &max));
+        retval += checkError(PM(getWavelength)(m_instrument, PM(ATTR_SET_VAL), &wavelength));
+        retval += checkError(PM(getWavelength)(m_instrument, PM(ATTR_MIN_VAL), &min));
+        retval += checkError(PM(getWavelength)(m_instrument, PM(ATTR_MAX_VAL), &max));
         
         if (!retval.containsError())
         {
@@ -1040,9 +1087,9 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
 
         if (compatible)
         {
-            retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_SET_VAL, &attenuation));
-            retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_MAX_VAL, &maxAttenuation));
-            retval += checkError(PM100D_getAttenuation(m_instrument, PM100D_ATTR_MIN_VAL, &minAttenuation));
+            retval += checkError(PM(getAttenuation)(m_instrument, PM(ATTR_SET_VAL), &attenuation));
+            retval += checkError(PM(getAttenuation)(m_instrument, PM(ATTR_MAX_VAL), &maxAttenuation));
+            retval += checkError(PM(getAttenuation)(m_instrument, PM(ATTR_MIN_VAL), &minAttenuation));
         }
         else
         {
@@ -1064,7 +1111,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
     if (what & bDarkOffset)
     {
         ViReal64 dark;
-        retval += checkError(PM100D_getDarkOffset(m_instrument, &dark));
+        retval += checkError(PM(getDarkOffset)(m_instrument, &dark));
 
         if (!retval.containsError())
         {
@@ -1082,7 +1129,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
 
         if (compatible)
         {
-            retval += checkError(PM100D_getLineFrequency(m_instrument, &frequency));
+            retval += checkError(PM(getLineFrequency)(m_instrument, &frequency));
         }
         else
         {
@@ -1104,9 +1151,9 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         ViReal64 minPowerRange;
         ViReal64 maxPowerRange;
 
-        retval += checkError(PM100D_getPowerRange(m_instrument, PM100D_ATTR_SET_VAL, &powerRange));
-        retval += checkError(PM100D_getPowerRange(m_instrument, PM100D_ATTR_MAX_VAL, &maxPowerRange));
-        retval += checkError(PM100D_getPowerRange(m_instrument, PM100D_ATTR_MIN_VAL, &minPowerRange));
+        retval += checkError(PM(getPowerRange)(m_instrument, PM(ATTR_SET_VAL), &powerRange));
+        retval += checkError(PM(getPowerRange)(m_instrument, PM(ATTR_MAX_VAL), &maxPowerRange));
+        retval += checkError(PM(getPowerRange)(m_instrument, PM(ATTR_MIN_VAL), &minPowerRange));
         if (!retval.containsError())
         {
             retval += m_params["power_range"].setVal<double>(powerRange);
@@ -1121,7 +1168,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
     if (what & bAutoRange)
     {
         ViBoolean autoRange;
-        retval += checkError(PM100D_getPowerAutorange(m_instrument, &autoRange));
+        retval += checkError(PM(getPowerAutorange)(m_instrument, &autoRange));
         if (!retval.containsError())
         {
             retval += m_params["auto_range"].setVal<ito::int32>(autoRange);
@@ -1142,14 +1189,14 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
     if (what & bMeasurementMode)
     {
         ViBoolean mode;
-        retval += checkError(PM100D_getPowerRefState(m_instrument, &mode));
+        retval += checkError(PM(getPowerRefState)(m_instrument, &mode));
         if (!retval.containsError())
         {
-			if (mode == PM100D_POWER_REF_ON)
+			if (mode == PM(POWER_REF_ON))
 			{
 				retval += m_params["measurement_mode"].setVal<char*>("relative");
 			}
-			else if (mode == PM100D_POWER_REF_OFF)
+			else if (mode == PM(POWER_REF_OFF))
 			{
 				retval += m_params["measurement_mode"].setVal<char*>("absolute");
 			}
@@ -1167,9 +1214,9 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         ViReal64 refPower;
         ViReal64 maxRefPower;
         ViReal64 minRefPower;
-        retval += checkError(PM100D_getPowerRef(m_instrument, PM100D_ATTR_SET_VAL, &refPower));
-        retval += checkError(PM100D_getPowerRef(m_instrument, PM100D_ATTR_MAX_VAL, &maxRefPower));
-        retval += checkError(PM100D_getPowerRef(m_instrument, PM100D_ATTR_MIN_VAL, &minRefPower));
+        retval += checkError(PM(getPowerRef)(m_instrument, PM(ATTR_SET_VAL), &refPower));
+        retval += checkError(PM(getPowerRef)(m_instrument, PM(ATTR_MAX_VAL), &maxRefPower));
+        retval += checkError(PM(getPowerRef)(m_instrument, PM(ATTR_MIN_VAL), &minRefPower));
         if (!retval.containsError())
         {
             retval += m_params["reference_power"].setVal<double>(refPower);
@@ -1187,7 +1234,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
 
         if (compatible)
         {
-            retval += checkError(PM100D_getInputFilterState(m_instrument, &bandwidth));
+            retval += checkError(PM(getInputFilterState)(m_instrument, &bandwidth));
         }
         else{
             bandwidth = -1;
