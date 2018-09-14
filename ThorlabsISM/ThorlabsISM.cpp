@@ -288,7 +288,8 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (!retval.containsError())
     {
         m_params["homingAvailable"].setVal<int>(ISC_CanHome(m_serialNo) ? 1 : 0);
-
+        
+        // itom crash during initalization of this plugin. Does not crash in debug. Some bug in ISC_LoadSettings. ask Robin?
         if (!ISC_LoadSettings(m_serialNo))
         {
             retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded.");
