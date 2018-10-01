@@ -757,11 +757,11 @@ int SerialPort::sreadable(void) const
 const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
 {    
     int ret = 0;
+    DWORD numread = 0;
 
 #ifndef WIN32
     if (!m_dev)
 #else
-    DWORD numread = 0;
     if (!m_dev || m_dev == INVALID_HANDLE_VALUE)
 #endif
     {
@@ -779,13 +779,14 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
             {
 #ifndef WIN32
                 ret = read(m_dev, buf, 1);
+                numread = ret;
 #else
                 ret = ReadFile(m_dev, buf, 1, &numread, NULL);
-                if ((!ret) || (numread != 1))
+#endif
+                if ((ret <= 0) || (numread != 1))
                 {
                     return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toLatin1().data());
                 }
-#endif
                 buf++;
                 *len++;
                 Sleep(sendDelay);
@@ -795,15 +796,15 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
         {
 #ifndef WIN32
             ret = read(m_dev, buf, bytesToRead);
-            *len = bytesToRead;
+            *len = ret;
 #else
             ret = ReadFile(m_dev, buf, bytesToRead, &numread, NULL);
             *len = numread;
-            if ((!ret) || (numread != bytesToRead))
+#endif
+            if ((ret <= 0) || (*len != bytesToRead))
             {
                 return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toLatin1().data());
             }
-#endif
         }
     }
 
