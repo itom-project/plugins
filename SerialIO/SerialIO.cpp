@@ -755,90 +755,59 @@ int SerialPort::sreadable(void) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
-{
-#ifndef WIN32
+{    
     int ret = 0;
-
-    if (!m_dev)
-    {
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
-    }
-
-    int readable = sreadable();
-    if (readable)
-    {
-        *len = *len > readable ? *len : readable;
-        if (sendDelay)
-        {
-            while (readable)
-            {
-                ret = read(m_dev, buf, 1);
-                buf++;
-                readable--;
-                Sleep(sendDelay);
-            }
-        }
-        else
-        {
-            ret = read(m_dev, buf, *len);
-        }
-    }
-    else
-    {
-        *buf = 0;
-    }
-    *len = readable;
-//    if (!ret)
-//        return ito::RetVal(ito::retError, 0, QObjcet::tr("error reading from com port"));
-
-#else
     DWORD numread = 0;
-    int ret;
 
-    if (!m_dev || INVALID_HANDLE_VALUE == m_dev)
+#ifndef WIN32
+    if (!m_dev)
+#else
+    if (!m_dev || m_dev == INVALID_HANDLE_VALUE)
+#endif
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
-    int readable = sreadable();
-    *len = readable < *len ? readable : *len;
-    if (readable)
+    int bytesToRead = sreadable();
+    bytesToRead = MIN(bytesToRead, *len);
+    *len = 0;
+    if (bytesToRead)
     {
         if (sendDelay)
         {
-            while (readable)
+            while (*len < bytesToRead)
             {
+#ifndef WIN32
+                ret = read(m_dev, buf, 1);
+                numread = ret;
+#else
                 ret = ReadFile(m_dev, buf, 1, &numread, NULL);
-                if ((numread != 1) || !ret)
+#endif
+                if ((ret <= 0) || (numread != 1))
                 {
                     return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toLatin1().data());
                 }
-                // changed ck 04/09/2015, I guess this loop would run quite long in that way
-                //readable++;
-                //buf--;
-                readable--;
                 buf++;
+                *len++;
                 Sleep(sendDelay);
             }
         }
         else
         {
-            ret = ReadFile(m_dev, buf, readable > *len ? *len : readable, &numread, NULL);
+#ifndef WIN32
+            ret = read(m_dev, buf, bytesToRead);
+            *len = ret;
+#else
+            ret = ReadFile(m_dev, buf, bytesToRead, &numread, NULL);
             *len = numread;
-            if ((!ret) || (!numread))
+#endif
+            if ((ret <= 0) || (*len != bytesToRead))
             {
                 return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toLatin1().data());
             }
         }
     }
-    else
-    {
-        *buf = 0;
-    }
 
-//        return ERRORFROMWIN(GetLastError());
-
-#endif
     return ito::retOk;
 }
 
@@ -1589,7 +1558,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
     {
         if (m_preBuf.isEmpty())
         {
-            retValue = m_serport.sread(data.data(), length.data(), 0);
+            retValue = m_serport.sread(data.data(), length.data(), m_params["sendDelay"].getVal<int>());
         }
         else
         {
@@ -1601,7 +1570,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
 
             if (remainingCharactersInData > 0)
             {
-                retValue = m_serport.sread(&(data.data()[numCharactersForPrebuf]), &remainingCharactersInData, 0);
+                retValue = m_serport.sread(&(data.data()[numCharactersForPrebuf]), &remainingCharactersInData, m_params["sendDelay"].getVal<int>());
                 *length = remainingCharactersInData + numCharactersForPrebuf;
             }
         }
@@ -1647,7 +1616,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
             while (!done && !retValue.containsError())
             {
                 len = *length - pos;
-                retValue = m_serport.sread(&(data.data()[pos]), &len, 0);
+                retValue = m_serport.sread(&(data.data()[pos]), &len, m_params["sendDelay"].getVal<int>());
 
                 if (!retValue.containsError())
                 {
