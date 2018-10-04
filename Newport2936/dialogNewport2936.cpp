@@ -144,6 +144,7 @@ void DialogNewport2936::on_btnZeroA_clicked()
     waitCond->deleteSemaphore();
     waitCond = NULL;
 }
+//---------------------------------------------------------------------------------------------------------------------
 void DialogNewport2936::on_btnZeroB_clicked()
 {
     ItomSharedSemaphore* waitCond = new ItomSharedSemaphore();
