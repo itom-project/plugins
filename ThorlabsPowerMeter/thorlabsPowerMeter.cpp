@@ -329,8 +329,8 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
             {
                 retval += checkError(status);
             }
-        }
 #endif
+        }
 
         ViChar name[256];
         status = PM(getRsrcName)(m_instrument, 0, name);
@@ -1031,7 +1031,6 @@ ito::RetVal ThorlabsPowerMeter::checkFunctionCompatibility(bool* compatibility)
     ViChar device[256];
     ViChar serial[256];
     ViChar firmware[256];
-    ViChar message[256];
     retval += checkError(PM(identificationQuery)(m_instrument, manufacturer, device, serial, firmware));
 
     QString str = device;
