@@ -757,7 +757,11 @@ int SerialPort::sreadable(void) const
 const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
 {    
     int ret = 0;
+#ifndef WIN32
+    unsigned int numread = 0;
+#else
     DWORD numread = 0;
+#endif
 
 #ifndef WIN32
     if (!m_dev)
