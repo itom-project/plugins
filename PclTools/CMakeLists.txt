@@ -139,6 +139,10 @@ IF(ITOM_SDK_PCL_SUPPORT)
         if(MSVC)
             list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
         endif(MSVC)
+        
+        if (MSVC)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+        endif()
 
         if (QT5_FOUND)
             #if automoc if OFF, you also need to call QT5_WRAP_CPP here
