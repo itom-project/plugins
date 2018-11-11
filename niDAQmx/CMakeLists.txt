@@ -177,7 +177,7 @@ IF(NIDAQMX_FOUND)
 	set(plugin_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.h
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.h
-		${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.h
+		#${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.h
 		${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-PeripheralClasses.h
@@ -186,7 +186,7 @@ IF(NIDAQMX_FOUND)
 
 	set(plugin_SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.cpp
+		#${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-PeripheralClasses.cpp
 		#add further source files here
@@ -200,7 +200,7 @@ IF(NIDAQMX_FOUND)
 
 	set(plugin_UI
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.ui
-		${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.ui
+		#${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.ui
 	)
 
 	set(plugin_RCC
