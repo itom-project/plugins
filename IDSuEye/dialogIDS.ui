@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>437</width>
-    <height>611</height>
+    <width>521</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,13 +25,6 @@
         <string>Buffer</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_bpp_2">
-          <property name="text">
-           <string>Color Mode and Bits per Pixel</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1" colspan="2">
          <widget class="QComboBox" name="comboBppMode">
           <property name="enabled">
@@ -42,6 +35,13 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_bpp_2">
+          <property name="text">
+           <string>Color Mode and Bits per Pixel</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_bpp_3">
           <property name="text">
@@ -49,11 +49,38 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="2">
+         <widget class="QComboBox" name="comboBinVer"/>
+        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="comboBinHor"/>
         </item>
-        <item row="1" column="2">
-         <widget class="QComboBox" name="comboBinVer"/>
+        <item row="3" column="1" colspan="2">
+         <widget class="SliderWidget" name="sliderNumBuffer">
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Number of Buffers</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="3">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>The number of buffers corresponds to the amount of images in one sequence. Be aware that the necessary memory will be allocated and if the systems memory is insufficient, the program will crash.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -67,44 +94,10 @@
         <string>Data Acquisition</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderGain">
-          <property name="decimals">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix">
-           <string> %</string>
-          </property>
-         </widget>
-        </item>
         <item row="11" column="0" colspan="4">
          <widget class="QCheckBox" name="checkAutoBlacklevel">
           <property name="text">
            <string>auto blacklevel correction (offset)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0" colspan="4">
-         <widget class="QCheckBox" name="checkGainBoost">
-          <property name="text">
-           <string>gain boost (analog hardware gain)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_gain">
-          <property name="text">
-           <string>Master Gain</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_offset">
-          <property name="text">
-           <string>Offset</string>
           </property>
          </widget>
         </item>
@@ -130,37 +123,10 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderIntegrationTime">
-          <property name="decimals">
-           <number>5</number>
-          </property>
-          <property name="maximum">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix">
-           <string> s</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_gain_2">
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_gain_3">
           <property name="text">
-           <string>Integration Time</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_gain_5">
-          <property name="text">
-           <string>Green Gain</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkLongIntegrationTime">
-          <property name="text">
-           <string>enable long integration time</string>
+           <string>Pixel Clock</string>
           </property>
          </widget>
         </item>
@@ -184,10 +150,65 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="label_gain_3">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_gain_5">
           <property name="text">
-           <string>Pixel Clock</string>
+           <string>Green Gain</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" colspan="2">
+         <widget class="QCheckBox" name="checkLongIntegrationTime">
+          <property name="text">
+           <string>enable long integration time</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_gain">
+          <property name="text">
+           <string>Master Gain</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0" colspan="4">
+         <widget class="QCheckBox" name="checkGainBoost">
+          <property name="text">
+           <string>gain boost (analog hardware gain)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_gain_2">
+          <property name="text">
+           <string>Integration Time</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_offset">
+          <property name="text">
+           <string>Offset</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_gain_6">
+          <property name="text">
+           <string>Blue Gain</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="3">
+         <widget class="SliderWidget" name="sliderGain">
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="suffix">
+           <string> %</string>
           </property>
          </widget>
         </item>
@@ -204,15 +225,21 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_gain_6">
-          <property name="text">
-           <string>Blue Gain</string>
+        <item row="6" column="1" colspan="3">
+         <widget class="SliderWidget" name="sliderIntegrationTime">
+          <property name="decimals">
+           <number>5</number>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="suffix">
+           <string> s</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderGainGreen">
+        <item row="4" column="1" colspan="3">
+         <widget class="SliderWidget" name="sliderGainBlue">
           <property name="decimals">
            <number>0</number>
           </property>
@@ -224,8 +251,8 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderGainBlue">
+        <item row="3" column="1" colspan="3">
+         <widget class="SliderWidget" name="sliderGainGreen">
           <property name="decimals">
            <number>0</number>
           </property>

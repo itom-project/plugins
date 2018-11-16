@@ -43,9 +43,9 @@ Parameters
 
 An instance of this plugin has the following internal parameters:
 
-**auto_blacklevel_enabled**: {int}, read-only
+**auto_blacklevel_enabled**: {int}
     If the camera supports an auto blacklevel correction (auto offset in addition to offset), this feature can be enabled / disabled by this parameter.
-**binning**: {int}
+**binning**: {int}, read-only
     Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (values up to 1x, 2x, 3x, 4x, 5x, 6x, 8x, 12x are valid; if read-only binning is not supported; some cameras only support certain combinations of binnings.)
 **bpp**: {int}
     Bitdepth of each pixel
@@ -71,6 +71,8 @@ An instance of this plugin has the following internal parameters:
     If long exposure time is available, this parameter let you enable this. If this value is changed, the range and value of integration_time might change, too.
 **name**: {str}, read-only
     GrabberName
+**num_buffer**: {int}
+    Number of Buffers used for acquisition. Note that if this is > 1, a sequence of images will be acquired.
 **offset**: {float}
     Offset (leads to blacklevel offset) (normalized value 0..1). Readonly if not adjustable.
 **pixel_clock**: {int}
@@ -86,7 +88,7 @@ An instance of this plugin has the following internal parameters:
 **sizey**: {int}, read-only
     Pixelsize in y (rows)
 **timeout**: {float}
-    Timeout for acquiring images in seconds
+    timeout in seconds when waiting for the next image. For sequences x1000.
 **trigger_mode**: {str}
     trigger modes for starting a new image acquisition, depending on the camera the following modes are supported: 'off' (fixed frame_rate), without fixed frame_rate: 'software', 'hi_lo', 'lo_hi', 'pre_hi_lo', 'pre_lo_hi'
 **x0**: {int}
@@ -113,6 +115,14 @@ need to install any DirectShow or ActiveX components as well as additional drive
 
 Under linux, simply install the drivers from the IDS website. After an successful installation, the header file *ueye.h* and the library file is installed
 to the default directories under linux. The CMakeLists.txt file of this itom plugin will then automatically detect these files and compile the plugin.
+
+Acquisiton of image sequences
+============================
+
+If the number of buffers (num_buffer) is set to a value greater than 1, a sequence of images will be acquired with the acquire()-function (without frameloss). The sequence
+is retrieved by getVal() as usual, but the obtained dataObject will be 3D. The number of planes corresponds to the amount of images in the sequence (i.e. the number of buffers).
+Please be aware that the necessary memory for the sequence will be allocated and there is no dynamic limitation of the parameter. Choosing a high value for the number of buffers
+might crash the program, if the sytems memory is insufficient.
 
 Known problems
 ===============
