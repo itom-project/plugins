@@ -78,7 +78,7 @@ Compilation
 ===========
 In order to compile CyUSB, get the Cypress Seminconductor SDK from: http://www.cypress.com/file/135301?finished=1 (e.g. CY3684Setup.exe). Install the SDK (select typical as 
 setup type to install the SDK components; you can quit installing the 3rd party softwares uVision2 and GPIF Designer). Then set the CMake variable CyAPI_INCLUDE_DIR to a
-directory similar than **C:\Program Files\Cypress\USB\CY3684_EZ-USB_FX2LP_DVK\1.1\Windows Applications\library\cpp\inc**.
+directory similar than **C:\\Program Files\\Cypress\\USB\\CY3684_EZ-USB_FX2LP_DVK\\1.1\\Windows Applications\\library\\cpp\\inc**.
 
 Run plugin
 ==========
