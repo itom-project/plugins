@@ -83,7 +83,7 @@ CVBInterface::CVBInterface(QObject *parent)
     m_license = tr("Licensed under LGPL, Stemmer Common Vision Blox under its own license.");
     m_aboutThis = tr(GITVERSION);  
 
-    ito::Param param( "scanForCameras", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1 scan for new cameras, else take the last opened camera (default). If you scan for new cameras, the configuration file (ini) created in CommonVisionBlox for GenICam or other cameras will be reset to the default values.").toLatin1().data());
+    ito::Param param("scanForCameras", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1 scan for new cameras, else take the last opened camera (default). If you scan for new cameras, the configuration file (ini) created in CommonVisionBlox for GenICam or other cameras will be reset to the default values.").toLatin1().data());
     m_initParamsOpt.append(param);
 
     param = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 16, new ito::IntMeta(8,16,2), tr("desired monochromatic bitdepth. Dependent on this parameter PixelFormat is set to mono8, mono10, mono12, mono14 or mono16. Make sure the bitdepth is supported by your camera").toLatin1().data());
@@ -96,7 +96,7 @@ CVBInterface::CVBInterface(QObject *parent)
     param.setMeta(sm,true);
     m_initParamsOpt.append(param);
 
-    param = ito::Param( "debug_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If debug_mode is 1, message boxes from the uEye driver will appear in case of an error (default: off, 0)").toLatin1().data());
+    param = ito::Param("debug_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If debug_mode is 1, message boxes from the uEye driver will appear in case of an error (default: off, 0)").toLatin1().data());
     m_initParamsOpt.append(param);*/
 }
 
@@ -106,14 +106,14 @@ CVBInterface::~CVBInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal CVBInterface::getAddInInst( ito::AddInBase **addInInst )
+ito::RetVal CVBInterface::getAddInInst(ito::AddInBase **addInInst)
 {
     NEW_PLUGININSTANCE(CommonVisionBlox)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal CVBInterface::closeThisInst( ito::AddInBase **addInInst )
+ito::RetVal CVBInterface::closeThisInst(ito::AddInBase **addInInst)
 {
    REMOVE_PLUGININSTANCE(CommonVisionBlox)
    return ito::retOk;

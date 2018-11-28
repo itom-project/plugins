@@ -147,11 +147,11 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
         {
             if (scan)
             {
-                retVal += ito::RetVal::format(ito::retError, 0, "Error loading %s driver! Probably no cameras were found during discovery", driverPath);
+                retVal += ito::RetVal::format(ito::retError, 0, tr("Error loading %s driver! Probably no cameras were found during discovery").toLatin1().data(), driverPath);
             }
             else
             {
-                retVal += ito::RetVal::format(ito::retError, 0, "Error loading %s driver! Probably no cameras are configured / reachable!", driverPath);
+                retVal += ito::RetVal::format(ito::retError, 0, tr("Error loading %s driver! Probably no cameras are configured / reachable!").toLatin1().data(), driverPath);
             }
         }
         else if (CanNodeMapHandle(m_hCamera))
@@ -160,15 +160,15 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
         }
         else if (!CanGrab2(m_hCamera))
         {
-            retVal += ito::RetVal(ito::retError, 0, "camera does not support the Grab2 interface from Common Vision Blox");
+            retVal += ito::RetVal(ito::retError, 0, tr("camera does not support the Grab2 interface from Common Vision Blox").toLatin1().data());
         }
         else if (!CanGrabber(m_hCamera))
         {
-            retVal += ito::RetVal(ito::retError, 0, "camera does not support the Grabber interface from Common Vision Blox");
+            retVal += ito::RetVal(ito::retError, 0, tr("camera does not support the Grabber interface from Common Vision Blox").toLatin1().data());
         }
         /*else if (!CanSoftwareTrigger (m_hCamera))
         {
-            retVal += ito::RetVal(ito::retError, 0, "camera does not support the SoftwareTrigger interface from Common Vision Blox");
+            retVal += ito::RetVal(ito::retError, 0, tr("camera does not support the SoftwareTrigger interface from Common Vision Blox").toLatin1().data());
         }*/
     }
 
@@ -182,7 +182,7 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
         {
             if (r.errorCode() == CVC_E_PARAMETER)
             {
-                retVal += ito::RetVal(ito::retError, 0, "chosen bitdepth is not supported by this camera.");
+                retVal += ito::RetVal(ito::retError, 0, tr("chosen bitdepth is not supported by this camera.").toLatin1().data());
             }
             else
             {
@@ -224,7 +224,7 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
             }
             else
             {
-                retVal += ito::RetVal::format(ito::retError, 0, "unsupported pixel format %s (supported is Mono8 and Mono16", pixelFormat.data());
+                retVal += ito::RetVal::format(ito::retError, 0, tr("unsupported pixel format %s (supported is Mono8 and Mono16").toLatin1().data(), pixelFormat.data());
             }
         }
 
@@ -278,7 +278,7 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
         }
         else
         {
-            retVal += ito::RetVal(ito::retError, 0, "no node 'ExposureTime' or 'ExposureTimeAbs' available");
+            retVal += ito::RetVal(ito::retError, 0, tr("no node 'ExposureTime' or 'ExposureTimeAbs' available").toLatin1().data());
         }
 
         if (setParamString("TriggerMode", "Off").containsError())
@@ -289,12 +289,12 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
         retVal += synchronize();
     }
 
-    if(!retVal.containsError())
+    if (!retVal.containsError())
     {
         checkData(); //check if image must be reallocated
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();
@@ -335,7 +335,7 @@ ito::RetVal CommonVisionBlox::close(ItomSharedSemaphore *waitCond)
         ReleaseObject(m_hCamera); 
     }    
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -368,12 +368,12 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
 
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (hasIndex)
         {
@@ -420,7 +420,7 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
 
                 if (!IsNode(node))
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "%s is no node", nodeName);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("%s is no node").toLatin1().data(), nodeName);
                 }
                 if (!retValue.containsError())
                 {
@@ -515,7 +515,7 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
                         }
                         break;
                     default:
-                        retValue += ito::RetVal::format(ito::retError, 0, "unsupported property type (%i)", nodeType);
+                        retValue += ito::RetVal::format(ito::retError, 0, tr("unsupported property type (%i)").toLatin1().data(), nodeType);
                     }
                 }
 
@@ -562,14 +562,14 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
     int running = 0;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
@@ -593,7 +593,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, "you need to indiciate a suffix for the node you want to set");        
+                retValue += ito::RetVal(ito::retError, 0, tr("you need to indiciate a suffix for the node you want to set").toLatin1().data());
             }
         }
         else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi" || key == "acquisition_mode" || key == "trigger_mode")
@@ -624,7 +624,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
                         retValue += setParamInt("Height", val->getVal<int>());
                         break;
                     default:
-                        retValue += ito::RetVal(ito::retError, 0, "invalid index");
+                        retValue += ito::RetVal(ito::retError, 0, tr("invalid index").toLatin1().data());
                     }
 
                     retValue += synchronize(roi);
@@ -671,7 +671,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
                 {
                     if (m_params["acquisition_mode"].getVal<char*>()[0] == 's')
                     {
-                        retValue += ito::RetVal(ito::retError, 0, "trigger_mode 'software' can only be set in acquisition_mode 'grab'");
+                        retValue += ito::RetVal(ito::retError, 0, tr("trigger_mode 'software' can only be set in acquisition_mode 'grab'").toLatin1().data());
                     }
                     else
                     {
@@ -692,7 +692,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
             {
                 if (val->getVal<char*>()[0] == 's' && m_params["trigger_mode"].getVal<char*>()[0] == 's')
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "acquisition_mode 'snap' can only be set in trigger_mode 'off'");
+                    retValue += ito::RetVal(ito::retError, 0, tr("acquisition_mode 'snap' can only be set in trigger_mode 'off'").toLatin1().data());
                 }
                 else
                 {
@@ -742,7 +742,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 
     
 
-    /*if(!retValue.containsError())
+    /*if (!retValue.containsError())
     {
         retValue += checkData();
     }*/
@@ -784,7 +784,7 @@ ito::RetVal CommonVisionBlox::startDevice(ItomSharedSemaphore *waitCond)
 
     if (0 /*!XC_IsInitialised(m_handle)*/)
     {
-        retValue += ito::RetVal(ito::retError, 0, "camera device is not initialised. start device failed.");
+        retValue += ito::RetVal(ito::retError, 0, tr("camera device is not initialised. start device failed.").toLatin1().data());
     }
     else
     {
@@ -801,7 +801,7 @@ ito::RetVal CommonVisionBlox::startDevice(ItomSharedSemaphore *waitCond)
         }
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -838,14 +838,14 @@ ito::RetVal CommonVisionBlox::stopDevice(ItomSharedSemaphore *waitCond)
         }
     }
 
-    if(grabberStartedCount() < 0)
+    if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of CommonVisionBlox can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -898,7 +898,7 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
         }
     }
     
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -941,11 +941,11 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
             {
                 char iniPath[DRIVERPATHSIZE] = { 0 };
                 TranslateFileName("%CVBDATA%\\Drivers\\GenICam.ini", iniPath, DRIVERPATHSIZE);
-                retValue += ito::RetVal::format(ito::retError, 0, "Obtained image has %i bits per pixel instead of %i given by the camera. Both values must be equal. Change property PixelFormat in %s of Common Vision Blox or use the configuration tool to adjust the CVB Color Format", bppImg, bpp, iniPath);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("Obtained image has %i bits per pixel instead of %i given by the camera. Both values must be equal. Change property PixelFormat in %s of Common Vision Blox or use the configuration tool to adjust the CVB Color Format").toLatin1().data(), bppImg, bpp, iniPath);
             }
             else if (xInc != ((int)(std::ceil((float)bpp/8.0))))
             {
-                retValue += ito::RetVal(ito::retError, 0, "currently unsupported image format");
+                retValue += ito::RetVal(ito::retError, 0, tr("currently unsupported image format").toLatin1().data());
             }
             else
             {
@@ -979,7 +979,7 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "currently unsupported bit depth of image");
+                    retValue += ito::RetVal(ito::retError, 0, tr("currently unsupported bit depth of image").toLatin1().data());
                 }
             }
 
@@ -1058,9 +1058,9 @@ ito::RetVal CommonVisionBlox::getVal(void *vpdObj, ItomSharedSemaphore *waitCond
 
     retValue += retrieveData();
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-        if(dObj == NULL)
+        if (dObj == NULL)
         {
             retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
@@ -1100,7 +1100,7 @@ ito::RetVal CommonVisionBlox::copyVal(void *vpdObj, ItomSharedSemaphore *waitCon
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-    if(!dObj)
+    if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
@@ -1109,12 +1109,12 @@ ito::RetVal CommonVisionBlox::copyVal(void *vpdObj, ItomSharedSemaphore *waitCon
         retValue += checkData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += retrieveData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
@@ -1274,7 +1274,7 @@ ito::RetVal CommonVisionBlox::getParamInt(const char *name, cvbint64_t &value)
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             retVal += checkError(NGetAsInteger(node, value), name);
@@ -1300,7 +1300,7 @@ ito::RetVal CommonVisionBlox::getParamFloat(const char *name, double &value)
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             retVal += checkError(NGetAsFloat(node, value), name);
@@ -1310,7 +1310,7 @@ ito::RetVal CommonVisionBlox::getParamFloat(const char *name, double &value)
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1326,7 +1326,7 @@ ito::RetVal CommonVisionBlox::getParamBool(const char *name, bool &value)
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             cvbbool_t val = 0;
@@ -1342,7 +1342,7 @@ ito::RetVal CommonVisionBlox::getParamBool(const char *name, bool &value)
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1358,7 +1358,7 @@ ito::RetVal CommonVisionBlox::getParamString(const char *name, QByteArray &value
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             char val[256] = {0};
@@ -1375,7 +1375,7 @@ ito::RetVal CommonVisionBlox::getParamString(const char *name, QByteArray &value
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1391,7 +1391,7 @@ ito::RetVal CommonVisionBlox::setParamInt(const char *name, const cvbint64_t &va
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             retVal += checkError(NSetAsInteger(node, value), name);
@@ -1401,7 +1401,7 @@ ito::RetVal CommonVisionBlox::setParamInt(const char *name, const cvbint64_t &va
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1418,7 +1418,7 @@ ito::RetVal CommonVisionBlox::setParamFloat(const char *name, const double &valu
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             retVal += checkError(NSetAsFloat(node, value), name);
@@ -1428,7 +1428,7 @@ ito::RetVal CommonVisionBlox::setParamFloat(const char *name, const double &valu
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1444,7 +1444,7 @@ ito::RetVal CommonVisionBlox::setParamBool(const char *name, const bool &value)
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             retVal += checkError(NSetAsBoolean(node, value), name);
@@ -1454,7 +1454,7 @@ ito::RetVal CommonVisionBlox::setParamBool(const char *name, const bool &value)
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1470,7 +1470,7 @@ ito::RetVal CommonVisionBlox::setParamString(const char *name, const char *value
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             // value camera dependent
             size_t size = 256;
@@ -1481,7 +1481,7 @@ ito::RetVal CommonVisionBlox::setParamString(const char *name, const char *value
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1497,7 +1497,7 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             TNodeType type;
             NType(node, type);
@@ -1549,7 +1549,7 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1565,7 +1565,7 @@ ito::RetVal CommonVisionBlox::getParamIntInfo(const char *name, ito::IntMeta &me
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             cvbint64_t mi, ma, inc;
             // value camera dependent
@@ -1590,7 +1590,7 @@ ito::RetVal CommonVisionBlox::getParamIntInfo(const char *name, ito::IntMeta &me
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1606,7 +1606,7 @@ ito::RetVal CommonVisionBlox::getParamEnumerationInfo(const char *name, ito::Str
         // get width feature node
         NODE node = NULL;
         retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             TNodeType nodeType;
             NType(node, nodeType);
@@ -1627,7 +1627,7 @@ ito::RetVal CommonVisionBlox::getParamEnumerationInfo(const char *name, ito::Str
             }
             else
             {
-                retVal += ito::RetVal::format(ito::retError, 0, "node %s is no enumeration", name);
+                retVal += ito::RetVal::format(ito::retError, 0, tr("node %s is no enumeration").toLatin1().data(), name);
             }
         }
             
@@ -1635,7 +1635,7 @@ ito::RetVal CommonVisionBlox::getParamEnumerationInfo(const char *name, ito::Str
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
     }
 
     return retVal;
@@ -1676,7 +1676,7 @@ ito::RetVal CommonVisionBlox::scan_for_cameras()
 
     if (!result)
     {
-        return ito::RetVal(ito::retError, 0, "failure while scanning for cameras");
+        return ito::RetVal(ito::retError, 0, tr("failure while scanning for cameras").toLatin1().data());
     }
     return ito::retOk;
 }
@@ -1698,105 +1698,105 @@ ito::RetVal CommonVisionBlox::checkError(const cvbres_t &code, const char *prefi
         switch (code_)
         {
         case CVC_E_ERROR :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn unspecified error occurred for which no further information is available. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn unspecified error occurred for which no further information is available. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_PARAMETER :
-            return ito::RetVal::format(ito::retError, code_, "%s%sA function was called with an invalid parameter value for one of the function's arguments. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sA function was called with an invalid parameter value for one of the function's arguments. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_FILEIO :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn error occurred during a File I/O operation (e.g. while loading/saving data from/to a file). (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn error occurred during a File I/O operation (e.g. while loading/saving data from/to a file). (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_TIMEOUT :
-            return ito::RetVal::format(ito::retError, code_, "%s%sA timeout occurred in an asynchronous function call. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sA timeout occurred in an asynchronous function call. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_MEMORY :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe allocation of a block of memory failed, typically because the amount of memory available to the application was insufficient for the operation at hand. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe allocation of a block of memory failed, typically because the amount of memory available to the application was insufficient for the operation at hand. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDPLANE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sA plane index was specified that was either negative or bigger than or equal to the number of planes in the image. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sA plane index was specified that was either negative or bigger than or equal to the number of planes in the image. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_UNSUPPORTEDDATATYPE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe data type of the input image is not supported by the function that has been called. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe data type of the input image is not supported by the function that has been called. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDCAMERAPORT :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn attempt to switch to an invalid/unavailable camera port was made. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn attempt to switch to an invalid/unavailable camera port was made. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_BOARDSELECT :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn attempt to switch to an invalid/unavailable board was made. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn attempt to switch to an invalid/unavailable board was made. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDTRIGGERMODE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn attempt to select and invalid/unsupported trigger mode was made. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn attempt to select and invalid/unsupported trigger mode was made. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_PROPERTYREAD :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn attempt to read a property was unsuccessful, either because the property does not exist or because the device or property is in a state that prevents the property from being read. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn attempt to read a property was unsuccessful, either because the property does not exist or because the device or property is in a state that prevents the property from being read. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_PROPERTYWRITE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn attempt to write a property was unsuccessful, either because the property does not exist or because the device or property is in a state that prevents the property from being written. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn attempt to write a property was unsuccessful, either because the property does not exist or because the device or property is in a state that prevents the property from being written. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDPORT :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn invalid/unavailable port was selected. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn invalid/unavailable port was selected. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_PORTREAD :
-            return ito::RetVal::format(ito::retError, code_, "%s%sA port read operation failed. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sA port read operation failed. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_PORTWRITE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sA port write operation failed. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sA port write operation failed. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOIMAGE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe handle to at least one of the input images does not point to a valid image. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe handle to at least one of the input images does not point to a valid image. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOINTERFACE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe input image object does not support the interface required for this operation. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe input image object does not support the interface required for this operation. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_BUSY :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe operation failed because the hardware is not in a state where it can handle that operation. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe operation failed because the hardware is not in a state where it can handle that operation. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOTSUPPORTED :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe requested feature is not supported. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe requested feature is not supported. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_GRABABORTED :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe current grab operation was aborted. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe current grab operation was aborted. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOPIXELLIST :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAt least one of the input handles does not point to a valid pixel list. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAt least one of the input handles does not point to a valid pixel list. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOTENOUGHDATA :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe amount of input data is insufficient for the requested operation. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe amount of input data is insufficient for the requested operation. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOTRANSFORMATION :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe object handle that was passed to the function does not point to a valid non linear transformation object. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe object handle that was passed to the function does not point to a valid non linear transformation object. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_LINEAR_ONLY :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe function only works on images with a linear VPAT layout. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe function only works on images with a linear VPAT layout. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_DIVISIONBYZERO :
-            return ito::RetVal::format(ito::retError, code_, "%s%sA division by zero was attempted. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sA division by zero was attempted. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDDIMENSION :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn invalid number of planes was specified. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn invalid number of planes was specified. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDCOLORMODEL :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn invalid/undefined color model mode has been passed to the function. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn invalid/undefined color model mode has been passed to the function. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDDATATYPE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn invalid data type descriptor has been passed to the function. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn invalid data type descriptor has been passed to the function. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_WRONGOBJECT :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAt least one of the input handles points to the wrong type of object. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAt least one of the input handles points to the wrong type of object. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOTREADY :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe device or object is not ready to handle the requested operation. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe device or object is not ready to handle the requested operation. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOANGLE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe input handle does not point to a valid angle object. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe input handle does not point to a valid angle object. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOVECTOR2D :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe input handle does not point to a valid 2D vector object. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe input handle does not point to a valid 2D vector object. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOLINE2D :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe input handle does not point to a valid 2D line object. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe input handle does not point to a valid 2D line object. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_VECTOR2D_ZERO_LENGTH :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe operation failed because the vector passed to this function has length zero. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe operation failed because the vector passed to this function has length zero. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_VECTORS_IDENTICAL :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe function call failed because the input vectors to this operation are identical. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe function call failed because the input vectors to this operation are identical. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_LINE2D_VERTICAL :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe operation failed because the line object passed to it is vertical. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe operation failed because the line object passed to it is vertical. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_LINE2D_HORIZONTAL :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe operation failed because the line object passed to it is horizontal. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe operation failed because the line object passed to it is horizontal. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOARGUMENT :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe argument cannot be calculated for a vector of length zero. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe argument cannot be calculated for a vector of length zero. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_LINE2D_UNDEFINED :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe operation failed because the input line 2D object has not yet been defined  (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe operation failed because the input line 2D object has not yet been defined  (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOINTERSECTION :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe operation failed because the the line objects provided to the function do not intersect  (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe operation failed because the the line objects provided to the function do not intersect  (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOCLIPPING :
-            return ito::RetVal::format(ito::retError, code_, "%s%sNo clipping points available. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sNo clipping points available. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOTENOUGHLINES :
-            return ito::RetVal::format(ito::retError, code_, "%s%sNot enough lines available to calculate the intersection reliably. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sNot enough lines available to calculate the intersection reliably. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_OVERFLOW :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn input value was too big or did lead to a too big result. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn input value was too big or did lead to a too big result. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOCIRCLE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe input handle does not point to a valid 2D circle object. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe input handle does not point to a valid 2D circle object. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_ACCESS :
-            return ito::RetVal::format(ito::retError, code_, "%s%sA feature access failed. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sA feature access failed. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOTPRESENT :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe requested operation failed because the selected feature is not present. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe requested operation failed because the selected feature is not present. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_UNSUPPORTEDFEATURE :
-            return ito::RetVal::format(ito::retError, code_, "%s%sThe requested feature is not supported (may happen if a specific interface implementation does not implement all functionality). (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sThe requested feature is not supported (may happen if a specific interface implementation does not implement all functionality). (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_INVALIDINDEX :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn index value in an indexed access exceeded its limits. (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn index value in an indexed access exceeded its limits. (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         case CVC_E_NOOVERLAY :
-            return ito::RetVal::format(ito::retError, code_, "%s%sAn image object that is expected to have overlay bits does not have overlay bits (see #DT_Overlay). (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sAn image object that is expected to have overlay bits does not have overlay bits (see #DT_Overlay). (%i)").toLatin1().data(), prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         default:
-            return ito::RetVal::format(ito::retError, code_, "%s%sCommon Vision Blox Error %i", CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, tr("%s%sCommon Vision Blox Error %i").toLatin1().data(), CVC_ERROR_FROM_HRES(code));
         }
     }
 }
