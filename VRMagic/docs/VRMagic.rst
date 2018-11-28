@@ -80,7 +80,7 @@ plugin set the CMake variable VRMagic_INCLUDE_DIR to the directory that contains
 
 .. note::
 
-    Under Windows this is often found under **%CommonProgramFiles%\VRmagic\VRmUsbCamSDK\include**!
+    Under Windows this is often found under **/Program Files (x86)/Common Files/VRmagic/VRmUsbCamSDK/include**!
 
     
     
