@@ -115,6 +115,5 @@ plot is opened that displays a moving graph of recent intensity values:
 Changelog
 =========
 
-itom 3.0.0: plugin uses the driver PM100x_Instrument_Driver in version 3.0.2
-
-itom 3.1.0: plugin uses the driver PM100x_Instrument_Driver in version 1.0.2 (Thorlabs has changed the major version number again)
+* itom 3.0.0: plugin uses the driver PM100x_Instrument_Driver in version 3.0.2
+* itom 3.1.0: plugin uses the driver PM100x_Instrument_Driver in version 1.0.2 (Thorlabs has changed the major version number again)
