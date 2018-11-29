@@ -42,7 +42,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QElapsedTimer> 
 
 #include "dockWidgetThorlabsPowerMeter.h"
-#if defined(USE_API_3_02) 
+#if defined(USE_API_1_02) 
     #include <PM100D.h>
 #define PM(name) PM100D_##name
 #else
