@@ -42,7 +42,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QElapsedTimer> 
 
 #include "dockWidgetThorlabsPowerMeter.h"
-#if defined(USE_API_3_02) 
+#if defined(USE_API_1_02) 
     #include <PM100D.h>
 #define PM(name) PM100D_##name
 #else
@@ -187,12 +187,15 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     registerExecFunc("zero_device", pMand, pOpt, pOut, tr("function to set the zero value of the device").toLatin1().data());
 
 
-    //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
-    
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+	if (hasGuiSupport())
+	{
+		//the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
+		DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
+
+		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -326,8 +329,8 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
             {
                 retval += checkError(status);
             }
-        }
 #endif
+        }
 
         ViChar name[256];
         status = PM(getRsrcName)(m_instrument, 0, name);
@@ -659,7 +662,6 @@ ito::RetVal ThorlabsPowerMeter::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->deleteSemaphore();
     }
     return retval;
-    return ito::retOk;
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1029,7 +1031,6 @@ ito::RetVal ThorlabsPowerMeter::checkFunctionCompatibility(bool* compatibility)
     ViChar device[256];
     ViChar serial[256];
     ViChar firmware[256];
-    ViChar message[256];
     retval += checkError(PM(identificationQuery)(m_instrument, manufacturer, device, serial, firmware));
 
     QString str = device;

@@ -48,9 +48,10 @@ IDSuEye::IDSuEye() :
     AddInGrabber(),
     m_camera(IS_INVALID_HIDS),
     m_colouredOutput(false),
-    m_captureVideoActive(false)
+    m_captureVideoActive(false),
+	m_seqAvailable(false)
 #if WIN32
-    ,m_frameEvent(NULL)
+    ,m_seqEvent(NULL)
 #endif
 {
 
@@ -130,8 +131,11 @@ IDSuEye::IDSuEye() :
     paramVal = ito::Param("fps", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1000.0, 0.0, tr("current fps reported by camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.04, 1000.0, 3.0, tr("timeout in seconds when waiting for the next image.").toLatin1().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.04, 1000.0, 3.0, tr("timeout in seconds when waiting for the next image. For sequences x1000.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+
+	paramVal = ito::Param("num_buffer", ito::ParamBase::Int, 1, 2000, 1, tr("Number of Buffers used for acquisition. Note that if this is > 1, a sequence of images will be acquired.").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())
     {
@@ -174,6 +178,8 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 
     HIDS camera_id = static_cast<HIDS>(paramsOpt->at(0).getVal<int>());
     QString init_color_mode = paramsOpt->at(1).getVal<char*>();
+
+	m_NumberOfBuffers = m_params["num_buffer"].getVal<int>();
 
     if (paramsOpt->at(2).getVal<int>() > 0)
     {
@@ -274,6 +280,9 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             int minBpp = 100;
             int maxBpp = 0;
             int maxMonochrome = IS_CM_MONO8;
+			
+			int test = bitDepths & IS_SENSOR_BIT_DEPTH_8_BIT;
+
             if (is_SetColorMode(m_camera, IS_CM_MONO8) == IS_SUCCESS && (bitDepths & IS_SENSOR_BIT_DEPTH_8_BIT || bitDepths==0))
             {
                 minBpp = std::min(minBpp,8);
@@ -348,12 +357,12 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         if (!retVal.containsError())
         {
 #if WIN32 //create and init only necessary for windows (see uEye documentation)
-            m_frameEvent = CreateEvent(NULL, false, false, NULL);
-            retVal += checkError(is_InitEvent(m_camera, m_frameEvent, IS_SET_EVENT_FRAME), "initEvent");
+			m_seqEvent = CreateEvent(NULL, false, false, NULL);
+			retVal += checkError(is_InitEvent(m_camera, m_seqEvent, IS_SET_EVENT_SEQ), "initEvent");
 #endif
             if (!retVal.containsError())
             {
-                retVal += is_EnableEvent(m_camera, IS_SET_EVENT_FRAME);
+				retVal += is_EnableEvent(m_camera, IS_SET_EVENT_SEQ);
             }
         }
     }
@@ -393,26 +402,31 @@ ito::RetVal IDSuEye::close(ItomSharedSemaphore *waitCond)
         retValue += stopDevice(NULL);
     }
 
-    for (int n = 0; n < BUFSIZE; n++)
-    {
-        is_ClearSequence (m_camera);
-        if (m_pMemory[n].ppcImgMem != NULL)
-        {
-            is_FreeImageMem(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid);
-            m_pMemory[n].ppcImgMem = NULL;
-            m_pMemory[n].pid = -1;
-            m_pMemory[n].height = -1; //invalidate the buffer
-        }
-    }
 
+	if (!m_vpcSeqImgMem.empty())
+	{
+		for (int i = (m_oldNumBuf - 1); i >= 0; i--)
+		{
+			// free buffers
+			if (is_FreeImageMem(m_camera, m_vpcSeqImgMem.at(i), m_viSeqMemId.at(i)) != IS_SUCCESS)
+			{
+				break;
+			}
+		}
 
-    is_DisableEvent(m_camera, IS_SET_EVENT_FRAME);
+		// no valid buffers any more
+		m_viSeqMemId.clear();
+		m_vpcSeqImgMem.clear();
+	}
+
+	
+	is_DisableEvent(m_camera, IS_SET_EVENT_SEQ);
     
 #if WIN32 //exit and close only necessary for Windows (see uEye documentation)
-    if (m_frameEvent)
+    if (m_seqEvent)
     {
-        is_ExitEvent(m_camera, IS_SET_EVENT_FRAME);
-        CloseHandle(m_frameEvent);
+		is_ExitEvent(m_camera, IS_SET_EVENT_SEQ);
+		CloseHandle(m_seqEvent);
     }
 #endif
 
@@ -878,7 +892,8 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
             if (!retValue.containsError())
             {
-                retValue += synchronizeCameraSettings(sBppAndColorMode);
+                retValue += synchronizeCameraSettings(sBppAndColorMode | sPixelClock | sExposure | sFrameTime);
+
             }
         }
         else if (key == "color_mode")
@@ -918,7 +933,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
             if (!retValue.containsError())
             {
-                retValue += synchronizeCameraSettings(sBppAndColorMode);
+                retValue += synchronizeCameraSettings(sBppAndColorMode | sPixelClock | sExposure | sFrameTime);
             }
         }
         else if (key == "frame_rate")
@@ -926,6 +941,11 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             retValue += setFrameRate(val->getVal<double>());
             retValue += synchronizeCameraSettings(sExposure | sFrameTime);
         }
+		else if (key == "num_buffer")
+		{
+			m_NumberOfBuffers = val->getVal<int>();
+			m_params["num_buffer"].setVal<int>(m_NumberOfBuffers);
+		}
         else
         { 
             //e.g. timeout
@@ -978,11 +998,7 @@ ito::RetVal IDSuEye::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 0)
     {
-        if (strcmp(m_params["trigger_mode"].getVal<char*>(), "software") != 0)
-        {
-            retValue += checkError(is_CaptureVideo(m_camera, IS_DONT_WAIT), "captureVideo");
-            m_captureVideoActive = true;
-        }
+		retValue += checkError(is_InitImageQueue(m_camera, 0), "initImageQueue");
     }
 
     incGrabberStarted();
@@ -1015,25 +1031,7 @@ ito::RetVal IDSuEye::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
     if (grabberStartedCount() == 0)
     {
-        if (m_captureVideoActive)
-        {
-            //sometimes it is necessary to stop the acquisition twice (e.g. if the trigger mode is changed on-the-fly)
-            retValue += checkError(is_StopLiveVideo(m_camera, IS_FORCE_VIDEO_STOP ));
-            retValue += checkError(is_StopLiveVideo(m_camera, IS_DONT_WAIT ));
-            m_captureVideoActive = false;
-
-            //for (int n = 0; n < BUFSIZE; n++)
-            //{
-            //    is_ClearSequence (m_camera);
-            //    if (m_pMemory[n].ppcImgMem != NULL)
-            //    {
-            //        is_FreeImageMem(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid);
-            //        m_pMemory[n].ppcImgMem = NULL;
-            //        m_pMemory[n].pid = -1;
-            //        m_pMemory[n].height = -1; //invalidate the buffer
-            //    }
-            //}
-        }
+		retValue += checkError(is_ExitImageQueue(m_camera));
     }
     else if (grabberStartedCount() < 0)
     {
@@ -1082,104 +1080,110 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        m_pMemory->imageAvailable = false;
 
-        if (!m_captureVideoActive) //software trigger
-        {
-            retValue += checkError(is_FreezeVideo(m_camera, IS_DONT_WAIT));
-        }
-
-        if (waitCond)
-        {
-            waitCond->returnValue = retValue;
-            waitCond->release();
-        }
+		retValue += checkError(is_CaptureVideo(m_camera,IS_DONT_WAIT), "captureVideo"); //start image acquisiton
 
 #if WIN32
-        DWORD eventRet = WaitForSingleObject(m_frameEvent, m_params["timeout"].getVal<double>() * 1000.0);
-        if (eventRet == WAIT_TIMEOUT)
-        {
-            retValue += ito::RetVal(ito::retError, 0, "timeout while acquiring image.");
-        }
-        else if (eventRet != WAIT_OBJECT_0)
-        {
-            retValue += ito::RetVal(ito::retError, 0, "wrong event signalling when acquiring image.");
-        }
+		DWORD eventRet = WaitForSingleObject(m_seqEvent, m_params["timeout"].getVal<double>() * 1000.0 * (double)m_NumberOfBuffers);
+		if (eventRet == WAIT_TIMEOUT)
+		{
+			retValue += ito::RetVal(ito::retError, 0, "timeout while acquiring image.");
+		}
+		else if (eventRet != WAIT_OBJECT_0)
+		{
+			retValue += ito::RetVal(ito::retError, 0, "wrong event signalling when acquiring image.");
+		}
 #else
-        INT eventRet = is_WaitEvent(m_camera, IS_SET_EVENT_FRAME, m_params["timeout"].getVal<double>() * 1000.0);
-        if (eventRet == IS_TIMED_OUT)
-        {
-            retValue += ito::RetVal(ito::retError, 0, "timeout while acquiring image.");
-        }
-        else if (eventRet != IS_SUCCESS)
-        {
-            retValue += checkError(eventRet, "waitEvent");
-        }
+		INT eventRet = is_WaitEvent(m_camera, IS_SET_EVENT_SEQ, m_params["timeout"].getVal<double>() * 1000.0 * (double)m_NumberOfBuffers);
+			
+		if (eventRet == IS_TIMED_OUT)
+		{
+			retValue += ito::RetVal(ito::retError, 0, "timeout while acquiring image.");
+		}
+		else if (eventRet != IS_SUCCESS)
+		{
+			retValue += checkError(eventRet, "waitEvent");
+		}
 #endif
-        char *imgBuffer;
-        if (!retValue.containsError())
-        {
-            char *current;
-            INT num;
-            retValue += checkError(is_GetActSeqBuf(m_camera, &num, &current, &imgBuffer));
-        }
 
-        if (!retValue.containsError())
-        {
-            int idx = 0;
-            for (idx = 0; idx < BUFSIZE; ++idx)
-            {
-                if (m_pMemory[idx].ppcImgMem == imgBuffer)
-                {
-                    break;
-                }
-            }
-            retValue += checkError(is_LockSeqBuf(m_camera, m_pMemory[idx].pid, m_pMemory[idx].ppcImgMem));
+		if (!retValue.containsError())
+		{
+			retValue += checkError(is_StopLiveVideo(m_camera, IS_FORCE_VIDEO_STOP));
 
-            int pnX, pnY, pnBits, pnPitch;
-            retValue += checkError(is_InquireImageMem(m_camera, m_pMemory[idx].ppcImgMem, m_pMemory[idx].pid, &pnX, &pnY, &pnBits, &pnPitch));
-            //width should be pnX, bitspixel should be pnBits!!!
-            int bytesPerLine = m_pMemory->width * m_pMemory->bitspixel / 8;
-            char *startPtr = m_pMemory[idx].ppcImgMem;
+			if (!retValue.containsError())
+			{
+				INT nMemID = 0;
+				char *imgBuffer;
+				int width = m_params["sizex"].getVal<int>();
+				int height = m_params["sizey"].getVal<int>();
+				int bpp = m_params["bpp"].getVal<int>();
 
-            //in rgba8_packed, the alpha channel is 0, this must be 255 in itom (opaque)
-            if (m_colouredOutput)
-            {
-                UCHAR *sourcePtr = (UCHAR*)(startPtr + 3);
-                //set alpha value in image to 255 (else it is transparent)
-                for (int y = 0; y < m_pMemory->height; ++y)
-                {
-                    for (int x = 0; x < m_pMemory->width; ++x)
-                    {
-                        sourcePtr[x*4] = 255;
-                    }
-                    sourcePtr += bytesPerLine;
-                }
-            }
 
-            cv::Mat *cvMat = m_data.getCvPlaneMat(0);
+				for (int i = 0; i < m_NumberOfBuffers; i++)
+				{
+					retValue += checkError(is_WaitForNextImage(m_camera, 1000, &imgBuffer, &nMemID)); // get oldest image in buffer
 
-            if (pnPitch == bytesPerLine)
-            {
-                memcpy(cvMat->ptr(0), startPtr, m_pMemory->height * bytesPerLine);
-            }
-            else
-            {
-                for (int y = 0; y < m_pMemory->height; y++)
-                {
-                    memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
-                    startPtr += pnPitch;
-                }
-            }
+					if (!retValue.containsError())
+					{
+						int pnX, pnY, pnBits, pnPitch;
+						retValue += checkError(is_InquireImageMem(m_camera, m_vpcSeqImgMem.at(i), m_viSeqMemId.at(i), &pnX, &pnY, &pnBits, &pnPitch));
+						//width should be pnX, bitspixel should be pnBits!!!
+						int bytesPerLine = width * m_bitspixel / 8;
+						//char *startPtr = m_pMemory[idx].ppcImgMem;
 
-            retValue += checkError(is_UnlockSeqBuf(m_camera, m_pMemory[idx].pid, m_pMemory[idx].ppcImgMem));
+						if (m_colouredOutput)
+						{
+							UCHAR *sourcePtr = (UCHAR*)(imgBuffer + 3);
+							//set alpha value in image to 255 (else it is transparent)
+							for (int y = 0; y < height; ++y)
+							{
+								for (int x = 0; x < width; ++x)
+								{
+									sourcePtr[x * 4] = 255;
+								}
+								sourcePtr += bytesPerLine;
+							}
+						}
 
-            m_imageAvailable = true;
-        }
+						if (pnPitch == bytesPerLine)
+						{
+							memcpy(m_data.rowPtr(i, 0), imgBuffer, height * bytesPerLine);
+						}
+						else
+						{
+							for (int y = 0; y < height; y++)
+							{
+								memcpy(m_data.rowPtr(i, y), imgBuffer, bytesPerLine);
+								imgBuffer += pnPitch;
+							}
+						}
+					}
+					else
+					{
+						break;
+					}
 
-        m_acquisitionRetVal = retValue;
+					retValue += checkError(is_UnlockSeqBuf(m_camera, nMemID, imgBuffer));
+
+					if (waitCond)
+					{
+						waitCond->returnValue = retValue;
+						waitCond->release();
+					}
+				}
+
+				m_seqAvailable = true;
+			}
+
+			m_acquisitionRetVal = retValue;
+		}
+		
     }
-
+	if (waitCond)
+	{
+		waitCond->returnValue = retValue;
+		waitCond->release();
+	}
     return retValue;
 }
 
@@ -1292,34 +1296,64 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
         retVal += checkData(externalDataObject);
     }
 
-    if (!m_imageAvailable)
+    if (!m_seqAvailable)
     {
-        retVal += ito::RetVal(ito::retError, 0, "no image has been acquired");
+        retVal += ito::RetVal(ito::retError, 0, "no image or sequence has been acquired");
     }
 
 
     if (!retVal.containsError())
     {      
-        if (externalDataObject)
-        {
-            switch (m_data.getType())
-            {
-            case ito::tUInt8:
-                retVal += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)m_data.rowPtr(0,0), m_data.getSize(1), m_data.getSize(0)); //m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
-                break;
-            case ito::tUInt16:
-                retVal += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)m_data.rowPtr(0,0), m_data.getSize(1), m_data.getSize(0)); //m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
-                break;
-            case ito::tRGBA32:
-                retVal += externalDataObject->copyFromData2D<ito::Rgba32>((ito::Rgba32*)m_data.rowPtr(0,0), m_data.getSize(1), m_data.getSize(0)); //m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
-                break;
-            default:
-                retVal += ito::RetVal(ito::retError, 0, tr("wrong picture type").toLatin1().data());
-                break;
-            }
-        }
+		if (m_NumberOfBuffers == 1)
+		{
+			if (externalDataObject)
+			{
+				switch (m_data.getType())
+				{
+				case ito::tUInt8:
+					retVal += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)m_data.rowPtr(0, 0), m_data.getSize(1), m_data.getSize(0)); //m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
+					break;
+				case ito::tUInt16:
+					retVal += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)m_data.rowPtr(0, 0), m_data.getSize(1), m_data.getSize(0)); //m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
+					break;
+				case ito::tRGBA32:
+					retVal += externalDataObject->copyFromData2D<ito::Rgba32>((ito::Rgba32*)m_data.rowPtr(0, 0), m_data.getSize(1), m_data.getSize(0)); //m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
+					break;
+				default:
+					retVal += ito::RetVal(ito::retError, 0, tr("wrong picture type").toLatin1().data());
+					break;
+				}
+			}
 
-        m_imageAvailable = false;
+			m_seqAvailable = false;
+		}
+		else
+		{
+			if (externalDataObject)
+			{
+				int planes = m_data.getNumPlanes();
+
+				for (int i = 0; i < planes; ++i)
+				{
+					const cv::Mat* internalMat = m_data.getCvPlaneMat(i);
+					cv::Mat* externalMat = externalDataObject->getCvPlaneMat(i);
+
+					if (externalMat->isContinuous())
+					{
+						memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
+					}
+					else
+					{
+						for (int y = 0; y < internalMat->rows; y++)
+						{
+							memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
+						}
+					}
+				}
+			}
+
+			m_seqAvailable = false;
+		}
     }
 
     return retVal;
@@ -1403,6 +1437,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
     UINT uintVal3[3];
     double dVal;
     double dVal3[3];
+	
     ito::RetVal retval, rettemp;
     QMap<QString, ito::Param>::iterator it;
 
@@ -1410,7 +1445,17 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
     {
         //get pixelclock and ranges
         it = m_params.find("pixel_clock");
-        rettemp = checkError(is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)uintVal3, sizeof(uintVal3)), "pixelClock");
+
+		//UINT nPixelClockList[150];
+		//UINT nNumberOfSupportedPixelClocks = 0;
+		//INT nRet = is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_NUMBER, (void*)&nNumberOfSupportedPixelClocks, sizeof(nNumberOfSupportedPixelClocks));
+
+		//if ((nRet == IS_SUCCESS) && (nNumberOfSupportedPixelClocks > 0))
+		//{
+		//	is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_LIST, (void*)nPixelClockList, nNumberOfSupportedPixelClocks * sizeof(UINT));	
+		//}
+
+		rettemp = checkError(is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)uintVal3, sizeof(uintVal3)), "pixelClock");
         rettemp += checkError(is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET, (void*)&uintVal, sizeof(uintVal)), "pixelClock");
         if (!rettemp.containsError())
         {
@@ -2072,53 +2117,100 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
 
     if (externalDataObject == NULL)
     {
-        if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
-        {
-            m_data = ito::DataObject(futureHeight,futureWidth,futureType);
-        }
+		if (m_NumberOfBuffers == 1)
+		{
+			if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+			{
+				m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+			}
+		}
+		else
+		{
+			if (m_data.getDims() != 3 || m_data.getSize(0) != m_NumberOfBuffers || m_data.getSize(1) != (unsigned int)futureHeight || m_data.getSize(2) != (unsigned int)futureWidth || m_data.getType() != futureType)
+			{
+				m_data = ito::DataObject(m_NumberOfBuffers, futureHeight, futureWidth, futureType);
+			}
+		}
+
     }
     else
-    {
-        int dims = externalDataObject->getDims();
-        if (externalDataObject->getDims() == 0)
-        {
-            *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
-        }
-        else if (externalDataObject->calcNumMats () != 1)
-        {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.").toLatin1().data());            
-        }
-        else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
-        {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.").toLatin1().data());
-        }
+    {	
+		int dims = externalDataObject->getDims();
+		if (m_NumberOfBuffers == 1)
+		{
+			if (externalDataObject->getDims() == 0)
+			{
+				*externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+			}
+			else if (externalDataObject->calcNumMats() != 1)
+			{
+				return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.").toLatin1().data());
+			}
+			else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+			{
+				return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.").toLatin1().data());
+			}
+		}
+		else
+		{
+			if (externalDataObject->getDims() == 0)
+			{
+				*externalDataObject = ito::DataObject(m_NumberOfBuffers, futureHeight, futureWidth, futureType);
+			}
+			else if (externalDataObject->calcNumMats() != m_NumberOfBuffers)
+			{
+				return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Frame burst is %1, the external object must then have %1 planes.").arg(m_NumberOfBuffers).toLatin1().data());
+			}
+			else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+			{
+				return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+			}
+
+		}
     }
 
+	if (!m_vpcSeqImgMem.empty())
+	{
+		for (int i = (m_oldNumBuf - 1); i >= 0; i--)
+		{
+			// free buffers
+			if (is_FreeImageMem(m_camera, m_vpcSeqImgMem.at(i), m_viSeqMemId.at(i)) != IS_SUCCESS)
+			{
+				break;
+			}
+		}
+
+		m_viSeqMemId.clear();
+		m_vpcSeqImgMem.clear();
+	}
+
     //now check if camera memory needs to be (re)allocated
-    if ((m_pMemory[0].height != futureHeight || m_pMemory[0].width != futureWidth || m_pMemory[0].bitspixel != m_bitspixel))
-    {
-        is_ClearSequence (m_camera);
-        for (int n = 0; n < BUFSIZE; n++)
-        {
-            if (m_pMemory[n].ppcImgMem)
-                is_FreeImageMem(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid);
-            m_pMemory[n].height = futureHeight;
-            m_pMemory[n].width = futureWidth;
-            m_pMemory[n].bitspixel = m_bitspixel;
-            m_pMemory[n].pid = 0;
-            m_pMemory[n].ppcImgMem = NULL;
-            m_pMemory[n].imageAvailable = false;
-            retval += checkError(is_AllocImageMem(m_camera, futureWidth, futureHeight, m_bitspixel, &(m_pMemory[n].ppcImgMem), &(m_pMemory[n].pid)));
-            if (retval.containsError())
-                return retval;
-            else
-            {
-                retval += checkError(is_AddToSequence(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid));
-                if (retval.containsError())
-                    return retval;
-            }
-        }
-    }
+	
+	is_ClearSequence(m_camera);
+	for (int i = 0; i < m_NumberOfBuffers; i++)
+	{
+		INT iImgMemID = 0;
+		char* pcImgMem = 0;
+			
+		
+		retval += checkError(is_AllocImageMem(m_camera, futureWidth, futureHeight, m_bitspixel, &pcImgMem, &iImgMemID));
+
+		if (retval.containsError())
+		{
+			return retval;
+		}
+		retval += checkError(is_AddToSequence(m_camera, pcImgMem, iImgMemID));
+		if (retval.containsError())
+		{
+			is_FreeImageMem(m_camera, pcImgMem, iImgMemID);
+			return retval;
+		}
+		m_viSeqMemId.push_back(iImgMemID);
+		m_vpcSeqImgMem.push_back(pcImgMem);
+	}
+
+	m_oldNumBuf = m_NumberOfBuffers;
+	
 
     return retval;
 }

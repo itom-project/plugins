@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -36,7 +36,7 @@ include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake") #include this mandatory macro f
 find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
 FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 
-find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include DOC "NITLibrary includ directory")
+find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include DOC "NITLibrary include directory")
 find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 
 IF(NITLIBRARY_INCLUDE_DIR)
@@ -93,10 +93,18 @@ IF(NITLIBRARY_INCLUDE_DIR)
         }
         #add further include directories here
     )
-
+    
+    
+    if(BUILD_TARGET64)
+        file(GLOB NITLIBRARY_LIB_DIR "${NITLIBRARY_SDK_DIR}/lib/x64/*.lib")
+    else(BUILD_TARGET64)
+        file(GLOB NITLIBRARY_LIB_DIR "${NITLIBRARY_SDK_DIR}/lib/x86/*.lib")
+    endif(BUILD_TARGET64)
+    
     LINK_DIRECTORIES(
-    ${NITLIBRARY_LIB_DIR}
-    ${OpenCV_DIR}/lib) 
+        ${NITLIBRARY_LIB_DIR}
+        ${OpenCV_DIR}/lib
+    )
 
     set(plugin_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/NITWidySWIR.h
@@ -139,8 +147,6 @@ IF(NITLIBRARY_INCLUDE_DIR)
         QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
     ENDIF (QT5_FOUND)
 
-
-
     #search for all existing translation files in the translation subfolder
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
 
@@ -167,7 +173,13 @@ IF(NITLIBRARY_INCLUDE_DIR)
     ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-
+    
+    if(BUILD_TARGET64)
+        file(GLOB NITLIBRARY_DLL "${NITLIBRARY_SDK_DIR}/bin/x64/*.dll")
+    else(BUILD_TARGET64)    
+        file(GLOB NITLIBRARY_DLL "${NITLIBRARY_SDK_DIR}/bin/x86/*.dll")
+    endif(BUILD_TARGET64)
+        
     POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} NITLIBRARY_DLL)
  
 ELSE(NITLIBRARY_INCLUDE_DIR)
