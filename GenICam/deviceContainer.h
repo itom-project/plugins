@@ -111,6 +111,7 @@ protected:
     GenTL::PTLGetInterfaceID TLGetInterfaceID;
     GenTL::PTLGetInterfaceInfo TLGetInterfaceInfo;
     GenTL::PTLOpenInterface TLOpenInterface;
+	GenTL::PGCGetLastError GCGetLastError;
 
     QString m_ctiFile;
     bool m_initialized;
