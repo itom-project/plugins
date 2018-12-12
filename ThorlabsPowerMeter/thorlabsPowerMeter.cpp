@@ -222,7 +222,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     ViUInt32   count = 0;            //counts found devices
     ViStatus status;
 
-#if defined(USE_API_3_02) 
+#if defined PMxxx_FIND_PATTERN
     ViChar     rscStr[VI_FIND_BUFLEN]; // resource string
     ViFindList findList;
 
