@@ -9,10 +9,11 @@
 #define niDAQmx_H
 
 //#include "opencv/cv.h"
-#include "common\addInInterface.h"
+#include "common/addInInterface.h"
+#include "DataObject/dataobj.h"
+
 #include <qsharedpointer.h>
 #include <qmap.h>
-#include <DataObject\dataobj.h>
 
 #include "dialogNI-DAQmx.h"
 #include "NIDAQmx.h"
