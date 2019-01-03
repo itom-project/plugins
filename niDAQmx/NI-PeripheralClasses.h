@@ -25,7 +25,7 @@
 
 #include <qstring.h>
 #include <qvector.h>
-#include <common\retVal.h>
+#include <common/retVal.h>
 #include "NIDAQmx.h"
 #include <qobject.h>
 #include <qstandarditemmodel.h>
