@@ -2088,6 +2088,7 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
     int futureHeight = m_params["sizey"].getVal<int>();
     int futureWidth = m_params["sizex"].getVal<int>();
     int futureType;
+	bool allocMemNew = false;
     ito::RetVal retval;
 
     int bpp = m_params["bpp"].getVal<int>();
@@ -2169,47 +2170,63 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
 		}
     }
 
-	if (!m_vpcSeqImgMem.empty())
+	//now check if camera memory needs to be (re)allocated
+
+	if (m_vpcSeqImgMem.empty())
 	{
-		for (int i = (m_oldNumBuf - 1); i >= 0; i--)
+		allocMemNew = true;
+	}
+	else
+	{
+		int pnX, pnY, pnBits, pnPitch;
+		retval += checkError(is_InquireImageMem(m_camera, m_vpcSeqImgMem.at(0), m_viSeqMemId.at(0), &pnX, &pnY, &pnBits, &pnPitch));
+
+		if (futureWidth != pnX || futureHeight != pnY || m_bitspixel != pnBits || m_NumberOfBuffers != m_oldNumBuf)
 		{
-			// free buffers
-			if (is_FreeImageMem(m_camera, m_vpcSeqImgMem.at(i), m_viSeqMemId.at(i)) != IS_SUCCESS)
+			for (int i = (m_oldNumBuf - 1); i >= 0; i--)
 			{
-				break;
+				// free buffers
+				if (is_FreeImageMem(m_camera, m_vpcSeqImgMem.at(i), m_viSeqMemId.at(i)) != IS_SUCCESS)
+				{
+					break;
+				}
 			}
-		}
 
-		m_viSeqMemId.clear();
-		m_vpcSeqImgMem.clear();
+			m_viSeqMemId.clear();
+			m_vpcSeqImgMem.clear();
+
+			allocMemNew = true;
+		}
 	}
 
-    //now check if camera memory needs to be (re)allocated
-	
-	is_ClearSequence(m_camera);
-	for (int i = 0; i < m_NumberOfBuffers; i++)
+	if (allocMemNew)
 	{
-		INT iImgMemID = 0;
-		char* pcImgMem = 0;
-			
-		
-		retval += checkError(is_AllocImageMem(m_camera, futureWidth, futureHeight, m_bitspixel, &pcImgMem, &iImgMemID));
+		is_ClearSequence(m_camera);
+		for (int i = 0; i < m_NumberOfBuffers; i++)
+		{
+			INT iImgMemID = 0;
+			char* pcImgMem = 0;
 
-		if (retval.containsError())
-		{
-			return retval;
+
+			retval += checkError(is_AllocImageMem(m_camera, futureWidth, futureHeight, m_bitspixel, &pcImgMem, &iImgMemID));
+
+			if (retval.containsError())
+			{
+				return retval;
+			}
+			retval += checkError(is_AddToSequence(m_camera, pcImgMem, iImgMemID));
+			if (retval.containsError())
+			{
+				is_FreeImageMem(m_camera, pcImgMem, iImgMemID);
+				return retval;
+			}
+			m_viSeqMemId.push_back(iImgMemID);
+			m_vpcSeqImgMem.push_back(pcImgMem);
 		}
-		retval += checkError(is_AddToSequence(m_camera, pcImgMem, iImgMemID));
-		if (retval.containsError())
-		{
-			is_FreeImageMem(m_camera, pcImgMem, iImgMemID);
-			return retval;
-		}
-		m_viSeqMemId.push_back(iImgMemID);
-		m_vpcSeqImgMem.push_back(pcImgMem);
+
+		m_oldNumBuf = m_NumberOfBuffers;
+
 	}
-
-	m_oldNumBuf = m_NumberOfBuffers;
 	
 
     return retval;
