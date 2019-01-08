@@ -233,7 +233,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 		retValue += sendCommand(devID, "PM:CHAN 2");
 		char rBuffer[64];
 		retValue += sendCommand(devID, "PM:ERRors?");
-		retValue += readResponse(devID, rBuffer);
+		retValue += readResponse(devID, rBuffer,64);
 
 		if (!atoi(rBuffer))
 		{
@@ -552,7 +552,7 @@ ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCon
    
 	char rBuffer[128];
 	retValue += sendCommand(devID, "PM:PWS?");
-	retValue += readResponse(devID, rBuffer);
+	retValue += readResponse(devID, rBuffer,128);
 
 	char* pToken = strtok(rBuffer, " \r");
 	int cnt = 0;
@@ -564,7 +564,7 @@ ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCon
 
 			if (cnt % 2 == 0)
 			{
-                if (m_params["channels"].getVal<int>() > cnt)
+                if (m_params["channels"].getVal<int>() >= cnt)
                 {
                     m_data.at<ito::float64>(0, cnt / 2) = atof(pToken);
                 }
@@ -580,8 +580,7 @@ ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCon
 		m_isgrabbing = true;
 		m_data.setValueUnit("W");
 	}
-
-
+    
   
     
     
@@ -662,15 +661,15 @@ ito::RetVal Newport2936::sendCommand(long DeviceID, char* commandBuffer)
 	return retValue;
 }
 
-ito::RetVal Newport2936::readResponse(long DeviceID, char* responseBuffer)
+ito::RetVal Newport2936::readResponse(long DeviceID, char* responseBuffer, const unsigned long& length)
 {
 	ito::RetVal retValue(ito::retOk);
 	unsigned long lBytesRead = 0;
-	unsigned long responseLength = (unsigned long)strlen(responseBuffer) + 1;
+	//unsigned long responseLength = (unsigned long)strlen(responseBuffer) + 1;
 
 	try
 	{
-		newp_usb_get_ascii( DeviceID, responseBuffer, responseLength, &lBytesRead);
+		newp_usb_get_ascii( DeviceID, responseBuffer, length, &lBytesRead);
 		int i = lBytesRead;
 
 		while (--i >= 0)
@@ -715,17 +714,17 @@ ito::RetVal Newport2936::synchronizeParams(int what)
         
         retValue += sendCommand(devID, "PM:CHAN 1");
 		retValue += sendCommand(devID, "PM:Lambda?");
-		retValue += readResponse(devID, rBuffer);
+		retValue += readResponse(devID, rBuffer,64);
 		lambda = atoi(rBuffer);
 		memset(rBuffer, -52, sizeof(rBuffer)); // clear buffer, but can't be set to 0 for some reason...
 
 		retValue += sendCommand(devID, "PM:MAX:Lambda?");
-		retValue += readResponse(devID, rBuffer);
+		retValue += readResponse(devID, rBuffer,64);
 		lambdaMax = atoi(rBuffer);
 		memset(rBuffer, -52, sizeof(rBuffer));
 
 		retValue += sendCommand(devID, "PM:MIN:Lambda?");
-		retValue += readResponse(devID, rBuffer);
+		retValue += readResponse(devID, rBuffer,64);
 		lambdaMin = atoi(rBuffer);
 		memset(rBuffer, -52, sizeof(rBuffer));
 
@@ -737,17 +736,17 @@ ito::RetVal Newport2936::synchronizeParams(int what)
 			retValue += sendCommand(devID, "PM:CHAN 2");
 
 			retValue += sendCommand(devID, "PM:Lambda?");
-			retValue += readResponse(devID, rBuffer);
+			retValue += readResponse(devID, rBuffer,64);
 			lambda = atoi(rBuffer);
 			memset(rBuffer, -52, sizeof(rBuffer));
 
 			retValue += sendCommand(devID, "PM:MAX:Lambda?");
-			retValue += readResponse(devID, rBuffer);
+			retValue += readResponse(devID, rBuffer,64);
 			lambdaMax = atoi(rBuffer);
 			memset(rBuffer, -52, sizeof(rBuffer));
 
 			retValue += sendCommand(devID, "PM:MIN:Lambda?");
-			retValue += readResponse(devID, rBuffer);
+			retValue += readResponse(devID, rBuffer,64);
 			lambdaMin = atoi(rBuffer);
 
             m_params["wavelengthB"].setMeta(new ito::IntMeta(lambdaMin, lambdaMax, 1), true);
@@ -766,7 +765,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
         int state;
         retValue += sendCommand(devID, "PM:CHAN 1");
         retValue += sendCommand(devID, "PM:ATT?");
-        retValue += readResponse(devID, rBuffer);
+        retValue += readResponse(devID, rBuffer,64);
         state = atoi(rBuffer);
         retValue += m_params["attenuatorA"].setVal<int>(state);
         if (m_params["channels"].getVal<ito::uint8>() == 2)
@@ -774,7 +773,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
             memset(rBuffer, -52, sizeof(rBuffer));
             retValue += sendCommand(devID, "PM:CHAN 2"); 
             retValue += sendCommand(devID, "PM:ATT?");
-            retValue += readResponse(devID, rBuffer);
+            retValue += readResponse(devID, rBuffer,64);
             state = atoi(rBuffer);
             retValue += m_params["attenuatorB"].setVal<int>(state);
 
@@ -785,7 +784,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
         memset(rBuffer, -52, sizeof(rBuffer));
         retValue += sendCommand(devID, "PM:CHAN 1");
         retValue += sendCommand(devID, "PM:ZEROVALue?");
-        retValue += readResponse(devID, rBuffer);
+        retValue += readResponse(devID, rBuffer,64);
         if (!retValue.containsError())
         {
             double val = atof(rBuffer);
@@ -796,7 +795,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
             memset(rBuffer, -52, sizeof(rBuffer));
             retValue += sendCommand(devID, "PM:CHAN 2");
             retValue += sendCommand(devID, "PM:ZEROVALue?");
-            retValue += readResponse(devID, rBuffer);
+            retValue += readResponse(devID, rBuffer,64);
             if (!retValue.containsError())
             {
                 double val = atof(rBuffer);
@@ -810,7 +809,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
         memset(rBuffer, -52, sizeof(rBuffer));
         retValue += sendCommand(devID, "PM:CHAN 1");
         retValue += sendCommand(devID, "PM:FILTer?");
-        retValue += readResponse(devID, rBuffer);
+        retValue += readResponse(devID, rBuffer,64);
         if (!retValue.containsError());
         {
             val = atoi(rBuffer);
@@ -821,7 +820,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
             memset(rBuffer, -52, sizeof(rBuffer));
             retValue += sendCommand(devID, "PM:CHAN 2");
             retValue += sendCommand(devID, "PM:FILTer?");
-            retValue += readResponse(devID, rBuffer);
+            retValue += readResponse(devID, rBuffer,64);
             if (!retValue.containsError());
             {
                 val = atoi(rBuffer);
@@ -985,7 +984,7 @@ ito::RetVal Newport2936::zeroDevice(int channel, ItomSharedSemaphore * waitCond)
     if (!retValue.containsError())
     {
         retValue += sendCommand(devID, "PM:ZEROSTOre");
-        retValue += readResponse(devID, rBuffer);
+        retValue += readResponse(devID, rBuffer,64);
     }
     if (waitCond) 
     {
@@ -1003,7 +1002,7 @@ ito::RetVal Newport2936::zeroDeviceTo(double val, int channel,ItomSharedSemaphor
     if (!retValue.containsError())
     {
         retValue += sendCommand(devID, QString("PM:ZEROVALue %1").arg(val).toLatin1().data());
-        retValue += readResponse(devID, rBuffer);
+        retValue += readResponse(devID, rBuffer,64);
     }
 
     return retValue;
@@ -1022,7 +1021,7 @@ ito::RetVal Newport2936::acquireAutograbbing(QSharedPointer<QList<double> > valu
     
     char rBuffer[128];
     retValue += sendCommand(devID, "PM:PWS?");
-    retValue += readResponse(devID, rBuffer);
+    retValue += readResponse(devID, rBuffer,128);
 
     char* pToken = strtok(rBuffer, " \r");
     int cnt = 0;
