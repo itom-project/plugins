@@ -85,6 +85,10 @@ class OpenCVFilters : public ito::AddInAlgo
         static ito::RetVal cvDilate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); /*! Function performs a "Dilate-Filter" on the input object*/
         static ito::RetVal cvErode(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);  /*! Function performs a "Erode-Filter" on the input object*/
 
+        static const QString cvMorphologyExDoc;
+        static ito::RetVal cvMorphologyExParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);           /*! This function returns the parameters for the morphologyEx function.*/
+        static ito::RetVal cvMorphologyEx(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);    /*! This function executes the morphologyEx filter of OpenCV.*/
+
         static const QString cvBlurDoc;
         static ito::RetVal cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function performs a "Blur-Filter" on the input object*/
         static ito::RetVal cvBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);   /*! Function gives back the optional and mandatory parameters for "Blur-Filter"*/
