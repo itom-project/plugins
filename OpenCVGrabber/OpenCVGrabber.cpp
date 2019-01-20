@@ -31,6 +31,11 @@
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/core/core.hpp"
 
+#if CV_MAJOR_VERSION >= 4
+	#include "opencv2/videoio/videoio_c.h"
+	#include "opencv2/imgproc/types_c.h"
+#endif
+
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
 #include <qstring.h>
