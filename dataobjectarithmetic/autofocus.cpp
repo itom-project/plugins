@@ -25,6 +25,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "common/typeDefs.h"
 #include "DataObject/dataObjectFuncs.h"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/types_c.h"
 
 //! creates template defined function table for all supported data types
 #define MAKEFUNCLIST(FuncName) static t##FuncName fList##FuncName[] =   \
