@@ -109,7 +109,7 @@ class Newport2936 : public ito::AddInGrabber
         ito::RetVal zeroDeviceTo(double val, int channel,ItomSharedSemaphore *waitCond = NULL);
 
 		ito::RetVal sendCommand(long DeviceID, char* commandBuffer);
-		ito::RetVal readResponse(long DeviceID, char* responseBuffer);
+		ito::RetVal readResponse(long DeviceID, char* responseBuffer, const unsigned long& length);
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
         
 

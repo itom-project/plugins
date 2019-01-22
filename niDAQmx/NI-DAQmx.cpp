@@ -23,7 +23,7 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "Ni-DAQmx.h"
+#include "NI-DAQmx.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
 

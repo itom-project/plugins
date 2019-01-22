@@ -92,6 +92,7 @@ GenTLSystem::GenTLSystem() :
     GCInitLib(NULL),
     GCCloseLib(NULL),
     GCGetInfo(NULL),
+	GCGetLastError(NULL),
     TLOpen(NULL),
     TLClose(NULL),
     TLUpdateInterfaceList(NULL),
@@ -199,6 +200,7 @@ ito::RetVal GenTLSystem::init(const QString &filename)
             TLGetInterfaceID = (GenTL::PTLGetInterfaceID)m_lib->resolve("TLGetInterfaceID");
             TLGetInterfaceInfo = (GenTL::PTLGetInterfaceInfo)m_lib->resolve("TLGetInterfaceInfo");
             TLOpenInterface = (GenTL::PTLOpenInterface)m_lib->resolve("TLOpenInterface");
+			GCGetLastError = (GenTL::PGCGetLastError)m_lib->resolve("GCGetLastError");
 
             if (GCInitLib == NULL || GCCloseLib == NULL || \
                 TLClose == NULL || TLOpen == NULL || !TLUpdateInterfaceList || \
@@ -417,8 +419,22 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
                 std::cout << "Trying to open interface '" << interfaceIDToOpen.constData() << "'...";
             }
 
-            GenTL::IF_HANDLE ifHandle;
-			retval += checkGCError(TLOpenInterface(m_handle, interfaceIDToOpen.constData(), &ifHandle), QString("Error opening interface '%1'").arg(QLatin1String(interfaceIDToOpen)));
+            GenTL::IF_HANDLE ifHandle = GENTL_INVALID_HANDLE;
+			GenTL::GC_ERROR err = TLOpenInterface(m_handle, interfaceIDToOpen.constData(), &ifHandle);
+
+			if (err != GenTL::GC_ERR_SUCCESS && GCGetLastError)
+			{
+				size_t errorTextSize = 1024;
+				char errorText[1024];
+
+				GCGetLastError(&err, errorText, &errorTextSize);
+
+				retval += checkGCError(err, QString("Error opening interface '%1' (Detailed error text: %2)").arg(QLatin1String(interfaceIDToOpen)).arg(QLatin1String(QByteArray(errorText, errorTextSize))));
+			}
+			else
+			{
+				retval += checkGCError(err, QString("Error opening interface '%1'").arg(QLatin1String(interfaceIDToOpen)));
+			}
 
             if (!retval.containsError())
             {
