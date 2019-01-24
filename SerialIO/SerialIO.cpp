@@ -43,6 +43,7 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 #include <qapplication.h>
+#include "common/helperCommon.h"
 
 #include "pluginVersion.h"
 #include "gitVersion.h"
@@ -757,11 +758,8 @@ int SerialPort::sreadable(void) const
 const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
 {    
     int ret = 0;
-#ifndef WIN32
-    unsigned int numread = 0;
-#else
-    DWORD numread = 0;
-#endif
+	unsigned long numread = 0;
+
 
 #ifndef WIN32
     if (!m_dev)
@@ -1223,7 +1221,19 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     QVector<ito::Param> pOut;
     registerExecFunc("clearInputBuffer", pMand, pOpt, pOut, tr("Clears the input buffer of serial port"));
     registerExecFunc("clearOutputBuffer", pMand, pOpt, pOut, tr("Clears the output buffer of serial port"));
+	
 
+	/*
+	Params and functions for multi-process synchronisation of serial/communications.
+	*/
+
+	paramVal = ito::Param("mutexMode", ito::ParamBase::Int, 0, 2, 0, tr("mutexMode:0:default, mutex is ignored;1:unlocked read/writes produce a warnin message; 2:unlocked read/writes are forbidden and produce an error.").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+	registerExecFunc("releaseMutex", pMand, pOpt, pOut, tr("releases the captured mutex. Every process can do this, so a little programmer's discipline is required."));
+	pMand << ito::Param("maxWaitTimeout_ms", ito::ParamBase::Int, -1, INT_MAX, 0, "max time to wait for mutexacquisition in ms. An error is returned on failure to acquire the mutex. Use -1 to wait forever.");
+	registerExecFunc("acquireMutex", pMand, pOpt, pOut, tr("Clears the output buffer of serial port"));
+
+	
     pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toLatin1().data());
     registerExecFunc("clearBuffer", pMand, pOpt, pOut, tr("Clears the input or output buffer of serial port"));
 
@@ -1403,84 +1413,89 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     if (paramsMand == NULL)
     {
         retval = ito::RetVal(ito::retError, 0, tr("Mandatory paramers are NULL").toLatin1().data());
-        goto end;
-    }
+	}
+	else {
 
-    retval += m_params["port"].copyValueFrom(&((*paramsMand)[0]));
-    port = m_params["port"].getVal<int>();
+		retval += m_params["port"].copyValueFrom(&((*paramsMand)[0]));
+		port = m_params["port"].getVal<int>();
 
-    retval += m_params["baud"].copyValueFrom(&((*paramsMand)[1]));
-    baud = m_params["baud"].getVal<int>();
+		retval += m_params["baud"].copyValueFrom(&((*paramsMand)[1]));
+		baud = m_params["baud"].getVal<int>();
 
-    retval += m_params["endline"].copyValueFrom(&((*paramsMand)[2]));
-    retval += m_params["endlineRead"].copyValueFrom(&((*paramsMand)[2]));
-    
-    tendline = m_params["endline"].getVal<char *>(); //borrowed reference
-    strncpy(endline, tendline, 3);
-//    sprintf(endline, "%s", tendline);
+		retval += m_params["endline"].copyValueFrom(&((*paramsMand)[2]));
+		retval += m_params["endlineRead"].copyValueFrom(&((*paramsMand)[2]));
 
-    // optional parameters
-    if (paramsOpt == NULL)
-    {
-        retval = ito::RetVal(ito::retError, 0, tr("Optinal paramers are NULL").toLatin1().data());
-        goto end;
-    }
+		tendline = m_params["endline"].getVal<char *>(); //borrowed reference
+		strncpy(endline, tendline, 3);
+		//    sprintf(endline, "%s", tendline);
 
-    retval += m_params["bits"].copyValueFrom(&((*paramsOpt)[0]));
-    bits = m_params["bits"].getVal<int>();
+			// optional parameters
+		if (paramsOpt == NULL)
+		{
+			//Sry, i have a personal crusade against gotos. 
+			//There is plenty of assemblers you can use, but don't use a OO language and rely on relicts from assembler.
+			retval = ito::RetVal(ito::retError, 0, tr("Optional paramers are NULL").toLatin1().data());
+		}
+		else {
 
-    retval += m_params["stopbits"].copyValueFrom(&((*paramsOpt)[1]));
-    stopbits = m_params["stopbits"].getVal<int>();
+			retval += m_params["bits"].copyValueFrom(&((*paramsOpt)[0]));
+			bits = m_params["bits"].getVal<int>();
 
-    retval += m_params["parity"].copyValueFrom(&((*paramsOpt)[2]));
-    parity = m_params["parity"].getVal<int>();
+			retval += m_params["stopbits"].copyValueFrom(&((*paramsOpt)[1]));
+			stopbits = m_params["stopbits"].getVal<int>();
 
-    retval += m_params["flow"].copyValueFrom(&((*paramsOpt)[3]));
-    flow = m_params["flow"].getVal<int>();
+			retval += m_params["parity"].copyValueFrom(&((*paramsOpt)[2]));
+			parity = m_params["parity"].getVal<int>();
 
-    retval += m_params["sendDelay"].copyValueFrom(&((*paramsOpt)[4]));
-    sendDelay = m_params["sendDelay"].getVal<int>();
+			retval += m_params["flow"].copyValueFrom(&((*paramsOpt)[3]));
+			flow = m_params["flow"].getVal<int>();
 
-    retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[5]));
-    timeout = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
+			retval += m_params["sendDelay"].copyValueFrom(&((*paramsOpt)[4]));
+			sendDelay = m_params["sendDelay"].getVal<int>();
 
-    SerialPort::PortType portType;
-    retval = m_serport.sopen(port, baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, portType);
+			retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[5]));
+			timeout = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
 
-    if (!retval.containsError())
-    {
-        switch (portType)
-        {
-        case SerialPort::COM:
-            m_identifier = QString("COM %1").arg( port );
-            break;
-        case SerialPort::TTYS:
-            m_identifier = QString("/dev/ttyS%1").arg(port);
-            break;
-        case SerialPort::TTYUSB:
-            m_identifier = QString("/dev/ttyUSB%1").arg(port);
-            break;
-        }
+			SerialPort::PortType portType;
+			retval = m_serport.sopen(port, baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, portType);
 
-        setIdentifier(m_identifier);
-    }
+			if (!retval.containsError())
+			{
+				switch (portType)
+				{
+				case SerialPort::COM:
+					m_identifier = QString("COM %1").arg(port);
+					break;
+				case SerialPort::TTYS:
+					m_identifier = QString("/dev/ttyS%1").arg(port);
+					break;
+				case SerialPort::TTYUSB:
+					m_identifier = QString("/dev/ttyUSB%1").arg(port);
+					break;
+				}
 
-    if (!retval.containsError())
-    {
-        retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[6]));
-        m_debugMode = (bool)(m_params["debug"].getVal<int>());
-    }
+				setIdentifier(m_identifier);
+			}
 
-    if (!retval.containsError())
-    {
-        retval += m_params["debugIgnoreEmpty"].copyValueFrom(&((*paramsOpt)[7]));
-        m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());    
-    }
+			if (!retval.containsError())
+			{
+				retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[6]));
+				m_debugMode = (bool)(m_params["debug"].getVal<int>());
+			}
 
-    emit parametersChanged(m_params);
+			if (!retval.containsError())
+			{
+				retval += m_params["debugIgnoreEmpty"].copyValueFrom(&((*paramsOpt)[7]));
+				m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());
+			}
 
-end:
+			emit parametersChanged(m_params);
 
+
+		}
+
+		m_syncMutex = new QMutex(QMutex::NonRecursive);
+	}
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -1558,110 +1573,127 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
 
-    if (m_params["readline"].getVal<int>() == 0)
-    {
-        if (m_preBuf.isEmpty())
-        {
-            retValue = m_serport.sread(data.data(), length.data(), m_params["sendDelay"].getVal<int>());
-        }
-        else
-        {
-            //prepend prebuf to data
-            int numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
-            int remainingCharactersInData = *length - numCharactersForPrebuf;
-            memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
-            m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
+	if (m_params["mutexMode"].getVal<int>() == mutexMode::warn)
+	{
+		if (m_syncMutex->tryLock())
+		{
+			m_syncMutex->unlock();
+			retValue += ito::RetVal(ito::retWarning, 123, "unlocked read operation on serialIO");
+		}
+	}else if (m_params["mutexMode"].getVal<int>() == mutexMode::strict)
+	{
+		if (m_syncMutex->tryLock())
+		{
+			m_syncMutex->unlock();
+			retValue += ito::RetVal(ito::retError, 123, "unlocked read operation on serialIO");
+		}
+	}
+	if (!retValue.containsError())
+	{
+		if (m_params["readline"].getVal<int>() == 0)
+		{
+			if (m_preBuf.isEmpty())
+			{
+				retValue += m_serport.sread(data.data(), length.data(), m_params["sendDelay"].getVal<int>());
+			}
+			else
+			{
+				//prepend prebuf to data
+				int numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
+				int remainingCharactersInData = *length - numCharactersForPrebuf;
+				memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
+				m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
 
-            if (remainingCharactersInData > 0)
-            {
-                retValue = m_serport.sread(&(data.data()[numCharactersForPrebuf]), &remainingCharactersInData, m_params["sendDelay"].getVal<int>());
-                *length = remainingCharactersInData + numCharactersForPrebuf;
-            }
-        }
-    }
-    else
-    {
-        char *endlineChar = m_params["endlineRead"].getVal<char *>();
-        int endlineLen = endlineChar[0] == 0 ? 0 : (endlineChar[1] == 0 ? 1 : (endlineChar[2] == 0 ? 2 : 3));
-        QByteArray endlineRead = QByteArray::fromRawData(endlineChar, endlineLen);
-        int numCharactersForPrebuf = 0;
+				if (remainingCharactersInData > 0)
+				{
+					retValue += m_serport.sread(&(data.data()[numCharactersForPrebuf]), &remainingCharactersInData, m_params["sendDelay"].getVal<int>());
+					*length = remainingCharactersInData + numCharactersForPrebuf;
+				}
+			}
+		}
+		else
+		{
+			char *endlineChar = m_params["endlineRead"].getVal<char *>();
+			int endlineLen = endlineChar[0] == 0 ? 0 : (endlineChar[1] == 0 ? 1 : (endlineChar[2] == 0 ? 2 : 3));
+			QByteArray endlineRead = QByteArray::fromRawData(endlineChar, endlineLen);
+			int numCharactersForPrebuf = 0;
 
-        if (!m_preBuf.isEmpty())
-        {
-            //prepend prebuf to data
-            numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
-            memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
-            m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
-        }
+			if (!m_preBuf.isEmpty())
+			{
+				//prepend prebuf to data
+				numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
+				memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
+				m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
+			}
 
-        if (*length == numCharactersForPrebuf)
-        {
-            // prebuf data longer than *length
-            QByteArray temp = QByteArray(data.data(), *length);
-            int endlinePos = temp.indexOf(endlineRead);
+			if (*length == numCharactersForPrebuf)
+			{
+				// prebuf data longer than *length
+				QByteArray temp = QByteArray(data.data(), *length);
+				int endlinePos = temp.indexOf(endlineRead);
 
-            if (endlinePos >= 0) //endlineRead found
-            {
-                m_preBuf = temp.mid(endlinePos + endlineLen);
-                *length = endlinePos;
-            }
-        }
-        else
-        {
-            // prebuf data shorter than *length
-            QTime timer;
-            int timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000);
-            bool done = false;
-            int pos = numCharactersForPrebuf; 
-            int len = 0;
+				if (endlinePos >= 0) //endlineRead found
+				{
+					m_preBuf = temp.mid(endlinePos + endlineLen);
+					*length = endlinePos;
+				}
+			}
+			else
+			{
+				// prebuf data shorter than *length
+				QTime timer;
+				int timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000);
+				bool done = false;
+				int pos = numCharactersForPrebuf;
+				int len = 0;
 
-            timer.start();
+				timer.start();
 
-            while (!done && !retValue.containsError())
-            {
-                len = *length - pos;
-                retValue = m_serport.sread(&(data.data()[pos]), &len, m_params["sendDelay"].getVal<int>());
+				while (!done && !retValue.containsError())
+				{
+					len = *length - pos;
+					retValue += m_serport.sread(&(data.data()[pos]), &len, m_params["sendDelay"].getVal<int>());
 
-                if (!retValue.containsError())
-                {
-                    QByteArray temp = QByteArray(data.data(), pos + len);
-                    int endlinePos = temp.indexOf(endlineRead);
+					if (!retValue.containsError())
+					{
+						QByteArray temp = QByteArray(data.data(), pos + len);
+						int endlinePos = temp.indexOf(endlineRead);
 
-                    if (endlinePos >= 0) //endlineRead found
-                    {
-                        m_preBuf = temp.mid(endlinePos + endlineLen);
-                        *length = endlinePos;
-                        done = true;
-                    }
-                    else
-                    {
-                        pos += len;
-                        done = (pos == *length);
-                    }
-                }
-                else
-                {
-                    len = 0;
-                }
+						if (endlinePos >= 0) //endlineRead found
+						{
+							m_preBuf = temp.mid(endlinePos + endlineLen);
+							*length = endlinePos;
+							done = true;
+						}
+						else
+						{
+							pos += len;
+							done = (pos == *length);
+						}
+					}
+					else
+					{
+						len = 0;
+					}
 
-                if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
-                {
-                    *length = pos + len;
-                    retValue += ito::RetVal(ito::retError, 256, tr("timeout while reading from serial port.").toLatin1().data());
-                }
-                else
-                {
-                    setAlive();
-                }
-            }
-        }
-    }
+					if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
+					{
+						*length = pos + len;
+						retValue += ito::RetVal(ito::retError, 256, tr("timeout while reading from serial port.").toLatin1().data());
+					}
+					else
+					{
+						setAlive();
+					}
+				}
+			}
+		}
 
-    if (m_debugMode)
-    {
-        emit serialLog(QByteArray(data.data(),*length), "", '<');
-    }
-
+		if (m_debugMode)
+		{
+			emit serialLog(QByteArray(data.data(), *length), "", '<');
+		}
+	}
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1678,14 +1710,31 @@ ito::RetVal SerialIO::setVal(const char *data, const int datalength, ItomSharedS
     const char *buf = data;
     char endline[3] = {0, 0, 0};
     ito::RetVal retval(ito::retOk);
-
-    m_serport.getendline(endline);
-    if (m_debugMode)
-    {
-        emit serialLog(QByteArray(buf,datalength), QByteArray(endline, (int)strlen(endline)), '>');
-    }
-    retval = m_serport.swrite(buf, datalength, m_params["sendDelay"].getVal<int>());
-
+	if (m_params["mutexMode"].getVal<int>() == mutexMode::warn)
+	{
+		if (m_syncMutex->tryLock())
+		{
+			m_syncMutex->unlock();
+			retval += ito::RetVal(ito::retWarning, 123, "unlocked write operation on serialIO");
+		}
+	}
+	else if (m_params["mutexMode"].getVal<int>() == mutexMode::strict)
+	{
+		if (m_syncMutex->tryLock())
+		{
+			m_syncMutex->unlock();
+			retval += ito::RetVal(ito::retError, 123, "unlocked write operation on serialIO");
+		}
+	}
+	if (!retval.containsError())
+	{
+		m_serport.getendline(endline);
+		if (m_debugMode)
+		{
+			emit serialLog(QByteArray(buf, datalength), QByteArray(endline, (int)strlen(endline)), '>');
+		}
+		retval = m_serport.swrite(buf, datalength, m_params["sendDelay"].getVal<int>());
+	}
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -1699,7 +1748,7 @@ ito::RetVal SerialIO::setVal(const char *data, const int datalength, ItomSharedS
 ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
+	ito::RetVal retval = ito::RetVal(ito::retOk);;
 
     if (funcName == "clearInputBuffer")
     {
@@ -1718,7 +1767,30 @@ ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<it
         {
             m_preBuf.clear();
         }
-    }
+	}
+	else if (funcName == "releaseMutex")
+	{
+		//just unlock it. if it's already unlocked that's also okay.
+		m_syncMutex->unlock();
+	}
+	else if (funcName == "acquireMutex")
+	{
+		int maxWaitTimeout_ms = ito::getParamByName(&(*paramsMand), "maxWaitTimeout_ms", &retval)->getVal<int>();
+		if (maxWaitTimeout_ms != -1)
+		{
+			if (!m_syncMutex->tryLock(maxWaitTimeout_ms))
+			{
+				retval += ito::RetVal(ito::retError, 1234567890, "Failed to acquire syncMutex using serialIO");
+			}
+		}
+		else {
+			m_syncMutex->lock();
+		}
+		
+	}
+	else {
+		retval += ito::RetVal(ito::retError, 123, tr("Function not found").toLatin1().data());
+	}
 
     if (waitCond)
     {
