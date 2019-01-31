@@ -686,15 +686,7 @@ ito::RetVal niDAQmx::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         m_cInIsAcquired = true;
     }
 
-    if (retval.containsWarning())
-    {
-        retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while starting read task. \n Code: %i", retval.errorCode());
-    }
-    else if (retval.containsError())
-    {
-        retval += ito::RetVal::format(ito::retError, 0, "Error occured while starting read task. \n Code: %i", retval.errorCode());
-    }
-    else
+    if (!retval.containsError())
     {
         m_isgrabbing = true;
     }
