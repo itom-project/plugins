@@ -427,7 +427,7 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 ai->setAnalogInputConfig(in[1].toInt());
                 ai->setInputLim(in[2].toInt());
                 // Channel is finished and added to the corresponding input task
-                ai->applyParameters(m_taskMap.value("ai"));
+                retValue += ai->applyParameters(m_taskMap.value("ai"));
                 // increase the corresponding counter
                 m_channels.insert(in[0], ai);
                 QString para = m_channels.getAllChParameters(niBaseChannel::chTypeAnalog, niBaseChannel::chIoInput).join(";");
@@ -489,7 +489,7 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 ai->setDevID(in[0].split('/')[0]);
                 ai->setChID(in[0].split('/')[1]);
                 // Channel is finished and added to the corresponding input task
-                ai->applyParameters(m_taskMap.value("di"));
+                retValue += ai->applyParameters(m_taskMap.value("di"));
                 // increase the corresponding counter
                 m_channels.insert(in[0], ai);
                 QString para = m_channels.getAllChParameters(niBaseChannel::chTypeDigital, niBaseChannel::chIoInput).join(";");
@@ -519,7 +519,7 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 ai->setDevID(in[0].split('/')[0]);
                 ai->setChID(in[0].split('/')[1]);
                 // Channel is finished and added to the corresponding input task
-                ai->applyParameters(m_taskMap.value("do"));
+                retValue += ai->applyParameters(m_taskMap.value("do"));
                 // increase the corresponding counter
                 m_channels.insert(in[0], ai);
                 QString para = m_channels.getAllChParameters(niBaseChannel::chTypeDigital, niBaseChannel::chIoOutput).join(";");
