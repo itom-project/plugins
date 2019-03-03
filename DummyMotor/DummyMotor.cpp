@@ -1030,6 +1030,12 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
                     }
                 }
             }
+
+            if (!timeout)
+            {
+                sendStatusUpdate();
+                Sleep(20);
+            }
         }
 
         QCoreApplication::processEvents();
