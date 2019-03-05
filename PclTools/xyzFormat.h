@@ -42,9 +42,9 @@ template<typename _Tp> ito::RetVal writeXYZ(const pcl::PointCloud<_Tp>& pointClo
     
     for (size_t i = 0; i < pointCloud.points.size (); ++i)
     {
-      if (!pcl_isfinite (pointCloud.points[i].x) || 
-          !pcl_isfinite (pointCloud.points[i].y) || 
-          !pcl_isfinite (pointCloud.points[i].z))
+      if (!std::isfinite (pointCloud.points[i].x) || 
+          !std::isfinite(pointCloud.points[i].y) ||
+          !std::isfinite(pointCloud.points[i].z))
         continue;
 
       stream << pointCloud.points[i].x << " " << pointCloud.points[i].y << " " << pointCloud.points[i].z << endl;
