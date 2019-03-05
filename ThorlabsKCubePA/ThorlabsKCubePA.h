@@ -89,6 +89,7 @@ class ThorlabsKCubePA : public ito::AddInDataIO
         char m_serialNo[16];
 		ito::DataObject m_data;
 		bool m_isgrabbing;
+        bool m_includeSumSignal;
 
         static QList<QByteArray> openedDevices;
 
