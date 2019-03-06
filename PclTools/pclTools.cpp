@@ -2891,7 +2891,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&(cvData[idx]) , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(cvData[idx])) idx++;
+                    if (std::isfinite(cvData[idx])) idx++;
                 }
             }
         }
@@ -2908,7 +2908,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&(cvData[idx]) , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(cvData[idx])) idx++;
+                    if (std::isfinite(cvData[idx])) idx++;
                 }
             }
         }
@@ -2925,7 +2925,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&(cvData[idx]) , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(cvData[idx])) idx++;
+                    if (std::isfinite(cvData[idx])) idx++;
                 }
             }
         }
@@ -2942,7 +2942,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&(cvData[idx]) , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(cvData[idx])) idx++;
+                    if (std::isfinite(cvData[idx])) idx++;
                 }
             }
         }
@@ -2959,7 +2959,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&(cvData[idx]) , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(cvData[idx])) idx++;
+                    if (std::isfinite(cvData[idx])) idx++;
                 }
             }
         }
@@ -2976,7 +2976,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&(cvData[idx]) , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(cvData[idx])) idx++;
+                    if (std::isfinite(cvData[idx])) idx++;
                 }
             }
         }
@@ -3109,7 +3109,7 @@ const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&val , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(val))
+                    if (std::isfinite(val))
                     {
                         idx += fillBucket(histo_ptr, &val, &minValue, &stepSize, steps);
                     }
@@ -3129,7 +3129,7 @@ const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&val , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(val))
+                    if (std::isfinite(val))
                     {
                         idx += fillBucket(histo_ptr, &val, &minValue, &stepSize, steps);
                     }
@@ -3149,7 +3149,7 @@ const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&val , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(val))
+                    if (std::isfinite(val))
                     {
                         idx += fillBucket(histo_ptr, &val, &minValue, &stepSize, steps);
                     }
@@ -3169,7 +3169,7 @@ const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&val , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(val))
+                    if (std::isfinite(val))
                     {
                         idx += fillBucket(histo_ptr, &val, &minValue, &stepSize, steps);
                     }
@@ -3189,7 +3189,7 @@ const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&val , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(val))
+                    if (std::isfinite(val))
                     {
                         idx += fillBucket(histo_ptr, &val, &minValue, &stepSize, steps);
                     }
@@ -3209,7 +3209,7 @@ const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
                 {
                     pt_data = reinterpret_cast<const uint8_t*>(&ptr->points[i]);
                     memcpy(&val , pt_data + offset, sizeof(float));
-                    if (pcl_isfinite(val))
+                    if (std::isfinite(val))
                     {
                         idx += fillBucket(histo_ptr, &val, &minValue, &stepSize, steps);
                     }

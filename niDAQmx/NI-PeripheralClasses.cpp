@@ -164,13 +164,21 @@ ito::RetVal niTask::run()
     int err = 0;
     if (this->isInitialized())
     {
-         this->applyParameters();
-         err = DAQmxStartTask(*this->getTaskHandle());
+         retVal += this->applyParameters();
+         if (!retVal.containsError())
+         {
+             err = DAQmxStartTask(*this->getTaskHandle());
+             if (err != 0)
+             {
+                 retVal += ito::RetVal::format(ito::retError, 0, "Error occured while starting the task. Code: %i.", err);
+             }
+         }
     }
-    if (err != 0)
+    else
     {
-        retVal += ito::RetVal::format(ito::retError, 0, "Error occured while starting task. \n Code: %i", retVal.errorCode());
+        retVal += ito::RetVal(ito::retError, 0, "Task cannot be started, since it is not initialized");
     }
+    
     return retVal;
 }
 
