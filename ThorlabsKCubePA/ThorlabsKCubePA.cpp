@@ -94,6 +94,7 @@ ThorlabsKCubePAInterface::ThorlabsKCubePAInterface()
     m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("includeSumSignal", ito::ParamBase::Int, 0, 1, 0, tr("If 1, a 3x1 dataObject with (dx, dy and sum signal) is returned via getVal / copyVal. Else (0, default), only the dx, dy signals are returned within a 2x1 dataObject.").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -108,7 +109,8 @@ ThorlabsKCubePAInterface::ThorlabsKCubePAInterface()
 */
 ThorlabsKCubePA::ThorlabsKCubePA() :
 	AddInDataIO(),
-	m_isgrabbing(false)
+	m_isgrabbing(false),
+    m_includeSumSignal(false)
 {
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsKCubePA", tr("Name of the plugin").toLatin1().data()));
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Description of the device").toLatin1().data()));
@@ -150,6 +152,7 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     ito::RetVal retval = ito::retOk;
 
     QByteArray serial = paramsOpt->at(0).getVal<char*>();
+    m_includeSumSignal = paramsOpt->at(1).getVal<int>() > 0;
 
     retval += checkError(TLI_BuildDeviceList(), "build device list");
     QByteArray existingSerialNumbers("", 256);
@@ -407,81 +410,10 @@ ito::RetVal ThorlabsKCubePA::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
-    //if (!retValue.containsError())
-    //{
-    //    //---------------------------
-    //    if (key == "async")
-    //    {
-    //        m_async = val->getVal<int>();
-    //        retValue += it->copyValueFrom(&(*val));
-    //    }
-    //    else if (key == "enabled")
-    //    {
-    //        if (val->getVal<int>() > 0)
-    //        {
-    //            retValue += checkError(ISC_EnableChannel(m_serialNo), "enable axis");
-    //        }
-    //        else
-    //        {
-    //            retValue += checkError(ISC_DisableChannel(m_serialNo), "disable axis");
-    //        }
-    //        retValue += it->copyValueFrom(&(*val));
-
-    //        Sleep(400);
-    //        QSharedPointer<QVector<int> > status(new QVector<int>(1, 0));
-    //        retValue += getStatus(status, NULL);
-    //    }
-    //    else if (key == "speed" || key == "accel")
-    //    {
-    //        int speed, accel;
-    //        retValue += checkError(ISC_GetVelParams(m_serialNo, &accel, &speed), "get current speed and acceleration");
-    //        if (!retValue.containsError())
-    //        {
-    //            if (key == "speed")
-    //            {
-    //                speed = realWorldUnit2DeviceUnit(val->getVal<double>(), 1);
-    //            }
-    //            else
-    //            {
-    //                accel = realWorldUnit2DeviceUnit(val->getVal<double>(), 2);
-    //            }
-
-    //            retValue += checkError(ISC_SetVelParams(m_serialNo, accel, speed), "set speed and acceleration");
-    //            retValue += checkError(ISC_GetVelParams(m_serialNo, &accel, &speed), "get current speed and acceleration");
-    //        }
-    //        m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed,1));
-    //        m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel,2));
-    //    }
-    //    else if (key == "moveCurrent" || key == "restCurrent")
-    //    {
-    //        MOT_PowerParameters powerParams;
-    //        retValue += checkError(ISC_GetPowerParams(m_serialNo, &powerParams), "get motor power parameters");
-    //        if (!retValue.containsError())
-    //        {
-    //            if (key == "moveCurrent")
-    //            {
-    //                powerParams.movePercentage = val->getVal<int>();
-    //            }
-    //            else
-    //            {
-    //                powerParams.restPercentage = val->getVal<int>();
-    //            }
-
-    //            retValue += checkError(ISC_SetPowerParams(m_serialNo, &powerParams), "set motor power parameters");
-    //            retValue += checkError(ISC_GetPowerParams(m_serialNo, &powerParams), "get current speed and acceleration");
-    //        }
-
-    //        m_params["moveCurrent"].setVal<int>(powerParams.movePercentage);
-    //        m_params["restCurrent"].setVal<int>(powerParams.restPercentage);
-    //    }
-        
-
-        //---------------------------
-        else
-        {
-            retValue += it->copyValueFrom(&(*val));
-        }
-    //}
+    if (!retValue.containsError())
+    {
+        retValue += it->copyValueFrom(&(*val));
+    }
 
     if (!retValue.containsError())
     {
@@ -543,6 +475,11 @@ ito::RetVal ThorlabsKCubePA::acquire(const int trigger, ItomSharedSemaphore *wai
 		ptr[0] = (10.0 * (ito::int16)readPosition.posDifference.x) / std::numeric_limits<ito::int16>::max();
 		ptr[1] = (10.0 * (ito::int16)readPosition.posDifference.y) / std::numeric_limits<ito::int16>::max();
 
+        if (m_includeSumSignal)
+        {
+            ptr[2] = (10.0 * (ito::uint16)readPosition.sum) / std::numeric_limits<ito::uint16>::max();
+        }
+
 	}
 
 	if (waitCond)
@@ -590,7 +527,7 @@ ito::RetVal ThorlabsKCubePA::retrieveData(ito::DataObject *externalDataObject)
 //-------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsKCubePA::checkData(ito::DataObject *externalDataObject)
 {
-	int futureHeight = 2; //x and y position
+	int futureHeight = m_includeSumSignal ? 3 : 2; //x and y position
 	int futureWidth = 1;
 	int futureType = ito::tFloat64;
 	ito::RetVal retval;
