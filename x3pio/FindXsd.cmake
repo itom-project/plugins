@@ -3,10 +3,9 @@
 # path will be in XSD_EXECUTABLE. Look in the usual locations, as well as in
 # the 'bin' directory in the path given in the XSD_ROOT environment variable.
 # 
-IF ((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
-	MESSAGE(STATUS "policy")
-	cmake_policy(SET CMP0053 OLD)
-ENDIF ((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
+IF (${CMAKE_VERSION} VERSION_GREATER "3.1.9") 
+    cmake_policy(SET CMP0053 NEW)
+ENDIF (${CMAKE_VERSION} VERSION_GREATER "3.1.9")
 
 IF (XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
 # in cache already
@@ -19,22 +18,24 @@ ELSE (BUILD_TARGET64)
     set(POSTFIX, "")
 ENDIF (BUILD_TARGET64)
 
+set(_pf_x86 "ProgramFiles(x86)")
+
 SET (XSD_POSSIBLE_ROOT_DIRS
   "$ENV{XSDDIR}"
   "$ENV{XSDDIR}"
   /usr/local
   /usr
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 3.3"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/bin"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 4.0"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/bin$POSTFIX"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/bin$POSTFIX"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 4.0/bin$POSTFIX"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/bin$POSTFIX"
   ${CMAKE_SOURCE_DIR}/../xsd/libxsd
   "$ENV{PATH}"
@@ -66,10 +67,10 @@ FIND_PATH(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
   /usr/local/include
   /usr/include
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/include"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/include"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/include"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/include"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 4.0/include"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/include"  
   ${CMAKE_SOURCE_DIR}/../xsd/libxsd
   "${XSD_ROOT_DIR}/include"
@@ -83,10 +84,10 @@ FIND_PROGRAM(XSD_EXECUTABLE
   "${XSD_ROOT_DIR}/bin"
   "[HKEY_CURRENT_USER\\software\\xsd\\bin]" 
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/bin"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/bin$POSTFIX"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/bin$POSTFIX"
+  "$ENV{${_pf_x86}}/CodeSynthesis XSD 4.0/bin$POSTFIX"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/bin$POSTFIX"  
   "$ENV{PATH}"
   "$ENV{XSDDIR}/bin$POSTFIX"
