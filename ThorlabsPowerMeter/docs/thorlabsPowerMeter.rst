@@ -72,6 +72,28 @@ Installation
 
 For using this plugin, please install the PM100x_Instrument_Driver that is shipped with the Thorlabs power meter.
 
+Compilation
+===========
+
+It is possible to use the Thorlabs power meter with the legacy Thorlabs software **ThorlabsPowerMeter_1.0.2**
+(see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=PM100x). Install this software and set the
+following CMake variables:
+
+* THORLABS_POWER_METER_API_VERSION: 1.02
+* THORLABS_PM100D_VISA_DIR: <path to the install directory of Thorlabs PM100D Visa, e.g. C:/Program Files/IVI Foundation/VISA/Win64>
+
+Alternatively you can use the Thorlabs Optical Power Meter Monitor Software **Thorlabs.OpticalPowerMonitor.1.1**
+(see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=OPM). Install this software and set the 
+CMake variables to the following values:
+
+* THORLABS_POWER_METER_API_VERSION: 1.1
+* THORLABS_PM100D_VISA_DIR: <path to the install directory of Thorlabs PM100D Visa, e.g. C:/Program Files/IVI Foundation/VISA/Win64>
+
+.. note::
+    
+    If you want to change the version of an existing configuration, please remove all related THORLABS_PM100D... variables, set the
+    new version and press configure.
+
 
 Exemplary usage from Python
 ============================
