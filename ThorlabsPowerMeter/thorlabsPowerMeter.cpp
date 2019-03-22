@@ -222,7 +222,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     ViUInt32   count = 0;            //counts found devices
     ViStatus status;
 
-#if defined PMxxx_FIND_PATTERN
+#ifdef USE_API_1_02 //Thorlabs Power Meter (1.02)
     ViChar     rscStr[VI_FIND_BUFLEN]; // resource string
     ViFindList findList;
 
@@ -241,7 +241,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
         if (retval == ito::retOk) foundDevices.append(rscStr);
     }
     viClose(findList);
-#else
+#else //Thorlabs Optical Power Meter (1.1)
     ViBoolean available;
     ViChar name[TLPM_BUFFER_SIZE], sernr[TLPM_BUFFER_SIZE];
     ViChar rsrcDescr[TLPM_BUFFER_SIZE];
