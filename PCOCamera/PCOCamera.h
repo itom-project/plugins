@@ -109,7 +109,7 @@ class PCOCamera : public ito::AddInGrabber
 
         ito::RetVal setExposure(double exposure);
 
-        ito::RetVal checkError(int error);
+        ito::RetVal checkError(DWORD error);
 
     signals:
 
