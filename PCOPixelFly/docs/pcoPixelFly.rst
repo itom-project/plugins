@@ -66,4 +66,4 @@ An instance of this plugin has the following internal parameters:
 Changelog
 =========
 
-* itom setup 3.1.0: This plugin has been compiled using the pco SDK 1.23
+* itom setup >=3.1.0: This plugin has been compiled using the pco pixelfly SDK 2.01.03
