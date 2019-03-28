@@ -82,4 +82,5 @@ Changelog
 =========
 
 * itom setup 3.1.0: plugin uses the Royale SDK in version 3.12.0.44
+* itom setup >3.1.0: plugin uses the Royale SDK in version 3.21.1.70
 

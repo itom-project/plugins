@@ -144,3 +144,4 @@ Changelog
 =========
 
 * itom setup 3.1.0: This plugin has been compiled using the niDAQmx 17.6.0
+* itom setup >3.1.0: This plugin has been compiled using the niDAQmx 18.6.0
