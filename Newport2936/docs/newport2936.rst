@@ -86,4 +86,4 @@ Additional functions (exec functions)
 Changelog
 =========
 
-itom > 3.1.0: plugin uses the driver Newport USB Driver 4.2.2
+* itom setup >3.1.0: This plugin has been compiled using Newport USB Driver 5.0.8

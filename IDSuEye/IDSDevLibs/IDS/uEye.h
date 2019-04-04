@@ -1,8 +1,8 @@
 /*****************************************************************************/
 /*! \file    ueye.h
-*   \author  (c) 2004-2017 by Imaging Development Systems GmbH
-*   \date    Date: 2017/11/09
-*   \version PRODUCTVERSION: 4.90
+*   \author  (c) 2004-2018 by Imaging Development Systems GmbH
+*   \date    Date: 2018/01/09
+*   \version PRODUCTVERSION: 4.91
 *
 *   \brief   Library interface for IDS uEye - camera family.
 *            definition of exported API functions and constants
@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 90, 3)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 91, 0)
 #endif
 
 
@@ -515,6 +515,9 @@ extern "C" {
 #define IS_DEVICE_BUSY                              205   // The device is busy. The operation must be executed again later.
 #define IS_SENSOR_INITIALIZATION_FAILED             206   // The sensor initialization failed
 #define IS_IMAGE_BUFFER_NOT_DWORD_ALIGNED           207   // The image buffer is not DWORD-aligned
+#define IS_SEQ_BUFFER_IS_LOCKED                     208   // Operation is not possible because the sequence buffer is locked
+#define IS_FILE_PATH_DOES_NOT_EXIST                 209   // The file path does not exist
+#define IS_INVALID_WINDOW_HANDLE                    210   // invalid window handle
 
 
 // ----------------------------------------------------------------------------
@@ -1155,8 +1158,9 @@ extern "C" {
 #define IS_CCOR_ENABLE_HQ_ENHANCED          0x0004
 #define IS_CCOR_SET_IR_AUTOMATIC            0x0080
 #define IS_CCOR_FACTOR                      0x0100
+#define IS_CCOR_ENABLE_D50                  0x0040
 
-#define IS_CCOR_ENABLE_MASK             (IS_CCOR_ENABLE_NORMAL | IS_CCOR_ENABLE_BG40_ENHANCED | IS_CCOR_ENABLE_HQ_ENHANCED)
+#define IS_CCOR_ENABLE_MASK             (IS_CCOR_ENABLE_NORMAL | IS_CCOR_ENABLE_BG40_ENHANCED | IS_CCOR_ENABLE_HQ_ENHANCED | IS_CCOR_ENABLE_D50)
 
 
 // ----------------------------------------------------------------------------
@@ -1898,8 +1902,9 @@ typedef struct _REVISIONINFO
     WORD  Logic_Board;              // 2
     WORD  FX3;                      // 2
     WORD  FPGA;                     // 2
-                                    // --36
-    BYTE reserved[92];              // --128
+    DWORD HardwareConfig;           // 4
+                                    // --40
+    BYTE reserved[88];              // --128
 } REVISIONINFO, *PREVISIONINFO;
 
 
@@ -3276,7 +3281,9 @@ typedef enum E_DEVICE_FEATURE_CMD
     IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_BUFFER_LIMIT                          = 107,
     IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_BUFFER_LIMIT_DEFAULT                  = 108,
     IS_DEVICE_FEATURE_CMD_SET_MEMORY_MODE_BUFFER_LIMIT                          = 109,
-    IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_DATA_LOADING_DEFAULT               = 110
+    IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_DATA_LOADING_DEFAULT               = 110,
+    IS_DEVICE_FEATURE_CMD_GET_BLACKLEVEL_OFFSET_CORRECTION                      = 111,
+    IS_DEVICE_FEATURE_CMD_SET_BLACKLEVEL_OFFSET_CORRECTION                      = 112
 } DEVICE_FEATURE_CMD;
 
 
@@ -5465,7 +5472,7 @@ typedef enum E_IS_SEQUENCER_FEATURE
 typedef enum E_IS_SEQUENCER_TRIGGER_SOURCE
 {
     /*! Disables the sequencer trigger source */
-    IS_TRIGGER_SOURCE_OFF       = 0,
+    IS_TRIGGER_SOURCE_OFF          = 0,
     /*! Starts with the reception of the Frame End. */
     IS_TRIGGER_SOURCE_FRAME_END = 0x01,
     /*! Starts with the reception of the Frame Start. */

@@ -492,7 +492,7 @@ ito::RetVal GCEnumerationType::setValue(const ito::ParamBase *value)
 			{
 				*m_sharedPtr = iee->GetSymbolic();
 			}
-			catch (GenericException & /*ex*/)
+			catch (GENICAM_NAMESPACE::GenericException & /*ex*/)
 			{
 #ifdef _DEBUG
 				GenApi::NodeList_t entries;

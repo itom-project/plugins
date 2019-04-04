@@ -59,3 +59,4 @@ Changelog
 =========
 
 * itom setup 3.1.0: This plugin has been compiled using the ThorlabsOSASW SDK 2.80
+* itom setup >=3.1.0: This plugin has been compiled using the ThorlabsOSASW SDK 2.85

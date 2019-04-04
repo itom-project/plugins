@@ -42,7 +42,10 @@
 
 #include "common/helperCommon.h"
 
-#include "PCO_errt.h"
+#ifndef USE_API_1_24
+    #include "PCO_errt.h"
+#endif // !(USE_API_1_24)
+
 
 #include <QElapsedTimer>
 
@@ -267,7 +270,7 @@ PCOCamera::~PCOCamera()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! adds the PCO error to ito::RetVal and translates the hex error to an error text.
-ito::RetVal PCOCamera::checkError(int error)
+ito::RetVal PCOCamera::checkError(DWORD error)
 {
     ito::RetVal retVal;
 
@@ -275,7 +278,11 @@ ito::RetVal PCOCamera::checkError(int error)
     {
         char buffer[512];
         buffer[511] = '\0';
-        PCO_GetErrorText(error, buffer, 512);
+# if defined (USE_API_1_24)
+        PCO_GetErrorTextSDK(error, buffer, 512);
+#else
+        PCO_GetErrorText(error, buffer, 512)
+#endif
         if (error & PCO_ERROR_IS_WARNING)
         {
             retVal += ito::RetVal(ito::retWarning,0,buffer);
@@ -796,7 +803,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         intMeta->setMin(m_caminfo.sMinCoolSetDESC);
         intMeta->setMax(m_caminfo.sMaxCoolSetDESC);
         short coolset;
-        int sensError = PCO_GetCoolingSetpointTemperature(m_hCamera, &coolset);
+        DWORD sensError = PCO_GetCoolingSetpointTemperature(m_hCamera, &coolset);
 
         if ((sensError & PCO_ERROR_SDKDLL_NOTAVAILABLE) == PCO_ERROR_SDKDLL_NOTAVAILABLE)
         {
@@ -816,7 +823,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     {
         //check if camera supports IRSensitivity and sets the value if so
         WORD IRSens;
-        int sensError = PCO_GetIRSensitivity(m_hCamera, &IRSens);
+        DWORD sensError = PCO_GetIRSensitivity(m_hCamera, &IRSens);
 
         if ((sensError & PCO_ERROR_SDKDLL_NOTAVAILABLE) == PCO_ERROR_SDKDLL_NOTAVAILABLE)
         {

@@ -40,14 +40,16 @@
 #include "common/retVal.h"
 #include "datatypes.h"
 
+
 #include "GenApi/GenApi.h"
 
 #include "GenTL_v1_5.h"
-
+#include "base/GCString.h"
 #define PFNC_INCLUDE_HELPERS
 #include "PFNC.h"
 
 using namespace GENAPI_NAMESPACE;
+using namespace GENICAM_NAMESPACE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /*

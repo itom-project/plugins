@@ -90,3 +90,4 @@ Changelog
 * itom setup 2.2.0: This plugin has been compiled using pco.sdk 1.18.0.000
 * itom setup 3.0.0: This plugin has been compiled using pco.sdk 1.18.0.000
 * itom setup 3.1.0: This plugin has been compiled using pco.sdk 1.23.0.000
+* itom setup >3.1.0: This plugin has been compiled using pco.sdk 1.24
