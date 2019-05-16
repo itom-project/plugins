@@ -302,7 +302,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>this device has no local/remote switch</source>
         <translation type="unfinished"></translation>
     </message>
@@ -366,12 +366,12 @@
     </message>
     <message>
         <location line="+51"/>
-        <location line="+958"/>
+        <location line="+967"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-909"/>
+        <location line="-918"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -387,12 +387,12 @@
     </message>
     <message>
         <location line="+68"/>
-        <location line="+717"/>
+        <location line="+726"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-579"/>
+        <location line="-588"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -514,12 +514,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1170"/>
+        <location line="-1171"/>
         <source>Check flags (or-combination possible): 0x01: check position boundaries before positioning and actualize current position after positioning (default: on), 0x02: check for errors when positioning (default: off), 0x04: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1236"/>
+        <location line="+1241"/>
         <location line="+49"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
@@ -535,7 +535,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+214"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -548,7 +548,7 @@
 <context>
     <name>PIPiezoCtrlInterface</name>
     <message>
-        <location filename="../PIPiezoCtrlInterface.cpp" line="+92"/>
+        <location filename="../PIPiezoCtrlInterface.cpp" line="+96"/>
         <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -561,7 +561,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-33"/>
+        <location line="-36"/>
         <source>PI Piezos E662, E-816, E-621, E-625, E665</source>
         <translation type="unfinished"></translation>
     </message>
@@ -571,17 +571,14 @@
 
 It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization. 
 
-WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding PI controller. Therefore don&apos;t mix stages and controllers but only use the original, calibrated combination.</source>
+WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding PI controller. Therefore don&apos;t mix stages and controllers but only use the original, calibrated combination. 
+
+WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum avaiable position.In the case of a higher maximum position, set the plugin parameter &quot;posLimitHigh&quot;. </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+16"/>
         <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

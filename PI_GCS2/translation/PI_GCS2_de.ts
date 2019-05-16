@@ -302,7 +302,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>this device has no local/remote switch</source>
         <translation type="unfinished"></translation>
     </message>
@@ -366,12 +366,12 @@
     </message>
     <message>
         <location line="+51"/>
-        <location line="+958"/>
+        <location line="+967"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-909"/>
+        <location line="-918"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -387,12 +387,12 @@
     </message>
     <message>
         <location line="+68"/>
-        <location line="+717"/>
+        <location line="+726"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-579"/>
+        <location line="-588"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -514,12 +514,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1170"/>
+        <location line="-1171"/>
         <source>Check flags (or-combination possible): 0x01: check position boundaries before positioning and actualize current position after positioning (default: on), 0x02: check for errors when positioning (default: off), 0x04: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1236"/>
+        <location line="+1241"/>
         <location line="+49"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
@@ -535,7 +535,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+214"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -548,7 +548,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../PI_GCS2Interface.cpp" line="+63"/>
+        <location filename="../PI_GCS2Interface.cpp" line="+64"/>
         <source>PI actuators following the GCS2 command set (e.g. E753)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -573,11 +573,6 @@ the default baudrate 0 forces the controller to connect with a default baudrate 
     <message>
         <location line="+19"/>
         <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

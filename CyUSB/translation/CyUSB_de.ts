@@ -115,7 +115,7 @@
         <translation type="obsolete">Kein Gerät zum Öffnen vorhanden</translation>
     </message>
     <message>
-        <location filename="../ItomCyUSB.cpp" line="+142"/>
+        <location filename="../ItomCyUSB.cpp" line="+143"/>
         <source>Timeout for reading commands in [s].</source>
         <translation type="unfinished"></translation>
     </message>

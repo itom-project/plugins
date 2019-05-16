@@ -89,7 +89,7 @@
 <context>
     <name>FileGrabber</name>
     <message>
-        <location filename="../FileGrabber.cpp" line="+235"/>
+        <location filename="../FileGrabber.cpp" line="+245"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -216,12 +216,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1087"/>
+        <location line="-1089"/>
         <source>A virtual grabber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>This plugin emulates a camera by grabbing images from files in a specific folder on the hard disk. Alternatively, it is possible to iteratively load images from a 3D-data object (stack). The first possibility uses the command imread from OpenCV (OpenCV library highgui required). 
 
 The grabber can work in 3 different modes: 
@@ -233,22 +233,12 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+17"/>
         <source>Licensed under LPGL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>File-Type, e.g. &apos;*.tif&apos;, &apos;*.png&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+8"/>
         <source>Absolute path of the source images</source>
         <translation type="unfinished"></translation>
     </message>
@@ -263,7 +253,7 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
         <source>If not NULL and preloading is active, an 3D-Object can to used for the grabber.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -283,7 +273,12 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-382"/>
+        <source>File-Type, e.g. &apos;tif&apos;, &apos;png&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+409"/>
         <source>Stack object type must be UInt8, UInt16 or Int32</source>
         <translation type="unfinished"></translation>
     </message>

@@ -135,34 +135,17 @@
 <context>
     <name>DockWidgetPIHexapodCtrl</name>
     <message>
-        <location filename="../dockWidgetPIHexapodCtrl.ui" line="+14"/>
-        <source>PI Piezo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
+        <location filename="../dockWidgetPIHexapodCtrl.ui" line="+44"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Device:</source>
+        <location line="-24"/>
+        <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+13"/>
-        <location line="+23"/>
-        <source>[unknown]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-13"/>
-        <source>Piezo:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
+        <location line="+51"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -172,215 +155,374 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
-        <source>Positioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Step Size</source>
+        <location line="+13"/>
+        <source>Axis:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
-        <location line="+149"/>
-        <location line="+42"/>
-        <source> µm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-155"/>
-        <source>Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+24"/>
-        <source>Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Remote</source>
+        <source>[Axis]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
-        <source>Local</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Absolut Positioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Actual Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+38"/>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Target Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+38"/>
-        <source>Refresh</source>
+        <source>Axis  Control</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PIHexapodCtrl</name>
     <message>
-        <location filename="../PIHexapodCtrl.cpp" line="+186"/>
-        <source>Current type of controller, e.g. E-662, E-665, ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>device information string</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Hexapod information string</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location filename="../PIHexapodCtrl.cpp" line="+185"/>
         <source>asychronous (1.0) or sychronous (0.0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+2"/>
         <source>Number of axes (here always 1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>use this parameter followed by :YourCommand in order to read/write value from/to device (e.g. PI_CMD:ERR?)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+73"/>
         <source>parameter PI_CMD requires the real command send to the motor after a colon-sign.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
-        <source>Array addressing failed, index out of range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+26"/>
-        <source>Array addressing failed, parameter is no array type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+50"/>
-        <source>name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+17"/>
+        <location line="+105"/>
         <source>parameter PI_CMD requires the real command send to the motor after a colon-sign in the parameter name or as value (second parameter of setParam method).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>System has only global speed either try speed[0] or [speed, speed, ...]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Parameter is read only, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>New value is larger than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>New value is smaller than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Given parameter and m_param do not have the same type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+60"/>
+        <location line="+94"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+107"/>
-        <source>you can only calilbrate axis [6], [7], [6,7] or [0-5]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+52"/>
+        <location line="+200"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+52"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+991"/>
+        <location line="+647"/>
+        <source>Parameter Syntax Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Unknown command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Command too long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>INI or Servo ON required before move at this time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>SGA-Parameter out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Motion range exceeded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Velocity range exceeded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Attempt to set pivot point while U, V or W not all equal to 0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Last command was STOP or DRV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>SST parameter out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>NAV parameter out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid analog channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid axis identifier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Command parameter out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid Real Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Missing Parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Soft Limit out of Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>F-361 (Optical Power Meter) missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>F-361 cannot be initialized/is not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>F-361 communications error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>MOV! command motion in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Unknown parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Data Record Table does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>INI is running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>No stage connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>File with stage/axis parameters not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid Axis Parameter File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Illegal File Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>File not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>File write Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>DTR hinders Velocity Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Position Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Unexpected Strut Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Reported Position is based on Interpolation (MOV, MWG or MAR! is running)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Reported Position is based on Estimation (MOV! is running)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Buffer overflow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Hardware Error, motion deviation limit exceeded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Undefined error code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>error could not be parsed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>No serial port open, pointer is NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+117"/>
+        <source>could not identify axes. No answer for command CST?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+167"/>
+        <source>interrupt occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+103"/>
         <source>no connection opened!
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+128"/>
-        <source>coordinate name &apos;%c&apos; does not exist</source>
+        <location line="+88"/>
+        <source>getting pivot point: coordinate name &apos;%c&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+112"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-738"/>
+        <location line="-866"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-34"/>
-        <location line="+62"/>
+        <location line="-1124"/>
+        <source>Set the system Pivot-Point (origin of rotation)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Get the system Pivot-Point (origin of rotation)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Cycle to iterate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Print the current positions of the specified axis to the command line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Identifier string of device (*idn?)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>speed of every axis in physical units / s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Number of axes attached to this stage (see axesNames for names of axes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>semicolon-separated list of the names of all connected axes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>current pivot point (x,y,z)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+131"/>
+        <source>any axis is moving. Parameters cannot be set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+504"/>
+        <source>Too many axes given. Only %i axes available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Index of %ith axis out of range [0,%i].</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+346"/>
+        <source>Error reading from device!
+%s
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <location line="+63"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1020"/>
+        <location line="-1158"/>
         <location line="+10"/>
         <source>Position of the Pivot-Point in x</source>
         <translation type="unfinished"></translation>
@@ -398,22 +540,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-7"/>
-        <source>Set the system Pivot-Point (origin of rotiation)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+8"/>
-        <source>Get the system Pivot-Point (origin of rotiation)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Cycle to iteralte</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Amplitude in mm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -423,32 +550,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Print the current positions of the specified axis to the consol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+581"/>
-        <source>Error. Too many Axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Error. Wrong Axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
+        <location line="+684"/>
         <source>Error. Addressed axis twice</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+676"/>
+        <location line="+737"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+63"/>
         <source>could not identify controller. No answer for command *idn?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -456,25 +568,7 @@
 <context>
     <name>PIHexapodCtrlInterface</name>
     <message>
-        <location line="-1414"/>
-        <source>An opened serial port (IF connected via Serial-Port).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>The IP-Address of the PI-Controller (If connected via TCP-IP).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The TCP/IP-Port of the PI-Controller (If connected via TCP-IP).</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>QObject</name>
-    <message>
-        <location line="-16"/>
+        <location line="-1583"/>
         <source>PI Hexapods H810, H824, H840, H850</source>
         <translation type="unfinished"></translation>
     </message>
@@ -487,35 +581,30 @@ This system needs a serial port, which differs depending on the controller type.
 It is initialized by actuator(&quot;PIHexapodCtrl&quot;, SerialIO, Controller Type (e.g. &apos;E662&apos;)).
 Stageparamters can be set directly by setParam(&quot;STAGEPARAMETER&quot;, value).
 WARNING: The calibration of voltage to position are hardcoded into the controller according to its corresponding stage.
-Hence, stages should not be mixed up.</source>
+Hence, stages should not be mixed up.
+
+If the device is newly started, all axes have to be initialized first. This is done using the command myMotor.calib(0,1,2,3,4,5) in order 
+to initialize the x,y,z,u,v and w axis, respectively.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+15"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+1023"/>
-        <source>uninitialized vector for mandatory parameters!</source>
+        <location line="+3"/>
+        <source>An opened serial port (If connected via Serial-Port).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
+        <location line="+2"/>
+        <source>The IP-address of the PI-Controller (If connected via TCP-IP).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
+        <location line="+2"/>
+        <source>The TCP/IP-Port of the PI-Controller (If connected via TCP-IP).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

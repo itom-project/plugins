@@ -4,17 +4,17 @@
 <context>
     <name>DataObjectArithmetic</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="+109"/>
+        <location filename="../dataobjectarithmetic.cpp" line="+110"/>
         <location line="+13"/>
         <location line="+3"/>
         <location line="+16"/>
-        <location line="+166"/>
-        <location line="+157"/>
+        <location line="+164"/>
+        <location line="+155"/>
         <source>source image data object for operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-353"/>
+        <location line="-349"/>
         <location line="+17"/>
         <location line="+17"/>
         <source>result of calculation. This param can be int or double</source>
@@ -22,34 +22,34 @@
     </message>
     <message>
         <location line="-2"/>
-        <location line="+166"/>
-        <location line="+159"/>
+        <location line="+164"/>
+        <location line="+157"/>
         <source>Ignore invalid-Values for floating point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-322"/>
-        <location line="+168"/>
+        <location line="-318"/>
+        <location line="+166"/>
         <location line="+4"/>
         <source>Index of the plane, which contains the result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-171"/>
-        <location line="+168"/>
+        <location line="-169"/>
+        <location line="+166"/>
         <location line="+4"/>
         <source>Pixelindex in y-direction.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-171"/>
-        <location line="+168"/>
+        <location line="-169"/>
+        <location line="+166"/>
         <location line="+4"/>
         <source>Pixelindex in x-direction.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-159"/>
+        <location line="-157"/>
         <source>1. source image data object for operation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -64,14 +64,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+712"/>
+        <location line="+708"/>
         <location line="+186"/>
-        <location line="+917"/>
+        <location line="+915"/>
         <source>2D source image data object (u)int8, (u)int16, int32, float32 or float64 only.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1101"/>
+        <location line="-1099"/>
         <source>values &lt; lowThreshold are ignored. lowThreshold is subtracted from each valid value before COG determination.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -94,19 +94,19 @@
     <message>
         <location line="+13"/>
         <location line="+513"/>
-        <location line="+587"/>
+        <location line="+585"/>
         <source>Error: sourceImage is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1096"/>
+        <location line="-1094"/>
         <location line="+513"/>
-        <location line="+588"/>
+        <location line="+586"/>
         <source>Error: sourceImage is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-939"/>
+        <location line="-937"/>
         <source>Mx3 or Mx4 2D data object of type uint16, each row corresponds to one spot. The line contains [px_x, px_y, circle_diameter] if the cog should be determined within a circle or [px_x, px_y, width, height] if the cog should be determined within a rectangle. circle_diameter, width or height have to be odd.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -141,7 +141,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+879"/>
+        <location line="+877"/>
         <source>input 2D or 3D uint8 or uint16 data object (in case of 3D, every plane is analyzed independently and the resulting spot object is 3D as well. Indicate parameter &apos;maxNrOfSpots&apos; in case of 3D.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -201,7 +201,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-940"/>
+        <location line="-938"/>
         <source>destination object for center of gravity values (in physical coordinates), float64, size: [numPlanes x sizeOfElements]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -236,7 +236,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+249"/>
+        <location line="+247"/>
         <source>valid non-complex data object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,14 +281,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1794"/>
-        <location line="+61"/>
+        <location line="-1789"/>
+        <location line="+60"/>
         <location line="+90"/>
         <source>data type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+97"/>
         <source>mean result</source>
         <translation type="unfinished"></translation>
     </message>
@@ -298,17 +298,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-279"/>
-        <location line="+60"/>
-        <location line="+86"/>
+        <location line="-275"/>
+        <location line="+59"/>
+        <location line="+85"/>
         <location line="+69"/>
-        <location line="+35"/>
+        <location line="+34"/>
         <location line="+68"/>
         <source>Error, object dimensions must be unequal zero</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-200"/>
+        <location line="-199"/>
         <source>Switch complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -323,22 +323,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+147"/>
         <source>Toggles the calculation mode of standard deviation over N or N-1 elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-218"/>
-        <location line="+86"/>
+        <location line="-215"/>
+        <location line="+85"/>
         <location line="+69"/>
-        <location line="+35"/>
+        <location line="+34"/>
         <source>Error: source image is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-250"/>
-        <location line="+312"/>
-        <location line="+111"/>
+        <location line="-247"/>
+        <location line="+309"/>
+        <location line="+110"/>
         <location line="+7"/>
         <source>Error: source image is NULLL</source>
         <translation type="unfinished"></translation>
@@ -365,12 +365,12 @@
     </message>
     <message>
         <location line="+33"/>
-        <location line="+1092"/>
+        <location line="+1090"/>
         <source>Unknown type or type not implemented for phase shifting evaluation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../autofocus.cpp" line="+172"/>
+        <location filename="../autofocus.cpp" line="+178"/>
         <source>2D or 3D source image data object (u)int8, (u)int16, int32 only.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -386,17 +386,9 @@
     </message>
 </context>
 <context>
-    <name>DataObjectArithmeticInterface</name>
-    <message>
-        <location filename="../dataobjectarithmetic.cpp" line="-1966"/>
-        <source>Arithmetic algorithms filters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>QObject</name>
     <message>
-        <location line="-12"/>
+        <location filename="../dataobjectarithmetic.cpp" line="-1972"/>
         <source>Operations and arithmetic calculations of dataObject.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -416,33 +408,32 @@ This plugin does not have any unusual dependencies.</source>
     </message>
     <message>
         <location line="+95"/>
-        <source>This filter calculates the minimal value and its first location within the dataObject. 
+        <source>This filter calculates the global minimum value and its first location within the dataObject. 
 
-The result value will be Integer vor all integer types or Double for all floating point types
+The returned value will be an integer for all fixed-point data types and float for all floating point types. 
 
 The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
 
 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>This filter calculates the global maximum value and its first location within the dataObject. 
+
+The returned value will be an integer for all fixed-point data types and float for all floating point types. 
+The global maximum of complex data types is defined to be the global maximum of all absolute values. 
+
+The filter is implemented for all data types besides RGBA32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+60"/>
-        <source>This filter calculates the maximal value and its first location within the dataObject. 
-
-The result value will be Integer vor all integer types or Double for all floating point types
-
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+61"/>
         <source>This filter calculates the minimal and maximal value and its first location within the dataObject. 
 
-The result value will be Integer vor all integer types or Double for all floating point types
+The returned values will be integer for all fixed-point data types or float for all floating point types. 
 
-The filter do not work with RGBA32 but with all other data-types
+The filter does not work with RGBA32 but with all other datatypes.
 
 </source>
         <translation type="unfinished"></translation>
@@ -453,43 +444,81 @@ The filter do not work with RGBA32 but with all other data-types
 
 The return value containing the mean value of the dataObject.
 
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
+The filter is implemented for all datatypes besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
-        <source>This filter calculates the median value over all values in the data object. 
+        <location line="+34"/>
+        <source>This method calculates the median value over all values in the data object. 
 
-The return value containing the mean value of the dataObject.
+The returned median values is given as double.
 
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
+This method is implemented for all datatypes besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
-        <source>The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.
+        <location line="+55"/>
+        <source>This method returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.
 
-The optinal flag to toggles if (flag==0) the deviation is calculated by 
+Use the optional argument &apos;flag&apos; to choose between two formulas for the determination of the standard deviation. 
+Either (flag = 0): 
 
 
     \sqrt(\sum{(x-xm)^2} / (n-1))
 
-or (if flag == 1)
+or (flag = 1):
 
 
     \sqrt(\sum{(x-xm)^2} / n)
 
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
+This method is implemented for all datatypes besides RGBA32, Complex64 and Complex128
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1751"/>
+        <location line="+47"/>
+        <source>Element-wise check if two dataObjects are equal. 
+The filter returns 1 if all values of both objects are equal, else 0.
+
+The filter is implemented for all datatypes besides RGBA32, Complex64 and Complex128.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+333"/>
+        <source>This filter calculates the center of gravity of a 2D real image. 
+
+The return value contains the column and row position in pixel and physical coordinates.
+
+For the determination, only values in the range [lowThreshold, highThreshold] are considered. The COG algorithm requires, that all values 
+that do not belong to the required peak have values around zero. In order to achieve this, the &apos;lowThreshold&apos; value is subtracted from each 
+valid intensity value before calculating the COG with the following equations: 
+
+cXI = \frac{\sum{idx_x * (I - lowThreshold)}}{\sum{(I - lowThreshold)} 
+cYI = \frac{\sum{idx_y * (I - lowThreshold)}}{\sum{(I - lowThreshold)} 
+
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other datatypes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1104"/>
+        <source>This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold. 
+
+The return value contains the [x0,y0,width,height] of the minimum ROI.
+
+Values of the data object belong to the ROI if they are &gt;= lowThreshold and &lt;= highThreshold. 
+The highThreshold is only checked, if it is different than the default value (maximum value of double). 
+
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other datatypes. This filter has got a fast 
+implementation for fixed-point data types without an higher threshold (since version 0.0.3).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+265"/>
         <source>This method determines the sub-pixel peak position of multiple spots in an image. 
 
 This algorithm is implemented for 2D or 3D input images of type uint8 or uint16 only and has been developped with respect to a fast implementation. At first, the image is analyzed line-wise with a line distancen of &apos;searchStepSize&apos;. 
@@ -511,33 +540,7 @@ The parameter &apos;searchStepSize&apos; is a list of two values, the first desc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1705"/>
-        <source>Check pixel-wise wether two dataObjects are equal. 
-The filter returns 1 if both objects are pixel-wise equal, else returns 0.
-
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+334"/>
-        <source>This filter calculates the center of gravity of a 2D real image. 
-
-The return value contains the column and row position in pixel and physical coordinates.
-
-For the determination, only values in the range [lowThreshold, highThreshold] are considered. The COG algorithm requires, that all values 
-that do not belong to the required peak have values around zero. In order to achieve this, the &apos;lowThreshold&apos; value is subtracted from each 
-valid intensity value before calculating the COG with the following equations: 
-
-cXI = \frac{\sum{idx_x * (I - lowThreshold)}}{\sum{(I - lowThreshold)} 
-cYI = \frac{\sum{idx_y * (I - lowThreshold)}}{\sum{(I - lowThreshold)} 
-
-The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+180"/>
+        <location line="-1189"/>
         <source>This filter determines the sub-pixel 
 spot position of multiple spots in an image. The pixel-precise spot position must be given including the size 
 of the area around the coarse spot position over which the center of gravity algorithm is applied. 
@@ -587,21 +590,8 @@ The filter is not implemented for complex data types and the type rgba32 since t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+469"/>
+        <location line="+467"/>
         <source>analyzes all values in the given data object and returns the value, which is at a given percentage in the sorted value list.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+150"/>
-        <source>This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold. 
-
-The return value contains the [x0,y0,width,height] of the minimum ROI.
-
-Values of the data object belong to the ROI if they are &gt;= lowThreshold and &lt;= highThreshold. 
-The highThreshold is only checked, if it is different than the default value (maximum value of double). 
-
-The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types. This filter has got a fast 
-implementation for fixed-point data types without an higher threshold (since version 0.0.3).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -4,7 +4,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../roughness.cpp" line="+60"/>
+        <location filename="../roughness.cpp" line="+61"/>
         <source>Algorithms for roughness evaluation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28,12 +28,7 @@ Some algorithms the plugin &apos;fittingFilters&apos; for a valid execution.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+56"/>
+        <location line="+57"/>
         <source>the chosen sampling length for five sections differs from the intended length (cut-off wavelength)</source>
         <translation type="unfinished"></translation>
     </message>

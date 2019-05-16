@@ -11,6 +11,14 @@
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error opening exiftool: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error reading exif-tag %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RawImport</name>

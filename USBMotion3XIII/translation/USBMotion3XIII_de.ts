@@ -541,7 +541,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../USBMotion3XIII.cpp" line="+111"/>
+        <location filename="../USBMotion3XIII.cpp" line="+112"/>
         <source>A motor driver for the USB Motion 3x III card, COPTONIX GmbH, www.coptonix.com</source>
         <translation type="unfinished"></translation>
     </message>
@@ -559,16 +559,11 @@ If you change any parameters like speed or acceleration, set the values and then
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>USBMotion3XIII</name>
     <message>
-        <location line="+244"/>
+        <location line="+245"/>
         <source>indicates whether motor driver is connected (1) or not (0)</source>
         <translation type="unfinished"></translation>
     </message>

@@ -2,6 +2,22 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
+    <name>DialogGenICam</name>
+    <message>
+        <location filename="../dialogGenicam.ui" line="+14"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogGenicam</name>
+    <message>
+        <location filename="../dialogGenicam.cpp" line="+53"/>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DockWidgetGenicam</name>
     <message>
         <location filename="../dockWidgetGenicam.ui" line="+20"/>
@@ -46,7 +62,7 @@
 <context>
     <name>GenICamClass</name>
     <message>
-        <location filename="../genicam.cpp" line="+126"/>
+        <location filename="../genicam.cpp" line="+159"/>
         <source>width of ROI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -76,27 +92,52 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+539"/>
+        <location line="+4"/>
+        <source>Number of buffers allocated at startDevice().</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Size of each image buffer in bytes (0: use value provided by camera - default).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Forces a resychroniziation of all camera parameters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+757"/>
+        <source>Invokes the command &apos;%1&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+146"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+67"/>
         <source>Acquisition failed since device has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>AcquisitionMode &apos;multiFrame&apos; not yet supported</source>
+        <location line="+23"/>
+        <source>AcquisitionMode &apos;multiFrame&apos; (or other than &apos;Continous&apos; and &apos;SingleFrame&apos;) not supported, yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+428"/>
+        <source>function name &apos;%s&apos; does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-346"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+73"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -119,7 +160,7 @@
 <context>
     <name>GenICamInterface</name>
     <message>
-        <location line="-878"/>
+        <location line="-1352"/>
         <source>Indicate either a string containing the vendor and model name separated with a semicolon (e.g. &apos;XIMEA GmbH.;xiApi&apos;) or the path to a cti file (GenICam GenTL transport layer) with the file suffix .cti of the respective camera driver. If nothing is indicated, a list of all auto-detected vendors and models is returned.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -133,6 +174,31 @@
         <source>name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>index of data stream to be opened (default: 0).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru, %4: Invisible).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>port index to be opened (default: 0).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states)).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -141,29 +207,24 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-64"/>
         <source>Camera control of devices that support the GenICam standard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>licensed under LGPL</source>
+        <location line="+35"/>
+        <source>licensed under LGPL, this plugin is based on GenICam licensed under the GenICam license 1.5 (see GenICam_License.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../deviceContainer.cpp" line="+164"/>
+        <location filename="../deviceContainer.cpp" line="+209"/>
         <source>cti file &apos;%1&apos; does not export all necessary methods of the GenTL standard.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+248"/>
-        <location filename="../dataStream.cpp" line="+63"/>
-        <location filename="../device.cpp" line="+71"/>
+        <location line="+301"/>
+        <location filename="../dataStream.cpp" line="+70"/>
+        <location filename="../basePort.cpp" line="+90"/>
         <source>cti file does not export all functions of the GenTL protocol.</source>
         <translation type="unfinished"></translation>
     </message>

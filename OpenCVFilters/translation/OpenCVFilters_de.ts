@@ -4,7 +4,7 @@
 <context>
     <name>OpenCVFilters</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="+161"/>
+        <location filename="../OpenCVFilters.cpp" line="+162"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -14,32 +14,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <location line="+372"/>
+        <location line="+14"/>
+        <location line="+570"/>
         <location line="+302"/>
-        <location line="+261"/>
+        <location line="+265"/>
         <location line="+168"/>
         <location line="+153"/>
         <location line="+650"/>
-        <location line="+167"/>
+        <location line="+168"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+93"/>
-        <location filename="../OpenCVFilters.cpp" line="-2068"/>
-        <location line="+372"/>
+        <location filename="../OpenCVFilters.cpp" line="-2271"/>
+        <location line="+570"/>
         <location line="+302"/>
-        <location line="+261"/>
+        <location line="+265"/>
         <location line="+168"/>
         <location line="+153"/>
         <location line="+650"/>
-        <location line="+167"/>
+        <location line="+168"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-2033"/>
+        <location filename="../OpenCVFilters.cpp" line="-2236"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -50,7 +50,8 @@
     </message>
     <message>
         <location line="+47"/>
-        <location line="+275"/>
+        <location line="+256"/>
+        <location line="+217"/>
         <location line="+302"/>
         <source>Error: source is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
@@ -62,76 +63,87 @@
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+441"/>
-        <location filename="../OpenCVFilters.cpp" line="-198"/>
+        <location filename="../OpenCVFilters.cpp" line="-396"/>
         <location line="+17"/>
-        <location line="+209"/>
-        <location line="+262"/>
+        <location line="+237"/>
+        <location line="+170"/>
+        <location line="+266"/>
         <location line="+312"/>
         <location line="+166"/>
         <location line="+147"/>
         <location line="+204"/>
         <location line="+440"/>
-        <location line="+169"/>
+        <location line="+170"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1835"/>
+        <location filename="../OpenCVFilters.cpp" line="-1840"/>
         <source>All types except complex64 and complex128 are accepted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-251"/>
+        <location line="-449"/>
+        <location line="+252"/>
         <source>input data object of type uint8, uint16, int16, float32, float64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-250"/>
+        <location line="+252"/>
         <source>output image with the same type and size than input (inplace allowed)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-249"/>
+        <location line="+254"/>
         <source>structuring element used for the morpholocial operation (default: None, a 3x3 rectangular structuring element is used). Else: An uint8 data object where values &gt; 0 are considered for the operation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-252"/>
+        <location line="+254"/>
         <source>position of the anchor within the element. If not given or if (-1,-1), the anchor is at the element center [default].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-252"/>
+        <location line="+254"/>
         <source>number of times the morpholocial operation is applied [default: 1]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-252"/>
+        <location line="+254"/>
         <source>This string defines how the filter should hande pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="-237"/>
+        <location line="+256"/>
         <source>source and destination object must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="-200"/>
+        <location line="+256"/>
         <source>border type %1 is unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="-239"/>
+        <location line="+256"/>
         <source>anchor must be in range [0,%1];[0,%2]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-246"/>
+        <location line="+256"/>
         <source>anchor must have either 2 values or none</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="-178"/>
         <source>erosion with (y,x) kernel(%1, %2), anchor(%3, %4), %5 iterations, borderType %6</source>
         <translation type="unfinished"></translation>
     </message>
@@ -141,7 +153,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+63"/>
+        <source>This parameters defines the operation type, 0: Erode, 1: Dilate, 2: Open, 3: Close, 4: Gradient, 5: Tophat, 6: Blackhat, 7: Hit or miss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+168"/>
+        <source>morphologyEx with (y,x) kernel(%1, %2), anchor(%3, %4), %5 iterations, borderType %6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <source>Empty object handle. Image will be of src-type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -177,7 +199,7 @@
     </message>
     <message>
         <location line="+5"/>
-        <location line="+264"/>
+        <location line="+268"/>
         <source>No compatible dataObject type found for given OpenCV matrix type.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -205,12 +227,12 @@
     </message>
     <message>
         <location line="+510"/>
-        <location line="+170"/>
+        <location line="+171"/>
         <source>Output Object handle. Will be come complex-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-167"/>
+        <location line="-168"/>
         <source>Low Threshold</source>
         <translation type="unfinished"></translation>
     </message>
@@ -230,7 +252,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+40"/>
         <source>Transformation code, see (OpenCV) documentation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -693,14 +715,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1673"/>
-        <location line="+1337"/>
-        <location line="+170"/>
+        <location filename="../OpenCVFilters.cpp" line="-1678"/>
+        <location line="+1341"/>
+        <location line="+171"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1390"/>
+        <location line="-1395"/>
         <source>Image of type Integer or float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -716,17 +738,17 @@
     </message>
     <message>
         <location line="+40"/>
-        <location line="+733"/>
+        <location line="+737"/>
         <source>Error: kernel must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-728"/>
+        <location line="-729"/>
         <source>Error: kernelsize &gt; 3 and object is not uint8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+36"/>
         <source>OpenCV medianblur-filter with kernel size = %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -735,12 +757,12 @@
         <location line="+168"/>
         <location line="+153"/>
         <location line="+650"/>
-        <location line="+167"/>
+        <location line="+168"/>
         <source>Error: nDim-stacks not supported yet, only 2D and 3D.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-674"/>
+        <location line="-675"/>
         <source>sourceObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -916,7 +938,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1145"/>
+        <location filename="../OpenCVFilters.cpp" line="-1346"/>
         <source>Wrapped algorithms from OpenCV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -942,11 +964,6 @@ the tags and meta information and save protocol data.</source>
     <message>
         <location line="+22"/>
         <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -980,7 +997,14 @@ Erosion can be applied several times (parameter &apos;iterations&apos;).</source
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+209"/>
+        <source>Erodes every plane of a data object by using a specific structuring element. 
+
+Performs advanced morphological transformations.The function cv::morphologyEx can perform advanced morphological transformations using an erosion and dilation as basic operations.MORPH_ERODE Any of the operations can be done in - place.In case of multi - channel images, each channel is processed independently.).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
         <source>Planewise median blur filter.
 
 This filter applies the method cv::blur to every plane in the source data object. The function smoothes the images by a simple mean-filter. Theresult is contained in the destination object. It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. 
@@ -1045,7 +1069,7 @@ Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+253"/>
+        <location line="+257"/>
         <source>This filter flips the image left to right. 
 
 This filter applies the flip method cvFlip of OpenCV with the flipCode &gt; 0 to a 2D source data object. The result is contained in the destination object
@@ -1149,15 +1173,16 @@ converted from an 8-bit image without any scaling, then it will have the 0..255 
 assumed by the function. So, before calling cvtColor , you need first to scale the image down
 
 The parameter code defines the conversion:
-RGB &lt;-&gt; GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)
-RGB &lt;-&gt; CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)
-RGB &lt;-&gt; YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)
-RGB &lt;-&gt; HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )
-RGB &lt;-&gt; HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)
-RGB &lt;-&gt; CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)
-RGB &lt;-&gt; CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)
-Bayer &lt;-&gt; RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...
-                        CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)
+
+* RGB &lt;-&gt; GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)
+* RGB &lt;-&gt; CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)
+* RGB &lt;-&gt; YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)
+* RGB &lt;-&gt; HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )
+* RGB &lt;-&gt; HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)
+* RGB &lt;-&gt; CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)
+* RGB &lt;-&gt; CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)
+* Bayer &lt;-&gt; RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...
+    CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)
 
 For more details see OpenCV documentation.</source>
         <translation type="unfinished"></translation>

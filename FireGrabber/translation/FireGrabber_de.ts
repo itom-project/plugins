@@ -96,7 +96,7 @@
 <context>
     <name>FireGrabber</name>
     <message>
-        <location filename="../FireGrabber.cpp" line="+147"/>
+        <location filename="../FireGrabber.cpp" line="+148"/>
         <source>vendor ID of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,12 +355,7 @@ This plugin can only be loaded and used once the AVT FirePackage driver has been
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-2"/>
+        <location line="+2"/>
         <source>LGPL; you need an installed AVT FirePackage driver, which requires further licenses if you are not using any AVT camera (see AVT FirePackage documentation).</source>
         <translation type="unfinished"></translation>
     </message>

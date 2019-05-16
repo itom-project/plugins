@@ -82,7 +82,7 @@
 <context>
     <name>GWInstekPSP</name>
     <message>
-        <location filename="../GWInstekPSP.cpp" line="+200"/>
+        <location filename="../GWInstekPSP.cpp" line="+201"/>
         <source>Undefined answer from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -257,11 +257,6 @@
     <message>
         <location line="+9"/>
         <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

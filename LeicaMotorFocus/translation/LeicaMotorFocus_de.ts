@@ -211,7 +211,7 @@
 <context>
     <name>LeicaMotorFocus</name>
     <message>
-        <location filename="../LeicaMotorFocus.cpp" line="+259"/>
+        <location filename="../LeicaMotorFocus.cpp" line="+260"/>
         <source>Unexspected #(17) at first sign in buffer. Sign deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -387,11 +387,6 @@ For the initialization of this plugin you already need an opened serial IO port 
     <message>
         <location line="+11"/>
         <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

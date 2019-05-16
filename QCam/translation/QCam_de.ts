@@ -42,7 +42,7 @@
 <context>
     <name>QCam</name>
     <message>
-        <location filename="../QCam.cpp" line="+99"/>
+        <location filename="../QCam.cpp" line="+100"/>
         <source>Integration time of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -333,17 +333,9 @@
     </message>
 </context>
 <context>
-    <name>QCamInterface</name>
-    <message>
-        <location line="-1096"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>QObject</name>
     <message>
-        <location line="-9"/>
+        <location line="-1105"/>
         <source>Firewire QCam cameras from QImaging</source>
         <translation type="unfinished"></translation>
     </message>
@@ -443,24 +435,6 @@
     <message>
         <location line="+7"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+1036"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -152,7 +152,7 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+186"/>
+        <location filename="../dispWindow.cpp" line="+187"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -378,11 +378,6 @@
         <source>DataObject with pixel values to display</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="-18"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DockWidgetDispWindow</name>
@@ -488,7 +483,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dispWindow.cpp" line="-13"/>
+        <location filename="../dispWindow.cpp" line="-31"/>
         <source>This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. 
 
 For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and set the variable GLEW_DIR in CMake to the corresponding folder. The necessary library will finally be copied to the lib-folder of itom such that an entry in the environment variable path is not necessary. Please make sure, that you use always the same version of glew for all plugins that require this library.</source>

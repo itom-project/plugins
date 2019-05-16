@@ -125,7 +125,7 @@
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
     </message>
     <message>
-        <location line="+233"/>
+        <location line="+239"/>
         <source>Axis and velocity vector differ in size.</source>
         <translation type="unfinished">Achse und Geschwindigkeitsvektor unterscheiden sich in der Größe.</translation>
     </message>
@@ -135,7 +135,7 @@
         <translation type="unfinished">Eine Joystick-Bewegung schlug fehl.</translation>
     </message>
     <message>
-        <location line="-607"/>
+        <location line="-613"/>
         <location line="+197"/>
         <source>axis index is out of bound</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
@@ -203,12 +203,12 @@
         <translation type="unfinished">Ein Fehler ist aufgetreten</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+74"/>
         <source>timeout occurred</source>
         <translation type="unfinished">Eine Zeitüberschreitung ist aufgetreten</translation>
     </message>
     <message>
-        <location line="-499"/>
+        <location line="-505"/>
         <location line="+59"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>

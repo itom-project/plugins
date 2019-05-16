@@ -4,7 +4,7 @@
 <context>
     <name>BasicGPLFilters</name>
     <message>
-        <location filename="../BasicGPLFilters.cpp" line="+207"/>
+        <location filename="../BasicGPLFilters.cpp" line="+208"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -78,11 +78,6 @@ This plugin does not have any unusual dependencies.</source>
     <message>
         <location line="+11"/>
         <source>GPL 3.0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

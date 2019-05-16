@@ -208,7 +208,7 @@
 <context>
     <name>PCOSensicam</name>
     <message>
-        <location filename="../PCOSensicam.cpp" line="+188"/>
+        <location filename="../PCOSensicam.cpp" line="+189"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -347,11 +347,6 @@ Download the SDK and install it at any location. Additionally you need to instal
     <message>
         <location line="+10"/>
         <source>LGPL / copyright of the external DLLs belongs to PCO</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
