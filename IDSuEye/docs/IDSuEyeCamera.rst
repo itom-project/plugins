@@ -117,7 +117,7 @@ Under linux, simply install the drivers from the IDS website. After an successfu
 to the default directories under linux. The CMakeLists.txt file of this itom plugin will then automatically detect these files and compile the plugin.
 
 Acquisiton of image sequences
-============================
+==============================
 
 If the number of buffers (num_buffer) is set to a value greater than 1, a sequence of images will be acquired with the acquire()-function (without frameloss). The sequence
 is retrieved by getVal() as usual, but the obtained dataObject will be 3D. The number of planes corresponds to the amount of images in the sequence (i.e. the number of buffers).
