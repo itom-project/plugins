@@ -993,7 +993,9 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 		
 
 		//get pixel endianess
-		if (pixelformat != PFNC_Mono8)
+		if (pixelformat != PFNC_Mono8 && 
+			pixelformat != PFNC_RGB8 &&
+			pixelformat != PFNC_YCbCr422_8)
 		{
 			pSize = sizeof(temp);
 			if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXEL_ENDIANNESS, &dtype, &temp, &pSize) != GenTL::GC_ERR_SUCCESS)
@@ -1028,6 +1030,10 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 		switch (pixelformat)
 		{
 		case PFNC_Mono8:
+		case PFNC_RGB8:
+			retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+			break;
+		case PFNC_YCbCr422_8:
 			retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
 			break;
 		case PFNC_Mono10:
@@ -1062,6 +1068,56 @@ ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t
 {
 	//little or big endian is idle for mono8:
 	return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, height);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void unpack_YCbCr422_into_rgb32(ito::Rgba32 *dest, const ito::uint8 *source, size_t n)
+{
+	//https://en.wikipedia.org/wiki/YUV#Y%E2%80%B2UV422_to_RGB888_conversion
+	//NTSC version of clampling
+	const ito::uint8 *end = source + n;
+	ito::uint8 y, u, v, c, d, e;
+
+	while (source != end)
+	{
+		y = *source++;
+		u = *source++;
+		v = *source++;
+
+		c = y - 16;
+		d = u - 128;
+		e = v - 128;
+
+		//byte 0: pixel 0, bit 11..4
+		//byte 1: pixel 1, bit 3..0  FOLLOWED by pixel 0, bit 3..0
+		//byte 2: pixel 1, bit 11..4
+		*dest++ = ((298 * c + 409 * e + 128) >> 8);
+		*dest++ = ((298 * c - 100 * d - 208 * e + 128) >> 8);
+		*dest++ = ((298 * c + 516 * d + 128) >> 8);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+{
+	// not working yet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	if (littleEndian)
+	{
+		if (width * height % 2 != 0)
+		{
+			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12Packed or (width*height must be divisible by 2).");
+		}
+
+		ito::Rgba32 *dest = dobj.rowPtr<ito::Rgba32>(0, 0);
+
+		const ito::uint8 *source = (const ito::uint8*)ptr;
+		unpack_YCbCr422_into_rgb32(dest, source, width * height * 12 / 8);
+		return ito::retOk;
+	}
+	else
+	{
+		return ito::RetVal(ito::retError, 0, "data converter for mono12Packed, most significant bit, not implemented yet.");
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

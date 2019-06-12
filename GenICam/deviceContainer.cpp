@@ -571,6 +571,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
         char sDeviceID[512];
         size_t piSize = 512;
         bool found = false;
+		ito::RetVal localRetVal;
 
         if (!retval.containsError())
         {
@@ -586,11 +587,12 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
             for (uint32_t i = 0; i < piNumDevices; ++i)
             {
-                retval += checkGCError(IFGetDeviceID(m_handle, i, sDeviceID, &piSize));
+				localRetVal = checkGCError(IFGetDeviceID(m_handle, i, sDeviceID, &piSize));
 
                 //check access status
                 GenTL::DEVICE_ACCESS_STATUS accessStatus = GenTL::DEVICE_ACCESS_STATUS_UNKNOWN;
 
+				if (!localRetVal.containsError())
                 {
                     GenTL::INFO_DATATYPE piType;
                     char pBuffer[512];
@@ -599,10 +601,16 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                     if (err == GenTL::GC_ERR_SUCCESS && piType == GenTL::INFO_DATATYPE_INT32)
                     {
                         accessStatus = ((ito::int32*)pBuffer)[0];
+
+						if (accessStatus == GenTL::DEVICE_ACCESS_STATUS_UNKNOWN)
+						{
+							accessStatus = GenTL::DEVICE_ACCESS_STATUS_READWRITE;
+							localRetVal += ito::RetVal::format(ito::retWarning, 0, "Device '%s' reports an unknown access status. Therefore it is assumed that this camera can be accessed!", sDeviceID);
+						}
                     }
                 }
 
-                if (!retval.containsError())
+                if (!localRetVal.containsError())
                 {
                     if (sDeviceID == "" && usedDeviceIDs.contains(sDeviceID)) //open next free device
                     {
@@ -619,15 +627,19 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
                     if ((found && m_verbose >= VERBOSE_ERROR) || (m_verbose >= VERBOSE_INFO) )
                     {
-                        retval += printDeviceInfo(sDeviceID);
+						localRetVal += printDeviceInfo(sDeviceID);
                     }
 
                     if (found)
                     {
+						retval += localRetVal;
+						localRetVal = ito::retOk;
                         break;
                     }
                 }
             }
+
+			retval += localRetVal;
         }
 
 		if (!retval.containsError() && !found && deviceID == "")
