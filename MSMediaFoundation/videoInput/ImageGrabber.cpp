@@ -249,6 +249,7 @@ HRESULT ImageGrabber::startGrabbing(void)
 				goto done;
 			}
 
+            Sleep(1);
 			continue;
 		}
 
