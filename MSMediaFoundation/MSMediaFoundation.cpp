@@ -1031,6 +1031,8 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
                 m_timeout = true;
                 break;
             }
+
+            Sleep(1);
         }
     }
 
