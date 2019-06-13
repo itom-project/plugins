@@ -1115,7 +1115,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 	CIntegerPtr pInt;
 	CEnumerationPtr pEnum;
 	ito::IntMeta *intMeta;
-	ParamMapIterator it;
+	ParamMapIterator it, itColor;
 	int sensorWidth, sensorHeight;
     int width = 0;
     int height = 0;
@@ -1263,8 +1263,9 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 		it->setFlags(0);
 	}
 
-	//bpp
+	//bpp and color
 	it = params.find("bpp");
+	itColor = params.find("color");
 	pEnum = m_device._GetNode("PixelFormat");
 	intMeta = it->getMetaT<ito::IntMeta>();
 
@@ -1301,6 +1302,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 			it->setVal<int>(m_supportedFormatsBpp[idx]);
 			intMeta->setMin(*std::min_element(m_supportedFormatsBpp.begin(), m_supportedFormatsBpp.end()));
 			intMeta->setMax(*std::max_element(m_supportedFormatsBpp.begin(), m_supportedFormatsBpp.end()));
+			itColor->setVal<int>(m_supportedFormatsColor[idx]);
 		}
 		else
 		{
@@ -1320,6 +1322,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 					it->setVal<int>(m_supportedFormatsBpp[idx]);
 					intMeta->setMin(m_supportedFormatsBpp[idx]);
 					intMeta->setMax(m_supportedFormatsBpp[idx]);
+					itColor->setVal<int>(m_supportedFormatsColor[idx]);
 					found = true;
 					break;
 				}
@@ -1369,12 +1372,13 @@ void BasePort::intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta
 }
 
 //--------------------------------------------------------------------------------------------------------
-QVector<PfncFormat> BasePort::supportedImageFormats(QVector<int> *bitdepths /*= NULL*/, QStringList *formatNames /*= NULL*/)
+QVector<PfncFormat> BasePort::supportedImageFormats(QVector<int> *bitdepths /*= NULL*/, QStringList *formatNames /*= NULL*/, QVector<int> *colortypes /*= NULL*/)
 {
 	if (m_supportedFormats.size() == 0)
 	{
-		m_supportedFormats << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16 << RGB8 << YCbCr422_8;
-		m_supportedFormatsBpp << 8 << 10 << 10 << 10 << 12 << 12 << 12 << 14 << 16 << 8 << 8;
+		m_supportedFormats      << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16 << RGB8 << YCbCr422_8;
+		m_supportedFormatsBpp   << 8     << 10     << 10           << 10      << 12     << 12           << 12      << 14     << 16     << 8    << 8;
+		m_supportedFormatsColor << 0     << 0      << 0            << 0       << 0      << 0            << 0       << 0      << 0      << 0    << 1;
 
 		for (int i = 0; i < m_supportedFormats.size(); ++i)
 		{
@@ -1390,6 +1394,11 @@ QVector<PfncFormat> BasePort::supportedImageFormats(QVector<int> *bitdepths /*= 
 	if (formatNames)
 	{
 		*formatNames = m_supportedFormatsNames;
+	}
+
+	if (colortypes)
+	{
+		*colortypes = m_supportedFormatsColor;
 	}
 
 	return m_supportedFormats;

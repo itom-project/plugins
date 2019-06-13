@@ -1034,7 +1034,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 			retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
 			break;
 		case PFNC_YCbCr422_8:
-			retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+			retval += copyYCbCr422ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
 			break;
 		case PFNC_Mono10:
 		case PFNC_Mono12:
@@ -1071,53 +1071,60 @@ ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void unpack_YCbCr422_into_rgb32(ito::Rgba32 *dest, const ito::uint8 *source, size_t n)
-{
-	//https://en.wikipedia.org/wiki/YUV#Y%E2%80%B2UV422_to_RGB888_conversion
-	//NTSC version of clampling
-	const ito::uint8 *end = source + n;
-	ito::uint8 y, u, v, c, d, e;
-
-	while (source != end)
-	{
-		y = *source++;
-		u = *source++;
-		v = *source++;
-
-		c = y - 16;
-		d = u - 128;
-		e = v - 128;
-
-		//byte 0: pixel 0, bit 11..4
-		//byte 1: pixel 1, bit 3..0  FOLLOWED by pixel 0, bit 3..0
-		//byte 2: pixel 1, bit 11..4
-		*dest++ = ((298 * c + 409 * e + 128) >> 8);
-		*dest++ = ((298 * c - 100 * d - 208 * e + 128) >> 8);
-		*dest++ = ((298 * c + 516 * d + 128) >> 8);
-	}
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
-	// not working yet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	if (littleEndian)
+	ito::RetVal retVal = ito::retOk;
+
+	size_t n = width * height;
+	cv::Mat sourceImage = cv::Mat(height, width, CV_8UC3);
+	ito::uint8* srcPtr = sourceImage.ptr<ito::uint8>(0);
+
+	//https://stackoverflow.com/questions/31425033/how-convert-yuv422-to-yuv420/33513072
+	// YUV422 to YUV 420
+	for (int i = 0, j = 0; i < width * height * 3; i += 6, j += 4)
 	{
-		if (width * height % 2 != 0)
+		srcPtr[i + 0] = ptr[j + 0];
+		srcPtr[i + 1] = ptr[j + 1];
+		srcPtr[i + 2] = ptr[j + 3];
+		srcPtr[i + 3] = ptr[j + 2];
+		srcPtr[i + 4] = ptr[j + 1];
+		srcPtr[i + 5] = ptr[j + 3];
+	}
+
+	cv::Mat rgbImage;
+	cv::cvtColor(sourceImage, rgbImage, CV_YUV2RGB, 3);
+
+	std::vector<cv::Mat> rgbChannels(3);
+	cv::split(rgbImage, rgbChannels);
+
+	cv::Mat* matR = &rgbChannels[0];
+	cv::Mat* matG = &rgbChannels[1];
+	cv::Mat* matB = &rgbChannels[2];
+
+	cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(dobj.getCvPlaneMat(0));
+	
+	const ito::uint8* rowPtrR;
+	const ito::uint8* rowPtrG;
+	const ito::uint8* rowPtrB;
+	ito::RgbaBase32* rowPtrDst;
+
+	for (int y = 0; y < height; y++)
+	{
+		rowPtrR = matR->ptr<ito::uint8>(y);
+		rowPtrG = matG->ptr<ito::uint8>(y);
+		rowPtrB = matB->ptr<ito::uint8>(y);
+		rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
+		for (int x = 0; x < width; x++)
 		{
-			return ito::RetVal(ito::retError, 0, "invalid numbers of pixels for datatype mono12Packed or (width*height must be divisible by 2).");
+			rowPtrDst[x].b = (ito::int32)rowPtrB[x];
+			rowPtrDst[x].g = (ito::int32)rowPtrG[x];
+			rowPtrDst[x].r = (ito::int32)rowPtrR[x];
+			rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
 		}
-
-		ito::Rgba32 *dest = dobj.rowPtr<ito::Rgba32>(0, 0);
-
-		const ito::uint8 *source = (const ito::uint8*)ptr;
-		unpack_YCbCr422_into_rgb32(dest, source, width * height * 12 / 8);
-		return ito::retOk;
 	}
-	else
-	{
-		return ito::RetVal(ito::retError, 0, "data converter for mono12Packed, most significant bit, not implemented yet.");
-	}
+	
+	return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

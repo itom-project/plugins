@@ -54,6 +54,8 @@ class GenICamClass : public ito::AddInGrabber
         ito::RetVal searchGenTLProducer(const QString &producer, const QString &vendor, const QString &model);
         ito::RetVal checkGCError(const GenTL::GC_ERROR &error) const;
 
+		ito::RetVal checkData(ito::DataObject *externalDataObject = NULL); //overload from AddInGrabber base class
+
     public:
         friend class GenICamInterface;
 		friend class GenTLDevice; //to access parameterChangedTimerFired

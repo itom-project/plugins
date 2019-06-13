@@ -83,7 +83,7 @@ public:
 
     ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params); //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
 
-    QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL);
+    QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL, QVector<int> *colortypes = NULL);
 
     void setCallbackParameterChangedReceiver(QObject* receiver);
     virtual void callbackParameterChanged_(INode *pNode) = 0; //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
@@ -133,6 +133,7 @@ protected:
     QVector<PfncFormat> m_supportedFormats;
 	QStringList m_supportedFormatsNames;
 	QVector<int> m_supportedFormatsBpp; //bitdepths that correspond to m_supportedFormats
+	QVector<int> m_supportedFormatsColor; //0 or 1 if dataObject should be a monochrome object (uint8, uint16...) or color (1, rgba32)
 
     static QHash<INode*, BasePort*> nodeDeviceHash;
 };

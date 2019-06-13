@@ -158,13 +158,20 @@ GenICamClass::GenICamClass() : AddInGrabber(),
         new ito::IntMeta(1, 2048, 1, "ImageFormatControl"), \
         tr("width of ROI").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 2048, \
         new ito::IntMeta(1, 2048, 1, "ImageFormatControl"), \
         tr("height of ROI").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, \
         new ito::IntMeta(8, 24, 2, "ImageFormatControl"), \
         tr("bitdepth in bits per pixel").toLatin1().constData());
+	m_params.insert(paramVal.getName(), paramVal);
+
+	paramVal = ito::Param("color", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, \
+		new ito::IntMeta(0, 1, 1, "ImageFormatControl"), \
+		tr("0: monochrome data stream, 1: color data stream with a rgba32 dataObject as result.").toLatin1().constData());
 	m_params.insert(paramVal.getName(), paramVal);
 
     ito::DoubleMeta *dm = new ito::DoubleMeta(0.0000001, std::numeric_limits<double>::max(), 0.0, "AcquisitionControl");
@@ -1573,6 +1580,67 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
     }
 
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenICamClass::checkData(ito::DataObject *externalDataObject)
+{
+	int futureHeight = m_params["sizey"].getVal<int>();
+	int futureWidth = m_params["sizex"].getVal<int>();
+	int futureType;
+
+	int bpp = m_params["bpp"].getVal<int>();
+	int color = m_params["color"].getVal<int>();
+
+	if (!color)
+	{
+		if (bpp <= 8)
+		{
+			futureType = ito::tUInt8;
+		}
+		else if (bpp <= 16)
+		{
+			futureType = ito::tUInt16;
+		}
+		else if (bpp <= 32)
+		{
+			futureType = ito::tInt32;
+		}
+		else
+		{
+			futureType = ito::tFloat64;
+		}
+	}
+	else
+	{
+		futureType = ito::tRGBA32;
+	}
+
+	if (externalDataObject == NULL)
+	{
+		if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+		{
+			m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+		}
+	}
+	else
+	{
+		int dims = externalDataObject->getDims();
+		if (externalDataObject->getDims() == 0)
+		{
+			*externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+		}
+		else if (externalDataObject->calcNumMats() != 1)
+		{
+			return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
+		}
+		else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+		{
+			return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+		}
+	}
+
+	return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
