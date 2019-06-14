@@ -54,11 +54,11 @@ class GenICamClass : public ito::AddInGrabber
         ito::RetVal searchGenTLProducer(const QString &producer, const QString &vendor, const QString &model);
         ito::RetVal checkGCError(const GenTL::GC_ERROR &error) const;
 
-		ito::RetVal checkData(ito::DataObject *externalDataObject = NULL); //overload from AddInGrabber base class
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL); //overload from AddInGrabber base class
 
     public:
         friend class GenICamInterface;
-		friend class GenTLDevice; //to access parameterChangedTimerFired
+        friend class GenTLDevice; //to access parameterChangedTimerFired
         friend class GenTLFramegrabber; //to access parameterChangedTimerFiredFramegrabber
 
         const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
@@ -73,22 +73,22 @@ class GenICamClass : public ito::AddInGrabber
 
         QList<QString> m_commandNames;
 
-		ito::RetVal m_acquisitionRetVal;
-		bool m_newImageAvailable;
-		bool m_hasTriggerSource;
-		bool m_acquisitionStartCommandByStartDevice;
+        ito::RetVal m_acquisitionRetVal;
+        bool m_newImageAvailable;
+        bool m_hasTriggerSource;
+        bool m_acquisitionStartCommandByStartDevice;
 
-		struct AcquisitionCache
-		{
-			enum Mode { Continuous, SingleFrame, MultiFrame, Other };
-			Mode mode;
-			bool triggerMode;
-			QByteArray triggerSource;
+        struct AcquisitionCache
+        {
+            enum Mode { Continuous, SingleFrame, MultiFrame, Other };
+            Mode mode;
+            bool triggerMode;
+            QByteArray triggerSource;
 
-		};
-		AcquisitionCache m_acquisitionCache;
+        };
+        AcquisitionCache m_acquisitionCache;
 
-		void cacheAcquisitionParameters();
+        void cacheAcquisitionParameters();
 
     public slots:
         //!< Get Camera-Parameter
@@ -115,7 +115,7 @@ class GenICamClass : public ito::AddInGrabber
 
 
     private slots:
-		void parameterChangedTimerFired();
+        void parameterChangedTimerFired();
         void parameterChangedTimerFiredFramegrabber();
 };
 

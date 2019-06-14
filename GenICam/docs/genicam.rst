@@ -179,7 +179,7 @@ GenICam uses the following 3rd party software packages:
 Package     License         Internet
 ==========  ==============  =============================================
 Mathparser  LGPL            http://kirya.narod.ru/mathparser.html
---			--  			http://www.sama.ru/~despair/ccalc/
+--          --              http://www.sama.ru/~despair/ccalc/
 Log4Cpp     LGPL            http://log4cpp.sourceforge.net
 CppUnit     LGPL            http://cppunit.sourceforge.net
 CLSerAll    NI              http://sourceforge.net/projects/clallserial

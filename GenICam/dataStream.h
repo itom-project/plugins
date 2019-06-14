@@ -46,41 +46,41 @@ public:
     ~GenTLDataStream();
 
     ito::RetVal allocateAndAnnounceBuffers(int nrOfBuffers, size_t bytesPerBuffer = 0); //bytesPerBuffer = 0 means that the payload for each buffer should be automatically detected
-	ito::RetVal revokeAllBuffers();
+    ito::RetVal revokeAllBuffers();
 
-	ito::RetVal flushBuffers(GenTL::ACQ_QUEUE_TYPE queueType = GenTL::ACQ_QUEUE_ALL_DISCARD);
+    ito::RetVal flushBuffers(GenTL::ACQ_QUEUE_TYPE queueType = GenTL::ACQ_QUEUE_ALL_DISCARD);
     ito::RetVal waitForNewestBuffer(ito::DataObject &destination);
     ito::RetVal startAcquisition(GenTL::ACQ_START_FLAGS startFlags = GenTL::ACQ_START_FLAGS_DEFAULT);
     ito::RetVal stopAcquisition(GenTL::ACQ_STOP_FLAGS stopFlags = GenTL::ACQ_STOP_FLAGS_DEFAULT);
 
-	bool setPayloadSize(int payloadSize); //use this method to signal payload size from GenApi XML., returns true if payloadSize is different than before
-	void setTimeoutSec(double timeout);
+    bool setPayloadSize(int payloadSize); //use this method to signal payload size from GenApi XML., returns true if payloadSize is different than before
+    void setTimeoutSec(double timeout);
 
     QByteArray getInfoString(GenTL::STREAM_INFO_CMD cmd, int maxSize, const QByteArray &defaultValue, GenTL::GC_ERROR *returnCode = NULL) const;
 
     QByteArray getTLType(ito::RetVal *retval = NULL) const;
 
-	ito::RetVal copyBufferToDataObject(const GenTL::BUFFER_HANDLE buffer, ito::DataObject &dobj);
+    ito::RetVal copyBufferToDataObject(const GenTL::BUFFER_HANDLE buffer, ito::DataObject &dobj);
 
 protected:
-	ito::RetVal copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
-	ito::RetVal copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
-	ito::RetVal copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono12pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
-	ito::RetVal copyMono12PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyMono12PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono10pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
-	ito::RetVal copyMono10PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyMono10PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
 
     bool checkForErrorEvent(ito::RetVal &retval, const QString &errorPrefix); //return true, if error event is available and has been reported, else false
 
-	void printBufferInfo(const char *prefix, GenTL::BUFFER_HANDLE buffer);
+    void printBufferInfo(const char *prefix, GenTL::BUFFER_HANDLE buffer);
 
     GenTL::DS_HANDLE m_handle;
     GenTL::EVENT_HANDLE m_newBufferEvent;
     GenTL::EVENT_HANDLE m_errorEvent;
 
     GenTL::PDSAllocAndAnnounceBuffer DSAllocAndAnnounceBuffer;
-	GenTL::PDSRevokeBuffer DSRevokeBuffer;
+    GenTL::PDSRevokeBuffer DSRevokeBuffer;
     GenTL::PGCRegisterEvent GCRegisterEvent;
     GenTL::PGCUnregisterEvent GCUnregisterEvent;
     GenTL::PEventGetData EventGetData;
@@ -92,15 +92,15 @@ protected:
     GenTL::PDSStartAcquisition DSStartAcquisition;
     GenTL::PDSStopAcquisition DSStopAcquisition;
     GenTL::PDSGetInfo DSGetInfo;
-	GenTL::PDSAnnounceBuffer DSAnnounceBuffer;
+    GenTL::PDSAnnounceBuffer DSAnnounceBuffer;
 
     QSet<GenTL::BUFFER_HANDLE> m_buffers; //all allocated buffers
     QSharedPointer<QLibrary> m_lib;
     bool m_acquisitionStarted;
-	int m_payloadSize;
-	uint64_t m_timeoutMS;
-	ito::int8 m_usePreAllocatedBuffer; //0 if the image buffer is allocated by the camera, 1 if the buffer is allocated by the itom-plugin and has to be deleted after revoking the buffer, -1 if not decided yet
-	bool m_endianessChanged;
+    int m_payloadSize;
+    uint64_t m_timeoutMS;
+    ito::int8 m_usePreAllocatedBuffer; //0 if the image buffer is allocated by the camera, 1 if the buffer is allocated by the itom-plugin and has to be deleted after revoking the buffer, -1 if not decided yet
+    bool m_endianessChanged;
     int m_verbose;
     
 };
