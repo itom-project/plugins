@@ -206,7 +206,7 @@
 <context>
     <name>PGRFlyCapture</name>
     <message>
-        <location filename="../PGRFlyCapture.cpp" line="+253"/>
+        <location filename="../PGRFlyCapture.cpp" line="+258"/>
         <source>Pixelsize in x (cols)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -216,12 +216,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+34"/>
         <source>Current video mode, default is Mode7</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-55"/>
+        <location line="-58"/>
         <source>Integrationtime of CCD programmed in seconds.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,12 +281,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+42"/>
         <source>Interface of camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2178"/>
+        <location line="+2280"/>
         <source>Bitdepth of %i bit is not supported by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -346,7 +346,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1588"/>
+        <location line="-1695"/>
+        <source>print all current parameters of the camera for internal checks.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>name of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -362,6 +367,11 @@
     </message>
     <message>
         <location line="+3"/>
+        <source>The grab strategy employed during image transfer. 0: DROP_FRAMES: Grabs the newest image in the user buffer each time the RetrieveBuffer() function is called, 1: BUFFER_FRAMES: Images accumulate in the user buffer, 2: UNSPECIFIED_GRAB_MODE, 3: GRAB_MODE_FORCE_32BITS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -371,7 +381,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+6"/>
+        <source>On some computers, a blue screen sometimes occurs if the time gap between starting the camera and acquiring an image is too short. In this case, try to increase this parameter (in s).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Serial number of the connected camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -411,6 +426,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+3"/>
+        <source>With some cameras, parameter changes like the exposure time or gain will only take effect x images after the change. If this parameter is set to &gt; 0, the given number of images are acquired after changing any parameter in order to delete the intermediate images.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+70"/>
         <source>suffix &apos;%s&apos; could not be interpreted as hex number</source>
         <translation type="unfinished"></translation>
@@ -426,7 +446,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+347"/>
         <source>Error setting packetsize: %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -436,7 +456,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+78"/>
         <location line="+28"/>
         <source>Error setting parameter %s: %s</source>
         <translation type="unfinished"></translation>
@@ -506,12 +526,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+60"/>
         <source>Error in startDevice-function: %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+86"/>
         <source>Acquire of PGRFlyCapture can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -551,7 +571,7 @@
 <context>
     <name>PGRFlyCaptureInterface</name>
     <message>
-        <location line="-2019"/>
+        <location line="-2128"/>
         <source>colorMode: &apos;gray&apos; (default) or &apos;color&apos; if color camera. In color mode, bpp is limited to 8 per color.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -584,12 +604,7 @@ This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folde
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Continuous camera number [0,10], default: -1 uses the next free camera.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -45,7 +45,7 @@ class DialogGenicam : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-		DialogGenicam(ito::AddInBase *grabber);
+        DialogGenicam(ito::AddInBase *grabber);
         ~DialogGenicam() {};
 
         ito::RetVal applyParameters();
@@ -55,7 +55,7 @@ class DialogGenicam : public ito::AbstractAddInConfigDialog
         bool m_firstRun;
 
         Ui::DialogGenICam ui;
-		QPointer<ito::AddInBase> m_pluginPointer;
+        QPointer<ito::AddInBase> m_pluginPointer;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

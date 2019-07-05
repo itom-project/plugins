@@ -113,9 +113,8 @@
         <translation>Unbekannter Fehler beim Öffnen des COM-Ports</translation>
     </message>
     <message>
-        <location line="+67"/>
-        <location line="+36"/>
-        <location line="+61"/>
+        <location line="+75"/>
+        <location line="+62"/>
         <location line="+10"/>
         <location line="+48"/>
         <location line="+30"/>
@@ -125,13 +124,13 @@
         <translation>COM-Port nicht geöffnet</translation>
     </message>
     <message>
-        <location line="-207"/>
-        <location line="+16"/>
+        <location line="-202"/>
+        <location line="+18"/>
         <source>error reading from com port</source>
         <translation>Fehler beim Lesen vom COM-Port</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+29"/>
         <location line="+13"/>
         <location line="+4"/>
         <location line="+47"/>

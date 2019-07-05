@@ -47,8 +47,8 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
     BasePort(lib, BasePort::TypeCamera, verbose, retval),
     m_cameraHandle(devHandle),
     m_deviceID(deviceID),
-	m_identifier(identifier),
-	
+    m_identifier(identifier),
+    
     m_errorEvent(GENTL_INVALID_HANDLE)
 {
     if (!retval.containsError())
@@ -75,7 +75,7 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
 //----------------------------------------------------------------------------------------------------------------------------------
 GenTLDevice::~GenTLDevice()
 {
-	
+    
 }
 
 
@@ -181,13 +181,13 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
 //--------------------------------------------------------------------------------------------------------
 int GenTLDevice::getPayloadSize() const
 {
-	CIntegerPtr pInt = m_device._GetNode("PayloadSize");
-	if (pInt.IsValid())
-	{
-		return pInt->GetValue();
-	}
+    CIntegerPtr pInt = m_device._GetNode("PayloadSize");
+    if (pInt.IsValid())
+    {
+        return pInt->GetValue();
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -200,47 +200,47 @@ int GenTLDevice::getPayloadSize() const
 //--------------------------------------------------------------------------------------------------------
 /*virtual*/ void GenTLDevice::callbackParameterChanged_(INode *pNode)
 {
-	CValuePtr ptrValue = pNode;
+    CValuePtr ptrValue = pNode;
     
     if (m_verbose >= VERBOSE_ALL)
     {
-		try
-		{
-			std::cout << "The node '" << pNode->GetName() << "' changed (" << pNode->GetAccessMode() << ")\n";
-			qDebug() << "The node '" << pNode->GetName() << "' changed (" << pNode->GetAccessMode() << ")";
+        try
+        {
+            std::cout << "The node '" << pNode->GetName() << "' changed (" << pNode->GetAccessMode() << ")\n";
+            qDebug() << "The node '" << pNode->GetName() << "' changed (" << pNode->GetAccessMode() << ")";
 
-			if (ptrValue.IsValid())
-			{
-				if (pNode->GetAccessMode() & (RO | RW))
-				{
-					std::cout << "New value = " << ptrValue->ToString() << ", access: " << ptrValue->GetAccessMode() << "\n" << std::endl;
-				}
-				else
-				{
-					std::cout << "New value not readable. No read access. Access: " << ptrValue->GetAccessMode() << "\n" << std::endl;
-				}
-			}
-		}
-		catch (GenericException ex)
-		{
-			qDebug() << ex.GetDescription() << ex.what();
-		}
+            if (ptrValue.IsValid())
+            {
+                if (pNode->GetAccessMode() & (RO | RW))
+                {
+                    std::cout << "New value = " << ptrValue->ToString() << ", access: " << ptrValue->GetAccessMode() << "\n" << std::endl;
+                }
+                else
+                {
+                    std::cout << "New value not readable. No read access. Access: " << ptrValue->GetAccessMode() << "\n" << std::endl;
+                }
+            }
+        }
+        catch (GenericException ex)
+        {
+            qDebug() << ex.GetDescription() << ex.what();
+        }
     }
 
-	if (m_callbackParameterChangedTimer.isNull())
-	{
-		m_callbackParameterChangedTimer = QSharedPointer<QTimer>(new QTimer());
-		m_callbackParameterChangedTimer->setSingleShot(true);
-		m_callbackParameterChangedTimer->setInterval(50);
-		m_callbackParameterChangedTimer->stop();
-		QObject::connect(m_callbackParameterChangedTimer.data(), SIGNAL(timeout()), m_pCallbackParameterChangedReceiver, SLOT(parameterChangedTimerFired()));
-	}
+    if (m_callbackParameterChangedTimer.isNull())
+    {
+        m_callbackParameterChangedTimer = QSharedPointer<QTimer>(new QTimer());
+        m_callbackParameterChangedTimer->setSingleShot(true);
+        m_callbackParameterChangedTimer->setInterval(50);
+        m_callbackParameterChangedTimer->stop();
+        QObject::connect(m_callbackParameterChangedTimer.data(), SIGNAL(timeout()), m_pCallbackParameterChangedReceiver, SLOT(parameterChangedTimerFired()));
+    }
 
-	if (pNode && m_paramMapping2.contains(pNode))
-	{
-		m_paramMapping2[pNode]->update(false);
+    if (pNode && m_paramMapping2.contains(pNode))
+    {
+        m_paramMapping2[pNode]->update(false);
         m_callbackParameterChangedTimer->start();
-	}
+    }
 }
 
 //--------------------------------------------------------------------------------------------------------

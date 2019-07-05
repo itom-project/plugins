@@ -4,8 +4,8 @@
 <context>
     <name>BasicFilters</name>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="+3345"/>
-        <location filename="../BasicFilters.cpp" line="+259"/>
+        <location filename="../BasicSpecialFilters.cpp" line="+3456"/>
+        <location filename="../BasicFilters.cpp" line="+260"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -263,25 +263,25 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-3149"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-3260"/>
         <location line="+139"/>
         <location line="+72"/>
         <location line="+169"/>
-        <location line="+1973"/>
+        <location line="+2084"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2348"/>
+        <location line="-2459"/>
         <location line="+139"/>
         <location line="+77"/>
-        <location line="+2137"/>
+        <location line="+2248"/>
         <location line="+410"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2758"/>
+        <location line="-2869"/>
         <source>Error: Input image must be 3D</source>
         <translation type="unfinished"></translation>
     </message>
@@ -293,12 +293,12 @@
     <message>
         <location line="+87"/>
         <location line="+85"/>
-        <location line="+717"/>
+        <location line="+828"/>
         <source>Unknown type or type not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-794"/>
+        <location line="-905"/>
         <source>Flattened object from 3d to 2d</source>
         <translation type="unfinished"></translation>
     </message>
@@ -344,12 +344,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+317"/>
         <source>Merged from multiplane color object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-230"/>
+        <location line="-341"/>
         <source>Input object of type float32 or float64 whose non-finite values will be replaced with the values in replaceImg.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -374,12 +374,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+49"/>
         <source>SrcImg must be three dimensional, of type uint8 and contain three or four planes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+168"/>
+        <source>Can convert only continuous cvMat style matrices to rgb32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+116"/>
         <source>3D input object of dimension [ZxMxN] with Z different planes.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -713,31 +718,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AdditionalFilters.cpp" line="+472"/>
-        <location line="+85"/>
+        <location filename="../AdditionalFilters.cpp" line="+488"/>
+        <location line="+87"/>
         <location line="+146"/>
         <source>image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-229"/>
+        <location line="-231"/>
         <source>threshold for labeling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+229"/>
+        <location line="+231"/>
         <source>list of found labels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-228"/>
         <source>inavlid pixels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+21"/>
-        <location line="+82"/>
+        <location line="+84"/>
         <location line="+158"/>
         <source>image must be a 2D image!</source>
         <translation type="unfinished"></translation>
@@ -818,12 +823,7 @@ This plugin does not have any unusual dependencies.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>replaces infinite and/or nan-values by values of second matrix. 
 
 </source>
@@ -1064,7 +1064,7 @@ The radiuses are the distances from the given center point to the physical coord
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AdditionalFilters.cpp" line="-697"/>
+        <location filename="../AdditionalFilters.cpp" line="-710"/>
         <source>Finds connected areas in an image an assigns a label to them. 
                                                              In the input image according found regions get painted with the according label.
                                                              The returned list has the format x0,y0,x1,y1 for each label.

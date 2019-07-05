@@ -97,7 +97,7 @@
 <context>
     <name>ItomHidApi</name>
     <message>
-        <location filename="../itomHidApi.cpp" line="+120"/>
+        <location filename="../itomHidApi.cpp" line="+121"/>
         <source>If true, all out and inputs are written to dockingWidget</source>
         <translation type="unfinished">Wenn aktiviert, wird die Kommunikation im dockingWidget protokolliert</translation>
     </message>

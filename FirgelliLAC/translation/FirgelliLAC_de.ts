@@ -265,9 +265,5 @@ and cannot be changed (due to the driver of the controller board).</source>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 </TS>

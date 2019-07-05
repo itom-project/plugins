@@ -34,6 +34,7 @@ Parameters
     
 **comPort**: {int}, read-only
     The current com-port ID of this specific device. -1 means undefined
+
 **inversex**: {int}
     
 **inversey**: {int}
@@ -42,6 +43,7 @@ Parameters
     
 **joyenabled**: {int}
     Enabled/disabled Joystick. Default: enabled
+
 **name**: {str}, read-only
     
 **numaxis**: {int}, read-only

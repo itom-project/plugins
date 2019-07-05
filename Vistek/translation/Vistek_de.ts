@@ -4,29 +4,9 @@
 <context>
     <name>DialogVistek</name>
     <message>
-        <location filename="../dialogVistek.cpp" line="+50"/>
+        <location filename="../dialogVistek.cpp" line="+55"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
-    </message>
-    <message>
-        <location line="+177"/>
-        <source>error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Error while setting parameters (%1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Warning while setting parameters (%1)</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -91,6 +71,11 @@
         <translation>Bildeigenschaften</translation>
     </message>
     <message>
+        <location line="+109"/>
+        <source> ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Width [px]:</source>
         <translation type="obsolete">Breite [px]:</translation>
     </message>
@@ -99,7 +84,7 @@
         <translation type="obsolete">Höhe [px]:</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="-22"/>
         <source>Camera Properties</source>
         <translation>Kameraeigenschaften</translation>
     </message>
@@ -135,12 +120,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source> s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+19"/>
+        <location line="+35"/>
         <source>Gain:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -158,7 +138,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../VistekInterface.cpp" line="+89"/>
+        <location filename="../VistekInterface.cpp" line="+90"/>
         <source>SVS Vistek GigE grabber.</source>
         <translation>SVS Vistek GigE Grabber.</translation>
     </message>
@@ -170,17 +150,14 @@ Some files of the SVGigE SDK are shipped within this plugin (currently 1.5.2). P
 
 This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version and make these libraries available for itom (PATH environment variable, system directory...). 
 
-For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter.</source>
+For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter. 
+
+Please notice: Currently, this plugin only works for Vistek drivers up to version 1.5.2. If you want to use a 2.x series of the Vistek drivers, use the GenICam plugin of itom that is able to communicate with Vistek USB3 and GigE cameras.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+19"/>
         <source>licensed under LGPL, the necessary Vistek drivers, header files and libraries have their own license.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -195,27 +172,27 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
 <context>
     <name>Vistek</name>
     <message>
-        <location filename="../Vistek.cpp" line="+123"/>
+        <location filename="../Vistek.cpp" line="+106"/>
         <source>Camera Model ID</source>
         <translation>Kameramodell ID</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Camera manufacturer</source>
         <translation>Kamerahersteller</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Camera firmware version</source>
         <translation>Kamera Firmware-Version</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+8"/>
         <source>IP adress of the camera</source>
         <translation>IP-Adresse der Kamera</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Camera Number</source>
         <translation>Kameranummer</translation>
     </message>
@@ -224,32 +201,32 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="vanished">Belichtungszeit in [s]</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Gain [0..18 dB]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>Binning mode (OFF = 0 [default], HORIZONTAL = 1 (or 102), VERTICAL = 2 (or 201),  2x2 = 3 (or 202), 3x3 = 4 (or 303), 4x4 = 5 (or 404)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+23"/>
         <source>Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+553"/>
+        <location line="+629"/>
         <source>acquisition not possible, since Vistek camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+92"/>
         <source>getVal of Vistek can not be executed, since no image has been acquired.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -258,12 +235,12 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="obsolete">Binning der unterschiedlichen Pixel</translation>
     </message>
     <message>
-        <location line="-622"/>
+        <location line="-745"/>
         <source>Width of current camera frame</source>
         <translation>Breite des aktuellen Kamerabilds</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Height of current camera frame</source>
         <translation>Höhe des aktuellen Kamerabilds</translation>
     </message>
@@ -272,37 +249,37 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="obsolete">Farbtiefe des Kamerapuffers</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+13"/>
         <source>Time in ms since last image (end of exposure)</source>
         <translation>Zeit in ms seit dem letzten Bild (Ende der Belichtung)</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-44"/>
         <source>Serial number of the camera (see camera housing)</source>
         <translation>Seriennummer der Kamera (siehe Kameragehäuse)</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+12"/>
         <source>Exposure time in [s] (deprecated: use integration_time instead; this is an alias for integration_time only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Exposure time in [s].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+6"/>
         <source>Offset [0.0..1.0]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>bit-depth for camera buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+128"/>
         <source>set log level</source>
         <translation type="unfinished"></translation>
     </message>
@@ -322,12 +299,14 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+109"/>
         <source>binning invalid: Accepted values are OFF = 0 [default], HORIZONTAL = 1 (or 102), VERTICAL = 2 (or 201),  2x2 = 3 (or 202), 3x3 = 4 (or 303), 4x4 = 5 (or 404)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-77"/>
+        <location line="+25"/>
+        <location line="+62"/>
         <location line="+59"/>
         <location line="+279"/>
         <source>stop camera</source>
@@ -339,13 +318,28 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-82"/>
+        <location line="+25"/>
+        <location line="+62"/>
         <location line="+59"/>
         <source>restart camera 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-58"/>
+        <location line="-331"/>
+        <source>ROI (x0, y0, width, height)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+180"/>
+        <location line="+25"/>
+        <source>set region of interest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <location line="+25"/>
+        <location line="+62"/>
         <location line="+59"/>
         <source>restart camera 2</source>
         <translation type="unfinished"></translation>
@@ -421,22 +415,27 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+54"/>
         <source>Camera trigger failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+25"/>
+        <source>Frame not completed within given timeout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
         <source>getVal of Vistek can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+46"/>
         <source>copy buffer during getVal of Vistek can not be executed, since no DataType unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>invalid image data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -526,7 +525,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -561,18 +560,18 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+144"/>
+        <location line="+147"/>
         <location line="+2"/>
         <source>Error getting image size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+55"/>
         <source>given pixeltype not supported. Supported is only MONO8, MONO12, MONO12_PACKED and MONO16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <source>maximal packet size determination</source>
         <translation type="unfinished"></translation>
     </message>
@@ -636,7 +635,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
 <context>
     <name>VistekInterface</name>
     <message>
-        <location filename="../VistekInterface.cpp" line="+5"/>
+        <location filename="../VistekInterface.cpp" line="+6"/>
         <source>Serial Number of the SVS Vistek camera (see camera housing)</source>
         <translation type="unfinished">Seriennummer der SVS Vistek-Kamera (siehe Kameragehäuse)</translation>
     </message>
@@ -659,17 +658,11 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
         <translation></translation>
     </message>
     <message>
-        <location line="+315"/>
-        <source>OK</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+7"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation type="vanished">Abbrechen</translation>
     </message>
     <message>
-        <location line="-198"/>
+        <location line="+124"/>
         <source>8</source>
         <translation></translation>
     </message>
@@ -864,17 +857,58 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
     </message>
     <message>
         <location line="+13"/>
-        <source>ms</source>
+        <source> ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+38"/>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>x0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>x1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>y0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>y1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>x-size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <location line="+29"/>
+        <source> px</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-16"/>
+        <source>y-size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-186"/>
         <source> dB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+44"/>
-        <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

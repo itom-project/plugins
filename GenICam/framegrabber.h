@@ -56,7 +56,7 @@ using namespace GENAPI_NAMESPACE;
 class GenTLFramegrabber : public BasePort
 {
 public:
-	GenTLFramegrabber(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE framegrabberHandle, int verbose, ito::RetVal &retval);
+    GenTLFramegrabber(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE framegrabberHandle, int verbose, ito::RetVal &retval);
     ~GenTLFramegrabber();
 
     void resyncAllParameters();

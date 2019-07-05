@@ -204,7 +204,7 @@
 <context>
     <name>PCOCamera</name>
     <message>
-        <location filename="../PCOCamera.cpp" line="+197"/>
+        <location filename="../PCOCamera.cpp" line="+202"/>
         <source>camera interface</source>
         <translation type="unfinished"></translation>
     </message>
@@ -279,7 +279,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+163"/>
+        <location line="+167"/>
         <source>binning in X and Y must be &gt;= 1 (&gt;= 101 in total)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -304,7 +304,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-198"/>
+        <location line="-202"/>
         <source>Desired set point temperature for cooling</source>
         <translation type="unfinished"></translation>
     </message>
@@ -319,7 +319,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+904"/>
+        <location line="+908"/>
         <source>StopDevice of PCOCamera can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -364,7 +364,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1445"/>
+        <location line="-1449"/>
         <source>DLL for PCO-Cameras</source>
         <translation type="unfinished"></translation>
     </message>
@@ -383,11 +383,6 @@ For GigE cameras, make sure that the PCO GigE driver is installed and that the c
     <message>
         <location line="+13"/>
         <source>LGPL / copyright of the external DLLs belongs to PCO</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

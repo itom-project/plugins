@@ -115,7 +115,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../thorlabsCCS.cpp" line="+32"/>
+        <location filename="../thorlabsCCS.cpp" line="+33"/>
         <source>Thorlabs CCS Series Spectrometer</source>
         <translation type="unfinished"></translation>
     </message>

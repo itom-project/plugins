@@ -4,7 +4,7 @@
 <context>
     <name>FFTWFilters</name>
     <message>
-        <location filename="../FFTWfilters.cpp" line="+1687"/>
+        <location filename="../FFTWfilters.cpp" line="+2014"/>
         <location line="+420"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
@@ -22,17 +22,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-708"/>
+        <location line="-1034"/>
         <source>Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128) which is shifted in-place.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>axes over which to shift: x and y axis (-1, default), only y axis (0), only x axis (1)</source>
+        <source>shift axis: x and y axis (-1, default), only y axis (0), only x axis (1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+666"/>
+        <location line="+3"/>
+        <source>shift axis in the case of a &gt; 2D dataObject. (-1, default) the axis parameter is considered, (0) the 0 axis of a 3D dataObject is shifted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+989"/>
         <location line="+41"/>
         <source>Output object (inplace allowed, but only feasible if source is complex64 or complex128). Destination has the same size than the input object, the type is either complex128 (for float64 or complex128 inputs) or complex64 (else).</source>
         <translation type="unfinished"></translation>
@@ -191,7 +196,7 @@
     </message>
     <message>
         <location line="+31"/>
-        <source>R_z over 200 u00B5m</source>
+        <source>R_z over 200 µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -247,7 +252,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-2753"/>
+        <location line="-3079"/>
         <source>Wrapper for the FFTW</source>
         <translation type="unfinished"></translation>
     </message>
@@ -270,28 +275,25 @@ To build this plugin you will need the libs from the fftw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>1D and 2D FFT algorithms (using the fast FFTW library)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+361"/>
+        <location line="+570"/>
         <source>Perform fftshift as known from Python, Matlab and so on, i.e. make the 
 zero order of diffraction appear in the center.
 
-The shift is currently implemented along the x and y or one of both axes within each plane (inplace).</source>
+The shift is implemented along the x and y or one of both axes within each plane (inplace) by using the axis parameter.
+The axisIndex parameter is used the shift a &gt;2D dataObject in the 0 axis.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+150"/>
         <source>Perform ifftshift as known from Python, Matlab and so on, i.e. move the 
 zero order of diffraction back to the corner to run the inverse fft correctly.
 
-The shift is currently implemented along the x and y or one of both axes within each plane (inplace).</source>
+The shift is implemented along the x and y or one of both axes within each plane (inplace) by using the axis parameter.
+The axisIndex parameter is used the shift a &gt;2D dataObject in the 0 axis.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+318"/>
+        <location line="+377"/>
         <source>Compute the one-dimensional discrete Fourier Transform. 
 
 This method computes the one-dimensional n-point discrete Fourier Transform (DFT) with the efficient 

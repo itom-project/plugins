@@ -244,7 +244,7 @@
 <context>
     <name>PCOPixelFly</name>
     <message>
-        <location filename="../PCOPixelFly.cpp" line="+148"/>
+        <location filename="../PCOPixelFly.cpp" line="+149"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -521,12 +521,7 @@ Please install first the necessary drivers for the camera and grabber board from
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+445"/>
+        <location line="+446"/>
         <source>no Error</source>
         <translation type="unfinished"></translation>
     </message>

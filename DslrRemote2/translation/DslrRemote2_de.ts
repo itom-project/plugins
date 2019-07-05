@@ -2,378 +2,371 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DialogSMC100</name>
+    <name>DslrRemote</name>
     <message>
-        <source>SMC Piezo</source>
+        <source>not yet implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Information</source>
+        <source>Minimum time between the start of two consecutive acquisitions [s], default: 0.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device:</source>
+        <source>Minimum integration time for an acquisition [s], default: 0.0 (as fast as possible).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>[unknown]</source>
+        <source>Virtual gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Number of Axis:</source>
+        <source>Virtual offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Homing (Calibration)</source>
+        <source>size in x (cols) [px]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Calibrate Axis</source>
+        <source>size in y (rows) [px]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Asynchrone</source>
+        <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MZ and encoder</source>
+        <source>bitdepth of images</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Current Pos as Home</source>
+        <source>Property, if none given list is returned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MZ only</source>
+        <source>Operation, if none given list is returned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>EoR ans encoder</source>
+        <source>Name of file to download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>EoR only</source>
+        <source>download a file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Calibration mode</source>
+        <source>List of files on device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Speed</source>
+        <source>list all files stored on device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> units/sec</source>
+        <source>stopDevice of DslrRemote can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acceleration</source>
+        <source>libpghoto error acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> units/sec^2</source>
+        <source>wrong bit depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>revert the changed configurations of this axis.</source>
+        <source>Acquire of DslrRemote can not be executed, since camera has not been started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>data object of getVal is NULL or cast failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty object handle retrieved from caller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>image could not be obtained since no image has been acquired.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>DockWidgetSMC100</name>
+    <name>DslrRemoteInterface</name>
     <message>
-        <source>Newport SMC100</source>
+        <source>!!! Important !!!
+To use this plugin under windows OS you probably will need to install libusb devcice driver.Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Info</source>
+        <source>Width of virtual sensor chip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Number of found axis: </source>
+        <source>Height of virtual sensor chip, please set this value to 1 (line camera) or a value dividable by 4 for a 2D camera.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>10</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>COM-Port:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Step Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> mm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>move step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>curr. pos.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>target pos.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>go</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>no</source>
+        <source>Bits per Pixel, usually 8-16bit grayvalues</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <source>Newport SMC100CC/PP</source>
+        <source>A virtual white noise grabber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>licensed under LGPL</source>
+        <source>Library to remote control some DSLR cameras. 
+
+!!! Important !!!
+To use this plugin under windows OS you probably will need to install libusb devcice driver.Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.
+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.
-It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SMC100</name>
-    <message>
-        <source>The current com-port ID of this specific device. -1 means undefined</source>
+        <source>Licensed under LPGL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>device information string</source>
+        <source>usb_open()</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Displays the current status in the Newport system.</source>
+        <source>access denied error, retrieving config descriptor, usb err: %1.
+Try changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Number of Axis</source>
+        <source>Error retrieving config descriptor, usb err: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asychronous (1) or sychronous (0) mode</source>
+        <source>access denied error, setting device configuration, usb err: %1.
+Try changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Calibration / Homing mode for each axis for further information refer to datasheet command HT</source>
+        <source>error setting device configuration, usb err: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reset Controller and switch to configmode (1) or set it back to unreferenced (0)</source>
+        <source>access denied error, claiming interface, usb err: %1.
+Try changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Expects an array with the axis that should be calibrated ([1,3,4])</source>
+        <source>Error claiming interface, usb err: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>timeout when calibrating axes in seconds</source>
+        <source>Error opening usb device ptp_usb</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>no serialIO instance given.</source>
+        <source>inep: usb_get_endpoint_status()</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>could not connect to %i axes</source>
+        <source>usb_clear_stall_feature()</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>timeout while entering config mode (axis %i)</source>
+        <source>outep: usb_get_endpoint_status()</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0</source>
+        <source>Could not read configuration, close_usb</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The given array must have %i entries</source>
+        <source>Error closing usb interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The requested axis is not in config mode</source>
+        <source>Error initializing usb</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The requested axis for setting homing mode could not be found</source>
+        <source>could not load device config descriptor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>invalid axis number</source>
+        <source>Found inep: 0x%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The requested axis is not in notReferenced mode</source>
+        <source>Found outep: 0x%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>timeout when calibrating axes</source>
+        <source>Found intep: 0x%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>invalid axis number (%i)</source>
+        <source>could not find any device matching given bus/dev numbers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Array size doesn�t match the number of axis</source>
+        <source>ERROR: Could not open session!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>invalid axis</source>
+        <source>ERROR: Could not get device info!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>could not read endline parameter from serial port</source>
+        <source>ERROR: Could not close session!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>timeout</source>
+        <source>Could not open session! Try to reset the camera.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>error while checking error.</source>
+        <source>Could not close session!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unknown message code or floating point controller address.</source>
+        <source>Your camera does not support InitiateCapture operation! Sorry, blame the %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controller address not correct.</source>
+        <source>Could not read exposure time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Parameter missing or out of range.</source>
+        <source>Could not capture.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed.</source>
+        <source>CANNOT DOWNLOAD: got &apos;capture completed&apos; but the object information is missing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Home sequence already started.</source>
+        <source>Skipping file: &quot;%s&quot;, file exists!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ESP stage name unknown.</source>
+        <source>Error writing file!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Displacement out of limits.</source>
+        <source>Error mmap!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed in NOT REFERENCED state.</source>
+        <source>Your camera is not Nikon! Do not buy from %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed in CONFIGURATION state.</source>
+        <source>Sorry, your camera does not support Nikon DirectCapture! Do not buy from %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed in DISABLE state.</source>
+        <source>Sorry, your camera dows not support Nikon DirectCapture! Do not buy from %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed in READY state.</source>
+        <source>ERROR: Could not capture.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed in HOMING state.</source>
+        <source>Could not get object info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed in MOVING state.</source>
+        <source>Ram cache overflow, capture terminated</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Current position out of software limit.</source>
+        <source>Could not get object handles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Communication Time Out.</source>
+        <source>Could not delete object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error during EEPROM access.</source>
+        <source>Handle: 0x %1 ERROR: Could not get object info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error during command execution.</source>
+        <source>Skipping file: &quot;%1&quot;, file exists!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed for PP version.</source>
+        <source>open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command not allowed for CC version.</source>
+        <source>write</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>value could not be parsed to a double value</source>
+        <source>mmap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Axis %i does not exist</source>
+        <source>close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>interrupt occurred</source>
+        <source>error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Not implemented, use calibmode to set actual position as zero.</source>
+        <source>PTP: ERROR: can&apos;t read data to send from file &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name of the plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SMC100Interface</name>
-    <message>
-        <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
+        <source>PTP: ERROR: response 0x%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>number of connected axes</source>
+        <source>0x%1: UNKNOWN</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>If 1 the current configuration of the given serial port is kept, else 0 [default].</source>
+        <source>error setting property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ERROR: Could not get device property description! Try to reset the camera.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FAILED!!!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ERROR: no such property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ERROR: Could not find property %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The device does not support this property!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not get device property description! Try to reset the camera.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>usb_get_endpoint_status()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>usb_ptp_get_device_status()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>usb_ptp_device_reset()</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

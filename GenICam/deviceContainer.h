@@ -52,10 +52,10 @@ public:
     QByteArray getIfaceID() const { return m_IfaceID; }
     int getNumDevices() const;
 
-	QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, GenTL::DEVICE_ACCESS_FLAGS deviceAccess, ito::RetVal &retval);
+    QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, GenTL::DEVICE_ACCESS_FLAGS deviceAccess, ito::RetVal &retval);
 
 protected:
-	ito::RetVal printDeviceInfo(const char* sDeviceID) const;
+    ito::RetVal printDeviceInfo(const char* sDeviceID) const;
 
     GenTL::IF_HANDLE m_handle;
     QByteArray m_IfaceID;
@@ -111,7 +111,7 @@ protected:
     GenTL::PTLGetInterfaceID TLGetInterfaceID;
     GenTL::PTLGetInterfaceInfo TLGetInterfaceInfo;
     GenTL::PTLOpenInterface TLOpenInterface;
-	GenTL::PGCGetLastError GCGetLastError;
+    GenTL::PGCGetLastError GCGetLastError;
 
     QString m_ctiFile;
     bool m_initialized;

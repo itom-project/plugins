@@ -163,7 +163,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+184"/>
+        <location filename="../MSMediaFoundation.cpp" line="+190"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>

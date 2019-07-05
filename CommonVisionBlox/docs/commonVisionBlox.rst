@@ -96,4 +96,4 @@ Things to configure are for example:
 Changelog
 =========
 
-* itom setup >3.1.0: This plugin has been compiled using the common vision blox 13.01.003
+* itom setup >3.1.0: This plugin has been compiled using the common vision blox 13.01.006

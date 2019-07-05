@@ -92,7 +92,7 @@ GenTLSystem::GenTLSystem() :
     GCInitLib(NULL),
     GCCloseLib(NULL),
     GCGetInfo(NULL),
-	GCGetLastError(NULL),
+    GCGetLastError(NULL),
     TLOpen(NULL),
     TLClose(NULL),
     TLUpdateInterfaceList(NULL),
@@ -140,43 +140,43 @@ ito::RetVal GenTLSystem::init(const QString &filename)
     else
     {
 #ifdef WIN32
-	#ifdef _WIN64
-		if (filename.contains("sv_gev_tl_x64.cti", Qt::CaseInsensitive))
-		{
-			//hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
-			QString filename_cl = filename;
-			filename_cl.replace("sv_gev_tl_x64.cti", "sv_cl_tl_x64.cti", Qt::CaseInsensitive);
-			filename_cl.replace("TLGigE", "TLCL", Qt::CaseSensitive);
-			if (QFileInfo(filename_cl).exists())
-			{
-				QLibrary lib;
-				lib.setFileName(filename_cl);
-				lib.load();
-			}
-			else
-			{
-				retval += ito::RetVal::format(ito::retWarning, 0, "It seems, that a SVS Vistek, GigE camera should be loaded. Due to unknown reasons, the library sv_cl_tl_x64.cti has to be loaded first. However, the path '%s' could not be found.", filename_cl.toLatin1().constData());
-			}
-		}
-	#else
-		if (filename.contains("sv_cl_tl.cti", Qt::CaseInsensitive))
-		{
-			//hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
-			QString filename_cl = filename;
-			filename_cl.replace("sv_gev_tl.cti", "sv_cl_tl.cti", Qt::CaseInsensitive);
-			filename_cl.replace("TLGigE", "TLCL", Qt::CaseSensitive);
-			if (QFileInfo(filename_cl).exists())
-			{
-				QLibrary lib;
-				lib.setFileName(filename_cl);
-				lib.load();
-			}
-			else
-			{
-				retval += ito::RetVal::format(ito::retWarning, 0, "It seems, that a SVS Vistek, GigE camera should be loaded. Due to unknown reasons, the library sv_cl_tl.cti has to be loaded first. However, the path '%s' could not be found.", filename_cl.toLatin1().constData());
-			}
-		}
-	#endif
+    #ifdef _WIN64
+        if (filename.contains("sv_gev_tl_x64.cti", Qt::CaseInsensitive))
+        {
+            //hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
+            QString filename_cl = filename;
+            filename_cl.replace("sv_gev_tl_x64.cti", "sv_cl_tl_x64.cti", Qt::CaseInsensitive);
+            filename_cl.replace("TLGigE", "TLCL", Qt::CaseSensitive);
+            if (QFileInfo(filename_cl).exists())
+            {
+                QLibrary lib;
+                lib.setFileName(filename_cl);
+                lib.load();
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retWarning, 0, "It seems, that a SVS Vistek, GigE camera should be loaded. Due to unknown reasons, the library sv_cl_tl_x64.cti has to be loaded first. However, the path '%s' could not be found.", filename_cl.toLatin1().constData());
+            }
+        }
+    #else
+        if (filename.contains("sv_cl_tl.cti", Qt::CaseInsensitive))
+        {
+            //hack: Vistek cameras: it seems that the sv_gev_cl_x64.cti has to be loaded before the GenICam transport layer is opened... (2018-01-26)
+            QString filename_cl = filename;
+            filename_cl.replace("sv_gev_tl.cti", "sv_cl_tl.cti", Qt::CaseInsensitive);
+            filename_cl.replace("TLGigE", "TLCL", Qt::CaseSensitive);
+            if (QFileInfo(filename_cl).exists())
+            {
+                QLibrary lib;
+                lib.setFileName(filename_cl);
+                lib.load();
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retWarning, 0, "It seems, that a SVS Vistek, GigE camera should be loaded. Due to unknown reasons, the library sv_cl_tl.cti has to be loaded first. However, the path '%s' could not be found.", filename_cl.toLatin1().constData());
+            }
+        }
+    #endif
 #endif
 
 
@@ -200,7 +200,7 @@ ito::RetVal GenTLSystem::init(const QString &filename)
             TLGetInterfaceID = (GenTL::PTLGetInterfaceID)m_lib->resolve("TLGetInterfaceID");
             TLGetInterfaceInfo = (GenTL::PTLGetInterfaceInfo)m_lib->resolve("TLGetInterfaceInfo");
             TLOpenInterface = (GenTL::PTLOpenInterface)m_lib->resolve("TLOpenInterface");
-			GCGetLastError = (GenTL::PGCGetLastError)m_lib->resolve("GCGetLastError");
+            GCGetLastError = (GenTL::PGCGetLastError)m_lib->resolve("GCGetLastError");
 
             if (GCInitLib == NULL || GCCloseLib == NULL || \
                 TLClose == NULL || TLOpen == NULL || !TLUpdateInterfaceList || \
@@ -350,27 +350,27 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
         char sIfaceID[512];
         size_t piSize = 512;
         bool found = false;
-		QByteArray id, displayname, tltype;
-		ito::RetVal tlretval;
-		QByteArray interfaceIDToOpen = interfaceID;
+        QByteArray id, displayname, tltype;
+        ito::RetVal tlretval;
+        QByteArray interfaceIDToOpen = interfaceID;
 
         if (!retval.containsError())
         {
-			if (interfaceID == "" || m_verbose >= VERBOSE_INFO)
-			{
-				std::cout << "Available interfaces\n----------------------------------------\n" << std::endl;
-			}
+            if (interfaceID == "" || m_verbose >= VERBOSE_INFO)
+            {
+                std::cout << "Available interfaces\n----------------------------------------\n" << std::endl;
+            }
 
             for (uint32_t i = 0; i < piNumIfaces; ++i)
             {
-				piSize = 512;
+                piSize = 512;
                 retval += checkGCError(TLGetInterfaceID(m_handle, i, sIfaceID, &piSize));
 
-				if (interfaceIDToOpen == "auto")
-				{
+                if (interfaceIDToOpen == "auto")
+                {
                     GenTL::IF_HANDLE ifHandle;
                     ito::RetVal retvalIFace;
-			        if (checkGCError(TLOpenInterface(m_handle, sIfaceID, &ifHandle), QString("Error opening interface '%1'").arg(QLatin1String(sIfaceID))) == ito::retOk)
+                    if (checkGCError(TLOpenInterface(m_handle, sIfaceID, &ifHandle), QString("Error opening interface '%1'").arg(QLatin1String(sIfaceID))) == ito::retOk)
                     {
                         GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, sIfaceID, m_verbose, retvalIFace);
 
@@ -384,29 +384,29 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
                         DELETE_AND_SET_NULL(gtli);
                     }
-				}
+                }
 
-				tlretval = ito::retOk;
-				tltype = getInterfaceInfo(GenTL::INTERFACE_INFO_TLTYPE, sIfaceID, tlretval);
+                tlretval = ito::retOk;
+                tltype = getInterfaceInfo(GenTL::INTERFACE_INFO_TLTYPE, sIfaceID, tlretval);
 
-				if (interfaceID == "" || m_verbose >= VERBOSE_INFO)
-				{
-					id = getInterfaceInfo(GenTL::INTERFACE_INFO_ID, sIfaceID, retval);
-					displayname = getInterfaceInfo(GenTL::INTERFACE_INFO_DISPLAYNAME, sIfaceID, retval);
-					std::cout << (i + 1) << ". ID: " << sIfaceID << ", name: " << displayname.constData() << ", transport layer type: " << tltype.constData() << "\n" << std::endl;
-				}
+                if (interfaceID == "" || m_verbose >= VERBOSE_INFO)
+                {
+                    id = getInterfaceInfo(GenTL::INTERFACE_INFO_ID, sIfaceID, retval);
+                    displayname = getInterfaceInfo(GenTL::INTERFACE_INFO_DISPLAYNAME, sIfaceID, retval);
+                    std::cout << (i + 1) << ". ID: " << sIfaceID << ", name: " << displayname.constData() << ", transport layer type: " << tltype.constData() << "\n" << std::endl;
+                }
             }
 
-			if (interfaceID == "")
-			{
-				std::cout << "----------------------------------------\nUse the 'ID' value as interface parameter\n" << std::endl;
-			}
+            if (interfaceID == "")
+            {
+                std::cout << "----------------------------------------\nUse the 'ID' value as interface parameter\n" << std::endl;
+            }
         }
 
-		if (interfaceID == "")
-		{
-			retval += ito::RetVal(ito::retError, 0, "No valid interface chosen");
-		}
+        if (interfaceID == "")
+        {
+            retval += ito::RetVal(ito::retError, 0, "No valid interface chosen");
+        }
         else if (interfaceIDToOpen == "auto")
         {
             retval += ito::RetVal(ito::retError, 0, "No devices could be automatically detected. Set the interface parameter to an empty string in order to get a list of all detected devices");
@@ -420,27 +420,27 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
             }
 
             GenTL::IF_HANDLE ifHandle = GENTL_INVALID_HANDLE;
-			GenTL::GC_ERROR err = TLOpenInterface(m_handle, interfaceIDToOpen.constData(), &ifHandle);
+            GenTL::GC_ERROR err = TLOpenInterface(m_handle, interfaceIDToOpen.constData(), &ifHandle);
 
-			if (err != GenTL::GC_ERR_SUCCESS && GCGetLastError)
-			{
-				size_t errorTextSize = 1024;
-				char errorText[1024];
+            if (err != GenTL::GC_ERR_SUCCESS && GCGetLastError)
+            {
+                size_t errorTextSize = 1024;
+                char errorText[1024];
 
-				GCGetLastError(&err, errorText, &errorTextSize);
+                GCGetLastError(&err, errorText, &errorTextSize);
 
-				retval += checkGCError(err, QString("Error opening interface '%1' (Detailed error text: %2)").arg(QLatin1String(interfaceIDToOpen)).arg(QLatin1String(QByteArray(errorText, errorTextSize))));
-			}
-			else
-			{
-				retval += checkGCError(err, QString("Error opening interface '%1'").arg(QLatin1String(interfaceIDToOpen)));
-			}
+                retval += checkGCError(err, QString("Error opening interface '%1' (Detailed error text: %2)").arg(QLatin1String(interfaceIDToOpen)).arg(QLatin1String(QByteArray(errorText, errorTextSize))));
+            }
+            else
+            {
+                retval += checkGCError(err, QString("Error opening interface '%1'").arg(QLatin1String(interfaceIDToOpen)));
+            }
 
             if (!retval.containsError())
             {
                 
 
-				GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, interfaceIDToOpen, m_verbose, retval);
+                GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, interfaceIDToOpen, m_verbose, retval);
                 if (!retval.containsError())
                 {
                     if (m_verbose >= VERBOSE_INFO)
@@ -448,8 +448,8 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
                         std::cout << "OK\n" << std::endl;
                     }
 
-					QSharedPointer<GenTLInterface> sharedPtr(gtli);
-					m_interfaces.append(sharedPtr.toWeakRef());
+                    QSharedPointer<GenTLInterface> sharedPtr(gtli);
+                    m_interfaces.append(sharedPtr.toWeakRef());
                     return sharedPtr;
                 }
                 else
@@ -571,6 +571,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
         char sDeviceID[512];
         size_t piSize = 512;
         bool found = false;
+        ito::RetVal localRetVal;
 
         if (!retval.containsError())
         {
@@ -579,18 +580,19 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 std::cout << "Detected devices: " << piNumDevices << "\n" << std::endl;
             }
 
-			if (piNumDevices == 0)
-			{
-				retval += ito::RetVal(ito::retError, 0, "no devices detected for given vendor and interface type");
-			}
+            if (piNumDevices == 0)
+            {
+                retval += ito::RetVal(ito::retError, 0, "no devices detected for given vendor and interface type");
+            }
 
             for (uint32_t i = 0; i < piNumDevices; ++i)
             {
-                retval += checkGCError(IFGetDeviceID(m_handle, i, sDeviceID, &piSize));
+                localRetVal = checkGCError(IFGetDeviceID(m_handle, i, sDeviceID, &piSize));
 
                 //check access status
                 GenTL::DEVICE_ACCESS_STATUS accessStatus = GenTL::DEVICE_ACCESS_STATUS_UNKNOWN;
 
+                if (!localRetVal.containsError())
                 {
                     GenTL::INFO_DATATYPE piType;
                     char pBuffer[512];
@@ -599,10 +601,16 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                     if (err == GenTL::GC_ERR_SUCCESS && piType == GenTL::INFO_DATATYPE_INT32)
                     {
                         accessStatus = ((ito::int32*)pBuffer)[0];
+
+                        if (accessStatus == GenTL::DEVICE_ACCESS_STATUS_UNKNOWN)
+                        {
+                            accessStatus = GenTL::DEVICE_ACCESS_STATUS_READWRITE;
+                            localRetVal += ito::RetVal::format(ito::retWarning, 0, "Device '%s' reports an unknown access status. Therefore it is assumed that this camera can be accessed!", sDeviceID);
+                        }
                     }
                 }
 
-                if (!retval.containsError())
+                if (!localRetVal.containsError())
                 {
                     if (sDeviceID == "" && usedDeviceIDs.contains(sDeviceID)) //open next free device
                     {
@@ -619,21 +627,25 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
                     if ((found && m_verbose >= VERBOSE_ERROR) || (m_verbose >= VERBOSE_INFO) )
                     {
-                        retval += printDeviceInfo(sDeviceID);
+                        localRetVal += printDeviceInfo(sDeviceID);
                     }
 
                     if (found)
                     {
+                        retval += localRetVal;
+                        localRetVal = ito::retOk;
                         break;
                     }
                 }
             }
+
+            retval += localRetVal;
         }
 
-		if (!retval.containsError() && !found && deviceID == "")
-		{
-			retval += ito::RetVal(ito::retError, 0, "No free camera devices detected for this interface.");
-		}
+        if (!retval.containsError() && !found && deviceID == "")
+        {
+            retval += ito::RetVal(ito::retError, 0, "No free camera devices detected for this interface.");
+        }
 
         if (!retval.containsError())
         {
@@ -651,10 +663,10 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             }
 
             GenTL::DEV_HANDLE devHandle;
-			GenTL::GC_ERROR err = IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle);
-			if (err == GenTL::GC_ERR_ACCESS_DENIED)
-			{
-				
+            GenTL::GC_ERROR err = IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle);
+            if (err == GenTL::GC_ERR_ACCESS_DENIED)
+            {
+                
                 switch (deviceAccess)
                 {
                 case GenTL::DEVICE_ACCESS_EXCLUSIVE:
@@ -672,75 +684,75 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 }
 
                 deviceAccess = GenTL::DEVICE_ACCESS_EXCLUSIVE;
-				retval += checkGCError(IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle), "Opening device in exclusive mode");
-			}
-			else
-			{
-				retval += checkGCError(err, "Opening device");
-			}
+                retval += checkGCError(IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle), "Opening device in exclusive mode");
+            }
+            else
+            {
+                retval += checkGCError(err, "Opening device");
+            }
             
 
             if (!retval.containsError())
             {
-				GenTL::INFO_DATATYPE piType;
-				QByteArray id(200, '\0');
-				piSize = id.size();
-				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_ID, &piType, id.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
-				{
-					id = "";
-				}
-				else
-				{
-					id = id.left(piSize);
-				}
+                GenTL::INFO_DATATYPE piType;
+                QByteArray id(200, '\0');
+                piSize = id.size();
+                if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_ID, &piType, id.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+                {
+                    id = "";
+                }
+                else
+                {
+                    id = id.left(piSize);
+                }
 
-				QByteArray vendor(200, '\0');
-				piSize = vendor.size();
-				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_VENDOR, &piType, vendor.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
-				{
-					vendor = "";
-				}
-				else
-				{
-					vendor = vendor.left(piSize);
-				}
+                QByteArray vendor(200, '\0');
+                piSize = vendor.size();
+                if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_VENDOR, &piType, vendor.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+                {
+                    vendor = "";
+                }
+                else
+                {
+                    vendor = vendor.left(piSize);
+                }
 
-				QByteArray model(200, '\0');
-				piSize = model.size();
-				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_MODEL, &piType, model.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
-				{
-					model = "";
-				}
-				else
-				{
-					model = model.left(piSize);
-				}
+                QByteArray model(200, '\0');
+                piSize = model.size();
+                if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_MODEL, &piType, model.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+                {
+                    model = "";
+                }
+                else
+                {
+                    model = model.left(piSize);
+                }
 
-				QByteArray identifier(200, '\0');
-				piSize = identifier.size();
-				if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_DISPLAYNAME, &piType, identifier.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
-				{
-					identifier = "unknown camera";
-				}
-				else
-				{
-					identifier = identifier.left(piSize);
-					if (m_verbose >= VERBOSE_INFO)
-					{
-						std::cout << "OK. Device '" << identifier.constData() << "' opened.\n" << std::endl;
-					}
-				}
+                QByteArray identifier(200, '\0');
+                piSize = identifier.size();
+                if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_DISPLAYNAME, &piType, identifier.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+                {
+                    identifier = "unknown camera";
+                }
+                else
+                {
+                    identifier = identifier.left(piSize);
+                    if (m_verbose >= VERBOSE_INFO)
+                    {
+                        std::cout << "OK. Device '" << identifier.constData() << "' opened.\n" << std::endl;
+                    }
+                }
 
-				if (vendor != "" && model != "")
-				{
-					identifier = (QLatin1String(vendor) + " " + QLatin1String(model)).toLatin1();
-					if (id != "")
-					{
-						identifier += " (" + QString::fromLatin1(id).toLatin1() + ")";
-					}
-				}
+                if (vendor != "" && model != "")
+                {
+                    identifier = (QLatin1String(vendor) + " " + QLatin1String(model)).toLatin1();
+                    if (id != "")
+                    {
+                        identifier += " (" + QString::fromLatin1(id).toLatin1() + ")";
+                    }
+                }
 
-				qDebug() << id << vendor << model << identifier;
+                qDebug() << id << vendor << model << identifier;
 
 
                 GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, identifier, m_verbose, retval);
@@ -852,7 +864,7 @@ ito::RetVal GenTLInterface::printDeviceInfo(const char* sDeviceID) const
             }
         }
 
-		std::cout << "Interface: " << m_IfaceID.constData() << "\n" << std::endl;
+        std::cout << "Interface: " << m_IfaceID.constData() << "\n" << std::endl;
     }
 
     return retval;

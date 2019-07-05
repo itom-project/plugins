@@ -95,7 +95,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../VRMagic.cpp" line="+58"/>
+        <location filename="../VRMagic.cpp" line="+59"/>
         <source>VRMagic Camera / Framegrabber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -111,16 +111,11 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>VRMagic</name>
     <message>
-        <location line="+39"/>
+        <location line="+40"/>
         <source>name of the camera</source>
         <translation type="unfinished"></translation>
     </message>
