@@ -94,6 +94,10 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
     -1: Complete free run, 0: enable standard external trigger (PtGrey mode 0), 1: Software Trigger (PtGrey mode 0, Software Source), 2: Bulb shutter external trigger (PtGrey mode 1), 3: Overlapped external trigger (PtGrey mode 14)
 **trigger_polarity**: {int}
     For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)
+**strobe_mode**: {int}
+    -1: disable output, 0..3 enable Line[x] as output with strobe mode. Check datasheet if available on your camera model. Strobe is emitted on beginning of integration time.
+**strobe_polarity**: {int}
+    0:active low(100uS low pulse), 1: active high:(100uS high pulse)
 **video_mode**: {int}, read-only
     Current video mode, default is Mode7
 
@@ -102,13 +106,15 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
 Compilation
 =============
 
-FlyCapture version 2.13.3.31 uses libiomp5md.dll in version 5.0.2011.1108. Libiomp5md.dll is also used by numpy (mkl version), but often in another version that is not compatible (there is an error when opening itom). Since it is impossible to load two dlls of the same name in one process, you may need to edit the FlyCapture2_vXXX.dll. 
+FlyCapture version 2.13.3.31 uses libiomp5md.dll in version 5.0.2011.1108. Libiomp5md.dll is also used by numpy (mkl version), 
+but often in another version that is not compatible (there is an error when opening itom). 
+Since it is impossible to load two dlls of the same name in one process, you may need to edit the FlyCapture2_vXXX.dll. 
 A useful tool for this is the "CFF Explorer". This program allows you to change the import table of the DLL.
 
     -open FlyCapture2_vXXX.dll loaded by the plugin using "CFF Explorer". The File should be located at ...\itom\build\itom\libs
     -change the name libiomp5md.dll under Import Directory to a different name
     -save the changes
-    -rename the libiomp5md.dll
+    -rename the ...\itom\build\itom\libs\libiomp5md.dll
 
 
 Image Acquisition

@@ -17,6 +17,11 @@ SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages tha
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
+if(LINUX)
+add_definitions( "--std=c++0x --std=c++11" )
+endif(LINUX)
+
+
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
 IF(BUILD_SHARED_LIBS)

@@ -99,12 +99,7 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal flyCapSetExtendedShutter(bool enabled);
         ito::RetVal flyCapSynchronizeFrameRateShutter();
 
-		//setter for polarity of strobe output(idle high or idle low signal;)
-		ito::RetVal setstrobeMode(int val);
-		//subFunctions for reading/writing registers on the camera
-		//ito::RetVal writeRegister(uint32_t address, uint32_t content);
-		//ito::RetVal readRegister(uint32_t address,uint32_t &content);
-
+        ito::RetVal setStrobeMode(int val);//adds strobe mode to given Line[no], or disables all[-1]
 
         bool m_isgrabbing;
         FlyCapture2::Camera m_myCam;

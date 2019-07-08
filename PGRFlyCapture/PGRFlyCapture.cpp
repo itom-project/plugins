@@ -309,8 +309,8 @@ PGRFlyCapture::PGRFlyCapture() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("strobe_mode", ito::ParamBase::Int, \
-        0, 1, 0, \
-        tr("0: off, 1: do a ~100uS pulse on output Line3. Output is configured on call of this parameter. Since this is a very specific feature not much support is compiled into this.").toLatin1().data());
+        -1, 3, -1, \
+        tr("-1: off, Enable a ~100uS pulse on output Line[X]. Output is configured on call of this parameter. Since this is a very specific feature not much support is compiled into this. check your camera datasheet for availability").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("strobe_polarity", ito::ParamBase::Int, \
@@ -537,7 +537,8 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
     {
         if (key == "strobe_mode")
         {
-            retValue += setstrobeMode(val->getVal<int>());
+            m_params["strobe_mode"].setVal<int>(val->getVal<int>());
+            retValue += setStrobeMode(val->getVal<int>());
         }
         else if (key == "strobe_polarity")
         {
@@ -1145,43 +1146,49 @@ ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, float &
 //GPIO status Register
 #define GPIO_CTRL 0x1100
 //config registers for single IO Pin
-
-#define GPIO_CTRL_PIN_3 0x1140
-#define STROBE_PATTERN_MASK 0x1148
+//registers addresses are incremented with 0x10 per pin...
+#define GPIO_CTRL_PIN_0 0x1110
+#define STROBE_PATTERN_MASK_PIN_0 0x1118
 #define STROBE_OUTPUT_CSR_BASE 0x48C
 
 
-ito::RetVal PGRFlyCapture::setstrobeMode(int val)
+ito::RetVal PGRFlyCapture::setStrobeMode(int val)
 /*
-This mode sets the GPIOMode of the Camera Line3 to output
+This mode sets the GPIOMode of the selected GPIO to output Strobes
 and selects(if not default) active exposure as signal to output
 see Register reference FLIR machine Vision Cameras V4.0
 registers on camera are 4 bytes wide but transferred big endian.
 So numbering is inverted, bit 31 is bit 0 here and vice versa...
-ADdresses luckily stay the same.
+Addresses luckily stay the same.
+GPIO3/Line3 is a non-isolated ouput.But. i'm not sure whether its 
+possible to access the isolated output on the camera we use here..
 */
 {
     using namespace ito;
     RetVal retVal(retOk);
     uint32_t regVal;
-    if (val)
+    uint32_t strobeCtrlPinReg = GPIO_CTRL_PIN_0 + val * 0x10;
+    uint32_t strobePatternMaskReg = STROBE_PATTERN_MASK_PIN_0 + val * 0x10;
+    if (val >= 0)
     {
-        m_myCam.ReadRegister(GPIO_CTRL_PIN_3, &regVal);
-        if (!(regVal&(1 << 0)))
+        m_myCam.ReadRegister(strobeCtrlPinReg, &regVal);
+        if (!(regVal&(1 << 31)))
         {
-            return RetVal(retError, 123, "error in setStrobe Mode feature not available.");
+            retVal = RetVal(retError, 123, "error in setStrobe Mode feature not available. No one knows why. Ask a pGrey/FLIR representative.");
+            return retVal;
         }
         //set GPIO Mode in CTRL register to strobe
         regVal |= (1 << (31 - 12)); /*output*/\
         regVal &= ~(1 << (31 - 30));/*disable enable pin*/
-        m_myCam.WriteRegister(GPIO_CTRL_PIN_3, regVal);
+        m_myCam.WriteRegister(strobeCtrlPinReg, regVal);
 
         //setting strobe pattern mask
-        m_myCam.ReadRegister(STROBE_PATTERN_MASK, &regVal);
+        m_myCam.ReadRegister(STROBE_PATTERN_MASK_PIN_0, &regVal);
         regVal |= (0xffff);
-        m_myCam.WriteRegister(STROBE_PATTERN_MASK, regVal);
+        m_myCam.WriteRegister(STROBE_PATTERN_MASK_PIN_0, regVal);
 
         ////set strobe output to only fire if camera is streaming
+        //this is taken from an example from ptGrey.....
         uint32_t regAddr = STROBE_OUTPUT_CSR_BASE;//base address
         m_myCam.ReadRegister(regAddr, &regAddr);//strobe0 signal address
         regAddr *= 4;//multiply by 4
@@ -2244,11 +2251,11 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         copyExternal = true;
     }
 
-    if (grabberStartedCount() <= 0 || m_isgrabbing != true)
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("Camera not started or triggered").toLatin1().data());
-        return retValue;
-    }
+    //if (grabberStartedCount() <= 0 || m_isgrabbing != true)
+    //{
+    //    retValue += ito::RetVal(ito::retError, 0, tr("Camera not started or triggered").toLatin1().data());
+    //    return retValue;
+    //}
 
     FlyCapture2::Image convertedImage;
 
