@@ -96,11 +96,6 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
 {
     Q_OBJECT
 
-	enum mutexMode {
-		none = 0,
-		warn = 1,
-		strict = 2
-	};
     protected:
         virtual ~SerialIO();
         SerialIO();
@@ -118,7 +113,6 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
         bool m_debugIgnoreEmpty;   /*! Enables / Disables to ignore empty messages */
         static int m_instCounter;
         QByteArray m_preBuf;
-		QMutex* m_syncMutex;
 
     signals:
         void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
