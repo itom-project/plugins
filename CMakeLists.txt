@@ -16,10 +16,6 @@ if (WIN32)
     set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
 endif (WIN32)
 
-if(LINUX)
-add_definitions( "--std=c++0x --std=c++11" )
-endif(LINUX)
-
 # AerotechA3200
 IF (WIN32)
     OPTION(PLUGIN_aerotechA3200 "Build with this plugin." OFF)
@@ -27,17 +23,6 @@ IF (WIN32)
             ADD_SUBDIRECTORY(AerotechA3200)
     endif (PLUGIN_aerotechA3200)
 ENDIF (WIN32)
-OPTION(PLUGIN_itom1DQwtPlot "Build with this solution." ON)
-OPTION(PLUGIN_itom2DQwtPlot "Build with this solution." ON)
-OPTION(PLUGIN_itom2DGraphicView "Build with this solution." OFF)
-OPTION(PLUGIN_itomIsoGLFigurePlugin "Build with this solution." ON)
-OPTION(PLUGIN_matplotlibPlot "Build with this solution." ON)
-OPTION(PLUGIN_motorController "Build with this solution." ON)
-OPTION(PLUGIN_dataObjectTable "Build with this solution." ON)
-OPTION(PLUGIN_dObMetaDataTable "Build with this solution." ON)
-OPTION(PLUGIN_evaluateGeometrics "Build with this solution." ON)
-OPTION(PLUGIN_vtk3dVisualizer "Build with this solution." ON)
-OPTION(PLUGIN_slider2D "Build with this solution." ON)
 
 # AerotechEnsemble
 IF (WIN32)
