@@ -33,6 +33,9 @@
 
 #define MAXPGR 10
 
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 class PGRFlyCaptureInterface : public ito::AddInInterfaceBase
 {
@@ -95,6 +98,8 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal flyCapChangeFormat7_(bool changeBpp, bool changeROI, int bpp = -1, int x0 = -1, int y0 = -1, int width = -1, int height = -1);
         ito::RetVal flyCapSetExtendedShutter(bool enabled);
         ito::RetVal flyCapSynchronizeFrameRateShutter();
+
+        ito::RetVal setStrobeMode(int val);//adds strobe mode to given Line[no], or disables all[-1]
 
         bool m_isgrabbing;
         FlyCapture2::Camera m_myCam;
