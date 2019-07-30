@@ -269,7 +269,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 
         if (!retval.containsError())
         {
-#if (CV_MAJOR_VERSION > 4)
+#if (CV_MAJOR_VERSION >= 4)
             cv::drawKeypoints(image_, keypoints, outImage, color__, cv::DrawMatchesFlags(flags));
 #else
             cv::drawKeypoints(image_, keypoints, outImage, color__, flags);
@@ -422,7 +422,7 @@ This function draws matches of keypoints from two images in the output image. Ma
         
         try
         {
-#if (CV_MAJOR_VERSION > 4)
+#if (CV_MAJOR_VERSION >= 4)
             cv::drawMatches(first_image_, first_keypoints, second_image_, second_keypoints, dmatches, outImg, matchColor__, singlePointColor__, matchesMask, cv::DrawMatchesFlags(flags));
 #else
             cv::drawMatches(first_image_, first_keypoints, second_image_, second_keypoints, dmatches, outImg, matchColor__, singlePointColor__, matchesMask, flags);
