@@ -28,9 +28,9 @@
 #include <qnumeric.h>
 #include <QList>
 
-#if ((CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) && CV_MAJOR_VERSION < 4)
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
-#include "opencv2/features2d/features2d.hpp"
+#include "opencv2\features2d.hpp"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const QString OpenCVFilters::cvFlannBasedMatcherDoc = QObject::tr("This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. \n\
@@ -202,7 +202,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     // Optional Parameters
     param = ito::Param("color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("color of keypoints (pass a rgba32 value). If 0 or omitted, random colors will be used.").toLatin1().data());
     paramsOpt->append(param);
-    int flags_max = cv::DrawMatchesFlags::DEFAULT | cv::DrawMatchesFlags::DRAW_OVER_OUTIMG | cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS;
+    int flags_max = int(cv::DrawMatchesFlags::DEFAULT) | int(cv::DrawMatchesFlags::DRAW_OVER_OUTIMG) | int(cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     QString flags_descr = tr("flags for drawing features (bit-combination): \n\
 - 0: DEFAULT (Output image matrix will be created (Mat::create), i.e. existing memory of output image may be reused. \
      Two source images, matches, and single keypoints will be drawn. For each keypoint, only the center point will be \
@@ -210,7 +210,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 - 1: DRAW_OVER_OUTIMG: Output image matrix will not be created (using Mat::create). Matches will be drawn \
      on existing content of output image. \n\
 - 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.");
-    paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, flags_max, cv::DrawMatchesFlags::DEFAULT, flags_descr.toLatin1().data()) );
+    paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, flags_max, int(cv::DrawMatchesFlags::DEFAULT), flags_descr.toLatin1().data()) );
     return retval;
 }
 
@@ -251,7 +251,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
             color__ = cv::Scalar(color_.b, color_.g, color_.r, 255.0); //alpha will be ignored since opencv only works with three channels (no alpha channel)
         }
 
-        if (flags & cv::DrawMatchesFlags::DRAW_OVER_OUTIMG)
+        if (flags & int(cv::DrawMatchesFlags::DRAW_OVER_OUTIMG))
         {
             const ito::DataObject outImageIn = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(),"outImage", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
             if (!retval.containsError())
@@ -269,7 +269,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 
         if (!retval.containsError())
         {
-            cv::drawKeypoints(image_, keypoints, outImage, color__, flags);
+            cv::drawKeypoints(image_, keypoints, outImage, color__, cv::DrawMatchesFlags(flags));
         }
 
         if (!retval.containsError())
@@ -310,7 +310,7 @@ This function draws matches of keypoints from two images in the output image. Ma
     param = ito::Param("single_point_color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("color of single keypoints (pass a rgba32 value). If 0 or omitted, random colors will be used.").toLatin1().data());
     paramsOpt->append(param);
 
-    int flags_max = cv::DrawMatchesFlags::DEFAULT | cv::DrawMatchesFlags::DRAW_OVER_OUTIMG | cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS | cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS;
+    int flags_max = int(cv::DrawMatchesFlags::DEFAULT) | int(cv::DrawMatchesFlags::DRAW_OVER_OUTIMG) | int(cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS) | int(cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     QString flags_descr = tr("flags for drawing features (bit-combination): \n\
 - 0: DEFAULT: Output image matrix will be created (Mat::create), i.e. existing memory of output image may be reused. \
      Two source images, matches, and single keypoints will be drawn. For each keypoint, only the center point will be \
@@ -319,7 +319,7 @@ This function draws matches of keypoints from two images in the output image. Ma
      on existing content of output image. \n\
 - 2: NOT_DRAW_SINGLE_POINTS: Single keypoints will not be drawn. \n\
 - 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.");
-    paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, flags_max, cv::DrawMatchesFlags::DEFAULT, flags_descr.toLatin1().data()) );
+    paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, flags_max, int(cv::DrawMatchesFlags::DEFAULT), flags_descr.toLatin1().data()));
 
     paramsOpt->append( ito::Param("max_match_distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, tr("max match distance that should be drawn. If 0, every match is drawn [default]").toLatin1().data()));
     return retval;
@@ -396,7 +396,7 @@ This function draws matches of keypoints from two images in the output image. Ma
             singlePointColor__ = cv::Scalar(color_.b, color_.g, color_.r, 255.0); //alpha will be ignored since opencv only works with three channels (no alpha channel)
         }
 
-        if (flags & cv::DrawMatchesFlags::DRAW_OVER_OUTIMG)
+        if (flags & int(cv::DrawMatchesFlags::DRAW_OVER_OUTIMG))
         {
 
 
@@ -416,7 +416,7 @@ This function draws matches of keypoints from two images in the output image. Ma
         
         try
         {
-            cv::drawMatches(first_image_, first_keypoints, second_image_, second_keypoints, dmatches, outImg, matchColor__, singlePointColor__, matchesMask, flags);
+            cv::drawMatches(first_image_, first_keypoints, second_image_, second_keypoints, dmatches, outImg, matchColor__, singlePointColor__, matchesMask, cv::DrawMatchesFlags(flags));
         }
         catch (cv::Exception exc)
         {

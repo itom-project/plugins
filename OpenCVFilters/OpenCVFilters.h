@@ -180,7 +180,6 @@ class OpenCVFilters : public ito::AddInAlgo
         static ito::RetVal cvStereoRectify(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvStereoRectifyParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);*/
 
-#if (CV_MAJOR_VERSION < 4)
         static const QString cvFlannBasedMatcherDoc;
         static ito::RetVal cvFlannBasedMatcher(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvFlannBasedMatcherParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -192,8 +191,6 @@ class OpenCVFilters : public ito::AddInAlgo
         static const QString cvDrawMatcherDoc;
         static ito::RetVal cvDrawMatcher(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvDrawMatcherParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-#endif
-
 
         static const QString cvResizeDoc;
         static ito::RetVal cvResize(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);

@@ -2682,7 +2682,6 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvComputeCorrespondEpilines, OpenCVFilters::cvComputeCorrespondEpilinesParams, cvComputeCorrespondEpilinesDoc);
     m_filterList.insert("cvComputeCorrespondEpilines", filter);
 
-#if (CV_MAJOR_VERSION < 4)
     filter = new FilterDef(OpenCVFilters::cvFlannBasedMatcher, OpenCVFilters::cvFlannBasedMatcherParams, cvFlannBasedMatcherDoc);
     m_filterList.insert("cvFlannBasedMatcher", filter);
 
@@ -2691,7 +2690,6 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
 
     filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, cvDrawMatcherDoc);
     m_filterList.insert("cvDrawMatcher", filter);
-#endif
 
     filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, cvWarpPerspectiveDoc);
     m_filterList.insert("cvWarpPerspective", filter);
