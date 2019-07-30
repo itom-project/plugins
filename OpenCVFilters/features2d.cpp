@@ -28,7 +28,7 @@
 #include <qnumeric.h>
 #include <QList>
 
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+#if ((CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) && CV_MAJOR_VERSION < 4)
 
 #include "opencv2/features2d/features2d.hpp"
 

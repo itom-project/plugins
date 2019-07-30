@@ -30,8 +30,10 @@
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 #include "opencv2/calib3d/calib3d.hpp"
 
-#if (CV_MAJOR_VERSION >= 3)
-#include "opencv/highgui.h"
+#if (CV_MAJOR_VERSION >= 4)
+    #include "opencv2\highgui.hpp"
+#else
+    #include "opencv/highgui.h"
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -117,7 +119,7 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
             dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
             param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
             param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
-        cv::HoughCircles(*cvplaneIn, circles, CV_HOUGH_GRADIENT, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
+        cv::HoughCircles(*cvplaneIn, circles, cv::HOUGH_GRADIENT, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
 
 
         // Copy the circles into the output dataObject
@@ -185,10 +187,10 @@ ito::RetVal OpenCVFilters::cvFindChessboardCornersParams(QVector<ito::Param> *pa
 
     int allflags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_FILTER_QUADS | cv::CALIB_CB_FAST_CHECK;
     QString flagsdocs = tr("OR Combination of various flags: \n\n");
-    flagsdocs += QString("* CV_CALIB_CB_ADAPTIVE_THRESH (%1) - Use adaptive thresholding to convert the image to black and white, rather than a fixed threshold level (computed from the average image brightness) [default], \n").arg(CV_CALIB_CB_ADAPTIVE_THRESH);
-    flagsdocs += QString("* CV_CALIB_CB_NORMALIZE_IMAGE (%1) - Normalize the image gamma with equalizeHist() before applying fixed or adaptive thresholding [default], \n").arg(CV_CALIB_CB_NORMALIZE_IMAGE);
-    flagsdocs += QString("* CV_CALIB_CB_FILTER_QUADS (%1) - Use additional criteria (like contour area, perimeter, square-like shape) to filter out false quads extracted at the contour retrieval stage, \n").arg(CV_CALIB_CB_FILTER_QUADS);
-    flagsdocs += QString("* CALIB_CB_FAST_CHECK (%1) - Run a fast check on the image that looks for chessboard corners, and shortcut the call if none is found. This can drastically speed up the call in the degenerate condition when no chessboard is observed (recommended to pre-check image).").arg(CV_CALIB_CB_FAST_CHECK);
+    flagsdocs += QString("* CV_CALIB_CB_ADAPTIVE_THRESH (%1) - Use adaptive thresholding to convert the image to black and white, rather than a fixed threshold level (computed from the average image brightness) [default], \n").arg(cv::CALIB_CB_ADAPTIVE_THRESH);
+    flagsdocs += QString("* CV_CALIB_CB_NORMALIZE_IMAGE (%1) - Normalize the image gamma with equalizeHist() before applying fixed or adaptive thresholding [default], \n").arg(cv::CALIB_CB_NORMALIZE_IMAGE);
+    flagsdocs += QString("* CV_CALIB_CB_FILTER_QUADS (%1) - Use additional criteria (like contour area, perimeter, square-like shape) to filter out false quads extracted at the contour retrieval stage, \n").arg(cv::CALIB_CB_FILTER_QUADS);
+    flagsdocs += QString("* CALIB_CB_FAST_CHECK (%1) - Run a fast check on the image that looks for chessboard corners, and shortcut the call if none is found. This can drastically speed up the call in the degenerate condition when no chessboard is observed (recommended to pre-check image).").arg(cv::CALIB_CB_FAST_CHECK);
     paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE, new ito::IntMeta(0, allflags), flagsdocs.toLatin1().data()));
 
     paramsOut->append(ito::Param("result", ito::ParamBase::Int | ito::ParamBase::Out, 0, new ito::IntMeta(0,1), "0: detection failed, 1: detection has been successful"));
@@ -420,18 +422,18 @@ before using it in the way that for each view, the last rows are cut where eithe
     paramsMand->append(ito::Param("tvecs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("3 x NrOfViews float64 output vector, where each column is the translation vector estimated for each pattern view").toLatin1().data()));
 
     QString description = tr("Different flags that may be a combination of the following values: ");
-    description += QString("CV_CALIB_USE_INTRINSIC_GUESS (%1)").arg(CV_CALIB_USE_INTRINSIC_GUESS);
-    description += QString(", CV_CALIB_FIX_PRINCIPAL_POINT (%1)").arg(CV_CALIB_FIX_PRINCIPAL_POINT);
-    description += QString(", CV_CALIB_FIX_ASPECT_RATIO (%1)").arg(CV_CALIB_FIX_ASPECT_RATIO);
-    description += QString(", CV_CALIB_ZERO_TANGENT_DIST (%1)").arg(CV_CALIB_ZERO_TANGENT_DIST);
-    description += QString(", CV_CALIB_FIX_K1 (%1)").arg(CV_CALIB_FIX_K1);
-    description += QString(", CV_CALIB_FIX_K2 (%1)").arg(CV_CALIB_FIX_K2);
-    description += QString(", CV_CALIB_FIX_K3 (%1)").arg(CV_CALIB_FIX_K3);
-    description += QString(", CV_CALIB_FIX_K4 (%1)").arg(CV_CALIB_FIX_K4);
-    description += QString(", CV_CALIB_FIX_K5 (%1)").arg(CV_CALIB_FIX_K5);
-    description += QString(", CV_CALIB_FIX_K6 (%1)").arg(CV_CALIB_FIX_K6);
-    description += QString(", CV_CALIB_RATIONAL_MODEL (%1)").arg(CV_CALIB_RATIONAL_MODEL);
-    int maxFlag = CV_CALIB_USE_INTRINSIC_GUESS | CV_CALIB_FIX_PRINCIPAL_POINT | CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_ZERO_TANGENT_DIST | CV_CALIB_FIX_K1 | CV_CALIB_FIX_K2 | CV_CALIB_FIX_K3 | CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5 | CV_CALIB_FIX_K6 | CV_CALIB_RATIONAL_MODEL;
+    description += QString("CV_CALIB_USE_INTRINSIC_GUESS (%1)").arg(cv::CALIB_USE_INTRINSIC_GUESS);
+    description += QString(", CV_CALIB_FIX_PRINCIPAL_POINT (%1)").arg(cv::CALIB_FIX_PRINCIPAL_POINT);
+    description += QString(", CV_CALIB_FIX_ASPECT_RATIO (%1)").arg(cv::CALIB_FIX_ASPECT_RATIO);
+    description += QString(", CV_CALIB_ZERO_TANGENT_DIST (%1)").arg(cv::CALIB_ZERO_TANGENT_DIST);
+    description += QString(", CV_CALIB_FIX_K1 (%1)").arg(cv::CALIB_FIX_K1);
+    description += QString(", CV_CALIB_FIX_K2 (%1)").arg(cv::CALIB_FIX_K2);
+    description += QString(", CV_CALIB_FIX_K3 (%1)").arg(cv::CALIB_FIX_K3);
+    description += QString(", CV_CALIB_FIX_K4 (%1)").arg(cv::CALIB_FIX_K4);
+    description += QString(", CV_CALIB_FIX_K5 (%1)").arg(cv::CALIB_FIX_K5);
+    description += QString(", CV_CALIB_FIX_K6 (%1)").arg(cv::CALIB_FIX_K6);
+    description += QString(", CV_CALIB_RATIONAL_MODEL (%1)").arg(cv::CALIB_RATIONAL_MODEL);
+    int maxFlag = cv::CALIB_USE_INTRINSIC_GUESS | cv::CALIB_FIX_PRINCIPAL_POINT | cv::CALIB_FIX_ASPECT_RATIO | cv::CALIB_ZERO_TANGENT_DIST | cv::CALIB_FIX_K1 | cv::CALIB_FIX_K2 | cv::CALIB_FIX_K3 | cv::CALIB_FIX_K4 | cv::CALIB_FIX_K5 | cv::CALIB_FIX_K6 | cv::CALIB_RATIONAL_MODEL;
     paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0,maxFlag), description.toLatin1().data()));
     paramsOpt->append(ito::Param("maxCounts", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 30, tr("if > 0, maximum number of counts, 0: unlimited number of counts allowed [default: 30]").toLatin1().data()));
     paramsOpt->append(ito::Param("epsilonAccuracy", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::epsilon(), tr("if > 0.0, desired accuracy at which the iterative algorithm stops, 0.0: no epsilon criteria [default: DBL_EPSILON]").toLatin1().data()));
@@ -998,9 +1000,9 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
 
     QString description = tr("Method. The following values are possible: ");
     description += QString("regular method using all points (%1) [default]").arg(0);
-    description += QString(", CV_RANSAC (%1)").arg(CV_RANSAC);
-    description += QString(", CV_LMEDS (%1)").arg(CV_LMEDS);
-    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, CV_LMEDS, 0, description.toLatin1().data()));
+    description += QString(", CV_RANSAC (%1)").arg(cv::RANSAC);
+    description += QString(", CV_LMEDS (%1)").arg(cv::LMEDS);
+    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::LMEDS, 0, description.toLatin1().data()));
     
     paramsOpt->append(ito::Param("ransacReprojThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, tr("maximum allowed reprojection error to treat a point pair as an inlier (used for RANSAC only)").toLatin1().data()));
 
@@ -1069,11 +1071,11 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
     paramsMand->append(ito::Param("F", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output, fundamental matrix [3x3], float64").toLatin1().data()));
 
     QString description = tr("Method for computing a fundamental matrix. The following values are possible: ");
-    description += QString(", CV_FM_7POINT (%1)").arg(CV_FM_7POINT);
-    description += QString(", CV_FM_8POINT (%1) [default]").arg(CV_FM_8POINT);
-    description += QString(", CV_FM_RANSAC (%1)").arg(CV_FM_RANSAC);
-    description += QString(", CV_FM_LMEDS (%1)").arg(CV_FM_LMEDS);
-    paramsOpt->append(ito::Param("method", ito::ParamBase::Int | ito::ParamBase::In, CV_FM_7POINT, std::max(CV_FM_RANSAC, CV_FM_LMEDS), CV_FM_8POINT, description.toLatin1().data()));
+    description += QString(", CV_FM_7POINT (%1)").arg(cv::FM_7POINT);
+    description += QString(", CV_FM_8POINT (%1) [default]").arg(cv::FM_8POINT);
+    description += QString(", CV_FM_RANSAC (%1)").arg(cv::FM_RANSAC);
+    description += QString(", CV_FM_LMEDS (%1)").arg(cv::FM_LMEDS);
+    paramsOpt->append(ito::Param("method", ito::ParamBase::Int | ito::ParamBase::In, cv::FM_7POINT, std::max(cv::FM_RANSAC, cv::FM_LMEDS), cv::FM_8POINT, description.toLatin1().data()));
     paramsOpt->append(ito::Param("param1", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, tr("Parameter used for RANSAC. It is the maximum distance from a point to an epipolar line in pixels, beyond which the point is considered an outlier and is not used for computing the final fundamental matrix. It can be set to something like 1-3, depending on the accuracy of the point localization, image resolution, and the image noise.").toLatin1().data()));
     paramsOpt->append(ito::Param("param2", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("Parameter used for the RANSAC or LMedS methods only. It specifies a desirable level of confidence (probability) that the estimated matrix is correct.").toLatin1().data()));
     paramsOpt->append(ito::Param("status", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1’s. If not given, no status information is returned.").toLatin1().data()));
@@ -1092,9 +1094,9 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
     double param2 = paramsOpt->at(2).getVal<double>();
     int method = paramsOpt->at(0).getVal<int>();
 
-    if (method != CV_FM_7POINT && method != CV_FM_8POINT && method != CV_FM_RANSAC && method != CV_FM_LMEDS)
+    if (method != cv::FM_7POINT && method != cv::FM_8POINT && method != cv::FM_RANSAC && method != cv::FM_LMEDS)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("method must be either CV_FM_7POINT (%i), CV_FM_8POINT (%i), CV_FM_RANSAC (%i) or CV_FM_LMEDS (%i)").toLatin1().data(), CV_FM_7POINT, CV_FM_8POINT, CV_FM_RANSAC, CV_FM_LMEDS);
+        retval += ito::RetVal::format(ito::retError, 0, tr("method must be either CV_FM_7POINT (%i), CV_FM_8POINT (%i), CV_FM_RANSAC (%i) or CV_FM_LMEDS (%i)").toLatin1().data(), cv::FM_7POINT, cv::FM_8POINT, cv::FM_RANSAC, cv::FM_LMEDS);
     }
 
     if (!retval.containsError())
