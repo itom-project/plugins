@@ -1092,7 +1092,7 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
     }
 
     cv::Mat rgbImage;
-    cv::cvtColor(sourceImage, rgbImage, CV_YUV2RGB, 3);
+    cv::cvtColor(sourceImage, rgbImage, cv::COLOR_YUV2RGB, 3);
 
     std::vector<cv::Mat> rgbChannels(3);
     cv::split(rgbImage, rgbChannels);
