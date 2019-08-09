@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),setT
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -25,13 +25,12 @@
 // includes
 #include <NI-PeripheralClasses.h>
 
-
 //*****************************************//
 //      niTask Class implementations       //
 //*****************************************//
 
 //------------------------------------------------------------------------------------------------------
-// Constructor I
+// Constructor
 niTask::niTask(QString name)
 {
     m_name = name;
@@ -41,16 +40,40 @@ niTask::niTask(QString name)
 }
 
 //------------------------------------------------------------------------------------------------------
-// Destructor I
+// Destructor
 niTask::~niTask()
 {
     DAQmxClearTask(*this->getTaskHandle());
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::isInitialized()
+bool niTask::setIgnoreTaskParamsInitialization()
 {
-    if (m_rateHz < 1 || m_samplesToRW < 1 || m_mode < 0 || m_mode > 2)
+    return m_ignoreTaskParamsInitialization = true;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::getIgnoreTaskParamsInitialization()
+{
+    return m_ignoreTaskParamsInitialization;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::setPassThroughToPeripheralClasses()
+{
+    return m_passThroughToPeripheralClasses = true;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::getPassThroughToPeripheralClasses()
+{
+    return m_passThroughToPeripheralClasses;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::taskParamsValid()
+{
+    if ( !getIgnoreTaskParamsInitialization() && ((m_taskParametersInitialized == false) || (m_rateHz < 1 || m_samplesToRW < 1 || m_mode < 0 || m_mode > 2)) )
     {
         return false;
     }
@@ -58,6 +81,42 @@ bool niTask::isInitialized()
     {
         return true;
     }
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::setTaskParamsInitialized()
+{
+    return m_taskParametersInitialized = true;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::getTaskParamsInitialized()
+{
+    return m_taskParametersInitialized;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::setTaskParamsSet()
+{
+    return m_taskParametersSet = true;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::getTaskParamsSet()
+{
+    return m_taskParametersSet;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::setChParamsInitialized()
+{
+    return m_chParametersInitialized = true;
+}
+
+//------------------------------------------------------------------------------------------------------
+bool niTask::getChParamsInitialized()
+{
+    return m_chParametersInitialized;
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -96,7 +155,7 @@ ito::RetVal niTask::applyParameters()
         // TODO: Up to now, all tasks are finite
         case niTaskModeFinite:
         {
-            // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or don´t use it.
+            // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or do not use it.
             err = DAQmxCfgSampClkTiming(m_task, NULL /*OnboardClock*/, m_rateHz, DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, m_samplesToRW);
             break;
         }
@@ -105,15 +164,15 @@ ito::RetVal niTask::applyParameters()
             err = DAQmxCfgSampClkTiming(m_task, NULL /*OnboardClock*/, m_rateHz, DAQmx_Val_Rising, DAQmx_Val_ContSamps, m_samplesToRW);
             break;
         }
-        case niTaskModeOnDemand:
+        case niTaskModeOnDemand: // Hardware Timed Single Point
         {
             err = DAQmxCfgSampClkTiming(m_task, NULL /*OnboardClock*/, m_rateHz, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, m_samplesToRW);
             break;
         }
         default:
         {
-            // TODO: through an error!
-            retval += ito::RetVal::format(ito::retError, 0, "The given mode does not exist. \n Mode: %i", m_mode);
+            // TODO: throw an error!
+            retval += ito::RetVal::format(ito::retError, 0, "niTask::applyParameters: Task mode %i is undefined. \n", m_mode);
         }
     }
     // If a triggerport is defined, set task to triggermode
@@ -121,14 +180,9 @@ ito::RetVal niTask::applyParameters()
     {
         err = DAQmxCfgDigEdgeStartTrig(m_task, this->getTriggerPort().toLatin1().data(), this->getTriggerEdge());
     }
-    if (err > 0 && retval == ito::retOk)
-    {
-        retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while configuring channel. \n Code: %i", err);
-    }
-    else if (err < 0 && retval == ito::retOk)
-    {
-        retval += ito::RetVal::format(ito::retError, 0, "Error occured while configuring channel. \n Code: %i", err);
-    }
+
+    retval += checkError(err, "niTask::applyParameters: NI function returned configure channel abnormality");
+
     return retval;
 }
 
@@ -146,14 +200,9 @@ ito::RetVal niTask::resetTaskHandle()
         m_triggerEdge = 0;
     }
     int err = DAQmxCreateTask(m_name.toLatin1(), &m_task);
-    if (err > 0)
-    {
-        retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while creating Task. \n Code: %i", err);
-    }
-    else if (err < 0)
-    {
-        retval += ito::RetVal::format(ito::retError, 0, "Error occured while creating Task. \n Code: %i", err);
-    }    
+
+    retval += checkError(err, "niTask::resetTaskHandle: NI function returned create task abnormality");
+
     m_chCount = 0;
     return retval;
 }
@@ -162,21 +211,21 @@ ito::RetVal niTask::run()
 {
     ito::RetVal retVal = ito::retOk;
     int err = 0;
-    if (this->isInitialized())
+
+    // getIgnoreTaskParamsInitialization() should be true only when unittesting error reporting functionality
+
+    if ( this->getTaskParamsInitialized() || this->getIgnoreTaskParamsInitialization() )
     {
-         retVal += this->applyParameters();
          if (!retVal.containsError())
          {
              err = DAQmxStartTask(*this->getTaskHandle());
-             if (err != 0)
-             {
-                 retVal += ito::RetVal::format(ito::retError, 0, "Error occured while starting the task. Code: %i.", err);
-             }
+
+	     retVal += checkError(err, "niTask::run: NI function returned start task abnormality");
          }
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "Task cannot be started, since it is not initialized");
+        retVal += ito::RetVal(ito::retError, 0, "niTask::run: Task cannot be started, since it is not initialized");
     }
     
     return retVal;
@@ -206,7 +255,7 @@ ito::RetVal niTask::free()
 //*****************************************//
 
 //------------------------------------------------------------------------------------------------------
-// Constructor I
+// Constructor
 niBaseChannel::niBaseChannel(const QString virtChannelName)
 {
 
@@ -225,7 +274,7 @@ niBaseChannel::~niBaseChannel()
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
-// Constructor I
+// Constructor
 niAnalogInputChannel::niAnalogInputChannel()
 {
     this->setChType(niBaseChannel::chTypeAnalog);
@@ -244,9 +293,8 @@ niAnalogInputChannel::~niAnalogInputChannel()
 ito::RetVal niAnalogInputChannel::applyParameters(niTask *task)
 {
     ito::RetVal retval;
-    DAQmx_Val_RSE;
     QString physName = m_devId + "/" + m_chId;
-    int config;
+    int config = 0;
     switch(m_analogInputConfig)
     {
         case niAnInConfDefault:
@@ -276,23 +324,39 @@ ito::RetVal niAnalogInputChannel::applyParameters(niTask *task)
         }
         default:
         {
-            retval += ito::RetVal::format(ito::retError, 0, "Configmode %i is not in range of 0 to 4", m_analogInputConfig);
+            retval += ito::RetVal::format(ito::retError, 0, "niAnalogInputChannel::applyParameters: Configmode %i is not in range of 0 to 4", m_analogInputConfig);
         }
     }
-    int ret = DAQmxCreateAIVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), config, -m_inputLim, m_inputLim, DAQmx_Val_Volts, NULL);
-    task->channelAdded(physName);
-    if (ret > 0)
+    if( !(task->getTaskParamsInitialized()) )
     {
-        retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while creating channel. \n Code: %i", ret);
+        retval += ito::RetVal(ito::retError, 0, "niAnalogInputChannel::applyParameters: task parameters must be set before setting channel parameters.");
     }
-    else if (ret < 0)
+	
+	// getIgnoreTaskParamsInitialization() should return true only if setParam(configForTesting) is given with the flag ignoreTaskParamInit
+
+	else if ( ((m_analogInputConfig >= 0 && m_analogInputConfig <= 4) || task->getIgnoreTaskParamsInitialization()) && !retval.containsError() )
     {
-        retval += ito::RetVal::format(ito::retError, 0, "Error occured while creating channel. \n Code: %i", ret);
+        int err = DAQmxCreateAIVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), config, m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
+        task->channelAdded(physName);
+        retval += checkError(err, "niAnalogInputChannel::applyParameters: NI routine reported a create channel abnormality -");
     }
-    else
-    {
-        retval += ito::retOk;
-    }
+
+    // It may seem odd that after the channel parameters are set, we then set the task parameters. This arises because the plugin requires
+    // that task parameters are set before channel parameters. However, the underlying NI functions require the opposite. Task parameters
+    // cannot be set until there is at least one device associated with the task. Otherwise the NI task call (DAQmxCfgSampClkTiming() )
+    // returns an error. So, niTask::applyParameters() is called immediately after the first call to niAnalogInputChannel::applyParameters().
+    // To ensure niTask::applyParameters() is called only once, the boolean *task->getTaskParamsSet() is tested. If false, the call to
+    // niTask::applyParameters() is made. Otherwise, it is not.
+
+    if ( !retval.containsError() && task->getTaskParamsInitialized() )
+        {
+        if (task->getTaskParamsSet() == false)
+            {
+            retval += task->applyParameters();
+            task->setTaskParamsSet();
+            }
+        }
+
     return retval;
 }
 
@@ -304,7 +368,8 @@ QStringList niAnalogInputChannel::getParameters()
     p.append(this->getDevID());
     p.append(this->getChID());
     p.append(QString::number(this->getAnalogInputConfig()));
-    p.append(QString::number(this->getInputLim()));
+    p.append(QString::number(this->getMinOutputLim()));
+    p.append(QString::number(this->getMaxOutputLim()));
     return p;
 }
 
@@ -313,7 +378,7 @@ QStringList niAnalogInputChannel::getParameters()
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
-// Constructor I
+// Constructor
 niAnalogOutputChannel::niAnalogOutputChannel()
 {
     this->setChType(niBaseChannel::chTypeAnalog);
@@ -334,20 +399,11 @@ ito::RetVal niAnalogOutputChannel::applyParameters(niTask *task)
     ito::RetVal retval;
     QString physName = m_devId + "/" + m_chId;
     // TODO: Check if parameters are in Range and min is smaller than max
-    int ret = DAQmxCreateAOVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
+    int err = DAQmxCreateAOVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
     task->channelAdded(physName);
-    if (ret > 0)
-    {
-        retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while creating channel. \n Code: %i", ret);
-    }
-    else if (ret < 0)
-    {
-        retval += ito::RetVal::format(ito::retError, 0, "Error occured while creating channel. \n Code: %i", ret);
-    }
-    else
-    {
-        retval += ito::retOk;
-    }
+
+    retval += checkError(err, "niAnalogOutputChannel::applyParameters: NI function returend create channel abnormality");
+
     return retval;
 }
 
@@ -368,7 +424,7 @@ QStringList niAnalogOutputChannel::getParameters()
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
-// Constructor I
+// Constructor
 niDigitalInputChannel::niDigitalInputChannel()
 {
     this->setChType(niBaseChannel::chTypeAnalog);
@@ -389,20 +445,12 @@ ito::RetVal niDigitalInputChannel::applyParameters(niTask *task)
     ito::RetVal retval;
     QString physName = m_devId + "/" + m_chId;
     // TODO: Check if parameters are in Range and min is smaller than max
-    int ret = DAQmxCreateDIChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), DAQmx_Val_ChanForAllLines);
+    int err = DAQmxCreateDIChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), DAQmx_Val_ChanForAllLines);
     task->channelAdded(physName);
-    if (ret > 0)
-    {
-        retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while creating channel. \n Code: %i", ret);
-    }
-    else if (ret < 0)
-    {
-        retval += ito::RetVal::format(ito::retError, 0, "Error occured while creating channel. \n Code: %i", ret);
-    }
-    else
-    {
-        retval += ito::retOk;
-    }
+
+
+    retval += checkError(err, "niDigitalInputChannel::applyParameters: NI function returned create channel abnormality");
+
     return retval;
 }
 
@@ -418,7 +466,7 @@ QStringList niDigitalInputChannel::getParameters()
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
-// Constructor I
+// Constructor
 niDigitalOutputChannel::niDigitalOutputChannel()
 {
     this->setChType(niBaseChannel::chTypeAnalog);
@@ -439,20 +487,11 @@ ito::RetVal niDigitalOutputChannel::applyParameters(niTask *task)
     ito::RetVal retval;
     QString physName = m_devId + "/" + m_chId;
     // TODO: Check if parameters are in Range and min is smaller than max
-    int ret = DAQmxCreateDOChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), DAQmx_Val_ChanForAllLines);
+    int err = DAQmxCreateDOChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), DAQmx_Val_ChanForAllLines);
     task->channelAdded(physName);
-    if (ret > 0)
-    {
-        retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while creating channel. \n Code: %i", ret);
-    }
-    else if (ret < 0)
-    {
-        retval += ito::RetVal::format(ito::retError, 0, "Error occured while creating channel. \n Code: %i", ret);
-    }
-    else
-    {
-        retval += ito::retOk;
-    }
+
+    retval += checkError(err, "niDigitalOutputChannel::applyParameters: NI function returned create channel abnormality");
+
     return retval;
 }
 
@@ -468,7 +507,7 @@ QStringList niDigitalOutputChannel::getParameters()
 //*************************************//
 
 //------------------------------------------------------------------------------------------------------
-// Constructor I
+// Constructor
 niChannelList::niChannelList(QString device)
 {
     getChannelsOfDevice(device);
@@ -506,7 +545,8 @@ int niChannelList::getNrOfChannels(niBaseChannel::niChType chType)
 // getChannelsOfDevice
 void niChannelList::getChannelsOfDevice(const QString dev)
 {
-    char buffer[5120]="";
+    const int ARRAY_lENGTH = 5120;
+    char buffer[ARRAY_lENGTH]="";
     this->clear();
 
     DAQmxGetDevAIPhysicalChans(qPrintable(dev), buffer, sizeof(buffer));
@@ -514,17 +554,32 @@ void niChannelList::getChannelsOfDevice(const QString dev)
     {
         this->insert(s, NULL);
     }
+    memset(buffer, '\0', sizeof(char)* strlen(buffer));
     DAQmxGetDevAOPhysicalChans(qPrintable(dev), buffer, sizeof(buffer));
     foreach(const QString &s, QString(buffer).split(", "))
     {
         this->insert(s, NULL);
     }
+    memset(buffer, '\0', sizeof(char)* strlen(buffer));
     DAQmxGetDevDIPorts(qPrintable(dev), buffer, sizeof(buffer));
     foreach(const QString &s, QString(buffer).split(", "))
     {
         this->insert(s, NULL);
     }
+    memset(buffer, '\0', sizeof(char)* strlen(buffer));
+    DAQmxGetDevDOPorts(qPrintable(dev), buffer, sizeof(buffer));
+    foreach(const QString &s, QString(buffer).split(", "))
+    {
+        this->insert(s, NULL);
+    }
+    memset(buffer, '\0', sizeof(char)* strlen(buffer));
     DAQmxGetDevCIPhysicalChans(qPrintable(dev), buffer, sizeof(buffer));
+    foreach(const QString &s, QString(buffer).split(", "))
+    {
+        this->insert(s, NULL);
+    }
+    memset(buffer, '\0', sizeof(char)* strlen(buffer));
+    DAQmxGetDevCOPhysicalChans(qPrintable(dev), buffer, sizeof(buffer));
     foreach(const QString &s, QString(buffer).split(", "))
     {
         this->insert(s, NULL);
@@ -574,6 +629,7 @@ QStringList niChannelList::getAllChannelAsString()
 QStringList niChannelList::getAllChParameters(niBaseChannel::niChType type,  niBaseChannel::niChIoType io)
 {
     QStringList params;
+
     foreach(niBaseChannel* c, this->values())
     {
         if (c != NULL)
@@ -584,6 +640,7 @@ QStringList niChannelList::getAllChParameters(niBaseChannel::niChType type,  niB
             }
         }
     }
+
     return params;
 }
         

@@ -26,9 +26,21 @@
 #include <qstring.h>
 #include <qvector.h>
 #include <common/retVal.h>
-#include "NIDAQmx.h"
+
+// This is required, since NIDAQmx.h (in the NI library) for linux and apple systems defines
+// int64 as long long int. This is incompatible with open_cv, which defines it as int64_t
+
+#if defined(__linux__) || defined(__APPLE__)
+    #ifndef _NI_int64_DEFINED_
+    #define _NI_int64_DEFINED_   
+        typedef int64_t      int64;
+    #endif
+#endif
+
+#include "NIDAQmx.h" // This is the NI C Library .h file
 #include <qobject.h>
 #include <qstandarditemmodel.h>
+#include "NI-DAQmxError.h"
 
 class niTask
 {
@@ -61,7 +73,17 @@ class niTask
         bool isDone();
         ito::RetVal stop();
         ito::RetVal free();
-        bool isInitialized();
+        bool getTaskParamsInitialized();
+        bool setTaskParamsInitialized();
+        bool getTaskParamsSet();
+        bool setTaskParamsSet();
+        bool getChParamsInitialized();
+        bool setChParamsInitialized();
+        bool taskParamsValid();
+        bool getIgnoreTaskParamsInitialization();
+        bool setIgnoreTaskParamsInitialization();
+        bool getPassThroughToPeripheralClasses();
+        bool setPassThroughToPeripheralClasses();
         //niChannelList getChannelPointer();
         TaskHandle* getTaskHandle(){return &m_task;};
         uInt32 getChCount();
@@ -81,6 +103,11 @@ class niTask
         uInt32 m_chCount;
         TaskHandle m_task;
         QStringList m_chList;
+        bool m_taskParametersInitialized = false;
+        bool m_taskParametersSet = false;
+        bool m_chParametersInitialized = false;
+        bool m_ignoreTaskParamsInitialization = false; // used only for testing
+        bool m_passThroughToPeripheralClasses = false; // used only for testing
 };
 
 class niBaseChannel
@@ -137,8 +164,11 @@ class niAnalogInputChannel : public niBaseChannel
         niAnalogInputChannel();
         ~niAnalogInputChannel();
 
-        double getInputLim(){return m_inputLim;};
-        void setInputLim(const double max){m_inputLim = max;};
+        int getMaxOutputLim(){return m_maxOutputLim;};
+        void setMaxOutputLim(const int max){m_maxOutputLim = max;};
+
+        int getMinOutputLim(){return m_minOutputLim;};
+        void setMinOutputLim(const int min){m_minOutputLim = min;};
 
         int getAnalogInputMode(){return m_analogInputMode;};
         void setAnalogInputMode(const int mode){m_analogInputMode = mode;};
@@ -151,8 +181,10 @@ class niAnalogInputChannel : public niBaseChannel
 
     private:
         int m_analogInputConfig;
-        double m_inputLim;
+        int m_maxOutputLim;
+        int m_minOutputLim;
         int m_analogInputMode;
+        bool m_analogInParamsInitialized = false;
 
 };
 
@@ -177,6 +209,7 @@ class niAnalogOutputChannel : public niBaseChannel
     private:
         int m_maxOutputLim;
         int m_minOutputLim;
+        bool m_analogOutParamsInitialized = false;
 };
 
 class niDigitalInputChannel : public niBaseChannel
@@ -188,6 +221,8 @@ class niDigitalInputChannel : public niBaseChannel
         ito::RetVal applyParameters(niTask *task);
         QStringList getParameters();
 
+    private:
+        bool m_digitalInParamsInitialized = false;
 };
 
 class niDigitalOutputChannel : public niBaseChannel
@@ -200,6 +235,7 @@ class niDigitalOutputChannel : public niBaseChannel
         QStringList getParameters();
 
     private:
+        bool m_digitalOutParamsInitialized = false;
 
 };
 

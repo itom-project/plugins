@@ -181,6 +181,7 @@ IF(NIDAQMX_FOUND)
 		${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-PeripheralClasses.h
+		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmxError.h
 		#add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
 	)
 
@@ -189,6 +190,7 @@ IF(NIDAQMX_FOUND)
 		#${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-PeripheralClasses.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmxError.cpp
 		#add further source files here
 	)
 

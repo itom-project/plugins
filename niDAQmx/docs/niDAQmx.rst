@@ -76,7 +76,7 @@ Example: the answer of taskStatus => "ai,0;ao,0;ci,-1;co,-1;di,-1;do,-1"
     2 = RSE
     3 = NRSE
     4 = Pseudodiff
-    Example: "Dev1/ai0,4,10"
+    Example: "Dev1/ai0,3,10"
 **aoChParams**: {str},
     Set/Get the parameters for an analog input channel. For further information refer to the gui dialog. !Not tested yet!
     "<device>/<channel>,<minVolt>,<maxVolt>" 
@@ -143,5 +143,5 @@ Known Issues
 Changelog
 =========
 
-* itom setup 3.1.0: This plugin has been compiled using the niDAQmx 17.6.0
-* itom setup >3.1.0: This plugin has been compiled using the niDAQmx 18.6.0
+* itom setup 3.1.0: This plugin has been compiled using the niDAQmx 18.1.0 (Linux)
+* itom setup 3.1.0: This plugin has been compiled using the niDAQmx 18.6.0 (Windows)
