@@ -26,12 +26,12 @@
 #include <NI-PeripheralClasses.h>
 
 //*****************************************//
-//      niTask Class implementations       //
+//      NiTask Class implementations       //
 //*****************************************//
 
 //------------------------------------------------------------------------------------------------------
 // Constructor
-niTask::niTask(QString name)
+NiTask::NiTask(QString name)
 {
     m_name = name;
     m_task = NULL;
@@ -41,37 +41,37 @@ niTask::niTask(QString name)
 
 //------------------------------------------------------------------------------------------------------
 // Destructor
-niTask::~niTask()
+NiTask::~NiTask()
 {
     DAQmxClearTask(*this->getTaskHandle());
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::setIgnoreTaskParamsInitialization()
+bool NiTask::setIgnoreTaskParamsInitialization()
 {
     return m_ignoreTaskParamsInitialization = true;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::getIgnoreTaskParamsInitialization()
+bool NiTask::getIgnoreTaskParamsInitialization()
 {
     return m_ignoreTaskParamsInitialization;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::setPassThroughToPeripheralClasses()
+bool NiTask::setPassThroughToPeripheralClasses()
 {
     return m_passThroughToPeripheralClasses = true;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::getPassThroughToPeripheralClasses()
+bool NiTask::getPassThroughToPeripheralClasses()
 {
     return m_passThroughToPeripheralClasses;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::taskParamsValid()
+bool NiTask::taskParamsValid()
 {
     if ( !getIgnoreTaskParamsInitialization() && ((m_taskParametersInitialized == false) || (m_rateHz < 1 || m_samplesToRW < 1 || m_mode < 0 || m_mode > 2)) )
     {
@@ -84,69 +84,69 @@ bool niTask::taskParamsValid()
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::setTaskParamsInitialized()
+bool NiTask::setTaskParamsInitialized()
 {
     return m_taskParametersInitialized = true;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::getTaskParamsInitialized()
+bool NiTask::getTaskParamsInitialized()
 {
     return m_taskParametersInitialized;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::setTaskParamsSet()
+bool NiTask::setTaskParamsSet()
 {
     return m_taskParametersSet = true;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::getTaskParamsSet()
+bool NiTask::getTaskParamsSet()
 {
     return m_taskParametersSet;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::setChParamsInitialized()
+bool NiTask::setChParamsInitialized()
 {
     return m_chParametersInitialized = true;
 }
 
 //------------------------------------------------------------------------------------------------------
-bool niTask::getChParamsInitialized()
+bool NiTask::getChParamsInitialized()
 {
     return m_chParametersInitialized;
 }
 
 //------------------------------------------------------------------------------------------------------
-uInt32 niTask::getChCount()
+uInt32 NiTask::getChCount()
 {
     DAQmxGetTaskNumChans(*this->getTaskHandle(), &m_chCount);
     return m_chCount;
 }
 
 //------------------------------------------------------------------------------------------------------
-QStringList niTask::getChList()
+QStringList NiTask::getChList()
 {
     return m_chList;
 }
 
 //------------------------------------------------------------------------------------------------------
-//QList<niBaseChannel*> niTask::getChannelPointer()
+//QList<NiBaseChannel*> NiTask::getChannelPointer()
 //{
 //
 //}
 
 //------------------------------------------------------------------------------------------------------
-void niTask::channelAdded(const QString name)
+void NiTask::channelAdded(const QString &name)
 {
     m_chList.append(name);
 }
 
 //------------------------------------------------------------------------------------------------------
 // sets the task in the right mode
-ito::RetVal niTask::applyParameters()
+ito::RetVal NiTask::applyParameters()
 {
     ito::RetVal retval = ito::retOk;
     int err = 0;
@@ -172,7 +172,7 @@ ito::RetVal niTask::applyParameters()
         default:
         {
             // TODO: throw an error!
-            retval += ito::RetVal::format(ito::retError, 0, "niTask::applyParameters: Task mode %i is undefined. \n", m_mode);
+            retval += ito::RetVal::format(ito::retError, 0, "NiTask::applyParameters: Task mode %i is undefined. \n", m_mode);
         }
     }
     // If a triggerport is defined, set task to triggermode
@@ -181,12 +181,13 @@ ito::RetVal niTask::applyParameters()
         err = DAQmxCfgDigEdgeStartTrig(m_task, this->getTriggerPort().toLatin1().data(), this->getTriggerEdge());
     }
 
-    retval += checkError(err, "niTask::applyParameters: NI function returned configure channel abnormality");
+    retval += checkError(err, "NiTask::applyParameters: NI function returned configure channel abnormality");
 
     return retval;
 }
 
-ito::RetVal niTask::resetTaskHandle()
+//--------------------------------------------------------------------------------
+ito::RetVal NiTask::resetTaskHandle()
 {
     ito::RetVal retval;
     if (m_task != NULL)
@@ -201,13 +202,14 @@ ito::RetVal niTask::resetTaskHandle()
     }
     int err = DAQmxCreateTask(m_name.toLatin1(), &m_task);
 
-    retval += checkError(err, "niTask::resetTaskHandle: NI function returned create task abnormality");
+    retval += checkError(err, "NiTask::resetTaskHandle: NI function returned create task abnormality");
 
     m_chCount = 0;
     return retval;
 }
 
-ito::RetVal niTask::run()
+//--------------------------------------------------------------------------------
+ito::RetVal NiTask::run()
 {
     ito::RetVal retVal = ito::retOk;
     int err = 0;
@@ -220,30 +222,33 @@ ito::RetVal niTask::run()
          {
              err = DAQmxStartTask(*this->getTaskHandle());
 
-	     retVal += checkError(err, "niTask::run: NI function returned start task abnormality");
+	     retVal += checkError(err, "NiTask::run: NI function returned start task abnormality");
          }
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "niTask::run: Task cannot be started, since it is not initialized");
+        retVal += ito::RetVal(ito::retError, 0, "NiTask::run: Task cannot be started, since it is not initialized");
     }
     
     return retVal;
 }
 
-bool niTask::isDone()
+//--------------------------------------------------------------------------------
+bool NiTask::isDone()
 {
     bool32 done;
     DAQmxIsTaskDone(*this->getTaskHandle(), &done);
     return done;
 }
 
-ito::RetVal niTask::stop()
+//--------------------------------------------------------------------------------
+ito::RetVal NiTask::stop()
 {
     return DAQmxStopTask(*this->getTaskHandle());
 }
 
-ito::RetVal niTask::free()
+//--------------------------------------------------------------------------------
+ito::RetVal NiTask::free()
 {
     ito::RetVal retVal;
     retVal = DAQmxClearTask(*this->getTaskHandle());
@@ -251,46 +256,46 @@ ito::RetVal niTask::free()
 }
 
 //*****************************************//
-//   niBaseChannel Class implementations   //
+//   NiBaseChannel Class implementations   //
 //*****************************************//
 
 //------------------------------------------------------------------------------------------------------
 // Constructor
-niBaseChannel::niBaseChannel(const QString virtChannelName)
+NiBaseChannel::NiBaseChannel(const QString virtChannelName)
 {
 
 }
 
 //------------------------------------------------------------------------------------------------------
 // Destructor
-niBaseChannel::~niBaseChannel()
+NiBaseChannel::~NiBaseChannel()
 {
 
 }
 
 
 //************************************************//
-//   niAnalogInputChannel Class implementations   //
+//   NiAnalogInputChannel Class implementations   //
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
 // Constructor
-niAnalogInputChannel::niAnalogInputChannel()
+NiAnalogInputChannel::NiAnalogInputChannel()
 {
-    this->setChType(niBaseChannel::chTypeAnalog);
-    this->setIoType(niBaseChannel::chIoInput);
+    this->setChType(NiBaseChannel::chTypeAnalog);
+    this->setIoType(NiBaseChannel::chIoInput);
 }
 
 //------------------------------------------------------------------------------------------------------
 // Destructor
-niAnalogInputChannel::~niAnalogInputChannel()
+NiAnalogInputChannel::~NiAnalogInputChannel()
 {
 
 }
 
 //------------------------------------------------------------------------------------------------------
 // applyParameters
-ito::RetVal niAnalogInputChannel::applyParameters(niTask *task)
+ito::RetVal NiAnalogInputChannel::applyParameters(NiTask *task)
 {
     ito::RetVal retval;
     QString physName = m_devId + "/" + m_chId;
@@ -324,29 +329,31 @@ ito::RetVal niAnalogInputChannel::applyParameters(niTask *task)
         }
         default:
         {
-            retval += ito::RetVal::format(ito::retError, 0, "niAnalogInputChannel::applyParameters: Configmode %i is not in range of 0 to 4", m_analogInputConfig);
+            retval += ito::RetVal::format(ito::retError, 0, "NiAnalogInputChannel::applyParameters: Configmode %i is not in range of 0 to %i", m_analogInputConfig, NiAnalogInputConfig::niAnInConfEndValue - 1);
         }
     }
-    if( !(task->getTaskParamsInitialized()) )
-    {
-        retval += ito::RetVal(ito::retError, 0, "niAnalogInputChannel::applyParameters: task parameters must be set before setting channel parameters.");
-    }
-	
-	// getIgnoreTaskParamsInitialization() should return true only if setParam(configForTesting) is given with the flag ignoreTaskParamInit
 
-	else if ( ((m_analogInputConfig >= 0 && m_analogInputConfig <= 4) || task->getIgnoreTaskParamsInitialization()) && !retval.containsError() )
+    if (!retval.containsError())
     {
-        int err = DAQmxCreateAIVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), config, m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
-        task->channelAdded(physName);
-        retval += checkError(err, "niAnalogInputChannel::applyParameters: NI routine reported a create channel abnormality -");
+        // getIgnoreTaskParamsInitialization() should return true only if setParam(configForTesting) is given with the flag ignoreTaskParamInit
+        if (!(task->getTaskParamsInitialized()) && !(task->getIgnoreTaskParamsInitialization()))
+        {
+            retval += ito::RetVal(ito::retError, 0, "NiAnalogInputChannel::applyParameters: task parameters must be set before setting channel parameters.");
+        }
+        else
+        {
+            int err = DAQmxCreateAIVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), config, m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
+            task->channelAdded(physName);
+            retval += checkError(err, "NiAnalogInputChannel::applyParameters: NI routine reported a create channel abnormality -");
+        }
     }
 
     // It may seem odd that after the channel parameters are set, we then set the task parameters. This arises because the plugin requires
     // that task parameters are set before channel parameters. However, the underlying NI functions require the opposite. Task parameters
     // cannot be set until there is at least one device associated with the task. Otherwise the NI task call (DAQmxCfgSampClkTiming() )
-    // returns an error. So, niTask::applyParameters() is called immediately after the first call to niAnalogInputChannel::applyParameters().
-    // To ensure niTask::applyParameters() is called only once, the boolean *task->getTaskParamsSet() is tested. If false, the call to
-    // niTask::applyParameters() is made. Otherwise, it is not.
+    // returns an error. So, NiTask::applyParameters() is called immediately after the first call to NiAnalogInputChannel::applyParameters().
+    // To ensure NiTask::applyParameters() is called only once, the boolean *task->getTaskParamsSet() is tested. If false, the call to
+    // NiTask::applyParameters() is made. Otherwise, it is not.
 
     if ( !retval.containsError() && task->getTaskParamsInitialized() )
         {
@@ -362,7 +369,7 @@ ito::RetVal niAnalogInputChannel::applyParameters(niTask *task)
 
 //------------------------------------------------------------------------------------------------------
 // returnParameters
-QStringList niAnalogInputChannel::getParameters()
+QStringList NiAnalogInputChannel::getParameters()
 {
     QStringList p;
     p.append(this->getDevID());
@@ -374,27 +381,27 @@ QStringList niAnalogInputChannel::getParameters()
 }
 
 //************************************************//
-//   niAnalogOutputChannel Class implementations   //
+//   NiAnalogOutputChannel Class implementations   //
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
 // Constructor
-niAnalogOutputChannel::niAnalogOutputChannel()
+NiAnalogOutputChannel::NiAnalogOutputChannel()
 {
-    this->setChType(niBaseChannel::chTypeAnalog);
-    this->setIoType(niBaseChannel::chIoOutput);
+    this->setChType(NiBaseChannel::chTypeAnalog);
+    this->setIoType(NiBaseChannel::chIoOutput);
 }
 
 //------------------------------------------------------------------------------------------------------
 // Destructor
-niAnalogOutputChannel::~niAnalogOutputChannel()
+NiAnalogOutputChannel::~NiAnalogOutputChannel()
 {
 
 }
 
 //------------------------------------------------------------------------------------------------------
 // applyParameters
-ito::RetVal niAnalogOutputChannel::applyParameters(niTask *task)
+ito::RetVal NiAnalogOutputChannel::applyParameters(NiTask *task)
 {
     ito::RetVal retval;
     QString physName = m_devId + "/" + m_chId;
@@ -402,14 +409,14 @@ ito::RetVal niAnalogOutputChannel::applyParameters(niTask *task)
     int err = DAQmxCreateAOVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
     task->channelAdded(physName);
 
-    retval += checkError(err, "niAnalogOutputChannel::applyParameters: NI function returend create channel abnormality");
+    retval += checkError(err, "NiAnalogOutputChannel::applyParameters: NI function returend create channel abnormality");
 
     return retval;
 }
 
 //------------------------------------------------------------------------------------------------------
 // returnParameters
-QStringList niAnalogOutputChannel::getParameters()
+QStringList NiAnalogOutputChannel::getParameters()
 {
     QStringList p;
     p.append(this->getDevID());
@@ -420,27 +427,27 @@ QStringList niAnalogOutputChannel::getParameters()
 }
 
 //************************************************//
-//   niDigitalInputChannel Class implementations   //
+//   NiDigitalInputChannel Class implementations   //
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
 // Constructor
-niDigitalInputChannel::niDigitalInputChannel()
+NiDigitalInputChannel::NiDigitalInputChannel()
 {
-    this->setChType(niBaseChannel::chTypeAnalog);
-    this->setIoType(niBaseChannel::chIoOutput);
+    this->setChType(NiBaseChannel::chTypeAnalog);
+    this->setIoType(NiBaseChannel::chIoOutput);
 }
 
 //------------------------------------------------------------------------------------------------------
 // Destructor
-niDigitalInputChannel::~niDigitalInputChannel()
+NiDigitalInputChannel::~NiDigitalInputChannel()
 {
 
 }
 
 //------------------------------------------------------------------------------------------------------
 // applyParameters
-ito::RetVal niDigitalInputChannel::applyParameters(niTask *task)
+ito::RetVal NiDigitalInputChannel::applyParameters(NiTask *task)
 {
     ito::RetVal retval;
     QString physName = m_devId + "/" + m_chId;
@@ -449,40 +456,40 @@ ito::RetVal niDigitalInputChannel::applyParameters(niTask *task)
     task->channelAdded(physName);
 
 
-    retval += checkError(err, "niDigitalInputChannel::applyParameters: NI function returned create channel abnormality");
+    retval += checkError(err, "NiDigitalInputChannel::applyParameters: NI function returned create channel abnormality");
 
     return retval;
 }
 
 //------------------------------------------------------------------------------------------------------
 // returnParameters
-QStringList niDigitalInputChannel::getParameters()
+QStringList NiDigitalInputChannel::getParameters()
 {
     return QStringList("notImplementedYet");
 }
 
 //************************************************//
-//  niDigitalOutputChannel Class implementations  //
+//  NiDigitalOutputChannel Class implementations  //
 //************************************************//
 
 //------------------------------------------------------------------------------------------------------
 // Constructor
-niDigitalOutputChannel::niDigitalOutputChannel()
+NiDigitalOutputChannel::NiDigitalOutputChannel()
 {
-    this->setChType(niBaseChannel::chTypeAnalog);
-    this->setIoType(niBaseChannel::chIoOutput);
+    this->setChType(NiBaseChannel::chTypeAnalog);
+    this->setIoType(NiBaseChannel::chIoOutput);
 }
 
 //------------------------------------------------------------------------------------------------------
 // Destructor
-niDigitalOutputChannel::~niDigitalOutputChannel()
+NiDigitalOutputChannel::~NiDigitalOutputChannel()
 {
 
 }
 
 //------------------------------------------------------------------------------------------------------
 // applyParameters
-ito::RetVal niDigitalOutputChannel::applyParameters(niTask *task)
+ito::RetVal NiDigitalOutputChannel::applyParameters(NiTask *task)
 {
     ito::RetVal retval;
     QString physName = m_devId + "/" + m_chId;
@@ -490,42 +497,48 @@ ito::RetVal niDigitalOutputChannel::applyParameters(niTask *task)
     int err = DAQmxCreateDOChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), DAQmx_Val_ChanForAllLines);
     task->channelAdded(physName);
 
-    retval += checkError(err, "niDigitalOutputChannel::applyParameters: NI function returned create channel abnormality");
+    retval += checkError(err, "NiDigitalOutputChannel::applyParameters: NI function returned create channel abnormality");
 
     return retval;
 }
 
 //------------------------------------------------------------------------------------------------------
 // returnParameters
-QStringList niDigitalOutputChannel::getParameters()
+QStringList NiDigitalOutputChannel::getParameters()
 {
     return QStringList("notImplementedYet");
 }
 
 //*************************************//
-// niChannelList Class implementations //
+// NiChannelList Class implementations //
 //*************************************//
+
+NiChannelList::NiChannelList()
+{
+    clear();
+}
 
 //------------------------------------------------------------------------------------------------------
 // Constructor
-niChannelList::niChannelList(QString device)
+NiChannelList::NiChannelList(const QString &device)
 {
-    getChannelsOfDevice(device);
+    clear();
+    updateChannelsOfDevice(device);
 }
 
 //------------------------------------------------------------------------------------------------------
 // Destructor
-niChannelList::~niChannelList()
+NiChannelList::~NiChannelList()
 {
 
 }
 
 //------------------------------------------------------------------------------------------------------
 // returns a vector of pointer, pointing to all elements of the requested type
-QVector<niBaseChannel*> niChannelList::getAllChannelOfType(niBaseChannel::niChType chType)
+QVector<NiBaseChannel*> NiChannelList::getAllChannelOfType(NiBaseChannel::NiChType chType)
 {
-    QVector<niBaseChannel*> retVector;  
-    foreach(niBaseChannel* c, this->values())
+    QVector<NiBaseChannel*> retVector;  
+    foreach(NiBaseChannel* c, this->values())
     {
         if (c->getChType() == chType)
         {
@@ -536,14 +549,14 @@ QVector<niBaseChannel*> niChannelList::getAllChannelOfType(niBaseChannel::niChTy
 }
 
 //------------------------------------------------------------------------------------------------------
-int niChannelList::getNrOfChannels(niBaseChannel::niChType chType)
+int NiChannelList::getNrOfChannels(NiBaseChannel::NiChType chType)
 {
     return getAllChannelOfType(chType).size();
 }
 
 //------------------------------------------------------------------------------------------------------
-// getChannelsOfDevice
-void niChannelList::getChannelsOfDevice(const QString dev)
+// updateChannelsOfDevice
+void NiChannelList::updateChannelsOfDevice(const QString &dev)
 {
     const int ARRAY_lENGTH = 5120;
     char buffer[ARRAY_lENGTH]="";
@@ -587,12 +600,12 @@ void niChannelList::getChannelsOfDevice(const QString dev)
 }
 
 //------------------------------------------------------------------------------------------------------
-int niChannelList::getNrOfOutputs()
+int NiChannelList::getNrOfOutputs()
 {  
     int count = 0;
-    foreach(niBaseChannel* c, this->values())
+    foreach(NiBaseChannel* c, this->values())
     {
-        if (c->getIoType() == niBaseChannel::chIoOutput)
+        if (c->getIoType() == NiBaseChannel::chIoOutput)
         {
             ++count;
         }
@@ -601,12 +614,12 @@ int niChannelList::getNrOfOutputs()
 }
 
 //------------------------------------------------------------------------------------------------------
-int niChannelList::getNrOfInputs()
+int NiChannelList::getNrOfInputs()
 {
     int count = 0;
-    foreach(niBaseChannel* c, this->values())
+    foreach(NiBaseChannel* c, this->values())
     {
-        if (c->getIoType() == niBaseChannel::chIoInput)
+        if (c->getIoType() == NiBaseChannel::chIoInput)
         {
             ++count;
         }
@@ -615,7 +628,7 @@ int niChannelList::getNrOfInputs()
 }
 
 //------------------------------------------------------------------------------------------------------
-QStringList niChannelList::getAllChannelAsString()
+QStringList NiChannelList::getAllChannelAsString()
 {
     QStringList sl;
     foreach(const QString &c, this->keys())
@@ -626,11 +639,11 @@ QStringList niChannelList::getAllChannelAsString()
 }
 
 //------------------------------------------------------------------------------------------------------
-QStringList niChannelList::getAllChParameters(niBaseChannel::niChType type,  niBaseChannel::niChIoType io)
+QStringList NiChannelList::getAllChParameters(NiBaseChannel::NiChType type,  NiBaseChannel::NiChIoType io)
 {
     QStringList params;
 
-    foreach(niBaseChannel* c, this->values())
+    foreach(NiBaseChannel* c, this->values())
     {
         if (c != NULL)
         {
@@ -645,14 +658,14 @@ QStringList niChannelList::getAllChParameters(niBaseChannel::niChType type,  niB
 }
         
 ////------------------------------------------------------------------------------------------------------
-//void niChannelList::setChannelType(QString hardwareCh, niBaseChannel::niChIoType io, niBaseChannel::niChType type)
+//void NiChannelList::setChannelType(QString hardwareCh, NiBaseChannel::NiChIoType io, NiBaseChannel::NiChType type)
 //{
 //
 //}
 
 //------------------------------------------------------------------------------------------------------
 
-//void niChannelList::setMultipleChannelType(int idx, niBaseChannel::niChIoType io, niBaseChannel::niChType type)
+//void NiChannelList::setMultipleChannelType(int idx, NiBaseChannel::NiChIoType io, NiBaseChannel::NiChType type)
 //{
 //
 //}

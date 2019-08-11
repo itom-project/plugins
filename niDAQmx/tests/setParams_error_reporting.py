@@ -17,28 +17,28 @@ class setParam(unittest.TestCase):
         aiChParams = strings["aiChParamsDev"] + strings["aiChParamsCh"] + "," + strings["aiChParamsMNRSE"] + "," + "-10" + "10"
         with self.assertRaises(RuntimeError) as context:
             self.plugin.setParam("aiChParams", aiChParams)
-        self.assertTrue('niDAQmx::setParam - aiChParams. Your device does not support this channel or the task is not initialized' in str(context.exception))
+        self.assertTrue('niDAQmx::setParam - aiChParams. Format must be' in str(context.exception))
 
     def test_calling_aoChParams_before_aoTaskParams_is_called(self):
         strings = param_strings
         aoChParams = strings["aoChParamsDev"] + strings["aoChParamsCh"] + "," + strings["aoChParamsMinOutputLim"] + "," + strings["aoChParamsMaxOutputLim"]
         with self.assertRaises(RuntimeError) as context:
             self.plugin.setParam("aoChParams", aoChParams)
-        self.assertTrue('niDAQmx::setParam - aoChParams. Your device does not support this channel or the task is not initialized' in str(context.exception))
+        self.assertTrue('niDAQmx::setParam - aoChParams. The task is not initialized' in str(context.exception))
 
     def test_calling_diChParams_before_diTaskParams_is_called(self):
         strings = param_strings
         diChParams = strings["diChParamsDev"] + strings["diChParamsCh"]
         with self.assertRaises(RuntimeError) as context:
             self.plugin.setParam("diChParams", diChParams)
-        self.assertTrue('niDAQmx::setParam - diChParams. Your device does not support this port or the task is not initialized' in str(context.exception))
+        self.assertTrue('niDAQmx::setParam - diChParams. The task is not initialized' in str(context.exception))
 
     def test_calling_doChParams_before_doTaskParams_is_called(self):
         strings = param_strings
         doChParams = strings["doChParamsDev"] + strings["doChParamsCh"]
         with self.assertRaises(RuntimeError) as context:
             self.plugin.setParam("doChParams", doChParams)
-        self.assertTrue('niDAQmx::setParam - doChParams. Your device does not support this port or the task is not initialized' in str(context.exception))
+        self.assertTrue('niDAQmx::setParam - doChParams. The task is not initialized' in str(context.exception))
 
     def test_calling_ciChParams_before_ciTaskParams_is_called(self):
         strings = param_strings

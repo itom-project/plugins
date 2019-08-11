@@ -33,6 +33,7 @@
 #include <qmessagebox.h>
 #include "DataObject/dataobj.h"
 #include <qvarlengtharray.h>
+#include <qregexp.h>
 #include <iostream>
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -79,14 +80,22 @@ Basic plugin documentation is found in ";
 
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Martin Hoppe, ITO, University Stuttgart; Dan Nessett, Unaffiliated";
+    m_author = "Martin Hoppe, ITO, University Stuttgart; Dan Nessett, Unaffiliated; M. Gronle, Unaffiliated";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION); 
     
-    m_initParamsMand.clear();
+
+    /*ito::Param paramVal("type", ito::ParamBase::String, "analogInput", tr("type of the task related to this instance of the NI-DAQmx plugin (analogInput, digitalInput, analogOutput, digitalOutput)").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
+    sm->addItem("analogInput");
+    sm->addItem("digitalInput");
+    sm->addItem("analogOutput");
+    sm->addItem("digitalOutput");
+    paramVal.setMeta(sm, true);
+    m_initParamsMand << paramVal;*/
 
     ito::Param paramVal("device", ito::ParamBase::String, "Dev1", tr("Name of the target Device, Dev1 as default, cDAQ1Mod1 for compactDAQ single module Device. Other names see device description in NI MAX").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -127,12 +136,12 @@ niDAQmx::niDAQmx() : AddInDataIO(), m_isgrabbing(false)
     m_params.insert(paramVal.getName(), paramVal);
 
     // Create the six tasks
-    m_taskMap.insert("ai", new niTask("ai"));
-    m_taskMap.insert("ao", new niTask("ao"));
-    m_taskMap.insert("di", new niTask("di"));
-    m_taskMap.insert("do", new niTask("do"));
-    m_taskMap.insert("ci", new niTask("ci"));
-    m_taskMap.insert("co", new niTask("co"));
+    m_taskMap.insert("ai", new NiTask("ai"));
+    m_taskMap.insert("ao", new NiTask("ao"));
+    m_taskMap.insert("di", new NiTask("di"));
+    m_taskMap.insert("do", new NiTask("do"));
+    m_taskMap.insert("ci", new NiTask("ci"));
+    m_taskMap.insert("co", new NiTask("co"));
 
     // General Parameters
     paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NI-DAQmx", NULL);    
@@ -205,7 +214,7 @@ niDAQmx::niDAQmx() : AddInDataIO(), m_isgrabbing(false)
 //----------------------------------------------------------------------------------------------------------------------------------
 niDAQmx::~niDAQmx()
 {
-    foreach(niTask *val, m_taskMap)
+    foreach(NiTask *val, m_taskMap)
     {
         delete val;
     }
@@ -225,29 +234,38 @@ ito::RetVal niDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     DAQmxGetSysDevNames(buffer, sizeof(buffer));
 
     // need to get rid of "spaces" in buffer
-
     QString s(buffer);
     s.replace(QString(" "), QString(""));
 																																																																																																																																																								
     if (!s.split(",").contains(device, Qt::CaseSensitive))
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "The specified device does not exist in your system. The following devices were found: %s", buffer);
+        if (s == "")
+        {
+            retValue = ito::RetVal(ito::retError, 0, "No devices could be found in your system.");
+        }
+        else
+        {
+            retValue += ito::RetVal::format(ito::retError, 0, "The specified device does not exist in your system. The following devices were found: %s", buffer);
+        }
     }
 
-    // populate m_channels
-    m_channels = niChannelList(device);
-
-    QStringList dummyReads;
-    dummyReads << "channel" << "chAssociated" << "aiChParams" << "aoChParams" << "diChParams" << "doChParams" << "ciChParams" << "coChParams" 
-               << "taskStatus" << "aiTaskParams" << "aoTaskParams"<< "diTaskParams" << "doTaskParams" << "ciTaskParams" << "coTaskParams";
-
-    foreach(const QString &p, dummyReads)
+    if (!retValue.containsError())
     {
-        QSharedPointer<ito::Param> val(new ito::Param(p.toLatin1().data()));
-        getParam(val, NULL);
-    }
+        // populate m_channels
+        m_channels = NiChannelList(device);
 
-    emit parametersChanged(m_params);    
+        QStringList dummyReads;
+        dummyReads << "channel" << "chAssociated" << "aiChParams" << "aoChParams" << "diChParams" << "doChParams" << "ciChParams" << "coChParams"
+            << "taskStatus" << "aiTaskParams" << "aoTaskParams" << "diTaskParams" << "doTaskParams" << "ciTaskParams" << "coTaskParams";
+
+        foreach(const QString &p, dummyReads)
+        {
+            QSharedPointer<ito::Param> val(new ito::Param(p.toLatin1().data()));
+            getParam(val, NULL);
+        }
+
+        emit parametersChanged(m_params);
+    }
 
     if (waitCond)
     {
@@ -262,7 +280,7 @@ ito::RetVal niDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal niDAQmx::close(ItomSharedSemaphore *waitCond)
 {
-    //ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     //
     ////todo:
@@ -270,13 +288,12 @@ ito::RetVal niDAQmx::close(ItomSharedSemaphore *waitCond)
     //// - this function is considered to be the "inverse" of init.
 
     // stop and reset all tasks
-
-    retValue += resetTask(QString("ai"));
-    retValue += resetTask(QString("di"));
-    retValue += resetTask(QString("ci"));
-    retValue += resetTask(QString("ao"));
-    retValue += resetTask(QString("do"));
-    retValue += resetTask(QString("co"));
+    retValue += resetTask("ai");
+    retValue += resetTask("di");
+    retValue += resetTask("ci");
+    retValue += resetTask("ao");
+    retValue += resetTask("do");
+    retValue += resetTask("co");
 
     if (waitCond)
     {
@@ -327,7 +344,7 @@ ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         else if (key == "chAssociated")
         {
             QStringList as;
-            foreach(niTask* t, m_taskMap)
+            foreach(NiTask* t, m_taskMap)
             {
                 if (t->getChCount() > 0)
                 {
@@ -342,7 +359,7 @@ ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         else if (key == "aiChParams")
         {
             QRegularExpression first_comma("^([^,]+),(.*)$");
-            QString para = m_channels.getAllChParameters(niBaseChannel::chTypeAnalog, niBaseChannel::chIoInput).join(";");
+            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoInput).join(";");
             
             // Replace comma between Device and Channel ids with '/'
             para.replace(first_comma, "\\1/\\2");
@@ -352,33 +369,33 @@ ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         }
         else if (key == "aoChParams")
         {
-            QString para = m_channels.getAllChParameters(niBaseChannel::chTypeAnalog, niBaseChannel::chIoOutput).join(";");
+            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoOutput).join(";");
             m_params["aoChParams"].setVal<char*>(para.toLatin1().data(), para.size());
             *val = it.value();
         }
         else if (key == "diChParams")
         {
-            QString para = m_channels.getAllChParameters(niBaseChannel::chTypeDigital, niBaseChannel::chIoInput).join(";");
+            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoInput).join(";");
             m_params["diChParams"].setVal<char*>(para.toLatin1().data(), para.size());
             *val = it.value();
         }
         else if (key == "doChParams")
         {
-            QString para = m_channels.getAllChParameters(niBaseChannel::chTypeDigital, niBaseChannel::chIoOutput).join(";");
+            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoOutput).join(";");
             m_params["doChParams"].setVal<char*>(para.toLatin1().data(), para.size());
             *val = it.value();
         }
         else if (key == "ciChParams")
         {
             retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - ciChParams. Counter input is not implemented").toLatin1().data());
- //           QString para = m_channels.getAllChParameters(niBaseChannel::chTypeCounter, niBaseChannel::chIoInput).join(";");
+ //           QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeCounter, NiBaseChannel::chIoInput).join(";");
  //           m_params["ciChParams"].setVal<char*>(para.toLatin1().data(), para.size());
  //           *val = it.value();
         }
         else if (key == "coChParams")
         {
             retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - coChParams. Counter output is not implemented").toLatin1().data());
- //           QString para = m_channels.getAllChParameters(niBaseChannel::chTypeCounter, niBaseChannel::chIoOutput).join(";");
+ //           QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeCounter, NiBaseChannel::chIoOutput).join(";");
  //           m_params["coChParams"].setVal<char*>(para.toLatin1().data(), para.size());
  //           *val = it.value();
         }
@@ -386,7 +403,7 @@ ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         else if (key == "taskStatus")
         {
             QStringList res;
-            foreach(niTask* t, m_taskMap)
+            foreach(NiTask* t, m_taskMap)
             {            
                 QStringList ch;
                 ch.append(t->getName());
@@ -504,128 +521,174 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     if (!retValue.containsError())
     {
         if (key == "aiChParams")
-        { // (dev-channel,inConfig, MinOutputVoltage, MaxOutputVoltage)
-            QStringList in = QString(val->getVal<char*>()).split(",");
-            if ( m_channels.contains(in[0]) && in.size() == 4 && (m_taskMap.value("ai")->getTaskParamsInitialized() || m_taskMap.value("ai")->getIgnoreTaskParamsInitialization()) ) 
+        { 
+            // (dev-channel,inConfig, MinOutputVoltage, MaxOutputVoltage)
+            QRegExp regExp(QString("(\\w+)/(\\w+),([0-%1]),([+-]?\\d+),([+-]?\\d+)").arg(NiAnalogInputChannel::niAnInConfEndValue-1));
+            if (regExp.indexIn(val->getVal<const char*>()) == -1)
             {
-                niAnalogInputChannel *ai = NULL;
-                if (m_channels.value(in[0]) == NULL)
-                { // channel does not exist yet
-                    ai = new niAnalogInputChannel();
-                }
-                else
-                { // channel already exists
-                    ai = dynamic_cast<niAnalogInputChannel*>(m_channels.value(in[0]));
-                }
-                ai->setDevID(in[0].split('/')[0]);
-                ai->setChID(in[0].split('/')[1]);
-                ai->setAnalogInputConfig(in[1].toInt());
-                ai->setMinOutputLim(in[2].toInt());
-                ai->setMaxOutputLim(in[3].toInt());
-                // Channel is finished and added to the corresponding input task
-                retValue += ai->applyParameters(m_taskMap.value("ai"));
-                // increase the corresponding counter
-                m_channels.insert(in[0], ai);
-                QString para = m_channels.getAllChParameters(niBaseChannel::chTypeAnalog, niBaseChannel::chIoInput).join(";");
-                m_params["aiChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-                *val = it.value();
-                retValue += it->copyValueFrom( &(*val));
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aiChParams. Format must be: device/channel,configMode [0-%1],minOutputVoltage,maxOutputVoltage")
+                    .arg(NiAnalogInputChannel::niAnInConfEndValue - 1)
+                    .toLatin1().data());
+            }
+            else if (!m_taskMap.value("ai")->getTaskParamsInitialized() && !m_taskMap.value("ai")->getIgnoreTaskParamsInitialization())
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aiChParams. The task is not initialized").toLatin1().data());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aiChParams. Your device does not support this channel or the task is not initialized").toLatin1().data());
+                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
+                if (!m_channels.contains(deviceID))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aiChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
+                }
+                else
+                {
+                    NiAnalogInputChannel *ai = NULL;
+                    if (m_channels.value(deviceID) == NULL)
+                    { // channel does not exist yet
+                        ai = new NiAnalogInputChannel();
+                    }
+                    else
+                    { // channel already exists
+                        ai = dynamic_cast<NiAnalogInputChannel*>(m_channels.value(deviceID));
+                    }
+                    ai->setDevID(regExp.cap(1));
+                    ai->setChID(regExp.cap(2));
+                    ai->setAnalogInputConfig(regExp.cap(3).toInt());
+                    ai->setMinOutputLim(regExp.cap(4).toInt());
+                    ai->setMaxOutputLim(regExp.cap(5).toInt());
+                    // Channel is finished and added to the corresponding input task
+                    retValue += ai->applyParameters(m_taskMap.value("ai"));
+                    // increase the corresponding counter
+                    m_channels.insert(deviceID, ai);
+                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoInput).join(";");
+                    it->setVal<char*>(para.toLatin1().data(), para.size());
+                }
             }
         }
         else if (key == "aoChParams")
-        { // (dev-channel,minInLim,maxInLim)
-            QStringList in = QString(val->getVal<char*>()).split(",");
-            if (m_channels.contains(in[0]) && in.size() == 3 && m_taskMap.value("ao")->getTaskParamsInitialized()) 
+        {
+            // (dev-channel,minInLim,maxInLim)
+            QRegExp regExp(QString("(\\w+)/(\\w+),([+-]?\\d+),([+-]?\\d+)"));
+            if (regExp.indexIn(val->getVal<const char*>()) == -1)
             {
-                niAnalogOutputChannel *ao = NULL;
-                if (m_channels.value(in[0]) == NULL)
-                { // channel does not exist yet
-                    ao = new niAnalogOutputChannel();
-                }
-                else
-                { // channel already exists
-                    ao = dynamic_cast<niAnalogOutputChannel*>(m_channels.value(in[0]));
-                }
-                ao->setDevID(in[0].split('/')[0]);
-                ao->setChID(in[0].split('/')[1]);
-                ao->setMinOutputLim(in[1].toInt());
-                ao->setMaxOutputLim(in[2].toInt());
-                // Channel is finished and added to the corresponding input task
-                retValue += ao->applyParameters(m_taskMap.value("ao"));
-                // increase the corresponding counter
-                m_channels.insert(in[0], ao);
-                QString para = m_channels.getAllChParameters(niBaseChannel::chTypeAnalog, niBaseChannel::chIoOutput).join(";");
-                m_params["aoChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-                *val = it.value();
-                retValue += it->copyValueFrom( &(*val));
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. Format must be: device/channel,minOutputVoltage,maxOutputVoltage").toLatin1().data());
+            }
+            else if (!m_taskMap.value("ao")->getTaskParamsInitialized())
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. The task is not initialized").toLatin1().data());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. Your device does not support this channel or the task is not initialized").toLatin1().data());
+                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
+                if (!m_channels.contains(deviceID))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
+                }
+                else
+                {
+                    NiAnalogOutputChannel *ao = NULL;
+                    if (m_channels.value(deviceID) == NULL)
+                    { // channel does not exist yet
+                        ao = new NiAnalogOutputChannel();
+                    }
+                    else
+                    { // channel already exists
+                        ao = dynamic_cast<NiAnalogOutputChannel*>(m_channels.value(deviceID));
+                    }
+                    ao->setDevID(regExp.cap(1));
+                    ao->setChID(regExp.cap(2));
+                    ao->setMinOutputLim(regExp.cap(3).toInt());
+                    ao->setMaxOutputLim(regExp.cap(4).toInt());
+                    // Channel is finished and added to the corresponding input task
+                    retValue += ao->applyParameters(m_taskMap.value("ao"));
+                    // increase the corresponding counter
+                    m_channels.insert(deviceID, ao);
+                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoOutput).join(";");
+                    it->setVal<char*>(para.toLatin1().data(), para.size());
+                }
             }
         }
         else if (key == "diChParams")
-        { // (dev-channel)
-            QStringList in = QString(val->getVal<char*>()).split(",");
-            if (m_channels.contains(in[0]) && in.size() == 1 && m_taskMap.value("di")->getTaskParamsInitialized()) 
+        { 
+            // (dev-channel)
+            QRegExp regExp(QString("(\\w+)/(\\w+)"));
+            if (regExp.indexIn(val->getVal<const char*>()) == -1)
             {
-                niDigitalInputChannel *di = NULL;
-                if (m_channels.value(in[0]) == NULL)
-                { // channel does not exist yet
-                    di = new niDigitalInputChannel();
-                }
-                else
-                { // channel already exists
-                    di = dynamic_cast<niDigitalInputChannel*>(m_channels.value(in[0]));
-                }
-                di->setDevID(in[0].split('/')[0]);
-                di->setChID(in[0].split('/')[1]);
-                // Channel is finished and added to the corresponding input task
-                retValue += di->applyParameters(m_taskMap.value("di"));
-                // increase the corresponding counter
-                m_channels.insert(in[0], di);
-                QString para = m_channels.getAllChParameters(niBaseChannel::chTypeDigital, niBaseChannel::chIoInput).join(";");
-                m_params["diChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-                *val = it.value();
-                retValue += it->copyValueFrom( &(*val));
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - diChParams. Format must be: device/channel").toLatin1().data());
+            }
+            else if (!m_taskMap.value("di")->getTaskParamsInitialized())
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - diChParams. The task is not initialized").toLatin1().data());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - diChParams. Your device does not support this port or the task is not initialized").toLatin1().data());
+                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
+                if (!m_channels.contains(deviceID))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
+                }
+                else
+                {
+                    NiDigitalInputChannel *di = NULL;
+                    if (m_channels.value(deviceID) == NULL)
+                    { // channel does not exist yet
+                        di = new NiDigitalInputChannel();
+                    }
+                    else
+                    { // channel already exists
+                        di = dynamic_cast<NiDigitalInputChannel*>(m_channels.value(deviceID));
+                    }
+                    di->setDevID(regExp.cap(1));
+                    di->setChID(regExp.cap(2));
+                    // Channel is finished and added to the corresponding input task
+                    retValue += di->applyParameters(m_taskMap.value("di"));
+                    // increase the corresponding counter
+                    m_channels.insert(deviceID, di);
+                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoInput).join(";");
+                    it->setVal<char*>(para.toLatin1().data(), para.size());
+                }
             }
         }
         else if (key == "doChParams")
-        { // (dev-channel)
-            QStringList in = QString(val->getVal<char*>()).split(",");
-            if (m_channels.contains(in[0]) && in.size() == 1 && m_taskMap.value("do")->getTaskParamsInitialized()) 
+        {
+            // (dev-channel)
+            QRegExp regExp(QString("(\\w+)/(\\w+)"));
+            if (regExp.indexIn(val->getVal<const char*>()) == -1)
             {
-                niDigitalOutputChannel *dout = NULL; // "do" is a keyword; have to use something else, i.e., dout
-                if (m_channels.value(in[0]) == NULL)
-                { // channel does not exist yet
-                    dout = new niDigitalOutputChannel();
-                }
-                else
-                { // channel already exists
-                    dout = dynamic_cast<niDigitalOutputChannel*>(m_channels.value(in[0]));
-                }
-                dout->setDevID(in[0].split('/')[0]);
-                dout->setChID(in[0].split('/')[1]);
-                // Channel is finished and added to the corresponding input task
-                retValue += dout->applyParameters(m_taskMap.value("do"));
-                // increase the corresponding counter
-                m_channels.insert(in[0], dout);
-                QString para = m_channels.getAllChParameters(niBaseChannel::chTypeDigital, niBaseChannel::chIoOutput).join(";");
-                m_params["doChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-                *val = it.value();
-                retValue += it->copyValueFrom( &(*val));
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doChParams. Format: device/channel").toLatin1().data());
+            }
+            else if (!m_taskMap.value("do")->getTaskParamsInitialized())
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doChParams. The task is not initialized").toLatin1().data());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doChParams. Your device does not support this port or the task is not initialized").toLatin1().data());
+                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
+                if (!m_channels.contains(deviceID))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
+                }
+                else
+                {
+                    NiDigitalOutputChannel *dout = NULL;
+                    if (m_channels.value(deviceID) == NULL)
+                    { // channel does not exist yet
+                        dout = new NiDigitalOutputChannel();
+                    }
+                    else
+                    { // channel already exists
+                        dout = dynamic_cast<NiDigitalOutputChannel*>(m_channels.value(deviceID));
+                    }
+                    dout->setDevID(regExp.cap(1));
+                    dout->setChID(regExp.cap(2));
+                    // Channel is finished and added to the corresponding input task
+                    retValue += dout->applyParameters(m_taskMap.value("do"));
+                    // increase the corresponding counter
+                    m_channels.insert(deviceID, dout);
+                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoOutput).join(";");
+                    it->setVal<char*>(para.toLatin1().data(), para.size());
+                }
             }
         }
         else if (key == "ciChParams")
@@ -734,12 +797,12 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 m_configForTesting.append(QString(","));
             }
 
-            m_configForTesting.append(QString(val->getVal<char*>()));
+            m_configForTesting.append(QString(val->getVal<const char*>()));
 
             // Enable various flags that support testing the plugin. Should not be specified when the plugin is used operationally.
 
-            QStringList in = QString(val->getVal<char*>()).split(",");
-            QMap<QString, niTask*>::iterator taskMapIterator;
+            QStringList in = QString(val->getVal<const char*>()).split(",");
+            QMap<QString, NiTask*>::iterator taskMapIterator;
             QStringList::iterator flag;
             for(taskMapIterator = m_taskMap.begin(); taskMapIterator != m_taskMap.end(); taskMapIterator++)
             {
@@ -1192,7 +1255,7 @@ ito::RetVal niDAQmx::manageTasks()
 /* resetTask is used by manageTasks and acquire to stop the identifed task and reset
    its task handle.
 */
-ito::RetVal niDAQmx::resetTask(QString task)
+ito::RetVal niDAQmx::resetTask(const QString &task)
 {
     ito::RetVal retValue(ito::retOk);
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -29,40 +29,48 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 
     if (error != DAQmxSuccess)
     {
-	// get size of buffer for error string and allocate buffer
+        // get size of buffer for error string and allocate buffer
+        int buffer_size = DAQmxGetErrorString(error, 0, 0);
+        char * buffer = new char[buffer_size + 1];
 
-	int buffer_size = DAQmxGetErrorString(error, 0, 0);
-	char * buffer = new char [buffer_size+1];
+        // Get string text corresponding to error code
+        DAQmxGetErrorString(error, buffer, buffer_size);
+        buffer[buffer_size] = '\0';
+
+        
 	
-	// Get string text corresponding to error code
-	
-	DAQmxGetErrorString(error, buffer, buffer_size);
-	buffer[buffer_size] = '\0';
-	
-	if (error > 0)
-	{
-	    if (prefix != "")
+	    if (error > 0)
 	    {
-		retVal += ito::RetVal::format(ito::retWarning, 0, "%s: %s", prefix.toLatin1().constData(), buffer);
+	        if (prefix != "")
+	        {
+		        retVal += ito::RetVal::format(ito::retWarning, 0, "%s: %s", prefix.toLatin1().constData(), buffer);
+	        }
+	        else
+	        {
+		        retVal += ito::RetVal::format(ito::retWarning, 0, "%s", buffer);
+	        }
 	    }
 	    else
 	    {
-		retVal += ito::RetVal(ito::retWarning,0,buffer);
-	    }
-	}
-	else
-	{
-	    if (prefix != "")
-	    {
-		retVal += ito::RetVal::format(ito::retError, 0, "%s: %s", prefix.toLatin1().constData(), buffer);
-	    }
-	    else
-	    {
-		retVal += ito::RetVal(ito::retError,0,buffer);
-	    }
-	}
+            int buffer_size_extended = DAQmxGetExtendedErrorInfo(0, 0);
+            char *buffer_extended = new char[buffer_size_extended + 1];
 
-	delete[] buffer;
+            DAQmxGetExtendedErrorInfo(buffer_extended, buffer_size_extended);
+            buffer_extended[buffer_size_extended] = '\0';
+
+	        if (prefix != "")
+	        {
+		        retVal += ito::RetVal::format(ito::retError, 0, "%s: %s (detailed description of latest error: %s)", prefix.toLatin1().constData(), buffer, buffer_extended);
+	        }
+	        else
+	        {
+		        retVal += ito::RetVal::format(ito::retError, 0, "%s (detailed description of latest error: %s)", buffer, buffer_extended);
+	        }
+
+            delete[] buffer_extended;
+	    }
+
+	    delete[] buffer;
     }
 
     return retVal;

@@ -111,8 +111,8 @@ class niDAQmx : public ito::AddInDataIO
         bool m_dOutIsAcquired = false;
         bool m_cOutIsAcquired = false;
        
-        QMap<QString, niTask*> m_taskMap;
-        niChannelList m_channels;
+        QMap<QString, NiTask*> m_taskMap;
+        NiChannelList m_channels;
         ito::DataObject m_data;
 		QString m_configForTesting;
         
@@ -122,7 +122,7 @@ class niDAQmx : public ito::AddInDataIO
         ito::RetVal readCounter(); /*!< Wait for acquired data */
         ito::RetVal retrieveData(int *, int *); //marc: new
         ito::RetVal manageTasks(); //dan: new
-        ito::RetVal resetTask(QString); //dan: new
+        ito::RetVal resetTask(const QString& task); //dan: new
 
         // Write-functions
         ito::RetVal writeAnalog(const ito::DataObject *externalDataObject = NULL);

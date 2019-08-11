@@ -42,31 +42,31 @@
 #include <qstandarditemmodel.h>
 #include "NI-DAQmxError.h"
 
-class niTask
+class NiTask
 {
     public:
         enum niTaskMode {niTaskModeFinite = 0, niTaskModeContinuous = 1, niTaskModeOnDemand = 2};
 
-        niTask(QString name);
-        ~niTask();
+        NiTask(QString name);
+        ~NiTask();
 
-        int getRateHz(){return m_rateHz;};
-        void setRateHz(const int rate){m_rateHz = rate;};
+        int getRateHz(){return m_rateHz;}
+        void setRateHz(const int rate){m_rateHz = rate;}
 
-        int getSamplesToRW(){return m_samplesToRW;};
-        void setSamplesToRW(const int sTRW){m_samplesToRW = sTRW;};
+        int getSamplesToRW(){return m_samplesToRW;}
+        void setSamplesToRW(const int sTRW){m_samplesToRW = sTRW;}
 
-        int getMode(){return m_mode;};
-        void setMode(const int mode){m_mode = mode;};
+        int getMode(){return m_mode;}
+        void setMode(const int mode){m_mode = mode;}
 
-        QString getTriggerPort(){return m_triggerPort;};
-        void setTriggerPort(const QString port){m_triggerPort = port;};
+        QString getTriggerPort(){return m_triggerPort;}
+        void setTriggerPort(const QString &port){m_triggerPort = port;}
 
-        int getTriggerEdge(){return m_triggerEdge;};
-        void setTriggerEdge(const int edge){m_triggerEdge = edge;};
+        int getTriggerEdge(){return m_triggerEdge;}
+        void setTriggerEdge(const int edge){m_triggerEdge = edge;}
 
-        QString getName(){return m_name;};
-        void setName(const QString s){m_name = s;};
+        QString getName(){return m_name;}
+        void setName(const QString &s){m_name = s;}
 
         ito::RetVal resetTaskHandle();
         ito::RetVal run();
@@ -84,11 +84,11 @@ class niTask
         bool setIgnoreTaskParamsInitialization();
         bool getPassThroughToPeripheralClasses();
         bool setPassThroughToPeripheralClasses();
-        //niChannelList getChannelPointer();
-        TaskHandle* getTaskHandle(){return &m_task;};
+        //NiChannelList getChannelPointer();
+        TaskHandle* getTaskHandle(){return &m_task;}
         uInt32 getChCount();
         QStringList getChList();
-        void channelAdded(const QString name);
+        void channelAdded(const QString &name);
 
         ito::RetVal applyParameters();
 
@@ -97,7 +97,7 @@ class niTask
         int m_samplesToRW;
         int m_mode;
         int m_triggerEdge;
-        //niChannelList m_channel;
+        //NiChannelList m_channel;
         QString m_triggerPort;
         QString m_name;
         uInt32 m_chCount;
@@ -110,15 +110,25 @@ class niTask
         bool m_passThroughToPeripheralClasses = false; // used only for testing
 };
 
-class niBaseChannel
+class NiBaseChannel
 {
     // enums
     public:
-        enum niChIoType {chIoOutput = 0, chIoInput = 1 };
-        enum niChType {chTypeAnalog = 0, chTypeDigital = 1, chTypeCounter = 2};
-        //niChannel(const char *virtualChannelStr);
-        niBaseChannel(const QString virtChannelName = "");
-        ~niBaseChannel();
+        enum NiChIoType 
+        {
+            chIoOutput = 0, 
+            chIoInput = 1 
+        };
+
+        enum NiChType 
+        {
+            chTypeAnalog = 0, 
+            chTypeDigital = 1, 
+            chTypeCounter = 2
+        };
+
+        NiBaseChannel(const QString virtChannelName = "");
+        ~NiBaseChannel();
 
         QString getDevID() {return m_devId;};
         void setDevID(const QString id) {m_devId = id;};
@@ -129,40 +139,44 @@ class niBaseChannel
         QString getName() {return m_chName;};
         void setName(const QString name) {m_chName = name;};
 
-        niChType getChType() {return m_chType;};
-        void setChType(const niChType type) {m_chType = type;};
+        NiChType getChType() {return m_chType;};
+        void setChType(const NiChType type) {m_chType = type;};
 
-        niChIoType getIoType() {return m_chIo;};
-        void setIoType(const niChIoType type) {m_chIo = type;};
+        NiChIoType getIoType() {return m_chIo;};
+        void setIoType(const NiChIoType type) {m_chIo = type;};
 
         bool errorOccured() {return m_chErrorOcc;};
-        //ito::RetVal retValue(void);
-
-        QVector<QString> getDeviceList(); // DAQmxGetDevChassisModuleDevNames
 
         // This routine must be overwritten by derived classes to Create a Channel
-        virtual ito::RetVal applyParameters(niTask *task) {return ito::retError;};
-        virtual QStringList getParameters() {return QStringList(0);};
-        QVector<QString> getChannelsOfDevice(const QString dev);
+        virtual ito::RetVal applyParameters(NiTask *task) {return ito::retError;}
+        virtual QStringList getParameters() {return QStringList(0);}
 
     protected:
         QString m_devId;                // device number
         QString m_chId;                 // channel number
         QString m_chName;                // Virtual name of the channel
-        niChType m_chType;                // analog, digital, counter
-        niChIoType m_chIo;                // 0 = output, 1 = input
+        NiChType m_chType;                // analog, digital, counter
+        NiChIoType m_chIo;                // 0 = output, 1 = input
         bool m_chErrorOcc;              // 1 = error occurred
         ito::RetVal m_retValue;            // return value by channel creation
 };
 
-class niAnalogInputChannel : public niBaseChannel
+class NiAnalogInputChannel : public NiBaseChannel
 {
     public:
         
-        enum niAnalogInputConfig {niAnInConfDefault = 0, niAnInConfDifferential = 1, niAnInConfRSE = 2, niAnInConfNRSE = 3, niAnInConfPseudoDiff = 4};
+        enum NiAnalogInputConfig 
+        {
+            niAnInConfDefault = 0, 
+            niAnInConfDifferential = 1, 
+            niAnInConfRSE = 2, 
+            niAnInConfNRSE = 3, 
+            niAnInConfPseudoDiff = 4,
+            niAnInConfEndValue = 5 //never used, but this number is always the end of the enumeration in order to check for valid input.
+        };
         
-        niAnalogInputChannel();
-        ~niAnalogInputChannel();
+        NiAnalogInputChannel();
+        ~NiAnalogInputChannel();
 
         int getMaxOutputLim(){return m_maxOutputLim;};
         void setMaxOutputLim(const int max){m_maxOutputLim = max;};
@@ -176,7 +190,7 @@ class niAnalogInputChannel : public niBaseChannel
         int getAnalogInputConfig(){return m_analogInputConfig;};
         void setAnalogInputConfig(const int conf){m_analogInputConfig = conf;};
 
-        ito::RetVal applyParameters(niTask *task);
+        ito::RetVal applyParameters(NiTask *task);
         QStringList getParameters();
 
     private:
@@ -188,14 +202,26 @@ class niAnalogInputChannel : public niBaseChannel
 
 };
 
-class niAnalogOutputChannel : public niBaseChannel
+class NiAnalogOutputChannel : public NiBaseChannel
 {
     public:
-        enum niAnalogOutputMode {niAnOutModeVoltageDC = 0, niAnOutModeSinewaveGen = 1};
-        enum niAnalogOutputTransferMechanism {niAnOutTransMechDMA = 0, niAnOutTransMechInterrupts = 1, niAnOutTransMechProgrammedIO = 2, niAnOutTransMechUSBBulk = 3, niAnOutTransMechDefault = 4};
+        enum NiAnalogOutputMode 
+        {
+            niAnOutModeVoltageDC = 0, 
+            niAnOutModeSinewaveGen = 1
+        };
 
-        niAnalogOutputChannel();
-        ~niAnalogOutputChannel();
+        enum NiAnalogOutputTransferMechanism 
+        {
+            niAnOutTransMechDMA = 0, 
+            niAnOutTransMechInterrupts = 1, 
+            niAnOutTransMechProgrammedIO = 2, 
+            niAnOutTransMechUSBBulk = 3, 
+            niAnOutTransMechDefault = 4
+        };
+
+        NiAnalogOutputChannel();
+        ~NiAnalogOutputChannel();
 
         int getMaxOutputLim(){return m_maxOutputLim;};
         void setMaxOutputLim(const int max){m_maxOutputLim = max;};
@@ -203,7 +229,7 @@ class niAnalogOutputChannel : public niBaseChannel
         int getMinOutputLim(){return m_minOutputLim;};
         void setMinOutputLim(const int min){m_minOutputLim = min;};
 
-        ito::RetVal applyParameters(niTask *task);
+        ito::RetVal applyParameters(NiTask *task);
         QStringList getParameters();
 
     private:
@@ -212,26 +238,26 @@ class niAnalogOutputChannel : public niBaseChannel
         bool m_analogOutParamsInitialized = false;
 };
 
-class niDigitalInputChannel : public niBaseChannel
+class NiDigitalInputChannel : public NiBaseChannel
 {
     public:
-        niDigitalInputChannel();
-        ~niDigitalInputChannel();
+        NiDigitalInputChannel();
+        ~NiDigitalInputChannel();
 
-        ito::RetVal applyParameters(niTask *task);
+        ito::RetVal applyParameters(NiTask *task);
         QStringList getParameters();
 
     private:
         bool m_digitalInParamsInitialized = false;
 };
 
-class niDigitalOutputChannel : public niBaseChannel
+class NiDigitalOutputChannel : public NiBaseChannel
 {
     public:
-        niDigitalOutputChannel();
-        ~niDigitalOutputChannel();
+        NiDigitalOutputChannel();
+        ~NiDigitalOutputChannel();
 
-        ito::RetVal applyParameters(niTask *task);
+        ito::RetVal applyParameters(NiTask *task);
         QStringList getParameters();
 
     private:
@@ -239,13 +265,13 @@ class niDigitalOutputChannel : public niBaseChannel
 
 };
 
-class niCounterChannel : public niBaseChannel
+class NiCounterChannel : public NiBaseChannel
 {
     public:
-        niCounterChannel();
-        ~niCounterChannel();
+        NiCounterChannel();
+        ~NiCounterChannel();
         
-        ito::RetVal applyParameters(niTask *task);
+        ito::RetVal applyParameters(NiTask *task);
         QStringList getParameters();
 
     private:
@@ -254,25 +280,21 @@ class niCounterChannel : public niBaseChannel
         int m_dutyCycle;
 };
 
-class niChannelList : public QMap<QString, niBaseChannel*>
+class NiChannelList : public QMap<QString, NiBaseChannel*>
 {
     public:
-        niChannelList(QString device = "Dev1"); // TODO: Wie kann man hier den default weg lassen? muss dafuer die "getchannelsofdevice" static werden?
-        ~niChannelList();
+        NiChannelList();
+        NiChannelList(const QString &device);
+        ~NiChannelList();
 
-        void getChannelsOfDevice(const QString dev); // DAQmxGetDevAIPhysicalChans
+        void updateChannelsOfDevice(const QString &dev); // DAQmxGetDevAIPhysicalChans
         
-        QVector<niBaseChannel*> getAllChannelOfType(niBaseChannel::niChType chType);
-        int getNrOfChannels(niBaseChannel::niChType chType);
+        QVector<NiBaseChannel*> getAllChannelOfType(NiBaseChannel::NiChType chType);
+        int getNrOfChannels(NiBaseChannel::NiChType chType);
         int getNrOfOutputs();
         int getNrOfInputs();
         QStringList getAllChannelAsString();
-        QStringList getAllChParameters(niBaseChannel::niChType type,  niBaseChannel::niChIoType io);
-        //void setChannelType(QString hardwareCh, niBaseChannel::niChIoType io, niBaseChannel::niChType type);
-        //void setMultipleChannelType(int idx, niBaseChannel::niChIoType io, niBaseChannel::niChType type);
-        //QStandardItemModel updateModel();
-        //QMap<QString, niBaseChannel*> m_channelList;
-        
+        QStringList getAllChParameters(NiBaseChannel::NiChType type,  NiBaseChannel::NiChIoType io);        
 };
 
 
