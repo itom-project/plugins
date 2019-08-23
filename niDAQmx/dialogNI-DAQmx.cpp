@@ -168,7 +168,7 @@ ito::RetVal DialogNiDAQmx::applyParameters()
 // Task Slots
 void DialogNiDAQmx::on_taskApplyButton_clicked(bool checked)
 {
-    niDAQmx *plugin = (niDAQmx*) m_pPlugin;
+    NiDAQmx *plugin = (NiDAQmx*) m_pPlugin;
     QString p = ui.taskCombo->itemData(ui.taskCombo->currentIndex()).toString()+"TaskParams";
     QStringList params;
     params.append(QString::number(ui.taskRateSpin->value()));
@@ -214,7 +214,7 @@ void DialogNiDAQmx::on_taskCombo_currentIndexChanged(int index)
 // Analog Input Slots
 void DialogNiDAQmx::on_aiApplyButton_clicked(bool checked)
 {
-    niDAQmx *plugin = (niDAQmx*) m_pPlugin;
+    NiDAQmx *plugin = (NiDAQmx*) m_pPlugin;
     QString channel = ui.aiChannelCombo->itemData(ui.aiChannelCombo->currentIndex()).toString();
     QStringList params;
     params.append(channel);
@@ -266,7 +266,7 @@ void DialogNiDAQmx::calculateResolution()
 // Analog Output Slots
 void DialogNiDAQmx::on_aoApplyButton_clicked(bool checked)
 {
-    niDAQmx *plugin = (niDAQmx*) m_pPlugin;
+    NiDAQmx *plugin = (NiDAQmx*) m_pPlugin;
     QString channel = ui.aoChannelCombo->itemData(ui.aoChannelCombo->currentIndex()).toString();
     QStringList params;
     params.append(channel);

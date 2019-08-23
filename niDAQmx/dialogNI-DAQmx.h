@@ -63,7 +63,7 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
         QMap<QString, ito::Param> m_params;
         
 
-        Ui::niDAQmx ui;
+        Ui::NiDAQmx ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

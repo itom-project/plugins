@@ -25,7 +25,7 @@
 
 ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 {
-    ito::RetVal retVal(ito::retOk);
+    ito::RetVal retValue(ito::retOk);
 
     if (error != DAQmxSuccess)
     {
@@ -43,11 +43,11 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 	    {
 	        if (prefix != "")
 	        {
-		        retVal += ito::RetVal::format(ito::retWarning, 0, "%s: %s", prefix.toLatin1().constData(), buffer);
+		        retValue += ito::RetVal::format(ito::retWarning, 0, "%s: %s", prefix.toLatin1().constData(), buffer);
 	        }
 	        else
 	        {
-		        retVal += ito::RetVal::format(ito::retWarning, 0, "%s", buffer);
+		        retValue += ito::RetVal::format(ito::retWarning, 0, "%s", buffer);
 	        }
 	    }
 	    else
@@ -60,11 +60,11 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 
 	        if (prefix != "")
 	        {
-		        retVal += ito::RetVal::format(ito::retError, 0, "%s: %s (detailed description of latest error: %s)", prefix.toLatin1().constData(), buffer, buffer_extended);
+		        retValue += ito::RetVal::format(ito::retError, 0, "%s: %s (detailed description of latest error: %s)", prefix.toLatin1().constData(), buffer, buffer_extended);
 	        }
 	        else
 	        {
-		        retVal += ito::RetVal::format(ito::retError, 0, "%s (detailed description of latest error: %s)", buffer, buffer_extended);
+		        retValue += ito::RetVal::format(ito::retError, 0, "%s (detailed description of latest error: %s)", buffer, buffer_extended);
 	        }
 
             delete[] buffer_extended;
@@ -73,5 +73,5 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 	    delete[] buffer;
     }
 
-    return retVal;
+    return retValue;
 }

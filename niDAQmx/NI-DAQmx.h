@@ -42,23 +42,22 @@
     #endif
 #endif
 
-#include "NIDAQmx.h" // This is the NI C Library .h file, which is distinquised from this file by lacking a hypen between "NI" and "DAQ"
-//#include "NIDAQmx-LibHeader.h"  // include NI-DAQmx Library functions       
+#include "NIDAQmx.h" // This is the NI C Library .h file, which is distinquised from this file by lacking a hypen between "NI" and "DAQ"      
 #include "NI-PeripheralClasses.h" // Classes that encapsulate general stuff like channels and tasks
 
 #include "NI-DAQmxError.h"
-#include <QRegularExpression>
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    niDAQmxInterface 
+  *\class    NiDAQmxInterface 
   *
-  *\brief    Interface-Class for niDAQmx-Class
+  *\brief    Interface-Class for NiDAQmx-Class
   *
-  *    \sa    AddInDataIO, niDAQmx
+  *    \sa    AddInDataIO, NiDAQmx
   *
   */
-class niDAQmxInterface : public ito::AddInInterfaceBase
+class NiDAQmxInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
 #if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
@@ -68,8 +67,8 @@ class niDAQmxInterface : public ito::AddInInterfaceBase
     PLUGIN_ITOM_API
 
     public:
-        niDAQmxInterface();
-        ~niDAQmxInterface();
+        NiDAQmxInterface();
+        ~NiDAQmxInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);
 
     private:
@@ -78,59 +77,84 @@ class niDAQmxInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    niDAQmx
+  *\class    NiDAQmx
 
   */
-class niDAQmx : public ito::AddInDataIO
+class NiDAQmx : public ito::AddInDataIO
 {
     Q_OBJECT
 
     protected:
-        ~niDAQmx();
-        niDAQmx();
+        ~NiDAQmx();
+        NiDAQmx();
         
         
     public:
-        friend class niDAQmxInterface;
+        friend class NiDAQmxInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
+        enum TaskSubTypes 
+        { 
+            Analog = 0x01, 
+            Digital = 0x02, 
+            Counter = 0x04, 
+            Input = 0x1000, 
+            Output = 0x2000 
+        };
+
+        enum TaskType 
+        { 
+            AnalogInput = Analog | Input, 
+            AnalogOutput = Analog | Output, 
+            DigitalInput = Digital | Input, 
+            DigitalOutput = Digital | Output 
+        };
+
+        enum NiTaskMode 
+        { 
+            NiTaskModeFinite = 0, 
+            NiTaskModeContinuous = 1, 
+            NiTaskModeOnDemand = 2 
+        };
+
     private:
+        static int InstanceCounter; /*!< used to give an auto-incremented taskName if no one is given as initialization parameter */
+
         ito::RetVal checkData(ito::DataObject *externalDataObject, int channels, int samples);
+        ito::RetVal scanForAvailableDevicesAndSupportedChannels();
+        ito::RetVal stopAndDeleteTask();
+        ito::RetVal createTask(); /*!< this method only creates a new task (without adding channels) and configures it with respect to the current set of parameters in m_params */
+        ito::RetVal createChannelsForTask();
+        ito::RetVal configTask();
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
-
-        // These three bools are set true by the acquire method to indicate what kind of data is
-        // received in the getVal method. The getVal method also resets the three bools to false
-
-        bool m_aInIsAcquired = false;
-        bool m_dInIsAcquired = false;
-        bool m_cInIsAcquired = false;
-
-        bool m_aOutIsAcquired = false;
-        bool m_dOutIsAcquired = false;
-        bool m_cOutIsAcquired = false;
-       
-        QMap<QString, NiTask*> m_taskMap;
-        NiChannelList m_channels;
+        
         ito::DataObject m_data;
 		QString m_configForTesting;
+
+        //NEW
+        TaskType m_taskType; /*!< type of this NI-DAQmx instance */
+        QStringList m_availableDevices; /*!< list of all detected devices */
+        QStringList m_supportedChannels; /*!< list of all detectable and supported channels (with respect to the TaskType of this instance */
+
+        TaskHandle m_taskHandle;
+        QList<NiBaseChannel*> m_channels;
+        NiTaskMode m_taskMode;
         
         // Read-functions
         ito::RetVal readAnalog(); /*!< Wait for acquired data */
         ito::RetVal readDigital(); /*!< Wait for acquired data */
         ito::RetVal readCounter(); /*!< Wait for acquired data */
-        ito::RetVal retrieveData(int *, int *); //marc: new
-        ito::RetVal manageTasks(); //dan: new
-        ito::RetVal resetTask(const QString& task); //dan: new
+        ito::RetVal retrieveData();
 
         // Write-functions
-        ito::RetVal writeAnalog(const ito::DataObject *externalDataObject = NULL);
-        ito::RetVal writeDigital(ito::DataObject *externalDataObject = NULL);
-        ito::RetVal writeCounter(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal writeAnalog(const ito::DataObject *dataObj);
+        ito::RetVal writeDigital(const ito::DataObject *dataObj);
+        ito::RetVal writeCounter(const ito::DataObject *dataObj);
  
         // Exec definition and helper functions
-        ito::RetVal help(QString *);
+        ito::RetVal help(const QString &helpTopic);
         
     public slots:
         //!< Get ADC-Parameter

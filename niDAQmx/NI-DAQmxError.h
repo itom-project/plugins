@@ -23,7 +23,7 @@
 #ifndef niDAQmxError_H
 #define niDAQmxError_H
 
-#include <common/retVal.h>
+#include "common/retVal.h"
 #include <qstring.h>
 #include "NIDAQmx.h"
 

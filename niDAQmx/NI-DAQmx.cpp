@@ -34,11 +34,14 @@
 #include "DataObject/dataobj.h"
 #include <qvarlengtharray.h>
 #include <qregexp.h>
+#include <QRegularExpression>
 #include <iostream>
+#include <qlist.h>
+#include "NI-PeripheralClasses.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(niDAQmxinterface, niDAQmxInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
+    Q_EXPORT_PLUGIN2(niDAQmxinterface, NiDAQmxInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
 #endif
 
 //#include "dockWidgetniDAQmx.h"
@@ -48,12 +51,12 @@
 /*!
     \todo add necessary information about your plugin here.
 */
-niDAQmxInterface::niDAQmxInterface()
+NiDAQmxInterface::NiDAQmxInterface()
 {
     m_type = ito::typeDataIO | ito::typeADDA; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
-    setObjectName("niDAQmx");
+    setObjectName("NI-DAQmx");
 
-    m_description = QObject::tr("niDAQmx");
+    m_description = QObject::tr("NI-DAQmx");
 
     char pathSeparator[] =
     #if defined(__linux__) || defined(__APPLE__)
@@ -67,7 +70,7 @@ niDAQmxInterface::niDAQmxInterface()
     std::string filepath (__FILE__);
     std::string dirpath = filepath.substr(0, filepath.rfind(pathSeparator));
     char first[] = "The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. \n\
-The installation needs the NI-DAQmx Library that can be downloaded from the NI website \n(http://www.ni.com/download/ni-daqmx-14.2/5046/en/).\n\n\
+The installation needs the NI-DAQmx Library that can be downloaded from the NI website \n(https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html).\n\n\
 Basic plugin documentation is found in ";
     char last[] = ". \nOnline help is available through <plugin_ref>.exec('help').";
     strcpy (docstring, first);
@@ -75,7 +78,7 @@ Basic plugin documentation is found in ";
     strcat (docstring, pathSeparator);
     strcat (docstring, "doc");
     strcat (docstring, pathSeparator);
-    strcat (docstring, "niDAQmx.rst");
+    strcat (docstring, "NiDAQmx.rst");
     strcat (docstring, last);
 
     m_detaildescription = QObject::tr(docstring);
@@ -87,22 +90,36 @@ Basic plugin documentation is found in ";
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION); 
     
-
-    /*ito::Param paramVal("type", ito::ParamBase::String, "analogInput", tr("type of the task related to this instance of the NI-DAQmx plugin (analogInput, digitalInput, analogOutput, digitalOutput)").toLatin1().data());
+    ito::Param paramVal("taskType", ito::ParamBase::String, "analogInput", tr("type of the task related to this instance of the NI-DAQmx plugin (analogInput, digitalInput, analogOutput, digitalOutput)").toLatin1().data());
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
     sm->addItem("analogInput");
     sm->addItem("digitalInput");
     sm->addItem("analogOutput");
     sm->addItem("digitalOutput");
     paramVal.setMeta(sm, true);
-    m_initParamsMand << paramVal;*/
+    m_initParamsMand << paramVal;
 
-    ito::Param paramVal("device", ito::ParamBase::String, "Dev1", tr("Name of the target Device, Dev1 as default, cDAQ1Mod1 for compactDAQ single module Device. Other names see device description in NI MAX").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
+    m_initParamsOpt << ito::Param("taskName", ito::ParamBase::String, "", tr("desired name of the underlying NI task (this might be changed by the NI task creation method)").toLatin1().data());
+
+    paramVal = ito::Param("taskMode", ito::ParamBase::String, "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
+    sm = new ito::StringMeta(ito::StringMeta::String);
+    sm->addItem("finite");
+    sm->addItem("continuous");
+    sm->addItem("onDemand");
+    paramVal.setMeta(sm, true);
+    m_initParamsOpt << paramVal;
+
+    paramVal = ito::Param("samplingRate", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000000.0, 100.0, tr("The sampling rate in samples per second per channel. If you use an external source for the Sample Clock, set this value to the maximum expected rate of that clock.").toLatin1().data());
+    m_initParamsOpt << paramVal;
+
+    paramVal = ito::Param("samplesPerChannel", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(),
+        20000,
+        tr("The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size.").toLatin1().data());
+    m_initParamsOpt << paramVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-niDAQmxInterface::~niDAQmxInterface()
+NiDAQmxInterface::~NiDAQmxInterface()
 {
 
 }
@@ -112,77 +129,63 @@ niDAQmxInterface::~niDAQmxInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmxInterface::getAddInInst(ito::AddInBase **addInInst)
+ito::RetVal NiDAQmxInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(niDAQmx) //the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(NiDAQmx) //the argument of the macro is the classname of the plugin
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmxInterface::closeThisInst(ito::AddInBase **addInInst)
+ito::RetVal NiDAQmxInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   REMOVE_PLUGININSTANCE(niDAQmx) //the argument of the macro is the classname of the plugin
+   REMOVE_PLUGININSTANCE(NiDAQmx) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ int NiDAQmx::InstanceCounter = 0;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-niDAQmx::niDAQmx() : AddInDataIO(), m_isgrabbing(false)
+NiDAQmx::NiDAQmx() : 
+    AddInDataIO(), 
+    m_isgrabbing(false),
+    m_taskHandle(NULL)
 {
-    ito::Param paramVal("device", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "Dev1", tr("Name of the target device").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    // Create the six tasks
-    m_taskMap.insert("ai", new NiTask("ai"));
-    m_taskMap.insert("ao", new NiTask("ao"));
-    m_taskMap.insert("di", new NiTask("di"));
-    m_taskMap.insert("do", new NiTask("do"));
-    m_taskMap.insert("ci", new NiTask("ci"));
-    m_taskMap.insert("co", new NiTask("co"));
+    InstanceCounter++;
 
     // General Parameters
-    paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NI-DAQmx", NULL);    
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("channel", ito::ParamBase::String | ito::ParamBase::Readonly, "", NULL);    
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("configForTesting", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for testing").toLatin1().data());  
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NI-DAQmx", NULL);    
     m_params.insert(paramVal.getName(), paramVal);
 
-    // Channel Parameters
-    paramVal = ito::Param("chAssociated", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("returns a list of all channels that are associated with their tasks").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal); // ai0,ai1,port0,... only the associated ports are listed
-    paramVal = ito::Param("aiChParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for analog input channel").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("aoChParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for analog output channel").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("diChParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for digital input channel").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("doChParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for digital output channel").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ciChParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for counter input channel").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("coChParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for counter output channel").toLatin1().data());
+    paramVal = ito::Param("taskName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("name of the NI task that is related to this instance").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    // Task Parameters
-    paramVal = ito::Param("taskStatus", ito::ParamBase::String | ito::ParamBase::Readonly, "Comma list of the six tasks aiX,aoX,diX,doX,...", NULL);    
-    m_params.insert(paramVal.getName(), paramVal); // (X: -1=not initialized, 0=initialized, 1=running, further status possible
-    paramVal = ito::Param("setValMode", ito::ParamBase::Int | ito::ParamBase::In, 1, 3, 0, tr("Defines whether the setVal data is meant for the analog, digital or counter task").toLatin1().data());
+    paramVal = ito::Param("availableDevices", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("comma-separated list of all detected and available devices").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("aiTaskParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for the analog input Task").toLatin1().data());
+
+    paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("aoTaskParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for the analog output Task").toLatin1().data());
+
+    paramVal = ito::Param("channels", ito::ParamBase::String, "", tr("semicolon-separated list of all channels that should be part of this task. Every item is a comma separated string that defines and parameterizes every channel.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("diTaskParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for the digital input Task").toLatin1().data());
+
+    paramVal = ito::Param("taskMode", ito::ParamBase::String, "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
+    sm->addItem("finite");
+    sm->addItem("continuous");
+    sm->addItem("onDemand");
+    paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("doTaskParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for the digital output Task").toLatin1().data());
+    m_taskMode = NiTaskModeFinite;
+
+    paramVal = ito::Param("samplingRate", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000000.0, 100.0, tr("The sampling rate in samples per second per channel. If you use an external source for the Sample Clock, set this value to the maximum expected rate of that clock.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ciTaskParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for the counter input Task").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("coTaskParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for the counter output Task").toLatin1().data());
+    
+    paramVal = ito::Param("samplesPerChannel", ito::ParamBase::Int | ito::ParamBase::In, 0,std::numeric_limits<int>::max(), 
+                                            20000, 
+                                            tr("The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // Register Exec Functions
@@ -205,65 +208,101 @@ niDAQmx::niDAQmx() : AddInDataIO(), m_isgrabbing(false)
     registerExecFunc("help:acquire", pMand, pOpt, pOut, tr("Prints information acquire plugin method."));
     registerExecFunc("help:getVal", pMand, pOpt, pOut, tr("Prints information getVal plugin method."));
     registerExecFunc("help:copyVal", pMand, pOpt, pOut, tr("Prints information copyVal plugin method."));
-    registerExecFunc("help:taskStatus", pMand, pOpt, pOut, tr("Prints information taskStatus plugin method."));
 
     //end register Exec Functions
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-niDAQmx::~niDAQmx()
+NiDAQmx::~NiDAQmx()
 {
-    foreach(NiTask *val, m_taskMap)
-    {
-        delete val;
-    }
 }
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    retValue += m_params["device"].copyValueFrom(&(paramsOpt->at(0)));
-    QString device = m_params["device"].getVal<char *>(); //borrowed reference
+    QByteArray taskName = paramsOpt->at(0).getVal<const char*>();
+    m_params["taskMode"].setVal<const char*>(paramsOpt->at(1).getVal<const char*>());
 
-    char buffer[1024];
-    memset(buffer, '\0', 1024 * sizeof(char));
-    DAQmxGetSysDevNames(buffer, sizeof(buffer));
-
-    // need to get rid of "spaces" in buffer
-    QString s(buffer);
-    s.replace(QString(" "), QString(""));
-																																																																																																																																																								
-    if (!s.split(",").contains(device, Qt::CaseSensitive))
+    switch (m_params["taskMode"].getVal<const char*>()[0])
     {
-        if (s == "")
-        {
-            retValue = ito::RetVal(ito::retError, 0, "No devices could be found in your system.");
-        }
-        else
-        {
-            retValue += ito::RetVal::format(ito::retError, 0, "The specified device does not exist in your system. The following devices were found: %s", buffer);
-        }
+    case 'f': //finite
+    {
+        m_taskMode = NiTaskModeFinite;
+        break;
+    }
+    case 'c': //continuous
+    {
+        m_taskMode = NiTaskModeContinuous;
+        break;
+    }
+    case 'o': // Hardware Timed Single Point
+    {
+        m_taskMode = NiTaskModeOnDemand;
+        break;
+    }
+    default:
+    {
+        retValue += ito::RetVal::format(ito::retError, 0, "configure sample clock timing: Task mode '%s' is not supported.", m_params["taskMode"].getVal<const char*>());
+        break;
+    }
+    }
+
+    m_params["samplingRate"].setVal<double>(paramsOpt->at(2).getVal<double>());
+    m_params["samplesPerChannel"].setVal<int>(paramsOpt->at(3).getVal<int>());
+
+    QString taskType = paramsMand->at(0).getVal<const char*>();
+    if (taskType == "analogInput")
+    {
+        m_taskType = TaskType::AnalogInput;
+        if (taskName == "") { taskName = QString("AnalogInput %1").arg(InstanceCounter).toLatin1(); }
+    }
+    else if (taskType == "digitalInput")
+    {
+        m_taskType = TaskType::DigitalInput;
+        if (taskName == "") { taskName = QString("DigitalInput %1").arg(InstanceCounter).toLatin1(); }
+    }
+    else if (taskType == "analogOutput")
+    {
+        m_taskType = TaskType::AnalogOutput;
+        if (taskName == "") { taskName = QString("AnalogOutput %1").arg(InstanceCounter).toLatin1(); }
+    }
+    else if (taskType == "digitalOutput")
+    {
+        m_taskType = TaskType::DigitalOutput;
+        if (taskName == "") { taskName = QString("DigitalOutput %1").arg(InstanceCounter).toLatin1(); }
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, "invalid taskType");
+    }
+
+    m_params["taskName"].setVal<const char*>(taskName.constData());
+
+    if (!retValue.containsError())
+    {
+        retValue += scanForAvailableDevicesAndSupportedChannels();
     }
 
     if (!retValue.containsError())
     {
-        // populate m_channels
-        m_channels = NiChannelList(device);
+        retValue += createTask();
+    }
 
-        QStringList dummyReads;
-        dummyReads << "channel" << "chAssociated" << "aiChParams" << "aoChParams" << "diChParams" << "doChParams" << "ciChParams" << "coChParams"
-            << "taskStatus" << "aiTaskParams" << "aoTaskParams" << "diTaskParams" << "doTaskParams" << "ciTaskParams" << "coTaskParams";
+    if (!retValue.containsError())
+    {
+        retValue += configTask();
+    }
 
-        foreach(const QString &p, dummyReads)
-        {
-            QSharedPointer<ito::Param> val(new ito::Param(p.toLatin1().data()));
-            getParam(val, NULL);
-        }
+    setIdentifier(m_params["taskName"].getVal<const char*>());
 
+    if (!retValue.containsError())
+    {
         emit parametersChanged(m_params);
     }
 
@@ -273,27 +312,16 @@ ito::RetVal niDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         waitCond->release();
     }
 
-    setInitialized(true); //init method has been finished (independent of retval)
+    setInitialized(true); //init method has been finished (independent of retValue)
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::close(ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    //
-    ////todo:
-    //// - disconnect the device if not yet done
-    //// - this function is considered to be the "inverse" of init.
 
-    // stop and reset all tasks
-    retValue += resetTask("ai");
-    retValue += resetTask("di");
-    retValue += resetTask("ci");
-    retValue += resetTask("ao");
-    retValue += resetTask("do");
-    retValue += resetTask("co");
+    ito::RetVal retValue = stopAndDeleteTask();
 
     if (waitCond)
     {
@@ -305,7 +333,162 @@ ito::RetVal niDAQmx::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::stopAndDeleteTask()
+{
+    ito::RetVal retValue;
+
+    if (m_channels.size() > 0)
+    {
+        foreach(NiBaseChannel* nbc, m_channels)
+        {
+            delete nbc;
+        }
+        m_channels.clear();
+    }
+
+    if (m_taskHandle)
+    {
+        DAQmxStopTask(m_taskHandle);
+
+        retValue += checkError(DAQmxClearTask(m_taskHandle), "Clear task");
+        m_taskHandle = NULL;
+    }
+    
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NiDAQmx::createTask()
+{
+    ito::RetVal retValue;
+
+    if (m_taskHandle)
+    {
+        retValue += stopAndDeleteTask();
+    }
+
+    retValue += checkError(DAQmxCreateTask(m_params["taskName"].getVal<const char*>(), &m_taskHandle), "Creating new task");
+
+    if (m_taskHandle == NULL)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "task could not be created (unknown reason)");
+    }
+
+    if (!retValue.containsError())
+    {
+        char buf[1024];
+        if (DAQmxGetTaskName(m_taskHandle, buf, sizeof(buf)) == DAQmxSuccess)
+        {
+            m_params["taskName"].setVal<const char*>(buf);
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NiDAQmx::createChannelsForTask()
+{
+    ito::RetVal retValue;
+
+    if (!m_taskHandle)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "no task created");
+    }
+    else
+    {
+        QStringList channels = QString(m_params["channels"].getVal<const char*>()).split(";");
+        NiBaseChannel *nbc;
+        
+        foreach(const QString &channel, channels)
+        {
+            nbc = NULL;
+
+            switch (m_taskType)
+            {
+            case TaskType::AnalogInput:
+                nbc = NiAnalogInputChannel::fromConfigurationString(channel, retValue);
+                break;
+            case TaskType::AnalogOutput:
+                nbc = NiAnalogOutputChannel::fromConfigurationString(channel, retValue);
+                break;
+            case TaskType::DigitalInput:
+                nbc = NiDigitalInputChannel::fromConfigurationString(channel, retValue);
+                break;
+            case TaskType::DigitalOutput:
+                nbc = NiDigitalOutputChannel::fromConfigurationString(channel, retValue);
+                break;
+            default:
+                retValue += ito::RetVal(ito::retError, 0, "invalid task type");
+                break;
+            }
+
+            if (!retValue.containsError() && nbc)
+            {
+                retValue += nbc->addChannelToTask(m_taskHandle);
+                m_channels.append(nbc);
+            }
+
+            if (retValue.containsError())
+            {
+                break;
+            }
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NiDAQmx::configTask()
+{
+    ito::RetVal retValue;
+
+    if (!m_taskHandle)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "no task created");
+    }
+    else if (m_channels.size() > 0)
+    {
+        double rateHz = m_params["samplingRate"].getVal<double>();
+        int samplesPerChannel = m_params["samplesPerChannel"].getVal<int>();
+        //configure task
+        switch (m_taskMode)
+        {
+        case NiTaskModeFinite: //finite
+        {
+            // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or do not use it.
+            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, NULL /*OnboardClock*/, rateHz, DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, samplesPerChannel), "configure sample clock timing");
+            break;
+        }
+        case NiTaskModeContinuous: //continuous
+        {
+            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, NULL /*OnboardClock*/, rateHz, DAQmx_Val_Rising, DAQmx_Val_ContSamps, samplesPerChannel), "configure sample clock timing");
+            break;
+        }
+        case NiTaskModeOnDemand: // Hardware Timed Single Point
+        {
+            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, NULL /*OnboardClock*/, rateHz, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
+            break;
+        }
+        }
+
+        //if (!retValue.containsError())
+        //{
+        //    // If a triggerport is defined, set task to triggermode
+        //    if (this->getTriggerPort() != "")
+        //    {
+        //        err = DAQmxCfgDigEdgeStartTrig(m_taskHandle, this->getTriggerPort().toLatin1().data(), this->getTriggerEdge());
+        //    }
+
+        //}
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NiDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -313,7 +496,7 @@ ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
     bool hasIndex = false;
     int index;
     QString suffix;
-    QMap<QString,ito::Param>::iterator it;
+    ParamMapIterator it;
 
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
@@ -323,175 +506,20 @@ ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
     }
     if (!retValue.containsError())
     {
-        // General Parameters
-        if (key == "name")
-        {
-            *val = it.value();
-        }
-        else if (key == "channel")
-        {
-            // Hier weitermachen
-            QString ch = m_channels.getAllChannelAsString().join(",");
-            m_params["channel"].setVal<char*>(ch.toLatin1().data(), ch.size());
-            *val = it.value();
-        }
-        else if (key == "configForTesting")
-        {
-            m_params[key].setVal<char*>(m_configForTesting.toLatin1().data(), m_configForTesting.size());
-            *val = it.value();
-        }
-        // Channel Parameters
-        else if (key == "chAssociated")
-        {
-            QStringList as;
-            foreach(NiTask* t, m_taskMap)
-            {
-                if (t->getChCount() > 0)
-                {
-                    as.append(t->getChList().join(","));
-                }
-            }
-            QString res;
-            res = as.join(";");
-            m_params["chAssociated"].setVal<char*>(res.toLatin1().data(), res.size());
-            *val = it.value();
-        }
-        else if (key == "aiChParams")
-        {
-            QRegularExpression first_comma("^([^,]+),(.*)$");
-            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoInput).join(";");
-            
-            // Replace comma between Device and Channel ids with '/'
-            para.replace(first_comma, "\\1/\\2");
-
-            m_params["aiChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-            *val = it.value();
-        }
-        else if (key == "aoChParams")
-        {
-            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoOutput).join(";");
-            m_params["aoChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-            *val = it.value();
-        }
-        else if (key == "diChParams")
-        {
-            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoInput).join(";");
-            m_params["diChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-            *val = it.value();
-        }
-        else if (key == "doChParams")
-        {
-            QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoOutput).join(";");
-            m_params["doChParams"].setVal<char*>(para.toLatin1().data(), para.size());
-            *val = it.value();
-        }
-        else if (key == "ciChParams")
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - ciChParams. Counter input is not implemented").toLatin1().data());
- //           QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeCounter, NiBaseChannel::chIoInput).join(";");
- //           m_params["ciChParams"].setVal<char*>(para.toLatin1().data(), para.size());
- //           *val = it.value();
-        }
-        else if (key == "coChParams")
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - coChParams. Counter output is not implemented").toLatin1().data());
- //           QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeCounter, NiBaseChannel::chIoOutput).join(";");
- //           m_params["coChParams"].setVal<char*>(para.toLatin1().data(), para.size());
- //           *val = it.value();
-        }
-        // Task Paramters
-        else if (key == "taskStatus")
-        {
-            QStringList res;
-            foreach(NiTask* t, m_taskMap)
-            {            
-                QStringList ch;
-                ch.append(t->getName());
-                if (t->getTaskParamsInitialized())
-                {
-                    // Hier muss noch der status ausgelesen werden
-                    // ist der Task running oder was auch immer
-                    if (t->isDone())
-                    {
-                        ch.append("0");
-                    }
-                    else
-                    {
-                        ch.append("1");
-                    }
-                }
-                else
-                {
-                    ch.append("-1");
-                }
-                res.append(ch.join(","));
-            }
-            QString resS = res.join(";");
-            m_params["taskStatus"].setVal<char*>(resS.toLatin1().data(), resS.size());
-            *val = it.value();
-        }
-        else if (key.right(10) == "TaskParams")
-        {
-            QStringList tl;                
-            QString ch = key.left(2);
-
-            if(ch == "ai")
-            {
-                if (m_taskMap.contains(ch))
-                {
-                    if (m_taskMap.value(ch)->taskParamsValid())
-                    {
-                        tl.append(QString::number(m_taskMap.value(ch)->getRateHz()));
-                        tl.append(QString::number(m_taskMap.value(ch)->getSamplesToRW()));
-                        tl.append(QString::number(m_taskMap.value(ch)->getMode()));
-                        ch = tl.join(",");
-                    }
-                    else
-                    {
-                        ch = "-1";
-                    }
-                }
-                m_params[key].setVal<char*>(ch.toLatin1().data(), ch.size());
-                *val = it.value();
-            }
-            else if(ch == "ao")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - aoTaskParams. aoTaskParams is not implemented").toLatin1().data());
-            }
-            else if(ch == "di")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - diTaskParams. diTaskParams is not implemented").toLatin1().data());
-            }
-            else if(ch == "do")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - doTaskParams. doTaskParams is not implemented").toLatin1().data());
-            }
-            else if(ch == "ci")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - ciTaskParams. ciTaskParams is not implemented").toLatin1().data());
-            }
-            else if(ch == "co")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::getParam - coTaskParams. coTaskParams is not implemented").toLatin1().data());
-            }
-        }
-        else
-        {
-            *val = it.value();
-        }
+        *val = it.value();
     }
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();
+waitCond->release();
     }
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -499,10 +527,11 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     bool hasIndex;
     int index;
     QString suffix;
-    QMap<QString, ito::Param>::iterator it;
+    ParamMapIterator it;
+    bool restartTask = false;
 
     ////parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
     if (!retValue.containsError())
     {
@@ -520,322 +549,111 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
     if (!retValue.containsError())
     {
-        if (key == "aiChParams")
-        { 
-            // (dev-channel,inConfig, MinOutputVoltage, MaxOutputVoltage)
-            QRegExp regExp(QString("(\\w+)/(\\w+),([0-%1]),([+-]?\\d+),([+-]?\\d+)").arg(NiAnalogInputChannel::niAnInConfEndValue-1));
-            if (regExp.indexIn(val->getVal<const char*>()) == -1)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aiChParams. Format must be: device/channel,configMode [0-%1],minOutputVoltage,maxOutputVoltage")
-                    .arg(NiAnalogInputChannel::niAnInConfEndValue - 1)
-                    .toLatin1().data());
-            }
-            else if (!m_taskMap.value("ai")->getTaskParamsInitialized() && !m_taskMap.value("ai")->getIgnoreTaskParamsInitialization())
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aiChParams. The task is not initialized").toLatin1().data());
-            }
-            else
-            {
-                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
-                if (!m_channels.contains(deviceID))
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aiChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
-                }
-                else
-                {
-                    NiAnalogInputChannel *ai = NULL;
-                    if (m_channels.value(deviceID) == NULL)
-                    { // channel does not exist yet
-                        ai = new NiAnalogInputChannel();
-                    }
-                    else
-                    { // channel already exists
-                        ai = dynamic_cast<NiAnalogInputChannel*>(m_channels.value(deviceID));
-                    }
-                    ai->setDevID(regExp.cap(1));
-                    ai->setChID(regExp.cap(2));
-                    ai->setAnalogInputConfig(regExp.cap(3).toInt());
-                    ai->setMinOutputLim(regExp.cap(4).toInt());
-                    ai->setMaxOutputLim(regExp.cap(5).toInt());
-                    // Channel is finished and added to the corresponding input task
-                    retValue += ai->applyParameters(m_taskMap.value("ai"));
-                    // increase the corresponding counter
-                    m_channels.insert(deviceID, ai);
-                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoInput).join(";");
-                    it->setVal<char*>(para.toLatin1().data(), para.size());
-                }
-            }
-        }
-        else if (key == "aoChParams")
+        if (key == "channels")
         {
-            // (dev-channel,minInLim,maxInLim)
-            QRegExp regExp(QString("(\\w+)/(\\w+),([+-]?\\d+),([+-]?\\d+)"));
-            if (regExp.indexIn(val->getVal<const char*>()) == -1)
+            QString currentValue = it->getVal<const char*>();
+            QString newValue = val->getVal<const char*>();
+
+            retValue += it->copyValueFrom(&(*val));
+
+            if (!retValue.containsError() && (currentValue != newValue))
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. Format must be: device/channel,minOutputVoltage,maxOutputVoltage").toLatin1().data());
-            }
-            else if (!m_taskMap.value("ao")->getTaskParamsInitialized())
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. The task is not initialized").toLatin1().data());
-            }
-            else
-            {
-                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
-                if (!m_channels.contains(deviceID))
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
-                }
-                else
-                {
-                    NiAnalogOutputChannel *ao = NULL;
-                    if (m_channels.value(deviceID) == NULL)
-                    { // channel does not exist yet
-                        ao = new NiAnalogOutputChannel();
-                    }
-                    else
-                    { // channel already exists
-                        ao = dynamic_cast<NiAnalogOutputChannel*>(m_channels.value(deviceID));
-                    }
-                    ao->setDevID(regExp.cap(1));
-                    ao->setChID(regExp.cap(2));
-                    ao->setMinOutputLim(regExp.cap(3).toInt());
-                    ao->setMaxOutputLim(regExp.cap(4).toInt());
-                    // Channel is finished and added to the corresponding input task
-                    retValue += ao->applyParameters(m_taskMap.value("ao"));
-                    // increase the corresponding counter
-                    m_channels.insert(deviceID, ao);
-                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeAnalog, NiBaseChannel::chIoOutput).join(";");
-                    it->setVal<char*>(para.toLatin1().data(), para.size());
-                }
+                restartTask = true;
             }
         }
-        else if (key == "diChParams")
-        { 
-            // (dev-channel)
-            QRegExp regExp(QString("(\\w+)/(\\w+)"));
-            if (regExp.indexIn(val->getVal<const char*>()) == -1)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - diChParams. Format must be: device/channel").toLatin1().data());
-            }
-            else if (!m_taskMap.value("di")->getTaskParamsInitialized())
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - diChParams. The task is not initialized").toLatin1().data());
-            }
-            else
-            {
-                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
-                if (!m_channels.contains(deviceID))
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
-                }
-                else
-                {
-                    NiDigitalInputChannel *di = NULL;
-                    if (m_channels.value(deviceID) == NULL)
-                    { // channel does not exist yet
-                        di = new NiDigitalInputChannel();
-                    }
-                    else
-                    { // channel already exists
-                        di = dynamic_cast<NiDigitalInputChannel*>(m_channels.value(deviceID));
-                    }
-                    di->setDevID(regExp.cap(1));
-                    di->setChID(regExp.cap(2));
-                    // Channel is finished and added to the corresponding input task
-                    retValue += di->applyParameters(m_taskMap.value("di"));
-                    // increase the corresponding counter
-                    m_channels.insert(deviceID, di);
-                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoInput).join(";");
-                    it->setVal<char*>(para.toLatin1().data(), para.size());
-                }
-            }
-        }
-        else if (key == "doChParams")
+        else if (key == "samplingRate" || key == "samplesPerChannel")
         {
-            // (dev-channel)
-            QRegExp regExp(QString("(\\w+)/(\\w+)"));
-            if (regExp.indexIn(val->getVal<const char*>()) == -1)
+            retValue += it->copyValueFrom(&(*val));
+            if (!retValue.containsError())
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doChParams. Format: device/channel").toLatin1().data());
-            }
-            else if (!m_taskMap.value("do")->getTaskParamsInitialized())
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doChParams. The task is not initialized").toLatin1().data());
-            }
-            else
-            {
-                QString deviceID = QString("%1/%2").arg(regExp.cap(1), regExp.cap(2));
-                if (!m_channels.contains(deviceID))
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doChParams. Invalid device/channel. Possible values are: %1").arg(m_channels.keys().join(", ")).toLatin1().data());
-                }
-                else
-                {
-                    NiDigitalOutputChannel *dout = NULL;
-                    if (m_channels.value(deviceID) == NULL)
-                    { // channel does not exist yet
-                        dout = new NiDigitalOutputChannel();
-                    }
-                    else
-                    { // channel already exists
-                        dout = dynamic_cast<NiDigitalOutputChannel*>(m_channels.value(deviceID));
-                    }
-                    dout->setDevID(regExp.cap(1));
-                    dout->setChID(regExp.cap(2));
-                    // Channel is finished and added to the corresponding input task
-                    retValue += dout->applyParameters(m_taskMap.value("do"));
-                    // increase the corresponding counter
-                    m_channels.insert(deviceID, dout);
-                    QString para = m_channels.getAllChParameters(NiBaseChannel::chTypeDigital, NiBaseChannel::chIoOutput).join(";");
-                    it->setVal<char*>(para.toLatin1().data(), para.size());
-                }
+                retValue += configTask();
             }
         }
-        else if (key == "ciChParams")
+        else if (key == "taskMode")
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - ciChParams. Counter input is not implemented").toLatin1().data());
-        }
-        else if (key == "coChParams")
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - coChParams. Counter output is not implemented").toLatin1().data());
-        }
-        else if (key == "setValMode")
-        {
+            retValue += it->copyValueFrom(&(*val));
 
-        // Note: We will never get here if the mode value is not between 1-3. Such an error is caught by the call to apiValidateParam()
-        // at the beginning of setParam()
-
-            // 1 = Analog; 2 = Digital; 3 = Counter
-            int mode = val->getVal<int>();
-            if (mode == 1)
+            switch (it->getVal<const char*>()[0])
             {
-                this->m_aOutIsAcquired = true;
-            }
-            else if (mode == 2)
-            {
-                this->m_dOutIsAcquired = true;
-            }
-            else if (mode == 3)
-            {
-                this->m_cOutIsAcquired = true;
-            }
-        }
-        else if (key.right(10) == "TaskParams")
-        {
-            QString taskID = key.left(2);
-            QStringList in = QString(val->getVal<char*>()).split(",");
-
-            if(taskID == "ai")
-            {
-                // aiTaskParams takes 3, 4 or 5 values; otherwise an error
-                if( in.size() < 3 || in.size() > 5 )
+                case 'f': //finite
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - TaskParams. Wrong number of parameters (rate[Hz], samples[1], mode)").toLatin1().data());
+                    m_taskMode = NiTaskModeFinite;
+                    break;
                 }
-
-                // Invalid mode identifier? (getPassThroughToPeripheralClasses should only be true when unittesting for error reporting functionality
-                // In that case, we want the mode set eventhough it is in error, so that underlying functionality in the NI-PeripheralClasses can be tested)
-
-                else if(in[2].toInt() > 2 && !m_taskMap.value("ai")->getPassThroughToPeripheralClasses())
+                case 'c': //continuous
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - TaskParams. Task Parmaters mode invalid").toLatin1().data());
+                    m_taskMode = NiTaskModeContinuous;
+                    break;
                 }
-                // on demand mode is not yet supported. Catch it now before things get out of hand.
-                else if(in[2].toInt() == 2)
+                case 'o': // Hardware Timed Single Point
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - TaskParams. On demand mode is not yet supported").toLatin1().data());
+                    m_taskMode = NiTaskModeOnDemand;
+                    break;
                 }
-                else
+                default:
                 {
-                    m_taskMap.value(taskID)->setRateHz(in[0].toInt());
-                    m_taskMap.value(taskID)->setSamplesToRW(in[1].toInt());
-                    m_taskMap.value(taskID)->setMode(in[2].toInt());
-                    retValue += it->copyValueFrom( &(*val) );
-                    if (in.size() >= 4) // Trigger source defined
-                    {
-                        m_taskMap.value(taskID)->setTriggerPort(in[3]);
-                        if (in[4] == "rising")
-                        {
-                            m_taskMap.value(taskID)->setTriggerEdge(DAQmx_Val_Rising);
-                        }
-                        else if (in[4] == "falling")
-                        {
-                            m_taskMap.value(taskID)->setTriggerEdge(DAQmx_Val_Falling);
-                        }
-                    }
-
-                    m_taskMap.value(taskID)->setTaskParamsInitialized();
+                    retValue += ito::RetVal::format(ito::retError, 0, "configure sample clock timing: Task mode '%s' is not supported.", m_params["taskMode"].getVal<const char*>());
+                    break;
                 }
             }
-            else if(taskID == "ao")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - aoTaskParams. aoTaskParams is not implemented").toLatin1().data());
-            }
-            else if(taskID == "di")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - diTaskParams. diTaskParams is not implemented").toLatin1().data());
-            }
-            else if(taskID == "do")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - doTaskParams. doTaskParams is not implemented").toLatin1().data());
-            }
-            else if(taskID == "ci")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - ciTaskParams. ciTaskParams is not implemented").toLatin1().data());
-            }
-            else if(taskID == "co")
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setParam - coTaskParams. coTaskParams is not implemented").toLatin1().data());
-            }
-        }
-        else if (key == "configForTesting")
-        {
-            // Record the flags in m_configForTesting by concatenating those specified here with those already there.
 
-            if(!m_configForTesting.isEmpty())
-            {
-                m_configForTesting.append(QString(","));
-            }
-
-            m_configForTesting.append(QString(val->getVal<const char*>()));
-
-            // Enable various flags that support testing the plugin. Should not be specified when the plugin is used operationally.
-
-            QStringList in = QString(val->getVal<const char*>()).split(",");
-            QMap<QString, NiTask*>::iterator taskMapIterator;
-            QStringList::iterator flag;
-            for(taskMapIterator = m_taskMap.begin(); taskMapIterator != m_taskMap.end(); taskMapIterator++)
-            {
-                for(flag = in.begin(); flag != in.end(); flag++)
-                {
-                    if(*flag == "ignoreTaskParamInit")
-                    {
-                        (*taskMapIterator)->setIgnoreTaskParamsInitialization();
-                    }
-                    if(*flag == "passThroughToPeripheralClasses")
-                    {
-                        (*taskMapIterator)->setPassThroughToPeripheralClasses();
-                    }
-                }
-            } 
+            restartTask = true;
         }
         else
         {
             //all parameters that don't need further checks can simply be assigned
             //to the value in m_params (the rest is already checked above)
-            retValue += it->copyValueFrom( &(*val) );
+            retValue += it->copyValueFrom(&(*val));
         }
+    }
+
+    if (restartTask)
+    {
+        retValue += stopAndDeleteTask();
+        retValue += createTask();
+        if (!retValue.containsError())
+        {
+            retValue += createChannelsForTask();
+        }
+
+        if (!retValue.containsError())
+        {
+            retValue += configTask();
+        }
+
+        const uInt32 bufferSize = 1024;
+        char buffer[bufferSize];
+        ito::RetVal retValue2 = checkError(DAQmxGetTaskChannels(m_taskHandle, buffer, bufferSize), "read all current task channels");
+
+        QStringList availableChannels = QString(buffer).split(",");
+
+        QList<NiBaseChannel*>::iterator iter = m_channels.begin();
+
+        while (iter != m_channels.end())
+        {
+            if (availableChannels.contains((*iter)->physicalName()))
+            {
+                ++iter;
+            }
+            else
+            {
+                delete (*iter);
+                iter = m_channels.erase(iter);
+            }
+        }
+
+        //update parameters
+        QStringList channelParams;
+        foreach(NiBaseChannel* nbc, m_channels)
+        {
+            channelParams << nbc->getConfigurationString();
+        }
+        QByteArray channels = channelParams.join(";").toLatin1();
+        m_params["channels"].setVal<const char*>(channels.constData());
     }
 
     if (!retValue.containsError())
     {
-        QStringList dummyReads;
-        dummyReads << "channel" << "chAssociated" << "taskStatus";
-        foreach(const QString &p, dummyReads)
-        {
-            QSharedPointer<ito::Param> val(new ito::Param(p.toLatin1().data()));
-            getParam(val, NULL);
-        }        
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
 
@@ -849,14 +667,14 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::startDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
 
     // startDevice is not used in this plugin.
 
-    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::startDevice. Warning: startDevice() is not used in niDAQmx. It is a NOOP").toLatin1().data());;
+    retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::startDevice. Warning: startDevice() is not used in NiDAQmx. It is a NOOP").toLatin1().data());;
 
     if (waitCond)
     {
@@ -868,14 +686,14 @@ ito::RetVal niDAQmx::startDevice(ItomSharedSemaphore *waitCond)
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::stopDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::stopDevice(ItomSharedSemaphore *waitCond)
 {
     //ItomSharedSemaphoreLocker locker(waitCond);
    ito::RetVal retValue;
 
     // stopDevice is not used in this plugin.
 
-    retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::stopDevice. Warning: stopDevice() is not used in niDAQmx It is a NOOP").toLatin1().data());;
+    retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::stopDevice. Warning: stopDevice() is not used in NiDAQmx It is a NOOP").toLatin1().data());;
 
     if (waitCond)
     {
@@ -887,7 +705,7 @@ ito::RetVal niDAQmx::stopDevice(ItomSharedSemaphore *waitCond)
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::acquire(const int trigger, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
 {
     // The trigger is used here in another meaning. It s a bitmask and defines
     // which tasks are started! (all decimal)
@@ -895,58 +713,48 @@ ito::RetVal niDAQmx::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     //  2 = Digital Input
     //  4 = Counter Input
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval(ito::retOk);
+    ito::RetVal retValue(ito::retOk);
+    m_isgrabbing = false;
 
-    if ( m_aInIsAcquired || m_dInIsAcquired || m_cInIsAcquired )
+    if (!m_taskHandle || m_channels.size() == 0)
     {
-        // acquire was called twice without an intervening call to getVal or copyVal.
-        m_aInIsAcquired = m_dInIsAcquired = m_cInIsAcquired = false;
-        retval += resetTask(QString("ai"));
-        retval += resetTask(QString("di"));
-        retval += resetTask(QString("ci"));
-        retval += ito::RetVal(ito::retError, 0, tr("niDAQmx::acquire - acquire was called twice without an intervening call to getVal or copyVal").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, "No task started or no channels assigned to the task");
     }
-    else if (trigger & 1)
+    else if (m_taskType & TaskSubTypes::Output)
     {
-        retval += m_taskMap.value("ai")->run();
-        m_aInIsAcquired = true;
+        retValue += ito::RetVal(ito::retError, 0, "Task is an output task. No data acquisition is possible.");
     }
-    else if (trigger & 2)
+    else
     {
-        retval += m_taskMap.value("di")->run();
-        m_dInIsAcquired = true;
-    }
-    else if (trigger & 4)
-    {
-        retval += m_taskMap.value("ci")->run();
-        m_cInIsAcquired = true;
+        retValue += checkError(DAQmxStartTask(m_taskHandle), "DAQmxStartTask");
     }
 
-    if (!retval.containsError())
+    if (!retValue.containsError())
     {
         m_isgrabbing = true;
     }
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
-        waitCond->release();  
+        waitCond->returnValue = retValue;
+        waitCond->release();
     }
 
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::readAnalog()
+ito::RetVal NiDAQmx::readAnalog()
 {
     ito::RetVal retValue(ito::retOk);
 
-    int channels = m_taskMap.value("ai")->getChCount();
-    int samples = m_taskMap.value("ai")->getSamplesToRW();
+    int channels = m_channels.size();
+    int samples = m_params["samplesPerChannel"].getVal<int>();
+    double samplingRate = m_params["samplingRate"].getVal<double>();
 
     if (m_isgrabbing == false)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::readAnalog - Tried to return data without first calling acquire").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readAnalog - Tried to return data without first calling acquire").toLatin1().data());
     }
     else
     {
@@ -955,34 +763,64 @@ ito::RetVal niDAQmx::readAnalog()
 
         if (!retValue.containsError())
         {
-            if (m_taskMap.value("ai")->getMode() == 0)
+            if (m_taskMode == NiTaskModeFinite)
             {
-                int size = channels * samples;
                 int32 retSize = -1;
 
-                //direct grab into the internal buffer of m_data!
-                int err = DAQmxReadAnalogF64(*m_taskMap["ai"]->getTaskHandle(), -1, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, (ito::float64*)m_data.rowPtr(0, 0), size, &retSize, NULL);
+                int run = 0;
+                int err;
 
-                double tScale = 1 / (double)m_taskMap["ai"]->getRateHz();
-                m_data.setAxisScale(1, tScale);
+                //provide a set-alive feature for long acquisitions!
+                while (1)
+                {
+                    err = DAQmxWaitUntilTaskDone(m_taskHandle, 4);
+                    if (err == 0)
+                    {
+                        break;
+                    }
+                    else if (err != DAQmxErrorWaitUntilDoneDoesNotIndicateDone)
+                    {
+                        retValue += checkError(err, "Wait till task is done");
+                        break;
+                    }
+
+                    run++;
+                    if (run > (0.5 * samples / samplingRate))
+                    {
+                        retValue += ito::RetVal(ito::retError, 0, "timeout while waiting for finished acquisition");
+                    }
+                    else
+                    {
+                        setAlive();
+                    }
+                }
+
+                if (!retValue.containsError())
+                {
+                    retValue += checkError(DAQmxReadAnalogF64(m_taskHandle, samples, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::float64>(0, 0), m_data.getTotal(), &retSize, NULL), "DAQmxReadAnalogF64");
+                }
+                
+                m_data.setAxisScale(1, 1.0 / samplingRate);
                 m_data.setAxisUnit(1, "s");
                 m_data.setAxisDescription(1, "time");
 
                 m_data.setValueUnit("volt"); //marc: todo: is the unit 'volt' correct? If there is a need to scale the values to a certain unit, this has to be done in a for loop, since DataObjects don't have a valueScale or valueOffset property (only for axes)
                 m_data.setValueDescription("voltage");
                 m_isgrabbing = false;
+
+                retValue += checkError(DAQmxStopTask(m_taskHandle), "stop task");
             }
-            else if (m_taskMap.value("ai")->getMode() == 1)
+            else if (m_taskMode == NiTaskModeContinuous)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::readAnalog - Continuous mode is not yet supported").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readAnalog - Continuous mode is not yet supported").toLatin1().data());
             }
-            else if (m_taskMap.value("ai")->getMode() == 2)
+            else if (m_taskMode == NiTaskModeOnDemand)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::readAnalog - On demand mode is not yet supported").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readAnalog - On demand mode is not yet supported").toLatin1().data());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::readAnalog - internal error invalid mode passed to readAnalog").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readAnalog - internal error invalid mode passed to readAnalog").toLatin1().data());
             }
         }
     }
@@ -992,121 +830,157 @@ ito::RetVal niDAQmx::readAnalog()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // not supported yet, because an external clock source is neccesary, marc: todo: similar to readAnalog
-ito::RetVal niDAQmx::readDigital()
+ito::RetVal NiDAQmx::readDigital()
 {
     // right now I only support 8 line Ports! Some devices have 16 or 32 lines per port! 
     // just use: DAQmxReadDigitalU16, DAQmxReadDigitalU32
     ito::RetVal retValue(ito::retOk);
 
-    int ports = m_taskMap.value("di")->getChCount();
-    int samples = m_taskMap.value("di")->getSamplesToRW();
+    int channels = m_channels.size();
+    int samples = m_params["samplesPerChannel"].getVal<int>();
+    double samplingRate = m_params["samplingRate"].getVal<double>();
 
     if (m_isgrabbing == false)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::readDigital - Tried to return data without first calling acquire").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readAnalog - Tried to return data without first calling acquire").toLatin1().data());
     }
     else
     {
         //step 1: create and check m_data (if not yet available)
-        retValue += checkData(NULL, ports*8, samples); //update external object or m_data
+        retValue += checkData(NULL, channels, samples); //update external object or m_data
 
         if (!retValue.containsError())
         {
-            int size = ports * 8 * samples;
-            int32 retSize = -1;
+            if (m_taskMode == NiTaskModeFinite)
+            {
+                int requestedSamples = 0;
+                int size = channels * samples;
+                int32 retSize = -1;
+                int maxSamplesPerTurn = samplingRate * 4; //max 4seconds per turn
+                ito::uint8* ptr = m_data.rowPtr<ito::uint8>(0, 0);
 
-            //direct grab into the internal buffer of m_data!
-            int err = DAQmxReadDigitalU8(*m_taskMap.value("di")->getTaskHandle(), samples, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, (ito::uint8*)m_data.rowPtr(0,0), size, &retSize, NULL);
+                while (requestedSamples < samples)
+                {
+                    size = std::min(samples - requestedSamples, maxSamplesPerTurn);
+                    requestedSamples += size;
+                    size *= channels;
+                    retValue += checkError(DAQmxReadDigitalU8(m_taskHandle, samples, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, ptr, size, &retSize, NULL), "DAQmxReadDigitalU8");
+                    ptr += size;
 
-	    // If DAQmxReadDigitalU8 returned an error or warning, translate the numerical code into text and attach a prefix
+                    setAlive();
 
-	    retValue += checkError(err, "niDAQmx::readDigital - DAQmxReadDigitalU8 abnormal return");
+                    if (!retValue.containsError())
+                    {
+                        break;
+                    }
+                }
 
-            double tScale = 1 / (double)m_taskMap["di"]->getRateHz();
-            m_data.setAxisScale(1, tScale);
-            m_data.setAxisUnit(1, "s");
-            m_data.setAxisDescription(1, "time");
+                m_data.setAxisScale(1, 1.0 / samplingRate);
+                m_data.setAxisUnit(1, "s");
+                m_data.setAxisDescription(1, "time");
 
-            m_data.setValueUnit("ZeroOrOne"); //marc: todo: is the unit 'volt' correct? If there is a need to scale the values to a certain unit, this has to be done in a for loop, since DataObjects don't have a valueScale or valueOffset property (only for axes)
-            m_data.setValueDescription("BinaryValue");
+                m_data.setValueUnit("digit"); //marc: todo: is the unit 'volt' correct? If there is a need to scale the values to a certain unit, this has to be done in a for loop, since DataObjects don't have a valueScale or valueOffset property (only for axes)
+                m_data.setValueDescription("value");
+                m_isgrabbing = false;
+            }
+            else if (m_taskMode == NiTaskModeContinuous)
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readDigital - Continuous mode is not yet supported").toLatin1().data());
+            }
+            else if (m_taskMode == NiTaskModeOnDemand)
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readDigital - On demand mode is not yet supported").toLatin1().data());
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readDigital - internal error invalid mode passed to readDigital").toLatin1().data());
+            }
         }
-
-        m_isgrabbing = false;
     }
-
+    
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //marc: todo: similar to readAnalog
-ito::RetVal niDAQmx::readCounter()
+ito::RetVal NiDAQmx::readCounter()
 {
     // TODO: Add Implementation
-    return ito::retOk;
+    return ito::RetVal(ito::retError, 0, "read from counter task not implemented yet");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::writeAnalog(const ito::DataObject *externalDataObject)
+ito::RetVal NiDAQmx::writeAnalog(const ito::DataObject *dataObj)
 {
     ito::RetVal retValue(ito::retOk);
-    int channels = m_taskMap.value("ao")->getChCount();
-    int samples = m_taskMap.value("ao")->getSamplesToRW();
+    int channels = m_channels.size();
+    int samples = m_params["samplesPerChannel"].getVal<int>();
+    double samplingRate = m_params["samplingRate"].getVal<double>();
     int32 smplW = -1;
-    /*if (m_isgrabbing == false)
+    
+    if (dataObj->getDims() != 2 ||
+        dataObj->getSize(0) != channels ||
+        dataObj->getSize(1) > samples ||
+        dataObj->getType() != ito::tFloat64)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to set picture without triggering exposure").toLatin1().data());
-    }*/
-    int err = DAQmxWriteAnalogF64(*m_taskMap.value("ao")->getTaskHandle(), samples, true, 0, DAQmx_Val_GroupByChannel, (ito::float64*)externalDataObject->rowPtr(0,0), &smplW, NULL);
+        retValue += ito::RetVal::format(ito::retError, 0, "%i x M, float64 dataObject required with M <= %i", channels, samples);
+    }
+    else
+    {
+        samples = dataObj->getSize(1);
 
-	// If DAQmxWriteAnalogF64 returned an error or warning, translate the numerical code into text and attach a prefix
+        int err = DAQmxWriteAnalogF64(m_taskHandle, samples, true, 0, DAQmx_Val_GroupByChannel, (ito::float64*)dataObj->rowPtr(0, 0), &smplW, NULL);
 
-	retValue += checkError(err, "niDAQmx::writeAnalog - DAQmxWriteAnalogF64 abnormal return");
+        // If DAQmxWriteAnalogF64 returned an error or warning, translate the numerical code into text and attach a prefix
+        retValue += checkError(err, "NiDAQmx::writeAnalog - DAQmxWriteAnalogF64 abnormal return");
+    }
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::writeDigital(ito::DataObject *externalDataObject)
+ito::RetVal NiDAQmx::writeDigital(const ito::DataObject *dataObj)
 {
-    return ito::retOk;
+    return ito::RetVal(ito::retError, 0, "write to digital task not implemented yet");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::writeCounter(ito::DataObject *externalDataObject)
+ito::RetVal NiDAQmx::writeCounter(const ito::DataObject *dataObj)
 {
-    return ito::retOk;
+    return ito::RetVal(ito::retError, 0, "write to counter task not implemented yet");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed niDAQmx device data as reference.
+//! Returns the grabbed NiDAQmx device data as reference.
 /*!
-    This method returns a reference to the recently acquired niDAQmx data. Therefore this data must fit into the data structure of the 
+    This method returns a reference to the recently acquired NiDAQmx data. Therefore this data must fit into the data structure of the 
     DataObject.
     
-    This method returns a reference to the internal dataObject m_data of the niDAQmx device where the currently acquired data is copied to (either
+    This method returns a reference to the internal dataObject m_data of the NiDAQmx device where the currently acquired data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a set of data is acquired.
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the niDAQmx device.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the NiDAQmx device.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError occurs when the niDAQmx device has not been started or no data has been acquired by the method acquire.
+    \return retOk if everything is ok, retError occurs when the NiDAQmx device has not been started or no data has been acquired by the method acquire.
     
     \sa retrieveImage, copyVal
 */
-ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     int error = -1;
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-//    *dObj = this->m_data; //dObj is now a shallow copy of the internal object m_data.
+    if (!retValue.containsError())
+    {
+        retValue += retrieveData();
+    }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(static_cast<int*>(nullptr), static_cast<int*>(nullptr));
+        *dObj = m_data; //dObj is now a shallow copy of the internal object m_data.
     }
-
-    *dObj = this->m_data; //dObj is now a shallow copy of the internal object m_data.
 
     if (waitCond) 
     {
@@ -1118,36 +992,39 @@ ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed niDAQmx device data as a deep copy.
+//! Returns the grabbed NiDAQmx device data as a deep copy.
 /*!
-    This method copies the recently grabbed niDAQmx device data to the given DataObject. 
+    This method copies the recently grabbed NiDAQmx device data to the given DataObject. 
     
-    The given dataObject must either have an empty size (then it is resized to the size and type of the niDAQmx device data) or its size or adjusted region of
-    interest must exactly fit to the size of the niDAQmx device data. Then, the acquired data is copied inside of the given region of interest.
+    The given dataObject must either have an empty size (then it is resized to the size and type of the NiDAQmx device data) or its size or adjusted region of
+    interest must exactly fit to the size of the NiDAQmx device data. Then, the acquired data is copied inside of the given region of interest.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError is niDAQmx device has not been started or no data has been acquired by the method acquire.
+    \return retOk if everything is ok, retError is NiDAQmx device has not been started or no data has been acquired by the method acquire.
     
     \sa retrieveImage, getVal
 */
-ito::RetVal niDAQmx::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *externalDataObject = reinterpret_cast<ito::DataObject *>(vpdObj);
-    int channels;
-    int samples;
 
     if (!externalDataObject)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::copyVal - Empty object handle provided by caller").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::copyVal - Empty object handle provided by caller").toLatin1().data());
     }
-
-    retValue += retrieveData(&channels, &samples); //retrieve data from device and store it in m_data
 
     if (!retValue.containsError())
     {
+        retValue += retrieveData(); //retrieve data from device and store it in m_data
+    }
+
+    if (!retValue.containsError())
+    {
+        int channels = m_channels.size();
+        int samples = m_params["samplesPerChannel"].getVal<int>();
         retValue += checkData(externalDataObject, channels, samples);
     }
 
@@ -1173,148 +1050,85 @@ ito::RetVal niDAQmx::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 /* retrieveData gets recently acquired data from the NI-card and stores them into the internal object m_data.
    Scalings, Offsets, axes descriptions etc. will be set to m_data accordingly.
 */
-ito::RetVal niDAQmx::retrieveData(int *channels, int *samples)
+ito::RetVal NiDAQmx::retrieveData()
 {
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue;
 
-    if( !(m_aInIsAcquired || m_dInIsAcquired || m_cInIsAcquired) )
+    if (!m_taskHandle || m_channels.size() == 0)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::retrieveData - cannot retrieve data because none was acquired.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, "No task started or no channels assigned to the task.");
     }
-
-    if (m_aInIsAcquired)
+    else if (m_taskType & TaskSubTypes::Output)
     {
-        retValue += readAnalog(); //marc: read out analog values from started task and put the results into the internal m_data object
+        retValue += ito::RetVal(ito::retError, 0, "Task is an output task. No data acquisition is possible.");
     }
-    else if (m_dInIsAcquired)
+    else if( !m_isgrabbing )
     {
-        //marc: todo
-        retValue += ito::RetVal(ito::retError, 0, tr("The digital read mode is not supported yet, because an external clock source is neccesary").toLatin1().data());
-        // retValue += readDigital();
+        retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::retrieveData - cannot retrieve data because none was acquired.").toLatin1().data());
     }
-    else if (m_cInIsAcquired)
+    else
     {
-        //marc: todo
-        retValue += ito::RetVal(ito::retError, 0, tr("The counter read mode is not supported yet").toLatin1().data());
-        // retValue += readCounter();
-    }
-
-    if (!retValue.containsError())
-    {
-        retValue += manageTasks();
-    }
-
-    if (!retValue.containsError() && channels != NULL && samples != NULL)
-    {
-        *channels = m_taskMap.value("ai")->getChCount();
-        *samples = m_taskMap.value("ai")->getSamplesToRW();
-    }
-
-    return retValue;
-}
-
-//---------------------------------------------------------------------------------------------
-/* manageTasks is used by retrieveData to clear the relevant ni tasks when
-   in "finite" mode. When in "continuous" mode it simply returns without 
-   changing any task state.
-*/
-ito::RetVal niDAQmx::manageTasks()
-{
-    ito::RetVal retValue(ito::retOk);
-
-    if (m_aInIsAcquired)
-    {
-        if (m_taskMap.value("ai")->getMode() == 1)
+        if (m_taskType & TaskSubTypes::Analog)
         {
-            retValue += resetTask(QString("ai"));
-            m_aInIsAcquired =  false;
+            retValue += readAnalog();
         }
-    }
-    if (m_dInIsAcquired)
-    {
-        if(m_taskMap.value("di")->getMode() == 1)
+        else if (m_taskType & TaskSubTypes::Digital)
         {
-            retValue += resetTask(QString("di"));
-            m_aInIsAcquired =  false;
+            retValue += readDigital();
         }
-    }
-    if (m_cInIsAcquired)
-    {
-        if(m_taskMap.value("ci")->getMode() == 1)
+        else if (m_taskType & TaskSubTypes::Counter)
         {
-            retValue += resetTask(QString("ci"));
-            m_aInIsAcquired =  false;
+            retValue += readCounter();
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError, 0, "Invalid input task type");
         }
     }
 
-    return retValue;
-}
-
-
-//---------------------------------------------------------------------------------------------
-/* resetTask is used by manageTasks and acquire to stop the identifed task and reset
-   its task handle.
-*/
-ito::RetVal niDAQmx::resetTask(const QString &task)
-{
-    ito::RetVal retValue(ito::retOk);
-
-        // no need to stop the task, since resetTaskHandle calls DAQmxClearTask, which calls DAQmxStopTask
-        retValue += m_taskMap.value(task)->resetTaskHandle();
+    m_isgrabbing = false;
 
     return retValue;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+
+    
     
     const ito::DataObject *dObj = reinterpret_cast<const ito::DataObject*>(data);
 
-    int error = 0;
-
-    if (dObj->getDims() != 2 || dObj->getSize(0) != m_taskMap.value("ao")->getChCount() || dObj->getSize(1) != m_taskMap.value("ao")->getSamplesToRW())
+    if (!m_taskHandle || m_channels.size() == 0)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("niDAQmx::setVal - Error occured: given Dataobject has wrong dimensions.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, "No task started or no channels assigned to the task.");
     }
+    else if (m_taskType & TaskSubTypes::Input)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "Task is an input task. No data output is possible.");
+    }
+
+    int error = 0;
 
     if (!retValue.containsError())
     {
-        //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the data obtained
-        //by the niDAQmx device directly into the given, external dataObject
-        if (m_aOutIsAcquired)
+        if (m_taskType & TaskSubTypes::Analog)
         {
             retValue += writeAnalog(dObj);
-            m_taskMap.value("ao")->applyParameters();
-            error = DAQmxStartTask(*m_taskMap.value("ao")->getTaskHandle());
-            m_aOutIsAcquired = false;
         }
-        else if (m_dOutIsAcquired)
+        else if (m_taskType & TaskSubTypes::Digital)
         {
-            retValue += writeDigital();
-            m_taskMap.value("do")->applyParameters();
-            error = DAQmxStartTask(*m_taskMap.value("do")->getTaskHandle());
-            m_dOutIsAcquired = false;
+            retValue += writeDigital(dObj);
         }
-        else if (m_cOutIsAcquired)
+        else if (m_taskType & TaskSubTypes::Counter)
         {
-            retValue += writeCounter();
-            m_taskMap.value("co")->applyParameters();
-            error = DAQmxStartTask(*m_taskMap.value("co")->getTaskHandle());
-            m_cOutIsAcquired = false;
+            retValue += writeCounter(dObj);
         }
-    
-
-        // If DAQmxStartTask returned an error or warning, translate the numerical code into text and attach a prefix
-
-        retValue = checkError(error, "niDAQmx::setVal - DAQmxStartTask abnormal return");
-        if(!retValue.containsError())
-//        else
+        else
         {
-            m_isgrabbing = true;
+            retValue += ito::RetVal(ito::retError, 0, "Invalid input task type");
         }
     }
 
@@ -1334,7 +1148,7 @@ ito::RetVal niDAQmx::setVal(const char *data, const int length, ItomSharedSemaph
     with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
     a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
 */
-void niDAQmx::dockWidgetVisibilityChanged(bool visible)
+void NiDAQmx::dockWidgetVisibilityChanged(bool visible)
 {
     //if (getDockWidget())
     //{
@@ -1372,20 +1186,22 @@ void niDAQmx::dockWidgetVisibilityChanged(bool visible)
     
     \sa hasConfDialog
 */
-const ito::RetVal niDAQmx::showConfDialog(void)
+const ito::RetVal NiDAQmx::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogNiDAQmx(this, (void*)this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::checkData(ito::DataObject *externalDataObject, int channels, int samples)
+ito::RetVal NiDAQmx::checkData(ito::DataObject *externalDataObject, int channels, int samples)
 {
+    ito::tDataType futureType = m_taskType & TaskSubTypes::Analog ? ito::tFloat64 : ito::tUInt8;
+
     if (externalDataObject == NULL)
     {
         //check internal object m_data
-        if (m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)channels || m_data.getSize(1) != (unsigned int)samples || m_data.getType() != ito::tFloat64)
+        if (m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)channels || m_data.getSize(1) != (unsigned int)samples || m_data.getType() != futureType)
         {
-            m_data = ito::DataObject(channels, samples, ito::tFloat64);
+            m_data = ito::DataObject(channels, samples, futureType);
         }
     }
     else
@@ -1393,15 +1209,15 @@ ito::RetVal niDAQmx::checkData(ito::DataObject *externalDataObject, int channels
         int dims = externalDataObject->getDims();
         if (externalDataObject->getDims() == 0)
         {
-            *externalDataObject = ito::DataObject(channels, samples, ito::tFloat64);
+            *externalDataObject = ito::DataObject(channels, samples, futureType);
         }
         else if (externalDataObject->calcNumMats () > 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("niDAQmx::checkData - Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("NiDAQmx::checkData - Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
         }
-        else if (externalDataObject->getSize(dims - 2) != (unsigned int)channels || externalDataObject->getSize(dims - 1) != (unsigned int)samples || externalDataObject->getType() != ito::tFloat64)
+        else if (externalDataObject->getSize(dims - 2) != (unsigned int)channels || externalDataObject->getSize(dims - 1) != (unsigned int)samples || externalDataObject->getType() != futureType)
         {
-            return ito::RetVal(ito::retError, 0, tr("niDAQmx::checkData - Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("NiDAQmx::checkData - Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
         }
     }
 
@@ -1409,23 +1225,92 @@ ito::RetVal niDAQmx::checkData(ito::DataObject *externalDataObject, int channels
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal niDAQmx::execFunc(const QString helpCommand, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::scanForAvailableDevicesAndSupportedChannels()
+{
+    ito::RetVal retValue;
+    ito::RetVal tempRetValue;
+    m_availableDevices.clear();
+    m_supportedChannels.clear();
+
+    //scan for devices
+    char buffer[5120];
+    memset(buffer, 0, 5120 * sizeof(char));
+    retValue += checkError(DAQmxGetSysDevNames(buffer, sizeof(buffer)), tr("Detect available devices."));
+
+    if (!retValue.containsError())
+    {
+        QString deviceNames = QString(buffer);
+        m_availableDevices = deviceNames.split(", ");
+        if (m_availableDevices.size() == 0)
+        {
+            retValue += ito::RetVal(ito::retWarning, 0, "Could not detect any devices. Probably, no channels can be added to the task.");
+        }
+    }
+
+    //scan for channels
+    foreach(const QString &deviceName, m_availableDevices)
+    {
+        switch (m_taskType)
+        {
+        case AnalogInput:
+            tempRetValue = checkError(DAQmxGetDevAIPhysicalChans(qPrintable(deviceName), buffer, sizeof(buffer)), QString("Detect supported channels for device %1").arg(deviceName));
+            break;
+        case AnalogOutput:
+            tempRetValue = checkError(DAQmxGetDevAOPhysicalChans(qPrintable(deviceName), buffer, sizeof(buffer)), QString("Detect supported channels for device %1").arg(deviceName));
+            break;
+        case DigitalInput:
+            tempRetValue = checkError(DAQmxGetDevDIPorts(qPrintable(deviceName), buffer, sizeof(buffer)), QString("Detect supported channels for device %1").arg(deviceName));
+            break;
+        case DigitalOutput:
+            tempRetValue = checkError(DAQmxGetDevDOPorts(qPrintable(deviceName), buffer, sizeof(buffer)), QString("Detect supported channels for device %1").arg(deviceName));
+            break;
+        default:
+            buffer[0] = '\0';
+            break;
+        }
+
+        if (!tempRetValue.containsError())
+        {
+            m_supportedChannels << QString(buffer).split(", ");
+        }
+        else
+        {
+            //convert an error into a warning
+            tempRetValue = ito::RetVal(ito::retWarning, tempRetValue.errorCode(), tempRetValue.errorMessage());
+        }
+
+        retValue += tempRetValue;
+    }
+
+    if (m_supportedChannels.size() == 0)
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, "Could not detect any supported channels. Probably, no channels can be added to the task.");
+    }
+
+    m_params["availableDevices"].setVal<char*>(m_availableDevices.join(",").toLatin1().data());
+    m_params["supportedChannels"].setVal<char*>(m_supportedChannels.join(",").toLatin1().data());
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NiDAQmx::execFunc(const QString helpCommand, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue = ito::retOk;
 
     QStringList parts = helpCommand.split(":");
     QString function = parts[0];
-    QString empty = QString("");
+    QString empty("");
 
     if (function == "help")
     {
         if(parts.size() == 1)
         {
-             retValue += help(&empty);
+             retValue += help(empty);
         }
         else
         {
-            retValue += help(&parts[1]);
+            retValue += help(parts[1]);
         }
     }
     else
@@ -1444,21 +1329,22 @@ ito::RetVal niDAQmx::execFunc(const QString helpCommand, QSharedPointer<QVector<
     return retValue;
 }
 
-ito::RetVal niDAQmx::help(QString * helpTopic)
+//--------------------------------------------------------------------------------------------------------
+ito::RetVal NiDAQmx::help(const QString &helpTopic)
 {
     ito::RetVal retValue = ito::retOk;
 
-    if (*helpTopic == "")
+    if (helpTopic == "")
     {
-        std::cout << "The niDAQmx plugin provides data acquistion and control using\n" << std::endl;
+        std::cout << "The NiDAQmx plugin provides data acquistion and control using\n" << std::endl;
         std::cout << "National Instruments computer interface hardware.\n" << std::endl;
         std::cout << "The plugin supports the following methods: name, getParam, setParam,\n" << std::endl;
-        std::cout << "startDevice, stopDevice, acquire, setValMode, getVal, copyVal, taskStatus,\n" << std::endl;
+        std::cout << "startDevice, stopDevice, acquire, setValMode, getVal, copyVal,\n" << std::endl;
         std::cout << "channel, and chAssociated. startDevice and stopDevice are NOOPs in this plugin.\n\n" << std::endl;
         std::cout << "Each method is documented separately with online help commands.\n" << std::endl;
         std::cout << "For example, setParam method documentation is accessed using\n" << std::endl;
         std::cout << "the command: <plugin ref>.exec('help:setParam').\n\n" << std::endl;
-        std::cout << "An example acquisition would start with plugin=dataIO('niDAQmx');\n" << std::endl;
+        std::cout << "An example acquisition would start with plugin=dataIO('NiDAQmx');\n" << std::endl;
         std::cout << "Followed by plugin.setParam('aiTaskParams','20000,100,0');\n" << std::endl;
         std::cout << "Then, plugin.setParam('aiChParams','Dev1/ai0,3,-10,10');\n" << std::endl;
         std::cout << "After setting these parameters, execute the command plugin.acquire(1);\n" << std::endl;
@@ -1468,55 +1354,51 @@ ito::RetVal niDAQmx::help(QString * helpTopic)
         std::cout << "If getVal is called before the acquistion is finished, it will wait until\n" << std::endl;
         std::cout << "all data is acquired before returning.\n\n" << std::endl;
     }
-    else if (*helpTopic == "name")
+    else if (helpTopic == "name")
     {
         std::cout << "\nTODO: name description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "getParam")
+    else if (helpTopic == "getParam")
     {
         std::cout << "\nTODO: getParam description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "setParam")
+    else if (helpTopic == "setParam")
     {
         std::cout << "\nTODO: setParam description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "startDevice")
+    else if (helpTopic == "startDevice")
     {
         std::cout << "\nTODO: startDevice description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "stopDevice")
+    else if (helpTopic == "stopDevice")
     {
         std::cout << "\nTODO: stopDevice description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "setValMode")
+    else if (helpTopic == "setValMode")
     {
         std::cout << "\nTODO: setValMode description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "acquire")
+    else if (helpTopic == "acquire")
     {
         std::cout << "\nTODO: acquire description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "getVal")
+    else if (helpTopic == "getVal")
     {
         std::cout << "\nTODO: getVal description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "copyVal")
+    else if (helpTopic == "copyVal")
     {
         std::cout << "\nTODO: copyVal description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "taskStatus")
-    {
-        std::cout << "\nTODO: taskStatus description.\n\n" << std::endl;
-    }
-    else if (*helpTopic == "channel")
+    else if (helpTopic == "channel")
     {
         std::cout << "\nTODO: channel description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "chAssociated")
+    else if (helpTopic == "chAssociated")
     {
         std::cout << "\nTODO: chAssociated description.\n\n" << std::endl;
     }
-    else if (*helpTopic == "TaskParams")
+    else if (helpTopic == "TaskParams")
     {
         std::cout << "TaskParams are specified as follows:\n\n" << std::endl;
         std::cout << "xxTaskParams, where xx is one of 'ai', 'ao', 'di', 'do', 'ci', 'do',\n" << std::endl;
@@ -1526,7 +1408,7 @@ ito::RetVal niDAQmx::help(QString * helpTopic)
         std::cout << "on specific TaskParmeters, type <plugin ref>.exec('help:xxTaskParams');\n" << std::endl;
         std::cout << "for example, <plugin ref>.exec('help:aiTaskParams').\n\n" << std::endl;
     }
-    else if (*helpTopic == "aiTaskParams")
+    else if (helpTopic == "aiTaskParams")
     {
         std::cout << "The aiTaskParams argument takes the following parameters:\n\n" << std::endl;
         std::cout << "'SR, S, M, TC(optional)', where SR is the sample rate in Hz; S is the number \n" << std::endl;
@@ -1547,7 +1429,7 @@ ito::RetVal niDAQmx::help(QString * helpTopic)
         std::cout << "Without the TC optional parameter the command would be:\n" << std::endl;
         std::cout << "<plugin ref>.setParam('aiTaskParams','20000,100,0')\n\n" << std::endl;
     }
-    else if (*helpTopic == "ChParams")
+    else if (helpTopic == "ChParams")
     {
         std::cout << "ChParams are specified as follows:\n\n" << std::endl;
         std::cout << "xxChParams, where xx is one of 'ai', 'ao', 'di', 'do', 'ci', 'do',\n" << std::endl;
@@ -1557,7 +1439,7 @@ ito::RetVal niDAQmx::help(QString * helpTopic)
         std::cout << "on specific ChParmeters, type <plugin ref>.exec('help:xxChParams');\n" << std::endl;
         std::cout << "for example, <plugin ref>.exec('help:aiChParams').\n\n" << std::endl;
     }
-    else if (*helpTopic == "aiChParams")
+    else if (helpTopic == "aiChParams")
     {
         std::cout << "The aiChParams argument takes the following parameters:\n\n" << std::endl;
         std::cout << "'Dev/Ch, M, minV, maxV', where Dev/Ch is the device and channel to apply the remaining\n" << std::endl;
