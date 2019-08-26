@@ -114,21 +114,25 @@ class NiDAQmx : public ito::AddInDataIO
         enum NiTaskMode 
         { 
             NiTaskModeFinite = 0, 
-            NiTaskModeContinuous = 1, 
-            NiTaskModeOnDemand = 2 
+            NiTaskModeContinuous = 1/*, 
+            NiTaskModeOnDemand = 2 */
         };
 
     private:
         static int InstanceCounter; /*!< used to give an auto-incremented taskName if no one is given as initialization parameter */
 
-        ito::RetVal checkData(ito::DataObject *externalDataObject, int channels, int samples);
+        ito::RetVal checkData(ito::DataObject *externalDataObject);
         ito::RetVal scanForAvailableDevicesAndSupportedChannels();
-        ito::RetVal stopAndDeleteTask();
+        ito::RetVal stopTask();
+        ito::RetVal deleteTask(); /*!< stops the task (if not yet done) and deletes it (if it has been created) */
         ito::RetVal createTask(); /*!< this method only creates a new task (without adding channels) and configures it with respect to the current set of parameters in m_params */
         ito::RetVal createChannelsForTask();
         ito::RetVal configTask();
+        ito::RetVal startTask();
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
+        bool m_taskStarted;
+        int m_deviceStartedCounter; /*!< counts how often the device is started, every call to startDevice will increments this, stopDevice will decrement it. The task is really stopped if it drops to zero again. */
         
         ito::DataObject m_data;
 		QString m_configForTesting;

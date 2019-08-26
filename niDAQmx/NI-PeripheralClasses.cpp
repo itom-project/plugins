@@ -298,11 +298,11 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
 /*static*/ NiBaseChannel* NiAnalogInputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel,inConfig, MinOutputVoltage, MaxOutputVoltage)
-    QRegExp regExp(QString("(\\w+)/(\\w+),([0-%1]),([+-]?\\d+),([+-]?\\d+)").arg(NiAnalogInputChannel::NiAnInConfEndValue - 1));
+    QRegExp regExp(QString("^(\\w+)/(\\w+),([0-%1]),([+-]?\\d+),([+-]?\\d+)$").arg(NiAnalogInputChannel::NiAnInConfEndValue - 1));
     if (regExp.indexIn(configString) == -1)
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "NiDAQmx::setParam - aiChParams. Format must be: device/channel,configMode [0-%i],minOutputVoltage,maxOutputVoltage",
-            NiAnalogInputChannel::NiAnInConfEndValue - 1);
+        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel,configMode [0-%i],minOutputVoltage,maxOutputVoltage",
+            configString.toLatin1().data(), NiAnalogInputChannel::NiAnInConfEndValue - 1);
         return NULL;
     }
     else
@@ -400,10 +400,10 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
 /*static*/ NiBaseChannel* NiAnalogOutputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel,minInLim,maxInLim)
-    QRegExp regExp(QString("(\\w+)/(\\w+),([+-]?\\d+),([+-]?\\d+)"));
+    QRegExp regExp(QString("^(\\w+)/(\\w+),([+-]?\\d+),([+-]?\\d+)$"));
     if (regExp.indexIn(configString) == -1)
     {
-        retValue += ito::RetVal(ito::retError, 0, "niDAQmx::setParam - aoChParams. Format must be: device/channel,minOutputVoltage,maxOutputVoltage");
+        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous analog output channel format '%s'. Required format: device/channel,minOutputVoltage,maxOutputVoltage", configString.toLatin1().data());
         return NULL;
     }
     else
@@ -461,15 +461,14 @@ NiDigitalInputChannel::~NiDigitalInputChannel()
 /*static*/ NiBaseChannel* NiDigitalInputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel)
-    QRegExp regExp(QString("(\\w+)/(\\w+)"));
-    if (regExp.indexIn(configString) == -1)
+    if (configString == "" || configString.contains(","))
     {
-        retValue += ito::RetVal(ito::retError, 0, "niDAQmx::setParam - aoChParams. Format must be: device/channel");
+        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel", configString.toLatin1().data());
         return NULL;
     }
     else
     {
-        QString physicalName = regExp.cap(1) + "/" + regExp.cap(2);
+        QString physicalName = configString;
         NiDigitalInputChannel *ai = new NiDigitalInputChannel(physicalName);
         return ai;
     }
@@ -514,15 +513,14 @@ NiDigitalOutputChannel::~NiDigitalOutputChannel()
 /*static*/ NiBaseChannel* NiDigitalOutputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel)
-    QRegExp regExp(QString("(\\w+)/(\\w+)"));
-    if (regExp.indexIn(configString) == -1)
+    if (configString == "" || configString.contains(","))
     {
-        retValue += ito::RetVal(ito::retError, 0, "niDAQmx::setParam - aoChParams. Format must be: device/channel");
+        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital output channel format '%s'. Required format: device/channel", configString.toLatin1().data());
         return NULL;
     }
     else
     {
-        QString physicalName = regExp.cap(1) + "/" + regExp.cap(2);
+        QString physicalName = configString;
         NiDigitalOutputChannel *ai = new NiDigitalOutputChannel(physicalName);
         return ai;
     }

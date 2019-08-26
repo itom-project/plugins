@@ -60,11 +60,11 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 
 	        if (prefix != "")
 	        {
-		        retValue += ito::RetVal::format(ito::retError, 0, "%s: %s (detailed description of latest error: %s)", prefix.toLatin1().constData(), buffer, buffer_extended);
+		        retValue += ito::RetVal::format(ito::retError, 0, "%s: %s\n(Detailed description of latest error: %s)", prefix.toLatin1().constData(), buffer, buffer_extended);
 	        }
 	        else
 	        {
-		        retValue += ito::RetVal::format(ito::retError, 0, "%s (detailed description of latest error: %s)", buffer, buffer_extended);
+		        retValue += ito::RetVal::format(ito::retError, 0, "%s\n(Detailed description of latest error: %s)", buffer, buffer_extended);
 	        }
 
             delete[] buffer_extended;
