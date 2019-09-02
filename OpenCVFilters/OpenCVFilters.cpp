@@ -492,6 +492,204 @@ ito::RetVal OpenCVFilters::cvErode(QVector<ito::ParamBase> *paramsMand, QVector<
     return cvDilateErode(paramsMand, paramsOpt, paramsOut, true);
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvMorphologyExParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param("sourceObj", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input data object of type uint8, uint16, int16, float32, float64").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("destinationObj", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output image with the same type and size than input (inplace allowed)").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("operation", ito::ParamBase::Int | ito::ParamBase::In, 0, 7, 0, tr("This parameters defines the operation type, 0: Erode, 1: Dilate, 2: Open, 3: Close, 4: Gradient, 5: Tophat, 6: Blackhat, 7: Hit or miss").toLatin1().data());
+        paramsMand->append(param);
+
+        param = ito::Param("element", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("structuring element used for the morpholocial operation (default: None, a 3x3 rectangular structuring element is used). Else: An uint8 data object where values > 0 are considered for the operation.").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("anchor", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("position of the anchor within the element. If not given or if (-1,-1), the anchor is at the element center [default].").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("iterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 65000, 1, tr("number of times the morpholocial operation is applied [default: 1]").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("borderType", ito::ParamBase::String | ito::ParamBase::In, "CONSTANT", tr("This string defines how the filter should hande pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvMorphologyEx(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    int op = (*paramsMand)[2].getVal<int>();
+
+    if (!dObjSrc || !dObjDst)
+    {
+        return ito::RetVal(ito::retError, 0, tr("source and destination object must not be NULL").toLatin1().data());
+    }
+
+    int dims = dObjSrc->getDims();
+
+    if (dims < 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source is not a matrix or image stack").toLatin1().data());
+    }
+
+    // Check if input type is allowed or not
+    retval += ito::dObjHelper::verifyDataObjectType(dObjSrc, "source data object", 5, ito::tUInt8, ito::tUInt16, ito::tInt16, ito::tFloat32, ito::tFloat64);
+    if (retval.containsError())
+        return retval;
+
+    //iterations
+    int iterations = (*paramsOpt)[2].getVal<int>();
+
+    //create structuring element
+    cv::Mat cvElement = cv::Mat();
+
+    if (paramsOpt->at(0).getVal<ito::DataObject*>())
+    {
+        ito::DataObject *element = apiCreateFromDataObject(paramsOpt->at(0).getVal<ito::DataObject*>(), 2, ito::tUInt8, NULL, &retval);
+        if (element && !retval.containsError())
+        {
+            cvElement = cv::Mat(*((cv::Mat*)(element->get_mdata()[element->seekMat(0)])));
+            delete element;
+        }
+    }
+
+    //border type
+    QString borderTypeStr = paramsOpt->at(3).getVal<char*>() ? paramsOpt->at(3).getVal<char*>() : QString();
+    int borderType;
+    if (QString::compare(borderTypeStr, "CONSTANT", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_CONSTANT;
+    }
+    else if (QString::compare(borderTypeStr, "REPLICATE", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REPLICATE;
+    }
+    else if (QString::compare(borderTypeStr, "REFLECT", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REFLECT;
+    }
+    else if (QString::compare(borderTypeStr, "WRAP", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_WRAP;
+    }
+    else if (QString::compare(borderTypeStr, "REFLECT_101", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REFLECT_101;
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("border type %1 is unknown").arg(borderTypeStr.toLatin1().data()).toLatin1().data());
+        return retval;
+    }
+
+    //anchor
+    int anchorLen = paramsOpt->at(1).getLen();
+    cv::Point anchor;
+
+    if (paramsOpt->at(1).getLen() == 2)
+    {
+        anchor = cv::Point(paramsOpt->at(1).getVal<int*>()[0], paramsOpt->at(1).getVal<int*>()[1]);
+
+        int m = dObjSrc->getSize(dims - 2);
+        int n = dObjSrc->getSize(dims - 1);
+
+        if (anchor.x < 0 || anchor.x >= n || anchor.y < 0 || anchor.y >= m)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("anchor must be in range [0,%1];[0,%2]").arg(m - 1).arg(n - 1).toLatin1().data());
+            return retval;
+        }
+    }
+    else if (paramsOpt->at(1).getLen() <= 0)
+    {
+        anchor = cv::Point(-1, -1);
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("anchor must have either 2 values or none").toLatin1().data());
+        return retval;
+    }
+
+    int planes = dObjSrc->calcNumMats();
+
+    //dObjDst is either equal to dObjSrc or must have the same size and type than dObjSrc (if not is created such it fullfills these requirements)
+    if (dObjDst != dObjSrc)
+    {
+        int dstDim = dObjDst->getDims();
+        int dstType = dObjDst->getType();
+        int *sizes = new int[dims];
+        bool sizeFit = true;
+
+        for (int i = 0; i < dims; ++i)
+        {
+            sizes[i] = dObjSrc->getSize(i);
+            if (dstDim != dims || sizes[i] != dObjDst->getSize(i))
+            {
+                sizeFit = false;
+            }
+        }
+
+        if (dstDim != dims || sizeFit == false || dstType != dObjSrc->getType())
+        {
+            (*dObjDst) = ito::DataObject(dims, sizes, dObjSrc->getType());
+        }
+
+        delete[] sizes;
+
+        dObjSrc->copyAxisTagsTo(*dObjDst);
+        dObjSrc->copyTagMapTo(*dObjDst);
+    }
+
+    cv::Mat *cvMatIn;
+    cv::Mat *cvMatOut;
+
+    for (int z = 0; z < planes; z++)
+    {
+        try
+        {
+            cvMatIn = ((cv::Mat *)dObjSrc->get_mdata()[dObjSrc->seekMat(z)]);
+            cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+            cv::morphologyEx(*cvMatIn, *cvMatOut, op, cvElement, anchor, iterations, borderType);
+        }
+        catch (cv::Exception &exc)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
+            break;
+        }
+    }
+    
+
+    if (!retval.containsError())
+    {
+
+        QString msg;
+        msg = tr("morphologyEx with (y,x) kernel(%1, %2), anchor(%3, %4), %5 iterations, borderType %6").arg(cvElement.rows).arg(cvElement.cols).arg(anchor.y).arg(anchor.x).arg(iterations).arg(borderTypeStr);
+
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvMorphologyExDoc = QObject::tr("Erodes every plane of a data object by using a specific structuring element. \n\
+\n\
+Performs advanced morphological transformations.\
+\
+The function cv::morphologyEx can perform advanced morphological transformations using an erosion and dilation as basic operations.\
+MORPH_ERODE \
+\
+\
+Any of the operations can be done in - place.In case of multi - channel images, each channel is processed independently.).");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -2407,6 +2605,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, cvErodeDoc);
     m_filterList.insert("cvErode", filter);
 
+    filter = new FilterDef(OpenCVFilters::cvMorphologyEx, OpenCVFilters::cvMorphologyExParams, cvMorphologyExDoc);
+    m_filterList.insert("cvMorphologyEx", filter);
+
     filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, cvMedianBlurDoc);
     m_filterList.insert("cvMedianBlur", filter);
 
@@ -2489,7 +2690,7 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
 
     filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, cvDrawMatcherDoc);
     m_filterList.insert("cvDrawMatcher", filter);
-    
+
     filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, cvWarpPerspectiveDoc);
     m_filterList.insert("cvWarpPerspective", filter);
 

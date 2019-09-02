@@ -4,7 +4,7 @@
 <context>
     <name>DemoAlgorithms</name>
     <message>
-        <location filename="../demoAlgorithms.cpp" line="+106"/>
+        <location filename="../demoAlgorithms.cpp" line="+107"/>
         <source>Demo algorithm (I) for plugin-developers - actuator communication. Moves selected axes of an actuator.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -127,17 +127,9 @@
     </message>
 </context>
 <context>
-    <name>DemoAlgorithmsInterface</name>
-    <message>
-        <location line="-563"/>
-        <source>Fill in about dialog content</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>QObject</name>
     <message>
-        <location line="-7"/>
+        <location line="-570"/>
         <source>DemoAlgorithms to show a plugin developer how to write plugins in c++</source>
         <translation type="unfinished"></translation>
     </message>

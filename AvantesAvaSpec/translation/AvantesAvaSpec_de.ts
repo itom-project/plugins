@@ -4,7 +4,7 @@
 <context>
     <name>AvantesAvaSpec</name>
     <message>
-        <location filename="../avantesAvaSpec.cpp" line="+172"/>
+        <location filename="../avantesAvaSpec.cpp" line="+173"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>

@@ -66,7 +66,7 @@
 <context>
     <name>ItomUSBDevice</name>
     <message>
-        <location filename="../ItomLibUSB.cpp" line="+144"/>
+        <location filename="../ItomLibUSB.cpp" line="+145"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -232,11 +232,6 @@ The setVal and getVal functions will write and read on the specified endpoint.</
         <location line="-14"/>
         <source>licensed under LGPL</source>
         <translation></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This plugin can be used for raw / lowlevel communication with USB-devices</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>This plugin can be used for raw / lowlevel comminication with USB-devices</source>

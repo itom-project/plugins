@@ -13,11 +13,12 @@ cmake_minimum_required(VERSION 2.8)
 #################################################################
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+set(PCO_Camera_BUILD_API_VERSION "1.24 or newer" CACHE STRING "Expected API version")
+set_property(CACHE PCO_Camera_BUILD_API_VERSION PROPERTY STRINGS "1.24 or newer" "<1.24" "really old")
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (PCO_SDK_DIR "" CACHE PATH "path of the pco.sdk. Must contain subfolders like bin,bin64,include,lib,lib64")
-OPTION(PCO_SDK_OLD_VERSION "If the plugin does not compile you probably have an old version of pco.sdk. Then click this flag and try again" OFF)
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
@@ -65,6 +66,12 @@ find_path(PCO_SDK_INCLUDE_DIR SC2_CamExport.h PATHS ${PCO_SDK_DIR} PATH_SUFFIXES
 
 IF(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
 
+	IF(PCO_Camera_BUILD_API_VERSION VERSION_EQUAL "1.24 or newer")
+        ADD_DEFINITIONS(-DUSE_API_1_24)
+    ELSE (PCO_Camera_BUILD_API_VERSION VERSION_EQUAL "really old")
+        ADD_DEFINITIONS(-DPCO_SDK_OLD)
+    ENDIF(PCO_Camera_BUILD_API_VERSION VERSION_EQUAL "1.24 or newer")
+
     #################################################################
     # General settings and preprocessor settings
     #################################################################
@@ -102,9 +109,6 @@ IF(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
     ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     
-    IF(PCO_SDK_OLD_VERSION)
-        ADD_DEFINITIONS(-DPCO_SDK_OLD)
-    ENDIF(PCO_SDK_OLD_VERSION)
 
     # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
     IF (DEFINED CMAKE_BUILD_TYPE)

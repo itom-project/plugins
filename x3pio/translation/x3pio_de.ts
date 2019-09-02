@@ -4,7 +4,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../x3pio.cpp" line="+249"/>
+        <location filename="../x3pio.cpp" line="+250"/>
         <source>x3p Import/Export</source>
         <translation type="unfinished"></translation>
     </message>
@@ -18,12 +18,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>loads dataObject from x3p file</source>
         <translation type="unfinished">Läd Datenobjekte im X3P-Dateiformat</translation>
     </message>
@@ -43,7 +38,7 @@ of the library itself see www.opengps.eu</source>
     </message>
     <message>
         <location line="+50"/>
-        <source>saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, u00B5m or nm they are correctly converted to m.</source>
+        <source>saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, µm or nm they are correctly converted to m.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

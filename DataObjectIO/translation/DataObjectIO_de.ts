@@ -16,7 +16,7 @@
         <translation type="obsolete">Läd 1D und 2D Datenobjekte aus gängigen Bildformaten (bmp, png, jpg, pgm...)</translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+142"/>
+        <location filename="../DataObjectIO.cpp" line="+149"/>
         <source>Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -93,7 +93,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+39"/>
         <location line="+818"/>
         <source>2D-DataObject of anytype or 3-planes DataObject of uint8</source>
         <translation type="unfinished"></translation>
@@ -281,7 +281,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2726"/>
+        <location line="-2729"/>
         <source>Images (*.xpm *.xbm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -292,6 +292,11 @@
     </message>
     <message>
         <location line="+12"/>
+        <source>Keyence vk4 profilometry images (*.vk4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>PR Line Profile (*.pr)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -627,6 +632,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../keyence.cpp" line="+372"/>
         <location filename="../zygo.cpp" line="+301"/>
         <location filename="../avantes.cpp" line="+122"/>
         <location filename="../DataObjectIO.cpp" line="+238"/>
@@ -634,7 +640,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <location filename="../zygo.cpp" line="+2"/>
         <location filename="../avantes.cpp" line="+2"/>
         <location filename="../DataObjectIO.cpp" line="+2"/>
         <source>Source filename</source>
@@ -642,6 +649,21 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>name of data set to load, empty string prints a list of all available dataset names. Possible values are: topo0, topo1, ..., intensity0, intensity1, ..., peak, color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Unit of x and y axes. VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Unit of value axis (only valid for topography data channels). VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../zygo.cpp" line="+2"/>
         <source>load topography data (1, default), else intensity data (0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -792,7 +814,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="-986"/>
+        <location filename="../DataObjectIO.cpp" line="-989"/>
         <source>import or export dataObject from/to several file formats.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -820,7 +842,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+112"/>
+        <location line="+115"/>
         <source>saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1233,6 +1255,11 @@ The file format has been implemented based on the MetroPro Reference Guide, vers
         <source>load binary files from Avantes devices. The destinationObject is a RxN float32 data object, where R is the number of spectas in the file and N the number of pixels. Use the optional parameter &apos;dataType&apos; to decide which type of data should be loaded (including the calibration wavelength table of the grating). 
 
 The description of the file format has been taken from &apos;AvaSoft 8 File Formats.pdf&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../keyence.cpp" line="-36"/>
+        <source>This filter loads Keyence VK4 profilometry images from Keyence devices (e.g. laser scanning microscope).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

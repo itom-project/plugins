@@ -31,7 +31,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "common/addInInterface.h"
 #include "dialogThorlabsPowerMeter.h"
 #include "DataObject/dataobj.h"
-#if defined(USE_API_3_02) 
+#if defined(USE_API_1_02) 
     #include "visa.h"
 #else
     #include "visatype.h"

@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -28,7 +28,7 @@ ENDIF(THORLABS_KINESIS_DIRECTORY)
 
 
 
-IF (THORLABS_KINESIS_INCLUDE_DIR)
+IF (THORLABS_KINESIS_BP_INCLUDE_DIR)
 
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
@@ -163,6 +163,6 @@ IF (THORLABS_KINESIS_INCLUDE_DIR)
     
     POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} BINARY_FILES)
     
-ELSE(THORLABS_KINESIS_INCLUDE_DIR)
+ELSE(THORLABS_KINESIS_BP_INCLUDE_DIR)
     message(WARNING "${THORLABS_KINESIS_BP_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
-ENDIF(THORLABS_KINESIS_INCLUDE_DIR)
+ENDIF(THORLABS_KINESIS_BP_INCLUDE_DIR)

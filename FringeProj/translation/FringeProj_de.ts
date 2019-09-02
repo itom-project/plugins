@@ -4,7 +4,7 @@
 <context>
     <name>FringeProj</name>
     <message>
-        <location filename="../FringeProj.cpp" line="+639"/>
+        <location filename="../FringeProj.cpp" line="+640"/>
         <source>Calculate the indexmap for graycode image stack</source>
         <translation type="unfinished"></translation>
     </message>
@@ -230,12 +230,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+603"/>
+        <location line="+604"/>
         <source>creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value. 
 
 The gray-code has a maximal width of graycodeBitWidth. Hence, N corresponds 1 &lt;&lt; (graycodeBitWidth+1) 

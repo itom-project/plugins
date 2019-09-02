@@ -573,7 +573,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SuperlumBS.cpp" line="+66"/>
+        <location filename="../SuperlumBS.cpp" line="+67"/>
         <source>Plugin for Superlum BraodSweeper BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -593,16 +593,11 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SuperlumBS</name>
     <message>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>The current com-port ID of this specific device. -1 means undefined.</source>
         <translation type="unfinished"></translation>
     </message>

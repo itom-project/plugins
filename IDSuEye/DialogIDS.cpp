@@ -156,6 +156,13 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
     ui.sliderPixelClock->setValue(params["pixel_clock"].getVal<int>());
     ui.sliderPixelClock->setEnabled(!(params["pixel_clock"].getFlags() & ito::ParamBase::Readonly));
 
+	im = static_cast<ito::IntMeta*>(params["num_buffer"].getMeta());
+	ui.sliderNumBuffer->setMinimum(im->getMin());
+	ui.sliderNumBuffer->setMaximum(im->getMax());
+	ui.sliderNumBuffer->setSingleStep(im->getStepSize());
+	ui.sliderNumBuffer->setValue(params["num_buffer"].getVal<int>());
+	ui.sliderNumBuffer->setEnabled(!(params["num_buffer"].getFlags() & ito::ParamBase::Readonly));
+
     double dval = params["gain"].getVal<double>();
     ui.sliderGain->setValue(dval*100.0);
     ui.sliderGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
@@ -299,6 +306,15 @@ ito::RetVal DialogIDS::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixel_clock", ito::ParamBase::Int, clock)));
         }
     }
+
+	if (ui.sliderNumBuffer->isEnabled())
+	{
+		int numbuf = ui.sliderNumBuffer->value();
+		if (m_currentParameters["num_buffer"].getVal<int>() != numbuf)
+		{
+			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("num_buffer", ito::ParamBase::Int, numbuf)));
+		}
+	}
 
     if (ui.checkGainBoost->isEnabled())
     {

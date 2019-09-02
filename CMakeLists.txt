@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(BUILD_GIT_TAG "Adds the current GIT commit tag in the about string of a plugin." OFF)
 SET(ITOM_DIR "" CACHE PATH "base path to itom") 
 
@@ -248,6 +248,12 @@ if (PLUGIN_NanotecStepMotor)
     ADD_SUBDIRECTORY(NanotecStepMotor)
 endif (PLUGIN_NanotecStepMotor)
 
+# Newport2936
+OPTION(PLUGIN_NEWPORT_2936 "Build with this plugin." OFF)
+if (PLUGIN_NEWPORT_2936)
+    ADD_SUBDIRECTORY(Newport2936)
+endif (PLUGIN_NEWPORT_2936)
+
 # NewportSMC100
 OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." OFF)
 if (PLUGIN_NEWPORT_SMC100)
@@ -402,6 +408,14 @@ IF (WIN32)
     if (PLUGIN_ThorlabsBP)
         ADD_SUBDIRECTORY(ThorlabsBP)
     endif (PLUGIN_ThorlabsBP)
+ENDIF (WIN32)
+
+# ThorlabsKCubePA KCube position aligner
+IF (WIN32)
+    OPTION(PLUGIN_ThorlabsKCubePA "Build with this plugin." OFF)
+    if (PLUGIN_ThorlabsKCubePA)
+        ADD_SUBDIRECTORY(ThorlabsKCubePA)
+    endif (PLUGIN_ThorlabsKCubePA)
 ENDIF (WIN32)
 
 # ThorlabsCCS Spectrometer

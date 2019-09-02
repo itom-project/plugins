@@ -142,10 +142,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ThorlabsISM is an acutator plugin to control the following integrated devices from Thorlabs: 
 
 * Long Travel Stage (e.g. LTS150 and LTS300) 
@@ -250,7 +246,7 @@ This plugin has been tested with the cage rotator K10CR1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>There seems to be an additional conversion factor between device and real world units. This can be given here.</source>
+        <source>There seems to be an additional conversion factor for some devices between device and real world units. This can be given here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

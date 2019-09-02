@@ -12,7 +12,7 @@
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+354"/>
+        <location filename="../OpenCVGrabber.cpp" line="+360"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -213,11 +213,6 @@ For some devices, an acquisition might deliver an older image. In order to get a
     <message>
         <location line="+19"/>
         <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

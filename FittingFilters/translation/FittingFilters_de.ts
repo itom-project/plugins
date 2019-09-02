@@ -26,7 +26,7 @@
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../fittingfilters.cpp" line="+132"/>
+        <location filename="../fittingfilters.cpp" line="+133"/>
         <location line="+136"/>
         <location line="+111"/>
         <source>source image data object</source>
@@ -41,19 +41,19 @@
     <message>
         <location line="-242"/>
         <location line="+248"/>
-        <location line="+815"/>
+        <location line="+825"/>
         <source>probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1062"/>
+        <location line="-1072"/>
         <location line="+248"/>
-        <location line="+815"/>
+        <location line="+825"/>
         <source>allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-934"/>
+        <location line="-944"/>
         <source>Parameter A of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -73,7 +73,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1233"/>
+        <location line="+1243"/>
         <source>LeastSquaresPlane (default), LMedSPlane (Least median of squares), Median, Mean</source>
         <translation type="unfinished"></translation>
     </message>
@@ -128,12 +128,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1278"/>
+        <location line="-1281"/>
         <source>Generated object via polyval2D with order X = %1, Y = %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+66"/>
         <source>Generated object via polyval2DSinglePoints with order X = %1, Y = %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -153,7 +153,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1055"/>
+        <location line="-1065"/>
         <source>Parameter A of regression plane z = A + Bx + Cy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -274,12 +274,7 @@ Furthermore this plugin also contains methods to finally subtract or reconstruct
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
+        <location line="+29"/>
         <source>fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy) 
 
 This fit can be executed by different fit strategies: 
@@ -318,8 +313,10 @@ For the fit, the optional scale and offset values of the input data object are c
 Depending on the orders, the fitted polynomial, whose coefficients are returned by this filter, has the following form: 
 
     if (orderX &lt;= orderY): 
+    
         f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
+    
         f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. 
@@ -330,7 +327,7 @@ The definition of the polynomial function is slightly different than the one use
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+69"/>
         <source>This method fits a two-dimensional polynomial of given order in x- and y-direction to the points whose x, y and z coordinates are given in &apos;xData&apos;, &apos;yData&apos; and &apos;zData&apos;. 
 
 The fit is executed in double precision, such that the input is converted to float64 (if not yet done). NaN values in the x, y or z data objects are ignored. Optionally, you can give a weighting data object (needs to have the same dimension and size than inputData) such that the values are weighted with the values of the data object &apos;weights&apos;. Values with corresponding weights &lt;= 0 are ignored as well. 
@@ -340,8 +337,10 @@ All input data objects must have the same size.
 Depending on the orders, the fitted polynomial, whose coefficients are returned by this filter, has the following form: 
 
     if (orderX &lt;= orderY): 
+    
         z = f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
+    
         z = f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. 
@@ -352,36 +351,42 @@ The definition of the polynomial function is slightly different than the one use
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+70"/>
         <source>This method evaluates a two-dimensional polynom for every point in a given data object
 
 For every single pixel in the input data object &apos;dataZ&apos;, its physical coordinate (using scale and offset of the data object) is taken and the polynomial (given by its coefficients) is evaluated and stored in the pixel. The data object is hereby converted to float64. 
 
 The polynomial coefficients (p0, p1, ...) are those returned by the filter &apos;fitPolynom2D&apos; and depend on the polynomial order in X and Y direction: 
+
     if (orderX &lt;= orderY): 
+    
         f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
+    
         f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+61"/>
         <source>This method evaluates a two-dimensional polynom for every x- and y- coordinate given in xData in yData
 
 For every single pixel whose x- and y-coordinate is given by corresponding values in xData and yData the polynomial (given by its coefficients) is evaluated and stored in zData (float64, same size than xData and yData). 
 The polynomial coefficients (p0, p1, ...) are those returned by the filter &apos;fitPolynom2D&apos; and depend on the polynomial order in X and Y direction: 
+
     if (orderX &lt;= orderY): 
+    
         f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
+    
         f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+66"/>
         <source>One-dimensional polynomial fit in z-direction for a 3D - data object. 
 
 The input data object must be three-dimensional and is internally casted to float64 (if not yet done). The resulting polynomial parameters per pixel are stored in the output data object &apos;polynoms&apos; whose z-dimension is equal to (order+2). The first (order+1) planes contain the coefficients p0...pn and the last plane contain the pixel wise residual error. 

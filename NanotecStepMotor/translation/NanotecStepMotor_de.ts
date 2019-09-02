@@ -340,9 +340,5 @@ It has been tested with one connected controller SMCP33 and 4 axis.</source>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 </TS>

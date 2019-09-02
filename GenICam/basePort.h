@@ -40,14 +40,16 @@
 #include "common/retVal.h"
 #include "datatypes.h"
 
+
 #include "GenApi/GenApi.h"
 
 #include "GenTL_v1_5.h"
-
+#include "base/GCString.h"
 #define PFNC_INCLUDE_HELPERS
 #include "PFNC.h"
 
 using namespace GENAPI_NAMESPACE;
+using namespace GENICAM_NAMESPACE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -57,17 +59,17 @@ class BasePort : public IPort
 public:
     enum PortType { TypeCamera, TypeFramegrabber };
 
-	BasePort(QSharedPointer<QLibrary> lib, PortType deviceType, int verbose, ito::RetVal &retval);
+    BasePort(QSharedPointer<QLibrary> lib, PortType deviceType, int verbose, ito::RetVal &retval);
     ~BasePort();
 
     virtual EAccessMode GetAccessMode() const; //overloaded from IPort: if the driver is open, return RW (= read/write), otherwise NA (= not available)
-	virtual void Read(void *pBuffer, int64_t Address, int64_t Length); //overloded from IPort
-	virtual void Write(const void *pBuffer, int64_t Address, int64_t Length); //overloded from IPort
+    virtual void Read(void *pBuffer, int64_t Address, int64_t Length); //overloded from IPort
+    virtual void Write(const void *pBuffer, int64_t Address, int64_t Length); //overloded from IPort
 
     ito::RetVal connectToGenApi(ito::uint32 portIndex);
 
     bool isDeviceParam(const ParamMapIterator &it) const; //returns true if p is managed by device and therefore mapped to INode, else false
-	ito::RetVal setDeviceParam(QSharedPointer<ito::ParamBase> newVal, ParamMapIterator it);
+    ito::RetVal setDeviceParam(QSharedPointer<ito::ParamBase> newVal, ParamMapIterator it);
 
     ito::RetVal createParamsFromDevice(QMap<QString, ito::Param> &params, int visibilityLevel = GenApi::Guru);
 
@@ -81,7 +83,7 @@ public:
 
     ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params); //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
 
-    QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL);
+    QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL, QVector<int> *colortypes = NULL);
 
     void setCallbackParameterChangedReceiver(QObject* receiver);
     virtual void callbackParameterChanged_(INode *pNode) = 0; //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
@@ -91,10 +93,10 @@ protected:
     QByteArray getPortInfoString(GenTL::PORT_INFO_CMD_LIST cmd, ito::RetVal &retval) const;
 
     ito::RetVal createIntParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
-	ito::RetVal createFloatParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
-	ito::RetVal createStringParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
-	ito::RetVal createBoolParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
-	ito::RetVal createEnumParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
+    ito::RetVal createFloatParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
+    ito::RetVal createStringParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
+    ito::RetVal createBoolParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
+    ito::RetVal createEnumParamFromDevice(GenApi::INode *node, QMap<QString, ito::Param> &params, ito::ByteArray &category);
 
     void intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta) const;
 
@@ -109,7 +111,7 @@ protected:
     GenTL::PDevOpenDataStream DevOpenDataStream;
     GenTL::PDevGetPort DevGetPort;
     GenTL::PGCReadPort GCReadPort;
-	GenTL::PGCWritePort GCWritePort;
+    GenTL::PGCWritePort GCWritePort;
     GenTL::PGCGetNumPortURLs GCGetNumPortURLs;
     GenTL::PGCGetPortURLInfo GCGetPortURLInfo;
     GenTL::PGCGetPortInfo GCGetPortInfo;
@@ -126,11 +128,12 @@ protected:
     QMap<gcstring, CCommandPtr> m_commandNodes;
 
     QHash<QString, GCType*> m_paramMapping; //the first parameter is the iterator to the corresponding ito::Param*, GCType* is owned by this map and has to be deleted at destroy-time
-	QHash<INode*, GCType*> m_paramMapping2; //the first parameter is the INode* pointer (for speed reasons there are two look-up tables), the second is the GCType*. It must not be destroyed since this is done via m_paramMapping.
+    QHash<INode*, GCType*> m_paramMapping2; //the first parameter is the INode* pointer (for speed reasons there are two look-up tables), the second is the GCType*. It must not be destroyed since this is done via m_paramMapping.
 
     QVector<PfncFormat> m_supportedFormats;
-	QStringList m_supportedFormatsNames;
-	QVector<int> m_supportedFormatsBpp; //bitdepths that correspond to m_supportedFormats
+    QStringList m_supportedFormatsNames;
+    QVector<int> m_supportedFormatsBpp; //bitdepths that correspond to m_supportedFormats
+    QVector<int> m_supportedFormatsColor; //0 or 1 if dataObject should be a monochrome object (uint8, uint16...) or color (1, rgba32)
 
     static QHash<INode*, BasePort*> nodeDeviceHash;
 };

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogNewport2936</class>
+ <widget class="QDialog" name="DialogNewport2936">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>463</width>
+    <height>293</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QGroupBox" name="group2">
+       <property name="title">
+        <string/>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QGroupBox" name="group1">
+          <property name="title">
+           <string>Settings</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="spinWavelengthA">
+             <property name="suffix">
+              <string> nm</string>
+             </property>
+             <property name="prefix">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" rowspan="2" colspan="2">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Filter A</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QComboBox" name="comboFilterA">
+             <item>
+              <property name="text">
+               <string>No Filter</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Analog</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Digital</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Digital + Analog</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Wavelength A</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Wavelength B</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Filter B</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QComboBox" name="comboFilterB">
+             <item>
+              <property name="text">
+               <string>No Filter</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Analog</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Digital</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Digital + Analog</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QCheckBox" name="checkAttenA">
+             <property name="text">
+              <string>Attenuator A</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QCheckBox" name="checkAttenB">
+             <property name="text">
+              <string>Attenuator B</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0" colspan="2">
+            <widget class="QPushButton" name="btnZeroA">
+             <property name="text">
+              <string>Zero Channel A</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="spinWavelengthB">
+             <property name="suffix">
+              <string> nm</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0" colspan="2">
+            <widget class="QPushButton" name="btnZeroB">
+             <property name="text">
+              <string>Zero Channel B</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>4</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="locale">
+      <locale language="German" country="Germany"/>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -122,10 +122,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ThorlabsBP</source>
         <translation type="unfinished"></translation>
     </message>

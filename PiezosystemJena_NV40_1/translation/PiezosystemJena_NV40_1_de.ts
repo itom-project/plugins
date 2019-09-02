@@ -12,7 +12,7 @@
 <context>
     <name>PiezosystemJena_NV40_1</name>
     <message>
-        <location filename="../piezosystemJena_NV40_1.cpp" line="+100"/>
+        <location filename="../piezosystemJena_NV40_1.cpp" line="+101"/>
         <source>asychronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -172,11 +172,6 @@ It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance
     <message>
         <location line="+8"/>
         <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

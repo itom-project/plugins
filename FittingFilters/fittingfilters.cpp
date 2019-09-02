@@ -1848,7 +1848,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                                 }
                             }
 
-                            scalar = nanmedian<ito::float64>(doubleVec.data(), floatVec.size());
+                            scalar = nanmedian<ito::float64>(doubleVec.data(), doubleVec.size());
                             if (ito::isFinite(scalar[0]))
                             {
                                 outputPatch.setTo(scalar, labelPatch == areaIdx);

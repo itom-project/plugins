@@ -267,7 +267,7 @@ ito::RetVal readExifTag(QProcess *exifProc, QString filename, QString tagName, Q
         Output.chop(readyStr.length());
     QString err = exifProc->readAllStandardError();
     if (err.length() > 0 || waited >= 10)
-        return ito::RetVal(ito::retError, 0, (QObject::tr("Error reading exif-tag %1: %2").arg(tagName).arg(err)).toLatin1().data());
+        return ito::RetVal(ito::retWarning, 0, (QObject::tr("Error reading exif-tag %1: %2").arg(tagName).arg(err)).toLatin1().data());
 
     return ito::retOk;
 }

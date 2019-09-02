@@ -83,7 +83,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
     m_license = QObject::tr("LGPL / do not copy Ximea-DLLs");
     m_aboutThis = QObject::tr(GITVERSION);
     
-    ito::Param paramVal = ito::Param("camera Number", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");
+    ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("restoreLast", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, "Toggle if the driver should try to connect to the last initialized camera");

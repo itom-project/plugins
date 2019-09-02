@@ -35,7 +35,7 @@
 <context>
     <name>LibModBus</name>
     <message>
-        <location filename="../LibModBus.cpp" line="+139"/>
+        <location filename="../LibModBus.cpp" line="+140"/>
         <source>IP Adress or COM-Port of the target device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -212,17 +212,16 @@ If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be u
         <translation type="vanished">Puffer löschen war nicht erfolgreich</translation>
     </message>
     <message>
-        <location line="-18"/>
-        <source>licensed under LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>N.A.</source>
-        <translation>K.A.</translation>
+        <translation type="vanished">K.A.</translation>
     </message>
     <message>
-        <location line="+251"/>
+        <location line="-18"/>
+        <source>licensed under GPL, since the libmodbus is also licensed under GPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+252"/>
         <source>Modbus-connect failed!</source>
         <translation type="unfinished"></translation>
     </message>

@@ -41,8 +41,15 @@
 #include <qmetaobject.h>
 #include "dockWidgetFileGrabber.h"
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include "opencv2/opencv.hpp"
+#include <opencv2/highgui/highgui.hpp>
+
+#if CV_MAJOR_VERSION >= 4
+	#include "opencv2/imgproc/types_c.h"
+	#include "opencv2/imgproc/imgproc_c.h"
+	#include "opencv2//imgcodecs/legacy/constants_c.h"
+#endif
+
 #if (CV_MAJOR_VERSION >= 3)
 #include "opencv2/imgcodecs.hpp"
 #endif

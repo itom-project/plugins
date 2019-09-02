@@ -155,7 +155,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SuperlumBL.cpp" line="+70"/>
+        <location filename="../SuperlumBL.cpp" line="+71"/>
         <source>Plugin for Superlum S-series BroadLighter SLDs.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -174,16 +174,11 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SuperlumBL</name>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Name of plugin.</source>
         <translation type="unfinished"></translation>
     </message>

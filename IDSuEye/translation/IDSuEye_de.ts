@@ -14,61 +14,61 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+16"/>
         <source>Color Mode and Bits per Pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+7"/>
         <source>Binning (horizontal, vertical)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+46"/>
         <source>Data Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <location line="+41"/>
-        <location line="+63"/>
-        <location line="+40"/>
+        <location line="+19"/>
+        <location line="+36"/>
+        <location line="+62"/>
+        <location line="+39"/>
         <location line="+13"/>
         <source> %</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-150"/>
+        <location line="-163"/>
         <source>auto blacklevel correction (offset)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+77"/>
         <source>gain boost (analog hardware gain)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-7"/>
         <source>Master Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+21"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+46"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-53"/>
         <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-28"/>
         <source>Green Gain</source>
         <translation type="unfinished"></translation>
     </message>
@@ -78,27 +78,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-27"/>
         <source>Red Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-7"/>
         <source>Pixel Clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+95"/>
         <source> Mhz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-26"/>
         <source>Blue Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="-127"/>
+        <source>Number of Buffers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The number of buffers corresponds to the amount of images in one sequence. Be aware that the necessary memory will be allocated and if the systems memory is insufficient, the program will crash.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+195"/>
         <location line="+6"/>
         <source>Trigger</source>
         <translation type="unfinished"></translation>
@@ -250,37 +260,42 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>Exposure:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source> s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+19"/>
+        <location line="+56"/>
         <source>Gain:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+140"/>
         <source>Offset:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="-70"/>
         <source>Gain Green:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-87"/>
+        <source>s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+47"/>
         <source>Gain Red:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+70"/>
         <source>Gain Blue:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -288,7 +303,12 @@
 <context>
     <name>IDSInterface</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="+102"/>
+        <location filename="../IDSInterface.cpp" line="+129"/>
+        <source>Licensed under LGPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-26"/>
         <source>This plugin supports IDS uEye cameras and has currently been tested with the following models: 
 * UI145xSE-C (colored, USB2) 
 * UI124xSE-M (monochrome, USB2) 
@@ -296,6 +316,8 @@
 * UI337xCP-C (colored, USB3) 
 * UI318xCP-M (monochrome, USB3) 
 * UI318xCP-C (colored, USB3) 
+* UI306xCP-M (monochrome, USB3) 
+* UI148xLE-M (monochrome, USB2) 
 * UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL 
 
 (Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU). 
@@ -304,21 +326,13 @@ The plugin has been compiled using the IDS library version %1.%2. You can run it
 
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. 
 
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.</source>
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart. 
+
+Note on supported sensor bit depths on monochrome cameras: The plugin may list a supported bit depth of 16 bit even if the camera explicitly does not support 16 bit color mode. The returned 16 bit images are most probably a MSB-Aligned representation of the maximum supported bit depth. (See IDS uEye handbook, appendix Color- and Dataformat)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
-        <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+29"/>
         <source>Camera ID (user-definable in IDS camera manager) of the camera to open (0: the next free camera will opened [default], 1-254: specific camera ID)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -336,7 +350,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 <context>
     <name>IDSuEye</name>
     <message>
-        <location filename="../IDSuEye.cpp" line="+61"/>
+        <location filename="../IDSuEye.cpp" line="+62"/>
         <source>Exposure time of chip (in seconds).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -431,18 +445,23 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>timeout in seconds when waiting for the next image.</source>
+        <location line="+2032"/>
+        <source>Error during check data, external dataObject invalid. Frame burst is %1, the external object must then have %1 planes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1996"/>
+        <location line="+4"/>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+93"/>
         <location line="+5"/>
         <source>Warning framerate is out of bounds, set to closest value possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2023"/>
+        <location line="-2153"/>
         <source>Model identifier of the attached camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -472,7 +491,17 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+909"/>
+        <location line="+6"/>
+        <source>timeout in seconds when waiting for the next image. For sequences x1000.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Number of Buffers used for acquisition. Note that if this is &gt; 1, a sequence of images will be acquired.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+901"/>
         <source>StopDevice of IDSuEye can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -482,7 +511,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+137"/>
+        <location line="+143"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -492,12 +521,12 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+68"/>
         <source>wrong picture type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+754"/>
+        <location line="+825"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -510,7 +539,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="-56"/>
+        <location filename="../IDSInterface.cpp" line="-60"/>
         <source>IDS uEye grabber.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -1355,6 +1355,10 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(const QByteArray &questi
     ito::RetVal retValue = PISendCommand(questionCommand);
     retValue += PIReadString(_answer, readSigns, timeoutMS);
 
+		if (_answer[0] == ' ')
+		{
+			_answer.remove(0, 1);
+		}
     answer = _answer.toDouble(&ok);
 
     if (retValue.containsError() && retValue.errorCode() != PI_READTIMEOUT)

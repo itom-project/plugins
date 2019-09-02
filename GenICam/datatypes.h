@@ -40,16 +40,16 @@ using namespace GENAPI_NAMESPACE;
 class GCType
 {
 public:
-	GCType(QMap<QString, ito::Param> *paramMap, const QString &name);
-	virtual ~GCType();
+    GCType(QMap<QString, ito::Param> *paramMap, const QString &name);
+    virtual ~GCType();
 
-	ito::Param &param() const { return (*m_paramMap)[m_name]; }
-	virtual ito::RetVal setValue(const ito::ParamBase *value) = 0;
-	virtual INode* node() const = 0;
-	virtual ito::RetVal update(bool valueOnly = true) = 0; //if valueOnly = false, the meta information is updated, too
+    ito::Param &param() const { return (*m_paramMap)[m_name]; }
+    virtual ito::RetVal setValue(const ito::ParamBase *value) = 0;
+    virtual INode* node() const = 0;
+    virtual ito::RetVal update(bool valueOnly = true) = 0; //if valueOnly = false, the meta information is updated, too
 
 protected:
-	int flagsFromAccessMode(const GenApi::EAccessMode &accessMode) const;
+    int flagsFromAccessMode(const GenApi::EAccessMode &accessMode) const;
     QMap<QString, ito::Param> *m_paramMap;
     QString m_name;
 };
@@ -59,15 +59,15 @@ class GCIntType : public GCType
 {
 public:
     GCIntType(QMap<QString, ito::Param> *paramMap, const QString &name, const CIntegerPtr &ptr);
-	~GCIntType();
-	CIntegerPtr value() const { return m_sharedPtr;  }
-	INode *node() const;
-	ito::RetVal setValue(const ito::ParamBase *value);
-	ito::RetVal update(bool valueOnly = true);
+    ~GCIntType();
+    CIntegerPtr value() const { return m_sharedPtr;  }
+    INode *node() const;
+    ito::RetVal setValue(const ito::ParamBase *value);
+    ito::RetVal update(bool valueOnly = true);
 
 private:
-	void intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta) const;
-	CIntegerPtr m_sharedPtr;
+    void intMetaFromInteger(const CIntegerPtr &iPtr, ito::IntMeta *intMeta) const;
+    CIntegerPtr m_sharedPtr;
 };
 
 //------------------------------------------------------------------------
@@ -75,15 +75,15 @@ class GCFloatType : public GCType
 {
 public:
     GCFloatType(QMap<QString, ito::Param> *paramMap, const QString &name, const CFloatPtr &ptr);
-	~GCFloatType();
-	CFloatPtr value() const { return m_sharedPtr; }
-	INode *node() const;
-	ito::RetVal setValue(const ito::ParamBase *value);
-	ito::RetVal update(bool valueOnly = true);
+    ~GCFloatType();
+    CFloatPtr value() const { return m_sharedPtr; }
+    INode *node() const;
+    ito::RetVal setValue(const ito::ParamBase *value);
+    ito::RetVal update(bool valueOnly = true);
 
 private:
-	void doubleMetaFromFloat(const CFloatPtr &fPtr, ito::DoubleMeta *dblMeta) const;
-	CFloatPtr m_sharedPtr;
+    void doubleMetaFromFloat(const CFloatPtr &fPtr, ito::DoubleMeta *dblMeta) const;
+    CFloatPtr m_sharedPtr;
 };
 
 //------------------------------------------------------------------------
@@ -91,14 +91,14 @@ class GCStringType : public GCType
 {
 public:
     GCStringType(QMap<QString, ito::Param> *paramMap, const QString &name, const CStringPtr &ptr);
-	~GCStringType();
-	INode *node() const;
-	CStringPtr value() const { return m_sharedPtr; }
-	ito::RetVal setValue(const ito::ParamBase *value);
-	ito::RetVal update(bool valueOnly = true);
+    ~GCStringType();
+    INode *node() const;
+    CStringPtr value() const { return m_sharedPtr; }
+    ito::RetVal setValue(const ito::ParamBase *value);
+    ito::RetVal update(bool valueOnly = true);
 
 private:
-	CStringPtr m_sharedPtr;
+    CStringPtr m_sharedPtr;
 };
 
 //------------------------------------------------------------------------
@@ -106,14 +106,14 @@ class GCBoolType : public GCType
 {
 public:
     GCBoolType(QMap<QString, ito::Param> *paramMap, const QString &name, const CBooleanPtr &ptr);
-	~GCBoolType();
-	INode *node() const;
-	CBooleanPtr value() const { return m_sharedPtr; }
-	ito::RetVal setValue(const ito::ParamBase *value);
-	ito::RetVal update(bool valueOnly = true);
+    ~GCBoolType();
+    INode *node() const;
+    CBooleanPtr value() const { return m_sharedPtr; }
+    ito::RetVal setValue(const ito::ParamBase *value);
+    ito::RetVal update(bool valueOnly = true);
 
 private:
-	CBooleanPtr m_sharedPtr;
+    CBooleanPtr m_sharedPtr;
 };
 
 //------------------------------------------------------------------------
@@ -121,16 +121,16 @@ class GCEnumerationType : public GCType
 {
 public:
     GCEnumerationType(QMap<QString, ito::Param> *paramMap, const QString &name, const CEnumerationPtr &ptr);
-	~GCEnumerationType();
-	INode *node() const;
-	CEnumerationPtr value() const { return m_sharedPtr; }
-	ito::RetVal setValue(const ito::ParamBase *value);
-	ito::RetVal update(bool valueOnly = true);
+    ~GCEnumerationType();
+    INode *node() const;
+    CEnumerationPtr value() const { return m_sharedPtr; }
+    ito::RetVal setValue(const ito::ParamBase *value);
+    ito::RetVal update(bool valueOnly = true);
 
 private:
-	void stringMetaFromEnumeration(const CEnumerationPtr &ePtr, ito::StringMeta *strMeta) const;
+    void stringMetaFromEnumeration(const CEnumerationPtr &ePtr, ito::StringMeta *strMeta) const;
 
-	CEnumerationPtr m_sharedPtr;
+    CEnumerationPtr m_sharedPtr;
 };
 
 

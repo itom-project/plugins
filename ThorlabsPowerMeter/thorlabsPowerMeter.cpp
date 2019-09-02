@@ -42,7 +42,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QElapsedTimer> 
 
 #include "dockWidgetThorlabsPowerMeter.h"
-#if defined(USE_API_3_02) 
+#if defined(USE_API_1_02) 
     #include <PM100D.h>
 #define PM(name) PM100D_##name
 #else
@@ -187,12 +187,15 @@ Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the
     registerExecFunc("zero_device", pMand, pOpt, pOut, tr("function to set the zero value of the device").toLatin1().data());
 
 
-    //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
-    
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+	if (hasGuiSupport())
+	{
+		//the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
+		DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
+
+		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -218,8 +221,8 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     ViSession  resMgr = VI_NULL;      //resource manager
     ViUInt32   count = 0;            //counts found devices
     ViStatus status;
-   
-#if defined(USE_API_3_02) 
+
+#ifdef USE_API_1_02 //Thorlabs Power Meter (1.02)
     ViChar     rscStr[VI_FIND_BUFLEN]; // resource string
     ViFindList findList;
 
@@ -230,25 +233,25 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
     }
     retval += checkError(viFindRsrc(resMgr, PMxxx_FIND_PATTERN, &findList, &count, rscStr));
-     if (retval == ito::retOk)
+    if (retval == ito::retOk)
         foundDevices.append(rscStr);
-     for (ViUInt32 c = 1; c < count; ++c)
-     {
-         retval += checkError(viFindNext(findList, rscStr));
-         if (retval == ito::retOk) foundDevices.append(rscStr);
-     }
-     viClose(findList);
-#else
+    for (ViUInt32 c = 1; c < count; ++c)
+    {
+        retval += checkError(viFindNext(findList, rscStr));
+        if (retval == ito::retOk) foundDevices.append(rscStr);
+    }
+    viClose(findList);
+#else //Thorlabs Optical Power Meter (1.1)
     ViBoolean available;
     ViChar name[TLPM_BUFFER_SIZE], sernr[TLPM_BUFFER_SIZE];
     ViChar rsrcDescr[TLPM_BUFFER_SIZE];
-    retval+= checkError(PM(findRsrc)(0, &count));
+    retval += checkError(PM(findRsrc)(0, &count));
     if (!retval.containsError())
     {
         for (int i = 0; i < count; ++i)
         {
             retval += checkError(PM(getRsrcInfo)(i, 0, name, sernr, VI_NULL, &available));
-            retval +=checkError(PM(getRsrcName)(i, 0, rsrcDescr));
+            retval += checkError(PM(getRsrcName)(i, 0, rsrcDescr));
             if (!retval.containsError())
             {
                 foundDevices.append(rsrcDescr);
@@ -260,144 +263,144 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
 
 #endif
-     if (!retval.containsError())
-     {
-         if (deviceName == "<scan>")
-         {
-             std::cout << "Thorlabs power meter devices \n" << std::endl;
+    if (!retval.containsError())
+    {
+        if (deviceName == "<scan>")
+        {
+            std::cout << "Thorlabs power meter devices \n" << std::endl;
 
-             for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
-             {
+            for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
+            {
 #if defined(USE_API_3_02)
-                 std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
+                std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
 #else
-                 std::cout << deviceInfo[i].toLatin1().data() << std::endl;
+                std::cout << deviceInfo[i].toLatin1().data() << std::endl;
 #endif
-             }
+            }
 
 
 
-             retval += ito::RetVal(ito::retError, 0, tr("The initialization is terminated since only a list of found devices has been requested ('<scan>')").toLatin1().data());
-         }
-         else if (deviceName == "")
-         {
-             if (foundDevices.size() == 0)
-             {
-                 retval += ito::RetVal(ito::retError, 0, tr("no devices found").toLatin1().data());
-             }
-             else
-             {
-                 deviceName = foundDevices[0];
-             }
-         }
-         else
-         {
-             bool gotIt(false);
-             
-             foreach(const QByteArray &string, foundDevices)
-             {
-                 if (QString::compare(deviceName, string, Qt::CaseInsensitive) == 0)
-                 {
-                     deviceName = string;
-                     gotIt = true;
-                     break;
-                 }
-             }
-             if (!gotIt)
-             {
-                 retval += ito::RetVal::format(ito::retError, 0, tr("Device %s could not be found").toLatin1().data(), deviceName.toLatin1().data());
-             }
-         }
+            retval += ito::RetVal(ito::retError, 0, tr("The initialization is terminated since only a list of found devices has been requested ('<scan>')").toLatin1().data());
+        }
+        else if (deviceName == "")
+        {
+            if (foundDevices.size() == 0)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("no devices found").toLatin1().data());
+            }
+            else
+            {
+                deviceName = foundDevices[0];
+            }
+        }
+        else
+        {
+            bool gotIt(false);
 
-		 
-         if (!retval.containsError())
-         {
-             //status = viOpen(resMgr, deviceName.toLatin1().data(), VI_EXCLUSIVE_LOCK, 2000, &m_instrument);
+            foreach(const QByteArray &string, foundDevices)
+            {
+                if (QString::compare(deviceName, string, Qt::CaseInsensitive) == 0)
+                {
+                    deviceName = string;
+                    gotIt = true;
+                    break;
+                }
+            }
+            if (!gotIt)
+            {
+                retval += ito::RetVal::format(ito::retError, 0, tr("Device %s could not be found").toLatin1().data(), deviceName.toLatin1().data());
+            }
+        }
 
-             //try to open device
-             status = PM(init)(deviceName.toLatin1().data(), VI_OFF, VI_OFF, &m_instrument);
+
+        if (!retval.containsError())
+        {
+            //status = viOpen(resMgr, deviceName.toLatin1().data(), VI_EXCLUSIVE_LOCK, 2000, &m_instrument);
+
+            //try to open device
+            status = PM(init)(deviceName.toLatin1().data(), VI_OFF, VI_OFF, &m_instrument);
 #if defined(USE_API_3_02)
-             if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
-             {
-                 retval += checkError(status);
-             }
+            if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
+            {
+                retval += checkError(status);
+            }
 #else
-             if (status != VI_SUCCESS)
-             {
-                 retval += checkError(status);
-             }
-         }
+            if (status != VI_SUCCESS)
+            {
+                retval += checkError(status);
+            }
 #endif
+        }
 
-		 ViChar name[256];
-		 status = PM(getRsrcName)(m_instrument, 0, name);
-         if (!retval.containsError())
-         {
-             //check if a photo diode is connected
-             ViChar name[256];
-             ViChar snr[256];
-             ViChar message[256];
-             ViInt16 pType;
-             ViInt16 pStype;
-             ViInt16 pFlags;
+        ViChar name[256];
+        status = PM(getRsrcName)(m_instrument, 0, name);
+        if (!retval.containsError())
+        {
+            //check if a photo diode is connected
+            ViChar name[256];
+            ViChar snr[256];
+            ViChar message[256];
+            ViInt16 pType;
+            ViInt16 pStype;
+            ViInt16 pFlags;
 
-             retval += checkError(PM(getSensorInfo)(m_instrument, name, snr, message, &pType, &pStype, &pFlags));
-             if (retval.containsError())
-             {
-                 switch (pType)
-                 {
-                 case SENSOR_TYPE_PD_SINGLE:
-                     break;
-                 case SENSOR_TYPE_THERMO:
-                     retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Thermal Sensor was detected.").toLatin1().data());
-                     break;
-                 case SENSOR_TYPE_PYRO:
-                     retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Pyroelectric Sensors was detected.").toLatin1().data());
-                     break;
-                 case SENSOR_TYPE_NONE:
-                     retval += ito::RetVal(ito::retError, 0, tr("There is no detector connected to the device.").toLatin1().data());
-                 }
-             }
-         }
-         if (!retval.containsError())
-         {
-             ViChar manufacturer[256];
-             ViChar device[256];
-             ViChar serial[256];
-             ViChar firmware[256];
-             ViChar message[256];
-             retval += checkError(PM(identificationQuery)(m_instrument, manufacturer, device, serial, firmware));
+            retval += checkError(PM(getSensorInfo)(m_instrument, name, snr, message, &pType, &pStype, &pFlags));
+            if (retval.containsError())
+            {
+                switch (pType)
+                {
+                case SENSOR_TYPE_PD_SINGLE:
+                    break;
+                case SENSOR_TYPE_THERMO:
+                    retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Thermal Sensor was detected.").toLatin1().data());
+                    break;
+                case SENSOR_TYPE_PYRO:
+                    retval += ito::RetVal(ito::retError, 0, tr("This plugin supports only Photodiode Power Sensor but a Pyroelectric Sensors was detected.").toLatin1().data());
+                    break;
+                case SENSOR_TYPE_NONE:
+                    retval += ito::RetVal(ito::retError, 0, tr("There is no detector connected to the device.").toLatin1().data());
+                }
+            }
+        }
+        if (!retval.containsError())
+        {
+            ViChar manufacturer[256];
+            ViChar device[256];
+            ViChar serial[256];
+            ViChar firmware[256];
+            ViChar message[256];
+            retval += checkError(PM(identificationQuery)(m_instrument, manufacturer, device, serial, firmware));
 
-             if (!retval.containsError())
-             {
-                 setIdentifier(QString("%1 (%2)").arg(device).arg(manufacturer));
-                 m_params["device_name"].setVal<char*>(device);
-                 m_params["manufacturer_name"].setVal<char*>(manufacturer);
-                 m_params["serial_number"].setVal<char*>(serial);
-                 m_params["firmware_revision"].setVal<char*>(firmware);
+            if (!retval.containsError())
+            {
+                setIdentifier(QString("%1 (%2)").arg(device).arg(manufacturer));
+                m_params["device_name"].setVal<char*>(device);
+                m_params["manufacturer_name"].setVal<char*>(manufacturer);
+                m_params["serial_number"].setVal<char*>(serial);
+                m_params["firmware_revision"].setVal<char*>(firmware);
 
 
-                 retval += checkError(PM(getCalibrationMsg)(m_instrument, message));
-                 if (!retval.containsError())
-                 {
-                     m_params["calibration_message"].setVal<char*>(message);
-                 }
+                retval += checkError(PM(getCalibrationMsg)(m_instrument, message));
+                if (!retval.containsError())
+                {
+                    m_params["calibration_message"].setVal<char*>(message);
+                }
 
-                 
-             }
-         }
-         if (!retval.containsError())
-         {
-             m_data = ito::DataObject(1, 1, ito::tFloat64);
-         }
-         if (!retval.containsError())
-         {
-             //get all changing parameters of the plugin
-             retval += synchronizeParams(bAll);
-         }
 
-         
-     }
+            }
+        }
+        if (!retval.containsError())
+        {
+            m_data = ito::DataObject(1, 1, ito::tFloat64);
+        }
+        if (!retval.containsError())
+        {
+            //get all changing parameters of the plugin
+            retval += synchronizeParams(bAll);
+        }
+
+
+        }
 
     //steps todo:
     // - get all initialization parameters
@@ -408,14 +411,14 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-    
 
-    
+
+
     if (!retval.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -424,6 +427,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -658,7 +662,6 @@ ito::RetVal ThorlabsPowerMeter::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->deleteSemaphore();
     }
     return retval;
-    return ito::retOk;
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1028,7 +1031,6 @@ ito::RetVal ThorlabsPowerMeter::checkFunctionCompatibility(bool* compatibility)
     ViChar device[256];
     ViChar serial[256];
     ViChar firmware[256];
-    ViChar message[256];
     retval += checkError(PM(identificationQuery)(m_instrument, manufacturer, device, serial, firmware));
 
     QString str = device;

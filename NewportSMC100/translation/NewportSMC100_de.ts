@@ -158,10 +158,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.</source>
         <translation type="unfinished"></translation>

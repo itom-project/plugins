@@ -30,9 +30,14 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "BasicFilters.h"
 #include "DataObject/dataObjectFuncs.h"
 
-#include <opencv/cv.h>
+#if CV_MAJOR_VERSION >= 4
+	#include "opencv2/opencv.hpp"
+#else
+	#include <opencv/cv.h>
+#endif
+
 #if CV_MAJOR_VERSION >= 3
-#include <opencv2/imgproc.hpp>
+	#include <opencv2/imgproc.hpp>
 //#include <opencv2/calib3d.hpp>
 #endif
 

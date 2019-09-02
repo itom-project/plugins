@@ -9,7 +9,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+352"/>
+        <location line="+355"/>
         <source>timing mode already updated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -105,7 +105,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../Ximea.cpp" line="+75"/>
+        <location filename="../Ximea.cpp" line="+76"/>
         <source>Ximea xiQ-Camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -120,16 +120,11 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <source>LGPL / do not copy Ximea-DLLs</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Ximea</name>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>Dark Image, if null, empty image will be generated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -360,78 +355,84 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+265"/>
+        <location line="+302"/>
         <source>Camera is not connected or does not work properly!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+367"/>
-        <location line="+43"/>
+        <location line="+357"/>
+        <location line="+19"/>
+        <source>LoadLibrary(&quot;xiapiX64.dll&quot;). Error code: %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+47"/>
         <source>Cannot get function xiGetNumberDevices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-44"/>
+        <location line="+47"/>
         <source>Cannot get function xiOpenDevice</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-44"/>
+        <location line="+47"/>
         <source>Cannot get function xiCloseDevice</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-44"/>
+        <location line="+47"/>
         <source>Cannot get function xiStartAcquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-44"/>
+        <location line="+47"/>
         <source>Cannot get function xiStopAcquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-44"/>
+        <location line="+47"/>
         <source>Cannot get function xiGetImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-44"/>
+        <location line="+47"/>
         <source>Cannot get function xiSetParam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-44"/>
+        <location line="+47"/>
         <source>Cannot get function xiGetParam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-42"/>
+        <location line="+46"/>
         <source>Cannot get function mmUpdateFrameShading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+46"/>
         <source>Cannot get function mmCalculateShading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-36"/>
-        <location line="+43"/>
+        <location line="-39"/>
+        <location line="+46"/>
         <source>Cannot get function mmInitializeShading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+157"/>
+        <location line="+158"/>
         <source>bpp value not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -441,12 +442,12 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+800"/>
+        <location line="+804"/>
         <source>stopDevice ignored since camera was not started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+706"/>
+        <location line="+726"/>
         <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -462,13 +463,13 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1740"/>
-        <location line="+43"/>
+        <location line="-1768"/>
+        <location line="+46"/>
         <source>Cannot get function mmProcessFrame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-873"/>
+        <location line="-931"/>
         <source>Gain in % (the percentage is mapped to the dB-values).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -508,7 +509,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+372"/>
+        <location line="+409"/>
         <source>Camera handle deleted before closing procedure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -864,18 +865,12 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
-        <location line="+11"/>
-        <source>LoadLibrary(&quot;m3apiX64.dll&quot;). Error code: %i</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+233"/>
+        <location line="+297"/>
         <source>maximum gray-value bit depth is %i</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+201"/>
+        <location line="+205"/>
         <source>frame_burst_count != 1 can only be applied if trigger_selector = frame_burst_start (%i) and trigger_mode != off (0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -900,7 +895,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+171"/>
         <source>Tried to get picture without starting device</source>
         <translation type="unfinished"></translation>
     </message>

@@ -171,9 +171,9 @@ RetVal DataObjectArithmetic::doubleDObjInputParams(QVector<ito::Param> *paramsMa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::minValueDoc = QObject::tr("This filter calculates the minimal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::minValueDoc = QObject::tr("This filter calculates the global minimum value and its first location within the dataObject. \n\
 \n\
-The result value will be Integer vor all integer types or Double for all floating point types\n\
+The returned value will be an integer for all fixed-point data types and float for all floating point types. \n\
 \n\
 The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
 \n");
@@ -182,7 +182,7 @@ The filter is implemented for all data types besides RGBA32, Complex64 and Compl
 ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
 
     if (dObj == NULL)
     {
@@ -194,7 +194,6 @@ ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, 
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
 
-// new Version using the SDK-minValueHelper
     ito::float64 result = 0.0;
     ito::uint32 location[3] = {0,0,0};
     bool ignoreInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
@@ -231,18 +230,18 @@ ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::maxValueDoc = QObject::tr("This filter calculates the maximal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::maxValueDoc = QObject::tr("This filter calculates the global maximum value and its first location within the dataObject. \n\
 \n\
-The result value will be Integer vor all integer types or Double for all floating point types\n\
+The returned value will be an integer for all fixed-point data types and float for all floating point types. \n\
+The global maximum of complex data types is defined to be the global maximum of all absolute values. \n\
 \n\
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
-\n");
+The filter is implemented for all data types besides RGBA32");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
 
     if (dObj == NULL)
     {
@@ -254,7 +253,6 @@ ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, 
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
 
-// new Version using the SDK-minValueHelper
     ito::float64 result = 0.0;
     ito::uint32 location[3] = {0,0,0};
 
@@ -294,9 +292,9 @@ ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString DataObjectArithmetic::minMaxValueDoc = QObject::tr("This filter calculates the minimal and maximal value and its first location within the dataObject. \n\
 \n\
-The result value will be Integer vor all integer types or Double for all floating point types\n\
+The returned values will be integer for all fixed-point data types or float for all floating point types. \n\
 \n\
-The filter do not work with RGBA32 but with all other data-types\n\
+The filter does not work with RGBA32 but with all other datatypes.\n\
 \n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -328,7 +326,7 @@ RetVal DataObjectArithmetic::minMaxValueParams(QVector<ito::Param> *paramsMand, 
 ito::RetVal DataObjectArithmetic::minMaxValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
 
     if (dObj == NULL)
     {
@@ -390,14 +388,14 @@ const QString DataObjectArithmetic::meanValueDoc = QObject::tr("This filter calc
 \n\
 The return value containing the mean value of the dataObject.\n\
 \n\
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
+The filter is implemented for all datatypes besides RGBA32, Complex64 and Complex128\n\
 \n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::meanValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
 
     if (dObj == NULL)
     {
@@ -409,7 +407,6 @@ ito::RetVal DataObjectArithmetic::meanValue(QVector<ito::ParamBase> *paramsMand,
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
 
-// new Version using the SDK-minValueHelper
     ito::float64 result = 0.0;
     bool toggleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
 
@@ -421,18 +418,18 @@ ito::RetVal DataObjectArithmetic::meanValue(QVector<ito::ParamBase> *paramsMand,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::medianValueDoc = QObject::tr("This filter calculates the median value over all values in the data object. \n\
+const QString DataObjectArithmetic::medianValueDoc = QObject::tr("This method calculates the median value over all values in the data object. \n\
 \n\
-The return value containing the mean value of the dataObject.\n\
+The returned median values is given as double.\n\
 \n\
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
+This method is implemented for all datatypes besides RGBA32, Complex64 and Complex128\n\
 \n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::medianValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
 
     if (dObj == NULL)
     {
@@ -444,13 +441,12 @@ ito::RetVal DataObjectArithmetic::medianValue(QVector<ito::ParamBase> *paramsMan
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
 
-    // new Version using the SDK-minValueHelper
     ito::float64 result = 0.0;
     bool toggleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
 
     retval += ito::dObjHelper::medianValue(dObj, result, toggleInf);
 
-    (*paramsOut)[0] = ParamBase("result", ParamBase::Double | ParamBase::Out, static_cast<double>(result));
+    (*paramsOut)[0] = ParamBase("result", ParamBase::Double | ParamBase::Out, result);
 
     return retval;
 }
@@ -477,24 +473,25 @@ RetVal DataObjectArithmetic::devValueParams(QVector<ito::Param> *paramsMand, QVe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::devValueDoc = QObject::tr("The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\n\
+const QString DataObjectArithmetic::devValueDoc = QObject::tr("This method returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\n\
 \n\
-The optinal flag to toggles if (flag==0) the deviation is calculated by \n\
+Use the optional argument 'flag' to choose between two formulas for the determination of the standard deviation. \n\
+Either (flag = 0): \n\
 \n\
 \n    \\sqrt(\\sum{(x-xm)^2} / (n-1))\n\
 \n\
-or (if flag == 1)\n\
+or (flag = 1):\n\
 \n\
 \n    \\sqrt(\\sum{(x-xm)^2} / n)\n\
 \n\
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
+This method is implemented for all datatypes besides RGBA32, Complex64 and Complex128\n\
 \n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
 
     if (dObj == NULL)
     {
@@ -523,11 +520,10 @@ ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::areEqualDoc = QObject::tr("Check pixel-wise wether two dataObjects are equal. \n\
-The filter returns 1 if both objects are pixel-wise equal, else returns 0.\n\
+const QString DataObjectArithmetic::areEqualDoc = QObject::tr("Element-wise check if two dataObjects are equal. \n\
+The filter returns 1 if all values of both objects are equal, else 0.\n\
 \n\
-The filter is implemented for all data types besides RGBA32, Complex64 and Complex128\n\
-\n");
+The filter is implemented for all datatypes besides RGBA32, Complex64 and Complex128.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Type> bool areEqualHelper(_Type* first, int xStep0, int yStep0, _Type* second, int xstep1, int ystep1, int rows, int cols)
@@ -868,7 +864,7 @@ valid intensity value before calculating the COG with the following equations: \
 cXI = \\frac{\\sum{idx_x * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
 cYI = \\frac{\\sum{idx_y * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
 \n\
-The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.");
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other datatypes.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::centerOfGravityParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1968,7 +1964,7 @@ The return value contains the [x0,y0,width,height] of the minimum ROI.\n\
 Values of the data object belong to the ROI if they are >= lowThreshold and <= highThreshold. \n\
 The highThreshold is only checked, if it is different than the default value (maximum value of double). \n\
 \n\
-The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types. This filter has got a fast \n\
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other datatypes. This filter has got a fast \n\
 implementation for fixed-point data types without an higher threshold (since version 0.0.3).");
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2874,7 +2870,8 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
     filter = new FilterDef(autoFocusEstimate, autoFocusEstimateParams, autoFocusEstimateDoc);
     m_filterList.insert("autofocusEstimate", filter);
 
-    m_filterList.insert("findMultiSpots", new FilterDef(findMultiSpots, findMultiSpotsParams, findMultiSpotsDoc));
+    filter = new FilterDef(findMultiSpots, findMultiSpotsParams, findMultiSpotsDoc);
+    m_filterList.insert("findMultiSpots", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;

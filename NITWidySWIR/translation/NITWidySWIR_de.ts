@@ -153,10 +153,6 @@
         <source>LPGL</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>dialogNITWidySWIR</name>

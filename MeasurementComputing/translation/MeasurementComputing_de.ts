@@ -187,7 +187,7 @@
 <context>
     <name>MeasurementComputing</name>
     <message>
-        <location filename="../MeasurementComputing.cpp" line="+96"/>
+        <location filename="../MeasurementComputing.cpp" line="+119"/>
         <source>name of itom plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -503,12 +503,7 @@ Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>board number of the connected device. This number must be defined by the software &apos;InstaCal&apos;</source>
         <translation type="unfinished"></translation>
     </message>

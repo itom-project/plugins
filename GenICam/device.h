@@ -55,28 +55,28 @@ using namespace GENAPI_NAMESPACE;
 class GenTLDevice : public BasePort
 {
 public:
-	GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHandle, QByteArray deviceID, const QByteArray &identifier, int verbose, ito::RetVal &retval);
+    GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHandle, QByteArray deviceID, const QByteArray &identifier, int verbose, ito::RetVal &retval);
     ~GenTLDevice();
 
     QByteArray getDeviceID() const { return m_deviceID; }
-	
-	QSharedPointer<GenTLDataStream> getDataStream(ito::int32 streamIndex, ito::RetVal &retval);
+    
+    QSharedPointer<GenTLDataStream> getDataStream(ito::int32 streamIndex, ito::RetVal &retval);
 
-	int getPayloadSize() const;
+    int getPayloadSize() const;
 
-	QByteArray getIdentifier() const { return m_identifier; }
+    QByteArray getIdentifier() const { return m_identifier; }
 
     void resyncAllParameters();
 
-	virtual void callbackParameterChanged_(INode *pNode); //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
+    virtual void callbackParameterChanged_(INode *pNode); //this is the member, called from the static version callbackParameterChanged (this is necessary if more than one GenICam device is connected to the computer)
 
     QSharedPointer<GenTLFramegrabber> getFramegrabber(ito::RetVal &retval);
 
 protected:
-	QSharedPointer<QTimer> m_callbackParameterChangedTimer;
+    QSharedPointer<QTimer> m_callbackParameterChangedTimer;
     GenTL::DEV_HANDLE m_cameraHandle;
     QByteArray m_deviceID;
-	QByteArray m_identifier;
+    QByteArray m_identifier;
     GenTL::EVENT_HANDLE m_errorEvent;
 };
 

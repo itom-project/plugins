@@ -74,7 +74,7 @@ This plugin is also used by other hardware plugins to communicate with further d
         
 Compilation
 ===========
-In order to compile LibUSB, get the sources or binaries from LibUSB from libusb.info. Then set LibUSB_DIR to the base
+In order to compile LibUSB, get the sources or binaries from LibUSB from http://www.libusb.info. Then set LibUSB_DIR to the base
 directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin.
 
 Changelog
@@ -84,3 +84,4 @@ Changelog
 * itom setup 2.2.0: This plugin has been compiled using the libusb 1.0.20
 * itom setup 3.0.0: This plugin has been compiled using the libusb 1.0.20
 * itom setup 3.1.0: This plugin has been compiled using the libusb 1.0.21
+* itom setup >3.1.0: This plugin has been compiled using the libusb 1.0.22
