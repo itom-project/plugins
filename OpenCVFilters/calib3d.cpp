@@ -27,10 +27,10 @@
 #include "DataObject/dataObjectFuncs.h"
 #include <qnumeric.h>
 
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-#include "opencv2/calib3d/calib3d.hpp"
+#if (CV_VERSION_MAJOR >= 2) //calib3d only available for OpenCV Version > 2.0
+    #include "opencv2/calib3d/calib3d.hpp"
 
-#if (CV_MAJOR_VERSION >= 4)
+#if (CV_VERSION_MAJOR >= 4)
     #include "opencv2\highgui.hpp"
 #else
     #include "opencv/highgui.h"
@@ -926,7 +926,7 @@ indices in a table of interpolation coefficients.");
     description += QString("BORDER_TRANSPARENT (%1)").arg(cv::BORDER_TRANSPARENT);
     description += QString("BORDER_DEFAULT (%1)").arg(cv::BORDER_DEFAULT);
     description += QString("BORDER_ISOLATED (%1)").arg(cv::BORDER_ISOLATED);
-    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_CONSTANT, cv::BORDER_ISOLATED, cv::BORDER_CONSTANT, description.toLatin1().data()));
+    paramsOpt->append(ito::Param("borderMode", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_CONSTANT, cv::BORDER_ISOLATED, cv::BORDER_CONSTANT, description.toLatin1().data()));
     
     paramsOpt->append(ito::Param("borderValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("value used in case of a constant border. By default, it is 0").toLatin1().data()));
 
@@ -937,7 +937,7 @@ indices in a table of interpolation coefficients.");
 /*static*/ ito::RetVal OpenCVFilters::cvRemap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(2,2), ito::Range(1,INT_MAX), retval, -1, 0);
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1, INT_MAX), ito::Range(1,INT_MAX), retval, -1, 0);
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
