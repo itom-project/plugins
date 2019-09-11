@@ -158,22 +158,22 @@ NiDAQmx::NiDAQmx() :
     InstanceCounter++;
 
     // General Parameters
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NI-DAQmx", NULL);    
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "NI-DAQmx", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("taskName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("name of the NI task that is related to this instance").toLatin1().data());
+    paramVal = ito::Param("taskName", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("name of the NI task that is related to this instance").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("availableDevices", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("comma-separated list of all detected and available devices").toLatin1().data());
+    paramVal = ito::Param("availableDevices", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and available devices").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name").toLatin1().data());
+    paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("channels", ito::ParamBase::String, "", tr("semicolon-separated list of all channels that should be part of this task. Every item is a comma separated string that defines and parameterizes every channel.").toLatin1().data());
+    paramVal = ito::Param("channels", ito::ParamBase::String | ito::ParamBase::In, "", tr("semicolon-separated list of all channels that should be part of this task. Every item is a comma separated string that defines and parameterizes every channel.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("taskMode", ito::ParamBase::String, "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
+    paramVal = ito::Param("taskMode", ito::ParamBase::String | ito::ParamBase::In, "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
     sm->addItem("finite");
     sm->addItem("continuous");
@@ -189,6 +189,31 @@ NiDAQmx::NiDAQmx() :
                                             20000, 
                                             tr("The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("sampleClockSource", ito::ParamBase::String | ito::ParamBase::In, "OnboardClock", tr("The source terminal of the Sample Clock. To use the internal clock of the device, use an empty string or 'OnboardClock' (default). An example for an external clock source is 'PFI0' or PFI1'.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("sampleClockRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If 1, samples are acquired on a rising edge of the sample clock (default), else they are acquired on a falling edge.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("startTriggerMode", ito::ParamBase::String | ito::ParamBase::In, "off", tr("Specifies the start trigger mode. 'off': software-based start trigger, 'digitalEdge': The start of acquiring or generating samples is given in '").toLatin1().data());
+    sm = new ito::StringMeta(ito::StringMeta::String);
+    sm->addItem("off");
+    sm->addItem("digitalEdge");
+    sm->addItem("analogEdge");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("startTriggerSource", ito::ParamBase::String | ito::ParamBase::In, "/Dev1/PFI0", tr("The source terminal of the trigger source (if 'startTriggerMode' is set to 'digitalEdge' or 'analogEdge').").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("startTriggerRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Specifies on which slope of the signal to start acquiring or generating samples. 1: rising edge (default), 0: falling edge.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    
+    paramVal = ito::Param("startTriggerLevel", ito::ParamBase::Double | ito::ParamBase::In, -1000.0, 1000.0, 1.0, tr("Only for 'startTriggerMode' == 'analogEdge': The threshold at which to start acquiring or generating samples. Specify this value in the units of the measurement or generation.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+
 
     // Register Exec Functions
     QVector<ito::Param> pMand = QVector<ito::Param>();
@@ -515,36 +540,55 @@ ito::RetVal NiDAQmx::configTask()
     {
         double rateHz = m_params["samplingRate"].getVal<double>();
         int samplesPerChannel = m_params["samplesPerChannel"].getVal<int>();
+        QByteArray clockSignal = m_params["sampleClockSource"].getVal<const char*>();
+        const char* clock = NULL; //default: OnboardClock
+        if (clockSignal != "")
+        {
+            clock = clockSignal.constData();
+        }
+
+        int32 activeEdge = m_params["sampleClockRisingEdge"].getVal<int>() > 0 ? DAQmx_Val_Rising : DAQmx_Val_Falling;
+
         //configure task
         switch (m_taskMode)
         {
         case NiTaskModeFinite: //finite
         {
             // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or do not use it.
-            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, NULL /*OnboardClock*/, rateHz, DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, samplesPerChannel), "configure sample clock timing");
+            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_FiniteSamps, samplesPerChannel), "configure sample clock timing");
             break;
         }
         case NiTaskModeContinuous: //continuous
         {
-            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, NULL /*OnboardClock*/, rateHz, DAQmx_Val_Rising, DAQmx_Val_ContSamps, samplesPerChannel), "configure sample clock timing");
+            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_ContSamps, samplesPerChannel), "configure sample clock timing");
             break;
         }
         //case NiTaskModeOnDemand: // Hardware Timed Single Point
         //{
-        //    retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, NULL /*OnboardClock*/, rateHz, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
+        //    retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
         //    break;
         //}
         }
 
-        //if (!retValue.containsError())
-        //{
-        //    // If a triggerport is defined, set task to triggermode
-        //    if (this->getTriggerPort() != "")
-        //    {
-        //        err = DAQmxCfgDigEdgeStartTrig(m_taskHandle, this->getTriggerPort().toLatin1().data(), this->getTriggerEdge());
-        //    }
-
-        //}
+        if (!retValue.containsError())
+        {
+            QByteArray startTriggerMode = m_params["startTriggerMode"].getVal<const char*>();
+            int32 edge = m_params["startTriggerRisingEdge"].getVal<int>() > 0 ? DAQmx_Val_Rising : DAQmx_Val_Falling;
+            
+            if (startTriggerMode == "off")
+            {
+                retValue += checkError(DAQmxDisableStartTrig(m_taskHandle), "disable start trigger");
+            }
+            else if (startTriggerMode == "digitalEdge")
+            {
+                retValue += checkError(DAQmxCfgDigEdgeStartTrig(m_taskHandle, m_params["startTriggerSource"].getVal<const char*>(), edge), "Create digital start trigger");
+            }
+            else //analogEdge
+            {
+                float64 triggerLevel = m_params["startTriggerLevel"].getVal<ito::float64>();
+                retValue += checkError(DAQmxCfgAnlgEdgeStartTrig(m_taskHandle, m_params["startTriggerSource"].getVal<const char*>(), edge, triggerLevel), "Create analog start trigger");
+            }
+        }
     }
 
     return retValue;
@@ -624,7 +668,14 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 restartDevice = true;
             }
         }
-        else if (key == "samplingRate" || key == "samplesPerChannel")
+        else if (key == "samplingRate" || 
+            key == "samplesPerChannel" ||
+            key == "sampleClockSource" ||
+            key == "sampleClockRisingEdge" ||
+            key == "startTriggerMode" ||
+            key == "startTriggerSource" ||
+            key == "startTriggerRisingEdge" ||
+            key == "startTriggerLevel")
         {
             retValue += it->copyValueFrom(&(*val));
             if (!retValue.containsError() && m_deviceStartedCounter > 0)
@@ -779,11 +830,6 @@ ito::RetVal NiDAQmx::stopDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NiDAQmx::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
 {
-    // The trigger is used here in another meaning. It s a bitmask and defines
-    // which tasks are started! (all decimal)
-    //  1 = Analog Input
-    //  2 = Digital Input
-    //  4 = Counter Input
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
     m_isgrabbing = false;

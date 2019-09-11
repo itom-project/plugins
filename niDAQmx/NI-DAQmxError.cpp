@@ -58,13 +58,15 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
             DAQmxGetExtendedErrorInfo(buffer_extended, buffer_size_extended);
             buffer_extended[buffer_size_extended] = '\0';
 
+            char *buffer_final = buffer_size_extended > 0 ? buffer_extended : buffer;
+
 	        if (prefix != "")
 	        {
-		        retValue += ito::RetVal::format(ito::retError, 0, "%s: %s\n(Detailed description of latest error: %s)", prefix.toLatin1().constData(), buffer, buffer_extended);
+		        retValue += ito::RetVal::format(ito::retError, 0, "%s: %s", prefix.toLatin1().constData(), buffer_final);
 	        }
 	        else
 	        {
-		        retValue += ito::RetVal::format(ito::retError, 0, "%s\n(Detailed description of latest error: %s)", buffer, buffer_extended);
+		        retValue += ito::RetVal::format(ito::retError, 0, "%s", buffer_final);
 	        }
 
             delete[] buffer_extended;
