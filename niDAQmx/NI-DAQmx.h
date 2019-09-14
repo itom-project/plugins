@@ -134,7 +134,8 @@ class NiDAQmx : public ito::AddInDataIO
         bool m_taskStarted;
         int m_deviceStartedCounter; /*!< counts how often the device is started, every call to startDevice will increments this, stopDevice will decrement it. The task is really stopped if it drops to zero again. */
         
-        ito::DataObject m_data;
+        ito::DataObject m_data; //source of data
+        ito::DataObject m_dataView; //in finite task, this is a shallow copy of m_data, for continuous tasks this is always a ROI (as shallow copy of m_data) containing the really acquired values.
 		QString m_configForTesting;
 
         //NEW
@@ -147,9 +148,9 @@ class NiDAQmx : public ito::AddInDataIO
         NiTaskMode m_taskMode;
         
         // Read-functions
-        ito::RetVal readAnalog(); /*!< Wait for acquired data */
-        ito::RetVal readDigital(); /*!< Wait for acquired data */
-        ito::RetVal readCounter(); /*!< Wait for acquired data */
+        ito::RetVal readAnalog(int32 &readNumSamples); /*!< Wait for acquired data */
+        ito::RetVal readDigital(int32 &readNumSamples); /*!< Wait for acquired data */
+        ito::RetVal readCounter(int32 &readNumSamples); /*!< Wait for acquired data */
         ito::RetVal retrieveData();
 
         // Write-functions
