@@ -118,10 +118,15 @@ class NiDAQmx : public ito::AddInDataIO
             NiTaskModeOnDemand = 2 */
         };
 
+        void taskStopped(TaskHandle taskHandle, int32 status);
+
+        static QVector<void*> ActiveInstances;
+
     private:
         static int InstanceCounter; /*!< used to give an auto-incremented taskName if no one is given as initialization parameter */
 
-        ito::RetVal checkData(ito::DataObject *externalDataObject);
+        ito::RetVal checkInternalData();
+        ito::RetVal checkExternalDataToView(ito::DataObject *externalData);
         ito::RetVal scanForAvailableDevicesAndSupportedChannels();
         ito::RetVal stopTask();
         ito::RetVal deleteTask(); /*!< stops the task (if not yet done) and deletes it (if it has been created) */
@@ -133,6 +138,7 @@ class NiDAQmx : public ito::AddInDataIO
         bool m_isgrabbing; /*!< Check if acquire was executed */
         bool m_taskStarted;
         int m_deviceStartedCounter; /*!< counts how often the device is started, every call to startDevice will increments this, stopDevice will decrement it. The task is really stopped if it drops to zero again. */
+        ito::tDataType m_digitalChannelDataType; /*!< only relevant for digital ports, defines the necessary data type to hold the maximum number of lines that are connected for every port. (<= 8 lines : uint8, <= 16 : uint16, else int32) */
         
         ito::DataObject m_data; //source of data
         ito::DataObject m_dataView; //in finite task, this is a shallow copy of m_data, for continuous tasks this is always a ROI (as shallow copy of m_data) containing the really acquired values.
@@ -183,9 +189,6 @@ class NiDAQmx : public ito::AddInDataIO
         ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
         //!< 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        
-        //checkData usually need not to be overwritten (see comments in source code)
-        //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
 

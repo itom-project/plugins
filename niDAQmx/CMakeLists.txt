@@ -50,7 +50,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR
 # - itomWidgets (further widgets) (may be used in dock widget...)
 # - pointcloud (pointCloud, point, polygonMesh...) (optional)
 # if no components are indicated, all components above are used
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake") #include this mandatory macro file (important)
 find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
 #       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
@@ -177,7 +177,7 @@ IF(NIDAQMX_FOUND)
 	set(plugin_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.h
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.h
-		#${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.h
+		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.h
 		${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-PeripheralClasses.h
@@ -187,7 +187,7 @@ IF(NIDAQMX_FOUND)
 
 	set(plugin_SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.cpp
-		#${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-PeripheralClasses.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmxError.cpp
@@ -202,7 +202,7 @@ IF(NIDAQMX_FOUND)
 
 	set(plugin_UI
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.ui
-		#${CMAKE_CURRENT_SOURCE_DIR}/dockNI-DAQmx.ui
+		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.ui
 	)
 
 	set(plugin_RCC

@@ -39,7 +39,7 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 
         
 	
-	    if (error > 0)
+	    if (!DAQmxFailed(error))
 	    {
 	        if (prefix != "")
 	        {

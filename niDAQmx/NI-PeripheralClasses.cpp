@@ -78,6 +78,13 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
     else
     {
         QString physicalName = regExp.cap(1) + "/" + regExp.cap(2);
+
+        if (physicalName.contains(":"))
+        {
+            retValue += ito::RetVal(ito::retError, 0, "A colon (:) in the physical channel name (range of channels) is currently not supported");
+            return NULL;
+        }
+
         int inConfig = regExp.cap(3).toInt();
         int minOutputVoltage = regExp.cap(4).toInt();
         int maxOutputVoltage = regExp.cap(5).toInt();
@@ -179,6 +186,13 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
     else
     {
         QString physicalName = regExp.cap(1) + "/" + regExp.cap(2);
+
+        if (physicalName.contains(":"))
+        {
+            retValue += ito::RetVal(ito::retError, 0, "A colon (:) in the physical channel name (range of channels) is currently not supported");
+            return NULL;
+        }
+
         int minOutputVoltage = regExp.cap(3).toInt();
         int maxOutputVoltage = regExp.cap(4).toInt();
         NiAnalogOutputChannel *ai = new NiAnalogOutputChannel(physicalName);
@@ -239,6 +253,13 @@ NiDigitalInputChannel::~NiDigitalInputChannel()
     else
     {
         QString physicalName = configString;
+
+        if (physicalName.contains(":"))
+        {
+            retValue += ito::RetVal(ito::retError, 0, "A colon (:) in the physical channel name (range of channels) is currently not supported");
+            return NULL;
+        }
+
         NiDigitalInputChannel *ai = new NiDigitalInputChannel(physicalName);
         return ai;
     }
@@ -291,6 +312,13 @@ NiDigitalOutputChannel::~NiDigitalOutputChannel()
     else
     {
         QString physicalName = configString;
+
+        if (physicalName.contains(":"))
+        {
+            retValue += ito::RetVal(ito::retError, 0, "A colon (:) in the physical channel name (range of channels) is currently not supported");
+            return NULL;
+        }
+
         NiDigitalOutputChannel *ai = new NiDigitalOutputChannel(physicalName);
         return ai;
     }
