@@ -2994,7 +2994,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
     else if (distance_idx > 0 && idx > 0)
     {
         cv::Mat_<float> values_valid(values, cv::Range::all(), cv::Range(0,idx));
-        cv::sort(values_valid,values_valid,CV_SORT_EVERY_ROW | CV_SORT_ASCENDING);
+        cv::sort(values_valid, values_valid, cv::SORT_EVERY_ROW | cv::SORT_ASCENDING);
 
         double thresholdIdx = percentage * idx;
         int thresholdIdxInt = cvRound(thresholdIdx);
