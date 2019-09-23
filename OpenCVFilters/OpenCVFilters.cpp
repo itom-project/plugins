@@ -2671,7 +2671,7 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     m_filterList.insert("cvInitUndistortRectifyMap", filter);
 
     filter = new FilterDef(OpenCVFilters::cvRemap, OpenCVFilters::cvRemapParams, cvRemapDoc);
-    m_filterList.insert("cvRemapParams", filter);
+    m_filterList.insert("cvRemap", filter);
 
     filter = new FilterDef(OpenCVFilters::cvFindHomography, OpenCVFilters::cvFindHomographyParams, cvFindHomographyDoc);
     m_filterList.insert("cvFindHomography", filter);

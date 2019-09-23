@@ -75,7 +75,30 @@ This plugin is also used by other hardware plugins to communicate with further d
 Compilation
 ===========
 In order to compile LibUSB, get the sources or binaries from LibUSB from http://www.libusb.info. Then set LibUSB_DIR to the base
-directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin.
+directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin. 
+
+Hint: prebuilt versions of libusb for Visual Studio 2015 can also be found here: https://sourceforge.net/projects/itom/files/all-in-one-build-setup/Optional-3rdParty
+
+Possible linker problems with Visual Studio
+--------------------------------------------------
+
+If you get a linker error (similar to **unresolved symbol __imp__vsnprintf**, **unresolved symbol **__imp__iob** in libusb-1.0.lib),
+then it is likely that the compiled binaries of libusb are not compatible with your version of Visual Studio.
+
+In this case you have to compile LibUSB by yourself using your version of Visual Studio:
+
+1. Download and unpack the sources of **libusb** (https://github.com/libusb/libusb/releases) to any folder
+2. Open the project **msvc/libusb_static_XXXX.vcxproj** with your Visual Studio, where XXXX corresponds to the correct version number.
+3. Compile the project (libusb-1.0 static) as **Release** in x86 and / or x64.
+4. Create a new folder (e.g. libusb_1.0.23_MSVC2015) and copy the following files to that folder ({sources} is the unpacked source folder):
+    
+    libusb_1.0.23_MSVC2015
+        
+        /include/libusb-1.0 --> this must contain the header file **libusb.h** from {sources}/libusb
+        /MS32/static --> this must contain the **libusb-1.0.lib** from {sources}/Win32/static (if 32bit build)
+        /MS64/static --> this must contain the newly built **libusb-1.0.lib** from {sources}/Win64/static (if 64bit build)
+    
+5. Set the CMake variable LibUSB_DIR to this new folder.
 
 Changelog
 =========

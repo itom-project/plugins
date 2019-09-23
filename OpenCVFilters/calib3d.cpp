@@ -27,10 +27,10 @@
 #include "DataObject/dataObjectFuncs.h"
 #include <qnumeric.h>
 
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-#include "opencv2/calib3d/calib3d.hpp"
+#if (CV_VERSION_MAJOR >= 2) //calib3d only available for OpenCV Version > 2.0
+    #include "opencv2/calib3d/calib3d.hpp"
 
-#if (CV_MAJOR_VERSION >= 4)
+#if (CV_VERSION_MAJOR >= 4)
     #include "opencv2\highgui.hpp"
 #else
     #include "opencv/highgui.h"
@@ -910,23 +910,23 @@ indices in a table of interpolation coefficients.");
     paramsMand->append(ito::Param("map1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("The first map of x values").toLatin1().data()));
     paramsMand->append(ito::Param("map2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("The second map of y values").toLatin1().data()));
 
-    QString description = tr("Interpolation method. The following values are possible: ");
-    description += QString("INTER_NEAREST (%1)").arg(cv::INTER_NEAREST);
-    description += QString(", INTER_LINEAR (%1)").arg(cv::INTER_LINEAR);
-    description += QString(", INTER_CUBIC (%1)").arg(cv::INTER_CUBIC);
-    description += QString(", INTER_LANCZOS4  (%1)").arg(cv::INTER_LANCZOS4);
+    QString description = tr("Interpolation method. The following values are possible:\n");
+    description += QString("INTER_NEAREST (%1)\n").arg(cv::INTER_NEAREST);
+    description += QString("INTER_LINEAR (%1)\n").arg(cv::INTER_LINEAR);
+    description += QString("INTER_CUBIC (%1)\n").arg(cv::INTER_CUBIC);
+    description += QString("INTER_LANCZOS4 (%1)").arg(cv::INTER_LANCZOS4);
     paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::INTER_LANCZOS4, cv::INTER_LINEAR, description.toLatin1().data()));
 
-    description = tr("Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT, it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function. The following values are possible: ");
-    description += QString("BORDER_CONSTANT (%1)").arg(cv::BORDER_CONSTANT);
-    description += QString("BORDER_REPLICATE (%1)").arg(cv::BORDER_REPLICATE);
-    description += QString("BORDER_REFLECT (%1)").arg(cv::BORDER_REFLECT);
-    description += QString("BORDER_WRAP (%1)").arg(cv::BORDER_WRAP);
-    description += QString("BORDER_REFLECT101 (%1)").arg(cv::BORDER_REFLECT101);
-    description += QString("BORDER_TRANSPARENT (%1)").arg(cv::BORDER_TRANSPARENT);
-    description += QString("BORDER_DEFAULT (%1)").arg(cv::BORDER_DEFAULT);
+    description = tr("Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT (%1), it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function. \nThe following values are possible:\n").arg(cv::BORDER_TRANSPARENT);
+    description += QString("BORDER_CONSTANT (%1)\n").arg(cv::BORDER_CONSTANT);
+    description += QString("BORDER_REPLICATE (%1)\n").arg(cv::BORDER_REPLICATE);
+    description += QString("BORDER_REFLECT (%1)\n").arg(cv::BORDER_REFLECT);
+    description += QString("BORDER_WRAP (%1)\n").arg(cv::BORDER_WRAP);
+    description += QString("BORDER_REFLECT101 (%1)\n").arg(cv::BORDER_REFLECT101);
+    description += QString("BORDER_TRANSPARENT (%1)\n").arg(cv::BORDER_TRANSPARENT);
+    description += QString("BORDER_DEFAULT (%1)\n").arg(cv::BORDER_DEFAULT);
     description += QString("BORDER_ISOLATED (%1)").arg(cv::BORDER_ISOLATED);
-    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_CONSTANT, cv::BORDER_ISOLATED, cv::BORDER_CONSTANT, description.toLatin1().data()));
+    paramsOpt->append(ito::Param("borderMode", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_CONSTANT, cv::BORDER_ISOLATED, cv::BORDER_CONSTANT, description.toLatin1().data()));
     
     paramsOpt->append(ito::Param("borderValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("value used in case of a constant border. By default, it is 0").toLatin1().data()));
 
@@ -937,7 +937,7 @@ indices in a table of interpolation coefficients.");
 /*static*/ ito::RetVal OpenCVFilters::cvRemap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(2,2), ito::Range(1,INT_MAX), retval, -1, 0);
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1, INT_MAX), ito::Range(1,INT_MAX), retval, -1, 0);
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
@@ -949,7 +949,8 @@ indices in a table of interpolation coefficients.");
 
     int interpolation = paramsOpt->at(0).getVal<int>();
     int borderType = paramsOpt->at(1).getVal<int>();
-    double borderValue = paramsOpt->at(2).getVal<double>();
+    double borderValueDouble = paramsOpt->at(2).getVal<double>();
+    cv::Scalar borderValue = borderValueDouble;
 
     if (!retval.containsError())
     {
