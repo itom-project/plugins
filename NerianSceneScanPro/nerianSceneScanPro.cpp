@@ -61,9 +61,9 @@ NerianSceneScanProInterface::NerianSceneScanProInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This template can be used for implementing a new type of camera or grabber plugin \n\
+"This template can be used to control a Nerian SceneScan Pro device. This plugin uses the Nerian Visiontransfer SDK. The typical IP of a Nerian Scene Scan is 192.168.10\n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
+The device has a web interface which allows access to further parameters.The interface can be accessed under the device ip";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
