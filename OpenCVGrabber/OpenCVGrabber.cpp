@@ -443,7 +443,7 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
         m_imgChannels = m_pDataMatBuffer.channels();
         m_imgCols = m_pDataMatBuffer.cols;
         m_imgRows = m_pDataMatBuffer.rows;
-        m_imgBpp = m_pDataMatBuffer.elemSize1() * 8;
+        m_imgBpp = (int)m_pDataMatBuffer.elemSize1() * 8;
 
         static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax( m_imgCols );
         static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax( m_imgRows );
@@ -823,14 +823,15 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     m_CCD_ID = paramsOpt->at(0).getVal<int>();
     QByteArray filename = paramsOpt->at(2).getVal<char*>();
 
+
     m_pCam = new VideoCaptureItom();
     if (filename == "")
     {
-        ret = m_pCam->open(m_CCD_ID);
+        ret = m_pCam->open(m_CCD_ID, cv::CAP_DSHOW);
     }
     else
     {
-        ret = m_pCam->open(filename.data());
+        ret = m_pCam->open(filename.data(), cv::CAP_DSHOW);
     }
 
     if(!m_pCam->isOpened())
@@ -847,7 +848,7 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     else
     {
 #if (CV_MAJOR_VERSION >= 4)
-        m_pCam->open(cv::CAP_DSHOW);
+        m_pCam->open(m_CCD_ID, cv::CAP_DSHOW);
 #else
         cvGetCaptureDomain(m_pCam->getDevice());
 #endif
