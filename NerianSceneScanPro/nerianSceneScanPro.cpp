@@ -151,10 +151,6 @@ NerianSceneScanPro::NerianSceneScanPro() : AddInGrabber(), m_isgrabbing(false), 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, NULL, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     m_params["bpp"].setMeta(new ito::IntMeta(8, 16, 8, "ImageFormatControl"), true);
-    paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("operationMode", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("0: Pass trhough, 1: rectify, 2: stereo matching").toLatin1().data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("ProcessingControl");
@@ -2004,7 +2000,15 @@ ito::RetVal NerianSceneScanPro::syncParams(SyncParams what /*=sAll*/)
                 }
                 else
                 {
-                    m_params["bpp"].setVal(m_pImagePair->getBytesPerPixel(0) * 8);
+					if (format1 = ImagePair::FORMAT_8_BIT_MONO)
+					{
+						m_params["bpp"].setVal(8);
+					}
+					else
+					{
+						m_params["bpp"].setVal(16);
+					}
+
                 }
 
                 int width = m_pImagePair->getWidth();
