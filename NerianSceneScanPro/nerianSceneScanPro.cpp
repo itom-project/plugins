@@ -2000,7 +2000,7 @@ ito::RetVal NerianSceneScanPro::syncParams(SyncParams what /*=sAll*/)
                 }
                 else
                 {
-					if (format1 = ImagePair::FORMAT_8_BIT_MONO)
+					if (format1 == ImagePair::FORMAT_8_BIT_MONO)
 					{
 						m_params["bpp"].setVal(8);
 					}
