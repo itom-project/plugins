@@ -28,10 +28,6 @@
 #include "gitVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#if CV_MAJOR_VERSION >= 4
-	#include "opencv2/imgproc/types_c.h"
-#endif
-
 #include <strmif.h>
 #include <wchar.h>
 
@@ -1125,7 +1121,11 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 //step 2. check whether 3 channel color should be transformed to 1 channel grayscale
                 if (m_imgChannels == 3 && m_colorMode == modeGray)
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    cv::cvtColor(tempImage, tempImage, cv::COLOR_BGR2GRAY, 0); //camera provides BGR images in OpenCV
+#else
                     cv::cvtColor(tempImage, tempImage, CV_BGR2GRAY, 0); //camera provides BGR images in OpenCV
+#endif                     
                 }
 
                 //step 3: create m_data (if not yet available)
