@@ -25,12 +25,16 @@
 
 #include "demoAlgorithms.h"
 
+#include "algoCancelWidget.h"
+
 #include "common/pluginThreadCtrl.h"  //! This include is for the actuator-helper class used in demoMoveActuator, demoSnapImage and demoSnapMovie
 
 #include "DataObject/dataobj.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
 #include <QtCore/QtPlugin>
+#include <qelapsedtimer.h>
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DemoAlgorithmsInterface::DemoAlgorithmsInterface()
@@ -39,7 +43,7 @@ DemoAlgorithmsInterface::DemoAlgorithmsInterface()
     setObjectName("DemoAlgorithms");
 
     m_description       = QObject::tr("DemoAlgorithms to show a plugin developer how to write plugins in c++");
-    m_detaildescription = QObject::tr("The DemoAlgorithms-DLL contains some basic filter function to show a plugin developer how to use a motor or programm an own plugin widget");
+    m_detaildescription = QObject::tr("The DemoAlgorithms-DLL contains some basic filter function to show a plugin developer how to use a motor or program an own plugin widget");
     m_author            = "Wolfram Lyda, ITO, University Stuttgart";
     m_license           = QObject::tr("LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -112,9 +116,14 @@ ito::RetVal DemoAlgorithms::init(QVector<ito::ParamBase> * /*paramsMand*/, QVect
     m_filterList.insert("demoSnapMovie", filter);
     filter = new FilterDef(DemoAlgorithms::demoTestActuator, DemoAlgorithms::demoTestActuatorParams, tr("Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis of an actuator several time to test the actuator performance."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("demoTestActuator", filter);
+    filter = new FilterDefExt(DemoAlgorithms::demoCancellationFunction, DemoAlgorithms::demoCancellationFunctionParams, tr("Demo algorithm, that can be cancelled and that delivers status updates."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+    m_filterList.insert("demoCancellationFunction", filter);
 
 	widget = new AlgoWidgetDef(DemoAlgorithms::demoWidget, DemoAlgorithms::demoWidgetParams, tr("Demo widget"));
 	m_algoWidgetList.insert("demoWidget", widget);
+
+    widget = new AlgoWidgetDef(DemoAlgorithms::demoAlgoCancelWidget, DemoAlgorithms::demoAlgoCancelWidgetParams, tr("Demo widget to show how to observe a long-running algorithm and cancel its execution"));
+    m_algoWidgetList.insert("demoCancellationFunctionWidget", widget);
 
     //---------------------------------------------------------End-User-Defined-Content-------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -673,4 +682,75 @@ ito::RetVal DemoAlgorithms::demoTestActuator(QVector<ito::ParamBase> *paramsMand
 	QWidget *widget = new QWidget();
 	return widget;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal DemoAlgorithms::demoAlgoCancelWidgetParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    return retval;
+}
+
+/*static*/ QWidget* DemoAlgorithms::demoAlgoCancelWidget(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue)
+{
+    AlgoCancelWidget *widget = new AlgoCancelWidget(demoCancellationFunction, NULL);
+    return widget;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal DemoAlgorithms::demoCancellationFunctionParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+    }
+
+    return retval;
+}
+
+/*static*/ ito::RetVal DemoAlgorithms::demoCancellationFunction(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, QSharedPointer<ito::FunctionCancellationAndObserver> observer)
+{
+    //let the algorithm run for 10 seconds and reports the progress.
+    //this algorithm can be cancelled
+
+    ito::RetVal retVal;
+
+    QElapsedTimer timer;
+    timer.start();
+    qint64 nextProgressReport = 1000; //every second
+
+    if (observer)
+    {
+        observer->setProgressValue(observer->progressMinimum());
+        observer->setProgressText("Start of algorithm");
+    }
+
+    while (timer.elapsed() < 10000)
+    {
+        if (observer)
+        {
+            if (timer.elapsed() >= nextProgressReport)
+            {
+                //always pass the value between the given minimum / maximum of the observer
+                int value = observer->progressMinimum() + timer.elapsed() * (observer->progressMaximum() - observer->progressMinimum()) / 10000;
+                observer->setProgressValue(value);
+                observer->setProgressText(QString("This algorithm run %1 from 10.0 seconds").arg(timer.elapsed() / 1000));
+                nextProgressReport += 1000;
+            }
+
+            if (observer->isCancelled())
+            {
+                retVal += ito::RetVal(ito::retError, 0, "algorithm cancelled");
+                break;
+            }
+        }
+
+#if QT_VERSION >= 0x050000
+        QThread::msleep(100);
+#endif
+    }
+
+    return retVal;
+}
+
 
