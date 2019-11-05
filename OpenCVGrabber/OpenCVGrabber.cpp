@@ -26,15 +26,9 @@
 #include "OpenCVGrabber.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
-#include "opencv2/core/types_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui_c.h"
 #include "opencv2/core/core.hpp"
-
-#if CV_MAJOR_VERSION >= 4
-	#include "opencv2/videoio/videoio_c.h"
-	#include "opencv2/imgproc/types_c.h"
-#endif
+#include "opencv2\videoio\videoio.hpp"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
@@ -333,7 +327,9 @@ OpenCVGrabberInterface::~OpenCVGrabberInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal OpenCVGrabber::showConfDialog(void)
 {
-#if (CV_MAJOR_VERSION > 2 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 4))
+#if (CV_MAJOR_VERSION >= 4)
+    return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), m_pCam->open(cv::CAP_DSHOW)));
+#elif (CV_MAJOR_VERSION >= 2 && CV_MAJOR_VERSION < 4)
     return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), cvGetCaptureDomain(m_pCam->getDevice()) == CV_CAP_DSHOW));
 #else
     return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), false));
@@ -419,7 +415,11 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
     {
         if (!m_pCam->retrieve(m_pDataMatBuffer))
         {
+#if (CV_MAJOR_VERSION >= 4)
+            if (m_pCam->open(cv::CAP_DSHOW))
+#else
             if (cvGetCaptureDomain(m_pCam->getDevice()) == CV_CAP_DSHOW)
+#endif
             {
                 if (!m_pCam->retrieve(m_pDataMatBuffer))
                 {
@@ -443,7 +443,7 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
         m_imgChannels = m_pDataMatBuffer.channels();
         m_imgCols = m_pDataMatBuffer.cols;
         m_imgRows = m_pDataMatBuffer.rows;
-        m_imgBpp = m_pDataMatBuffer.elemSize1() * 8;
+        m_imgBpp = (int)m_pDataMatBuffer.elemSize1() * 8;
 
         static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax( m_imgCols );
         static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax( m_imgRows );
@@ -617,9 +617,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         {
             if (key == "exposure")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_EXPOSURE, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_EXPOSURE, val->getVal<double>()))
+#endif
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_EXPOSURE));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_EXPOSURE));
+#endif  
                 }
                 else
                 {
@@ -628,9 +636,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else if (key == "brightness")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_BRIGHTNESS, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_BRIGHTNESS, val->getVal<double>()))
+#endif  
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_BRIGHTNESS));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_BRIGHTNESS));
+#endif   
                 }
                 else
                 {
@@ -639,9 +655,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else if (key == "contrast")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_CONTRAST, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_CONTRAST, val->getVal<double>()))
+#endif   
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_CONTRAST));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_CONTRAST));
+#endif  
                 }
                 else
                 {
@@ -650,9 +674,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else if (key == "saturation")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_SATURATION, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_SATURATION, val->getVal<double>()))
+#endif  
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_SATURATION));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_SATURATION));
+#endif  
                 }
                 else
                 {
@@ -661,9 +693,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else if (key == "hue")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_HUE, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_HUE, val->getVal<double>()))
+#endif  
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_HUE));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_HUE));
+#endif                  
                 }
                 else
                 {
@@ -672,9 +712,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else if (key == "gain")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_GAIN, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_GAIN, val->getVal<double>()))
+#endif
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_GAIN));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_GAIN));
+#endif
                 }
                 else
                 {
@@ -683,9 +731,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else if (key == "sharpness")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_SHARPNESS, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_SHARPNESS, val->getVal<double>()))
+#endif                
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_SHARPNESS));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_SHARPNESS));
+#endif                    
                 }
                 else
                 {
@@ -694,9 +750,17 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else if (key == "gamma")
             {
+#if (CV_MAJOR_VERSION >= 4)
+                if (m_pCam->set(cv::CAP_PROP_GAMMA, val->getVal<double>()))
+#else
                 if (m_pCam->set(CV_CAP_PROP_GAMMA, val->getVal<double>()))
+#endif                
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    it->setVal<double>(m_pCam->get(cv::CAP_PROP_GAMMA));
+#else
                     it->setVal<double>(m_pCam->get(CV_CAP_PROP_GAMMA));
+#endif                      
                 }
                 else
                 {
@@ -759,14 +823,15 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     m_CCD_ID = paramsOpt->at(0).getVal<int>();
     QByteArray filename = paramsOpt->at(2).getVal<char*>();
 
+
     m_pCam = new VideoCaptureItom();
     if (filename == "")
     {
-        ret = m_pCam->open(m_CCD_ID);
+        ret = m_pCam->open(m_CCD_ID, cv::CAP_DSHOW);
     }
     else
     {
-        ret = m_pCam->open(filename.data());
+        ret = m_pCam->open(filename.data(), cv::CAP_DSHOW);
     }
 
     if(!m_pCam->isOpened())
@@ -782,12 +847,21 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
     else
     {
+#if (CV_MAJOR_VERSION >= 4)
+        m_pCam->open(m_CCD_ID, cv::CAP_DSHOW);
+#else
         cvGetCaptureDomain(m_pCam->getDevice());
+#endif
     }
 
     if(!retValue.containsError())
     {
+#if (CV_MAJOR_VERSION >= 4)
+        unsigned int fourcc = static_cast<unsigned int>(m_pCam->get(cv::CAP_PROP_FOURCC));        //4-character code of codec.
+#else
         unsigned int fourcc = static_cast<unsigned int>(m_pCam->get(CV_CAP_PROP_FOURCC));        //4-character code of codec.
+#endif 
+        
         //m_pCam->set(CV_CAP_PROP_FOURCC, 0);
         //
         //tempformat = static_cast<unsigned long>(camRetVal);
@@ -797,72 +871,141 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         //format[2] =    (tempformat & 0XFF0000) >> 16;
         //format[3] = (tempformat & 0XFF000000) >> 24;
 
-        m_params["sizex"].setVal<int>( m_pCam->get(CV_CAP_PROP_FRAME_WIDTH) );
-        m_params["sizey"].setVal<int>( m_pCam->get(CV_CAP_PROP_FRAME_HEIGHT) );
-
-        if(!propertyExists(CV_CAP_PROP_BRIGHTNESS))    //Brightness of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        m_params["sizex"].setVal<int>(m_pCam->get(cv::CAP_PROP_FRAME_WIDTH));
+        m_params["sizey"].setVal<int>(m_pCam->get(cv::CAP_PROP_FRAME_HEIGHT));
+#else
+        m_params["sizex"].setVal<int>(m_pCam->get(CV_CAP_PROP_FRAME_WIDTH));
+        m_params["sizey"].setVal<int>(m_pCam->get(CV_CAP_PROP_FRAME_HEIGHT));
+#endif 
+        
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_BRIGHTNESS))    //Brightness of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_BRIGHTNESS))    //Brightness of the data (only for cameras).
+#endif        
         {
             m_params["brightness"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["brightness"].setVal<double>(m_pCam->get(cv::CAP_PROP_BRIGHTNESS));
+#else
             m_params["brightness"].setVal<double>(m_pCam->get(CV_CAP_PROP_BRIGHTNESS));
+#endif              
         }
-        if(!propertyExists(CV_CAP_PROP_CONTRAST)) //Contrast of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_CONTRAST)) //Contrast of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_CONTRAST)) //Contrast of the data (only for cameras).
+#endif          
         {
             m_params["contrast"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["contrast"].setVal<double>(m_pCam->get(cv::CAP_PROP_CONTRAST));
+#else
             m_params["contrast"].setVal<double>(m_pCam->get(CV_CAP_PROP_CONTRAST));
+#endif             
         }
-        if(!propertyExists(CV_CAP_PROP_HUE)) //Hue of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_HUE)) //Hue of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_HUE)) //Hue of the data (only for cameras).
+#endif         
         {
             m_params["hue"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["hue"].setVal<double>(m_pCam->get(cv::CAP_PROP_HUE));
+#else
             m_params["hue"].setVal<double>(m_pCam->get(CV_CAP_PROP_HUE));
+#endif              
         }
-        if(!propertyExists(CV_CAP_PROP_SATURATION)) //Saturation of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_SATURATION)) //Saturation of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_SATURATION)) //Saturation of the data (only for cameras).
+#endif        
         {
             m_params["saturation"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["saturation"].setVal<double>(m_pCam->get(cv::CAP_PROP_SATURATION));
+#else
             m_params["saturation"].setVal<double>(m_pCam->get(CV_CAP_PROP_SATURATION));
+#endif
         }
-        if(!propertyExists(CV_CAP_PROP_GAIN)) //Gain of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_GAIN)) //Gain of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_GAIN)) //Gain of the data (only for cameras).
+#endif        
         {
             m_params["gain"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["gain"].setVal<double>(m_pCam->get(cv::CAP_PROP_GAIN));
+#else
             m_params["gain"].setVal<double>(m_pCam->get(CV_CAP_PROP_GAIN));
+#endif
         }
-        if(!propertyExists(CV_CAP_PROP_EXPOSURE)) //Exposure of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_EXPOSURE)) //Exposure of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_EXPOSURE)) //Exposure of the data (only for cameras).
+#endif
         {
             m_params["exposure"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["exposure"].setVal<double>(m_pCam->get(cv::CAP_PROP_EXPOSURE));
+#else
             m_params["exposure"].setVal<double>(m_pCam->get(CV_CAP_PROP_EXPOSURE));
+#endif
         }
-        if(!propertyExists(CV_CAP_PROP_SHARPNESS)) //SHARPNESS of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_SHARPNESS)) //SHARPNESS of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_SHARPNESS)) //SHARPNESS of the data (only for cameras).
+#endif
         {
             m_params["sharpness"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["sharpness"].setVal<double>(m_pCam->get(cv::CAP_PROP_SHARPNESS));
+#else
             m_params["sharpness"].setVal<double>(m_pCam->get(CV_CAP_PROP_SHARPNESS));
+#endif            
         }
-        if(!propertyExists(CV_CAP_PROP_GAMMA)) //gamma of the data (only for cameras).
+#if (CV_MAJOR_VERSION >= 4)
+        if (!propertyExists(cv::CAP_PROP_GAMMA)) //gamma of the data (only for cameras).
+#else
+        if (!propertyExists(CV_CAP_PROP_GAMMA)) //gamma of the data (only for cameras).
+#endif
         {
             m_params["gamma"].setFlags(ito::ParamBase::Readonly);
         }
         else
         {
+#if (CV_MAJOR_VERSION >= 4)
+            m_params["gamma"].setVal<double>(m_pCam->get(cv::CAP_PROP_GAMMA));
+#else
             m_params["gamma"].setVal<double>(m_pCam->get(CV_CAP_PROP_GAMMA));
+#endif            
         }
 
 #ifdef _DEBUG
@@ -1156,7 +1299,11 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
                 //step 2. check whether 3 channel color should be transformed to 1 channel grayscale
                 if(m_imgChannels == 3 && m_colorMode == modeGray)
                 {
+#if (CV_MAJOR_VERSION >= 4)
+                    cv::cvtColor(tempImage, tempImage, cv::COLOR_BGR2GRAY, 0); //camera provides BGR images in OpenCV
+#else
                     cv::cvtColor(tempImage, tempImage, CV_BGR2GRAY, 0); //camera provides BGR images in OpenCV
+#endif                    
                 }
 
                 //step 3: create m_data (if not yet available)
@@ -1425,9 +1572,11 @@ bool OpenCVGrabber::propertyExists(int propId)
 //----------------------------------------------------------------------------------------------------------------------------------
 bool OpenCVGrabber::showNativeSettingsDialog()
 {
-#if (CV_MAJOR_VERSION > 2 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 4))
+#if (CV_MAJOR_VERSION >= 4)
+    return m_pCam->set(cv::CAP_PROP_SETTINGS, 0.0);
+#elif(CV_MAJOR_VERSION > 2 && CV_MAJOR_VERSION < 4)
     return m_pCam->set(CV_CAP_PROP_SETTINGS, 0.0);
-#else
+#else 
     return false;
 #endif
 }

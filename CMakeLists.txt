@@ -242,6 +242,11 @@ if (PLUGIN_MSMediaFoundation)
 endif (PLUGIN_MSMediaFoundation)
 ENDIF(WIN32)
 
+# NerianSceneScanPro
+OPTION(PLUGIN_NerianSceneScanPro "Build with this plugin." OFF)
+if (PLUGIN_NerianSceneScanPro)
+    ADD_SUBDIRECTORY(NerianSceneScanPro)
+endif (PLUGIN_NerianSceneScanPro)
 # NanotecStepMotor
 OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." OFF)
 if (PLUGIN_NanotecStepMotor)
