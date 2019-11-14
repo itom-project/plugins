@@ -28,7 +28,7 @@
 #include "gitVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/core/core.hpp"
-#include "opencv2\videoio\videoio.hpp"
+#include "opencv2/videoio/videoio.hpp"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
