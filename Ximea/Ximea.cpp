@@ -257,7 +257,7 @@ Ximea::Ximea() :
     paramVal = ito::Param("color_camera", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 0, tr("0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("filter_pattern_size", ito::ParamBase::String , NULL, tr("Size of the hyperspectral bayer pattern size (number of channels). Allowed are 1, 16 and 25 channels.").toLatin1().data());
-    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::RegExp,"(1\b|16|25)");
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::RegExp,"(\\b1\\b|\\b16\\b|\\b25\\b)");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("filter_pattern_offset_x", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Offset of the hyperspectral bayer pattern in x direction").toLatin1().data());
