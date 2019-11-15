@@ -123,7 +123,8 @@ Ximea::Ximea() :
     ximeaLib(NULL),
     m_family(familyUnknown),
     m_numFrameBurst(1),
-    m_maxOutputBitDepth(8)
+    m_maxOutputBitDepth(8),
+    m_channelNumberChanged(false)
 {
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>()
@@ -203,6 +204,8 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 0, 0, tr("Height of ROI (number of rows).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizez", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 25, 1, tr("number of channels. This Param is readonly and controlled via \"filter_pattern_size\" ").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Acquisition timeout in s.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 8, 8, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth). For color cameras set bpp to 32 in order to obtain the color data.").toLatin1().data());
@@ -253,6 +256,17 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("color_camera", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 0, tr("0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("filter_pattern_size", ito::ParamBase::String , NULL, tr("Size of the hyperspectral bayer pattern size (number of channels). Allowed are 1, 16 and 25 channels.").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::RegExp,"(1\b|16|25)");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("filter_pattern_offset_x", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Offset of the hyperspectral bayer pattern in x direction").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("filter_pattern_offset_y", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Offset of the hyperspectral bayer pattern in y direction").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    
+    
 
     if (hasGuiSupport())
     {
@@ -597,6 +611,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     retValue += readCameraIntParam(XI_PRM_BPC, "bad_pixel", false);
                 }
                 
+                
 
                 //disable AEAG
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_AEAG, &badpix, pSize, intType), "set XI_PRM_AEAG", QString::number(badpix));
@@ -604,6 +619,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
                 //disable LUT
                 pxiSetParam(m_handle, XI_PRM_LUT_EN, &badpix, pSize, intType);
+
+                m_params["filter_pattern_size"].setVal<char*>("1");
             }
 
             if (!retValue.containsError())
@@ -1454,11 +1471,20 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                     int numBuffers = std::min((int)m_params["buffers_queue_size"].getMax(), std::max((int)m_params["buffers_queue_size"].getMin()+1,count+1));
                     retValue += checkError(pxiSetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT, &count, sizeof(int), intType), "set:" XI_PRM_ACQ_FRAME_BURST_COUNT);
                     retValue += checkError(pxiSetParam(m_handle, XI_PRM_BUFFERS_QUEUE_SIZE, &numBuffers, sizeof(int), intType), "set:" XI_PRM_BUFFERS_QUEUE_SIZE);
+                    if (QString::compare(m_params["filter_pattern_size"].getVal<char*>(), "1") != 1)
+                    {
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("Parallel usage of burst mode and hyperspectral filter pattern is not implemented yet. Number of bursts is set to one again.").toLatin1().data());
+                        QSharedPointer<ito::ParamBase> ptr(new ito::ParamBase("filter_pattern_size", ito::ParamBase::String, "1"));
+                        this->setParam(ptr);
+                    }
                 }
+
             }
 
             retValue += readCameraIntParam(XI_PRM_ACQ_FRAME_BURST_COUNT, "frame_burst_count", false);
             retValue += readCameraIntParam(XI_PRM_BUFFERS_QUEUE_SIZE, "buffers_queue_size", false);
+
+
             m_numFrameBurst = m_params["frame_burst_count"].getVal<int>();
         }
         else if (QString::compare(key, "trigger_mode", Qt::CaseInsensitive) == 0)
@@ -1575,6 +1601,48 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                     retValue += synchronizeCameraSettings(sExposure | sRoi | sFrameRate);
                 }            
             }
+        }
+        else if (QString::compare(key, "filter_pattern_size", Qt::CaseInsensitive) == 0)
+        {
+           char* size = val->getVal<char*>();
+           if (QString::compare(size, m_params["filter_pattern_size"].getVal<char*>()) != 0)
+           {
+               m_channelNumberChanged = true;
+           }
+           m_params["filter_pattern_size"].setVal<char*>(size);
+           int channels = QString(size).toInt();
+           if (channels == 1)
+           {
+               m_params["filter_pattern_offset_x"].setFlags(ito::ParamBase::Readonly);
+               m_params["filter_pattern_offset_y"].setFlags(ito::ParamBase::Readonly);
+           }
+           else if(channels == 25)
+           {
+               m_params["filter_pattern_offset_x"].setFlags(0);
+               m_params["filter_pattern_offset_x"].setMeta(new ito::IntMeta(0, 4, 1), true);
+               m_params["filter_pattern_offset_y"].setFlags(0);
+               m_params["filter_pattern_offset_y"].setMeta(new ito::IntMeta(0, 4, 1), true);
+           }
+           else if (channels == 16)
+           {
+               m_params["filter_pattern_offset_x"].setFlags(0);
+               m_params["filter_pattern_offset_x"].setMeta(new ito::IntMeta(0, 3, 1), true);
+               m_params["filter_pattern_offset_y"].setFlags(0);
+               m_params["filter_pattern_offset_y"].setMeta(new ito::IntMeta(0, 3, 1), true);
+           }
+           else
+           {
+               retValue += ito::RetVal::format(ito::retError, 0, tr("pattern size %i not implemented yet").toLatin1().data(), channels);
+           }
+           
+           if (QString(size).toInt() != 1 && m_numFrameBurst != 1)
+           {
+               retValue += ito::RetVal(ito::retWarning, 0, tr("Parallel usage of burst mode and hyperspectral filter pattern is not implemented yet. Number of bursts is set to one again.").toLatin1().data());
+               QSharedPointer<ito::ParamBase> ptr(new ito::ParamBase("frame_burst_count", ito::ParamBase::Int, 1));
+               this->setParam(ptr);
+           }
+           m_params["sizez"].setVal<int>(channels);
+           synchronizeCameraSettings(sRoi);
         }
         else
         {
@@ -1850,43 +1918,96 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
         {
             offsetInc_y = 1;
         }
-
-        m_params["x0"].setVal<int>(offset_x);
-        m_params["x0"].setMeta(new ito::IntMeta(offsetMin_x, sizeMax_x - sizeMin_x, offsetInc_x), true);
-
-        m_params["x1"].setVal<int>(offset_x + size_x - 1);
-        m_params["x1"].setMeta(new ito::IntMeta(offset_x + sizeMin_x - 1, sizeMax_x - 1, sizeInc_x), true);
-
-        m_params["y0"].setVal<int>(offset_y);
-        m_params["y0"].setMeta(new ito::IntMeta(offsetMin_y, sizeMax_y - sizeMin_y, offsetInc_y), true);
-
-        m_params["y1"].setVal<int>(offset_y + size_y - 1);
-        m_params["y1"].setMeta(new ito::IntMeta(offset_y + sizeMin_y - 1, sizeMax_y - 1, sizeInc_y), true);
-
-        m_params["sizex"].setVal<int>(size_x);
-        m_params["sizex"].setMeta(new ito::IntMeta(sizeMin_x, sizeMax_x, sizeInc_x), true);
-
-        m_params["sizey"].setVal<int>(size_y);
-        m_params["sizey"].setMeta(new ito::IntMeta(sizeMin_y, sizeMax_y, sizeInc_y), true);
-
-        it = m_params.find("roi");
-        int *roi = it->getVal<int*>();
-        roi[0] = offset_x;
-        roi[1] = offset_y;
-        roi[2] = size_x;
-        roi[3] = size_y;
-        if (sizeMin_x % sizeInc_x != 0)
+        if (m_channelNumberChanged)
         {
-            sizeMin_x = sizeMin_x - (sizeMin_x % sizeInc_x) + sizeInc_x;
+            if (offset_x != offsetMin_x || offset_y != offsetMin_y || size_y != sizeMax_y || size_x != sizeMax_x)
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Camera switched back to full frame size since the number of channels was changed").toLatin1().data()); // check muss auch weiter oben rein, damit auch ein wechsel auf channels ==0 nicht geht
+                int newROI[4] = { 0, 0, sizeMax_x, sizeMax_y };
+                m_channelNumberChanged = false;
+                QSharedPointer<ito::ParamBase> ptr(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, newROI));
+                this->setParam(ptr);
+            }
+            m_channelNumberChanged = false;
         }
-        if (sizeMin_y % sizeInc_y != 0)
+        if (QString::compare(m_params["filter_pattern_size"].getVal<char*>(), "1")==0)
         {
-            sizeMin_y = sizeMin_y - (sizeMin_x % sizeInc_x) + sizeInc_x;
-        }
 
-        ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x - 1, offsetInc_x, sizeMin_x, sizeMax_x + offset_x, sizeInc_x);
-        ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y - 1, offsetInc_y, sizeMin_y, sizeMax_y + offset_y, sizeInc_y);    
-        it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+            m_params["x0"].setVal<int>(offset_x);
+            m_params["x0"].setMeta(new ito::IntMeta(offsetMin_x, sizeMax_x - sizeMin_x, offsetInc_x), true);
+
+            m_params["x1"].setVal<int>(offset_x + size_x - 1);
+            m_params["x1"].setMeta(new ito::IntMeta(offset_x + sizeMin_x - 1, sizeMax_x - 1, sizeInc_x), true);
+
+            m_params["y0"].setVal<int>(offset_y);
+            m_params["y0"].setMeta(new ito::IntMeta(offsetMin_y, sizeMax_y - sizeMin_y, offsetInc_y), true);
+
+            m_params["y1"].setVal<int>(offset_y + size_y - 1);
+            m_params["y1"].setMeta(new ito::IntMeta(offset_y + sizeMin_y - 1, sizeMax_y - 1, sizeInc_y), true);
+
+            m_params["sizex"].setVal<int>(size_x);
+            m_params["sizex"].setMeta(new ito::IntMeta(sizeMin_x, sizeMax_x, sizeInc_x), true);
+
+            m_params["sizey"].setVal<int>(size_y);
+            m_params["sizey"].setMeta(new ito::IntMeta(sizeMin_y, sizeMax_y, sizeInc_y), true);
+
+            it = m_params.find("roi");
+            int *roi = it->getVal<int*>();
+            roi[0] = offset_x;
+            roi[1] = offset_y;
+            roi[2] = size_x;
+            roi[3] = size_y;
+            if (sizeMin_x % sizeInc_x != 0)
+            {
+                sizeMin_x = sizeMin_x - (sizeMin_x % sizeInc_x) + sizeInc_x;
+            }
+            if (sizeMin_y % sizeInc_y != 0)
+            {
+                sizeMin_y = sizeMin_y - (sizeMin_x % sizeInc_x) + sizeInc_x;
+            }
+
+            ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x - 1, offsetInc_x, sizeMin_x, sizeMax_x + offset_x, sizeInc_x);
+            ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y - 1, offsetInc_y, sizeMin_y, sizeMax_y + offset_y, sizeInc_y);
+            it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+        }
+        else
+        {
+
+            short filter_pattern_size = QString::compare(m_params["filter_pattern_size"].getVal<char*>(), "16") == 0 ? 16 : 25;
+            short patternEdgeLength = filter_pattern_size == 25 ? 5 : 4;
+            m_params["sizex"].setVal<int>(size_x / patternEdgeLength);
+            m_originalSizeX = size_x;
+            m_params["sizex"].setMeta(new ito::IntMeta(sizeMin_x / patternEdgeLength, (sizeMax_x - m_params["filter_pattern_offset_x"].getVal<int>()) / patternEdgeLength, sizeInc_x / patternEdgeLength + 1));
+
+            m_params["sizey"].setVal<int>(size_y / patternEdgeLength);
+            m_originalSizeY = size_y;
+            m_params["sizey"].setMeta(new ito::IntMeta(sizeMin_y / patternEdgeLength, (sizeMax_y - m_params["filter_pattern_offset_y"].getVal<int>())/ patternEdgeLength, sizeInc_y / patternEdgeLength + 1));
+            
+            
+            int x0 = std::ceil((offset_x - m_params["filter_pattern_offset_x"].getVal<int>()) / patternEdgeLength); //todo is ceil a good option? waht happens if ceil(0)...
+            m_params["x0"].setVal<int>(x0);
+            int hyperSizeMin_x = std::ceil(float(offsetMin_x - m_params["filter_pattern_offset_x"].getVal<int>()) / patternEdgeLength);
+            int hyperSizeMax_x = std::floor(float(sizeMax_x - sizeMin_x) / patternEdgeLength);
+            m_params["x0"].setMeta(new ito::IntMeta(hyperSizeMin_x, hyperSizeMax_x, offsetInc_x/patternEdgeLength+1));
+
+            int y0 = std::ceil((offset_y - m_params["filter_pattern_offset_y"].getVal<int>()) / patternEdgeLength); //todo is ceil a good option? waht happens if ceil(0)...
+            m_params["y0"].setVal<int>(y0);
+            int hyperSizeMin_y = std::ceil(float(offsetMin_y - m_params["filter_pattern_offset_y"].getVal<int>()) / patternEdgeLength);
+            int hyperSizeMax_y = std::floor(float(sizeMax_y - sizeMin_y) / patternEdgeLength);
+            m_params["y0"].setMeta(new ito::IntMeta(hyperSizeMin_y, hyperSizeMax_y, offsetInc_y / patternEdgeLength + 1));
+
+            m_params["x1"].setVal<int>(x0 + size_x / patternEdgeLength-1);
+            float test = (float)sizeMin_x / patternEdgeLength;
+            int test2 = std::ceil((float)sizeMin_x / patternEdgeLength);
+            m_params["x1"].setMeta(new ito::IntMeta(x0 + std::ceil((float)sizeMin_x / patternEdgeLength), ((sizeMax_x - m_params["filter_pattern_offset_x"].getVal<int>()) / patternEdgeLength)-1, sizeInc_x / patternEdgeLength + 1));
+
+            m_params["y1"].setVal<int>(y0 + size_y / patternEdgeLength-1);
+            m_params["y1"].setMeta(new ito::IntMeta(y0 + std::ceil((float)sizeMin_y / patternEdgeLength), ((sizeMax_y - m_params["filter_pattern_offset_y"].getVal<int>()) / patternEdgeLength)-1, sizeInc_y / patternEdgeLength + 1)); 
+            
+        }
+        
+            
+        
     }
     if (what & sGain)
     {
@@ -2149,8 +2270,17 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         if (!retValue.containsError())
         {
             int iPicTimeOut = (int)(m_params["timeout"].getVal<double>() * 1000 + 1.0); //timeout in ms
-            int curxsize = m_params["sizex"].getVal<int>();
-            int curysize = m_params["sizey"].getVal<int>();
+            int curxsize, curysize;
+            if (QString(m_params["filter_pattern_size"].getVal<char*>()).toInt() == 1)
+            {
+                curxsize = m_params["sizex"].getVal<int>();
+                curysize = m_params["sizey"].getVal<int>();
+            }
+            else
+            {
+                curysize = m_originalSizeY;
+                curxsize = m_originalSizeX;
+            }
             std::string number;
 
             for (int i = 0; i < m_numFrameBurst; ++i)
@@ -2257,7 +2387,47 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     
     return retValue;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void makeHyperCube(ito::DataObject* srcObj, ito::DataObject *dstObj, const int &offsetX, const int &offsetY, const int &filter_pattern_size)
+{
+    unsigned int patternEdgeLength = filter_pattern_size == 25 ? 5 : 4;
+    const int dstSizeX = dstObj->getSize(dstObj->getDims() - 1);
+    const int dstSizeY = dstObj->getSize(dstObj->getDims() - 2);
+    const int numCannels = dstObj->getSize(dstObj->getDims() - 3);
+    cv::Mat* srcPlane = srcObj->get_mdata()[srcObj->seekMat(0)];
+    int srcRowStep = srcPlane->step1();
+    int macroStepX = 0;
+    int macroStepY = 0;
+    
+    int row, col;
+    _Tp* dstPtr;
+    const _Tp* srcPtr;
+    _Tp* dstRowPtr;
+    for (int channel = 0; channel < numCannels; ++channel)
+    {
+        for (row = 0; row < dstSizeY; ++row)
+        {
+            dstRowPtr = dstObj->rowPtr<_Tp>(dstObj->seekMat(channel), row);
+            srcPtr = ((const _Tp*)(srcPlane->data))+ (srcRowStep*(offsetY + row*patternEdgeLength + macroStepY) + offsetX + macroStepX);
 
+            for (col = 0; col < dstSizeX; ++col)
+            {
+                dstRowPtr[col] = srcPtr[col*patternEdgeLength];
+            }
+        }
+        if (macroStepX == 4)
+        {
+            ++macroStepY;
+            macroStepX = 0;
+        }
+        else
+        {
+            ++macroStepX;
+        }
+
+    }
+
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
 {
@@ -2278,64 +2448,117 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
         retValue += m_acqRetVal;
         m_acqRetVal = ito::retOk;      
     }
-
-    if (!retValue.containsError())
-    {
-        if (copyExternal)
+    
+    
+        if (!retValue.containsError())
         {
-            //here we wait until the Event is set to signaled state
-            //or the timeout runs out
-            int planes = m_data.getNumPlanes();
-            bool valid;
-            std::string number;
+            int patternSize = QString(m_params["filter_pattern_size"].getVal<char*>()).toInt();
 
-            for (int i = 0; i < planes; ++i)
+            if (copyExternal)
             {
-                const cv::Mat* internalMat = m_data.getCvPlaneMat(i);
-                cv::Mat* externalMat = externalDataObject->getCvPlaneMat(i);
+                if (patternSize == 1)
+                {
+                    //here we wait until the Event is set to signaled state
+                    //or the timeout runs out
+                    int planes = m_data.getNumPlanes();
+                    bool valid;
+                    std::string number;
 
-                if (externalMat->isContinuous())
-                {
-                    memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
-                }
-                else
-                {
-                    for (int y = 0; y < internalMat->rows; y++)
+                    for (int i = 0; i < planes; ++i)
                     {
-                        memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
-                    }
-                }
+                        const cv::Mat* internalMat = m_data.getCvPlaneMat(i);
+                        cv::Mat* externalMat = externalDataObject->getCvPlaneMat(i);
 
-                if (planes <= 1)
-                {
-                    if (m_family != familyMU)
-                    {
-                        externalDataObject->setTag("timestamp", m_data.getTag("timestamp", valid));
-                    }
-                    externalDataObject->setTag("frame_counter", m_data.getTag("frame_counter", valid));
-                }
-                else
-                {
+
+                        if (externalMat->isContinuous())
+                        {
+                            memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
+                        }
+                        else
+                        {
+                            for (int y = 0; y < internalMat->rows; y++)
+                            {
+                                memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
+                            }
+                        }
+
+                        if (planes <= 1)
+                        {
+                            if (m_family != familyMU)
+                            {
+                                externalDataObject->setTag("timestamp", m_data.getTag("timestamp", valid));
+                            }
+                            externalDataObject->setTag("frame_counter", m_data.getTag("frame_counter", valid));
+                        }
+                        else
+                        {
 #if __cplusplus > 199711L //C++11 support
-                    number = std::to_string((long long)i);
+                            number = std::to_string((long long)i);
 #else
-                    std::stringstream out;
-                    out << i;
-                    number = out.str();
+                            std::stringstream out;
+                            out << i;
+                            number = out.str();
 #endif
-                    if (m_family != familyMU)
-                    {
-                        externalDataObject->setTag("timestamp" + number, m_data.getTag("timestamp" + number, valid));
+                            if (m_family != familyMU)
+                            {
+                                externalDataObject->setTag("timestamp" + number, m_data.getTag("timestamp" + number, valid));
+                            }
+                            externalDataObject->setTag("frame_counter" + number, m_data.getTag("frame_counter" + number, valid));
+                        }
                     }
-                    externalDataObject->setTag("frame_counter" + number, m_data.getTag("frame_counter" + number, valid));
+
+                    externalDataObject->setTag("roi_x0", m_data.getTag("roi_x0", valid));
+                    externalDataObject->setTag("roi_y0", m_data.getTag("roi_y0", valid));
+                }
+                else
+                {
+                    switch (m_data.getType())
+                    {
+                    case ito::tUInt8:
+                        makeHyperCube<ito::uint8>(&m_data, externalDataObject, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    case ito::tUInt16:
+                        makeHyperCube<ito::uint16>(&m_data, externalDataObject, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    case ito::tInt32:
+                        makeHyperCube<ito::int32>(&m_data, externalDataObject, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    case ito::tFloat64:
+                        makeHyperCube<ito::float64>(&m_data, externalDataObject, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    default:
+                        retValue += ito::RetVal(ito::retError, 0, tr("data type is not supported for hyperspectral images.").toLatin1().data());
+
+                    }
                 }
             }
+            else //do not copy external, but maybe we have to create a data cube for hyperspectral data
+            {
+                if (patternSize != 1)
+                {
+                    switch (m_data.getType())
+                    {
+                    case ito::tUInt8:
+                        makeHyperCube<ito::uint8>( &m_data, &m_hyperspectralCubeObj, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    case ito::tUInt16:
+                        makeHyperCube<ito::uint16>(&m_data, &m_hyperspectralCubeObj, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    case ito::tInt32:
+                        makeHyperCube<ito::int32>(&m_data, &m_hyperspectralCubeObj, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    case ito::tFloat64:
+                        makeHyperCube<ito::float64>(&m_data, &m_hyperspectralCubeObj, m_params["filter_pattern_offset_x"].getVal<int>(), m_params["filter_pattern_offset_y"].getVal<int>(), patternSize);
+                        break;
+                    default:
+                        retValue += ito::RetVal(ito::retError, 0, tr("data type is not supported for hyperspectral images.").toLatin1().data());
 
-            externalDataObject->setTag("roi_x0", m_data.getTag("roi_x0", valid));
-            externalDataObject->setTag("roi_y0", m_data.getTag("roi_y0", valid));           
+                    }
+                }
+                
+            }
         }
-    }
-
+    
     m_isgrabbing = false;
 
     return retValue;
@@ -2356,7 +2579,14 @@ ito::RetVal Ximea::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
         if (dObj)
         {
-            (*dObj) = this->m_data;
+            if (QString(m_params["filter_pattern_size"].getVal<char *>()).toInt() == 1)
+            {
+                (*dObj) = this->m_data;
+            }
+            else
+            {
+                (*dObj) = this->m_hyperspectralCubeObj;
+            }
         }
     }
 
@@ -2774,7 +3004,8 @@ ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
 
     if (externalDataObject == NULL)
     {
-        if (m_numFrameBurst == 1)
+        int filter_pattern_size = QString(m_params["filter_pattern_size"].getVal<char *>()).toInt();
+        if (m_numFrameBurst == 1 && filter_pattern_size == 1)
         {
             if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
             {
@@ -2783,9 +3014,23 @@ ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
         }
         else
         {
-            if (m_data.getDims() != 3 || m_data.getSize(0) != m_numFrameBurst || m_data.getSize(1) != (unsigned int)futureHeight || m_data.getSize(2) != (unsigned int)futureWidth || m_data.getType() != futureType)
+            if (m_numFrameBurst != 1)
             {
-                m_data = ito::DataObject(m_numFrameBurst,futureHeight,futureWidth,futureType);
+                if (m_data.getDims() != 3 || m_data.getSize(0) != m_numFrameBurst || m_data.getSize(1) != (unsigned int)futureHeight || m_data.getSize(2) != (unsigned int)futureWidth || m_data.getType() != futureType)
+                {
+                    m_data = ito::DataObject(m_numFrameBurst, futureHeight, futureWidth, futureType);
+                }
+            }
+            else//hyperspectral Check
+            {
+                if (m_data.getDims() < 2 || m_data.getSize(m_data.getDims()-2) != (unsigned int)futureHeight || m_data.getSize(m_data.getDims() - 1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+                {
+                    m_data = ito::DataObject( m_originalSizeY, m_originalSizeX, futureType);
+                }
+                if (m_hyperspectralCubeObj.getDims() < 3 || m_hyperspectralCubeObj.getSize(m_hyperspectralCubeObj.getDims() - 3) != (unsigned int)filter_pattern_size || m_hyperspectralCubeObj.getSize(m_hyperspectralCubeObj.getDims() - 2) != (unsigned int)futureHeight || m_hyperspectralCubeObj.getSize(m_hyperspectralCubeObj.getDims() - 1) != (unsigned int)futureWidth || m_hyperspectralCubeObj.getType() != futureType)
+                {
+                    m_hyperspectralCubeObj = ito::DataObject(filter_pattern_size, futureHeight, futureWidth, futureType);
+                }
             }
         }
     }
@@ -2826,3 +3071,4 @@ ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
 
     return ito::retOk;
 }
+

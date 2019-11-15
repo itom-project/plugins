@@ -168,6 +168,10 @@ class Ximea : public ito::AddInGrabber
         ito::RetVal getErrStr(const int error, const QString &command, const QString &value);
         ito::RetVal checkError(const XI_RETURN &error, const QString &command, const QString &value = QString());
         int m_saveParamsOnClose;
+        bool m_channelNumberChanged;
+        int m_originalSizeX;
+        int m_originalSizeY;
+        ito::DataObject m_hyperspectralCubeObj;
         
 #if linux
         void *m_handle;
