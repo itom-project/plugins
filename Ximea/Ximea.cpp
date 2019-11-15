@@ -3001,10 +3001,10 @@ ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
     {
         futureType = ito::tFloat64;
     }
-
+    int filter_pattern_size = QString(m_params["filter_pattern_size"].getVal<char *>()).toInt();
     if (externalDataObject == NULL)
     {
-        int filter_pattern_size = QString(m_params["filter_pattern_size"].getVal<char *>()).toInt();
+        
         if (m_numFrameBurst == 1 && filter_pattern_size == 1)
         {
             if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
@@ -3039,11 +3039,15 @@ ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
         int dims = externalDataObject->getDims();
         if (m_numFrameBurst == 1)
         {
-            if (externalDataObject->getDims() == 0)
+            if (externalDataObject->getDims() == 0 && filter_pattern_size == 1)
             {
                 *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
             }
-            else if (externalDataObject->calcNumMats () != 1)
+            else if (externalDataObject->getDims() == 0 && filter_pattern_size != 1)
+            {
+                *externalDataObject = ito::DataObject(filter_pattern_size, futureHeight, futureWidth, futureType);
+            }
+            else if (externalDataObject->calcNumMats () != 1 && filter_pattern_size == 1)
             {
                 return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());            
             }
