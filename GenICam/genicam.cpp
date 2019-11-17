@@ -1040,6 +1040,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                 //first time to be started
                 retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), m_params["userDefinedPayloadSize"].getVal<int>());
 
+                
                 //stop acquisition (in case the camera is already running)
                 if (!retValue.containsError())
                 {
@@ -1051,6 +1052,10 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                 if (!retValue.containsError())
                 {
                     revertAllocateIfError = true;
+                    //Note: We noticed a strange behaviour with two Silicon Software framegrabber and two CoaxPress Mikrotron cameras.
+                    //If one camera is started (and startAcquisition is active) and startDevice of the 2nd camera is started, no
+                    //new image frames are reported for the first camera. The following startAcquisition command is responsible for 
+                    //"stopping" the first camera.
                     retValue += m_stream->startAcquisition();
                 }
 
@@ -1094,6 +1099,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
          
