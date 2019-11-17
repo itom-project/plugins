@@ -116,7 +116,14 @@ ito::RetVal DemoAlgorithms::init(QVector<ito::ParamBase> * /*paramsMand*/, QVect
     m_filterList.insert("demoSnapMovie", filter);
     filter = new FilterDef(DemoAlgorithms::demoTestActuator, DemoAlgorithms::demoTestActuatorParams, tr("Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis of an actuator several time to test the actuator performance."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("demoTestActuator", filter);
-    filter = new FilterDefExt(DemoAlgorithms::demoCancellationFunction, DemoAlgorithms::demoCancellationFunctionParams, tr("Demo algorithm, that can be cancelled and that delivers status updates."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+    filter = new FilterDefExt(DemoAlgorithms::demoCancellationFunction, 
+        DemoAlgorithms::demoCancellationFunctionParams, 
+        tr("Demo algorithm, that can be cancelled and that delivers status updates."), 
+        ito::AddInAlgo::catNone, 
+        ito::AddInAlgo::iNotSpecified,
+        QString(),
+        true,
+        true);
     m_filterList.insert("demoCancellationFunction", filter);
 
 	widget = new AlgoWidgetDef(DemoAlgorithms::demoWidget, DemoAlgorithms::demoWidgetParams, tr("Demo widget"));
