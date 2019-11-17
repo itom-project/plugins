@@ -110,24 +110,51 @@ not writeable or supported by the specific camera.
 
 Additional functions (exec functions)
 =====================================
-**printParameterInfo**: pMand{}, pOpt{}, pOut{}
-    print all current parameters of the camera for internal checks.
-**setStrobeMode**:pMand{source}, the GPIO pin to be edited
-    pOpt{onOff[0,1]: ON or OFF this function; 0: OFF, 1 : ON, 
-        polarity[0,1]: 0 = active low; 1 = active high, 
-        delay[0.,100.]: delay after start of exposure until the strobe signal asserts in ms, 
-        duration[0.,100.]: duration of the strobe signal in ms, a value of 0 means 
-                            de-assert at the end of exposure, if required}, 
-    pOut{}
+
+.. py:function::  ptGreyCam.exec('printParameterInfo')
+    :noindex:
     
-**getStrobeMode**:pMand{source}: the GPO pin to get the mode from, 
-    pOpt{}, 
-    pOut{onOff: ON or OFF this function; 0: OFF, 1 : ON,
-        polarity: 0 = active low; 1 = active high,
-        delay: delay after start of exposure until the strobe signal asserts in ms,
-        duration: duration of the strobe signal in ms, a value of 0 means de-assert 
-                    at the end of exposure, if required
-        }
+    print all current parameters of the camera for internal checks.
+    
+    :param funcName: Name of the function, must be "printParameterInfo")
+    :type funcName: str
+    :return: None
+    :rtype: None
+
+.. py:function::  ptGreyCam.exec('setStrobeMode', source, onOff = 1, polarity = 0, delay = 0.0, duration = 0.0)
+    :noindex:
+    
+    configures the strobe mode for the given GPIO pin (source).
+    
+    :param funcName: Name of the function, must be "setStrobeMode")
+    :type funcName: str
+    :param source: the GPIO pin to be edited (mandatory)
+    :type source: int 
+    :param onOff: ON or OFF this function; 0: OFF, 1 : ON, optional
+    :type onOff: int
+    :param polarity: 0 = active low; 1 = active high, optional
+    :type polarity: int
+    :param delay: delay after start of exposure until the strobe signal asserts in ms.
+                 This value must be in the range [0.0-100.0], optional
+    :type delay: float
+    :param duration: duration of the strobe signal in ms, a value of 0 means 
+                     de-assert at the end of exposure, if required.
+                     This value must be in the range [0.0-100.0], optional
+    :type duration: float
+    :return: None
+    :rtype: None
+
+.. py:function::  [onOff, polarity, delay, duration] = ptGreyCam.exec('getStrobeMode', source)
+    :noindex:
+    
+    returns the configuration of the strobe mode for the given GPIO pin (source).
+    
+    :param funcName: Name of the function, must be "getStrobeMode")
+    :type funcName: str
+    :return: Tuple with the current values for onOff (int), polarity (int), delay (float) and duration (float).
+             For the meaning of these values see the description of the exec-function 'setStrobeMode'.
+    :rtype: None
+
         
 Compilation
 =============
