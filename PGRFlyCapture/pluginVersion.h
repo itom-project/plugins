@@ -24,14 +24,17 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+/*
+2.2.0: removed set_trigger mode params in favor of setStrobeMode/getStrobeMode Functions
 
+*/
 #ifndef PLUGINVERSION_H
 #define PLUGINVERSION_H
 
 #include "itom_sdk.h"
 
-#define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 2
+#define PLUGIN_VERSION_MAJOR 2
+#define PLUGIN_VERSION_MINOR 0
 #define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
 

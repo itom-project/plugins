@@ -22,7 +22,7 @@
 
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
-
+#include <qdatetime.h>
 #include "PGRFlyCapture.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
@@ -229,12 +229,45 @@ PGRFlyCapture::PGRFlyCapture() :
     m_firstTimestamp(std::numeric_limits<double>::quiet_NaN()),
     m_pendingIdleGrabs(false)
 {
+    ito::RetVal retVal(ito::retOk);
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("printParameterInfo", pMand, pOpt, pOut, \
+    retVal += registerExecFunc("printParameterInfo", pMand, pOpt, pOut, \
         tr("print all current parameters of the camera for internal checks."));
+
+    pMand = QVector<ito::Param>();
+    pOpt = QVector<ito::Param>();
+    pOut = QVector<ito::Param>();
+    pMand << ito::Param("source", ito::ParamBase::In | ito::ParamBase::Int,
+        0, 0xFF, 0, tr("the GPIO pin to be edited").toLatin1().data()); //TODO check how many pins there are 
+    pOpt << ito::Param("onOff", ito::ParamBase::In | ito::ParamBase::Int, 0, 1, 1,
+        tr("ON or OFF this function; 0: OFF, 1 : ON").toLatin1().data());
+    pOpt << ito::Param("polarity", ito::ParamBase::In | ito::ParamBase::Int, 0, 1, 0,
+        tr("0 = active low; 1 = active high").toLatin1().data());
+    pOpt <<  ito::Param("delay", ito::ParamBase::In | ito::ParamBase::Double, 0., 100., 0.,
+        tr("delay after start of exposure until the strobe signal asserts in ms").toLatin1().data());//TOdO standard value
+    pOpt << ito::Param("duration", ito::ParamBase::In | ito::ParamBase::Double, 0.0, 100., 0.,
+        tr("duration of the strobe signal in ms, a value of 0 means de-assert at the end of exposure, if required").toLatin1().data());//TOdO standard value
+    retVal += registerExecFunc("setStrobeMode", pMand, pOpt, pOut,
+        tr("sets the strobe mode with the given parameters"));
+
+    pMand = QVector<ito::Param>();
+    pOpt = QVector<ito::Param>();
+    pOut = QVector<ito::Param>();
+    pMand << ito::Param("source", ito::ParamBase::In | ito::ParamBase::Int,
+        0, 0xFF, 0, tr("the GPO pin to get the mode from").toLatin1().data()); //TODO check how many pins there are 
+    pOut << ito::Param("onOff", ito::ParamBase::Out | ito::ParamBase::Int, 0, 1, 1,
+        tr("ON or OFF this function; 0: OFF, 1 : ON").toLatin1().data());
+    pOut << ito::Param("polarity", ito::ParamBase::Out | ito::ParamBase::Int, 0, 1, 0,
+        tr("0 = active low; 1 = active high").toLatin1().data());
+    pOut << ito::Param("delay", ito::ParamBase::Out | ito::ParamBase::Double, 0., 100., 0.,
+        tr("delay after start of exposure until the strobe signal asserts in ms").toLatin1().data());//TOdO standard value
+    pOut << ito::Param("duration", ito::ParamBase::Out | ito::ParamBase::Double, 0.0, 100., 0.,
+        tr("duration of the strobe signal in ms, a value of 0 means de-assert at the end of exposure, if required").toLatin1().data());//TOdO standard value
+    retVal += registerExecFunc("getStrobeMode", pMand, pOpt, pOut,
+        tr("gets the strobe mode of the given source pin"));
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, \
         "PGRFlyCapture", tr("name of the camera").toLatin1().data());
@@ -306,16 +339,6 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, \
         - 1, 3, -1, \
         tr("-1: Complete free run, 0: enable standard external trigger (PtGrey mode 0), 1: Software Trigger (PtGrey mode 0, Software Source), 2: Bulb shutter external trigger (PtGrey mode 1), 3: Overlapped external trigger (PtGrey mode 14)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("strobe_mode", ito::ParamBase::Int, \
-        -1, 3, -1, \
-        tr("-1: off, Enable a ~100uS pulse on output Line[X]. Output is configured on call of this parameter. Since this is a very specific feature not much support is compiled into this. check your camera datasheet for availability").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("strobe_polarity", ito::ParamBase::Int, \
-        0, 1, 0, \
-        tr("0: negative step, active Low signal, 1: positive step, active High signal. Active after next setting strobe_mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("grab_mode", ito::ParamBase::Int, \
@@ -535,20 +558,10 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
     if (!retValue.containsError())
     {
-        if (key == "strobe_mode")
-        {
-            m_params["strobe_mode"].setVal<int>(val->getVal<int>());
-            retValue += setStrobeMode(val->getVal<int>());
-        }
-        else if (key == "strobe_polarity")
-        {
-            m_params["strobe_polarity"].setVal<int>(val->getVal<int>());
-        }
-        else if (key == "roi")
+        if (key == "roi")
         {
             if (hasIndex)
             {
-
                 const unsigned int k_imagePosition = 0xA08;
                 const unsigned int k_imageSize = 0xA0C;
 
@@ -838,11 +851,12 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         }
         else if (key == "trigger_mode")
         {
-
             if (grabberStartedCount() > 0)
             {
                 running = grabberStartedCount();
+
                 setGrabberStarted(1);
+
                 retValue += stopDevice(NULL);
             }
 
@@ -1140,83 +1154,6 @@ ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, float &
     }
 
     return ito::retOk;
-}
-
-//section for register defines.
-//GPIO status Register
-#define GPIO_CTRL 0x1100
-//config registers for single IO Pin
-//registers addresses are incremented with 0x10 per pin...
-#define GPIO_CTRL_PIN_0 0x1110
-#define STROBE_PATTERN_MASK_PIN_0 0x1118
-#define STROBE_OUTPUT_CSR_BASE 0x48C
-
-
-ito::RetVal PGRFlyCapture::setStrobeMode(int val)
-/*
-This mode sets the GPIOMode of the selected GPIO to output Strobes
-and selects(if not default) active exposure as signal to output
-see Register reference FLIR machine Vision Cameras V4.0
-registers on camera are 4 bytes wide but transferred big endian.
-So numbering is inverted, bit 31 is bit 0 here and vice versa...
-Addresses luckily stay the same.
-GPIO3/Line3 is a non-isolated ouput.But. i'm not sure whether its 
-possible to access the isolated output on the camera we use here..
-*/
-{
-    using namespace ito;
-    RetVal retVal(retOk);
-    uint32_t regVal;
-    uint32_t strobeCtrlPinReg = GPIO_CTRL_PIN_0 + val * 0x10;
-    uint32_t strobePatternMaskReg = STROBE_PATTERN_MASK_PIN_0 + val * 0x10;
-    if (val >= 0)
-    {
-        m_myCam.ReadRegister(strobeCtrlPinReg, &regVal);
-        if (!(regVal&(1 << 31)))
-        {
-            retVal = RetVal(retError, 123, "error in setStrobe Mode feature not available. No one knows why. Ask a pGrey/FLIR representative.");
-            return retVal;
-        }
-        //set GPIO Mode in CTRL register to strobe
-        regVal |= (1 << (31 - 12)); /*output*/\
-        regVal &= ~(1 << (31 - 30));/*disable enable pin*/
-        m_myCam.WriteRegister(strobeCtrlPinReg, regVal);
-
-        //setting strobe pattern mask
-        m_myCam.ReadRegister(STROBE_PATTERN_MASK_PIN_0, &regVal);
-        regVal |= (0xffff);
-        m_myCam.WriteRegister(STROBE_PATTERN_MASK_PIN_0, regVal);
-
-        ////set strobe output to only fire if camera is streaming
-        //this is taken from an example from ptGrey.....
-        uint32_t regAddr = STROBE_OUTPUT_CSR_BASE;//base address
-        m_myCam.ReadRegister(regAddr, &regAddr);//strobe0 signal address
-        regAddr *= 4;//multiply by 4
-        regAddr &= 0xfffff;//remove leading 0xf, works for this camera at least
-        regAddr += 0x20c;//offset for pin3
-        m_myCam.ReadRegister(regAddr, &regVal);
-        regVal |= (1 << (31 - 6));//delete continuous bit
-        if (m_params["strobe_polarity"].getVal<int>() != 0)
-        {
-            regVal |= (1 << (31 - 7));
-        }
-        else {
-            regVal &= ~(1 << (31 - 7));
-        }
-        m_myCam.WriteRegister(regAddr, regVal);
-    }
-    else {
-        ////set strobe output to only fire if camera is streaming
-        uint32_t regAddr = STROBE_OUTPUT_CSR_BASE;//base address
-        m_myCam.ReadRegister(regAddr, &regAddr);//strobe0 signal address
-        regAddr *= 4;//multiply by 4
-        regAddr &= 0xfffff;//remove leading 0xf, works for this camera at least
-        regAddr += 0x20c;//offset for pin3
-        m_myCam.ReadRegister(regAddr, &regVal);
-        regVal &= ~(1 << (31 - 6));//delete continuous bit
-        m_myCam.WriteRegister(regAddr, regVal);
-    }
-    return retVal;
 }
 
 
@@ -2058,6 +1995,7 @@ ito::RetVal PGRFlyCapture::stopDevice(ItomSharedSemaphore *waitCond)
     FlyCapture2::Error retError;
 
     decGrabberStarted();
+
     if (grabberStartedCount() == 0)
     {
 #if QT_VERSION >= 0x050200
@@ -3174,7 +3112,9 @@ double PGRFlyCapture::timeStampToDouble(const FlyCapture2::TimeStamp &timestamp)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PGRFlyCapture::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
+ito::RetVal PGRFlyCapture::execFunc(const QString funcName,
+    QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt,
+    QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue = ito::retOk;
     ito::ParamBase *param1 = NULL;
@@ -3217,6 +3157,119 @@ ito::RetVal PGRFlyCapture::execFunc(const QString funcName, QSharedPointer<QVect
             std::cout << "Parameter " << i.key().data() << ": \n" << std::endl;
             std::cout << prop.absControl << " " << prop.absValue << " " << prop.autoManualMode << " " << prop.onePush \
                 << " " << prop.onOff << " " << prop.present << " " << prop.reserved << " " << prop.type << " " << prop.valueA << " " << prop.valueB << "\n" << std::endl;
+        }
+    }
+    else if (funcName == "setStrobeMode") {
+        FlyCapture2::StrobeControl strobeControl;
+        FlyCapture2::StrobeInfo strobeInfo;
+        ito::ParamBase* param;
+
+        unsigned int source = ito::getParamByName(&(*paramsMand), "source", &retValue)->getVal<int>();
+        strobeInfo.source = source;
+        retValue += checkError(m_myCam.GetStrobeInfo(&strobeInfo));
+
+        if (!retValue.containsError()) {
+            if (!strobeInfo.present) {
+                retValue += ito::RetVal(ito::retError, 0, "strobe feature is not available for this pin on the given camera");
+            }
+        }
+
+        if (!retValue.containsError()) {
+            strobeControl.source = source;
+            retValue += checkError(m_myCam.GetStrobe(&strobeControl));
+        }
+
+        if (!retValue.containsError()) {
+            param = ito::getParamByName(&(*paramsOpt), "onOff");
+            if (param != nullptr) {
+                if (!strobeInfo.onOffSupported) {
+                    retValue += ito::RetVal(ito::retError, 0, "strobe feature cannot be switched on or off for this pin on the given camera");
+                }
+                else {
+                    strobeControl.onOff = param->getVal<int>();
+                }
+            }
+        }
+
+        if (!retValue.containsError()) {
+            param = ito::getParamByName(&(*paramsOpt), "polarity");
+            if (param != nullptr) {
+                if (!strobeInfo.polaritySupported) {
+                    retValue += ito::RetVal(ito::retError, 0, "polarity can not be changed for this pin on the given camera");
+                }
+                else {
+                    strobeControl.polarity = param->getVal<int>();
+                }
+            }
+        }
+
+        if (!retValue.containsError()) {
+            param = ito::getParamByName(&(*paramsOpt), "delay");
+            if (param != nullptr) {
+                strobeControl.delay = (float)param->getVal<double>();
+            }
+
+            param = ito::getParamByName(&(*paramsOpt), "duration");
+            if (param != nullptr) {
+                strobeControl.duration = (float)param->getVal<double>();
+            }
+            retValue += checkError(m_myCam.SetStrobe(&strobeControl));
+        }
+    }
+    else if (funcName == "getStrobeMode") {
+        FlyCapture2::StrobeControl strobeControl;
+        FlyCapture2::StrobeInfo strobeInfo;
+        ito::ParamBase* param;
+
+        unsigned int source = ito::getParamByName(&(*paramsMand), "source", &retValue)->getVal<int>();
+        strobeInfo.source = source;
+        retValue += checkError(m_myCam.GetStrobeInfo(&strobeInfo));
+
+        if (!retValue.containsError()) {
+            if (!strobeInfo.present) {
+                retValue += ito::RetVal(ito::retError, 0, "strobe feature is not available for this pin on the given camera");
+            }
+        }
+
+        if (!retValue.containsError()) {
+            strobeControl.source = source;
+            retValue += checkError(m_myCam.GetStrobe(&strobeControl));
+        }
+
+        if (!retValue.containsError()) {
+            param = ito::getParamByName(&(*paramsOut), "onOff");
+            if (param != nullptr) {
+                if (!strobeInfo.onOffSupported) {
+                    retValue += ito::RetVal(ito::retError, 0, "strobe feature cannot be switched on or off for this pin on the given camera");
+                }
+                else {
+                    retValue += param->setVal<int>(strobeControl.onOff);
+                }
+            }
+        }
+
+        if (!retValue.containsError()) {
+            param = ito::getParamByName(&(*paramsOut), "polarity");
+            if (param != nullptr) {
+                if (!strobeInfo.polaritySupported) {
+                    retValue += ito::RetVal(ito::retError, 0, "polarity can not be changed for this pin on the given camera");
+                }
+                else {
+                    retValue += param->setVal<int>(strobeControl.polarity);
+                }
+            }
+        }
+
+        if (!retValue.containsError()) {
+            param = ito::getParamByName(&(*paramsOut), "delay");
+            if (param != nullptr) {
+                retValue += param->setVal<double>(strobeControl.delay);
+            }
+
+            param = ito::getParamByName(&(*paramsOut), "duration");
+            if (param != nullptr) {
+                retValue += param->setVal<double>(strobeControl.duration);
+            }
         }
     }
 
