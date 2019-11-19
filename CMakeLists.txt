@@ -208,6 +208,12 @@ if (PLUGIN_IDSuEye)
     ADD_SUBDIRECTORY(IDSuEye)
 endif (PLUGIN_IDSuEye)
 
+# IntelRealSense
+OPTION(PLUGIN_IntelRealSense "Build with this plugin." OFF)
+if (PLUGIN_IntelRealSense)
+	ADD_SUBDIRECTORY(IntelRealSense)
+endif (PLUGIN_IntelRealSense)
+
 # LeicaMotorFocus
 OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." OFF)
 if (PLUGIN_LeicaMotorFocus)
