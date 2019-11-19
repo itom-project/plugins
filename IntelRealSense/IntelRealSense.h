@@ -91,6 +91,7 @@ class IntelRealSense : public ito::AddInGrabber
         //rs2::XXXX *m_pXXXX;
 		rs2_stream *s_streamType;
 		rs2::pipeline pipe;
+		rs2::frame * p_frame;
 
 		enum SyncParams : unsigned long {
 			sMode = 0x00000001,

@@ -187,6 +187,7 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 	//	* rs2_stream::RS2_STREAM_INFRARED
 	//rs2_stream s_streamType;
 	s_streamType = new rs2_stream();
+	p_frame = new rs2::frame;
 
 	if (!retValue.containsError())
 	{
@@ -405,6 +406,8 @@ ito::RetVal IntelRealSense::close(ItomSharedSemaphore *waitCond)
     //todo:
     // - disconnect the device if not yet done
     // - this funtion is considered to be the "inverse" of init.
+	delete p_frame;
+	p_frame = NULL;
 
     if (waitCond)
     {
@@ -587,11 +590,11 @@ ito::RetVal IntelRealSense::acquire(const int trigger, ItomSharedSemaphore *wait
     ito::RetVal retValue(ito::retOk);
     bool RetCode = false;
 
+
     if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Tried to acquire an image without having started the device.").toLatin1().data());
 		m_isgrabbing = false;
-
 		if (waitCond)
 		{
 			waitCond->returnValue = retValue;
@@ -602,62 +605,57 @@ ito::RetVal IntelRealSense::acquire(const int trigger, ItomSharedSemaphore *wait
     {
         m_isgrabbing = true;
     }
-    
-	if (!retValue.containsError())
+    if (!retValue.containsError())
 	{
 		rs2::frameset frames = pipe.wait_for_frames();
-		rs2::frame frame = frames.first(*s_streamType);	// grabbed image frame OR error
+		p_frame = &frames.first(*s_streamType);	// grabbed image frame OR error
 		//rs2::frame frame = frames.first_or_default(s_streamType); // grabbed image frame OR empty frame --> this is used in get_xxx_frame()
 
-		if (frame)
+		if (p_frame)
 		{
-			int f_px = frame.get_data_size(); //frame_size in px ????? the number of bytes in frame (laut docu)
-			auto f_data = frame.get_data(); //frame_data in ?????? the pointer to the start of the frame data
-				//frame.get_frame_number();
-			rs2::video_frame vframe = frame.as<rs2::video_frame>();
-			//int bits = vf.get_bits_per_pixel();
-			int bytes = vframe.get_bytes_per_pixel();
+			p_frame->keep();
+			rs2::video_frame vframe = p_frame->as<rs2::video_frame>();
+			int bits = vframe.get_bits_per_pixel();
+			//int bytes = vframe.get_bytes_per_pixel();
 			int width = vframe.get_width();
 			int height = vframe.get_height();
 			retValue += m_params["sizex"].setVal<int>(width);
 			retValue += m_params["sizey"].setVal<int>(height);
-			int bpp;
-			rs2_format format = frame.get_profile().format();
-			switch (format)
-			{
-			case RS2_FORMAT_ANY: bpp = 32;
-				break;
-			case RS2_FORMAT_Z16:	bpp = 16;
-				break;
-			case RS2_FORMAT_DISPARITY16:	bpp = 16;
-				break;
-			case RS2_FORMAT_YUYV:	bpp = 32;
-				break;
-			case RS2_FORMAT_RGB8:	bpp = 24;
-				break;
-			case RS2_FORMAT_RGBA8:	bpp = 32;
-				break;
-			case RS2_FORMAT_Y8:	bpp = 8;
-				break;
-			case RS2_FORMAT_Y16:	bpp = 16;
-				break;
-			case RS2_FORMAT_DISPARITY32:	bpp = 32;
-				break;
-			case RS2_FORMAT_DISTANCE:	bpp = 32;
-				break;
-			default:
-				bpp = 32;
-			}
+			int bpp = bits;
+			//rs2_format format = p_frame->get_profile().format();
+			//switch (format)
+			//{
+			//case RS2_FORMAT_ANY: bpp = 32;
+			//	break;
+			//case RS2_FORMAT_Z16:	bpp = 16;
+			//	break;
+			//case RS2_FORMAT_DISPARITY16:	bpp = 16;
+			//	break;
+			//case RS2_FORMAT_YUYV:	bpp = 32;
+			//	break;
+			//case RS2_FORMAT_RGB8:	bpp = 24;
+			//	break;
+			//case RS2_FORMAT_RGBA8:	bpp = 32;
+			//	break;
+			//case RS2_FORMAT_Y8:	bpp = 8;
+			//	break;
+			//case RS2_FORMAT_Y16:	bpp = 16;
+			//	break;
+			//case RS2_FORMAT_DISPARITY32:	bpp = 32;
+			//	break;
+			//case RS2_FORMAT_DISTANCE:	bpp = 32;
+			//	break;
+			//default:
+			//	bpp = 32;
+			//}
 			retValue += m_params["bpp"].setVal<int>(bpp);
 		}
 	}
-
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();  
     }
-    
     return retValue;
 }
 
@@ -673,8 +671,10 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
     
     const int bufferWidth = m_params["sizex"].getVal<int>();
     const int bufferHeight = m_params["sizey"].getVal<int>();
-	int desiredBpp = m_params["bpp"].getVal<int>();
-
+	const int bufferBpp = m_params["bpp"].getVal<int>();
+	const int bufferSize = p_frame->get_data_size();
+	// *ptr to image data
+	const size_t* bufferPtr = static_cast<const size_t*>(p_frame->get_data());
 
     if (m_isgrabbing == false)
     {
@@ -682,7 +682,6 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
     }
     else
     {
-        //step 1: create m_data (if not yet available)
         if (externalDataObject && hasListeners)
         {
             retValue += checkData(NULL); //update m_data
@@ -692,10 +691,44 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
         {
             retValue += checkData(externalDataObject); //update external object or m_data
         }
-        
         if (!retValue.containsError())
         {
-            if (m_data.getType() == ito::tUInt8)
+			if (bufferBpp <= 8)			//8-bit (non-color):	Y8, Raw8
+			{
+				if (copyExternal)
+				{
+					retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+				}
+				if (!copyExternal || hasListeners)
+				{
+					retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+				}
+			}
+			else if (bufferBpp <= 16)	//16bit:	Z16, Disparity16, Y16
+			{
+				if (copyExternal)
+				{
+					retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
+				}
+				if (!copyExternal || hasListeners)
+				{
+					retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
+				}
+			}
+			else if (bufferBpp > 16)	//24-32bit: RGB8, RGBA8, YUYV, DISPARITY32, DISTANCE
+			{
+				if (copyExternal)
+				{
+					retValue += externalDataObject->copyFromData2D<ito::uint32>((ito::uint32*) bufferPtr, bufferWidth, bufferHeight);
+				}
+				if (!copyExternal || hasListeners)
+				{
+					retValue += m_data.copyFromData2D<ito::uint32>((ito::uint32*) bufferPtr, bufferWidth, bufferHeight);
+				}
+			}
+			
+			
+			/*if (m_data.getType() == ito::tUInt8)
             {
                 if (copyExternal)
                 {
@@ -727,7 +760,7 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
 				{
 					retValue += m_data.copyFromData2D<ito::uint32>((ito::uint32*) bufferPtr, bufferWidth, bufferHeight);
 				}
-			}
+			}*/
             else
             {
                 retValue += ito::RetVal(ito::retError, 1002, tr("copying image buffer not possible since unsupported type.").toLatin1().data());
