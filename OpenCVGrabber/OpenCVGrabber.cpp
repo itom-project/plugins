@@ -851,7 +851,11 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
     else
     {
+#if (CV_MAJOR_VERSION >= 4)
+        m_pCam->open(cv::CAP_DSHOW);
+#else
         cvGetCaptureDomain(m_pCam->getDevice());
+#endif  
     }
 
     if(!retValue.containsError())
