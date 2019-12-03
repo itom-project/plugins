@@ -2182,12 +2182,12 @@ ito::RetVal OpenCVFilters::cvResizeParams(QVector<ito::Param> *paramsMand, QVect
     paramsMand->append( ito::Param("fx", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "scale factor along the horizontal axis."));
     paramsMand->append( ito::Param("fy", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "scale factor along the vertical axis."));
 
-    QString description = "Interpolation method. The following values are possible: ";
-    description += QString("INTER_NEAREST (%1)").arg(cv::INTER_NEAREST);
-    description += QString(", INTER_LINEAR (%1)").arg(cv::INTER_LINEAR);
-    description += QString(", INTER_AREA (%1)").arg(cv::INTER_AREA);
-    description += QString(", INTER_CUBIC (%1)").arg(cv::INTER_CUBIC);
-    description += QString(", INTER_LANCZOS4  (%1)").arg(cv::INTER_LANCZOS4 );
+    QString description = "Interpolation method. The following values are possible:\n\n";
+    description += QString("INTER_NEAREST (%1)\n").arg(cv::INTER_NEAREST);
+    description += QString("INTER_LINEAR (%1)\n").arg(cv::INTER_LINEAR);
+    description += QString("INTER_AREA (%1)\n").arg(cv::INTER_AREA);
+    description += QString("INTER_CUBIC (%1)\n").arg(cv::INTER_CUBIC);
+    description += QString("INTER_LANCZOS4 (%1)\n").arg(cv::INTER_LANCZOS4 );
     paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::INTER_LANCZOS4, cv::INTER_LINEAR, description.toLatin1().data()));
     return retval;
 }
@@ -2262,13 +2262,13 @@ ito::RetVal OpenCVFilters::cvBilateralFilterParams(QVector<ito::Param> *paramsMa
     paramsMand->append(ito::Param("sigmaColor", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "Filter sigma in the color space. A larger value of the parameter means that farther colors within the pixel neighborhood (see sigmaSpace) will be mixed together, resulting in larger areas of semi-equal color."));
     paramsMand->append(ito::Param("sigmaSpace", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "Filter sigma in the coordinate space. A larger value of the parameter means that farther pixels will influence each other as long as their colors are close enough (see sigmaColor ). When diameter>0, it specifies the neighborhood size regardless of sigmaSpace. Otherwise, diameter is proportional to sigmaSpace.."));
 
-    QString description = "border mode used to extrapolate pixels outside of the image. The following values are possible: ";
-    description += QString("BORDER_CONSTANT (%1) (iiiiii|abcdefgh|iiiiiii with some specified i)").arg(cv::BORDER_CONSTANT);
-    description += QString(", BORDER_REPLICATE (%1) (aaaaaa|abcdefgh|hhhhhhh)").arg(cv::BORDER_REPLICATE);
-    description += QString(", BORDER_REFLECT  (%1) (fedcba|abcdefgh|hgfedcb)").arg(cv::BORDER_REFLECT);
-    description += QString(", BORDER_WRAP (%1) (cdefgh|abcdefgh|abcdefg)").arg(cv::BORDER_WRAP);
-    description += QString(", BORDER_TRANSPARENT (%1) (gfedcb|abcdefgh|gfedcba)").arg(cv::BORDER_REFLECT_101);
-    description += QString(", BORDER_ISOLATED (%1) (do not look outside of ROI)").arg(cv::BORDER_DEFAULT);
+    QString description = "border mode used to extrapolate pixels outside of the image. The following values are possible:\n\n";
+    description += QString("BORDER_CONSTANT (%1) (iiiiii|abcdefgh|iiiiiii with some specified i)\n").arg(cv::BORDER_CONSTANT);
+    description += QString("BORDER_REPLICATE (%1) (aaaaaa|abcdefgh|hhhhhhh)\n").arg(cv::BORDER_REPLICATE);
+    description += QString("BORDER_REFLECT  (%1) (fedcba|abcdefgh|hgfedcb)\n").arg(cv::BORDER_REFLECT);
+    description += QString("BORDER_WRAP (%1) (cdefgh|abcdefgh|abcdefg)\n").arg(cv::BORDER_WRAP);
+    description += QString("BORDER_TRANSPARENT (%1) (gfedcb|abcdefgh|gfedcba)\n").arg(cv::BORDER_REFLECT_101);
+    description += QString("BORDER_ISOLATED (%1) (do not look outside of ROI)\n").arg(cv::BORDER_DEFAULT);
     paramsOpt->append(ito::Param("borderType", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_DEFAULT, cv::BORDER_CONSTANT, cv::BORDER_DEFAULT, description.toLatin1().data()));
     return retval;
 }
