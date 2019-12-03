@@ -70,6 +70,7 @@ class Newport2936 : public ito::AddInGrabber
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
 		ito::DataObject m_data;
+        int m_faileIdx;
 		int devID;	//Device ID to communicate via USB Port
 
 		enum SyncParams {
@@ -83,6 +84,8 @@ class Newport2936 : public ito::AddInGrabber
 			bAll = bWavelength | bAttenuator | bFilterType | bPowerRange | bAutoRange | bPowerOffset 
 		};
 		ito::RetVal synchronizeParams(int what = bAll);
+        ito::RetVal Newport2936::charToInt(char* str, int &val);
+        ito::RetVal Newport2936::charToDouble(char* str, double &val);
 
         
     public slots:

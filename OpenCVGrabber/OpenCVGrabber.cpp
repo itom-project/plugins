@@ -28,7 +28,7 @@
 #include "gitVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/core/core.hpp"
-#include "opencv2\videoio\videoio.hpp"
+#include "opencv2/videoio/videoio.hpp"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
@@ -827,7 +827,11 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     m_pCam = new VideoCaptureItom();
     if (filename == "")
     {
+#if (CV_MAJOR_VERSION >= 3 && CV_MINOR_VERSION >= 2)
         ret = m_pCam->open(m_CCD_ID, cv::CAP_DSHOW);
+#else 
+        ret = m_pCam->open(m_CCD_ID);
+#endif
     }
     else
     {
@@ -848,10 +852,10 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     else
     {
 #if (CV_MAJOR_VERSION >= 4)
-        m_pCam->open(m_CCD_ID, cv::CAP_DSHOW);
+        m_pCam->open(cv::CAP_DSHOW);
 #else
         cvGetCaptureDomain(m_pCam->getDevice());
-#endif
+#endif  
     }
 
     if(!retValue.containsError())

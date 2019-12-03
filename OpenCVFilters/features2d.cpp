@@ -30,7 +30,7 @@
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
-#include "opencv2\features2d.hpp"
+#include "opencv2/features2d.hpp"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const QString OpenCVFilters::cvFlannBasedMatcherDoc = QObject::tr("This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. \n\
