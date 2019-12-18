@@ -111,15 +111,17 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
         // Declare the output vector to hold the circle coordinates and radii
 #if (CV_MAJOR_VERSION >= 3)
         std::vector<cv::Vec3f> circles;
+        int method = cv::HOUGH_GRADIENT;
 #else
         cv::vector<cv::Vec3f> circles;
+        int method = CV_HOUGH_GRADIENT;
 #endif
 
         /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0)
             dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
             param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
             param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
-        cv::HoughCircles(*cvplaneIn, circles, cv::HOUGH_GRADIENT, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
+        cv::HoughCircles(*cvplaneIn, circles, method, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
 
 
         // Copy the circles into the output dataObject
