@@ -27,10 +27,10 @@
 #include "DataObject/dataObjectFuncs.h"
 #include <qnumeric.h>
 
-#if (CV_VERSION_MAJOR >= 2) //calib3d only available for OpenCV Version > 2.0
+#if (CV_MAJOR_VERSION >= 2) //calib3d only available for OpenCV Version > 2.0
     #include "opencv2/calib3d/calib3d.hpp"
 
-#if (CV_VERSION_MAJOR >= 4)
+#if (CV_MAJOR_VERSION >= 4)
     #include "opencv2\highgui\highgui.hpp"
 #else
     #include "opencv/highgui.h"
