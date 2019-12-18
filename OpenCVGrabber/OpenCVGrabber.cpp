@@ -28,7 +28,9 @@
 #include "gitVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/core/core.hpp"
-#include "opencv2/videoio/videoio.hpp"
+#if (CV_MAJOR_VERSION >= 3)
+    #include "opencv2/videoio/videoio.hpp"
+#endif
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
@@ -835,7 +837,11 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
     else
     {
+#if (CV_MAJOR_VERSION >= 3 && CV_MINOR_VERSION >= 2)
         ret = m_pCam->open(filename.data(), cv::CAP_DSHOW);
+#else 
+        ret = m_pCam->open(filename.data());
+#endif
     }
 
     if(!m_pCam->isOpened())
