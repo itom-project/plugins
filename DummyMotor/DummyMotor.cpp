@@ -222,7 +222,7 @@ DummyMotor::DummyMotor() :
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("Limits");
     m_params.insert(paramVal.getName(), paramVal);
 
-    /*paramVal = ito::Param("array", ito::ParamBase::IntArray, NULL, tr("test").toLatin1().data());
+    /*paramVal = ito::Param("array", ito::ParamBase::IntArray, nullptr, tr("test").toLatin1().data());
     paramVal.setMeta( new ito::IntMeta(0,5),true);
     m_params.insert(paramVal.getName(), paramVal);*/
 
@@ -446,9 +446,9 @@ ito::RetVal DummyMotor::close(ItomSharedSemaphore *waitCond)
 ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue = ito::retOk;
-    ito::ParamBase *param1 = NULL;
-    ito::ParamBase *param2 = NULL;
-    ito::ParamBase *param3 = NULL;
+    ito::ParamBase *param1 = nullptr;
+    ito::ParamBase *param2 = nullptr;
+    ito::ParamBase *param3 = nullptr;
 
     if (funcName == "dummyExecFunction")
     {
@@ -490,13 +490,13 @@ ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<
             waitCond->release();
             waitCond->deleteSemaphore();
         }
-        retValue += setPosRel(param1->getVal<int>(), param2->getVal<double>() * param3->getVal<double>(), NULL);
+        retValue += setPosRel(param1->getVal<int>(), param2->getVal<double>() * param3->getVal<double>(), nullptr);
         return retValue;
         /*
         waitCond->waitAndProcessEvents(param3->getVal<double>() * 1000.0);
         retValue += waitCond->returnValue;
         waitCond->deleteSemaphore();
-        waitCond = NULL;
+        waitCond = nullptr;
         */
     }
     else
@@ -580,7 +580,7 @@ ito::RetVal DummyMotor::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    retValue += setOrigin(QVector<int>(1,axis), NULL);
+    retValue += setOrigin(QVector<int>(1,axis), nullptr);
 
     if (waitCond)
     {
