@@ -946,12 +946,16 @@ void DummyMotor::dockWidgetVisibilityChanged(bool visible)
 ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
 {
     ito::RetVal retVal(ito::retOk);
+
+    //reset interrupt flag
+    isInterrupted();
+
     bool done = false;
     bool timeout = false;
     QVector<int> _axis = axis;
     if (_axis.size() == 0) //all axis
     {
-        for (int i=0;i<m_numaxis;i++) _axis.append(i);
+        for (int i = 0; i < m_numaxis; i++) _axis.append(i);
     }
     
     QElapsedTimer timer;
@@ -972,6 +976,7 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
             done = true;
+            sendStatusUpdate();
             return retVal;
         }
 

@@ -54,7 +54,7 @@ GenTLFramegrabber::GenTLFramegrabber(QSharedPointer<QLibrary> lib, GenTL::DEV_HA
 
         if (m_verbose >= VERBOSE_INFO)
         {
-            std::cout << "Available loations for XML parameter description in framegrabber\n----------------------------------------\n";
+            std::cout << "Available locations for XML parameter description in framegrabber\n----------------------------------------\n";
 
             for (ito::uint32 i = 0; i < numURLS; ++i)
             {

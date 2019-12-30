@@ -23,6 +23,7 @@
 #include "dataStream.h"
 
 #include "gccommon.h"
+#include "opencv2/imgproc/imgproc.hpp"
 
 #include <qfileinfo.h>
 #include <qdebug.h>
@@ -1092,7 +1093,11 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
     }
 
     cv::Mat rgbImage;
+#if(CV_MAJOR_VERSION > 3)
+    cv::cvtColor(sourceImage, rgbImage, cv::COLOR_YUV2RGB, 3);
+#else
     cv::cvtColor(sourceImage, rgbImage, CV_YUV2RGB, 3);
+#endif
 
     std::vector<cv::Mat> rgbChannels(3);
     cv::split(rgbImage, rgbChannels);

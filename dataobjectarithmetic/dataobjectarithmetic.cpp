@@ -1227,10 +1227,10 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
                             denomy += y_px[c] * (vals[c] - lowThreshold);
                             nom += (vals[c] - lowThreshold);
                         }
-                        else
-                        {
-                            count--;
-                        }
+                        //else
+                        //{
+                            //count--;
+                        //}
                     }
                 }
                 else

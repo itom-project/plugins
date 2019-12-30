@@ -99,8 +99,6 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal flyCapSetExtendedShutter(bool enabled);
         ito::RetVal flyCapSynchronizeFrameRateShutter();
 
-        ito::RetVal setStrobeMode(int val);//adds strobe mode to given Line[no], or disables all[-1]
-
         bool m_isgrabbing;
         FlyCapture2::Camera m_myCam;
         FlyCapture2::PGRGuid m_myGUID;

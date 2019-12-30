@@ -2182,12 +2182,12 @@ ito::RetVal OpenCVFilters::cvResizeParams(QVector<ito::Param> *paramsMand, QVect
     paramsMand->append( ito::Param("fx", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "scale factor along the horizontal axis."));
     paramsMand->append( ito::Param("fy", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "scale factor along the vertical axis."));
 
-    QString description = "Interpolation method. The following values are possible: ";
-    description += QString("INTER_NEAREST (%1)").arg(cv::INTER_NEAREST);
-    description += QString(", INTER_LINEAR (%1)").arg(cv::INTER_LINEAR);
-    description += QString(", INTER_AREA (%1)").arg(cv::INTER_AREA);
-    description += QString(", INTER_CUBIC (%1)").arg(cv::INTER_CUBIC);
-    description += QString(", INTER_LANCZOS4  (%1)").arg(cv::INTER_LANCZOS4 );
+    QString description = "Interpolation method. The following values are possible:\n\n";
+    description += QString("INTER_NEAREST (%1)\n").arg(cv::INTER_NEAREST);
+    description += QString("INTER_LINEAR (%1)\n").arg(cv::INTER_LINEAR);
+    description += QString("INTER_AREA (%1)\n").arg(cv::INTER_AREA);
+    description += QString("INTER_CUBIC (%1)\n").arg(cv::INTER_CUBIC);
+    description += QString("INTER_LANCZOS4 (%1)\n").arg(cv::INTER_LANCZOS4 );
     paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::INTER_LANCZOS4, cv::INTER_LINEAR, description.toLatin1().data()));
     return retval;
 }
@@ -2232,6 +2232,82 @@ ito::RetVal OpenCVFilters::cvResize(QVector<ito::ParamBase> *paramsMand, QVector
             dst->setAxisScale(1, src.getAxisScale(1) / fx);
             dst->setAxisOffset(0, src.getAxisOffset(0) * fy);
             dst->setAxisOffset(1, src.getAxisOffset(1) * fx);
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvBilateralFilterDoc = QObject::tr("Resizes an image \n\
+\n\
+The function resize resizes the image 'inputObject' down to or up by the specific factors. \n\
+\n\
+To shrink an image, it will generally look best with CV_INTER_AREA interpolation, whereas to enlarge an image, \n\
+it will generally look best with CV_INTER_CUBIC (slow) or CV_INTER_LINEAR (faster but still looks OK). \n\
+The axisScale properties of the x- and y-axes of the outputObject are divided by fx and fy respectively, while the offset values are multiplied with fx and fy.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvBilateralFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (retval.containsError()) return retval;
+
+    paramsMand->append(ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input image (8-bit or floating-point, 1-Channel or 3-Channel)"));
+    paramsMand->append(ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output image, will have the same type and size than inputObject."));
+
+    paramsMand->append(ito::Param("diameter", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 1, "diameter of each pixel neighborhood that is used during filtering. If it is non-positive, it is computed from sigmaSpace.."));
+    paramsMand->append(ito::Param("sigmaColor", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "Filter sigma in the color space. A larger value of the parameter means that farther colors within the pixel neighborhood (see sigmaSpace) will be mixed together, resulting in larger areas of semi-equal color."));
+    paramsMand->append(ito::Param("sigmaSpace", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "Filter sigma in the coordinate space. A larger value of the parameter means that farther pixels will influence each other as long as their colors are close enough (see sigmaColor ). When diameter>0, it specifies the neighborhood size regardless of sigmaSpace. Otherwise, diameter is proportional to sigmaSpace.."));
+
+    QString description = "border mode used to extrapolate pixels outside of the image. The following values are possible:\n\n";
+    description += QString("BORDER_CONSTANT (%1) (iiiiii|abcdefgh|iiiiiii with some specified i)\n").arg(cv::BORDER_CONSTANT);
+    description += QString("BORDER_REPLICATE (%1) (aaaaaa|abcdefgh|hhhhhhh)\n").arg(cv::BORDER_REPLICATE);
+    description += QString("BORDER_REFLECT  (%1) (fedcba|abcdefgh|hgfedcb)\n").arg(cv::BORDER_REFLECT);
+    description += QString("BORDER_WRAP (%1) (cdefgh|abcdefgh|abcdefg)\n").arg(cv::BORDER_WRAP);
+    description += QString("BORDER_TRANSPARENT (%1) (gfedcb|abcdefgh|gfedcba)\n").arg(cv::BORDER_REFLECT_101);
+    description += QString("BORDER_ISOLATED (%1) (do not look outside of ROI)\n").arg(cv::BORDER_DEFAULT);
+    paramsOpt->append(ito::Param("borderType", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_DEFAULT, cv::BORDER_CONSTANT, cv::BORDER_DEFAULT, description.toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvBilateralFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    ito::DataObject dObj = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "inputObject", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 2, ito::tUInt8, ito::tFloat32);
+
+    if (!paramsMand->at(1).getVal<ito::DataObject*>())
+    {
+        retval += ito::RetVal(ito::retError, 0, "outputObject is empty");
+    }
+
+    int diameter = paramsMand->at(2).getVal<int>();
+    double sigmaColor = paramsMand->at(3).getVal<double>();
+    double sigmaSpace = paramsMand->at(4).getVal<double>();
+    int border = paramsOpt->at(0).getVal<int>();
+
+    if (!retval.containsError())
+    {
+        cv::Mat input = *(dObj.getCvPlaneMat(0));
+
+        int type = input.type();
+        cv::Mat dst;
+
+        try
+        {
+            cv::bilateralFilter(input, dst, diameter, sigmaColor, sigmaSpace, border);
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
+        }
+
+        if (!retval.containsError())
+        {
+            retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], &dst);
         }
     }
 
@@ -2638,6 +2714,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvResize, OpenCVFilters::cvResizeParams, cvResizeDoc);
     m_filterList.insert("cvResize", filter);
 
+    filter = new FilterDef(OpenCVFilters::cvBilateralFilter, OpenCVFilters::cvBilateralFilterParams, cvBilateralFilterDoc);
+    m_filterList.insert("cvBilateralFilter", filter);
+
     /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, cvCalcHistDoc);
     m_filterList.insert("cvCalcHistogram", filter);*/
 
@@ -2671,7 +2750,7 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     m_filterList.insert("cvInitUndistortRectifyMap", filter);
 
     filter = new FilterDef(OpenCVFilters::cvRemap, OpenCVFilters::cvRemapParams, cvRemapDoc);
-    m_filterList.insert("cvRemapParams", filter);
+    m_filterList.insert("cvRemap", filter);
 
     filter = new FilterDef(OpenCVFilters::cvFindHomography, OpenCVFilters::cvFindHomographyParams, cvFindHomographyDoc);
     m_filterList.insert("cvFindHomography", filter);

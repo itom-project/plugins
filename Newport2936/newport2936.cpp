@@ -89,7 +89,7 @@ ito::RetVal Newport2936Interface::closeThisInst(ito::AddInBase **addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
     in this constructor or later in the init method
 */
-Newport2936::Newport2936() : AddInGrabber(), m_isgrabbing(false)
+Newport2936::Newport2936() : AddInGrabber(), m_isgrabbing(false), m_faileIdx(0)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "Newport2936", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -162,6 +162,32 @@ void StringToChar(char* lpDest, std::string strSrc)
 #pragma warning (default : 4996)	// Enable unsafe parameter warning
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Newport2936::charToInt(char* str, int &val)
+{
+    QLocale locale("C");
+    bool ok = true;
+    val = locale.toInt(str,&ok);
+    if (!ok)
+    {
+        return ito::RetVal(ito::retError, 0, tr("could not convert char* to int").toLatin1().data());
+    }
+    return ito::retOk;
+}
+
+ito::RetVal Newport2936::charToDouble(char* str, double &val)
+{
+    bool ok = true;
+    QLocale locale("C");
+    val = locale.toDouble(str,&ok);
+    if (!ok)
+    {
+        return ito::RetVal(ito::retError, 0, tr("could not convert char* to int").toLatin1().data());
+    }
+    return ito::retOk;
+
+
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
 /*!
     \sa close
@@ -199,7 +225,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
 			if (cnt % 2 == 1) {
 
-				devID = atoi(pToken);
+                retValue += charToInt(pToken, devID);
 
 			}
 			else 
@@ -234,8 +260,9 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 		char rBuffer[64];
 		retValue += sendCommand(devID, "PM:ERRors?");
 		retValue += readResponse(devID, rBuffer,64);
-
-		if (!atoi(rBuffer))
+        int channel = 0;
+        retValue += charToInt(rBuffer, channel);
+		if (!channel)
 		{
 			retValue += sendCommand(devID, "PM:CHAN 1");
 			retValue += m_params["channels"].setVal<ito::uint8>(2);
@@ -566,7 +593,12 @@ ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCon
 			{
                 if (m_params["channels"].getVal<int>() >= cnt)
                 {
-                    m_data.at<ito::float64>(0, cnt / 2) = atof(pToken);
+                    double val;
+                    retValue += charToDouble(pToken, val);
+                    if (!retValue.containsError())
+                    {
+                        m_data.at<ito::float64>(0, cnt / 2) = val;
+                    }
                 }
 			}
 
@@ -701,133 +733,175 @@ ito::RetVal Newport2936::readResponse(long DeviceID, char* responseBuffer, const
 
 ito::RetVal Newport2936::synchronizeParams(int what)
 {
-	ito::RetVal retValue(ito::retOk);
-	char rBuffer[64];
-	
-
-
-	if (what & bWavelength)
-	{
-		int lambda;
-		int lambdaMax;
-		int lambdaMin;
-        
-        retValue += sendCommand(devID, "PM:CHAN 1");
-		retValue += sendCommand(devID, "PM:Lambda?");
-		retValue += readResponse(devID, rBuffer,64);
-		lambda = atoi(rBuffer);
-		memset(rBuffer, -52, sizeof(rBuffer)); // clear buffer, but can't be set to 0 for some reason...
-
-		retValue += sendCommand(devID, "PM:MAX:Lambda?");
-		retValue += readResponse(devID, rBuffer,64);
-		lambdaMax = atoi(rBuffer);
-		memset(rBuffer, -52, sizeof(rBuffer));
-
-		retValue += sendCommand(devID, "PM:MIN:Lambda?");
-		retValue += readResponse(devID, rBuffer,64);
-		lambdaMin = atoi(rBuffer);
-		memset(rBuffer, -52, sizeof(rBuffer));
-
-        m_params["wavelengthA"].setMeta(new ito::IntMeta(lambdaMin, lambdaMax, 1), true);
-		retValue += m_params["wavelengthA"].setVal<int>(lambda);
-
-		if (m_params["channels"].getVal<ito::uint8>() == 2)
-		{
-			retValue += sendCommand(devID, "PM:CHAN 2");
-
-			retValue += sendCommand(devID, "PM:Lambda?");
-			retValue += readResponse(devID, rBuffer,64);
-			lambda = atoi(rBuffer);
-			memset(rBuffer, -52, sizeof(rBuffer));
-
-			retValue += sendCommand(devID, "PM:MAX:Lambda?");
-			retValue += readResponse(devID, rBuffer,64);
-			lambdaMax = atoi(rBuffer);
-			memset(rBuffer, -52, sizeof(rBuffer));
-
-			retValue += sendCommand(devID, "PM:MIN:Lambda?");
-			retValue += readResponse(devID, rBuffer,64);
-			lambdaMin = atoi(rBuffer);
-
-            m_params["wavelengthB"].setMeta(new ito::IntMeta(lambdaMin, lambdaMax, 1), true);
-			retValue += m_params["wavelengthB"].setVal<int>(lambda);
-		}
-		else
-		{
-			retValue += m_params["wavelengthB"].setVal<int>(-1);
-			m_params["wavelengthB"].setMeta(new ito::IntMeta(-1, -1, 1), true);
-		}
-
-	}
-    if (what & bAttenuator)
+    ito::RetVal retValue(ito::retOk);
+    char rBuffer[64];
+    if (m_faileIdx < 2)
     {
-		memset(rBuffer, -52, sizeof(rBuffer));
-        int state;
-        retValue += sendCommand(devID, "PM:CHAN 1");
-        retValue += sendCommand(devID, "PM:ATT?");
-        retValue += readResponse(devID, rBuffer,64);
-        state = atoi(rBuffer);
-        retValue += m_params["attenuatorA"].setVal<int>(state);
-        if (m_params["channels"].getVal<ito::uint8>() == 2)
-        {
-            memset(rBuffer, -52, sizeof(rBuffer));
-            retValue += sendCommand(devID, "PM:CHAN 2"); 
-            retValue += sendCommand(devID, "PM:ATT?");
-            retValue += readResponse(devID, rBuffer,64);
-            state = atoi(rBuffer);
-            retValue += m_params["attenuatorB"].setVal<int>(state);
 
-        }
-    }
-    if (what & bPowerOffset)
-    {        
-        memset(rBuffer, -52, sizeof(rBuffer));
-        retValue += sendCommand(devID, "PM:CHAN 1");
-        retValue += sendCommand(devID, "PM:ZEROVALue?");
-        retValue += readResponse(devID, rBuffer,64);
-        if (!retValue.containsError())
+        ito::RetVal retValue(ito::retOk);
+        char rBuffer[64];
+
+
+
+        if (what & bWavelength)
         {
-            double val = atof(rBuffer);
-            retValue += m_params["offsetValueA"].setVal<double>(val);
-        }
-        if (m_params["channels"].getVal<ito::uint8>() == 2)
-        {
+            int lambda;
+            int lambdaMax;
+            int lambdaMin;
+
+            retValue += sendCommand(devID, "PM:CHAN 1");
+            retValue += sendCommand(devID, "PM:Lambda?");
+            retValue += readResponse(devID, rBuffer, 64);
+            retValue += charToInt(rBuffer, lambda);
+            memset(rBuffer, -52, sizeof(rBuffer)); // clear buffer, but can't be set to 0 for some reason...
+
+            retValue += sendCommand(devID, "PM:MAX:Lambda?");
+            retValue += readResponse(devID, rBuffer, 64);
+            retValue += charToInt(rBuffer, lambdaMax);
             memset(rBuffer, -52, sizeof(rBuffer));
-            retValue += sendCommand(devID, "PM:CHAN 2");
-            retValue += sendCommand(devID, "PM:ZEROVALue?");
-            retValue += readResponse(devID, rBuffer,64);
+
+            retValue += sendCommand(devID, "PM:MIN:Lambda?");
+            retValue += readResponse(devID, rBuffer, 64);
+            retValue += charToInt(rBuffer, lambdaMin);
+            memset(rBuffer, -52, sizeof(rBuffer));
+
             if (!retValue.containsError())
             {
-                double val = atof(rBuffer);
-                retValue += m_params["offsetValueB"].setVal<double>(val);
+                m_params["wavelengthA"].setMeta(new ito::IntMeta(lambdaMin, lambdaMax, 1), true);
+                retValue += m_params["wavelengthA"].setVal<int>(lambda);
             }
+
+            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            {
+                retValue += sendCommand(devID, "PM:CHAN 2");
+
+                retValue += sendCommand(devID, "PM:Lambda?");
+                retValue += readResponse(devID, rBuffer, 64);
+                retValue += charToInt(rBuffer, lambda);
+                memset(rBuffer, -52, sizeof(rBuffer));
+
+                retValue += sendCommand(devID, "PM:MAX:Lambda?");
+                retValue += readResponse(devID, rBuffer, 64);
+                retValue += charToInt(rBuffer, lambdaMax);
+                memset(rBuffer, -52, sizeof(rBuffer));
+
+                retValue += sendCommand(devID, "PM:MIN:Lambda?");
+                retValue += readResponse(devID, rBuffer, 64);
+                retValue += charToInt(rBuffer, lambdaMin);
+
+                if (!retValue.containsError())
+                {
+                    if (!retValue.containsError())
+                    {
+                        m_params["wavelengthB"].setMeta(new ito::IntMeta(lambdaMin, lambdaMax, 1), true);
+                        retValue += m_params["wavelengthB"].setVal<int>(lambda);
+                    }
+                }
+            }
+            else
+            {
+                retValue += m_params["wavelengthB"].setVal<int>(-1);
+                m_params["wavelengthB"].setMeta(new ito::IntMeta(-1, -1, 1), true);
+            }
+
         }
-    }
-    if (what & bFilterType)
-    {
-        int val;
-        memset(rBuffer, -52, sizeof(rBuffer));
-        retValue += sendCommand(devID, "PM:CHAN 1");
-        retValue += sendCommand(devID, "PM:FILTer?");
-        retValue += readResponse(devID, rBuffer,64);
-        if (!retValue.containsError());
-        {
-            val = atoi(rBuffer);
-            retValue += m_params["filterTypeA"].setVal<int>(val);
-        }
-        if (m_params["channels"].getVal<ito::uint8>() == 2)
+        if (what & bAttenuator)
         {
             memset(rBuffer, -52, sizeof(rBuffer));
-            retValue += sendCommand(devID, "PM:CHAN 2");
+            int state;
+            retValue += sendCommand(devID, "PM:CHAN 1");
+            retValue += sendCommand(devID, "PM:ATT?");
+            retValue += readResponse(devID, rBuffer, 64);
+            retValue += charToInt(rBuffer, state);
+            if (!retValue.containsError())
+            {
+                retValue += m_params["attenuatorA"].setVal<int>(state);
+            }
+            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            {
+                memset(rBuffer, -52, sizeof(rBuffer));
+                retValue += sendCommand(devID, "PM:CHAN 2");
+                retValue += sendCommand(devID, "PM:ATT?");
+                retValue += readResponse(devID, rBuffer, 64);
+                retValue += charToInt(rBuffer, state);
+                if (!retValue.containsError())
+                {
+                    retValue += m_params["attenuatorB"].setVal<int>(state);
+                }
+            }
+        }
+        if (what & bPowerOffset)
+        {
+            memset(rBuffer, -52, sizeof(rBuffer));
+            retValue += sendCommand(devID, "PM:CHAN 1");
+            retValue += sendCommand(devID, "PM:ZEROVALue?");
+            retValue += readResponse(devID, rBuffer, 64);
+            if (!retValue.containsError())
+            {
+                double val;
+                retValue += charToDouble(rBuffer,val);
+                if (!retValue.containsError())
+                {
+                    retValue += m_params["offsetValueA"].setVal<double>(val);
+                }
+            }
+            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            {
+                memset(rBuffer, -52, sizeof(rBuffer));
+                retValue += sendCommand(devID, "PM:CHAN 2");
+                retValue += sendCommand(devID, "PM:ZEROVALue?");
+                retValue += readResponse(devID, rBuffer, 64);
+                if (!retValue.containsError())
+                {
+                    double val;
+                    retValue += charToDouble(rBuffer,val);
+                    if (!retValue.containsError())
+                    {
+                        retValue += m_params["offsetValueB"].setVal<double>(val);
+                    }
+                }
+            }
+        }
+        if (what & bFilterType)
+        {
+            int val;
+            memset(rBuffer, -52, sizeof(rBuffer));
+            retValue += sendCommand(devID, "PM:CHAN 1");
             retValue += sendCommand(devID, "PM:FILTer?");
-            retValue += readResponse(devID, rBuffer,64);
+            retValue += readResponse(devID, rBuffer, 64);
             if (!retValue.containsError());
             {
-                val = atoi(rBuffer);
-                retValue += m_params["filterTypeB"].setVal<int>(val);
+                retValue += charToInt(rBuffer,val);
+                if (retValue.containsError())
+                {
+                    retValue += m_params["filterTypeA"].setVal<int>(val);
+                }
+            }
+            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            {
+                memset(rBuffer, -52, sizeof(rBuffer));
+                retValue += sendCommand(devID, "PM:CHAN 2");
+                retValue += sendCommand(devID, "PM:FILTer?");
+                retValue += readResponse(devID, rBuffer, 64);
+                if (!retValue.containsError());
+                {
+                    retValue = charToInt(rBuffer, val);
+                    if (retValue.containsError())
+                    {
+                        retValue += m_params["filterTypeB"].setVal<int>(val);
+                    }
+                }
             }
         }
     }
+    if (retValue.containsError() && m_faileIdx++ < 1)
+    {
+        retValue = ito::RetVal(ito::retWarning, 0, tr("Failed to synchronize parameters with device. Retry to sync params.").toLatin1().data());
+        retValue +=Newport2936::synchronizeParams(what);
+        m_faileIdx = 0;
+        
+    }
+    
 	return retValue;
 
 }
@@ -1033,7 +1107,12 @@ ito::RetVal Newport2936::acquireAutograbbing(QSharedPointer<QList<double> > valu
 
             if (cnt % 2 == 0)
             {
-                value->append(atof(pToken));
+                double val;
+                retValue += charToDouble(pToken, val);
+                    if (!retValue.containsError())
+                    {
+                        value->append(val);
+                    }
             }
 
             pToken = strtok(NULL, " \r");
