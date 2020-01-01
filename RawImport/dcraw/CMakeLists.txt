@@ -42,11 +42,11 @@ INCLUDE_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/dcraw.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dcraw.h
 )
 
 set(plugin_SOURCES 
-	${CMAKE_CURRENT_SOURCE_DIR}/dcraw.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/dcraw.c
 )
 
 #Add version information to the plugIn-dll unter MSVC

@@ -111,9 +111,7 @@ This plugin has been tested with the cage rotator K10CR1.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class ThorlabsISMInterface with the name ThorlabsISMInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(ThorlabsISMInterface, ThorlabsISMInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 

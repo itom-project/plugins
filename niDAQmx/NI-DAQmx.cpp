@@ -35,13 +35,6 @@
 #include <qvarlengtharray.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(niDAQmxinterface, niDAQmxInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
-#endif
-
-//#include "dockWidgetniDAQmx.h"
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
     \todo add necessary information about your plugin here.

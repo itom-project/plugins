@@ -92,9 +92,7 @@ ito::RetVal MeasurementComputingInterface::closeThisInst(ito::AddInBase **addInI
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(MeasurementComputingInterface, MeasurementComputingInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal MeasurementComputing::showConfDialog(void)

@@ -110,11 +110,6 @@ V4L2Interface::~V4L2Interface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(v4l2interface, V4L2Interface)
-#endif
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //! shows the configuration dialog. This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
 /*!
     creates new instance of dialogDummyGrabber, calls the method setVals of DialogV4L2, starts the execution loop and if the dialog

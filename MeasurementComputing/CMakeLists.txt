@@ -70,97 +70,95 @@ FIND_FILE(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/In
 
 IF(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
 
-	# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-	IF (DEFINED CMAKE_BUILD_TYPE)
-		SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-	ELSE(CMAKE_BUILD_TYPE)
-		SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-	ENDIF (DEFINED CMAKE_BUILD_TYPE)
+    # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
+    IF (DEFINED CMAKE_BUILD_TYPE)
+        SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ELSE(CMAKE_BUILD_TYPE)
+        SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
-	message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
+    message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-	set(MeasurementComputing_LIB debug cbw${bit_dest} optimized cbw${bit_dest}  CACHE STRING "" FORCE)
+    set(MeasurementComputing_LIB debug cbw${bit_dest} optimized cbw${bit_dest}  CACHE STRING "" FORCE)
 
-	INCLUDE_DIRECTORIES(
-		${CMAKE_CURRENT_BINARY_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}
-		${ITOM_SDK_INCLUDE_DIRS}
-		${VISUALLEAKDETECTOR_INCLUDE_DIR}
-		${MeasurementComputing_DAQ_C_SDK_DIR}
-	)
+    INCLUDE_DIRECTORIES(
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${ITOM_SDK_INCLUDE_DIRS}
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+        ${MeasurementComputing_DAQ_C_SDK_DIR}
+    )
 
-	LINK_DIRECTORIES(
-		${USBADDA_LIB_DIR}
-		${MeasurementComputing_DAQ_C_SDK_DIR}
-	)
+    LINK_DIRECTORIES(
+        ${USBADDA_LIB_DIR}
+        ${MeasurementComputing_DAQ_C_SDK_DIR}
+    )
 
-	set(plugin_HEADERS
-		${CMAKE_CURRENT_SOURCE_DIR}/MeasurementComputing.h
-		${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    set(plugin_HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/MeasurementComputing.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.h
-	)
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.h
+    )
 
-	set(plugin_UI
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.ui
-	)
+    set(plugin_UI
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.ui
+    )
 
-	set(plugin_SOURCES 
-		${CMAKE_CURRENT_SOURCE_DIR}/MeasurementComputing.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.cpp
-	)
+    set(plugin_SOURCES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/MeasurementComputing.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.cpp
+    )
 
-	set(plugin_RCC
-		#add absolute pathes to any *.qrc resource files here
-	)
+    set(plugin_RCC
+        #add absolute pathes to any *.qrc resource files here
+    )
 
-	#Add version information to the plugIn-dll unter MSVC
-	if(MSVC)
-		list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-	endif(MSVC)
+    #Add version information to the plugIn-dll unter MSVC
+    if(MSVC)
+        list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif(MSVC)
 
-	if (QT5_FOUND)
-		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-		QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	else (QT5_FOUND)
-		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	endif (QT5_FOUND)
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
+    endif (QT5_FOUND)
 
-	file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 
-	ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-	if (MSVC)
-		#delayload cbw32.dll or cbw64.dll
-		SET_TARGET_PROPERTIES (${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:cbw${bit_dest}.dll")
-		TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} Delayimp.lib)
-	else (MSVC)
-		TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-	endif (MSVC)
+    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    if (MSVC)
+        #delayload cbw32.dll or cbw64.dll
+        SET_TARGET_PROPERTIES (${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:cbw${bit_dest}.dll")
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} Delayimp.lib)
+    else (MSVC)
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+    endif (MSVC)
 
     IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
         qt5_use_modules(${target_name} ${QT_COMPONENTS})
     ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
-	SET(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-	PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+    SET(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
-	#documentation
-	PLUGIN_DOCUMENTATION(${target_name} MeasurementComputing)
+    #documentation
+    PLUGIN_DOCUMENTATION(${target_name} MeasurementComputing)
 
-	# COPY SECTION
-	set(COPY_SOURCES "")
-	set(COPY_DESTINATIONS "")
-	ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-	ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-	POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    # COPY SECTION
+    set(COPY_SOURCES "")
+    set(COPY_DESTINATIONS "")
+    ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-	# copy libs to itoms lib folder
-	POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} MeasurementComputing_DAQ_BINARY)
+    # copy libs to itoms lib folder
+    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} MeasurementComputing_DAQ_BINARY)
 
 ELSE()
-	message(WARNING "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    
+    message(WARNING "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    
 ENDIF()

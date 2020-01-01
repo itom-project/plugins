@@ -50,17 +50,17 @@ INCLUDE_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.h
     ${CMAKE_CURRENT_SOURCE_DIR}/re_comp.h
-	${CMAKE_CURRENT_SOURCE_DIR}/regex.h
-	${CMAKE_CURRENT_SOURCE_DIR}/regex_internal.h
-#	${CMAKE_CURRENT_SOURCE_DIR}/regex_internal.c
-#	${CMAKE_CURRENT_SOURCE_DIR}/regcomp.c
-#	${CMAKE_CURRENT_SOURCE_DIR}/regexec.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/regex.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/regex_internal.h
+#    ${CMAKE_CURRENT_SOURCE_DIR}/regex_internal.c
+#    ${CMAKE_CURRENT_SOURCE_DIR}/regcomp.c
+#    ${CMAKE_CURRENT_SOURCE_DIR}/regexec.c
 )
 
 set(plugin_SOURCES 
-	${CMAKE_CURRENT_SOURCE_DIR}/regex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/regex.c
 )
 
 #Add version information to the plugIn-dll unter MSVC

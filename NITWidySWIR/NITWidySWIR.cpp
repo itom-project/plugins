@@ -106,11 +106,6 @@ ito::RetVal NITWidySWIRInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(NITWidySWIRInterface, NITWidySWIRInterface)
-#endif
-
-//----------------------------------------------------------------------------------------------------------------------------------
 NITWidySWIR::NITWidySWIR() : AddInGrabber(),
 m_grabbingStatus(GrabIdle),
 m_camManager(NITManager::getInstance()),

@@ -94,8 +94,8 @@ set(plugin_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/DataObjectIO.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/avantes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zygo.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/nanoscopeIII.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/keyence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nanoscopeIII.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/keyence.cpp
 )
 
 set(plugin_UI
@@ -114,9 +114,7 @@ if (QT5_FOUND)
     QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
     QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 else (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
 endif (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")

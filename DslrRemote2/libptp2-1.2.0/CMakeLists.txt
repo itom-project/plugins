@@ -40,42 +40,42 @@ IF(LibUSB_INCLUDE_DIRS)
     ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
-	
+    
     INCLUDE_DIRECTORIES(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     )
 
     set(plugin_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/libptp-endian.h
-		${CMAKE_CURRENT_SOURCE_DIR}/src/libptp-stdint.h
-		${CMAKE_CURRENT_SOURCE_DIR}/src/ptp.h
-		#${CMAKE_CURRENT_SOURCE_DIR}/src/ptpcam.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/libptp-stdint.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ptp.h
+        #${CMAKE_CURRENT_SOURCE_DIR}/src/ptpcam.h
     )
 
     set(plugin_SOURCES 
         ${CMAKE_CURRENT_SOURCE_DIR}/src/properties.c
-		${CMAKE_CURRENT_SOURCE_DIR}/src/ptp.c
-		#${CMAKE_CURRENT_SOURCE_DIR}/myusb.c
-		#${CMAKE_CURRENT_SOURCE_DIR}/ptpcam.c
-		#${CMAKE_CURRENT_SOURCE_DIR}/src/ptp-pack.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ptp.c
+        #${CMAKE_CURRENT_SOURCE_DIR}/myusb.c
+        #${CMAKE_CURRENT_SOURCE_DIR}/ptpcam.c
+        #${CMAKE_CURRENT_SOURCE_DIR}/src/ptp-pack.c
     )
-	
-	SET_SOURCE_FILES_PROPERTIES( ${plugin_SOURCES} PROPERTIES LANGUAGE CXX )
-	
+    
+    SET_SOURCE_FILES_PROPERTIES( ${plugin_SOURCES} PROPERTIES LANGUAGE CXX )
+    
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
 
-	IF (WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} wsock32)
-	ELSE(WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES})
-	ENDIF(WIN32)
-	
-	LIST(APPEND COPY_SOURCES "$<TARGET_FILE:${target_name}>")
-    LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")	
-    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)	
+    IF (WIN32)
+        TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} wsock32)
+    ELSE(WIN32)
+        TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES})
+    ENDIF(WIN32)
+    
+    LIST(APPEND COPY_SOURCES "$<TARGET_FILE:${target_name}>")
+    LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")    
+    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)    
 
 ELSE (LibUSB_INCLUDE_DIRS)
     message(WARNING "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    

@@ -50,28 +50,28 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	${LibUSB_INCLUDE_DIRS}
-	${CMAKE_CURRENT_SOURCE_DIR}/..
-	${CMAKE_CURRENT_SOURCE_DIR}/../../libtool
-	${CMAKE_CURRENT_SOURCE_DIR}/../../regex		
+    ${LibUSB_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libtool
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../regex        
 )
 
 set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-info-list.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-library.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-log.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-portability.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-result.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-version.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-info-list.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-library.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-log.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-portability.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-result.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-version.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../config.h
 )
 
 set(plugin_SOURCES 
-	${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-info-list.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-log.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-result.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-info-list.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-log.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-result.c
     ${CMAKE_CURRENT_SOURCE_DIR}/libusb1.c
 )
 
@@ -85,8 +85,8 @@ SET(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Co
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
 TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} 
-	${LTDLLIB}
-	${REGEXLIB})
+    ${LTDLLIB}
+    ${REGEXLIB})
 
 #documentation
 #PLUGIN_DOCUMENTATION(${target_name} dslrRemote)

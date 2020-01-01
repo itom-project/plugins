@@ -83,13 +83,13 @@ if (WIN32)
             ${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win64
         )
         SET(PI_GCS2_LIBRARY "PI_GCS2_DLL_x64")
-		SET(PI_GCS2_DLL "${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win64/PI_GCS2_DLL_x64.dll")
+        SET(PI_GCS2_DLL "${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win64/PI_GCS2_DLL_x64.dll")
     ELSE()
         LINK_DIRECTORIES(
             ${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win32
         )
         SET(PI_GCS2_LIBRARY "PI_GCS2_DLL")
-		SET(PI_GCS2_DLL "${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win32/PI_GCS2_DLL.dll")
+        SET(PI_GCS2_DLL "${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win32/PI_GCS2_DLL.dll")
     ENDIF()
 endif (WIN32)
 
@@ -129,9 +129,7 @@ if (QT5_FOUND)
     QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
     QT5_ADD_RESOURCES(plugin_rcc_MOC ${plugin_RCC})
 else (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    QT4_ADD_RESOURCES(plugin_rcc_MOC ${plugin_RCC})
+    MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
 endif (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")

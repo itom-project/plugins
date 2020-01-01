@@ -106,7 +106,7 @@ IF(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         ELSEIF(MSVC_VERSION EQUAL 1800)
             SET(PGR_LIBDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../lib/vs2013")
             SET(PGR_BINDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../bin/vs2013")
-        ELSE(MSVC_VERSION)	
+        ELSE(MSVC_VERSION)    
             SET(PGR_LIBDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../lib")
             SET(PGR_BINDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../bin")
         ENDIF(MSVC_VERSION)
@@ -144,9 +144,7 @@ IF(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
         QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
     ELSE(QT5_FOUND)
-        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-        QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
     ENDIF(QT5_FOUND)
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
@@ -159,7 +157,7 @@ IF(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         ELSEIF(MSVC_VERSION EQUAL 1800)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v120"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
         ELSEIF(MSVC_VERSION EQUAL 1700)
-            find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v110"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012			
+            find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v110"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012            
         ELSEIF(MSVC_VERSION EQUAL 1600)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v100"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
         ELSEIF(MSVC_VERSION EQUAL 1500)
@@ -179,13 +177,13 @@ IF(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     
     IF(WIN32)
         IF(MSVC_VERSION EQUAL 1900)
-            find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010	
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010    
         ELSEIF(MSVC_VERSION EQUAL 1800)
-            find_file(FLYCAPTURE_BINARY "FlyCapture2_v120.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010	
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v120.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010    
         ELSEIF(MSVC_VERSION EQUAL 1700)
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v110.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
         ELSEIF(MSVC_VERSION EQUAL 1600)
-            find_file(FLYCAPTURE_BINARY "FlyCapture2_v100.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012			
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v100.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2012            
         ELSEIF(MSVC_VERSION EQUAL 1500)
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v90.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2009
         ELSEIF(MSVC_VERSION EQUAL 1400)

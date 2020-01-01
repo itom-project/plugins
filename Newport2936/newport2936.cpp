@@ -75,12 +75,6 @@ ito::RetVal Newport2936Interface::closeThisInst(ito::AddInBase **addInInst)
    return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(mygrabberinterface, Newport2936Interface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
-#endif
-
-
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

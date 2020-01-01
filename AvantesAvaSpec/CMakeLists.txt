@@ -74,7 +74,7 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesAvaSpec.h
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesDefines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
@@ -82,12 +82,12 @@ set(plugin_HEADERS
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesAvaSpec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.cpp
 )
 
 set(plugin_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.ui
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.ui
 )
 
 set(plugin_RCC
@@ -104,9 +104,7 @@ if (QT5_FOUND)
     QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
     QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
 else (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+    MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
 endif (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")

@@ -81,23 +81,23 @@ IF(LibUSB_FOUND)
         ${OpenCV_DIR}/include
         ${ITOM_SDK_INCLUDE_DIR}
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	    ${LibUSB_INCLUDE_DIRS}
+        ${LibUSB_INCLUDE_DIRS}
     )
 
     set(plugin_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/ItomLibUSB.h
-	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
     set(plugin_UI
-	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.ui
     )
 
     set(plugin_SOURCES 
         ${CMAKE_CURRENT_SOURCE_DIR}/ItomLibUSB.cpp
-	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.cpp
     )
 
     #Add version information to the plugIn-dll unter MSVC
@@ -105,21 +105,19 @@ IF(LibUSB_FOUND)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
 
-	if (QT5_FOUND)
-		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-		QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	else (QT5_FOUND)
-		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	endif (QT5_FOUND)
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
+    endif (QT5_FOUND)
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
     
-	TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${LibUSB_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${LibUSB_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
     IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
         qt5_use_modules(${target_name} ${QT_COMPONENTS})
@@ -139,5 +137,5 @@ IF(LibUSB_FOUND)
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     
 ELSE (LibUSB_FOUND)
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")	
+    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
 ENDIF (LibUSB_FOUND)

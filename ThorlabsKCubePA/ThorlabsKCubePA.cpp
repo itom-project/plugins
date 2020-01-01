@@ -99,9 +99,7 @@ ThorlabsKCubePAInterface::ThorlabsKCubePAInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class ThorlabsKCubePAInterface with the name ThorlabsKCubePAInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(ThorlabsKCubePAInterface, ThorlabsKCubePAInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 

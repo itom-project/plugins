@@ -26,51 +26,51 @@ find_package(LibUSB QUIET)
 IF(LibUSB_INCLUDE_DIRS)
 
 
-	IF (WIN32)
-		IF (BUILD_UNICODE)
-			ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-		ENDIF (BUILD_UNICODE)
-		ADD_DEFINITIONS(-DCMAKE)
+    IF (WIN32)
+        IF (BUILD_UNICODE)
+            ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+        ENDIF (BUILD_UNICODE)
+        ADD_DEFINITIONS(-DCMAKE)
 
-		IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-			ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-		ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+            ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
+        ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-		# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-		IF (DEFINED CMAKE_BUILD_TYPE)
-			SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-		ELSE(CMAKE_BUILD_TYPE)
-			SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-		ENDIF (DEFINED CMAKE_BUILD_TYPE)
+        # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
+        IF (DEFINED CMAKE_BUILD_TYPE)
+            SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+        ELSE(CMAKE_BUILD_TYPE)
+            SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+        ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
-		message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
+        message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-		LINK_DIRECTORIES(
-			${LIBUSB_API_DIR}/lib
-		)
-		
-		INCLUDE_DIRECTORIES(
-			${CMAKE_CURRENT_BINARY_DIR}
-			${CMAKE_CURRENT_SOURCE_DIR}
-			${LibUSB_INCLUDE_DIRS}
-			${VISUALLEAKDETECTOR_INCLUDE_DIR}
-		)
+        LINK_DIRECTORIES(
+            ${LIBUSB_API_DIR}/lib
+        )
+        
+        INCLUDE_DIRECTORIES(
+            ${CMAKE_CURRENT_BINARY_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${LibUSB_INCLUDE_DIRS}
+            ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+        )
 
-		set(plugin_HEADERS
-		)
+        set(plugin_HEADERS
+        )
 
-		set(plugin_SOURCES 
-			${CMAKE_CURRENT_SOURCE_DIR}/usbtest.cpp
-		)
+        set(plugin_SOURCES 
+            ${CMAKE_CURRENT_SOURCE_DIR}/usbtest.cpp
+        )
 
-		ADD_EXECUTABLE(${target_name} ${plugin_SOURCES} ${plugin_HEADERS})
+        ADD_EXECUTABLE(${target_name} ${plugin_SOURCES} ${plugin_HEADERS})
 
-		IF (WIN32)
-			TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARY})
-		ELSE(WIN32)
-			TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARY})
-		ENDIF(WIN32)
-	ENDIF(WIN32)
+        IF (WIN32)
+            TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARY})
+        ELSE(WIN32)
+            TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARY})
+        ENDIF(WIN32)
+    ENDIF(WIN32)
 
 ELSE (LibUSB_INCLUDE_DIRS)
     message(WARNING "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    

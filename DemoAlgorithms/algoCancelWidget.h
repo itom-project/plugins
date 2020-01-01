@@ -6,11 +6,7 @@
 #include <qsharedpointer.h>
 #include <qvector.h>
 #include <qfuture.h>
-#if QT_VERSION >= 0x050000
-    #include <QtConcurrent/qtconcurrentrun.h>
-#else
-    #include <qtconcurrentrun.h>
-#endif
+#include <QtConcurrent/qtconcurrentrun.h>
 #include <qmessagebox.h>
 
 #include "ui_AlgoCancelWidget.h"

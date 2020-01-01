@@ -51,9 +51,9 @@ MESSAGE(STATUS "Build static")
 ENDIF(BUILD_SHARED_LIBS)
 
 INCLUDE_DIRECTORIES( 
-	${XSD_INCLUDE_DIR}
-	"../../include"
-	"../../include/opengps/cxx"
+    ${XSD_INCLUDE_DIR}
+    "../../include"
+    "../../include/opengps/cxx"
 )
 
 add_definitions(-DUNICODE -D_UNICODE -DISO5436_2_LIBRARY)
@@ -76,16 +76,16 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,-R./:./lib")
 IF(BUILD_SHARED_LIBS)
   ADD_CUSTOM_TARGET( copyzlib ALL)
   ADD_CUSTOM_COMMAND( TARGET copyzlib POST_BUILD
-			COMMAND /bin/mkdir
-			ARGS -p ${CMAKE_CURRENT_BINARY_DIR}/lib/
-			COMMAND /bin/cp
-			ARGS -u ${ISO5436_2_PATH}/../zlib/contrib/minizip/.libs/*.so* ${CMAKE_CURRENT_BINARY_DIR}/lib/
-			COMMAND /bin/cp 
-			ARGS -u ${ISO5436_2_LIB_PATH}/*.so* ${CMAKE_CURRENT_BINARY_DIR}/lib/
-			DEPENDS ISO5436-2-demo)
+            COMMAND /bin/mkdir
+            ARGS -p ${CMAKE_CURRENT_BINARY_DIR}/lib/
+            COMMAND /bin/cp
+            ARGS -u ${ISO5436_2_PATH}/../zlib/contrib/minizip/.libs/*.so* ${CMAKE_CURRENT_BINARY_DIR}/lib/
+            COMMAND /bin/cp 
+            ARGS -u ${ISO5436_2_LIB_PATH}/*.so* ${CMAKE_CURRENT_BINARY_DIR}/lib/
+            DEPENDS ISO5436-2-demo)
 ENDIF(BUILD_SHARED_LIBS)
 
 target_link_libraries(iso5436-2-xml-demo 
-	    -L${XERCESC_LIBRARY} -lxerces-c-3.1
-	    -L${ISO5436_2_PATH}/../zlib/contrib/minizip/.libs/ -lminizip
-	    -L${ISO5436_2_LIB_PATH}/ -liso5436-2-xml)
+        -L${XERCESC_LIBRARY} -lxerces-c-3.1
+        -L${ISO5436_2_PATH}/../zlib/contrib/minizip/.libs/ -lminizip
+        -L${ISO5436_2_LIB_PATH}/ -liso5436-2-xml)

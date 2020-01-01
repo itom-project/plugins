@@ -49,40 +49,40 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__alloc.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__dirent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__glibc.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__private.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__strl.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt_dlloader.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt_error.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt_system.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libltdl/slist.h
-	${CMAKE_CURRENT_SOURCE_DIR}/argz.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ltdl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__dirent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__glibc.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__private.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt__strl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt_dlloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt_error.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/lt_system.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libltdl/slist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/argz.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ltdl.h
 )
 
 set(plugin_SOURCES 
-#	${CMAKE_CURRENT_SOURCE_DIR}/loaders/dld_link.c #linux?
-#	${CMAKE_CURRENT_SOURCE_DIR}/loaders/dlopen.c #linux? or we can use dlfcn
-#	${CMAKE_CURRENT_SOURCE_DIR}/loaders/dyld.c #OS-X
-#	${CMAKE_CURRENT_SOURCE_DIR}/loaders/load_add_on.c
-	${CMAKE_CURRENT_SOURCE_DIR}/loaders/loadlibrary.c #win
-	${CMAKE_CURRENT_SOURCE_DIR}/loaders/preopen.c
-#	${CMAKE_CURRENT_SOURCE_DIR}/loaders/shl_load.c #HP-UX
+#    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/dld_link.c #linux?
+#    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/dlopen.c #linux? or we can use dlfcn
+#    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/dyld.c #OS-X
+#    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/load_add_on.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/loadlibrary.c #win
+    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/preopen.c
+#    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/shl_load.c #HP-UX
     ${CMAKE_CURRENT_SOURCE_DIR}/lt__alloc.c
-	${CMAKE_CURRENT_SOURCE_DIR}/lt__dirent.c
-	${CMAKE_CURRENT_SOURCE_DIR}/lt__strl.c
-	${CMAKE_CURRENT_SOURCE_DIR}/lt_dlloader.c
-	${CMAKE_CURRENT_SOURCE_DIR}/lt_error.c
-	${CMAKE_CURRENT_SOURCE_DIR}/argz.c
-	${CMAKE_CURRENT_SOURCE_DIR}/ltdl.c
-	${CMAKE_CURRENT_SOURCE_DIR}/slist.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lt__dirent.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lt__strl.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lt_dlloader.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lt_error.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/argz.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ltdl.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/slist.c
 )
 
 #Add version information to the plugIn-dll unter MSVC

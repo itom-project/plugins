@@ -50,35 +50,35 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/../libtool
-	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2
-	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2_port
-	${CMAKE_CURRENT_SOURCE_DIR}/../../ #for gphoto2 directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libtool
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2_port
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../ #for gphoto2 directory
     ${CMAKE_CURRENT_BINARY_DIR}/../../ #for gphoto2 directory
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/chdk_live_view.h
-	${CMAKE_CURRENT_SOURCE_DIR}/chdk_ptp.h
-	${CMAKE_CURRENT_SOURCE_DIR}/device-flags.h
-	${CMAKE_CURRENT_SOURCE_DIR}/music-players.h
-	${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp-bugs.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp-private.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/chdk_live_view.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/chdk_ptp.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/device-flags.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/music-players.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp-bugs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp-private.h
 )
 
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/chdk.c
-	${CMAKE_CURRENT_SOURCE_DIR}/config.c
-	${CMAKE_CURRENT_SOURCE_DIR}/library.c
-	${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.c
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp.c
-	${CMAKE_CURRENT_SOURCE_DIR}/ptpip.c
-#	${CMAKE_CURRENT_SOURCE_DIR}/ptp-pack.c
-	${CMAKE_CURRENT_SOURCE_DIR}/usb.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2/auxfuncs.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/library.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptpip.c
+#    ${CMAKE_CURRENT_SOURCE_DIR}/ptp-pack.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/usb.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2/auxfuncs.c
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -93,11 +93,11 @@ SET(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_p
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
 TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
-	${LTDLLIB}
-	${REGEXLIB}
-	${LIBGPHOTO2}
-	${LIBGPHOTO2PORT}
-	shell32)
+    ${LTDLLIB}
+    ${REGEXLIB}
+    ${LIBGPHOTO2}
+    ${LIBGPHOTO2PORT}
+    shell32)
 
 if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)

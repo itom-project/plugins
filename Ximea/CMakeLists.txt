@@ -60,7 +60,7 @@ IF(XIMEA_APIDIR)
         ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
     ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-	# HANDLE VERSION (FROM GIT)
+    # HANDLE VERSION (FROM GIT)
     UNSET(GIT_FOUND CACHE)
     find_package(Git)
     IF(BUILD_GIT_TAG AND GIT_FOUND)
@@ -78,7 +78,7 @@ IF(XIMEA_APIDIR)
     
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
     ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
-	
+    
     # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
     IF (DEFINED CMAKE_BUILD_TYPE)
         SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
@@ -116,7 +116,7 @@ IF(XIMEA_APIDIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-		${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
     set(plugin_UI
@@ -143,9 +143,7 @@ IF(XIMEA_APIDIR)
         QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
         QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
     else (QT5_FOUND)
-        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-        QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
     endif (QT5_FOUND)
 
     #handle translations BEGIN STEP 1

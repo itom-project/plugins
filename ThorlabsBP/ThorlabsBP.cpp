@@ -113,9 +113,7 @@ The position values are always in mm if the corresponding axis is in closed-loop
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class ThorlabsBPInterface with the name ThorlabsBPInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(ThorlabsBPInterface, ThorlabsBPInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 

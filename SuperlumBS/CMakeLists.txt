@@ -71,7 +71,7 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ITOM_SDK_INCLUDE_DIRS}
-	${ITOM_SDK_INCLUDE_DIR}/itomWidgets
+    ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
@@ -100,7 +100,7 @@ set(plugin_SOURCES
 
 set(plugin_RCC
     #add absolute pathes to any *.qrc resource files here
-	${CMAKE_CURRENT_SOURCE_DIR}/superlumBS.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/superlumBS.qrc
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -113,9 +113,7 @@ if (QT5_FOUND)
     QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
     QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 else (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
 endif (QT5_FOUND)
 
 

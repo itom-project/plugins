@@ -201,9 +201,7 @@ ito::RetVal FirgelliLACInterface::unloadDLL()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class FirgelliLACInterface with the name FirgelliLACInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(FirgelliLACInterface, FirgelliLACInterface)
-#endif
+
         
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

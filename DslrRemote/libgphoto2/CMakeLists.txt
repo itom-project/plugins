@@ -49,36 +49,36 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/../libtool
-	${CMAKE_CURRENT_SOURCE_DIR}/..
-	${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libtool
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/bayer.h
-	${CMAKE_CURRENT_SOURCE_DIR}/exif.h
-	${CMAKE_CURRENT_SOURCE_DIR}/gamma.h
-	${CMAKE_CURRENT_SOURCE_DIR}/jpeg.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/exif.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gamma.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/jpeg.h
 )
 
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/ahd_bayer.c
-	${CMAKE_CURRENT_SOURCE_DIR}/bayer.c
-	${CMAKE_CURRENT_SOURCE_DIR}/exif.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gamma.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-abilities-list.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-camera.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-context.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-file.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-filesys.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-library.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-list.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-result.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-setting.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-version.c
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-widget.c
-	${CMAKE_CURRENT_SOURCE_DIR}/jpeg.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/bayer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/exif.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gamma.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-abilities-list.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-camera.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-context.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-file.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-filesys.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-library.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-list.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-result.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-setting.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-version.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-widget.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/jpeg.c
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -90,9 +90,9 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
 
 
 TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
-	../libgphoto2_port/$(Configuration)/libgphoto2_port 
-	../libtool/$(Configuration)/libltdl
-	../regex/$(Configuration)/regex)
+    ../libgphoto2_port/$(Configuration)/libgphoto2_port 
+    ../libtool/$(Configuration)/libltdl
+    ../regex/$(Configuration)/regex)
 
 if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)

@@ -103,6 +103,3 @@ In the case of a higher maximum position, set the plugin parameter \"posLimitHig
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class PIPiezoCtrlInterface with the name PIPiezoCtrlInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(PIPiezoCtrlInterface, PIPiezoCtrlInterface)
-#endif

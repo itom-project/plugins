@@ -92,9 +92,3 @@ The parameters of the serial port (besides port number) are set automatically du
     paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class SMC100Interface with the name SMC100Interface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(SMC100Interface, SMC100Interface)
-#endif

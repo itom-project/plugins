@@ -44,9 +44,7 @@
 class PCOCameraInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
-#endif
     Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this PCOCameraInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
     PLUGIN_ITOM_API
 

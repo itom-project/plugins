@@ -92,23 +92,23 @@ IF(CyAPI_INCLUDE_DIR)
         ${OpenCV_DIR}/include
         ${ITOM_SDK_INCLUDE_DIR}
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	    ${CyAPI_INCLUDE_DIR}
+        ${CyAPI_INCLUDE_DIR}
     )
 
     set(plugin_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/ItomCyUSB.h
-	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
     set(plugin_UI
-	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.ui
     )
 
     set(plugin_SOURCES 
         ${CMAKE_CURRENT_SOURCE_DIR}/ItomCyUSB.cpp
-	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.cpp
     )
     
     LINK_DIRECTORIES(${CyAPI_LIB_DIR})
@@ -119,15 +119,13 @@ IF(CyAPI_INCLUDE_DIR)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
 
-	if (QT5_FOUND)
-		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-		QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	else (QT5_FOUND)
-		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	endif (QT5_FOUND)
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
+    endif (QT5_FOUND)
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
@@ -163,5 +161,5 @@ IF(CyAPI_INCLUDE_DIR)
     
     
 ELSE (CyAPI_INCLUDE_DIR)
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")	
+    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
 ENDIF (CyAPI_INCLUDE_DIR)

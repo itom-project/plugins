@@ -51,11 +51,11 @@ INCLUDE_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/ltdl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ltdl.h
 )
 
 set(plugin_SOURCES 
-	${CMAKE_CURRENT_SOURCE_DIR}/ltdl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ltdl.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC

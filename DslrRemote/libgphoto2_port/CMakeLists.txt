@@ -54,36 +54,36 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/..
-	${CMAKE_CURRENT_SOURCE_DIR}/../libtool
-	${CMAKE_CURRENT_SOURCE_DIR}/../regex
-	${LibUSB_INCLUDE_DIRS}	
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libtool
+    ${CMAKE_CURRENT_SOURCE_DIR}/../regex
+    ${LibUSB_INCLUDE_DIRS}    
 )
 
 set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port.h
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-info-list.h
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-library.h
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-log.h
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-portability.h
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-result.h
-	${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-version.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-info.h
-	${CMAKE_CURRENT_SOURCE_DIR}/config.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dirent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-info-list.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-library.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-log.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-portability.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-result.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-version.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-info.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dirent.h
 )
 
 set(plugin_SOURCES 
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port.c
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-info-list.c
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-log.c
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-portability.c
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-result.c
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-version.c
-#	${CMAKE_CURRENT_SOURCE_DIR}/serial/unix.c
-#	${CMAKE_CURRENT_SOURCE_DIR}/test/test-gp-port.c
-	${CMAKE_CURRENT_SOURCE_DIR}/test/test-port-list.c
-	${CMAKE_CURRENT_SOURCE_DIR}/dirent.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-info-list.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-log.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-portability.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-result.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-version.c
+#    ${CMAKE_CURRENT_SOURCE_DIR}/serial/unix.c
+#    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-gp-port.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-port-list.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/dirent.c
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -99,11 +99,11 @@ SET(DISKLIB optimized ./disk/$(Configuration)/libgphoto2_port_disk debug ./disk/
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
 TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} 
-	${LTDLLIB}
-	${REGEXLIB}
-	${LIBUSB1LIB}
-	${PTPPORTLIB}
-	${DISKLIB})
+    ${LTDLLIB}
+    ${REGEXLIB}
+    ${LIBUSB1LIB}
+    ${PTPPORTLIB}
+    ${DISKLIB})
 
 #documentation
 PLUGIN_DOCUMENTATION(${target_name} dslrRemote)

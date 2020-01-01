@@ -66,93 +66,91 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 IF(BUILD_TARGET64)
-	message(WARNING "AerotechA3200 can only be build for 32bit. ${target_name} will not be build")
+    message(WARNING "AerotechA3200 can only be build for 32bit. ${target_name} will not be build")
 ELSE(BUILD_TARGET64)
 
-	INCLUDE_DIRECTORIES(
-		${CMAKE_CURRENT_BINARY_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/Include
-		${CMAKE_CURRENT_SOURCE_DIR}/Lib
-		${ITOM_SDK_INCLUDE_DIRS}
-		${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	)
+    INCLUDE_DIRECTORIES(
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/Include
+        ${CMAKE_CURRENT_SOURCE_DIR}/Lib
+        ${ITOM_SDK_INCLUDE_DIRS}
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    )
 
-	SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Lib)
-	SET(LIB_NAME A32Sys A32Cmplr) #A3200C)
+    SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Lib)
+    SET(LIB_NAME A32Sys A32Cmplr) #A3200C)
 
-	LINK_DIRECTORIES(
-		${LIB_PATH}
-	)
+    LINK_DIRECTORIES(
+        ${LIB_PATH}
+    )
 
-	set(plugin_HEADERS
-		${CMAKE_CURRENT_SOURCE_DIR}/aerotechA3200.h
-		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.h
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.h
-		${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    set(plugin_HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/aerotechA3200.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-	)
+    )
 
-	set(plugin_UI
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.ui
-		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.ui
-	)
+    set(plugin_UI
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.ui
+    )
 
-	set(plugin_RCC
-		#${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
-	)
+    set(plugin_RCC
+        #${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
+    )
 
-	set(plugin_SOURCES 
-		${CMAKE_CURRENT_SOURCE_DIR}/aerotechA3200.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp    
-	)
+    set(plugin_SOURCES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/aerotechA3200.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp    
+    )
 
-	#Add version information to the plugIn-dll unter MSVC
-	if(MSVC)
-		list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-	endif(MSVC)
+    #Add version information to the plugIn-dll unter MSVC
+    if(MSVC)
+        list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif(MSVC)
 
-	if (QT5_FOUND)
-		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-		QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
-	else (QT5_FOUND)
-		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-		QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
-	endif (QT5_FOUND)
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
+    endif (QT5_FOUND)
 
-	file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-	#handle translations END STEP 1
+    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    #handle translations END STEP 1
 
-	ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-	TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${LIB_NAME})
+    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${LIB_NAME})
     
     IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
         qt5_use_modules(${target_name} ${QT_COMPONENTS})
     ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
-	IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")
-	ENDIF()
+    IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")
+    ENDIF()
 
-	#translation
+    #translation
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
     PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
     
-	#documentation
+    #documentation
     PLUGIN_DOCUMENTATION(${target_name} aerotechA3200)
-	
-	# COPY SECTION
-	set(COPY_SOURCES "")
-	set(COPY_DESTINATIONS "")
-	ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    
+    # COPY SECTION
+    set(COPY_SOURCES "")
+    set(COPY_DESTINATIONS "")
+    ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-	ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-	POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-	# copy dlls in itoms lib folder
-	#file(GLOB dlls "${BINARY_PATH}/*.dll")
-	#POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
+    # copy dlls in itoms lib folder
+    #file(GLOB dlls "${BINARY_PATH}/*.dll")
+    #POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
 ENDIF(BUILD_TARGET64)
