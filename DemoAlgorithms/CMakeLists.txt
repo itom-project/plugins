@@ -74,13 +74,16 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/demoAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algoCancelWidget.h
 )
 
 set(plugin_UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/algoCancelWidget.ui
 )
 
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/demoAlgorithms.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algoCancelWidget.cpp
 )
 
 set(plugin_RCC
