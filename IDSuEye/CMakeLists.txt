@@ -1,4 +1,4 @@
-SET (target_name IDSuEye)
+set(target_name IDSuEye)
 
 project(${target_name})
 
@@ -6,55 +6,58 @@ message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
 #################################################################
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
-SET (IDS_DEVELOP_DIRECTORY "" CACHE PATH "path to develop directory of IDS SDK")
+option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+option(BUILD_SHARED_LIBS "Build shared library." ON)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+set(IDS_DEVELOP_DIRECTORY "" CACHE PATH "path to develop directory of IDS SDK")
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-IF(IDS_DEVELOP_DIRECTORY)
-    IF(WIN32)
-        MESSAGE(STATUS "IDS SDK is located in ${IDS_DEVELOP_DIRECTORY}")
-        SET (IDS_INCLUDE_DIRECTORY "${IDS_DEVELOP_DIRECTORY}/include" )
+include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
+
+if(IDS_DEVELOP_DIRECTORY)
+    if(WIN32)
+        message(STATUS "IDS SDK is located in ${IDS_DEVELOP_DIRECTORY}")
+        set(IDS_INCLUDE_DIRECTORY "${IDS_DEVELOP_DIRECTORY}/include" )
         find_file( IDS_HEADER_FILE uEye.h PATHS ${IDS_INCLUDE_DIRECTORY} PATH_SUFFIXES IDS include)
-    ELSE(WIN32)
+    else(WIN32)
         find_path(IDS_INCLUDE_DIRECTORY
         NAMES ueye.h
         PATHS /usr/local/include/
               /usr/include)
         find_file(IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY})
-    ENDIF(WIN32)
-ELSE(IDS_DEVELOP_DIRECTORY)
-    IF(WIN32)
-        MESSAGE(STATUS "IDS SDK is located in ${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs")
-        SET (IDS_INCLUDE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs/IDS" )
+    endif(WIN32)
+else(IDS_DEVELOP_DIRECTORY)
+    if(WIN32)
+        message(STATUS "IDS SDK is located in ${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs")
+        set(IDS_INCLUDE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs/IDS" )
         find_file( IDS_HEADER_FILE uEye.h PATHS ${IDS_INCLUDE_DIRECTORY} PATH_SUFFIXES "IDS")
-    ELSE(WIN32)
+    else(WIN32)
         find_path(IDS_INCLUDE_DIRECTORY
         NAMES ueye.h
         PATHS /usr/local/include/
               /usr/include)
         find_file(IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY})
-    ENDIF(WIN32)
-ENDIF(IDS_DEVELOP_DIRECTORY)
+    endif(WIN32)
+endif(IDS_DEVELOP_DIRECTORY)
 
 
 
-IF (IDS_HEADER_FILE)
+if(IDS_HEADER_FILE)
 
     #################################################################
     # Automatic package detection
-    #   add here find_package commands for searching for 3rd party
+    #   add here FIND_PACKAGE commands for searching for 3rd party
     #   libraries
     #
     #   for detecting Qt, use FIND_PACKAGE_QT instead of the
@@ -72,7 +75,6 @@ IF (IDS_HEADER_FILE)
     # - pointcloud (pointCloud, point, polygonMesh...) (optional)
     # if no components are indicated, all components above are used
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-    include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake") #include this mandatory macro file (important)
     find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
     find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
 
@@ -87,28 +89,28 @@ IF (IDS_HEADER_FILE)
     # possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
     FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 
-    IF(WIN32)
+    if(WIN32)
         set( DELAY_IMP_LIB "delayimp")
-        IF(IDS_DEVELOP_DIRECTORY)
-            IF(BUILD_TARGET64)
+        if(IDS_DEVELOP_DIRECTORY)
+            if(BUILD_TARGET64)
                 find_library(IDS_LIBRARY "uEye_api_64" PATHS ${IDS_DEVELOP_DIRECTORY} PATH_SUFFIXES Lib)
-            ELSE(BUILD_TARGET64)
+            else(BUILD_TARGET64)
                 find_library(IDS_LIBRARY "uEye_api" PATHS ${IDS_DEVELOP_DIRECTORY} PATH_SUFFIXES Lib)
-            ENDIF(BUILD_TARGET64)
-        ELSE(IDS_DEVELOP_DIRECTORY)
-            MESSAGE(STATUS "IDS SDK is located in ${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs")
-            SET (IDS_LIB_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs" )
-            IF(BUILD_TARGET64)
+            endif(BUILD_TARGET64)
+        else(IDS_DEVELOP_DIRECTORY)
+            message(STATUS "IDS SDK is located in ${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs")
+            set(IDS_LIB_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs" )
+            if(BUILD_TARGET64)
                 set( IDS_LIBRARY ${IDS_LIB_DIRECTORY}/Lib/uEye_api_64.lib )
-            ELSE(BUILD_TARGET64)
+            else(BUILD_TARGET64)
                 set( IDS_LIBRARY ${IDS_LIB_DIRECTORY}/Lib/uEye_api.lib )
-            ENDIF(BUILD_TARGET64)
-        ENDIF(IDS_DEVELOP_DIRECTORY)
-    ELSE(WIN32)
+            endif(BUILD_TARGET64)
+        endif(IDS_DEVELOP_DIRECTORY)
+    else(WIN32)
         set( DELAY_IMP_LIB )
-        IF(IDS_DEVELOP_DIRECTORY)
-        ELSE(IDS_DEVELOP_DIRECTORY)
-            IF(BUILD_TARGET64)
+        if(IDS_DEVELOP_DIRECTORY)
+        else(IDS_DEVELOP_DIRECTORY)
+            if(BUILD_TARGET64)
                 FIND_LIBRARY(IDS_LIBRARY NAMES ueye_api64 libueye_api64
                     PATHS /usr/local/lib64/
                           /usr/local/lib/
@@ -116,7 +118,7 @@ IF (IDS_HEADER_FILE)
                           /usr/lib/x86_64-linux-gnu/
                           /usr/lib64/
                 )
-            ELSE(BUILD_TARGET64)
+            else(BUILD_TARGET64)
                 FIND_LIBRARY(IDS_LIBRARY NAMES ueye_api libueye_api
                     PATHS /usr/local/lib/
                           /usr/local/lib64
@@ -124,33 +126,33 @@ IF (IDS_HEADER_FILE)
                           /usr/lib/
                           /usr/lib64/
                 )
-            ENDIF(BUILD_TARGET64)
-        ENDIF(IDS_DEVELOP_DIRECTORY)
-    ENDIF(WIN32)
+            endif(BUILD_TARGET64)
+        endif(IDS_DEVELOP_DIRECTORY)
+    endif(WIN32)
 
     #################################################################
     # General settings and preprocessor settings
     #################################################################
-    IF(BUILD_SHARED_LIBS)
-        SET(LIBRARY_TYPE SHARED)
-    ELSE(BUILD_SHARED_LIBS)
-        SET(LIBRARY_TYPE STATIC)
-    ENDIF(BUILD_SHARED_LIBS)
+    if(BUILD_SHARED_LIBS)
+        set(LIBRARY_TYPE SHARED)
+    else(BUILD_SHARED_LIBS)
+        set(LIBRARY_TYPE STATIC)
+    endif(BUILD_SHARED_LIBS)
 
-    IF (BUILD_UNICODE)
-        ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-    ENDIF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DCMAKE)
-    ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
+    if(BUILD_UNICODE)
+        add_definitions(-DUNICODE -D_UNICODE)
+    endif(BUILD_UNICODE)
+    add_definitions(-DCMAKE)
+    add_definitions(-DITOMWIDGETS_SHARED)
 
-    IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-        ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-    ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
     # HANDLE VERSION (FROM GIT)
-    UNSET(GIT_FOUND CACHE)
+    unset(GIT_FOUND CACHE)
     find_package(Git)
-    IF(BUILD_GIT_TAG AND GIT_FOUND)
+    if(BUILD_GIT_TAG AND GIT_FOUND)
         execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT_VARIABLE GITVERSION
@@ -159,27 +161,27 @@ IF (IDS_HEADER_FILE)
         OUTPUT_STRIP_TRAILING_WHITESPACE)
     #uncomment to enable output to cmake console
     #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
-        CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    ENDIF (BUILD_GIT_TAG AND GIT_FOUND)
-    IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+    endif(BUILD_GIT_TAG AND GIT_FOUND)
+    if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+    endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     
     # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-    IF (DEFINED CMAKE_BUILD_TYPE)
-        SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-    ELSE(CMAKE_BUILD_TYPE)
-        SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-    ENDIF (DEFINED CMAKE_BUILD_TYPE)
+    if(DEFINED CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    else()
+        set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    endif()
 
 
     #################################################################
     # List of include directories
     #
     # Hint: necessary Qt include directories are automatically added
-    #  via the find_package macro above
+    #  via the FIND_PACKAGE macro above
     #################################################################
-    INCLUDE_DIRECTORIES(
+    include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
         ${OpenCV_DIR}/include       #include directory of OpenCV
@@ -195,14 +197,14 @@ IF (IDS_HEADER_FILE)
     #################################################################
     # List of linker directories
     #
-    # Hint: libraries detected using find_package usually provide
+    # Hint: libraries detected using FIND_PACKAGE usually provide
     #  all necessary libraries in a specific variable (e.g.
     #  ${OpenCV_LIBS} or ${ITOM_SDK_LIBRARIES}). These variables
     #  already contain absolute pathes, therefore no link directory
     #  needs to be set for them. Simply add these variables to
     #  the link target command below.
     #################################################################
-    LINK_DIRECTORIES(
+    link_directories(
         #add all linker directories
     )
 
@@ -242,7 +244,7 @@ IF (IDS_HEADER_FILE)
     # to the properties of the DLL under Visual Studio.
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif(MSVC)
+    endif()
 
     set(plugin_UI
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogIDS.ui
@@ -257,13 +259,13 @@ IF (IDS_HEADER_FILE)
     # Qt related pre-processing of the files above
     # (These methods create the moc, rcc and uic process.)
     #################################################################
-    if (QT5_FOUND)
+    if(QT5_FOUND)
         #if automoc if OFF, you also need to call QT5_WRAP_CPP here
         QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
         QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-    else (QT5_FOUND)
-        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
-    endif (QT5_FOUND)
+    else()
+        message(SEND_ERROR "Currently only Qt5 is supported")
+    endif()
 
 
     #################################################################
@@ -284,26 +286,24 @@ IF (IDS_HEADER_FILE)
     #################################################################
 
     #search for all existing translation files in the translation subfolder
-    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
+    file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
 
     #add all (generated) header and source files to the library (these files are compiled then)
-    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
     #link the compiled library
-    #append all libraries this plugin should be linked to at the end of the TARGET_LINK_LIBRARIES command
+    #append all libraries this plugin should be linked to at the end of the target_link_libraries command
     # Important variables are:
     # ${ITOM_SDK_LIBRARIES} -> all necessary libraries from find_package(ITOM_SDK)
     # ${QT_LIBRARIES} -> all necessary libraries from FIND_PACKAGE_QT (Qt4 or Qt5)
     # ${OpenCV_LIBS} -> all necessary libraries opencv libraries from find_package(OpenCV)
     #
-    # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
+    # if you want to link against one library whose directory is already added to link_directories above
     # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${IDS_LIBRARY} ${DELAY_IMP_LIB})
+    target_link_libraries(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${IDS_LIBRARY} ${DELAY_IMP_LIB})
 
-    IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-        qt5_use_modules(${target_name} ${QT_COMPONENTS})
-    ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+
 
     # SET_TARGET_PROPERTIES(${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:SC2_Cam.dll")
 
@@ -313,12 +313,12 @@ IF (IDS_HEADER_FILE)
     # In the source directory of the plugin can be a subfolder 'docs'.
     # This folder can contain one or more *.rst files with the docu-
     # mentation of the plugin. CMake organizes the rest if you 
-    # indicate the name of the main documentation file (without
+    # indicate the name of the main documentation file(without
     # suffix rst) in the following command:
     # 
     # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
     #################################################################
-    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
     PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
     #################################################################
@@ -327,7 +327,7 @@ IF (IDS_HEADER_FILE)
     # In the source directory of the plugin can be a subfolder 'docs'.
     # This folder can contain one or more *.rst files with the docu-
     # mentation of the plugin. CMake organizes the rest if you 
-    # indicate the name of the main documentation file (without
+    # indicate the name of the main documentation file(without
     # suffix rst) in the following command:
     # 
     # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
@@ -384,6 +384,6 @@ IF (IDS_HEADER_FILE)
     # copy SC2_Cam.dll in itoms lib folder
     #POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} FILES_TO_COPY_TO_LIB)
 
-ELSE(IDS_HEADER_FILE)
+else(IDS_HEADER_FILE)
     message(WARNING "ueye.h for plugin ${target_name} could not be found. ${target_name} will not be build.")
-ENDIF(IDS_HEADER_FILE)
+endif(IDS_HEADER_FILE)

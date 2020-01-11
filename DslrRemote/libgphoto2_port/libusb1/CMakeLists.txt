@@ -1,52 +1,54 @@
-SET (target_name libgphoto2_port_libusb1)
+set(target_name libgphoto2_port_libusb1)
 
 project(${target_name})
 
 message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-SET (PACKAGE_VERSION CACHE STRING "2.5.9")
+option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+option(BUILD_SHARED_LIBS "Build shared library." ON)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+set(PACKAGE_VERSION CACHE STRING "2.5.9")
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-IF(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE SHARED)
-ELSE(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE STATIC)
-ENDIF(BUILD_SHARED_LIBS)
+if(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE SHARED)
+else(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE STATIC)
+endif(BUILD_SHARED_LIBS)
+
 
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
 find_package(VisualLeakDetector QUIET)
 find_package(LibUSB QUIET)
 
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
-ADD_DEFINITIONS(-DCMAKE)
-ADD_DEFINITIONS(-DPACKAGE_VERSION="${PACKAGE_VERSION}")
-ADD_DEFINITIONS(-DHAVE_REGEX)
-ADD_DEFINITIONS(-DDLLEXPORT)
+if(BUILD_UNICODE)
+    add_definitions(-DUNICODE -D_UNICODE)
+endif(BUILD_UNICODE)
+add_definitions(-DCMAKE)
+add_definitions(-DPACKAGE_VERSION="${PACKAGE_VERSION}")
+add_definitions(-DHAVE_REGEX)
+add_definitions(-DDLLEXPORT)
 
-IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
+endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+if(DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+else()
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+endif()
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-INCLUDE_DIRECTORIES(
+include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -78,13 +80,13 @@ set(plugin_SOURCES
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif(MSVC)
+endif()
 
-SET(LTDLLIB optimized ../../libtool/$(Configuration)/libltdl debug ../../libtool/$(Configuration)/libltdld)
-SET(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Configuration)/regexd)
+set(LTDLLIB optimized ../../libtool/$(Configuration)/libltdl debug ../../libtool/$(Configuration)/libltdld)
+set(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Configuration)/regexd)
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
-TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} 
+add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
+target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} 
     ${LTDLLIB}
     ${REGEXLIB})
 

@@ -1,37 +1,39 @@
-SET (target_name FittingFilters)
+set(target_name FittingFilters)
 
 project(${target_name})
 
 message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+option(BUILD_SHARED_LIBS "Build shared library." ON)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-IF(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE SHARED)
-ELSE(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE STATIC)
-ENDIF(BUILD_SHARED_LIBS)
+include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
+
+if(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE SHARED)
+else(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE STATIC)
+endif(BUILD_SHARED_LIBS)
  
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 
 find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 find_package(LAPACKE)
 find_package(VisualLeakDetector QUIET)
 
-FIND_PACKAGE( OpenMP QUIET)
+find_package( OpenMP QUIET)
 if(OPENMP_FOUND)
     message(STATUS "OPENMP FOUND")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -39,20 +41,20 @@ if(OPENMP_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
-ADD_DEFINITIONS(-DCMAKE)
+add_definitions(${QT_DEFINITIONS})
+if(BUILD_UNICODE)
+    add_definitions(-DUNICODE -D_UNICODE)
+endif(BUILD_UNICODE)
+add_definitions(-DCMAKE)
 
-IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
+endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 # HANDLE VERSION (FROM GIT)
-UNSET(GIT_FOUND CACHE)
+unset(GIT_FOUND CACHE)
 find_package(Git)
-IF(BUILD_GIT_TAG AND GIT_FOUND)
+if(BUILD_GIT_TAG AND GIT_FOUND)
     execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT_VARIABLE GITVERSION
@@ -61,22 +63,22 @@ IF(BUILD_GIT_TAG AND GIT_FOUND)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 #uncomment to enable output to cmake console
 #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
-    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-ENDIF (BUILD_GIT_TAG AND GIT_FOUND)
-IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+endif(BUILD_GIT_TAG AND GIT_FOUND)
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+if(DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+else()
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+endif()
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-INCLUDE_DIRECTORIES(
+include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${OpenCV_DIR}/include
@@ -91,17 +93,17 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
-IF(${LAPACKE_FOUND})
-    SET(plugin_HEADERS ${plugin_HEADERS}
+if(${LAPACKE_FOUND})
+    set(plugin_HEADERS ${plugin_HEADERS}
         ${LAPACKE_INCLUDE_DIR}/lapacke.h
     )
     
-    INCLUDE_DIRECTORIES(
+    include_directories(
         ${LAPACKE_INCLUDE_DIR}
     )
     
-    ADD_DEFINITIONS(-DLAPACKE -DADD_ -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE )
-ENDIF()
+    add_definitions(-DLAPACKE -DADD_ -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE )
+endif()
 
 set(plugin_UI
 )
@@ -116,30 +118,28 @@ set(plugin_SOURCES
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
     list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif(MSVC)
+endif()
 
-if (QT5_FOUND)
+if(QT5_FOUND)
     #if automoc if OFF, you also need to call QT5_WRAP_CPP here
     QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
     QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-else (QT5_FOUND)
-    MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
-endif (QT5_FOUND)
+else()
+    message(SEND_ERROR "Currently only Qt5 is supported")
+endif()
 
 
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${LAPACKE_LIBRARIES})
+target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${LAPACKE_LIBRARIES})
 
-IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-    qt5_use_modules(${target_name} ${QT_COMPONENTS})
-ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+
 
 #translation
-set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 PLUGIN_DOCUMENTATION(${target_name} fittingFilters)
@@ -149,14 +149,14 @@ set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 
 message(STATUS "${LAPACKE_FOUND}  - ${LAPACKE_RUNTIME_LIBRARIES} - ${LAPACKE_LIBRARIES}")
-IF(WIN32)
-    IF(${LAPACKE_FOUND})
-    FOREACH(__LIB ${LAPACKE_RUNTIME_LIBRARIES})
+if(WIN32)
+    if(${LAPACKE_FOUND})
+    foreach(__LIB ${LAPACKE_RUNTIME_LIBRARIES})
         POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} __LIB)
         message(STATUS ${__LIB})
-    ENDFOREACH(__LIB)
-    ENDIF(${LAPACKE_FOUND})
-ENDIF(WIN32)
+    endforeach(__LIB)
+    endif(${LAPACKE_FOUND})
+endif(WIN32)
     
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)

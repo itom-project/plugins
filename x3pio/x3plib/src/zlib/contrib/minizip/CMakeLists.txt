@@ -1,52 +1,52 @@
 project(zlibwapi)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
 
-#IF(BUILD_SHARED_LIBS)
-#  SET(LIBRARY_TYPE SHARED)
+#if(BUILD_SHARED_LIBS)
+#  set(LIBRARY_TYPE SHARED)
 #  add_definitions(-DZLIB_DLL )
-#ELSE(BUILD_SHARED_LIBS)
+#else(BUILD_SHARED_LIBS)
     #always compile as static library
-    SET(LIBRARY_TYPE STATIC) 
-#ENDIF(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE STATIC) 
+#endif(BUILD_SHARED_LIBS)
 
 #if minizip is static, add -fPIC as compiler flag for linux
-IF(UNIX)
+if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-ENDIF(UNIX)
+endif(UNIX)
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
 add_definitions(-DUNICODE -D_UNICODE)
-if (WIN32)
+if(WIN32)
    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -DZLIB_WINAPI)
 endif()
 
 
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-  SET (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+if(DEFINED CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+else()
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+endif()
 
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}"
+include_directories( "${PROJECT_SOURCE_DIR}"
       "${PROJECT_SOURCE_DIR}/../../"
 )
 
 
 
-#IF(NOT CMAKE_ASM_MASM_COMPILER_WORKS)
-#    MESSAGE(FATAL_ERROR "No assembler found!")
-#ENDIF()
-IF (MSVC)
+#if(NOT CMAKE_ASM_MASM_COMPILER_WORKS)
+#    message(FATAL_ERROR "No assembler found!")
+#endif()
+if(MSVC)
     ENABLE_LANGUAGE(ASM_MASM)
     add_definitions(-DASMV -DASMINF)
     
-    IF(CMAKE_CL_64)
+    if(CMAKE_CL_64)
         ADD_CUSTOM_COMMAND(OUTPUT inffasx64.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffasx64.asm
@@ -66,7 +66,7 @@ IF (MSVC)
             gvmat64.obj
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffas8664.c            
         )
-    ELSE(CMAKE_CL_64)
+    else(CMAKE_CL_64)
         ADD_CUSTOM_COMMAND(OUTPUT inffas32.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/inffas32.asm
@@ -85,11 +85,11 @@ IF (MSVC)
             inffas32.obj
             match686.obj
         )
-    ENDIF(CMAKE_CL_64)
-ELSE (MSVC)
+    endif(CMAKE_CL_64)
+else(MSVC)
     #ENABLE_LANGUAGE(ASM_MASM)
-    MESSAGE(STATUS "MINIZIP: No MSVC: therefore no assembler compilation enabled")
-ENDIF(MSVC) 
+    message(STATUS "MINIZIP: No MSVC: therefore no assembler compilation enabled")
+endif() 
 
 
 
@@ -102,7 +102,7 @@ set(libSrcs
         ${CMAKE_CURRENT_SOURCE_DIR}/mztools.c
 )
 
-if (WIN32)
+if(WIN32)
   set(libSrcs
     ${libSrcs}
         ${CMAKE_CURRENT_SOURCE_DIR}/../../adler32.c
@@ -137,9 +137,9 @@ endif()
 
 add_library(zlibwapi ${LIBRARY_TYPE} ${libSrcs})
 
-if (DEFINED MSVC_VERSION)
+if(DEFINED MSVC_VERSION)
   set_target_properties(zlibwapi PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
-endif ()
+endif()
 
 
 install(TARGETS  zlibwapi 

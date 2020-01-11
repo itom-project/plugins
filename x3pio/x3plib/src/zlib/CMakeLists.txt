@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.4)
+cmake_minimum_required(VERSION 3.0.2)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
 project(zlib C)
@@ -126,10 +126,10 @@ string(REGEX REPLACE ".*#define[ \t]+ZLIB_VERSION[ \t]+\"([0-9A-Za-z.]+)\".*"
 if(MINGW)
     # This gets us DLL resource information when compiling on MinGW.
     if(NOT CMAKE_RC_COMPILER)
-        SET(CMAKE_RC_COMPILER windres.exe)
+        set(CMAKE_RC_COMPILER windres.exe)
     endif()
 
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zlib1rc.obj
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zlib1rc.obj
                        COMMAND ${CMAKE_RC_COMPILER}
                             -D GCC_WINDRES
                             -I ${CMAKE_CURRENT_SOURCE_DIR}

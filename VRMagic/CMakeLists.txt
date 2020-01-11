@@ -1,59 +1,61 @@
-SET (target_name VRMagic)
+set(target_name VRMagic)
 
 project(${target_name})
 
 message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+option(BUILD_SHARED_LIBS "Build shared library." ON)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-IF(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE SHARED)
-ELSE(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE STATIC)
-ENDIF(BUILD_SHARED_LIBS)
+include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
+
+if(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE SHARED)
+else(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE STATIC)
+endif(BUILD_SHARED_LIBS)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 
 find_package(VisualLeakDetector QUIET)
 
-IF(WIN32)
-    FIND_PATH( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATHS "$ENV{CommonProgramFiles}\\VRmagic\\VRmUsbCamSDK" PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h). Usually in %CommonProgramFiles%/VRmagic/VRmUsbCamSDK/include.")
-ELSE()
-    FIND_PATH( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h).")
-ENDIF()
+if(WIN32)
+    find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATHS "$ENV{CommonProgramFiles}\\VRmagic\\VRmUsbCamSDK" PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h). Usually in %CommonProgramFiles%/VRmagic/VRmUsbCamSDK/include.")
+else()
+    find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h).")
+endif()
 
-IF(VRMAGIC_INCLUDE_DIR)
+if(VRMAGIC_INCLUDE_DIR)
     get_filename_component(VRMAGIC_SDK_DIR ${VRMAGIC_INCLUDE_DIR} DIRECTORY)
     
-    ADD_DEFINITIONS(${QT_DEFINITIONS})
-    IF (BUILD_UNICODE)
-        ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-    ENDIF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DCMAKE)
-    #ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
+    add_definitions(${QT_DEFINITIONS})
+    if(BUILD_UNICODE)
+        add_definitions(-DUNICODE -D_UNICODE)
+    endif(BUILD_UNICODE)
+    add_definitions(-DCMAKE)
+    #add_definitions(-DITOMWIDGETS_SHARED)
 
-    IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-        ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-    ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
     # HANDLE VERSION (FROM GIT)
-    UNSET(GIT_FOUND CACHE)
+    unset(GIT_FOUND CACHE)
     find_package(Git)
-    IF(BUILD_GIT_TAG AND GIT_FOUND)
+    if(BUILD_GIT_TAG AND GIT_FOUND)
     execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT_VARIABLE GITVERSION
@@ -62,23 +64,23 @@ IF(VRMAGIC_INCLUDE_DIR)
         OUTPUT_STRIP_TRAILING_WHITESPACE)
     #uncomment to enable output to cmake console
     #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
-    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    ENDIF ()
-    IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
+    endif()
+    if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    ENDIF ()
+    endif()
     
     # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-    IF (DEFINED CMAKE_BUILD_TYPE)
-        SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-    ELSE(CMAKE_BUILD_TYPE)
-        SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-    ENDIF (DEFINED CMAKE_BUILD_TYPE)
+    if(DEFINED CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    else()
+        set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    endif()
 
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-    INCLUDE_DIRECTORIES(
+    include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${QT_QTCORE_INCLUDE_DIR}
@@ -90,11 +92,11 @@ IF(VRMAGIC_INCLUDE_DIR)
     )
 
     if(BUILD_TARGET64)
-        LINK_DIRECTORIES(
+        link_directories(
             ${VRMAGIC_SDK_DIR}/lib/x64
         )
     else(BUILD_TARGET64)
-        LINK_DIRECTORIES(
+        link_directories(
             ${VRMAGIC_SDK_DIR}/lib/x86
         )
     endif(BUILD_TARGET64)
@@ -124,28 +126,26 @@ IF(VRMAGIC_INCLUDE_DIR)
 
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif(MSVC)
+    endif()
 
-    if (QT5_FOUND)
+    if(QT5_FOUND)
         #if automoc if OFF, you also need to call QT5_WRAP_CPP here
         QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
         QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-    else (QT5_FOUND)
-        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
-    endif (QT5_FOUND)
+    else()
+        message(SEND_ERROR "Currently only Qt5 is supported")
+    endif()
 
-    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
-    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
     
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} vrmusbcam2 ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) 
+    target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} vrmusbcam2 ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) 
 
-    IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-        qt5_use_modules(${target_name} ${QT_COMPONENTS})
-    ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+
     
     #translation
-    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
     PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
     
     #documentation
@@ -165,6 +165,6 @@ IF(VRMAGIC_INCLUDE_DIR)
     endif(BUILD_TARGET64)
     POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
         
-ELSE (VRMAGIC_INCLUDE_DIR)
+else(VRMAGIC_INCLUDE_DIR)
     message(WARNING "${target_name}-SDK directory could not be found. ${target_name} will not be build")    
-ENDIF (VRMAGIC_INCLUDE_DIR)
+endif(VRMAGIC_INCLUDE_DIR)
