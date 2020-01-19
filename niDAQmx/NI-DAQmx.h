@@ -183,6 +183,8 @@ class NiDAQmx : public ito::AddInDataIO
         ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //!< Softwaretrigger for the ADC
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+        //!< stop a continuous acquisition
+        ito::RetVal stop(ItomSharedSemaphore *waitCond = NULL);
         //!< Wait for acquired picture, copy the Values to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         //!< 

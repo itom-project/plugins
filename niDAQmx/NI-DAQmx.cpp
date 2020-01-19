@@ -271,8 +271,6 @@ NiDAQmx::NiDAQmx() :
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
 
-    registerExecFunc("stop", pMand, pOpt, pOut, tr("Stops a running task (e.g. a continuous acquisition task)"));
-
     registerExecFunc("help", pMand, pOpt, pOut, tr("Prints information on plugin methods."));
     registerExecFunc("help:name", pMand, pOpt, pOut, tr("Prints information about name plugin method."));
     registerExecFunc("help:taskName", pMand, pOpt, pOut, tr("Prints information about parameter 'taskName'."));
@@ -1040,7 +1038,36 @@ ito::RetVal NiDAQmx::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCon
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! Stops a running task (e.g. a continuous acquisition task)
+*/
+ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
 
+    //this method can later be replaced by an official 'stop' method in the DataIO interface.
+    if (!m_taskStarted)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "Task not started.");
+    }
+    else if (!m_taskHandle)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "Task not available.");
+    }
+    else
+    {
+        retValue += stopTask();
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed NiDAQmx device data as reference.
@@ -1806,8 +1833,6 @@ ito::RetVal NiDAQmx::writeDigital(const ito::DataObject *dataObj)
             retValue += ito::RetVal(ito::retError, 0, "invalid digital channel data type.");
             break;
         }
-
-        
     }
 
     //task must then be started
@@ -1839,22 +1864,6 @@ ito::RetVal NiDAQmx::execFunc(const QString helpCommand, QSharedPointer<QVector<
         else
         {
             retValue += help(parts[1]);
-        }
-    }
-    else if (function == "stop")
-    {
-        //this method can later be replaced by an official 'stop' method in the DataIO interface.
-        if (!m_taskStarted)
-        {
-            retValue += ito::RetVal(ito::retError, 0, "Task not started.");
-        }
-        else if (!m_taskHandle)
-        {
-            retValue += ito::RetVal(ito::retError, 0, "Task not available.");
-        }
-        else
-        {
-            retValue += stopTask();
         }
     }
     else if (function == "configureLogging")
