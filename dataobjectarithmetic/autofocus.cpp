@@ -26,12 +26,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "DataObject/dataObjectFuncs.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#if CV_MAJOR_VERSION >= 4
-	#include "opencv2/imgproc/types_c.h"
-#endif
-
-
-
 //! creates template defined function table for all supported data types
 #define MAKEFUNCLIST(FuncName) static t##FuncName fList##FuncName[] =   \
 {                                                                       \
@@ -80,7 +74,13 @@ template<typename _Tp> ito::RetVal AutoFocusDerivate(const ito::DataObject *src,
     else if (method == "3x3Scharr")
     {
         useSobel = true;
+
+#if (CV_MAJOR_VERSION >= 4)
+        ksize = cv::FILTER_SCHARR;
+#else
         ksize = CV_SCHARR;
+#endif
+        
     }
     else if (method == "3x3Roberts")
     {

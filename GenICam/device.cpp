@@ -60,7 +60,7 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
 
         if (m_verbose >= VERBOSE_INFO)
         {
-            std::cout << "Available loations for XML parameter description\n----------------------------------------\n";
+            std::cout << "Available locations for XML parameter description\n----------------------------------------\n";
 
             for (ito::uint32 i = 0; i < numURLS; ++i)
             {

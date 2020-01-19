@@ -44,12 +44,6 @@
 #include "opencv2/opencv.hpp"
 #include <opencv2/highgui/highgui.hpp>
 
-#if CV_MAJOR_VERSION >= 4
-	#include "opencv2/imgproc/types_c.h"
-	#include "opencv2/imgproc/imgproc_c.h"
-	#include "opencv2//imgcodecs/legacy/constants_c.h"
-#endif
-
 #if (CV_MAJOR_VERSION >= 3)
 #include "opencv2/imgcodecs.hpp"
 #endif
@@ -603,11 +597,19 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         cv::Mat loadedMat;
         QString fileName("");
 
+#if (CV_MAJOR_VERSION >= 4)
+        int openCVLoadingFlags = cv::IMREAD_UNCHANGED;
+#else
         int openCVLoadingFlags = CV_LOAD_IMAGE_UNCHANGED;
+#endif        
 
         for(i = 0; i < m_fileList.size(); i++)
         {
-            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), CV_LOAD_IMAGE_UNCHANGED );
+#if (CV_MAJOR_VERSION >= 4)
+            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), cv::IMREAD_UNCHANGED);
+#else
+            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), CV_LOAD_IMAGE_UNCHANGED);
+#endif            
 
             if (loadedMat.data != NULL && bppFilter == 0) // Loading okay and no bppFilter
             {
@@ -618,22 +620,38 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 if (loadedMat.type() == CV_8U)
                 {
                     bppFilter = 8;
+#if (CV_MAJOR_VERSION >= 4)
+                    if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_GRAYSCALE;
+#else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_GRAYSCALE;
+#endif                    
                 }
                 else if (loadedMat.type() == CV_16U)
                 {
                     bppFilter = 16;
+#if (CV_MAJOR_VERSION >= 4)
+                    if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_GRAYSCALE | cv::IMREAD_ANYDEPTH;
+#else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH;
+#endif                    
                 }
                 else if (loadedMat.type() == CV_8UC3)
                 {
                     bppFilter = 24;
+#if (CV_MAJOR_VERSION >= 4)
+                    if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_COLOR;
+#else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_COLOR;
+#endif                    
                 }
                 else if (loadedMat.type() == CV_8UC4)
                 {
                     bppFilter = 32;
+#if (CV_MAJOR_VERSION >= 4)
+                    if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_ANYCOLOR;
+#else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_ANYCOLOR;
+#endif                      
                 }
 
                 i++;
@@ -1209,7 +1227,11 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
         {
             cv::Mat loadedMat;
             //loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toLatin1().data(), CV_LOAD_IMAGE_UNCHANGED);
+#if (CV_MAJOR_VERSION >= 4)
+            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toLatin1().data(), cv::IMREAD_GRAYSCALE | cv::IMREAD_ANYDEPTH);
+#else
             loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toLatin1().data(), CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH);
+#endif            
             long lsrcstrpos = 0;
             int maxxsize = (int)m_params["sizex"].getMax();
             int maxysize = (int)m_params["sizey"].getMax();

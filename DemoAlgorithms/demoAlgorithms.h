@@ -91,9 +91,13 @@ class DemoAlgorithms : public ito::AddInAlgo
         static ito::RetVal demoSnapImageParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal demoSnapMovie(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal demoSnapMovieParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        static ito::RetVal demoCancellationFunction(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, QSharedPointer<ito::FunctionCancellationAndObserver> observer);
+        static ito::RetVal demoCancellationFunctionParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
 		static QWidget* demoWidget(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue);
 		static ito::RetVal demoWidgetParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        static QWidget* demoAlgoCancelWidget(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue);
+        static ito::RetVal demoAlgoCancelWidgetParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
     //---------------------------------------------------------End-User-Defined-Content-------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
 
