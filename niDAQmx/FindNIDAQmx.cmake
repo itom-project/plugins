@@ -12,21 +12,21 @@
 # #########################################################################
 # Useful variables
 
-IF( WIN32 )
+if(WIN32)
 
-    if ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    if (CMAKE_SIZEOF_VOID_P EQUAL 4)
       list(APPEND NIDAQMX_DIR 
         "C:/Program Files (x86)/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
         "C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
-      SET(SUFFIXES "lib/msvc"
+      set(SUFFIXES "lib/msvc"
             "lib32/msvc")
-    else ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    else (CMAKE_SIZEOF_VOID_P EQUAL 4)
       list(APPEND NIDAQMX_DIR 
         "C:/Program Files/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
         "C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
-      SET(SUFFIXES "lib/msvc"
+      set(SUFFIXES "lib/msvc"
             "lib64/msvc")
-    endif ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    endif (CMAKE_SIZEOF_VOID_P EQUAL 4)
 
     # Find installed library using CMake functions
     find_library(NIDAQMX_LIBRARY
@@ -48,27 +48,27 @@ IF( WIN32 )
     mark_as_advanced(NIDAQMX_LIBRARY NIDAQMX_INCLUDE_DIR)
     # #########################################################################
 
-ENDIF( WIN32 )
+endif(WIN32)
 
-IF( UNIX )
+if(UNIX)
 
-if( EXISTS "/etc/centos-release" )
+if(EXISTS "/etc/centos-release")
    file(READ "/etc/centos-release" centos-release)
    string(FIND centos_release "CentOS Linux release 7.5" match)
    string (COMPARE NOTEQUAL match "-1" success)
-   if( success )
-      if( EXISTS "/usr/share/ni-daqmx/nidaqmx.version" )
+   if(success)
+      if(EXISTS "/usr/share/ni-daqmx/nidaqmx.version")
          file(READ "/usr/share/ni-daqmx/nidaqmx.version" nidaqmx-version)
          string (FIND nidaqmx-version "18.1" match)
          string (COMPARE NOTEQUAL match "-1" success)
-         if( success )
-            if( EXISTS "/usr/include/NIDAQmx.h" )
+         if(success)
+            if(EXISTS "/usr/include/NIDAQmx.h")
                set(NIDAQMX_INCLUDE_DIR "/usr/include" CACHE PATH "NIDAQMX include directory" FORCE)
             endif()
-            if( EXISTS "/usr/lib/x86_64-linux-gnu/libnidaqmx.so" )
+            if(EXISTS "/usr/lib/x86_64-linux-gnu/libnidaqmx.so")
                set(NIDAQMX_LIBRARY "/usr/lib/x86_64-linux-gnu/libnidaqmx.so" CACHE FILEPATH "NIDAQMX library path" FORCE)
             endif()
-            if( (DEFINED NIDAQMX_INCLUDE_DIR) AND (DEFINED NIDAQMX_LIBRARY) )
+            if((DEFINED NIDAQMX_INCLUDE_DIR) AND (DEFINED NIDAQMX_LIBRARY))
                mark_as_advanced(NIDAQMX_LIBRARY NIDAQMX_INCLUDE_DIR)
                set(NIDAQMX_FOUND ON CACHE BOOL "NIDAQMX 18.1 is installed on machine running Centos 7.5" FORCE)
             endif()
@@ -77,10 +77,10 @@ if( EXISTS "/etc/centos-release" )
    endif()
 endif()
 
-if( NOT DEFINED NIDAQMX_FOUND )
+if(NOT DEFINED NIDAQMX_FOUND)
    message(FATAL_ERROR "For Linux, this plugin only works on Centos 7.5 with NIDAQMX version 18.1")
 endif()
 
-ENDIF( UNIX )
+endif(UNIX)
 
 
