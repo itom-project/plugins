@@ -129,7 +129,7 @@ if(MINGW)
         set(CMAKE_RC_COMPILER windres.exe)
     endif()
 
-    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zlib1rc.obj
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zlib1rc.obj
                        COMMAND ${CMAKE_RC_COMPILER}
                             -D GCC_WINDRES
                             -I ${CMAKE_CURRENT_SOURCE_DIR}

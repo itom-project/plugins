@@ -26,7 +26,7 @@ if(LibUSB_INCLUDE_DIRS)
     if(BUILD_UNICODE)
         add_definitions(-DUNICODE -D_UNICODE)
     endif(BUILD_UNICODE)
-    add_definitions(-DCMAKE -DPTP_DLL)
+    add_definitions(-DPTP_DLL)
 
     if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
         add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)

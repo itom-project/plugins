@@ -2,14 +2,7 @@ project(zlibwapi)
 
 cmake_minimum_required(VERSION 3.0.2)
 
-
-#if(BUILD_SHARED_LIBS)
-#  set(LIBRARY_TYPE SHARED)
-#  add_definitions(-DZLIB_DLL )
-#else(BUILD_SHARED_LIBS)
-    #always compile as static library
-    set(LIBRARY_TYPE STATIC) 
-#endif(BUILD_SHARED_LIBS)
+set(LIBRARY_TYPE STATIC) 
 
 #if minizip is static, add -fPIC as compiler flag for linux
 if(UNIX)
@@ -24,8 +17,6 @@ if(WIN32)
    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -DZLIB_WINAPI)
 endif()
 
-
-
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 if(DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
@@ -37,23 +28,21 @@ include_directories( "${PROJECT_SOURCE_DIR}"
       "${PROJECT_SOURCE_DIR}/../../"
 )
 
-
-
 #if(NOT CMAKE_ASM_MASM_COMPILER_WORKS)
 #    message(FATAL_ERROR "No assembler found!")
 #endif()
 if(MSVC)
-    ENABLE_LANGUAGE(ASM_MASM)
+    enable_language(ASM_MASM)
     add_definitions(-DASMV -DASMINF)
     
     if(CMAKE_CL_64)
-        ADD_CUSTOM_COMMAND(OUTPUT inffasx64.obj
+        add_custom_command(OUTPUT inffasx64.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffasx64.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffasx64.asm
         COMMENT "generate inffasx64.obj") 
 
-        ADD_CUSTOM_COMMAND(OUTPUT gvmat64.obj
+        add_custom_command(OUTPUT gvmat64.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/gvmat64.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/gvmat64.asm
@@ -67,13 +56,13 @@ if(MSVC)
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffas8664.c            
         )
     else(CMAKE_CL_64)
-        ADD_CUSTOM_COMMAND(OUTPUT inffas32.obj
+        add_custom_command(OUTPUT inffas32.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/inffas32.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/inffas32.asm
         COMMENT "generate inffas32.obj") 
 
-        ADD_CUSTOM_COMMAND(OUTPUT match686.obj
+        add_custom_command(OUTPUT match686.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/match686.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/match686.asm
@@ -87,12 +76,9 @@ if(MSVC)
         )
     endif(CMAKE_CL_64)
 else(MSVC)
-    #ENABLE_LANGUAGE(ASM_MASM)
+    #enable_language(ASM_MASM)
     message(STATUS "MINIZIP: No MSVC: therefore no assembler compilation enabled")
 endif() 
-
-
-
 
 set(libSrcs 
         ${libSrcs}
@@ -131,9 +117,6 @@ else()
 #    ${CMAKE_CURRENT_SOURCE_DIR}/miniunz.c
 #  )
 endif()
-
-
-
 
 add_library(zlibwapi ${LIBRARY_TYPE} ${libSrcs})
 

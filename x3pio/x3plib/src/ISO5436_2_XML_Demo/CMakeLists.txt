@@ -75,7 +75,7 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,-R./:./lib")
 
 if(BUILD_SHARED_LIBS)
   add_custom_target( copyzlib ALL)
-  ADD_CUSTOM_COMMAND( TARGET copyzlib POST_BUILD
+  add_custom_command( TARGET copyzlib POST_BUILD
             COMMAND /bin/mkdir
             ARGS -p ${CMAKE_CURRENT_BINARY_DIR}/lib/
             COMMAND /bin/cp
