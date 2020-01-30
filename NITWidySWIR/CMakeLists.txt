@@ -8,8 +8,6 @@ message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 3.0.2)
 
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -44,16 +42,9 @@ find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 if(NITLIBRARY_INCLUDE_DIR)
     message(STATUS "NITLibrary found")
 
-    if(BUILD_SHARED_LIBS)
-        set(LIBRARY_TYPE SHARED)
-    else(BUILD_SHARED_LIBS)
-        set(LIBRARY_TYPE STATIC)
-    endif(BUILD_SHARED_LIBS)
 
-    if(BUILD_UNICODE)
-        add_definitions(-DUNICODE -D_UNICODE)
-    endif(BUILD_UNICODE)
-    add_definitions(-DCMAKE)
+
+
     add_definitions(-DITOMWIDGETS_SHARED)
 
     if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
@@ -105,7 +96,7 @@ if(NITLIBRARY_INCLUDE_DIR)
     
     link_directories(
         ${NITLIBRARY_LIB_DIR}
-        ${OpenCV_DIR}/lib
+        
     )
 
     set(plugin_HEADERS
@@ -151,9 +142,9 @@ if(NITLIBRARY_INCLUDE_DIR)
     file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
 
     #add all (generated) header and source files to the library (these files are compiled then)
-    add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    add_library(${target_name} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-    target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${NITLIBRARY_LIB_DIR} ${OPENCV240_LIB_DIR})
+    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${NITLIBRARY_LIB_DIR} ${OPENCV240_LIB_DIR})
 
 
     

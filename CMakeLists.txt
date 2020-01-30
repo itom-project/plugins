@@ -2,29 +2,26 @@ project(itom_plugins)
 
 cmake_minimum_required(VERSION 3.0.2)
 
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(BUILD_GIT_TAG "Adds the current GIT commit tag in the about string of a plugin." OFF)
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "itom_sdk.cmake"
+find_path(ITOM_SDK_CMAKE_DIR "itom_sdk.cmake"
     HINTS "C:/itom/build/itom/SDK"
           "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    PATH_SUFFIXES "cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
+get_filename_component(ITOM_SDK_DIR ${ITOM_SDK_CMAKE_DIR} DIRECTORY)
 
-if("${ITOM_SDK_DIR}" STREQUAL "ITOM_SDK_DIR-NOTFOUND")
+if(NOT ITOM_SDK_DIR)
     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-load_cache(${ITOM_SDK_DIR}/../[EXCLUDE ${VTK_DIR}])
-
-
-if(WIN32)
+if(MSVC)
     # add /LTCG flag to remove MSVC linker warning in release build
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
     set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
-endif(WIN32)
+endif()
 
 # AerotechA3200
 if(WIN32)
@@ -32,7 +29,7 @@ if(WIN32)
     if(PLUGIN_aerotechA3200)
             add_subdirectory(AerotechA3200)
     endif(PLUGIN_aerotechA3200)
-endif(WIN32)
+endif()
 
 # AerotechEnsemble
 if(WIN32)
@@ -40,7 +37,7 @@ if(WIN32)
     if(PLUGIN_aerotechEnsemble)
             add_subdirectory(AerotechEnsemble)
     endif(PLUGIN_aerotechEnsemble)
-endif(WIN32)
+endif()
 
 # AndorSDK3
 option(PLUGIN_andorSDK3 "Build with this plugin." OFF)
@@ -60,7 +57,7 @@ if(WIN32)
     if(PLUGIN_AVTVimba)
             add_subdirectory(AVTVimba)
     endif(PLUGIN_AVTVimba)
-endif(WIN32)
+endif()
 
 # BasicFilters
 option(PLUGIN_BasicFilters "Build with this plugin." ON)
@@ -86,7 +83,7 @@ if(WIN32)
     if(PLUGIN_cmu1394)
             add_subdirectory(cmu1394)
     endif(PLUGIN_cmu1394)
-endif(WIN32)
+endif()
 
 # CommonVisionBlox
 if(WIN32)
@@ -94,7 +91,7 @@ if(WIN32)
     if(PLUGIN_CommonVisionBlox)
             add_subdirectory(CommonVisionBlox)
     endif(PLUGIN_CommonVisionBlox)
-endif(WIN32)
+endif()
 
 # CyUSB
 option(PLUGIN_CyUSB "Build with this plugin." OFF)
@@ -180,7 +177,7 @@ if(WIN32)
     if(PLUGIN_FirgelliLAC)
         add_subdirectory(FirgelliLAC)
     endif(PLUGIN_FirgelliLAC)
-endif(WIN32)
+endif()
 
 # FringeProj
 option(PLUGIN_FringeProj "Build with this plugin." OFF)
@@ -242,7 +239,7 @@ option(PLUGIN_MeasurementComputing "Build with this plugin." OFF)
 if(PLUGIN_MeasurementComputing)
     add_subdirectory(MeasurementComputing)
 endif(PLUGIN_MeasurementComputing)
-endif(WIN32)
+endif()
 
 # MSMediaFoundation
 if(WIN32)
@@ -250,7 +247,7 @@ option(PLUGIN_MSMediaFoundation "Build with this plugin." ON)
 if(PLUGIN_MSMediaFoundation)
     add_subdirectory(MSMediaFoundation)
 endif(PLUGIN_MSMediaFoundation)
-endif(WIN32)
+endif()
 
 # NerianSceneScanPro
 option(PLUGIN_NerianSceneScanPro "Build with this plugin." OFF)
@@ -317,7 +314,7 @@ if(WIN32)
   if(PLUGIN_PCOCamera)
       add_subdirectory(PCOCamera)
   endif(PLUGIN_PCOCamera)
-endif(WIN32)
+endif()
 
 # PCOSensicam
 if(WIN32)
@@ -325,7 +322,7 @@ if(WIN32)
   if(PLUGIN_PCOSensicam)
       add_subdirectory(PCOSensicam)
   endif(PLUGIN_PCOSensicam)
-endif(WIN32)
+endif()
 
 # PCOPixelFly
 if(WIN32)
@@ -333,7 +330,7 @@ if(WIN32)
   if(PLUGIN_PCOPixelFly)
       add_subdirectory(PCOPixelFly)
   endif(PLUGIN_PCOPixelFly)
-endif(WIN32)
+endif()
 
 # PiezosystemJena_NV40_1
 option(PLUGIN_PiezosystemJena_NV40_1 "Build with this plugin." OFF)
@@ -377,7 +374,7 @@ if(WIN32)
     if(PLUGIN_QCam)
         add_subdirectory(QCam)
     endif(PLUGIN_QCam)
-endif(WIN32)
+endif()
 
 # rawImport
 option(PLUGIN_rawImport "Build with this plugin." ON)
@@ -415,7 +412,7 @@ if(WIN32)
     if(PLUGIN_ST8SMC4USB)
             add_subdirectory(ST8SMC4USB)
     endif(PLUGIN_ST8SMC4USB)
-endif(WIN32)
+endif()
 
 # ThorlabsBP benchtop piezo
 if(WIN32)
@@ -423,7 +420,7 @@ if(WIN32)
     if(PLUGIN_ThorlabsBP)
         add_subdirectory(ThorlabsBP)
     endif(PLUGIN_ThorlabsBP)
-endif(WIN32)
+endif()
 
 # ThorlabsKCubePA KCube position aligner
 if(WIN32)
@@ -431,7 +428,7 @@ if(WIN32)
     if(PLUGIN_ThorlabsKCubePA)
         add_subdirectory(ThorlabsKCubePA)
     endif(PLUGIN_ThorlabsKCubePA)
-endif(WIN32)
+endif()
 
 # ThorlabsCCS Spectrometer
 if(WIN32)
@@ -439,7 +436,7 @@ if(WIN32)
     if(PLUGIN_ThorlabsCCS)
         add_subdirectory(ThorlabsCCS)
     endif(PLUGIN_ThorlabsCCS)
-endif(WIN32)
+endif()
 
 # ThorlabsISM stepper motor
 if(WIN32)
@@ -447,7 +444,7 @@ if(WIN32)
     if(PLUGIN_ThorlabsISM)
         add_subdirectory(ThorlabsISM)
     endif(PLUGIN_ThorlabsISM)
-endif(WIN32)
+endif()
 
 # ThorlabsDCxCam cameras
 if(WIN32)
@@ -455,7 +452,7 @@ if(WIN32)
     if(PLUGIN_ThorlabsDCxCam)
         add_subdirectory(ThorlabsDCxCam)
     endif(PLUGIN_ThorlabsDCxCam)
-endif(WIN32)
+endif()
 
 # Thorlabs Power Meter
 if(WIN32)
@@ -463,7 +460,7 @@ if(WIN32)
     if(PLUGIN_ThorlabsPowerMeter)
         add_subdirectory(ThorlabsPowerMeter)
     endif(PLUGIN_ThorlabsPowerMeter)
-endif(WIN32)
+endif()
 
 # UhlRegister
 option(PLUGIN_UhlRegister "Build with this plugin." OFF)
@@ -483,7 +480,7 @@ if(WIN32)
     if(PLUGIN_USBMotion3XIII)
         add_subdirectory(USBMotion3XIII)
     endif(PLUGIN_USBMotion3XIII)
-endif(WIN32)
+endif()
 
 # V4L2
 if(UNIX AND NOT APPLE)
@@ -499,7 +496,7 @@ if(WIN32)
     if(PLUGIN_Vistek)
         add_subdirectory(Vistek)
     endif(PLUGIN_Vistek)
-endif(WIN32)
+endif()
 
 # VRMagic
 if(WIN32)
@@ -507,7 +504,7 @@ if(WIN32)
     if(PLUGIN_VRMagic)
         add_subdirectory(VRMagic)
     endif(PLUGIN_VRMagic)
-endif(WIN32)
+endif()
 
 # x3pio
 option(PLUGIN_x3pio "Build with this plugin." ON)
@@ -521,7 +518,7 @@ if(WIN32)
     if(PLUGIN_Xeneth)
         add_subdirectory(Xeneth)
     endif(PLUGIN_Xeneth)
-endif(WIN32)
+endif()
 
 # XIMEA
 option(PLUGIN_XIMEA "Build with this plugin." OFF)

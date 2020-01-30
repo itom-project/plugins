@@ -6,8 +6,7 @@ message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 cmake_minimum_required(VERSION 3.0.2)
 
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED "Build shared library." ON)
+
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -27,21 +26,12 @@ else(BUILD_TARGET64)
    set(bit_dest "32")
 endif(BUILD_TARGET64)
 
-if(BUILD_SHARED)
-    set(LIBRARY_TYPE SHARED)
-else(BUILD_SHARED)
-    set(LIBRARY_TYPE STATIC)
-endif(BUILD_SHARED)
-
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
 
     
-if(BUILD_UNICODE)
-    add_definitions(-DUNICODE -D_UNICODE)
-endif(BUILD_UNICODE)
-add_definitions(-DCMAKE)
+add_definitions(-DUNICODE -D_UNICODE)
 
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
@@ -77,7 +67,6 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
         set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
     endif()
 
-    message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
     set(MeasurementComputing_LIB debug cbw${bit_dest} optimized cbw${bit_dest}  CACHE STRING "" FORCE)
 
@@ -130,13 +119,13 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
     file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 
-    add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    add_library(${target_name} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
     if(MSVC)
         #delayload cbw32.dll or cbw64.dll
         SET_TARGET_PROPERTIES (${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:cbw${bit_dest}.dll")
-        target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} Delayimp.lib)
+        target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} Delayimp.lib)
     else(MSVC)
-        target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+        target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${MeasurementComputing_LIB} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
     endif()
 
 

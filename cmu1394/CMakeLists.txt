@@ -6,8 +6,6 @@ message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 cmake_minimum_required(VERSION 3.0.2)
 
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -20,11 +18,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR}
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
 
-if(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE SHARED)
-else(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE STATIC)
-endif(BUILD_SHARED_LIBS)
 
 find_package(ITOM_SDK REQUIRED)
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
@@ -32,10 +25,7 @@ FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
-if(BUILD_UNICODE)
-    add_definitions(-DUNICODE -D_UNICODE)
-endif(BUILD_UNICODE)
-add_definitions(-DCMAKE)
+add_definitions(-DUNICODE -D_UNICODE)
 
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
@@ -59,14 +49,9 @@ if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
 endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else()
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+
 endif()
 
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -78,12 +63,12 @@ include_directories(
 
 if(BUILD_TARGET64)
     link_directories(
-        ${OpenCV_DIR}/lib
+        
         ${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib64/x64
     )
 else(BUILD_TARGET64)    
     link_directories(
-        ${OpenCV_DIR}/lib
+        
         ${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib
     )
 endif(BUILD_TARGET64)
@@ -125,9 +110,9 @@ endif()
 
 file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
-add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
     
 
 

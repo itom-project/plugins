@@ -6,8 +6,6 @@ message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 cmake_minimum_required(VERSION 3.0.2)
 
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -20,11 +18,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR}
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
 
-if(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE SHARED)
-else(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE STATIC)
-endif(BUILD_SHARED_LIBS)
 
 #set(VTK_INSTALL_EXPORT_NAME 1) #avoid that vtk directly links to an absolute Qt-library, that is located somewhere on their computer configuration.
 find_package(ITOM_SDK REQUIRED)
@@ -49,12 +42,8 @@ if(ITOM_SDK_PCL_SUPPORT)
 
         include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
-        add_definitions(${QT_DEFINITIONS})
-        if(BUILD_UNICODE)
-            add_definitions(-DUNICODE -D_UNICODE)
-        endif(BUILD_UNICODE)
-        add_definitions(-DCMAKE)
-
+        
+    
         if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
             add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
         endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
@@ -88,15 +77,14 @@ if(ITOM_SDK_PCL_SUPPORT)
         include_directories(
             ${CMAKE_CURRENT_BINARY_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}
-            ${QT_QTCORE_INCLUDE_DIR}
-            ${OpenCV_DIR}/include
+            #            #${OpenCV_DIR}/include
             ${PCL_INCLUDE_DIRS}
-            ${BOOST_INCLUDE_DIRS}
+            #${BOOST_INCLUDE_DIRS}
             ${ITOM_SDK_INCLUDE_DIRS}
             ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-            ${EIGEN_INCLUDE_DIR}
-            ${FLANN_INCLUDE_DIRS}
-            ${Boost_INCLUDE_DIR}
+            #${EIGEN_INCLUDE_DIR}
+            #${FLANN_INCLUDE_DIRS}
+            #${Boost_INCLUDE_DIR}
         )
 
         link_directories(
@@ -164,9 +152,9 @@ if(ITOM_SDK_PCL_SUPPORT)
         endforeach(__comps)
         endif()
 
-        add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+        add_library(${target_name} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
         
-        target_link_libraries(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES} ${VTK_LIBS})
+        target_link_libraries(${target_name} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES} ${VTK_LIBS})
 
         #translation
         set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
