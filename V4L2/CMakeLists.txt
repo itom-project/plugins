@@ -26,7 +26,6 @@ FIND_PACKAGE_QT(ON Core LinguistTools Designer Widgets)
 
 
 add_definitions(-DUNICODE -D_UNICODE)
-add_definitions(-DITOMWIDGETS_SHARED)
 
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
