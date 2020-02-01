@@ -69,9 +69,12 @@
 #include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
 
-#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
+#if PCL_VERSION_COMPARE(>, 1, 7, 0) && PCL_VERSION_COMPARE(<, 1, 10, 0)
 	#include <pcl/recognition/auxiliary.h>
-	#include <pcl/recognition/ransac_based/trimmed_icp.h>
+    #include <pcl/recognition/ransac_based/trimmed_icp.h>
+#elif PCL_VERSION_COMPARE(>=, 1, 10, 0)
+    #include <pcl/recognition/auxiliary.h>
+    #include <pcl/recognition/trimmed_icp.h>
 #endif
 
 
