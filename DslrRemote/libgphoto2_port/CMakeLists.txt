@@ -1,19 +1,26 @@
 set(target_name libgphoto2_port)
 
-project(${target_name})
 
-message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
-
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+set(ITOM_SDK_DIR "" CACHE PATH "path of SDK subfolder of itom root (build) directory")
+
+#this is to automatically detect the SDK subfolder of the itom build directory.
+find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "C:/itom/build/itom/SDK"
+          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
+    DOC "path of SDK subfolder of itom root (build) directory")
+
+if(NOT ITOM_SDK_DIR)
+    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif()
+
 set(PACKAGE_VERSION CACHE STRING "2.5.9")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 #if(BUILD_SHARED_LIBS)
 #    set(LIBRARY_TYPE SHARED)
@@ -23,25 +30,21 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR}
 set(LIBRARY_TYPE STATIC)
 
 
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 find_package(LibUSB QUIET)
-find_package(VisualLeakDetector QUIET)
 
 add_subdirectory(disk)
 add_subdirectory(libusb1)
 add_subdirectory(ptpip)
 
 if(BUILD_UNICODE)
-    add_definitions(-DUNICODE -D_UNICODE)
-endif(BUILD_UNICODE)
+    endif(BUILD_UNICODE)
 add_definitions(-DCMAKE)
 add_definitions(-DPACKAGE_VERSION="${PACKAGE_VERSION}")
 add_definitions(-DHAVE_REGEX)
 
-if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
-endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 if(DEFINED CMAKE_BUILD_TYPE)
@@ -55,14 +58,13 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../libtool
     ${CMAKE_CURRENT_SOURCE_DIR}/../regex
     ${LibUSB_INCLUDE_DIRS}    
 )
 
-set(plugin_HEADERS
+set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-info-list.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gphoto2/gphoto2-port-library.h
@@ -75,7 +77,7 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dirent.h
 )
 
-set(plugin_SOURCES 
+set(PLUGIN_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port.c
     ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-info-list.c
     ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port/gphoto2-port-log.c
@@ -90,7 +92,7 @@ set(plugin_SOURCES
 
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
-#    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+#    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
 
 set(LTDLLIB optimized ../libtool/$(Configuration)/libltdl debug ../libtool/$(Configuration)/libltdld)
@@ -99,7 +101,8 @@ set(LIBUSB1LIB optimized ./libusb1/$(Configuration)/libgphoto2_port_libusb1 debu
 set(PTPPORTLIB optimized ./ptpip/$(Configuration)/libgphoto2_port_ptpip debug ./ptpip/$(Configuration)/libgphoto2_port_ptpipd)
 set(DISKLIB optimized ./disk/$(Configuration)/libgphoto2_port_disk debug ./disk/$(Configuration)/libgphoto2_port_diskd)
 
-add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
+add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
+
 target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} 
     ${LTDLLIB}
     ${REGEXLIB}
@@ -108,12 +111,12 @@ target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LI
     ${DISKLIB})
 
 #documentation
-PLUGIN_DOCUMENTATION(${target_name} dslrRemote)
+itom_configure_plugin_documentation(${target_name} dslrRemote)
 
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 #LIST(APPEND COPY_SOURCES "$<TARGET_FILE:libgphoto2_port>")
 #LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-#ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-#POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

@@ -1,6 +1,6 @@
 project(ISO5436_2-demo)
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -11,7 +11,7 @@ else(BUILD_SHARED_LIBS)
   set(LIBRARY_TYPE STATIC)
 endif(BUILD_SHARED_LIBS)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(Xerces REQUIRED)
 find_package(XSD REQUIRED)
@@ -84,6 +84,9 @@ if(BUILD_SHARED_LIBS)
             ARGS -u ${ISO5436_2_LIB_PATH}/*.so* ${CMAKE_CURRENT_BINARY_DIR}/lib/
             DEPENDS ISO5436-2-demo)
 endif(BUILD_SHARED_LIBS)
+
+# Qt: enable all automoc, autouic and autorcc.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(iso5436-2-xml-demo 
         -L${XERCESC_LIBRARY} -lxerces-c-3.1

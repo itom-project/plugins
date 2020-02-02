@@ -1,26 +1,29 @@
 project(itom_plugins) 
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-option(BUILD_GIT_TAG "Adds the current GIT commit tag in the about string of a plugin." OFF)
+set(ITOM_SDK_DIR "" CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_CMAKE_DIR "itom_sdk.cmake"
+find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "C:/itom/build/itom/SDK"
+          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
+    DOC "path of SDK subfolder of itom root (build) directory")
+
+if(NOT ITOM_SDK_DIR)
+    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif()
+
+
+#this is to automatically detect the SDK subfolder of the itom build directory.
+find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     HINTS "C:/itom/build/itom/SDK"
           "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
-    PATH_SUFFIXES "cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
-get_filename_component(ITOM_SDK_DIR ${ITOM_SDK_CMAKE_DIR} DIRECTORY)
 
 if(NOT ITOM_SDK_DIR)
     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
-
-if(MSVC)
-    # add /LTCG flag to remove MSVC linker warning in release build
-    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
-    set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
 endif()
 
 # AerotechA3200

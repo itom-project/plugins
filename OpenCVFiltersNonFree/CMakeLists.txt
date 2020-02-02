@@ -1,27 +1,32 @@
 set(target_name OpenCVFiltersNonFree)
 
-project(${target_name})
 
-message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
-
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+set(ITOM_SDK_DIR "" CACHE PATH "path of SDK subfolder of itom root (build) directory")
+
+#this is to automatically detect the SDK subfolder of the itom build directory.
+find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "C:/itom/build/itom/SDK"
+          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
+    DOC "path of SDK subfolder of itom root (build) directory")
+
+if(NOT ITOM_SDK_DIR)
+    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
-find_package(VisualLeakDetector QUIET)
+itom_find_package_qt(ON Widgets Xml LinguistTools)
 
 if(${OpenCV_VERSION_MAJOR} STRGREATER "2")
     find_package(OpenCV COMPONENTS core features2d REQUIRED)
@@ -29,32 +34,8 @@ else()
     find_package(OpenCV COMPONENTS core nonfree features2d REQUIRED)
 endif()
 
-add_definitions(-DUNICODE -D_UNICODE)
-
-if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
-endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-
-# HANDLE VERSION (FROM GIT)
-unset(GIT_FOUND CACHE)
-find_package(Git)
-if(BUILD_GIT_TAG AND GIT_FOUND)
-    execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    OUTPUT_VARIABLE GITVERSION
-    RESULT_VARIABLE GITRESULT
-    ERROR_VARIABLE GITERROR
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-#uncomment to enable output to cmake console
-#message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-endif(BUILD_GIT_TAG AND GIT_FOUND)
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 
 
-endif()
 
 
 include_directories(
@@ -62,61 +43,55 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../OpenCVFilters
     ${ITOM_SDK_INCLUDE_DIRS}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 link_directories(
     
 )
 
-set(plugin_HEADERS
+set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFiltersNonFree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../OpenCVFilters/itomCvConversions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
-set(plugin_SOURCES 
+set(PLUGIN_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFiltersNonFree.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/../OpenCVFilters/itomCvConversions.cpp
 )
 
-set(plugin_UI
+set(PLUGIN_UI
 )
 
-set(plugin_RCC
+set(PLUGIN_RCC
 )
 
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
-    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()    
 
-if(QT5_FOUND)
-    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
-    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-else()
-    message(SEND_ERROR "Currently only Qt5 is supported")
-endif()
 
-file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
-add_library(${target_name} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
+
+# Qt: enable all automoc, autouic and autorcc.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 
 
 #translation
-set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
+itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
-PLUGIN_DOCUMENTATION(${target_name} openCVFiltersNonFree)
+itom_configure_plugin_documentation(${target_name} openCVFiltersNonFree)
 
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

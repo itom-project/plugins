@@ -1,6 +1,6 @@
 project(ISO5436_2)
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
 
 if(NOT DEFINED BUILD_SHARED_LIBS)
     option(BUILD_SHARED_LIBS "Build shared library." OFF)
@@ -28,7 +28,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
 set(iso54362xmlNAME iso5436-2-xml${iso54362LIBSUFFIX})
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(Xerces REQUIRED)
 find_package(XSD REQUIRED)
@@ -260,6 +260,9 @@ if(LINUX)
 else(LINUX)
    set(ZLIBNAME "zlibwapi")
 endif(LINUX)
+
+# Qt: enable all automoc, autouic and autorcc.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${iso54362xmlNAME} ${XERCESC_LIBRARY} ${ZLIBNAME})
 

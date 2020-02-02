@@ -1,6 +1,6 @@
 project(zlibwapi)
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
 
 set(LIBRARY_TYPE STATIC) 
 
@@ -12,7 +12,6 @@ endif(UNIX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
-add_definitions(-DUNICODE -D_UNICODE)
 if(WIN32)
    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -DZLIB_WINAPI)
 endif()

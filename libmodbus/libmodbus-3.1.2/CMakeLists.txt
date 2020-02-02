@@ -1,13 +1,11 @@
 set(target_name libmodbus_library)
 project(${target_name})
 
-message(STATUS "\n--------------- PLUGIN ${target_name} ---------------") 
+message(STATUS "-------- LIBMODBUS 3.1.2 LIBRARY ----------") 
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
  
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 option(BUILD_LIBMODBUS_SHARED "Build libmodbus as shared library (DLL) or static library (must be OFF)" OFF)
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
 if(BUILD_LIBMODBUS_SHARED)
     message(SEND_ERROR "Currently only BUILD_LIBMODBUS_SHARED=OFF is supported")
@@ -27,10 +25,6 @@ endif(BUILD_LIBMODBUS_SHARED)
 if(WIN32)
     set(LIBRARIES "Ws2_32")
 endif(WIN32)
-
-if(BUILD_UNICODE)
-    add_definitions(-DUNICODE -D_UNICODE)
-endif(BUILD_UNICODE)
 
 #configure_file(
 #    ${CMAKE_CURRENT_SOURCE_DIR}/src/modbus-version.h.in
