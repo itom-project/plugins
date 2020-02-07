@@ -152,7 +152,7 @@ if(XERCESC_FOUND AND XSD_FOUND)
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${XERCESC_LIBRARY} ${zlibname} iso5436-2-xml ${iso54362LIBSUFFIX} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${XERCESC_LIBRARY} ${zlibname} iso5436-2-xml${iso54362LIBSUFFIX} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 
     

@@ -2,31 +2,26 @@ project(ISO5436_2)
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
-if(NOT DEFINED BUILD_SHARED_LIBS)
-    option(BUILD_SHARED_LIBS "Build shared library." OFF)
-endif(NOT DEFINED BUILD_SHARED_LIBS)
+option(BUILD_X3P_ISO5436_SHARED "Build ISO5436-XML library as shared library (default: ON)." ON)
 
-if(POLICY CMP0071)
-    cmake_policy(SET CMP0071 NEW) #Let AUTOMOC and AUTOUIC process GENERATED files.
-endif()
-
-if(BUILD_SHARED_LIBS)
+if(BUILD_X3P_ISO5436_SHARED)
   set(LIBRARY_TYPE SHARED)
   add_definitions(-DZLIB_DLL -D_DLL -DBUILD_ISO5436_2_XML_DLL -DZLIB_WINAPI)
   # for ZLIB_WINAPI definition, see
   # see http://stackoverflow.com/questions/5424549/unresolved-externals-despite-linking-in-zlib-lib
-else(BUILD_SHARED_LIBS)
+else()
   set(LIBRARY_TYPE STATIC)
   add_definitions(-D_LIB) 
   set(iso54362LIBSUFFIX S)
-endif(BUILD_SHARED_LIBS)
+endif()
 
 if(CMAKE_CL_64)
     set(iso54362LIBSUFFIX ${iso54362LIBSUFFIX}64)
 endif(CMAKE_CL_64)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
-set(iso54362xmlNAME iso5436-2-xml${iso54362LIBSUFFIX})
+set(iso54362xmlNAME "iso5436-2-xml${iso54362LIBSUFFIX}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
@@ -55,17 +50,8 @@ endif(NOT SUBVERSION_FOUND)
 
 
 add_definitions(-DUNICODE -D_UNICODE -DISO5436_2_LIBRARY -DBUILD_ISO5436_2_XML  -DXSD_FP_ALL_DIGITS)
-if(WIN32 AND NOT BUILD_SHARED_LIBS)
+if(WIN32 AND NOT BUILD_X3P_ISO5436_SHARED)
    add_definitions(-DZLIB_WINAPI)
-endif()
-
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else()
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build,
-options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release
-RelWithDebInfo MinSizeRel.")
 endif()
 
 include_directories( "${PROJECT_SOURCE_DIR}/../../include"
@@ -253,16 +239,13 @@ set(iso54362xml_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/xyssl/md5.c
 )
 
-add_library( ${iso54362xmlNAME} ${LIBRARY_TYPE} ${iso54362xml_SRCS} ${iso54362xml_HEADER} ${opengps_HDRS} ${opengps_CXXHDRS})
+add_library(${iso54362xmlNAME} ${LIBRARY_TYPE} ${iso54362xml_SRCS} ${iso54362xml_HEADER} ${opengps_HDRS} ${opengps_CXXHDRS})
 
 if(LINUX)
    set(ZLIBNAME "minizip")
 else(LINUX)
    set(ZLIBNAME "zlibwapi")
 endif(LINUX)
-
-# Qt: enable all automoc, autouic and autorcc.
-set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${iso54362xmlNAME} ${XERCESC_LIBRARY} ${ZLIBNAME})
 
@@ -274,7 +257,7 @@ install(TARGETS  ${iso54362xmlNAME}
 install(FILES ${opengps_HDRS} DESTINATION iso5436-2-xml/include/opengps)    
 install(FILES ${opengps_CXXHDRS} DESTINATION iso5436-2-xml/include/opengps/cxx)    
 
-if(DEFINED MSVC_VERSION)
+if(MSVC)
   set_target_properties(${iso54362xmlNAME}  PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
 endif()
 
@@ -290,8 +273,6 @@ set(CPACK_PACKAGE_VERSION_PATCH "0")
 
 if(WIN32 AND NOT UNIX)
     set(CPACK_GENERATOR ZIP)
-else(WIN32 AND NOT UNIX)
-
 endif(WIN32 AND NOT UNIX)
 
 

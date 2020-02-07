@@ -51,7 +51,7 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     )
 
     if(BUILD_TARGET64)
-        if(MSVC_VERSION EQUAL 1900)
+        if(MSVC_VERSION GREATER 1899)
             set(PGR_LIBDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../lib64/vs2015")
             set(PGR_BINDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../bin64/vs2015")
         elseif(MSVC_VERSION EQUAL 1800)
@@ -62,7 +62,7 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
             set(PGR_BINDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../bin64")
         endif()
     else()
-        if(MSVC_VERSION EQUAL 1900)
+        if(MSVC_VERSION GREATER 1899)
             set(PGR_LIBDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../lib/vs2015")
             set(PGR_BINDIR_HINT "${FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR}/../bin/vs2015")
         elseif(MSVC_VERSION EQUAL 1800)
@@ -104,10 +104,8 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     if(UNIX)
         FIND_LIBRARY(FLYCAPTURE_LIBRARY NAMES libflycapture flycapture PATHS /usr/lib NO_DEFAULT_PATH)
     else()
-        if(MSVC_VERSION GREATER 1909) #>= MSVC 15.0
-            find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v140"  PATHS ${PGR_LIBDIR_HINT} PATH_SUFFIXES vs2015) 
-        elseif(MSVC_VERSION EQUAL 1900)
-            find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v140"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
+        if(MSVC_VERSION GREATER 1899) #>= MSVC 15.0
+            find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v140"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2015
         elseif(MSVC_VERSION EQUAL 1800)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v120"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010
         elseif(MSVC_VERSION EQUAL 1700)
@@ -130,10 +128,8 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     endif()
     
     if(WIN32)
-        if(MSVC_VERSION GREATER 1909) #>= MSVC 15.0
-            find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} PATH_SUFFIXES vs2015 NO_DEFAULT_PATH) 
-        elseif(MSVC_VERSION EQUAL 1900)
-            find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} PATH_SUFFIXES vs2015 NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010    
+        if(MSVC_VERSION GREATER 1899) #>= MSVC 15.0
+            find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} PATH_SUFFIXES vs2015 NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2015    
         elseif(MSVC_VERSION EQUAL 1800)
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v120.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2010    
         elseif(MSVC_VERSION EQUAL 1700)
