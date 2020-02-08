@@ -67,47 +67,47 @@ link_directories(
      "${CMAKE_CURRENT_BINARY_DIR}/../zlib/contrib/minizip"
 )
 
-# Generate the version include file from the .in file
-if(GENVERSION)
-   if(WIN32)
-      # Find subwcrev executable
-      get_filename_component(Subversion_PATH "${Subversion_SVN_EXECUTABLE}" PATH)
-      set(Subwcrev_EXECUTABLE "${Subversion_PATH}/subwcrev.exe" )
-      message(STATUS Subwcrev found: ${Subwcrev_EXECUTABLE})
-      # subwcrev $(ProjectDir) $(InputDir)/cxx/Version.in $(InputDir)/cxx/Version.h
-      add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
-                          PRE_BUILD
-                          COMMAND "${Subwcrev_EXECUTABLE}"
-                          ARGS "${PROJECT_SOURCE_DIR}"
-                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
-                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
-                          MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
-                          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}"
-                          COMMENT generating cxx/version.h )
-   endif(WIN32)
-   if(UNIX)
-      # on mac and linux we need the included replacement script
-      add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h" 
-                          PRE_BUILD
-                          COMMAND "${PROJECT_SOURCE_DIR}/../tools/subwcrev.sh"
-                          ARGS "${PROJECT_SOURCE_DIR}"
-                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
-                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
-                          MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
-                          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}"
-                          COMMENT generating cxx/version.h )
-   endif(UNIX)
-endif(GENVERSION)
+## Generate the version include file from the .in file
+#if(GENVERSION)
+#   if(WIN32)
+#      # Find subwcrev executable
+#      get_filename_component(Subversion_PATH "${Subversion_SVN_EXECUTABLE}" PATH)
+#      set(Subwcrev_EXECUTABLE "${Subversion_PATH}/subwcrev.exe" )
+#      message(STATUS Subwcrev found: ${Subwcrev_EXECUTABLE})
+#      # subwcrev $(ProjectDir) $(InputDir)/cxx/Version.in $(InputDir)/cxx/Version.h
+#      add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                          PRE_BUILD
+#                          COMMAND "${Subwcrev_EXECUTABLE}"
+#                          ARGS "${PROJECT_SOURCE_DIR}"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                          MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}"
+#                          COMMENT generating cxx/version.h )
+#   endif(WIN32)
+#   if(UNIX)
+#      # on mac and linux we need the included replacement script
+#      add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h" 
+#                          PRE_BUILD
+#                          COMMAND "${PROJECT_SOURCE_DIR}/../tools/subwcrev.sh"
+#                          ARGS "${PROJECT_SOURCE_DIR}"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                          MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}"
+#                          COMMENT generating cxx/version.h )
+#   endif(UNIX)
+#endif(GENVERSION)
 
-# Now publish the version file to public include dir
-add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../../include/opengps/cxx/version.h" 
-                    PRE_BUILD
-                    COMMAND "${CMAKE_COMMAND}" -E copy
-                    ARGS "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
-                         "${CMAKE_CURRENT_SOURCE_DIR}/../../include/opengps/cxx/"
-                    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
-                    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
-                    COMMENT publishing cxx/version.h )
+## Now publish the version file to public include dir
+#add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../../include/opengps/cxx/version.h" 
+#                    PRE_BUILD
+#                    COMMAND "${CMAKE_COMMAND}" -E copy
+#                    ARGS "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                         "${CMAKE_CURRENT_SOURCE_DIR}/../../include/opengps/cxx/"
+#                    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                    COMMENT publishing cxx/version.h )
 
 
 set(iso54362xml_HEADER
