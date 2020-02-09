@@ -7,7 +7,7 @@ option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 set(XIMEA_BUILD_API_VERSION "4.10" CACHE STRING "Expected API version")
 set_property(CACHE XIMEA_BUILD_API_VERSION PROPERTY STRINGS 3.16 4.10 "4.15 or newer")
 option(XIMEA_BUILD_INCLUDE_SHADING "Build with shading support from API-Version" OFF)
-set(ITOM_SDK_DIR "" CACHE PATH "path of SDK subfolder of itom root (build) directory")
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"

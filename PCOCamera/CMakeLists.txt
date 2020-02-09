@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.1...3.15)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(PCO_Camera_BUILD_API_VERSION "1.24 or newer" CACHE STRING "Expected API version")
 set_property(CACHE PCO_Camera_BUILD_API_VERSION PROPERTY STRINGS "1.24 or newer" "<1.24" "really old")
-set(ITOM_SDK_DIR "" CACHE PATH "path of SDK subfolder of itom root (build) directory")
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
