@@ -38,6 +38,11 @@
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
+#ifdef WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class DummyMotorInterface
@@ -89,13 +94,30 @@ class DummyMotor : public ito::AddInActuator
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
 
     protected:
-        ~DummyMotor() {}    //! Destructor
+        ~DummyMotor() //!< Destructor        
+        {
+            bool timeout = false;
+            int waitcount = 0;
+            bool moving = false;
+            for (int na = 0; na < m_numaxis; na++)
+                moving |= (m_currentStatus[na] & ito::actuatorMoving) != 0;
+            while (m_async && moving && !timeout)
+            {
+                Sleep(100);
+                waitcount++;
+                if (waitcount > PLUGINWAIT / 100)
+                    timeout = true;
+                moving = false;
+                for (int na = 0; na < m_numaxis; na++)
+                    moving |= (m_currentStatus[na] & ito::actuatorMoving) != 0;
+            }
+        }    
         DummyMotor();    //!< Constructur
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
     private:
-        int m_numaxis;    //!< Number of axis currently aviable at this stage
+        int m_numaxis;  //!< Number of axis currently aviable at this stage
         int m_async;    //!< variable to set up async and sync positioning --> Syncrone means programm do not return until positioning was done.
         int m_scale;    // Its something to round from ITO mm into stepwith of the corresponding system
         
@@ -105,22 +127,22 @@ class DummyMotor : public ito::AddInActuator
         // till here
 
     public slots:
-        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = nullptr);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-        ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = nullptr);
         ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
         ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
         ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-        ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = nullptr);
 
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);    //!< Slot to trigger a Status and position request

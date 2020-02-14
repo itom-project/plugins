@@ -34,7 +34,8 @@
 #include <qplugin.h>
 
 #if (CV_MAJOR_VERSION >= 3)
-#include "opencv2/xfeatures2d/nonfree.hpp"
+
+#include "opencv2\features2d.hpp"
 #elif (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 #include "opencv2/nonfree/nonfree.hpp"
 #endif
@@ -140,7 +141,7 @@ reference: David G. Lowe, \"Distinctive image features from scale-invariant key 
     if (!retval.containsError())
     {
 #if CV_MAJOR_VERSION >= 3
-        cv::xfeatures2d::SIFT detector;
+        cv::Feature2D detector;
 #else
         cv::SIFT detector;
 #endif
