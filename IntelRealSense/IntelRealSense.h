@@ -87,15 +87,19 @@ class IntelRealSense : public ito::AddInGrabber
         rs2::frameset * m_pFrameset = new rs2::frameset;
         rs2::frame * m_pFrame = new rs2::frame;
 
-        enum Mode {
+      /*  enum Mode {
             M_default,
             M_left,
             M_right,
             M_stereo,
             M_color
-        };
+        };*/
+        cv::Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
 
         QString * m_pMode = new QString;
+        bool isFilter;
+
+
         //enum SyncParams : unsigned long {
         //    sRoi = 0x0001,
         //    sBpp = 0x0002,
@@ -131,7 +135,7 @@ class IntelRealSense : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         
         //checkData usually need not to be overwritten (see comments in source code)
-        //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

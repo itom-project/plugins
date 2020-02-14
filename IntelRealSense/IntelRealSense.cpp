@@ -20,6 +20,26 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+
+
+/*-------------------------------------------------------------------------
+NOTES & TODOs:
++   COlor
++   Check if simplification is possible
++   Stream all & select IR/Stereo/etc. -frame by Params->mode
++   Sync image acquisition:     
+        rs2::frame_queue
+        rs2::syncer
++   Post-processing filters?! ---> rs_processing.hpp
+        rs2::threshold_filter
+        rs2::units_transform
+        decimation_filter
+        temporal_filter
+        disparity_transform
+        zero_order_invalistion
+        hole_filling_filter
+        rates_printer
+--------------------------------------------------------------------------- */
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
@@ -63,7 +83,7 @@ The device includes several single camera instances controlled separately with p
 	meta.addItem("left");
     meta.addItem("right");
 	meta.addItem("stereo");
-	//meta.addItem("color");
+	meta.addItem("color");
 	paramVal.setMeta(&meta, false);
 	m_initParamsOpt.append(paramVal);
 
@@ -115,8 +135,8 @@ IntelRealSense::IntelRealSense() : AddInGrabber(), m_isgrabbing(false)
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("fps", ito::ParamBase::Int | ito::ParamBase::Readonly , tr("Frames per second").toLatin1().data(), NULL);
 	m_params.insert(paramVal.getName(), paramVal);
-
-
+    paramVal = ito::Param("filter", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Filtering of Stereo image [0=OFF; 1=ON]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     DockWidgetIntelRealSense *dw = new DockWidgetIntelRealSense(this);
     
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
@@ -198,9 +218,10 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 			s_mode = sensor.get_info(RS2_CAMERA_INFO_NAME);
 			*s_streamType = RS2_STREAM_COLOR;
 		}
-		if (selectedMode == "default")
+        else
 		{
-			sensor = sensorList[0];
+            selectedMode = "default";
+            sensor = sensorList[0];
 			s_mode = sensor.get_info(RS2_CAMERA_INFO_NAME);
 			*s_streamType = RS2_STREAM_DEPTH;
 		}
@@ -277,32 +298,32 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 							break;
 						case RS2_FORMAT_Y16:	stream_bpp = 16;
 							break;
-						case RS2_FORMAT_RAW10:	stream_bpp = 10;
-							break;
-						case RS2_FORMAT_RAW16:	stream_bpp = 16;
-							break;
-						case RS2_FORMAT_RAW8:	stream_bpp = 8;
-							break;
-						case RS2_FORMAT_UYVY:	stream_bpp = 32;
-							break;
-						case RS2_FORMAT_MOTION_RAW:	stream_bpp = 8;
-							break;
-						case RS2_FORMAT_MOTION_XYZ32F:	stream_bpp = 32;
-							break;
-						case RS2_FORMAT_GPIO_RAW:	stream_bpp = 8;
-							break;
-						case RS2_FORMAT_6DOF:	stream_bpp = 8;
-							break;
+						//case RS2_FORMAT_RAW10:	stream_bpp = 10;
+						//	break;
+						//case RS2_FORMAT_RAW16:	stream_bpp = 16;
+						//	break;
+						//case RS2_FORMAT_RAW8:	stream_bpp = 8;
+						//	break;
+						//case RS2_FORMAT_UYVY:	stream_bpp = 32;
+						//	break;
+						//case RS2_FORMAT_MOTION_RAW:	stream_bpp = 8;
+						//	break;
+						//case RS2_FORMAT_MOTION_XYZ32F:	stream_bpp = 32;
+						//	break;
+						//case RS2_FORMAT_GPIO_RAW:	stream_bpp = 8;
+						//	break;
+						//case RS2_FORMAT_6DOF:	stream_bpp = 8;
+						//	break;
 						case RS2_FORMAT_DISPARITY32:	stream_bpp = 32;
 							break;
-						case RS2_FORMAT_Y10BPACK:	stream_bpp = 10;
-							break;
+						//case RS2_FORMAT_Y10BPACK:	stream_bpp = 10;
+						//	break;
 						case RS2_FORMAT_DISTANCE:	stream_bpp = 32;
 							break;
-						case RS2_FORMAT_MJPEG:	stream_bpp = 16;
-							break;
-						case RS2_FORMAT_COUNT:	stream_bpp = 8;
-							break;
+						//case RS2_FORMAT_MJPEG:	stream_bpp = 16;
+						//	break;
+						//case RS2_FORMAT_COUNT:	stream_bpp = 8;
+						//	break;
 						default:
 							stream_bpp = 32;
 						}
@@ -363,8 +384,8 @@ ito::RetVal IntelRealSense::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     
-    delete m_pFrame, m_pFrameset, m_pPipe;
-    m_pFrame, m_pFrameset, m_pPipe = NULL;
+    delete m_pFrame, m_pFrameset, m_pPipe, s_streamType, m_pMode;
+    m_pFrame, m_pFrameset, m_pPipe, s_streamType , m_pMode  = NULL;
 
     if (waitCond)
     {
@@ -471,6 +492,12 @@ ito::RetVal IntelRealSense::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
 
 			retValue += it->copyValueFrom(&(*val));
 		}
+        else if (key == "filter")
+        {
+            isFilter = val->getVal<int>();
+            
+            retValue += it->copyValueFrom(&(*val));
+        }
         else
         {
             //all parameters that don't need further checks can simply be assigned
@@ -545,9 +572,12 @@ ito::RetVal IntelRealSense::stopDevice(ItomSharedSemaphore *waitCond)
         setGrabberStarted(0);
     }
     
-    // Stop Pipeline from streaming
-    m_pPipe->stop();
-
+    if (!retValue.containsError())
+    {
+        // Stop Pipeline from streaming
+        m_pPipe->stop();
+    }
+    
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -581,27 +611,27 @@ ito::RetVal IntelRealSense::acquire(const int trigger, ItomSharedSemaphore *wait
     
 	if (!retValue.containsError())
 	{
-		rs2::frameset frames = m_pPipe->wait_for_frames();
-		rs2::frame frame = frames.first(*s_streamType);	// grabbed image frame OR error
+		rs2::frameset frames = m_pPipe->wait_for_frames();  //frameset containing frames from acquisition queue (-->wait for frames)
+		rs2::frame frame = frames.first(*s_streamType);     //grabbed image frame OR error
 		// Alternative:
         //rs2::frame frame = frames.first_or_default(*s_streamType); // grabbed image frame OR empty frame --> this is used in get_xxx_frame()
 
-        *m_pFrameset = frames;
-        *m_pFrame = frame;
+        *m_pFrameset = frames;  //Ptr to frameset
+        *m_pFrame = frame;      //Ptr to frame
 
 		if (frame)
 		{
-			rs2::video_frame vframe = frame.as<rs2::video_frame>();
+			rs2::video_frame vframe = frame.as<rs2::video_frame>(); //frame as/is video-frame
 
-			int width = vframe.get_width();
-			int height = vframe.get_height();
+			int width = vframe.get_width();     //videoframe width in px
+			int height = vframe.get_height();   //videoframe height in px
 			retValue += m_params["sizex"].setVal<int>(width);
 			retValue += m_params["sizey"].setVal<int>(height);
 			
             //int bits = vf.get_bits_per_pixel();
 			//int bytes = vframe.get_bytes_per_pixel();
             int bpp;
-			rs2_format format = frame.get_profile().format();
+			rs2_format format = frame.get_profile().format();       //videoframe format (bpp)
 			switch (format)
 			{
 			case RS2_FORMAT_ANY: bpp = 16;      //usually 32bit
@@ -648,10 +678,11 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
     
-    const int bufferWidth = m_params["sizex"].getVal<int>();
-    const int bufferHeight = m_params["sizey"].getVal<int>();
+    int bufferWidth = m_params["sizex"].getVal<int>();    //img buffer width in px
+    int bufferHeight = m_params["sizey"].getVal<int>();   //img buffer height in px
 	//int desiredBpp = m_params["bpp"].getVal<int>();
-    
+
+
 
     if (m_isgrabbing == false)
     {
@@ -671,10 +702,12 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
         
         if (!retValue.containsError())
         {
-            //int f_px = m_pFrame->get_data_size(); //frame_size in px ????? the number of bytes in frame (laut docu)
-            auto bufferPtr = m_pFrame->get_data(); //pointer to the start of the frame data
+            //Polling image data to img buffer of selected stream - except IR: see below
+            const void* bufferPtr = m_pFrame->get_data(); //pointer to the start of the frame data
             //frame.get_frame_number(); //möglicherweise wichtig zur sync von bildern
+            //int f_px = m_pFrame->get_data_size(); //frame_size in px ????? the number of bytes in frame (laut docu)
 
+            //Polling exclusively IR-left OR -right frames from the AllEnabledStream
             if (*m_pMode == "left") //m_pFrame->get_profile().stream_type() == RS2_STREAM_INFRARED && 
             {
                 bufferPtr = m_pFrameset->get_infrared_frame(1).get_data();
@@ -682,6 +715,25 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
             if (*m_pMode == "right") //m_pFrame->get_profile().stream_type() == RS2_STREAM_INFRARED && 
             {
                 bufferPtr = m_pFrameset->get_infrared_frame(2).get_data();
+            }
+            if ((*m_pMode == "stereo" || *m_pMode == "default") && isFilter)
+            {
+                //Filter the DEPTH-Image
+                rs2::decimation_filter dec_filter;
+                rs2::spatial_filter spat_filter;
+                rs2::temporal_filter temp_filter;
+                rs2::disparity_transform disparityToDepth(false);
+                rs2::disparity_transform depth_to_disparity(true);
+                //rs2::frame_queue original_data;
+                //rs2::frame_queue filtered_data;
+                
+                rs2::frame filtered = m_pFrameset->get_depth_frame();
+                filtered = dec_filter.process(filtered);
+                filtered = spat_filter.process(filtered);
+                filtered = temp_filter.process(filtered);
+                filtered = disparityToDepth.process(filtered);
+
+                bufferPtr = filtered.get_data();
             }
 
             if (m_data.getType() == ito::tUInt8)
@@ -706,6 +758,59 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
                     retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
                 }
             }
+            //TODO: COLOR IMAGES!!!
+            else if (m_data.getType() == ito::tRGBA32 && *m_pMode == "color")
+            {
+                int planes = dataObj->getDims();
+                
+                if (copyExternal)
+                {
+                    for (int i = 0; i < planes; ++i)
+                    {
+                        cv::Mat* externalMat = dataObj->getCvPlaneMat(i);
+                        memcpy(externalMat->data, &bufferPtr, bufferWidth*bufferHeight*externalMat->elemSize());
+                    }
+                }
+                if (!copyExternal || hasListeners)
+                {
+                    memcpy(&dataObj, bufferPtr, bufferWidth*bufferHeight*dataObj->elemSize()-1);
+                }
+                
+                
+                
+                
+                //int planes = m_data.getNumPlanes();
+                //for (int i = 0; i < planes; ++i)
+                //{
+                //    const cv::Mat* internalMat = m_data.getCvPlaneMat(i);
+                //    cv::Mat* externalMat = externalDataObject->getCvPlaneMat(i);
+
+                //    if (externalMat->isContinuous())
+                //    {
+                //        memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
+                //    }
+                //    else
+                //    {
+                //        for (int y = 0; y < internalMat->rows; y++)
+                //        {
+                //            memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
+                //        }
+                //    }
+
+                //}
+                //cv::Range ranges[] = { cv::Range(0,bufferHeight), cv::Range(0,bufferWidth) };
+                //
+                //cv::Mat* tempImage = NULL;
+                //memcpy(tempImage,bufferPtr,bufferWidth*bufferHeight*3);//  tempImage = cv::Mat(bufferPtr, ranges);
+                ////cv::Mat tempImage = cv::Mat(bufferWidth,bufferHeight,0,&bufferPtr,0Ui32); ///not working
+                //
+                //cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; 
+                //int fromTo[] = { 0,0,1,1,2,2 }; //{0,2,1,1,2,0}; //implicit BGR (camera) -> BGR (dataObject style) conversion
+
+                //cv::mixChannels(tempImage, 1, out, 1, fromTo, 3);
+
+            }
+
             else
             {
                 retValue += ito::RetVal(ito::retError, 1002, tr("copying image buffer not possible since unsupported type.").toLatin1().data());
@@ -717,22 +822,82 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// usually it is not necessary to implement the checkData method, since the default implementation from AddInGrabber is already
-// sufficient.
-//
-// What is does:
-// - it obtains the image size from sizex, sizey, bpp
-// - it checks whether the rows, cols and type of m_data are unequal to the requested dimensions and type
-// - if so, m_data is reallocated, else nothing is done
-// - if an external data object is given (from copyVal), this object is checked in place of m_data
-// - the external data object is only reallocated if it is empty, else its size or its region of interest must exactly
-//    fit to the given size restrictions
-//
-// if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal IntelRealSense::checkData(ito::DataObject *externalDataObject)
+ito::RetVal IntelRealSense::checkData(ito::DataObject *externalDataObject)
 {
+    int futureHeight = m_params["sizey"].getVal<int>();
+    int futureWidth = m_params["sizex"].getVal<int>();
+    int futureType;
+    int futureCh = (*m_pMode == "color") ? 3 : 1;
+
+
+    int bpp = m_params["bpp"].getVal<int>();
+    if (bpp <= 8)
+    {
+        futureType = ito::tUInt8;
+    }
+    else if (bpp <= 16)
+    {
+        futureType = ito::tUInt16;
+    }
+    else if (bpp == 24 && futureCh == 3)
+    {
+        futureType = ito::tRGBA32;
+    }
+    else if (bpp <= 32 && futureCh == 1)
+    {
+        futureType = ito::tInt32;
+    }
+    else
+    {
+        futureType = ito::tFloat64;
+    }
+
+    if (futureType == ito::tRGBA32 && (m_alphaChannel.cols != futureWidth || m_alphaChannel.rows != futureHeight))
+    {
+        m_alphaChannel = cv::Mat(futureHeight, futureWidth, CV_8UC1, cv::Scalar(255));
+    }
+
+
+
+    if (externalDataObject == NULL)
+    {
+        if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+        {
+            m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+
+            if (futureType == ito::tRGBA32)
+            {
+                //copy alpha channel to 4th channel in m_data
+                const int relations[] = { 0,3 };
+                cv::mixChannels(&m_alphaChannel, 1, m_data.get_mdata()[0], 1, relations, 1);
+            }
+        }
+    }
+    else
+    {
+        int dims = externalDataObject->getDims();
+        if (externalDataObject->getDims() == 0)
+        {
+            *externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+        }
+        else if (externalDataObject->calcNumMats() != 1)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
+        }
+        else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+        }
+        
+        if (futureType == ito::tRGBA32)
+        {
+            //copy alpha channel to 4th channel in m_data
+            const int relations[] = { 0,3 };
+            cv::mixChannels(&m_alphaChannel, 1, (cv::Mat*)externalDataObject->get_mdata()[externalDataObject->seekMat(0)], 1, relations, 1);
+        }
+    }
     return ito::retOk;
-}*/
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
