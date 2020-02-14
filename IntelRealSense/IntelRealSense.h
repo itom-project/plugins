@@ -62,18 +62,12 @@ class IntelRealSenseInterface : public ito::AddInInterfaceBase
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
- /**
-  *\class    IntelRealSense
-
-  */
 class IntelRealSense : public ito::AddInGrabber
 {
     Q_OBJECT
 
     protected:
-        //! Destructor
         ~IntelRealSense();
-        //! Constructor
         IntelRealSense();
         
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
@@ -83,49 +77,40 @@ class IntelRealSense : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
         
-        char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
-        //ito::RetVal syncParams();
-        //rs2::XXXX *m_pXXXX;
-		rs2_stream *s_streamType;
-		rs2::pipeline pipe;
-		rs2::frame * p_frame;
+        char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
 
-		enum SyncParams : unsigned long {
-			sMode = 0x00000001,
-			sFormat = 0x000000000002,
-			sStereoMatching = 0x000000000004,
-			sMaskBorderPixels = 0x000000000008,
-			sConsistencyCheck = 0x00000000010,
-			sUniquenessCheck = 0x000000000020,
-			sTextureFilter = 0x000000000040,
-			sGapInterpolation = 0x000000000080,
-			sNoiseReduction = 0x000000000100,
-			sSpeckleFilterIterations = 0x000000000200,
-			sAutoMode = 0x000000000400,
-			sAutoTargetIntensity = 0x000000000800,
-			sAutoIntensityDelta = 0x000000001000,
-			sAutoTargetFrame = 0x000000002000,
-			sAutoSkippedFrames = 0x000000004000,
-			sAutoMaxExposureTime = 0x000000008000,
-			sAutoMaxGain = 0x000000010000,
-			sManualExposureTime = 0x000000020000,
-			sManualGain = 0x000000040000,
-			sAutoROI = 0x000000080000,
-			sMaxFrameTimeDifference = 0x000000100000,
-			sTrigger = 0x000000200000,
-			sAutoRecalibration = 0x000000400000,
-			sImageFormat = 0x000000800000,
-			sAll = sMode | sFormat | sStereoMatching | sMaskBorderPixels | sConsistencyCheck | sUniquenessCheck |
-			sTextureFilter | sGapInterpolation | sNoiseReduction | sSpeckleFilterIterations | sAutoMode | sAutoTargetIntensity |
-			sAutoIntensityDelta | sAutoTargetFrame | sAutoSkippedFrames | sAutoMaxExposureTime | sAutoMaxGain | sManualExposureTime | sManualGain |
-			sAutoROI | sMaxFrameTimeDifference | sTrigger | sAutoRecalibration | sImageFormat
-		};
-		ito::RetVal syncParams(SyncParams what = sAll);
-		template<typename _Tp>ito::RetVal getParamInfo(_Tp &min, _Tp &max, _Tp &inc, _Tp &value, const char* name);
-		//visiontransfer::SceneScanParameters *m_pParamsObj;
+		rs2_stream *s_streamType;
+		rs2::pipeline * m_pPipe = new rs2::pipeline;
+        rs2::frameset * m_pFrameset = new rs2::frameset;
+        rs2::frame * m_pFrame = new rs2::frame;
+
+      /*  enum Mode {
+            M_default,
+            M_left,
+            M_right,
+            M_stereo,
+            M_color
+        };*/
+        cv::Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
+
+        QString * m_pMode = new QString;
+        bool isFilter;
+
+
+        //enum SyncParams : unsigned long {
+        //    sRoi = 0x0001,
+        //    sBpp = 0x0002,
+        //    sFps = 0x0004,
+        //    sRes = 0x0008,
+        //    sDoDepth = 0x0010,
+        //    sAll = sRoi | sBpp | sFps | sRes
+        //};
+        //int res[2];
+		//ito::RetVal syncParams(SyncParams what = sAll);
+		//template<typename _Tp>ito::RetVal getParamInfo(_Tp &min, _Tp &max, _Tp &inc, _Tp &value, const char* name);
 		//*m_pParamsObj;
 
     public slots:
@@ -150,7 +135,7 @@ class IntelRealSense : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         
         //checkData usually need not to be overwritten (see comments in source code)
-        //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

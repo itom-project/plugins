@@ -20,6 +20,26 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+
+
+/*-------------------------------------------------------------------------
+NOTES & TODOs:
++   COlor
++   Check if simplification is possible
++   Stream all & select IR/Stereo/etc. -frame by Params->mode
++   Sync image acquisition:     
+        rs2::frame_queue
+        rs2::syncer
++   Post-processing filters?! ---> rs_processing.hpp
+        rs2::threshold_filter
+        rs2::units_transform
+        decimation_filter
+        temporal_filter
+        disparity_transform
+        zero_order_invalistion
+        hole_filling_filter
+        rates_printer
+--------------------------------------------------------------------------- */
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
@@ -36,9 +56,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
-/*!
-    \todo add necessary information about your plugin here.
-*/
 IntelRealSenseInterface::IntelRealSenseInterface()
 {
     m_type = ito::typeDataIO | ito::typeGrabber; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
@@ -50,7 +67,7 @@ IntelRealSenseInterface::IntelRealSenseInterface()
     char docstring[] = \
 "This camera or grabber plugin can be used to control an INTEL RealSense camera device. It uses the IntelRealSense SDK with Connection over USB3.\n\
 \n\
-The device includes several single camera instances controlled separately with parameters. Also the stereo image processing is done by the cameras ASIC delivering depth map (16bit)";
+The device includes several single camera instances controlled separately with parameters. Also the stereo image processing is done by the camera's ASIC delivering a depth map (16bit)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
@@ -60,13 +77,13 @@ The device includes several single camera instances controlled separately with p
     m_license = QObject::tr("Apache License 2.0");
     m_aboutThis = QObject::tr(GITVERSION); 
 
-	ito::Param paramVal = ito::Param("Sensor", ito::ParamBase::String, "", tr("Sensor-Device to be opened. Choose 'default' (stereo)|'color'|'stereo'").toLatin1().data());
+	ito::Param paramVal = ito::Param("Sensor", ito::ParamBase::String, "", tr("Sensor-Device to be opened. Choose 'default' (=stereo)|'left'|'right'|'stereo'|'color'").toLatin1().data());
 	ito::StringMeta meta(ito::StringMeta::String);
-	meta.addItem("");
-	meta.addItem("color");
+	meta.addItem("default");
+	meta.addItem("left");
+    meta.addItem("right");
 	meta.addItem("stereo");
-	//meta.addItem("left");
-	//meta.addItem("right");
+	meta.addItem("color");
 	paramVal.setMeta(&meta, false);
 	m_initParamsOpt.append(paramVal);
 
@@ -82,14 +99,14 @@ IntelRealSenseInterface::~IntelRealSenseInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal IntelRealSenseInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(IntelRealSense) //the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(IntelRealSense)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal IntelRealSenseInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   REMOVE_PLUGININSTANCE(IntelRealSense) //the argument of the macro is the classname of the plugin
+   REMOVE_PLUGININSTANCE(IntelRealSense)
    return ito::retOk;
 }
 
@@ -99,22 +116,13 @@ ito::RetVal IntelRealSenseInterface::closeThisInst(ito::AddInBase **addInInst)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of plugin.
 IntelRealSense::IntelRealSense() : AddInGrabber(), m_isgrabbing(false)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "IntelRealSense", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 	
-	paramVal= ito::Param("mode", ito::ParamBase::String | ito::ParamBase::Readonly, "Sensor-Mode", NULL);
+	paramVal= ito::Param("mode", ito::ParamBase::String | ito::ParamBase::In, "Sensor-Mode", NULL);
 	m_params.insert(paramVal.getName(), paramVal);
-	/*paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);*/
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
@@ -125,10 +133,10 @@ IntelRealSense::IntelRealSense() : AddInGrabber(), m_isgrabbing(false)
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("fps", ito::ParamBase::Double | ito::ParamBase::Readonly , tr("Frames per second").toLatin1().data(), NULL);
+	paramVal = ito::Param("fps", ito::ParamBase::Int | ito::ParamBase::Readonly , tr("Frames per second").toLatin1().data(), NULL);
 	m_params.insert(paramVal.getName(), paramVal);
-    
-    //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
+    paramVal = ito::Param("filter", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Filtering of Stereo image [0=OFF; 1=ON]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     DockWidgetIntelRealSense *dw = new DockWidgetIntelRealSense(this);
     
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
@@ -142,21 +150,22 @@ IntelRealSense::~IntelRealSense()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! initialization of plugin
 ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-	//Initparam of selected Sensor (default=""|"color"|"stereo"|"left"|"right")
-	QString selectedMode = paramsOpt->at(0).getVal<char*>();
-	
+
+    //InitParam of selected Sensor ("default"|"color"|"stereo"|"left"|"right")
+	QString selectedMode = paramsOpt->at(0).getVal<char *>();
+    *m_pMode = selectedMode;
+
 	// Device context - represents the current platform w/ respect to connected devices
 	rs2::context ctx;
 	// List of available & connected RealSense Devices
 	rs2::device_list devlist = ctx.query_devices();
 	// device handler for an INTEL device
 	rs2::device dev;
-	// Check for NO detected devices:
+	// Check if NO detected devices:
 	if (devlist.size() == 0)
 	{
 		retValue += ito::RetVal(ito::retError, 0, tr("No devices found, please connect a RealSense device").toLatin1().data());
@@ -174,7 +183,7 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 		m_identifier = QString(&sn[0]);
 		setIdentifier(m_identifier);
 	}
-	// Sensor construct for depth/color/etc.-cameras or IMU
+	// Sensor construct for depth/color/etc.-cameras (or IMU)
 	rs2::sensor sensor;
 	// List of sensors as part of a rs2::device container
 	std::vector<rs2::sensor> sensorList = dev.query_sensors();
@@ -187,7 +196,6 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 	//	* rs2_stream::RS2_STREAM_INFRARED
 	//rs2_stream s_streamType;
 	s_streamType = new rs2_stream();
-	p_frame = new rs2::frame;
 
 	if (!retValue.containsError())
 	{
@@ -210,13 +218,14 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 			s_mode = sensor.get_info(RS2_CAMERA_INFO_NAME);
 			*s_streamType = RS2_STREAM_COLOR;
 		}
-		if (selectedMode.isEmpty())
+        else
 		{
-			sensor = sensorList[0];
+            selectedMode = "default";
+            sensor = sensorList[0];
 			s_mode = sensor.get_info(RS2_CAMERA_INFO_NAME);
-			*s_streamType = RS2_STREAM_ANY;
+			*s_streamType = RS2_STREAM_DEPTH;
 		}
-		retValue += m_params["mode"].setVal<char*>(&s_mode[0]);
+        retValue += m_params["mode"].setVal<char*>(&m_pMode->toStdString()[0]);   ///(&s_mode[0]);
 
 		// Stream profile list of a sensor (can be multiple streams)
 		std::vector<rs2::stream_profile> stream_profile_list = sensor.get_stream_profiles();
@@ -246,7 +255,8 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 					if (stream_profile.is_default())
 					{
 						s_profile = stream_profile;
-						rs2::video_stream_profile video_stream_profile = stream_profile.as<rs2::video_stream_profile>();
+                        
+                        rs2::video_stream_profile video_stream_profile = stream_profile.as<rs2::video_stream_profile>();
 						// Format of stream (enum)
 							//	RS2_FORMAT_ANY, /**< When passed to enable stream, librealsense will try to provide best suited format */
 							//	RS2_FORMAT_Z16, /**< 16-bit linear depth values. The depth is meters is equal to depth scale * pixel value. */
@@ -288,32 +298,32 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 							break;
 						case RS2_FORMAT_Y16:	stream_bpp = 16;
 							break;
-						case RS2_FORMAT_RAW10:	stream_bpp = 10;
-							break;
-						case RS2_FORMAT_RAW16:	stream_bpp = 16;
-							break;
-						case RS2_FORMAT_RAW8:	stream_bpp = 8;
-							break;
-						case RS2_FORMAT_UYVY:	stream_bpp = 32;
-							break;
-						case RS2_FORMAT_MOTION_RAW:	stream_bpp = 8;
-							break;
-						case RS2_FORMAT_MOTION_XYZ32F:	stream_bpp = 32;
-							break;
-						case RS2_FORMAT_GPIO_RAW:	stream_bpp = 8;
-							break;
-						case RS2_FORMAT_6DOF:	stream_bpp = 8;
-							break;
+						//case RS2_FORMAT_RAW10:	stream_bpp = 10;
+						//	break;
+						//case RS2_FORMAT_RAW16:	stream_bpp = 16;
+						//	break;
+						//case RS2_FORMAT_RAW8:	stream_bpp = 8;
+						//	break;
+						//case RS2_FORMAT_UYVY:	stream_bpp = 32;
+						//	break;
+						//case RS2_FORMAT_MOTION_RAW:	stream_bpp = 8;
+						//	break;
+						//case RS2_FORMAT_MOTION_XYZ32F:	stream_bpp = 32;
+						//	break;
+						//case RS2_FORMAT_GPIO_RAW:	stream_bpp = 8;
+						//	break;
+						//case RS2_FORMAT_6DOF:	stream_bpp = 8;
+						//	break;
 						case RS2_FORMAT_DISPARITY32:	stream_bpp = 32;
 							break;
-						case RS2_FORMAT_Y10BPACK:	stream_bpp = 10;
-							break;
+						//case RS2_FORMAT_Y10BPACK:	stream_bpp = 10;
+						//	break;
 						case RS2_FORMAT_DISTANCE:	stream_bpp = 32;
 							break;
-						case RS2_FORMAT_MJPEG:	stream_bpp = 16;
-							break;
-						case RS2_FORMAT_COUNT:	stream_bpp = 8;
-							break;
+						//case RS2_FORMAT_MJPEG:	stream_bpp = 16;
+						//	break;
+						//case RS2_FORMAT_COUNT:	stream_bpp = 8;
+						//	break;
 						default:
 							stream_bpp = 32;
 						}
@@ -326,38 +336,9 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 						retValue += m_params["fps"].setVal<int>(stream_fps);
 						retValue += m_params["format"].setVal<char*>(&f[0]);
 						retValue += m_params["bpp"].setVal<int>(stream_bpp);
-
 					}
 				}
 			}
-		}
-
-
-
-		/////===============================================================================================
-		////////	Functions for using the sensor to acquire frames
-		//sensor.open(s_profile);
-		//sensor.start([&](rs2::frame f) {});
-		//sensor.stop();
-		//sensor.close();
-		//////////////////////////////////////////////////////////////////
-		/////////////2nd Approach:	Config & Pipeline Streaming
-		
-		// Configuration of what sensor/stream to use for grabbing
-		rs2::config cfg;
-		// Pipeline, encapsulating the actual device and sensors (all avail.)
-		pipe = rs2::pipeline();
-		
-		rs2::pipeline_profile selection;
-
-		if (*s_streamType)
-		{
-			cfg.enable_stream(*s_streamType, -1);	// enables the selected stream
-			selection = pipe.start(cfg);	// starts the pipeline streaming process based on cfg
-			//auto data = selection.get_stream(s_streamType).as<rs2::video_stream_profile>();	// contains specific video_stream_profile parameters (width,height,fps,...)
-			//int data_sizex = data.width();	// Videostream image size in X
-			//int data_sizey = data.height();	// Videostream image size in Y
-			//std::cout << "Pipeline Size: " << data_sizex << "x" << data_sizey << "px" << std::endl;
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -403,11 +384,8 @@ ito::RetVal IntelRealSense::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     
-    //todo:
-    // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
-	delete p_frame;
-	p_frame = NULL;
+    delete m_pFrame, m_pFrameset, m_pPipe, s_streamType, m_pMode;
+    m_pFrame, m_pFrameset, m_pPipe, s_streamType , m_pMode  = NULL;
 
     if (waitCond)
     {
@@ -483,48 +461,53 @@ ito::RetVal IntelRealSense::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
+
+    // TODO: Params!
+
+
     if (!retValue.containsError())
     {
         if (key == "mode")
         {
-            //check the new value and if ok, assign it to the internal parameter
-			
-			//mode = val->getVal<char>();
-
+			*m_pMode = val->getVal<char*>();
 
             retValue += it->copyValueFrom( &(*val) );
         }
         else if (key == "format")
         {
-            //check the new value and if ok, assign it to the internal parameter
+            
             retValue += it->copyValueFrom( &(*val) );
         }
 		else if (key == "sizex")
 		{
-			//check the new value and if ok, assign it to the internal parameter
+			
 			retValue += it->copyValueFrom(&(*val));
 		}
 		else if (key == "sizey")
 		{
-			//check the new value and if ok, assign it to the internal parameter
 			retValue += it->copyValueFrom(&(*val));
 		}
 		else if (key == "bpp")
 		{
-			//check the new value and if ok, assign it to the internal parameter
+
 			retValue += it->copyValueFrom(&(*val));
 		}
+        else if (key == "filter")
+        {
+            isFilter = val->getVal<int>();
+            
+            retValue += it->copyValueFrom(&(*val));
+        }
         else
         {
             //all parameters that don't need further checks can simply be assigned
-            //to the value in m_params (the rest is already checked above)
             retValue += it->copyValueFrom( &(*val) );
         }
     }
 
     if (!retValue.containsError())
     {
-        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+        emit parametersChanged(m_params);
     }
 
     if (waitCond)
@@ -546,9 +529,27 @@ ito::RetVal IntelRealSense::startDevice(ItomSharedSemaphore *waitCond)
     
     //todo:
     // if this function has been called for the first time (grabberStartedCount() == 1),
-    // start the camera, allocate necessary buffers or do other work that is necessary
-    // to prepare the camera for image acquisitions.
+
+    if (!retValue.containsError())
+    {
+        // Configuration of what sensor/stream to use for grabbing
+        rs2::config cfg;
+        // Pipeline, encapsulating the actual device and sensors (all avail.)
+        rs2::pipeline pipe;
+        //Ptr to pipe
+        *m_pPipe = pipe;
+
+        rs2::pipeline_profile selection;
+
+        if (*s_streamType)
+        {
+            //cfg.enable_stream(*s_streamType);	// enables the selected stream
+            cfg.enable_all_streams();
+            selection = m_pPipe->start(cfg);	// starts the pipeline streaming process based on cfg
+        }
+    }
     
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -571,10 +572,12 @@ ito::RetVal IntelRealSense::stopDevice(ItomSharedSemaphore *waitCond)
         setGrabberStarted(0);
     }
     
-    //todo:
-    // if the counter (obtained by grabberStartedCount()) drops to zero again, stop the camera, free all allocated
-    // image buffers of the camera... (it is the opposite from all things that have been started, allocated... in startDevice)
-
+    if (!retValue.containsError())
+    {
+        // Stop Pipeline from streaming
+        m_pPipe->stop();
+    }
+    
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -590,11 +593,11 @@ ito::RetVal IntelRealSense::acquire(const int trigger, ItomSharedSemaphore *wait
     ito::RetVal retValue(ito::retOk);
     bool RetCode = false;
 
-
     if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Tried to acquire an image without having started the device.").toLatin1().data());
 		m_isgrabbing = false;
+
 		if (waitCond)
 		{
 			waitCond->returnValue = retValue;
@@ -605,49 +608,55 @@ ito::RetVal IntelRealSense::acquire(const int trigger, ItomSharedSemaphore *wait
     {
         m_isgrabbing = true;
     }
-    if (!retValue.containsError())
+    
+	if (!retValue.containsError())
 	{
-		rs2::frameset frames = pipe.wait_for_frames();
-		p_frame = &frames.first(*s_streamType);	// grabbed image frame OR error
-		//rs2::frame frame = frames.first_or_default(s_streamType); // grabbed image frame OR empty frame --> this is used in get_xxx_frame()
+		rs2::frameset frames = m_pPipe->wait_for_frames();  //frameset containing frames from acquisition queue (-->wait for frames)
+		rs2::frame frame = frames.first(*s_streamType);     //grabbed image frame OR error
+		// Alternative:
+        //rs2::frame frame = frames.first_or_default(*s_streamType); // grabbed image frame OR empty frame --> this is used in get_xxx_frame()
 
-		if (p_frame)
+        *m_pFrameset = frames;  //Ptr to frameset
+        *m_pFrame = frame;      //Ptr to frame
+
+		if (frame)
 		{
-			p_frame->keep();
-			rs2::video_frame vframe = p_frame->as<rs2::video_frame>();
-			int bits = vframe.get_bits_per_pixel();
-			//int bytes = vframe.get_bytes_per_pixel();
-			int width = vframe.get_width();
-			int height = vframe.get_height();
+			rs2::video_frame vframe = frame.as<rs2::video_frame>(); //frame as/is video-frame
+
+			int width = vframe.get_width();     //videoframe width in px
+			int height = vframe.get_height();   //videoframe height in px
 			retValue += m_params["sizex"].setVal<int>(width);
 			retValue += m_params["sizey"].setVal<int>(height);
-			int bpp = bits;
-			//rs2_format format = p_frame->get_profile().format();
-			//switch (format)
-			//{
-			//case RS2_FORMAT_ANY: bpp = 32;
-			//	break;
-			//case RS2_FORMAT_Z16:	bpp = 16;
-			//	break;
-			//case RS2_FORMAT_DISPARITY16:	bpp = 16;
-			//	break;
-			//case RS2_FORMAT_YUYV:	bpp = 32;
-			//	break;
-			//case RS2_FORMAT_RGB8:	bpp = 24;
-			//	break;
-			//case RS2_FORMAT_RGBA8:	bpp = 32;
-			//	break;
-			//case RS2_FORMAT_Y8:	bpp = 8;
-			//	break;
-			//case RS2_FORMAT_Y16:	bpp = 16;
-			//	break;
-			//case RS2_FORMAT_DISPARITY32:	bpp = 32;
-			//	break;
-			//case RS2_FORMAT_DISTANCE:	bpp = 32;
-			//	break;
-			//default:
-			//	bpp = 32;
-			//}
+			
+            //int bits = vf.get_bits_per_pixel();
+			//int bytes = vframe.get_bytes_per_pixel();
+            int bpp;
+			rs2_format format = frame.get_profile().format();       //videoframe format (bpp)
+			switch (format)
+			{
+			case RS2_FORMAT_ANY: bpp = 16;      //usually 32bit
+				break;
+			case RS2_FORMAT_Z16:	bpp = 16;       //USED BY DEPTH
+				break;
+			case RS2_FORMAT_DISPARITY16:	bpp = 16;
+				break;
+			case RS2_FORMAT_YUYV:	bpp = 32;
+				break;
+			case RS2_FORMAT_RGB8:	bpp = 24;
+				break;
+			case RS2_FORMAT_RGBA8:	bpp = 32;
+				break;
+			case RS2_FORMAT_Y8:	bpp = 8;        //USED BY IR1 & IR2
+				break;
+			case RS2_FORMAT_Y16:	bpp = 16;   
+				break;
+			case RS2_FORMAT_DISPARITY32:	bpp = 32;
+				break;
+			case RS2_FORMAT_DISTANCE:	bpp = 32;
+				break;
+			default:
+				bpp = 16;
+			}
 			retValue += m_params["bpp"].setVal<int>(bpp);
 		}
 	}
@@ -669,12 +678,11 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
     
-    const int bufferWidth = m_params["sizex"].getVal<int>();
-    const int bufferHeight = m_params["sizey"].getVal<int>();
-	const int bufferBpp = m_params["bpp"].getVal<int>();
-	const int bufferSize = p_frame->get_data_size();
-	// *ptr to image data
-	const size_t* bufferPtr = static_cast<const size_t*>(p_frame->get_data());
+    int bufferWidth = m_params["sizex"].getVal<int>();    //img buffer width in px
+    int bufferHeight = m_params["sizey"].getVal<int>();   //img buffer height in px
+	//int desiredBpp = m_params["bpp"].getVal<int>();
+
+
 
     if (m_isgrabbing == false)
     {
@@ -691,44 +699,44 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
         {
             retValue += checkData(externalDataObject); //update external object or m_data
         }
+        
         if (!retValue.containsError())
         {
-			if (bufferBpp <= 8)			//8-bit (non-color):	Y8, Raw8
-			{
-				if (copyExternal)
-				{
-					retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-				}
-				if (!copyExternal || hasListeners)
-				{
-					retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-				}
-			}
-			else if (bufferBpp <= 16)	//16bit:	Z16, Disparity16, Y16
-			{
-				if (copyExternal)
-				{
-					retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
-				}
-				if (!copyExternal || hasListeners)
-				{
-					retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
-				}
-			}
-			else if (bufferBpp > 16)	//24-32bit: RGB8, RGBA8, YUYV, DISPARITY32, DISTANCE
-			{
-				if (copyExternal)
-				{
-					retValue += externalDataObject->copyFromData2D<ito::uint32>((ito::uint32*) bufferPtr, bufferWidth, bufferHeight);
-				}
-				if (!copyExternal || hasListeners)
-				{
-					retValue += m_data.copyFromData2D<ito::uint32>((ito::uint32*) bufferPtr, bufferWidth, bufferHeight);
-				}
-			}
-			
-			
-			/*if (m_data.getType() == ito::tUInt8)
+            //Polling image data to img buffer of selected stream - except IR: see below
+            const void* bufferPtr = m_pFrame->get_data(); //pointer to the start of the frame data
+            //frame.get_frame_number(); //möglicherweise wichtig zur sync von bildern
+            //int f_px = m_pFrame->get_data_size(); //frame_size in px ????? the number of bytes in frame (laut docu)
+
+            //Polling exclusively IR-left OR -right frames from the AllEnabledStream
+            if (*m_pMode == "left") //m_pFrame->get_profile().stream_type() == RS2_STREAM_INFRARED && 
+            {
+                bufferPtr = m_pFrameset->get_infrared_frame(1).get_data();
+            }
+            if (*m_pMode == "right") //m_pFrame->get_profile().stream_type() == RS2_STREAM_INFRARED && 
+            {
+                bufferPtr = m_pFrameset->get_infrared_frame(2).get_data();
+            }
+            if ((*m_pMode == "stereo" || *m_pMode == "default") && isFilter)
+            {
+                //Filter the DEPTH-Image
+                rs2::decimation_filter dec_filter;
+                rs2::spatial_filter spat_filter;
+                rs2::temporal_filter temp_filter;
+                rs2::disparity_transform disparityToDepth(false);
+                rs2::disparity_transform depth_to_disparity(true);
+                //rs2::frame_queue original_data;
+                //rs2::frame_queue filtered_data;
+                
+                rs2::frame filtered = m_pFrameset->get_depth_frame();
+                filtered = dec_filter.process(filtered);
+                filtered = spat_filter.process(filtered);
+                filtered = temp_filter.process(filtered);
+                filtered = disparityToDepth.process(filtered);
+
+                bufferPtr = filtered.get_data();
+            }
+
+            if (m_data.getType() == ito::tUInt8)
             {
                 if (copyExternal)
                 {
@@ -750,46 +758,146 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
                     retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
                 }
             }
-			else if (m_data.getType() == ito::tUInt32)
-			{
-				if (copyExternal)
-				{
-					retValue += externalDataObject->copyFromData2D<ito::uint32>((ito::uint32*) bufferPtr, bufferWidth, bufferHeight);
-				}
-				if (!copyExternal || hasListeners)
-				{
-					retValue += m_data.copyFromData2D<ito::uint32>((ito::uint32*) bufferPtr, bufferWidth, bufferHeight);
-				}
-			}*/
+            //TODO: COLOR IMAGES!!!
+            else if (m_data.getType() == ito::tRGBA32 && *m_pMode == "color")
+            {
+                int planes = dataObj->getDims();
+                
+                if (copyExternal)
+                {
+                    for (int i = 0; i < planes; ++i)
+                    {
+                        cv::Mat* externalMat = dataObj->getCvPlaneMat(i);
+                        memcpy(externalMat->data, &bufferPtr, bufferWidth*bufferHeight*externalMat->elemSize());
+                    }
+                }
+                if (!copyExternal || hasListeners)
+                {
+                    memcpy(&dataObj, bufferPtr, bufferWidth*bufferHeight*dataObj->elemSize()-1);
+                }
+                
+                
+                
+                
+                //int planes = m_data.getNumPlanes();
+                //for (int i = 0; i < planes; ++i)
+                //{
+                //    const cv::Mat* internalMat = m_data.getCvPlaneMat(i);
+                //    cv::Mat* externalMat = externalDataObject->getCvPlaneMat(i);
+
+                //    if (externalMat->isContinuous())
+                //    {
+                //        memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
+                //    }
+                //    else
+                //    {
+                //        for (int y = 0; y < internalMat->rows; y++)
+                //        {
+                //            memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
+                //        }
+                //    }
+
+                //}
+                //cv::Range ranges[] = { cv::Range(0,bufferHeight), cv::Range(0,bufferWidth) };
+                //
+                //cv::Mat* tempImage = NULL;
+                //memcpy(tempImage,bufferPtr,bufferWidth*bufferHeight*3);//  tempImage = cv::Mat(bufferPtr, ranges);
+                ////cv::Mat tempImage = cv::Mat(bufferWidth,bufferHeight,0,&bufferPtr,0Ui32); ///not working
+                //
+                //cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; 
+                //int fromTo[] = { 0,0,1,1,2,2 }; //{0,2,1,1,2,0}; //implicit BGR (camera) -> BGR (dataObject style) conversion
+
+                //cv::mixChannels(tempImage, 1, out, 1, fromTo, 3);
+
+            }
+
             else
             {
                 retValue += ito::RetVal(ito::retError, 1002, tr("copying image buffer not possible since unsupported type.").toLatin1().data());
             }
         }
-
         m_isgrabbing = false;
     }
-
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// usually it is not necessary to implement the checkData method, since the default implementation from AddInGrabber is already
-// sufficient.
-//
-// What is does:
-// - it obtains the image size from sizex, sizey, bpp
-// - it checks whether the rows, cols and type of m_data are unequal to the requested dimensions and type
-// - if so, m_data is reallocated, else nothing is done
-// - if an external data object is given (from copyVal), this object is checked in place of m_data
-// - the external data object is only reallocated if it is empty, else its size or its region of interest must exactly
-//    fit to the given size restrictions
-//
-// if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal IntelRealSense::checkData(ito::DataObject *externalDataObject)
+ito::RetVal IntelRealSense::checkData(ito::DataObject *externalDataObject)
 {
+    int futureHeight = m_params["sizey"].getVal<int>();
+    int futureWidth = m_params["sizex"].getVal<int>();
+    int futureType;
+    int futureCh = (*m_pMode == "color") ? 3 : 1;
+
+
+    int bpp = m_params["bpp"].getVal<int>();
+    if (bpp <= 8)
+    {
+        futureType = ito::tUInt8;
+    }
+    else if (bpp <= 16)
+    {
+        futureType = ito::tUInt16;
+    }
+    else if (bpp == 24 && futureCh == 3)
+    {
+        futureType = ito::tRGBA32;
+    }
+    else if (bpp <= 32 && futureCh == 1)
+    {
+        futureType = ito::tInt32;
+    }
+    else
+    {
+        futureType = ito::tFloat64;
+    }
+
+    if (futureType == ito::tRGBA32 && (m_alphaChannel.cols != futureWidth || m_alphaChannel.rows != futureHeight))
+    {
+        m_alphaChannel = cv::Mat(futureHeight, futureWidth, CV_8UC1, cv::Scalar(255));
+    }
+
+
+
+    if (externalDataObject == NULL)
+    {
+        if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+        {
+            m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+
+            if (futureType == ito::tRGBA32)
+            {
+                //copy alpha channel to 4th channel in m_data
+                const int relations[] = { 0,3 };
+                cv::mixChannels(&m_alphaChannel, 1, m_data.get_mdata()[0], 1, relations, 1);
+            }
+        }
+    }
+    else
+    {
+        int dims = externalDataObject->getDims();
+        if (externalDataObject->getDims() == 0)
+        {
+            *externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+        }
+        else if (externalDataObject->calcNumMats() != 1)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
+        }
+        else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+        }
+        
+        if (futureType == ito::tRGBA32)
+        {
+            //copy alpha channel to 4th channel in m_data
+            const int relations[] = { 0,3 };
+            cv::mixChannels(&m_alphaChannel, 1, (cv::Mat*)externalDataObject->get_mdata()[externalDataObject->seekMat(0)], 1, relations, 1);
+        }
+    }
     return ito::retOk;
-}*/
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
@@ -886,608 +994,187 @@ ito::RetVal IntelRealSense::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
 //ito::RetVal IntelRealSense::syncParams(SyncParams what /*=sAll*/)
 //{
-//	ito::RetVal retVal(ito::retOk);
-//	if (m_pParamsObj)
-//	{
-//		std::map<std::string, rs2_camera_info> test = m_pParamsObj->getAllParameters();
-//		if (what & sMode)
-//		{
-//			int min, max, inc, val;
-//
-//			retVal += getParamInfo<int>(min, max, inc, val, "operation_mode");
-//			//int val = m_pParamsObj->getOperationMode();
-//
-//
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["operationMode"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["operationMode"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//		}
-//		if (what & sFormat)
-//		{
-//			int min, max, inc, val;
-//
-//			retVal += getParamInfo<int>(min, max, inc, val, "disparity_offset");
-//
-//			//int val = m_pParamsObj->getOperationMode();
-//
-//
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["disparityOffset"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["disparityOffset"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			//int val = m_pParamsObj->getDisparityOffset();
-//		}
-//		if (what & sStereoMatching)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "sgm_p1_edge");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["stereoMatchingP1Edge"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["stereoMatchingP1Edge"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			retVal += getParamInfo<int>(min, max, inc, val, "sgm_p1_no_edge");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["stereoMatchingP1NoEdge"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["stereoMatchingP1NoEdge"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			retVal += getParamInfo<int>(min, max, inc, val, "sgm_p2_edge");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["stereoMatchingP2Edge"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["stereoMatchingP2Edge"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			retVal += getParamInfo<int>(min, max, inc, val, "sgm_p1_no_edge");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["stereoMatchingP2NoEdge"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["stereoMatchingP2NoEdge"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			retVal += getParamInfo<int>(min, max, inc, val, "sgm_edge_sensitivity");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["stereoMatchingEdgeSensitivity"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["stereoMatchingEdgeSensitivity"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//
-//
-//			/*int val;
-//			val = m_pParamsObj->getStereoMatchingP1Edge();
-//			retVal += m_params["stereoMatchingP1Edge"].setVal<int>(val);
-//			val = m_pParamsObj->getStereoMatchingP1NoEdge();
-//			retVal += m_params["stereoMatchingP1NoEdge"].setVal<int>(val);
-//			val = m_pParamsObj->getStereoMatchingP2Edge();
-//			retVal += m_params["stereoMatchingP2Edge"].setVal<int>(val);
-//			val = m_pParamsObj->getStereoMatchingP2NoEdge();
-//			retVal += m_params["stereoMatchingP2NoEdge"].setVal<int>(val);
-//			val = m_pParamsObj->getStereoMatchingEdgeSensitivity();
-//			retVal += m_params["stereoMatchingEdgeSensitivity"].setVal<int>(val);*/
-//		}
-//		if (what &sMaskBorderPixels)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "mask_border_pixels_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["maskBorderPixels"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["maskBorderPixels"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			/*bool val = m_pParamsObj->getMaskBorderPixelsEnabled();
-//			retVal += m_params["maskBorderPixels"].setVal<int>(val? 1 : 0);*/
-//		}
-//		if (what & sConsistencyCheck)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "consistency_check_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["consistencyCheck"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["consistencyCheck"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			retVal += getParamInfo<int>(min, max, inc, val, "consistency_check_sensitivity");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["consistencyCheckSensitivity"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["consistencyCheckSensitivity"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			/*bool val = m_pParamsObj->getConsistencyCheckEnabled();
-//			retVal += m_params["consistencyCheck"].setVal<int>(val ? 1 : 0);
-//			int i = m_pParamsObj->getConsistencyCheckSensitivity();
-//			retVal += m_params["consistencyCheckSensitivity"].setVal<int>(i);*/
-//		}
-//		if (what & sUniquenessCheck)
-//		{
-//
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "uniqueness_check_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["uniquenessCheck"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["uniquenessCheck"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			retVal += getParamInfo<int>(min, max, inc, val, "uniqueness_check_sensitivity");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["uniquenessCheckSensitivity"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["uniquenessCheckSensitivity"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			/*bool val = m_pParamsObj->getUniquenessCheckEnabled();
-//			retVal += m_params["uniquenessCheck"].setVal<int>(val ? 1 : 0);
-//			int i = m_pParamsObj->getUniquenessCheckSensitivity();
-//			retVal += m_params["uniquenessCheckSensitivity"].setVal<int>(i);*/
-//
-//		}
-//		if (what & sTextureFilter)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "texture_filter_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["textureFilter"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["textureFilter"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			retVal += getParamInfo<int>(min, max, inc, val, "texture_filter_sensitivity");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["textureFilterSensitivity"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["textureFilterSensitivity"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*bool val = m_pParamsObj->getTextureFilterEnabled();
-//			retVal += m_params["textureFilter"].setVal<int>(val ? 1 : 0);
-//			int i = m_pParamsObj->getTextureFilterSensitivity();
-//			retVal += m_params["textureFilterSensitivity"].setVal<int>(i);*/
-//		}
-//		if (what & sGapInterpolation)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "gap_interpolation_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["gapInterpolation"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["gapInterpolation"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*bool val = m_pParamsObj->getGapInterpolationEnabled();
-//			retVal += m_params["gapInterpolation"].setVal<int>(val ? 1 : 0);*/
-//		}
-//		if (what & sNoiseReduction)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "noise_reduction_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["noiseReduction"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["noiseReduction"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*bool val = m_pParamsObj->getNoiseReductionEnabled();
-//			retVal += m_params["noiseReduction"].setVal<int>(val ? 1 : 0);*/
-//		}
-//		if (what & sSpeckleFilterIterations)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "speckle_filter_iterations");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["speckleFilterIterations"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["speckleFilterIterations"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*int val = m_pParamsObj->getSpeckleFilterIterations();
-//			retVal += m_params["speckleFilterIterations"].setVal<int>(val);*/
-//		}
-//		if (what & sAutoMode)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "auto_exposure_mode");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["exposureGainMode"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["exposureGainMode"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*int val = m_pParamsObj->getAutoMode();
-//			retVal += m_params["exposureGainMode"].setVal<int>(val);*/
-//		}
-//		if (what & sAutoTargetIntensity)
-//		{
-//			double min, max, inc, val;
-//			retVal += getParamInfo<double>(min, max, inc, val, "auto_target_intensity");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoTargetIntensity"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["autoTargetIntensity"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*double val = m_pParamsObj->getAutoTargetIntensity();
-//			retVal += m_params["autoTargetIntensity"].setVal<double>(val);*/
-//		}
-//		if (what & sAutoIntensityDelta)
-//		{
-//			double min, max, inc, val;
-//			retVal += getParamInfo<double>(min, max, inc, val, "auto_intensity_delta");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoIntensityDelta"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["autoIntensityDelta"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*double val = m_pParamsObj->getAutoIntensityDelta();
-//			retVal += m_params["autoIntensityDelta"].setVal<double>(val);*/
-//		}
-//		if (what & sAutoTargetFrame)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "auto_target_frame");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoTargetFrame"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["autoTargetFrame"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*int val = m_pParamsObj->getAutoTargetFrame();
-//			retVal += m_params["autoTargetFrame"].setVal<int>(val);*/
-//		}
-//		if (what &sAutoSkippedFrames)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "auto_skipped_frames");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoSkippedFrames"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["autoSkippedFrames"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*int val = m_pParamsObj->getAutoSkippedFrames();
-//			retVal += m_params["autoSkippedFrames"].setVal<int>(val);*/
-//		}
-//		if (what & sAutoMaxExposureTime)
-//		{
-//			double min, max, inc, val;
-//			retVal += getParamInfo<double>(min, max, inc, val, "auto_maximum_exposure_time");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoMaxExposureTime"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["autoMaxExposureTime"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*double val = m_pParamsObj->getAutoMaxExposureTime();
-//			retVal += m_params["autoMaxExposureTime"].setVal<double>(val);*/
-//		}
-//		if (what & sAutoMaxGain)
-//		{
-//			double min, max, inc, val;
-//			retVal += getParamInfo<double>(min, max, inc, val, "auto_maximum_gain");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoMaxGain"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["autoMaxGain"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*double val = m_pParamsObj->getAutoMaxGain();
-//			retVal += m_params["autoMaxGain"].setVal<double>(val);*/
-//		}
-//		if (what & sManualExposureTime)
-//		{
-//			double min, max, inc, val;
-//			retVal += getParamInfo<double>(min, max, inc, val, "manual_exposure_time");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["manualExposureTime"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["manualExposureTime"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*double val = m_pParamsObj->getManualExposureTime();
-//			retVal += m_params["manualExposureTime"].setVal<double>(val);*/
-//		}
-//		if (what & sManualGain)
-//		{
-//			double min, max, inc, val;
-//			retVal += getParamInfo<double>(min, max, inc, val, "manual_gain");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["manualGain"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["manualGain"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*double val = m_pParamsObj->getManualGain();
-//			retVal += m_params["manualGain"].setVal<double>(val);*/
-//		}
-//		if (what & sAutoROI)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "auto_exposure_roi_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoROI"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["autoROI"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			int min1, max1, inc1, val1;
-//			retVal += getParamInfo<int>(min1, max1, inc1, val1, "auto_exposure_roi_x");
-//
-//			int min2, max2, inc2, val2;
-//			retVal += getParamInfo<int>(min2, max2, inc2, val2, "auto_exposure_roi_y");
-//
-//			int min3, max3, inc3, val3;
-//			retVal += getParamInfo<int>(min3, max3, inc3, val3, "auto_exposure_roi_width");
-//
-//			int min4, max4, inc4, val4;
-//			retVal += getParamInfo<int>(min4, max4, inc4, val4, "auto_exposure_roi_height");
-//			if (!retVal.containsError())
-//			{
-//				int roi[4];
-//				roi[0] = val1;
-//				roi[1] = val2;
-//				roi[2] = val3;
-//				roi[3] = val4;
-//
-//				retVal += m_params["autoExposureGainControlROI"].setVal<int*>(roi, 4);
-//				ito::RectMeta* meta = m_params["autoExposureGainControlROI"].getMetaT<ito::RectMeta>();
-//				meta->setWidthRangeMeta(ito::RangeMeta(min3, max3, inc3));
-//				meta->setHeightRangeMeta(ito::RangeMeta(min4, max4, inc4));
-//			}
-//
-//			// m_pParamsObj->getAutoROI();
-//		}
-//		if (what & sMaxFrameTimeDifference)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "max_frame_time_difference_ms");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["maxFrameTimeDifference"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["maxFrameTimeDifference"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*int val = m_pParamsObj->getMaxFrameTimeDifference();
-//			retVal += m_params["maxFrameTimeDifference"].setVal<int>(val);*/
-//		}
-//		if (what & sTrigger)
-//		{
-//			double min, max, inc, val;
-//			retVal += getParamInfo<double>(min, max, inc, val, "trigger_frequency");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["triggerFrequency"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["triggerFrequency"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			int mini, maxi, vali, inci;
-//			retVal += getParamInfo<int>(mini, maxi, inci, vali, "trigger_0_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["trigger0"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["trigger0"].getMetaT<ito::IntMeta>();
-//				meta->setMin(mini);
-//				meta->setMax(maxi);
-//				meta->setStepSize(inci);
-//			}
-//			retVal += getParamInfo<int>(mini, maxi, inci, vali, "trigger_1_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["trigger1"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["trigger1"].getMetaT<ito::IntMeta>();
-//				meta->setMin(mini);
-//				meta->setMax(maxi);
-//				meta->setStepSize(inci);
-//			}
-//			retVal += getParamInfo<double>(min, max, inc, val, "trigger_0_pulse_width");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["trigger0PulseWidth"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["trigger0PulseWidth"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			retVal += getParamInfo<double>(min, max, inc, val, "trigger_1_pulse_width");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["trigger1PulseWidth"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["trigger1PulseWidth"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			retVal += getParamInfo<double>(min, max, inc, val, "trigger_1_offset");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["trigger1Offset"].setVal<double>(val);
-//				ito::DoubleMeta* meta = m_params["trigger1Offset"].getMetaT<ito::DoubleMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//
-//			/*double val = m_pParamsObj->getTriggerFrequency();
-//			retVal += m_params["triggerFrequency"].setVal<double>(val);
-//			bool val1 = m_pParamsObj->getTrigger0Enabled();
-//			retVal += m_params["trigger0"].setVal<int>(val1 ? 1 : 0);
-//			bool val2 = m_pParamsObj->getTrigger1Enabled();
-//			retVal += m_params["trigger1"].setVal<int>(val2 ? 1 : 0);
-//			double val3 = m_pParamsObj->getTrigger0PulseWidth();
-//			retVal += m_params["trigger0PulseWidth"].setVal<double>(val3);
-//			double val4 = m_pParamsObj->getTrigger1PulseWidth();
-//			retVal += m_params["trigger1PulseWidth"].setVal<double>(val4);
-//			double val5 = m_pParamsObj->getTrigger1Offset();
-//			retVal += m_params["trigger1Offset"].setVal<double>(val5);*/
-//
-//		}
-//		if (what & sAutoRecalibration)
-//		{
-//			int min, max, inc, val;
-//			retVal += getParamInfo<int>(min, max, inc, val, "auto_recalibration_enabled");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["autoRecalibration"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["autoRecalibration"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			retVal += getParamInfo<int>(min, max, inc, val, "auto_recalibration_permanent");
-//			if (!retVal.containsError())
-//			{
-//				retVal += m_params["saveAutoRecalibration"].setVal<int>(val);
-//				ito::IntMeta* meta = m_params["saveAutoRecalibration"].getMetaT<ito::IntMeta>();
-//				meta->setMin(min);
-//				meta->setMax(max);
-//				meta->setStepSize(inc);
-//			}
-//			/*bool val = m_pParamsObj->getAutoRecalibrationEnabled();
-//			retVal += m_params["autoRecalibration"].setVal<int>(val ? 1 : 0);
-//			val = m_pParamsObj->getSaveAutoReclabration();
-//			retVal += m_params["saveAutoRecalibration"].setVal<int>(val ? 1 : 0);*/
-//
-//		}
-//		if (what & sImageFormat)
-//		{
-//			if (m_pImagePair && m_pParamsObj)
-//			{
-//				for (int i = 0; i < 2; ++i)// Changes are often only visible after the 2nd image
-//				{
-//					while (!m_pImageTransferObj->receiveImagePair(*m_pImagePair))
-//					{
-//						//wait till done
-//					}
-//				}
-//				ImagePair::ImageFormat format1 = m_pImagePair->getPixelFormat(0);
-//				ImagePair::ImageFormat format2 = m_pImagePair->getPixelFormat(1);
-//				if (format1 != format2)
-//				{
-//					if (format1 == ImagePair::FORMAT_8_BIT_RGB || format2 == ImagePair::FORMAT_8_BIT_RGB)
-//					{
-//						retVal += ito::RetVal(ito::retError, 0, tr("camera delivers rgb image. This is not implemented yet").toLatin1().data());
-//
-//					}
-//					else
-//					{
-//						m_params["bpp"].setVal(16);
-//					}
-//				}
-//				else
-//				{
-//					if (format1 == ImagePair::FORMAT_8_BIT_MONO)
-//					{
-//						m_params["bpp"].setVal(8);
-//					}
-//					else
-//					{
-//						m_params["bpp"].setVal(16);
-//					}
-//
-//				}
-//
-//				int width = m_pImagePair->getWidth();
-//				int height = m_pImagePair->getHeight();
-//				int *roi = m_params["roi"].getVal<int*>();
-//				roi[0] = 0;
-//				roi[1] = 0;
-//				roi[2] = width;
-//				roi[3] = height;
-//				m_params["sizex"].setVal<int>(width);
-//				m_params["sizey"].setVal<int>(height);
-//			}
-//			else
-//			{
-//				retVal += ito::RetVal(ito::retError, 0, tr("ImagePair instance not available").toLatin1().data());
-//			}
-//		}
-//	}
-//	else
-//	{
-//		retVal = ito::RetVal(ito::retError, 0, QString("parameter instance not callable").toLatin1().data());
-//	}
-//	return retVal;
+//    ito::RetVal retVal(ito::retOk);
+//    bool get_depth_frame;
+//    if (m_params["getDepthData"].getVal<int>())
+//    {
+//        get_depth_frame = true;
+//    }
+//    if (what&sRoi)
+//    {
+//        int size_x, size_y;
+//        int* test = m_params["roi"].getVal<int*>();
+//        size_x = (*(test + 2)) - (*test);
+//        size_y = (*(test + 3)) - (*(test + 1));
+//        m_params["sizex"].setVal<int>(size_x);
+//        m_params["sizey"].setVal<int>(size_y);
+//    }
+//    if (what&sRes)
+//    {
+//        int resol = m_params["resolution"].getVal<int>();
+//        int fps = m_params["fps"].getVal<int>();
+//        int new_fps{ 0 };
+//        bool change_fps{ false };
+//        if (get_depth_frame)
+//        {
+//            switch (resol)
+//            {
+//            case 0:
+//                res[0] = 256;
+//                res[1] = 144;
+//                if (fps != 90)
+//                {
+//                    change_fps = true;
+//                    new_fps = 90;
+//                }
+//                break;
+//            case 1:
+//                res[0] = 424;
+//                res[1] = 240;
+//                if (fps != 6 && fps != 15 && fps != 30 && fps != 60 && fps != 90)
+//                {
+//                    change_fps = true;
+//                    new_fps = 30;
+//                }
+//                break;
+//            case 2:
+//                res[0] = 480;
+//                res[1] = 270;
+//                if (fps != 6 && fps != 15 && fps != 30 && fps != 60 && fps != 90)
+//                {
+//                    change_fps = true;
+//                    new_fps = 30;
+//                }
+//                break;
+//            case 3:
+//                res[0] = 640;
+//                res[1] = 360;
+//                if (fps != 6 && fps != 15 && fps != 30 && fps != 60 && fps != 90)
+//                {
+//                    change_fps = true;
+//                    new_fps = 30;
+//                }
+//                break;
+//            case 4:
+//                res[0] = 640;
+//                res[1] = 480;
+//                if (fps != 6 && fps != 15 && fps != 30 && fps != 60 && fps != 90)
+//                {
+//                    change_fps = true;
+//                    new_fps = 30;
+//                }
+//                break;
+//            case 5:
+//                res[0] = 848;
+//                res[1] = 100;
+//                if (fps != 100)
+//                {
+//                    change_fps = true;
+//                    new_fps = 100;
+//                }
+//                break;
+//            case 6:
+//                res[0] = 848;
+//                res[1] = 480;
+//                if (fps != 6 && fps != 15 && fps != 30 && fps != 60 && fps != 90)
+//                {
+//                    change_fps = true;
+//                    new_fps = 30;
+//                }
+//                break;
+//            case 7:
+//                res[0] = 1280;
+//                res[1] = 720;
+//                if (fps != 6 && fps != 15 && fps != 30)
+//                {
+//                    change_fps = true;
+//                    new_fps = 30;
+//                }
+//                break;
+//                //case 8:
+//                //	retVal += ito::RetVal(ito::retWarning, 0, tr("Chosen resolution not supported for depth-frame. Previous resolution is maintained.").toLatin1().data());
+//                //	break;
+//            default:
+//                break;
+//            }
+//            if (change_fps)
+//            {
+//                retVal += ito::RetVal(ito::retWarning, 0, tr("Incompatible with current fps-value. Changing fps to %1.").arg(new_fps).toLatin1().data());
+//                m_params["fps"].setVal<int>(new_fps);
+//                //setVal fps to new_fps
+//            }
+//        }
+//        else
+//        {
+//            int dummyInt = 0;//TODO
+//        }
+//    }
+//    if (what&sDoDepth)
+//    {
+//        bool dodepth = m_params["getDepthData"].getVal<int>();
+//        if (!dodepth)
+//        {
+//            retVal += ito::RetVal(ito::retError, 0, tr("Tried to acquire non-depth-data. This feature is not implemented yet!").toLatin1().data());
+//        }
+//    }
+//    if (what&sFps)
+//    {
+//        int resol = m_params["resolution"].getVal<int>();
+//        int fps = m_params["fps"].getVal<int>();
+//        int new_resolution{ 0 };
+//        bool change_resolution{ false };
+//        if (get_depth_frame)
+//        {
+//            switch (fps)
+//            {
+//            case 6:
+//            case 15:
+//            case 30:
+//                if ((resol == 5 || resol == 0))
+//                {
+//                    change_resolution = true;
+//                    new_resolution = 7;
+//                }
+//                break;
+//            case 25:
+//                retVal += ito::RetVal(ito::retWarning, 0, tr("Chosen fps-rate not supported for depth-frame. Previous fps-rate is maintained.").toLatin1().data());
+//            case 60:
+//                if ((resol != 1) && (resol != 2) && (resol != 3) && (resol != 4) && (resol != 6))
+//                {
+//                    change_resolution = true;
+//                    new_resolution = 6;
+//                }
+//            case 90:
+//                if (resol == 5 || resol == 7)
+//                {
+//                    change_resolution = true;
+//                    new_resolution = 6;
+//                }
+//            case 100:
+//                if (resol != 5)
+//                {
+//                    change_resolution = true;
+//                    new_resolution = 5;
+//                }
+//            default:
+//                break;
+//            }
+//            if (change_resolution)
+//            {
+//                retVal += ito::RetVal(ito::retWarning, 0, tr("Incompatible with current resolution-value. Changing resolution to %1.").arg(new_resolution).toLatin1().data());
+//                m_params["resolution"].setVal<int>(new_resolution);
+//                //setVal fps to new_fps
+//            }
+//        }
+//        else
+//        {
+//            int dummyInt = 0; //TODO
+//        }
+//    }
+//    return retVal;
 //}
+
+
 ////----------------------------------------------------------------------------------------------------------------------------------
 //template<typename _Tp> inline ito::RetVal IntelRealSense::getParamInfo(_Tp & min, _Tp & max, _Tp &inc, _Tp & value, const char * name)
 //{
@@ -1551,12 +1238,6 @@ ito::RetVal IntelRealSense::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot called if the dock widget of the plugin becomes (in)visible
-/*!
-    Overwrite this method if the plugin has a dock widget. If so, you can connect the parametersChanged signal of the plugin
-    with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
-    a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
-*/
 void IntelRealSense::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1565,7 +1246,6 @@ void IntelRealSense::dockWidgetVisibilityChanged(bool visible)
         if (visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-
             emit parametersChanged(m_params);
         }
         else
@@ -1576,25 +1256,6 @@ void IntelRealSense::dockWidgetVisibilityChanged(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to show the configuration dialog
-/*!
-    This method is called from the main thread from itom and should show the configuration dialog of the plugin.
-    If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
-    of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
-    m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
-    The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
-    If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
-    If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
-    the things mentioned in this description.
-    
-    Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
-    has a configuration dialog.
-    
-    \sa hasConfDialog
-*/
 const ito::RetVal IntelRealSense::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogIntelRealSense(this));
