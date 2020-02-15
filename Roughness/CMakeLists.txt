@@ -17,7 +17,7 @@ if(NOT ITOM_SDK_DIR)
 endif()
 
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} "${ITOM_SDK_DIR}/CMake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} "${ITOM_SDK_DIR}/cmake")
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
