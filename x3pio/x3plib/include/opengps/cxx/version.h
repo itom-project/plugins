@@ -54,7 +54,7 @@
 /// Build date
 #define _OPENGPS_BUILD_DATE "2013/02/08 09:39:03"
 /// URL of project archive
-#define _OPENGPS_REPOSITORY_URL "http://obelix.ito.uni-stuttgart.de/svn/itom/m12/trunk/iTOM/pluginSource/x3pio/x3plib/src/ISO5436_2_XML"
+#define _OPENGPS_REPOSITORY_URL "https://bitbucket.org/itom/plugins/src/master/x3pio/x3plib/src/ISO5436_2_XML/"
 /// Warning message "Warning! Contains locally modified code!" or empty.
 #define _OPENGPS_CLEAN_BUILD "Warning! Contains locally modified code!"
 /// Warning message "Warning! Contains mixed revisions!" or empty

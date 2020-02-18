@@ -175,12 +175,6 @@ PGRFlyCaptureInterface::~PGRFlyCaptureInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PGRFlyCaptureInterface with the name PGRFlyCaptureinterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(PGRFlyCaptureinterface, PGRFlyCaptureInterface)
-#endif
-
-//----------------------------------------------------------------------------------------------------------------------------------
 
 /*!
     \class PGRFlyCapture

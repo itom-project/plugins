@@ -29,20 +29,15 @@
 #include <QGLWidget>
 #include <qvector.h>
 
-#if QT_VERSION >= 0x050000
-    #include <qopenglfunctions.h> //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
-    #include <qopenglvertexarrayobject.h>
-    #include <qopenglshaderprogram.h>
-    #include <qopenglbuffer.h>
+#include <qopenglfunctions.h> //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
+#include <qopenglvertexarrayobject.h>
+#include <qopenglshaderprogram.h>
+#include <qopenglbuffer.h>
+
 #if  _DEBUG
     #include <qopengldebug.h>
 #endif
-#else
-    //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
-    #include <qglshaderprogram.h>
-    #include <qglfunctions.h>
-    
-#endif
+
 
 #include "DataObject/dataobj.h"
 
@@ -77,7 +72,7 @@ protected:
     ito::RetVal checkGLError();
 
 private:
-#if QT_VERSION >= 0x050000
+
     QOpenGLShaderProgram shaderProgram;
     QOpenGLFunctions *m_glf;
 #if _DEBUG
@@ -88,9 +83,6 @@ private:
     QOpenGLBuffer m_vertexBuffer;
     QOpenGLBuffer m_textureBuffer;
     QOpenGLVertexArrayObject *m_vao;
-#else
-    QGLShaderProgram shaderProgram;
-#endif
     QVector<QVector3D> m_vertices;
     QVector<QVector2D> m_textureCoordinates;
 

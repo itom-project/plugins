@@ -139,6 +139,3 @@ VistekInterface::~VistekInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class VistekInterface with the name Vistekinterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(Vistekinterface, VistekInterface)
-#endif

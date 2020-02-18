@@ -95,9 +95,7 @@ to initialize the x,y,z,u,v and w axis, respectively.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class PIHexapodCtrlInterface with the name PIHexapodCtrlInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(PIHexapodCtrlInterface, PIHexapodCtrlInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

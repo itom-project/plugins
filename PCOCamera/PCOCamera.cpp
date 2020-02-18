@@ -149,9 +149,7 @@ PCOCameraInterface::~PCOCameraInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class PCOCameraInterface with the name PCOCamerainterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(PCOCamerainterface, PCOCameraInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

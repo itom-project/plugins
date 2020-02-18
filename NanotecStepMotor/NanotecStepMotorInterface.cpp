@@ -94,6 +94,4 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class NanotecStepMotorInterface with the name NanotecStepMotorInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(NanotecStepMotorInterface, NanotecStepMotorInterface)
-#endif
+
