@@ -24,11 +24,10 @@
 #define PROJWINDOW_H
 
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
+
 #include <QtOpenGL/qgl.h>
-#if QT_VERSION >= 0x050000
-    #include <qopenglfunctions.h>
-    #include <qopenglvertexarrayobject.h>
-#endif
+#include <qopenglfunctions.h>
+#include <qopenglvertexarrayobject.h>
 #include "DataObject/dataobj.h"
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
@@ -88,15 +87,9 @@ class PrjWindow : public QGLWidget
         unsigned char **m_grayImgsVert;
         unsigned char **m_grayImgsHoriz;
         QVector<unsigned char> m_lut;
-#if QT_VERSION >= 0x050000
         QOpenGLFunctions *m_glf;
         QOpenGLVertexArrayObject *m_vao;
-#else
-        // just a dummy pointer so we don't need to adapt the rest of the code
-        char *m_glf;
-        char *m_vao;
-        GLuint m_VAO;
-#endif
+        
         void paintGL();
         void initializeGL();
         void resizeGL(int width, int height);
@@ -116,7 +109,6 @@ class PrjWindow : public QGLWidget
         ito::RetVal setupProjection();
         int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
             GLint &UniformTexture, GLint &UniformColor, GLuint &ArrayBufferName, GLuint &ElementBufferName);
-        int initOGL2(const int width, const int height);
 
         // Deleter Function
         ito::RetVal cosineExit();

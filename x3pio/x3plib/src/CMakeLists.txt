@@ -1,23 +1,17 @@
 project(x3plib)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1...3.15)
 
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-SET(ITOM_DIR "" CACHE PATH "base path to itom") 
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
-ADD_SUBDIRECTORY(zlib/contrib/minizip)
-ADD_SUBDIRECTORY(ISO5436_2_XML)
+add_subdirectory(zlib/contrib/minizip)
+add_subdirectory(ISO5436_2_XML)
 
-IF(BUILD_SHARED_LIBS)
-ELSE(BUILD_SHARED_LIBS)
-  SET(iso54362LIBSUFFIX S)
-ENDIF(BUILD_SHARED_LIBS)
+set(iso54362LIBSUFFIX "")
 
 if(CMAKE_CL_64)
-	SET(iso54362LIBSUFFIX ${iso54362LIBSUFFIX}64)
+    set(iso54362LIBSUFFIX ${iso54362LIBSUFFIX}64)
 endif(CMAKE_CL_64)
 
-ADD_DEPENDENCIES("iso5436-2-xml${iso54362LIBSUFFIX}" zlibwapi)
-ADD_DEPENDENCIES("iso5436-2-xml${iso54362LIBSUFFIX}" genxmlxsd)
+add_dependencies("iso5436-2-xml${iso54362LIBSUFFIX}" zlibwapi)
+add_dependencies("iso5436-2-xml${iso54362LIBSUFFIX}" genxmlxsd)

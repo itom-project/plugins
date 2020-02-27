@@ -1,116 +1,121 @@
-SET (target_name ptp2)
+set(target_name ptp2)
 
-project(${target_name})
 
-message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
+cmake_minimum_required(VERSION 3.1...3.15)
 
-cmake_minimum_required(VERSION 3.0)
+option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+option(BUILD_SHARED_LIBS "Build shared library." ON)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+#this is to automatically detect the SDK subfolder of the itom build directory.
+find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "C:/itom/build/itom/SDK"
+          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
+    DOC "path of SDK subfolder of itom root (build) directory")
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
-SET (PACKAGE_VERSION CACHE STRING "2.5.9")
-#SET (CAMLIBS CACHE STRING "")
+if(NOT ITOM_SDK_DIR)
+    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif()
 
-IF(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE SHARED)
-ELSE(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE STATIC)
-ENDIF(BUILD_SHARED_LIBS)
 
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-find_package(VisualLeakDetector QUIET)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+set(PACKAGE_VERSION CACHE STRING "2.5.9")
+#set(CAMLIBS CACHE STRING "")
 
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
-ADD_DEFINITIONS(-DCMAKE)
-ADD_DEFINITIONS(-DPACKAGE_VERSION="${PACKAGE_VERSION}")
-#ADD_DEFINITIONS(-DCAMLIBS="${CAMLIBS}")
-ADD_DEFINITIONS(-DHAVE_LIMITS_H)
-ADD_DEFINITIONS(-DDLLEXPORT)
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+if(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE SHARED)
+else(BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE STATIC)
+endif(BUILD_SHARED_LIBS)
+
+
+if(BUILD_UNICODE)
+    endif(BUILD_UNICODE)
+add_definitions(-DCMAKE)
+add_definitions(-DPACKAGE_VERSION="${PACKAGE_VERSION}")
+#add_definitions(-DCAMLIBS="${CAMLIBS}")
+add_definitions(-DHAVE_LIMITS_H)
+add_definitions(-DDLLEXPORT)
+
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+if(DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+else()
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+endif()
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-INCLUDE_DIRECTORIES(
+include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/../libtool
-	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2
-	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2_port
-	${CMAKE_CURRENT_SOURCE_DIR}/../../ #for gphoto2 directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libtool
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2_port
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../ #for gphoto2 directory
     ${CMAKE_CURRENT_BINARY_DIR}/../../ #for gphoto2 directory
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
-set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/chdk_live_view.h
-	${CMAKE_CURRENT_SOURCE_DIR}/chdk_ptp.h
-	${CMAKE_CURRENT_SOURCE_DIR}/device-flags.h
-	${CMAKE_CURRENT_SOURCE_DIR}/music-players.h
-	${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp-bugs.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp-private.h
+set(PLUGIN_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/chdk_live_view.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/chdk_ptp.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/device-flags.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/music-players.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp-bugs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp-private.h
 )
 
-set(plugin_SOURCES 
+set(PLUGIN_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/chdk.c
-	${CMAKE_CURRENT_SOURCE_DIR}/config.c
-	${CMAKE_CURRENT_SOURCE_DIR}/library.c
-	${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.c
-	${CMAKE_CURRENT_SOURCE_DIR}/ptp.c
-	${CMAKE_CURRENT_SOURCE_DIR}/ptpip.c
-#	${CMAKE_CURRENT_SOURCE_DIR}/ptp-pack.c
-	${CMAKE_CURRENT_SOURCE_DIR}/usb.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2/auxfuncs.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/library.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/olympus-wrap.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptp.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ptpip.c
+#    ${CMAKE_CURRENT_SOURCE_DIR}/ptp-pack.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/usb.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2/auxfuncs.c
 )
 
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
-#    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif(MSVC)
+#    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+endif()
 
-SET(LTDLLIB optimized ../../libtool/$(Configuration)/libltdl debug ../../libtool/$(Configuration)/libltdld)
-SET(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Configuration)/regexd)
-SET(LIBGPHOTO2 optimized ../../libgphoto2/$(Configuration)/libgphoto2 debug ../../libgphoto2/$(Configuration)/libgphoto2d)
-SET(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_port debug ../../libgphoto2_port/$(Configuration)/libgphoto2_portd)
+set(LTDLLIB optimized ../../libtool/$(Configuration)/libltdl debug ../../libtool/$(Configuration)/libltdld)
+set(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Configuration)/regexd)
+set(LIBGPHOTO2 optimized ../../libgphoto2/$(Configuration)/libgphoto2 debug ../../libgphoto2/$(Configuration)/libgphoto2d)
+set(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_port debug ../../libgphoto2_port/$(Configuration)/libgphoto2_portd)
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
-TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
-	${LTDLLIB}
-	${REGEXLIB}
-	${LIBGPHOTO2}
-	${LIBGPHOTO2PORT}
-	shell32)
+add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
+
+target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
+    ${LTDLLIB}
+    ${REGEXLIB}
+    ${LIBGPHOTO2}
+    ${LIBGPHOTO2PORT}
+    shell32)
 
 if(MSVC)
-#    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+#    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 #  set_target_properties(${target_name}  PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
-endif(MSVC)
+endif()
 
 #documentation
-PLUGIN_DOCUMENTATION(${target_name} ptp2)
+itom_configure_plugin_documentation(${target_name} ptp2)
 
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 LIST(APPEND COPY_SOURCES "$<TARGET_FILE:${target_name}>")
 LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/plugins/DslrRemote")
-#ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

@@ -118,9 +118,7 @@ GWInstekPSPInterface::~GWInstekPSPInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class GWInstekPSPInterface with the name GWInstekPSPInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(GWInstekPSPInterface, GWInstekPSPInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

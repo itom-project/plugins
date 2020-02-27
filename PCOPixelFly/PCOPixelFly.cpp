@@ -120,9 +120,7 @@ PCOPixelFlyInterface::~PCOPixelFlyInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(PCOPixelFlyinterface, PCOPixelFlyInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -469,7 +467,7 @@ ito::RetVal PCOPixelFly::libraryVersionNumber(const QByteArray &fileName, QStrin
 
     #if UNICODE
         wchar_t *pszFilePath = new wchar_t[ fileName.size() + 2];
-        int size = fileName.toWCharArray(pszFilePath);
+        int size = QString(fileName).toWCharArray(pszFilePath);
         pszFilePath[size] = '\0';
     #else
         char *pszFilePath = qstrdup(fileName.data());

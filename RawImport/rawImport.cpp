@@ -32,11 +32,7 @@
 #include <qprocess.h>
 #include <qmenu.h>
 #include <qcoreapplication.h>
-#if QTVERSION < 0x050000
-    #include <qdir.h>
-#else
-    #include <qtemporarydir.h>
-#endif
+#include <qtemporarydir.h>
 #include "common/apiFunctionsInc.h"
 
 #if WIN32
@@ -86,9 +82,7 @@ ito::RetVal RawImportInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(rawimportinterface, RawImportInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -315,13 +309,9 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     if ((*paramsOpt)[1].getVal<int>())
     {
         QString tmpPath = "";
-#if QTVERSION < 0x050000
-        tmpPath = QDir::tempPath();
-#else
         QTemporaryDir *tmpDir = new QTemporaryDir();
         tmpPath = tmpDir->path();
         delete tmpDir;
-#endif
 
         QString tmpFilename(filename);
         if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1

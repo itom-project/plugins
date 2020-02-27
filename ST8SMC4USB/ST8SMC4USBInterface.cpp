@@ -86,9 +86,3 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.");
     m_initParamsOpt.append(ito::Param("deviceNum", ito::ParamBase::Int, 0, 10, 0, tr("The current number of this specific device, if there are more than one devices connected. (0 = first device)").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("microSteps", ito::ParamBase::Int, 1, 256, 1, tr("micro steps for motor [1,2,4,8,16,32,64,128,256]").toLatin1().data()));
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class ST8SMC4USBInterface with the name ST8SMC4USBInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(ST8SMC4USBInterface, ST8SMC4USBInterface)
-#endif

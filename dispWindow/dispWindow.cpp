@@ -125,9 +125,7 @@ DispWindowInterface::~DispWindowInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(DispWindowInterface, DispWindowInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor of the DispWindow class

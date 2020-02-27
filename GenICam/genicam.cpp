@@ -140,9 +140,7 @@ GenICamInterface::~GenICamInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(genicaminterface, GenICamInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -1126,9 +1124,7 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
 
             m_device->setParamsLocked(0);
 
-#if QT_VERSION >= 0x050000
             QThread::msleep(100);
-#endif
         }
         else if (grabberStartedCount() == 0)
         {
@@ -1139,10 +1135,8 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
             retValue += m_device->invokeCommandNode("AcquisitionStop", ito::retWarning);
             retValue += m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_DISCARD);
             retValue += m_stream->revokeAllBuffers();
-
-#if QT_VERSION >= 0x050000
+            
             QThread::msleep(100);
-#endif
             
             m_device->setParamsLocked(0);
 

@@ -189,9 +189,3 @@ ito::RetVal IDSInterface::checkVersionConsistency()
 
     return ito::retOk;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// this macro registers the class IDSInterface with the name IDSuEye as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(IDSuEye, IDSInterface)
-#endif

@@ -6,10 +6,10 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 #define __BYTEORDER_H\n\
 ")
 
-INCLUDE(TestBigEndian)
+include(TestBigEndian)
 TEST_BIG_ENDIAN(ENDIANNESS)
 
-IF(ENDIANNESS)
+if(ENDIANNESS)
 # big endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* No other byte swapping functions are available on this big-endian system */\n\
@@ -27,7 +27,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 			      ((x) >> 40) & 0x000000000000ff00ULL | \\\n\
 			      ((x) >> 56) & 0x00000000000000ffULL))\n\
 \n" APPEND)
-ELSE(ENDIANNESS)
+else(ENDIANNESS)
 # little endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* Use these as generic byteswapping macros on this little endian system */\n\
@@ -54,7 +54,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 			      (((x) >> 56) & 0x00000000000000ffULL)))\n\
 \n" APPEND)
 
-ENDIF(ENDIANNESS)
+endif(ENDIANNESS)
 
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* The byte swapping macros have the form: */\n\
@@ -108,7 +108,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 #define BE16TOH(x) (x) = be16toh(x)\n\
 \n" APPEND)
 
-IF(ENDIANNESS)
+if(ENDIANNESS)
 # big endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* Define our own extended byte swapping macros for big-endian machines */\n\
@@ -145,7 +145,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 #define BE64TOH(x)      (void) (x)\n\
 \n" APPEND)
 
-ELSE(ENDIANNESS)
+else(ENDIANNESS)
 # little endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 
 	"/* On little endian machines, these macros are null */\n\
@@ -186,14 +186,14 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 #define HTOBE64(x)      (x) = htobe64(x)\n\
 #define BE64TOH(x)      (x) = be64toh(x)\n\
 \n" APPEND)
-ENDIF(ENDIANNESS)
+endif(ENDIANNESS)
 
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 	"/* Define the C99 standard length-specific integer types */\n\
 #include <stdint.h>\n\
 \n" APPEND)
 
-MESSAGE(STATUS "PROC-TYPE: " ${CMAKE_SYSTEM_PROCESSOR})
+message(STATUS "PROC-TYPE: " ${CMAKE_SYSTEM_PROCESSOR})
 # this is for x86 platforms only but we simply include for the time being until the test 
 # for the platform is included
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h" 

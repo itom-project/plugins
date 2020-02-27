@@ -108,9 +108,7 @@ class ItomCyUSB : public ito::AddInDataIO //, public
 class ItomCyUSBInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
-#endif
     Q_INTERFACES(ito::AddInInterfaceBase)
     PLUGIN_ITOM_API
 
