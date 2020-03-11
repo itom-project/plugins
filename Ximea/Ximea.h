@@ -131,7 +131,8 @@ class Ximea : public ito::AddInGrabber
 			sGamma = 0x0200,
 			sSharpness = 0x0400,
             sGpiGpo = 0x0800,
-            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerSelector | sBpp | sFrameRate | sGamma | sSharpness | sGpiGpo 
+			sLens = 0x1000,
+            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerSelector | sBpp | sFrameRate | sGamma | sSharpness | sGpiGpo | sLens
         };
 
 		struct RoiMeta

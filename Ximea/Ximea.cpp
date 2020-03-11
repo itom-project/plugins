@@ -262,6 +262,8 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("filter_pattern_offset_y", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Offset of the hyperspectral bayer pattern in y direction").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("aperture_value", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 5.0 ,0.0 , tr("Current aperture Value").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
 
     
     
@@ -584,6 +586,18 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                         static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(32);
                     }
                 }
+				if (!retValue.containsError())
+				{
+					//check if lens settings are avialable
+					XI_SWITCH value = XI_ON;
+					XI_RETURN error = pxiSetParam(m_handle, XI_PRM_LENS_MODE, &value, sizeof(int), intType);
+					if (error != 100)
+					{
+						m_params["aperture_value"].setFlags(0);
+
+					}
+					
+				}
 
                 // reset timestamp for MQ and MD cameras
                 if (m_family == familyMD || m_family == familyMQ)
@@ -1642,6 +1656,13 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
            m_params["sizez"].setVal<int>(channels);
            synchronizeCameraSettings(sRoi);
         }
+		else if (QString::compare(key, "aperture_value",Qt::CaseInsensitive) == 0)
+		{
+		float aperture = val->getVal<double>();
+		retValue += checkError(pxiSetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE, &aperture, sizeof(float), xiTypeFloat), "set XI_PRM_LENS_APERTURE_VALUE", QString::number(aperture));
+		retValue += synchronizeCameraSettings(sLens);
+
+		}
         else
         {
             it->copyValueFrom(&(*val));
@@ -2148,6 +2169,20 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPO_MODE, &(gpo_mode[i-1]),&intSize, &intType), "get:" XI_PRM_GPO_MODE);
         }
     }
+	if (what & sLens)
+	{
+		if (!(m_params["aperture_value"].getFlags() & ito::ParamBase::Readonly))
+		{
+			float maxAperture, minAperture, aperture;
+			retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE XI_PRM_INFO_MAX, &maxAperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE MAX");
+			retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE XI_PRM_INFO_MIN, &minAperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE MIN");
+			retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE, &aperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE");
+			minAperture = std::round(minAperture * 10.) / 10.;
+			maxAperture = std::round(maxAperture * 10.) / 10.;
+			m_params["aperture_value"].setMeta(new ito::DoubleMeta(minAperture, maxAperture, 0.1), true);
+			m_params["aperture_value"].setVal<double>(aperture);
+		}
+	}
     
     return retValue;
 }
