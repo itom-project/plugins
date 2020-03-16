@@ -255,8 +255,8 @@ template<typename _Tp> ito::RetVal CalcZv(const uchar* data, const size_t byte_s
         const _Tp* values = (const _Tp*)data;
         size_t steps = byte_steps / sizeof(_Tp);
         Z_mean = 0.0;
-        Z_min = 0.0;
-        Z_max = -std::numeric_limits<ito::float64>::max();
+        Z_min = std::numeric_limits<ito::float64>::max();
+        Z_max = 0.0;
         bool valids = false;
 
         for (int sample = 0; sample < num_samples; ++sample)
@@ -277,11 +277,12 @@ template<typename _Tp> ito::RetVal CalcZv(const uchar* data, const size_t byte_s
             }
 
             Z_mean += current;
-            Z_min = std::min(Z_min, current);
-            Z_max = std::max(Z_max, current);
+            Z_min = std::min(Z_min, -current);
+            Z_max = std::max(Z_max, -current);
         }
 
         Z_mean /= (ito::float64)num_samples;
+        Z_mean = -Z_mean;
 
         if (!valids)
         {
@@ -616,9 +617,15 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
         {
             //based on the new standard, every single Rsk,i for i in range(0, sample) uses the same overall Rq as quotient
             ito::float64 Rq_mean, Rq_min, Rq_max;
-            retval += CalcZq<_Tp>(data, steps, length, params, Rq_mean, Rq_min, Rq_max, num_samples);
-            Rq_mean = (Rq_mean * Rq_mean * Rq_mean);
-
+            retval += CalcZq<_Tp>(data, byte_steps, length, params, Rq_mean, Rq_min, Rq_max, num_samples);
+            if (!retval.containsError()) {
+                Rq_mean = (Rq_mean * Rq_mean * Rq_mean);
+                if (Rq_mean <= 0) {
+                    retval += ito::RetVal(ito::retError, 0,
+                        QObject::tr("profile contains at least one sample length "\
+                            "with only zero values -> Zq == 0 -> Zsk not determinable").toLatin1().data());
+                }
+            }
             if (!retval.containsError())
             {
                 for (int sample = 0; sample < num_samples; ++sample)
@@ -634,14 +641,7 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
                         values += steps;
                     }
 
-                    if (Rq_mean > 0)
-                    {
-                        current = (current_Sk / sample_length) / (Rq_mean);
-                    }
-                    else
-                    {
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zsk not determinable").toLatin1().data());
-                    }
+                    current = (current_Sk / sample_length) / (Rq_mean);
 
                     Z_mean += current;
                     Z_min = std::min(Z_min, current);
@@ -739,13 +739,20 @@ template<typename _Tp> ito::RetVal CalcZku(const uchar* data, const size_t byte_
         {
             //based on the new standard, every single Rsk,i for i in range(0, sample) uses the same overall Rq as quotient
             ito::float64 Rq_mean, Rq_min, Rq_max;
-            retval += CalcZq<_Tp>(data, steps, length, params, Rq_mean, Rq_min, Rq_max, num_samples);
+            retval += CalcZq<_Tp>(data, byte_steps, length, params, Rq_mean, Rq_min, Rq_max, num_samples);
 
             if (!retval.containsError())
             {
                 Rq_mean *= Rq_mean;
                 Rq_mean *= Rq_mean;
-
+                if (Rq_mean <= 0) {
+                    retval += ito::RetVal(ito::retError, 0,
+                        QObject::tr("profile contains at least one sample "\
+                            "length with only zero values -> Zq == 0 -> Zku not determinable").toLatin1().data());
+                }
+            }
+            if (!retval.containsError())
+            {
                 for (int sample = 0; sample < num_samples; ++sample)
                 {
                     ito::float64 temp;
@@ -761,14 +768,7 @@ template<typename _Tp> ito::RetVal CalcZku(const uchar* data, const size_t byte_
                         values += steps;
                     }
 
-                    if (Rq_mean > 0)
-                    {
-                        current = (current_Sk / sample_length) / (Rq_mean);
-                    }
-                    else
-                    {
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("profile contains at least one sample length with only zero values -> Zq == 0 -> Zku not determinable").toLatin1().data());
-                    }
+                    current = (current_Sk / sample_length) / (Rq_mean);
 
                     Z_mean += current;
                     Z_min = std::min(Z_min, current);
@@ -1439,8 +1439,8 @@ where min-value, max-value and std-dev are calculated over the mean-values of al
 \n\
 The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997. \n\
 \n\
-Possible roughness parameters are Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile \n\
-the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("_", QLatin1String("\u00B5"));
+Possible roughness parameters are Rp, Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile \n\
+the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("_", QLatin1String("\u00B5"));
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal Roughness::evalRoughnessProfileParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1462,6 +1462,7 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
     sm->addItem("Rdq");
     sm->addItem("Rda");
     sm->addItem("Rdc");
+    sm->addItem("Wp");
     sm->addItem("Wv");
     sm->addItem("Wz");
     sm->addItem("Wt");
@@ -1472,6 +1473,17 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
     sm->addItem("Wdq");
     sm->addItem("Wda");
     sm->addItem("Wdc");
+    sm->addItem("Pp");
+    sm->addItem("Pv");
+    sm->addItem("Pz");
+    sm->addItem("Pt");
+    sm->addItem("Pa");
+    sm->addItem("Pq");
+    sm->addItem("Psk");
+    sm->addItem("Pku");
+    sm->addItem("Pdq");
+    sm->addItem("Pda");
+    sm->addItem("Pdc");
     param.setMeta(sm, true);
     paramsMand->append(param);
 
@@ -1576,20 +1588,23 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
         unit = input.getValueUnit();
         ito::float64 resultScale = 1.0;
 
-        if (unit == "mm")
-        {
-            resultScale *= 1000.0; //convert to \mu m
-        }
-        else if (unit == QLatin1String("\u00B5m").latin1())
-        {
-        }
-        else if (unit == "nm")
-        {
-            resultScale /= 1000.0; //convert to \mu m
-        }
-        else
-        {
-            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("value unit of input should be mm, _m or nm. Else the right scaling of the resulting values (in _m) cannot be guaranteed.").replace("_", QLatin1String("\u00B5")).toLatin1().data());
+        if (param[1] != 's' && param[1] != 'k')
+        {//Zsk and Zku are without unit
+            if (unit == "mm")
+            {
+                resultScale *= 1000.0; //convert to \mu m
+            }
+            else if (unit == QLatin1String("\u00B5m").latin1())
+            {
+            }
+            else if (unit == "nm")
+            {
+                resultScale /= 1000.0; //convert to \mu m
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retWarning, 0, QObject::tr("value unit of input should be mm, _m or nm. Else the right scaling of the resulting values (in _m) cannot be guaranteed.").replace("_", QLatin1String("\u00B5")).toLatin1().data());
+            }
         }
 
 
@@ -1645,9 +1660,9 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
                         ito::DataObject result_detailed_(1,3,ito::tFloat64);
                         memcpy(result_detailed_.rowPtr(0,0), Z_out, 3*sizeof(ito::float64));
                         *result_detailed = result_detailed_;
-						result_detailed->setTag("lc", lc);
-						bool dummy;
-						result_detailed->setTag("ls", input.getTag("ls", dummy));
+                        result_detailed->setTag("lc", lc);
+                        bool dummy;
+                        result_detailed->setTag("ls", input.getTag("ls", dummy));
                     }
                 }
             }
@@ -1687,10 +1702,10 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
 
                 if (result_detailed)
                 {
-					*result_detailed = result_detailed_;
-					result_detailed->setTag("lc", lc);
-					bool dummy;
-					result_detailed->setTag("ls", input.getTag("ls", dummy));
+                    *result_detailed = result_detailed_;
+                    result_detailed->setTag("lc", lc);
+                    bool dummy;
+                    result_detailed->setTag("ls", input.getTag("ls", dummy));
                 }
 
                 if (!retval.containsError())
@@ -1721,7 +1736,7 @@ the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").replace("
         }
     }
 
-    return retval;    
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
