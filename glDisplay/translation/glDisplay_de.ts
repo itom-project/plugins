@@ -135,7 +135,7 @@
 <context>
     <name>GLDisplay</name>
     <message>
-        <location filename="../glDisplay.cpp" line="+211"/>
+        <location filename="../glDisplay.cpp" line="+209"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -288,7 +288,7 @@
 <context>
     <name>GLDisplayInterface</name>
     <message>
-        <location line="-728"/>
+        <location line="-726"/>
         <source>Frameless window to display images using OpenGL</source>
         <translation type="unfinished"></translation>
     </message>

@@ -16,7 +16,7 @@
         <translation type="obsolete">Läd 1D und 2D Datenobjekte aus gängigen Bildformaten (bmp, png, jpg, pgm...)</translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+149"/>
+        <location filename="../DataObjectIO.cpp" line="+147"/>
         <source>Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -814,7 +814,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="-989"/>
+        <location filename="../DataObjectIO.cpp" line="-987"/>
         <source>import or export dataObject from/to several file formats.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -842,7 +842,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+113"/>
         <source>saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).</source>
         <translation type="unfinished"></translation>
     </message>

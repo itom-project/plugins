@@ -62,18 +62,23 @@
 <context>
     <name>GenICamClass</name>
     <message>
-        <location filename="../genicam.cpp" line="+159"/>
+        <location filename="../genicam.cpp" line="+158"/>
         <source>width of ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>height of ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>bitdepth in bits per pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>0: monochrome data stream, 1: color data stream with a rgba32 dataObject as result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -112,12 +117,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+146"/>
+        <location line="+152"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+63"/>
         <source>Acquisition failed since device has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -127,12 +132,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+428"/>
+        <location line="+433"/>
+        <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-346"/>
+        <location line="-407"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -160,7 +175,7 @@
 <context>
     <name>GenICamInterface</name>
     <message>
-        <location line="-1352"/>
+        <location line="-1359"/>
         <source>Indicate either a string containing the vendor and model name separated with a semicolon (e.g. &apos;XIMEA GmbH.;xiApi&apos;) or the path to a cti file (GenICam GenTL transport layer) with the file suffix .cti of the respective camera driver. If nothing is indicated, a list of all auto-detected vendors and models is returned.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -207,12 +222,12 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location line="-64"/>
+        <location line="-65"/>
         <source>Camera control of devices that support the GenICam standard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+36"/>
         <source>licensed under LGPL, this plugin is based on GenICam licensed under the GenICam license 1.5 (see GenICam_License.txt)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -223,7 +238,7 @@
     </message>
     <message>
         <location line="+301"/>
-        <location filename="../dataStream.cpp" line="+70"/>
+        <location filename="../dataStream.cpp" line="+71"/>
         <location filename="../basePort.cpp" line="+90"/>
         <source>cti file does not export all functions of the GenTL protocol.</source>
         <translation type="unfinished"></translation>

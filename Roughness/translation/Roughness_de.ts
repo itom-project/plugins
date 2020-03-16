@@ -28,7 +28,7 @@ Some algorithms the plugin &apos;fittingFilters&apos; for a valid execution.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+52"/>
         <source>the chosen sampling length for five sections differs from the intended length (cut-off wavelength)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -48,19 +48,19 @@ Some algorithms the plugin &apos;fittingFilters&apos; for a valid execution.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+445"/>
-        <location line="+38"/>
+        <location line="+446"/>
+        <location line="+19"/>
         <source>profile contains at least one sample length with only zero values -&gt; Zq == 0 -&gt; Zsk not determinable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+85"/>
-        <location line="+42"/>
+        <location line="+103"/>
+        <location line="+22"/>
         <source>profile contains at least one sample length with only zero values -&gt; Zq == 0 -&gt; Zku not determinable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+68"/>
         <source>Rdq or Wdq require a sample length of at least 7 samples.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -130,12 +130,12 @@ This filter is implemented based on DIN EN ISO 16610-21:2013.</source>
     </message>
     <message>
         <location line="+30"/>
-        <location line="+532"/>
+        <location line="+547"/>
         <source>real input object (1D or 2D). The roughness is determined row-by-row. The axis units must be set to &apos;mm&apos;, &apos;_m&apos; or &apos;nm&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-531"/>
+        <location line="-546"/>
         <source>roughness output object of the same size than the input object. Type is float64.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -146,59 +146,59 @@ This filter is implemented based on DIN EN ISO 16610-21:2013.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+556"/>
+        <location line="+571"/>
         <source>cut-off wavelength in _m for the separation between the waviness and roughness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-555"/>
-        <location line="+556"/>
+        <location line="-570"/>
+        <location line="+571"/>
         <source>short cut-off wavelength in _m for the separation between roughness and further high-frequency components (set 0.0 to omit this filtering)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-554"/>
+        <location line="-569"/>
         <source>mode of determination: convolution, dft or auto (auto-selection of both methods)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+550"/>
+        <location line="+565"/>
         <source>0: non periodic profile (default), 1: periodic profile (not implemented yet)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-549"/>
-        <location line="+550"/>
+        <location line="-564"/>
+        <location line="+565"/>
         <source>quality factor for the convolution based calculation. The convolution kernel is set to zero for indices &gt; cutoff-wavelength * cutoff_factor. See ISO 16610-21:2013 A.5: 0.5 for general purpose, high precision: 0.6, reference software: 1.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+252"/>
-        <location line="+402"/>
+        <location line="-563"/>
+        <location line="+264"/>
+        <location line="+405"/>
         <source>nr of pixels at both sides of the profile that contain wrong values to the final length of the convolution filter kernel. Skip these pixels in any evaluation (see DIN EN ISO 16610-21, 4.3; DIN EN ISO 16610-28 will show more information when it is released in a final version)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-633"/>
+        <location line="-648"/>
         <source>empty input object given</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+299"/>
+        <location line="+311"/>
         <source>axis unit could not be read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-284"/>
-        <location line="+299"/>
+        <location line="-296"/>
+        <location line="+311"/>
         <source>axis unit of input must be mm, _m or nm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-219"/>
+        <location line="-231"/>
         <source>periodic, closed profiles cannot be evaluated using dft (not implemented yet)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,67 +229,67 @@ where min-value, max-value and std-dev are calculated over the mean-values of al
 
 The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997. 
 
-Possible roughness parameters are Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile 
-the parameters are then Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.</source>
+Possible roughness parameters are Rp, Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile 
+the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+25"/>
-        <location line="+427"/>
+        <location line="+442"/>
         <source>real input object (1D or 2D, no unsigned data types) - must be either the output argument &apos;roughness&apos; or &apos;waviness&apos; from filter &apos;calcRoughnessProfile&apos;. The roughness is determined row-by-row. The axis units must be set to &apos;mm&apos;, &apos;_m&apos; or &apos;nm&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-426"/>
+        <location line="-441"/>
         <source>roughness or waviness parameter to determine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+37"/>
         <source>cut-off wavelength in _m used for the separation between the waviness and roughness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+296"/>
+        <location line="+299"/>
         <source>mode how to split the measurement length (ml) into different sampling lengths (sl): 0: split ml into five samples (warn if the sl does not correspond to Lc), 1: split ml into n samples whose length is Lc, 2: same as 1 but only use the first 5 sampling lengths.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-295"/>
+        <location line="-298"/>
         <source>returns a Nx3 float64 data object will the mean,min and max roughness value for each evaluated line (only interesting if input contains more than one line)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+295"/>
+        <location line="+298"/>
         <source>[min,max] range in percent for the parameter Rdc or Wdc (height difference between two levels of the Abbott-Firstone-Curve</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-291"/>
-        <location line="+295"/>
+        <location line="-294"/>
+        <location line="+298"/>
         <source>resulting values. See docstring of filter.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-294"/>
-        <location line="+295"/>
+        <location line="-297"/>
+        <location line="+298"/>
         <source>Number of evaluated samples per line (5 is the desired value with respect to DIN EN ISO 4288), Rt is evaluated over the whole measurement range, therefore nr_of_samples is 1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-236"/>
+        <location line="-239"/>
         <source>unknown param name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+45"/>
         <source>value unit of input should be mm, _m or nm. Else the right scaling of the resulting values (in _m) cannot be guaranteed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+137"/>
         <source>Calculate a profile roughness parameter for each line in the given input object. 
 
 The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997. 
@@ -345,7 +345,7 @@ The evaluation is done based on DIN EN ISO 4287:2010.</source>
 <context>
     <name>Roughness</name>
     <message>
-        <location line="-813"/>
+        <location line="-828"/>
         <source>Roughness filtered with L_c = %1 and L_s = %2, mode = %3</source>
         <translation type="unfinished"></translation>
     </message>

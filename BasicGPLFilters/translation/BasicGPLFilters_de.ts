@@ -4,7 +4,7 @@
 <context>
     <name>BasicGPLFilters</name>
     <message>
-        <location filename="../BasicGPLFilters.cpp" line="+208"/>
+        <location filename="../BasicGPLFilters.cpp" line="+206"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,7 +62,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-362"/>
+        <location line="-360"/>
         <source>filter-functions for dateObjects</source>
         <translation type="unfinished"></translation>
     </message>

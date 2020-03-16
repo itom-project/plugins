@@ -4,7 +4,7 @@
 <context>
     <name>OpenCVFilters</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="+162"/>
+        <location filename="../OpenCVFilters.cpp" line="+158"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -20,26 +20,26 @@
         <location line="+265"/>
         <location line="+168"/>
         <location line="+153"/>
-        <location line="+650"/>
+        <location line="+726"/>
         <location line="+168"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calib3d.cpp" line="+93"/>
-        <location filename="../OpenCVFilters.cpp" line="-2271"/>
+        <location filename="../calib3d.cpp" line="+95"/>
+        <location filename="../OpenCVFilters.cpp" line="-2347"/>
         <location line="+570"/>
         <location line="+302"/>
         <location line="+265"/>
         <location line="+168"/>
         <location line="+153"/>
-        <location line="+650"/>
+        <location line="+726"/>
         <location line="+168"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-2236"/>
+        <location filename="../OpenCVFilters.cpp" line="-2312"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,7 +62,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calib3d.cpp" line="+441"/>
+        <location filename="../calib3d.cpp" line="+443"/>
         <location filename="../OpenCVFilters.cpp" line="-396"/>
         <location line="+17"/>
         <location line="+237"/>
@@ -72,13 +72,13 @@
         <location line="+166"/>
         <location line="+147"/>
         <location line="+204"/>
-        <location line="+440"/>
+        <location line="+516"/>
         <location line="+170"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1840"/>
+        <location filename="../OpenCVFilters.cpp" line="-1916"/>
         <source>All types except complex64 and complex128 are accepted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -226,7 +226,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+510"/>
+        <location line="+586"/>
         <location line="+171"/>
         <source>Output Object handle. Will be come complex-type</source>
         <translation type="unfinished"></translation>
@@ -267,7 +267,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calib3d.cpp" line="-481"/>
+        <location filename="../calib3d.cpp" line="-483"/>
         <source>input image of type uint8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -302,7 +302,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+120"/>
         <source>OR Combination of various flags: 
 
 </source>
@@ -517,12 +517,12 @@
     <message>
         <location line="+12"/>
         <location line="+180"/>
-        <location line="+290"/>
+        <location line="+291"/>
         <source>destination is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-406"/>
+        <location line="-407"/>
         <source>undistorted image size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -568,22 +568,29 @@
     </message>
     <message>
         <location line="+2"/>
-        <location line="+305"/>
+        <source>Interpolation method. The following values are possible:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT (%1), it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function. 
+The following values are possible:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+299"/>
         <source>Interpolation method. The following values are possible: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-298"/>
-        <source>Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT, it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function. The following values are possible: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
+        <location line="-288"/>
         <source>value used in case of a constant border. By default, it is 0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+67"/>
         <source>coordinates of the points in the original plane, a matrix of type [Nx2], float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -715,14 +722,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1678"/>
-        <location line="+1341"/>
+        <location filename="../OpenCVFilters.cpp" line="-1754"/>
+        <location line="+1417"/>
         <location line="+171"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1395"/>
+        <location line="-1471"/>
         <source>Image of type Integer or float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -756,13 +763,13 @@
         <location line="+209"/>
         <location line="+168"/>
         <location line="+153"/>
-        <location line="+650"/>
+        <location line="+726"/>
         <location line="+168"/>
         <source>Error: nDim-stacks not supported yet, only 2D and 3D.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-675"/>
+        <location line="-751"/>
         <source>sourceObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -792,7 +799,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../features2d.cpp" line="+50"/>
+        <location filename="../features2d.cpp" line="+54"/>
         <location line="+141"/>
         <source>error while executing some methods</source>
         <translation type="unfinished"></translation>
@@ -881,7 +888,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+100"/>
         <source>Input parameter - first image to draw the matching points</source>
         <translation type="unfinished"></translation>
     </message>
@@ -938,7 +945,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1346"/>
+        <location filename="../OpenCVFilters.cpp" line="-1342"/>
         <source>Wrapped algorithms from OpenCV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -967,7 +974,7 @@ the tags and meta information and save protocol data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+343"/>
+        <location line="+339"/>
         <source>Dilates every plane of a data object by using a specific structuring element. 
 
 This filter applies the dialation method cvDilate of OpenCV to every plane in the source data object. The result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, float32 and float64 only. 
@@ -1146,6 +1153,7 @@ component, in case of three, the alpha component is set to the optional alpha va
     </message>
     <message>
         <location line="+89"/>
+        <location line="+79"/>
         <source>Resizes an image 
 
 The function resize resizes the image &apos;inputObject&apos; down to or up by the specific factors. 
@@ -1156,7 +1164,7 @@ The axisScale properties of the x- and y-axes of the outputObject are divided by
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+76"/>
         <source>Canny Edge detector using cv::DFT.
 
 It&apos;s just Canny&apos;s edge filter
@@ -1188,7 +1196,7 @@ For more details see OpenCV documentation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../features2d.cpp" line="-288"/>
+        <location filename="../features2d.cpp" line="-294"/>
         <source>This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. 
 This includes some nearest neighbour algorithms to calculate the distance between two points. 
 
@@ -1202,13 +1210,13 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+108"/>
+        <location line="+114"/>
         <source>Draw the obtained matches points between two images. 
 This function draws matches of keypoints from two images in the output image. Match is a line connecting two keypoints (circles).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calib3d.cpp" line="-1258"/>
+        <location filename="../calib3d.cpp" line="-1261"/>
         <source>Finds circles in a grayscale image using the Hough transform.
 
 This filter is a wrapper for the OpenCV-function cv::HoughCircles.The function finds circles in a grayscale image using a modification of the Hough transform.Based on this filter, circles are identified and located.The result is a dataObject where the number of rows corresponds to the number of found circles, each row is (x,y,r).
@@ -1216,7 +1224,7 @@ This filter is a wrapper for the OpenCV-function cv::HoughCircles.The function f
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+119"/>
         <source>Finds the positions of internal corners of the chessboard.
 
 This filter is a wrapper for the cv::method cv::findChessboardCorners. 
@@ -1312,7 +1320,7 @@ indices in a table of interpolation coefficients.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>Finds a perspective transformation between two planes. 
 
 The functions find and return the perspective transformation H between the source and the destination planes: 

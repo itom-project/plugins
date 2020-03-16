@@ -26,7 +26,7 @@
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../fittingfilters.cpp" line="+133"/>
+        <location filename="../fittingfilters.cpp" line="+131"/>
         <location line="+136"/>
         <location line="+111"/>
         <source>source image data object</source>
@@ -257,7 +257,7 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-292"/>
+        <location filename="../fittingfilters.cpp" line="-290"/>
         <source>Plugin with fitting algorithms.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -274,7 +274,7 @@ Furthermore this plugin also contains methods to finally subtract or reconstruct
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+27"/>
         <source>fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy) 
 
 This fit can be executed by different fit strategies: 

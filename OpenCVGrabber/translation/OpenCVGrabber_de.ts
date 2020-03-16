@@ -12,22 +12,22 @@
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+360"/>
+        <location filename="../OpenCVGrabber.cpp" line="+356"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+416"/>
+        <location line="+493"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-310"/>
+        <location line="-383"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-111"/>
+        <location line="-115"/>
         <source>width of ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -42,7 +42,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+623"/>
+        <location line="+778"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,7 +62,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-757"/>
+        <location line="-912"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -117,12 +117,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+463"/>
         <source>Camera (%s) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+339"/>
+        <location line="+417"/>
         <source>Error: grabbed image is empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -142,7 +142,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+52"/>
         <source>Error while converting data format. Unsupported format.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -175,7 +175,7 @@
 <context>
     <name>OpenCVGrabberInterface</name>
     <message>
-        <location line="-1099"/>
+        <location line="-1258"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
