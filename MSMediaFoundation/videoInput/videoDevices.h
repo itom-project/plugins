@@ -19,7 +19,7 @@ public:
 
 	VideoDevice *getDevice(unsigned int i);
 
-	int getCount();
+	size_t getCount();
 			
 	void clearDevices();
 

@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <qmutex.h>
 
-DWORD WINAPI MainThreadFunction( LPVOID lpParam );
+unsigned int WINAPI MainThreadFunction( LPVOID lpParam );
 
 class ImageGrabber;
 
@@ -14,7 +14,7 @@ typedef void(*emergensyStopEventCallback)(int, void *);
 /// Class for controlling of thread of the grabbing raw data from video device
 class ImageGrabberThread
 {
-	friend DWORD WINAPI MainThreadFunction( LPVOID lpParam );
+	friend unsigned int WINAPI MainThreadFunction( LPVOID lpParam );
 
 public:
 	~ImageGrabberThread(void);
@@ -39,9 +39,9 @@ private:
 	
 	ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID);
 
-	HANDLE igt_Handle;
+	uintptr_t igt_Handle;
 	
-    DWORD   igt_ThreadIdArray;
+    unsigned int igt_ThreadIdArray;
 
 	ImageGrabber *igt_pImageGrabber;
 

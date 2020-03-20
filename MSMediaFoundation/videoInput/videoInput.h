@@ -139,7 +139,7 @@ public:
 	unsigned int listDevices(bool silent = false);
 		
 	// Getting numbers of formats, which are supported by VideoDevice with deviceID
-	unsigned int getCountFormats(unsigned int deviceID);
+	size_t getCountFormats(unsigned int deviceID);
 
 	// Getting width of image, which is getting from VideoDevice with deviceID
 	unsigned int getWidth(unsigned int deviceID);

@@ -144,7 +144,7 @@ int dialogAerotechA3200::getVals(QMap<QString, ito::Param> * /*paramVals*/)
         }
 
         QSharedPointer<ito::ParamBase> val(new ito::ParamBase("speed", ito::ParamBase::DoubleArray, m_numaxis, speedArray));
-        delete speedArray;
+        delete[] speedArray;
 
         m_pAerotechA3200->setParam(val);
     }

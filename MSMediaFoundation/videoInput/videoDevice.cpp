@@ -370,7 +370,7 @@ MediaType VideoDevice::getFormat(unsigned int id)
 
 }
 
-int VideoDevice::getCountFormats()
+size_t VideoDevice::getCountFormats()
 {
 	return vd_CurrentFormats.size();
 }

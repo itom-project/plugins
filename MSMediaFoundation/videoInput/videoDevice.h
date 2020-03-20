@@ -47,7 +47,7 @@ public:
 		
 	wchar_t *getName();
 
-	int getCountFormats();
+	size_t getCountFormats();
 
 	unsigned int getWidth();
 	

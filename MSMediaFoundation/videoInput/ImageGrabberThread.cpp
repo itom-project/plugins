@@ -1,6 +1,6 @@
 #include <new>
 #include <mfapi.h>
-
+#include <process.h>    /* _beginthread, _endthread */
 
 #include "ImageGrabberThread.h"
 #include "ImageGrabber.h"
@@ -10,7 +10,7 @@
 
 
 //----------------------------------------------------------------------------------------
-DWORD WINAPI MainThreadFunction( LPVOID lpParam )
+unsigned int WINAPI MainThreadFunction( LPVOID lpParam )
 {
 	ImageGrabberThread *pIGT = (ImageGrabberThread *)lpParam;
 
@@ -39,7 +39,7 @@ HRESULT ImageGrabberThread::CreateInstance(ImageGrabberThread **ppIGT, IMFMediaS
 }
 
 //----------------------------------------------------------------------------------------
-ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID): igt_Handle(NULL), igt_stop(false), igt_pImageGrabber(NULL)
+ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID): igt_Handle(0), igt_stop(false), igt_pImageGrabber(NULL)
 {
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
 
@@ -103,7 +103,7 @@ void ImageGrabberThread::stop()
 //----------------------------------------------------------------------------------------
 void ImageGrabberThread::start()
 {
-	igt_Handle = CreateThread( 
+	igt_Handle = _beginthreadex( 
             NULL,                   // default security attributes
             0,                      // use default stack size  
             MainThreadFunction,       // thread function name

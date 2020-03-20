@@ -326,7 +326,7 @@ bool VideoInput::isFrameNew(unsigned int deviceID)
 	return false;
 }
 
-unsigned int VideoInput::getCountFormats(unsigned int deviceID)
+size_t VideoInput::getCountFormats(unsigned int deviceID)
 {
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
 
@@ -336,8 +336,10 @@ unsigned int VideoInput::getCountFormats(unsigned int deviceID)
 	
 		VideoDevice * VD = VDS->getDevice(deviceID);
 		
-		if(VD)
-			return VD->getCountFormats();
+        if (VD)
+        {
+            return VD->getCountFormats();
+        }
 	}
 	else
 	{
@@ -351,8 +353,10 @@ void VideoInput::closeAllDevices()
 {
 	VideoDevices *VDS = &VideoDevices::getInstance();
 
-	for(unsigned int i = 0; i < VDS->getCount(); i++)
-		closeDevice(i);
+    for (unsigned int i = 0; i < VDS->getCount(); i++)
+    {
+        closeDevice(i);
+    }
 }
 
 void VideoInput::setParameters(unsigned int deviceID, CamParameters parameters)
@@ -497,7 +501,7 @@ unsigned int VideoInput::listDevices(bool silent)
 {
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
 
-	int out = 0;
+	size_t out = 0;
 
 	if(accessToDevices)
 	{
@@ -507,11 +511,11 @@ unsigned int VideoInput::listDevices(bool silent)
 
 		DebugPrintOut *DPO = &DebugPrintOut::getInstance();
 
-		if(!silent)DPO->printOut(L"\nVideoInput SPY MODE!\n\n");
+		if(!silent) DPO->printOut(L"\nVideoInput SPY MODE!\n\n");
 
-		if(!silent)DPO->printOut(L"SETUP: Looking For Capture Devices\n");
+		if(!silent) DPO->printOut(L"SETUP: Looking For Capture Devices\n");
 
-		for(int i = 0; i < out; i++)
+		for(size_t i = 0; i < out; i++)
 		{
 			if(!silent)DPO->printOut(L"SETUP: %i) %s \n",i, getNameVideoDevice(i));
 		}
@@ -630,8 +634,6 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 	unsigned int numInts = numBytes >> 2;
 
 	unsigned int widthInInts = widthInBytes >> 2;
-
-	int *dstInt, *srcInt;
 	
 	if(!bRGB)
 	{
