@@ -23,7 +23,6 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "avantesAvaSpec.h"
-#include "pluginVersion.h"
 
 #include <QFile>
 #include <qstring.h>
