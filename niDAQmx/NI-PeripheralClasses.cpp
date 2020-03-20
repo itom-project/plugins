@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -96,7 +96,7 @@ ito::RetVal niTask::applyParameters()
         // TODO: Up to now, all tasks are finite
         case niTaskModeFinite:
         {
-            // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or don´t use it.
+            // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or do not use it.
             err = DAQmxCfgSampClkTiming(m_task, NULL /*OnboardClock*/, m_rateHz, DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, m_samplesToRW);
             break;
         }
