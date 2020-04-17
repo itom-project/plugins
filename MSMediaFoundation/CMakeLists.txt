@@ -12,9 +12,9 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
           "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
     DOC "path of SDK subfolder of itom root (build) directory")
 
-if(NOT ITOM_SDK_DIR)
+if (NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
+endif ()
 
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -28,7 +28,7 @@ find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 find_package(WindowsSDK QUIET)
 
-if(WINDOWSSDK_FOUND)
+if (WINDOWSSDK_FOUND)
     itom_find_package_qt(ON Core Widgets LinguistTools)
 
     include_directories(
@@ -85,9 +85,9 @@ if(WINDOWSSDK_FOUND)
     )
 
     #Add version information to the plugIn-dll unter MSVC
-    if(MSVC)
+    if (MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif()
+    endif ()
 
 
     itom_add_source_group(videoInput)
@@ -114,4 +114,4 @@ if(WINDOWSSDK_FOUND)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 else()
     message(WARNING "WindowsSDK could not be found. ${target_name} will not be build")  
-endif()
+endif ()

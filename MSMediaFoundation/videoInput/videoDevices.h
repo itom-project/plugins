@@ -3,6 +3,9 @@
 #include <basetsd.h>
 #include <vector>
 
+#include <qsharedpointer.h>
+#include "DebugPrintOut.h"
+
 struct IMFAttributes;
 
 class VideoDevice;
@@ -11,11 +14,11 @@ class VideoDevice;
 class VideoDevices
 {
 public:
+    VideoDevices(QSharedPointer<DebugPrintOut> debugPrintOut);
+
 	~VideoDevices(void);
 
 	long initDevices(IMFAttributes *pAttributes);
-
-	static VideoDevices& getInstance();
 
 	VideoDevice *getDevice(unsigned int i);
 
@@ -24,11 +27,9 @@ public:
 	void clearDevices();
 
 private:
-			
-    UINT32 count;
-
-	std::vector<VideoDevice *> vds_Devices;
+	
+	std::vector<VideoDevice *> m_devices;
 		
-	VideoDevices(void);
+    QSharedPointer<DebugPrintOut> m_debugPrintOut;
 };
 

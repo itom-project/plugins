@@ -32,6 +32,7 @@
 #endif
 
 #include <qsharedpointer.h>
+#include <qmutex.h>
 #include "videoInput.h"
 #include "dialogMSMediaFoundation.h"
 
@@ -58,13 +59,18 @@ class MSMediaFoundation : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
+        static QSharedPointer<VideoInput> VideoInputInstance;
+
     private:
+
+        static QMutex VideoInputCreateMutex;
+        static int VideoInputRefCount; //!< reference counter about currently existing instances. Used to create a singleton of VideoInput.
 
         enum InitState {initNotTested, initSuccessfull, initNotSuccessfull};
 
         InitState m_initState;
 
-        VideoInput *m_pVI;    /*!< Handle to the VideoInput-Class */
+        QSharedPointer<VideoInput> m_videoInput;    /*!< Handle to the VideoInput-Class Eqaul to VideoInputInstance */
         CamParameters m_camParams;
         QHash<QString, Parameter*> m_camParamsHash;
 

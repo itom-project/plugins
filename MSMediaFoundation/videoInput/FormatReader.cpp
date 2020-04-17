@@ -12,34 +12,34 @@ HRESULT SpecialCaseAttributeValueNew(GUID guid, const PROPVARIANT& var, MediaTyp
 
 unsigned int *GetParameter(GUID guid, MediaType &out)
 {
-	if(guid == MF_MT_YUV_MATRIX) 
+	if (guid == MF_MT_YUV_MATRIX) 
 		return &(out.MF_MT_YUV_MATRIX);
 
-	if(guid == MF_MT_VIDEO_LIGHTING) 
+	if (guid == MF_MT_VIDEO_LIGHTING) 
 		return &(out.MF_MT_VIDEO_LIGHTING);
 		
-	if(guid == MF_MT_DEFAULT_STRIDE) 
+	if (guid == MF_MT_DEFAULT_STRIDE) 
 		return &(out.MF_MT_DEFAULT_STRIDE);
 		
-	if(guid == MF_MT_VIDEO_CHROMA_SITING) 
+	if (guid == MF_MT_VIDEO_CHROMA_SITING) 
 		return &(out.MF_MT_VIDEO_CHROMA_SITING);
 	
-	if(guid == MF_MT_VIDEO_NOMINAL_RANGE) 
+	if (guid == MF_MT_VIDEO_NOMINAL_RANGE) 
 		return &(out.MF_MT_VIDEO_NOMINAL_RANGE);
 
-	if(guid == MF_MT_ALL_SAMPLES_INDEPENDENT) 
+	if (guid == MF_MT_ALL_SAMPLES_INDEPENDENT) 
 		return &(out.MF_MT_ALL_SAMPLES_INDEPENDENT);
 	
-	if(guid == MF_MT_FIXED_SIZE_SAMPLES) 
+	if (guid == MF_MT_FIXED_SIZE_SAMPLES) 
 		return &(out.MF_MT_FIXED_SIZE_SAMPLES);
 
-	if(guid == MF_MT_SAMPLE_SIZE) 
+	if (guid == MF_MT_SAMPLE_SIZE) 
 		return &(out.MF_MT_SAMPLE_SIZE);
 
-	if(guid == MF_MT_VIDEO_PRIMARIES) 
+	if (guid == MF_MT_VIDEO_PRIMARIES) 
 		return &(out.MF_MT_VIDEO_PRIMARIES);
 
-	if(guid == MF_MT_INTERLACE_MODE) 
+	if (guid == MF_MT_INTERLACE_MODE) 
 		return &(out.MF_MT_INTERLACE_MODE);
 
 	return NULL;
@@ -85,7 +85,7 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
 
 			p = GetParameter(guid, out);
 
-			if(p) 
+			if (p) 
 			{
 				*p = var.ulVal;
 			}
@@ -101,7 +101,7 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
             break;
 
         case VT_CLSID:
-			if(guid == MF_MT_AM_FORMAT_TYPE)
+			if (guid == MF_MT_AM_FORMAT_TYPE)
 			{
 				hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
 
@@ -115,7 +115,7 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
 				}
 			}
 
-			if(guid == MF_MT_MAJOR_TYPE)
+			if (guid == MF_MT_MAJOR_TYPE)
 			{
 				hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
 
@@ -129,7 +129,7 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
 				}
 			}
 
-			if(guid == MF_MT_SUBTYPE)
+			if (guid == MF_MT_SUBTYPE)
 			{
 				hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
 
@@ -307,7 +307,7 @@ HRESULT SpecialCaseAttributeValueNew(GUID guid, const PROPVARIANT& var, MediaTyp
 }
 
 #ifndef IF_EQUAL_RETURN
-#define IF_EQUAL_RETURN(param, val) if(val == param) return L#val
+#define IF_EQUAL_RETURN(param, val) if (val == param) return L#val
 #endif
 
 LPCWSTR GetGUIDNameConstNew(const GUID& guid)

@@ -5,24 +5,20 @@
 #include "DebugPrintOut.h"
 
 
-DebugPrintOut::DebugPrintOut(void):verbose(true)
+//-----------------------------------------------------------
+DebugPrintOut::DebugPrintOut(void):m_verbose(true)
 {
 }
 
+//-----------------------------------------------------------
 DebugPrintOut::~DebugPrintOut(void)
 {
 }
 
-DebugPrintOut& DebugPrintOut::getInstance()
-{
-	static DebugPrintOut instance;
-
-	return instance;
-}
-
+//-----------------------------------------------------------
 void DebugPrintOut::printOut(const wchar_t *format, ...)
 {
-	if(verbose)
+	if (m_verbose)
 	{
 		int i = 0;
 
@@ -35,12 +31,12 @@ void DebugPrintOut::printOut(const wchar_t *format, ...)
 		bool state = true;
 
 	
-		if(wcscmp(format, L"%i"))
+		if (wcscmp(format, L"%i"))
 		{
 				i = va_arg (args, int);
 		}
  
-		if(wcscmp(format, L"%s"))
+		if (wcscmp(format, L"%s"))
 		{
 				p = va_arg (args, wchar_t *);
 		}
@@ -51,7 +47,8 @@ void DebugPrintOut::printOut(const wchar_t *format, ...)
 	}
 }
 
+//-----------------------------------------------------------
 void DebugPrintOut::setVerbose(bool state)
 {
-	verbose = state;
+	m_verbose = state;
 }

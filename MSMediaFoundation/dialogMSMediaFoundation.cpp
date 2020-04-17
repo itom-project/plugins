@@ -118,7 +118,7 @@ ito::RetVal DialogMSMediaFoundation::applyParameters()
     }
     
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
-    if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
+    if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
         int x0, x1, y0, y1;
         ui.rangeX01->values(x0,x1);
@@ -136,33 +136,33 @@ ito::RetVal DialogMSMediaFoundation::applyParameters()
         }
     }
 #else
-    if(ui.rangeX01->isEnabled())
+    if (ui.rangeX01->isEnabled())
     {
         int x0;
         int x1;
         ui.rangeX01->values(x0,x1);
 
-        if((m_currentParameters["x0"].getVal<int>() !=  x0))
+        if ((m_currentParameters["x0"].getVal<int>() !=  x0))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, x0)));
         }
-        if((m_currentParameters["x1"].getVal<int>() !=  x1))
+        if ((m_currentParameters["x1"].getVal<int>() !=  x1))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, x1)));
         }
     }
 
-    if(ui.rangeY01->isEnabled())
+    if (ui.rangeY01->isEnabled())
     {
         int y0;
         int y1;
         ui.rangeY01->values(y0, y1);
 
-        if((m_currentParameters["y0"].getVal<int>() !=  y0))
+        if ((m_currentParameters["y0"].getVal<int>() !=  y0))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, y0)));
         }
-        if((m_currentParameters["y1"].getVal<int>() !=  y1))
+        if ((m_currentParameters["y1"].getVal<int>() !=  y1))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, y1)));
         }

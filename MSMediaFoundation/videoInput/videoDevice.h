@@ -3,8 +3,9 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <qsharedpointer.h>
 
-
+#include "DebugPrintOut.h"
 #include "VideoInput.h"
 
 struct IMFActivate;
@@ -73,6 +74,20 @@ public:
 
 private:
 
+    long enumerateCaptureFormats(IMFMediaSource *pSource);
+
+    long setDeviceFormat(IMFMediaSource *pSource, unsigned long dwFormatIndex);
+
+    void buildLibraryofTypes();
+
+    int findType(unsigned int size, unsigned int frameRate = 0);
+
+    long resetDevice(IMFActivate *pActivate);
+
+    long initDevice();
+
+    long checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice);
+
 	enum typeLock
 	{
 		MediaSourceLock,
@@ -83,43 +98,32 @@ private:
 
 	} vd_LockOut;
 	
-	wchar_t *vd_pFriendlyName;
+	wchar_t *m_pFriendlyName;
 
-	ImageGrabberThread *vd_pImGrTh;
+	ImageGrabberThread *m_pImGrTh;
 
-	CamParameters vd_PrevParameters;
+	CamParameters m_prevParameters;
 
-	unsigned int vd_Width;
+	unsigned int m_width;
 
-	unsigned int vd_Height;
+	unsigned int m_height;
 
-	unsigned int vd_CurrentNumber;
+	unsigned int m_currentNumber;
 
-	bool vd_IsSetuped;
+	bool m_isSetuped;
 		
-	std::map<UINT64, FrameRateMap> vd_CaptureFormats;
+	std::map<UINT64, FrameRateMap> m_captureFormats;
 	
-	std::vector<MediaType> vd_CurrentFormats;
+	std::vector<MediaType> m_currentFormats;
 
-	IMFMediaSource *vd_pSource;
+	IMFMediaSource *m_pSource;
 
-	emergensyStopEventCallback vd_func;
+	emergensyStopEventCallback m_func;
 
-	void *vd_userData;
+	void *m_userData;
 	
-	long enumerateCaptureFormats(IMFMediaSource *pSource);
+    QSharedPointer<DebugPrintOut> m_debugPrintOut;
 	
-	long setDeviceFormat(IMFMediaSource *pSource, unsigned long dwFormatIndex);
-
-	void buildLibraryofTypes();
-
-	int findType(unsigned int size, unsigned int frameRate = 0);	
-	
-	long resetDevice(IMFActivate *pActivate);
-	
-	long initDevice();
-
-	long checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice);
 
 };
 

@@ -12,40 +12,49 @@
   The singleton instance of this class contains all found and available video devices
 */
 
-VideoDevices::VideoDevices(void): count(0)
+//--------------------------------------------------------
+VideoDevices::VideoDevices(QSharedPointer<DebugPrintOut> debugPrintOut): 
+    m_debugPrintOut(debugPrintOut)
 {
 }
 
+//--------------------------------------------------------
+VideoDevices::~VideoDevices(void)
+{
+    clearDevices();
+}
+
+//--------------------------------------------------------
 void VideoDevices::clearDevices()
 {
-	std::vector<VideoDevice *>::iterator i = vds_Devices.begin();
+	std::vector<VideoDevice *>::iterator i = m_devices.begin();
 
-	for(; i != vds_Devices.end(); ++i)
-		delete (*i);
+    for (; i != m_devices.end(); ++i)
+    {
+        delete (*i);
+    }
 
-	vds_Devices.clear();
+	m_devices.clear();
 }
 
-VideoDevices::~VideoDevices(void)
-{	
-	clearDevices();
-}
 
+//--------------------------------------------------------
 VideoDevice * VideoDevices::getDevice(unsigned int i)
 {
-	if(i >= vds_Devices.size())
+	if (i >= m_devices.size())
 	{
 		return NULL;
 	}
 
-	if(i < 0)
+	if (i < 0)
 	{
 		return NULL;
 	}
 
-	return vds_Devices[i];
+	return m_devices[i];
 }
 
+//---------------------------------------------------------------------
 long VideoDevices::initDevices(IMFAttributes *pAttributes)
 {
 	HRESULT hr = S_OK;
@@ -53,12 +62,14 @@ long VideoDevices::initDevices(IMFAttributes *pAttributes)
 	IMFActivate **ppDevices = NULL;
 
 	clearDevices();
+
+    UINT32 count;
 	
 	hr = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
 
 	if (SUCCEEDED(hr))
     {
-        if(count > 0)
+        if (count > 0)
 		{
 			for(UINT32 i = 0; i < count; i++)
 			{
@@ -66,7 +77,7 @@ long VideoDevices::initDevices(IMFAttributes *pAttributes)
 
 				vd->readInfoOfDevice(ppDevices[i], i);
 
-				vds_Devices.push_back(vd);		
+				m_devices.push_back(vd);		
 
 				SafeRelease(&ppDevices[i]);
 			}
@@ -78,22 +89,14 @@ long VideoDevices::initDevices(IMFAttributes *pAttributes)
     }
 	else
 	{
-		DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-		DPO->printOut(L"VideoDevices: The instances of the VideoDevice class cannot be created\n");
+		m_debugPrintOut->printOut(L"VideoDevices: The instances of the VideoDevice class cannot be created\n");
 	}
 
 	return hr;
 }
 
+//--------------------------------------------------------
 size_t VideoDevices::getCount()
 {
-	return vds_Devices.size();
-}
-
-VideoDevices& VideoDevices::getInstance() 
-{
-	static VideoDevices instance;
-
-	return instance;
+	return m_devices.size();
 }

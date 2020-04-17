@@ -1,6 +1,11 @@
 #pragma once
 
 #include <guiddef.h>
+#include <qsharedpointer.h>
+
+#include "DebugPrintOut.h"
+#include "Media_Foundation.h"
+#include "videoDevices.h"
 
 
 struct IMFMediaSource;
@@ -115,10 +120,10 @@ struct CamParameters
 class VideoInput
 {
 public:
-	virtual ~VideoInput(void);
+    //must be called as singleton
+    VideoInput(QSharedPointer<DebugPrintOut> m_debugPrintOut);
 
-	// Getting of static instance of VideoInput class
-	static VideoInput& getInstance(); 
+	virtual ~VideoInput(void);
 
 	// Closing video device with deviceID
 	void closeDevice(unsigned int deviceID);
@@ -185,12 +190,16 @@ public:
 	
 private: 
 
-	bool accessToDevices;
-	
-    VideoInput(void);
-
 	void processPixels(unsigned char * src, unsigned char * dst, unsigned int width, unsigned int height, unsigned int bpp, bool bRGB, bool bFlip);
 	
 	void updateListOfDevices();
+
+    bool m_accessToDevices;
+
+    QSharedPointer<DebugPrintOut> m_debugPrintOut;
+
+    QSharedPointer<Media_Foundation> m_mediaFoundation;
+
+    QSharedPointer<VideoDevices> m_videoDevices;
 };
 
