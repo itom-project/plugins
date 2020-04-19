@@ -108,13 +108,13 @@ VideoInput::VideoInput(QSharedPointer<DebugPrintOut> debugPrintOut):
 
     m_mediaFoundation = QSharedPointer<Media_Foundation>(new Media_Foundation(debugPrintOut));
 
-	m_debugPrintOut->printOut(L"\n***** VideoInput LIBRARY - 2013 (Author: Evgeny Pereguda) *****\n\n");
+	m_debugPrintOut->printOut("\n***** VideoInput LIBRARY - 2013 (Author: Evgeny Pereguda) *****\n\n");
 
 	updateListOfDevices();
 	
     if (!m_accessToDevices)
     {
-        m_debugPrintOut->printOut(L"INITIALIZATION: Ther is not any suitable video device\n");
+        m_debugPrintOut->printOut("INITIALIZATION: Ther is not any suitable video device\n");
     }
 }
 
@@ -125,14 +125,14 @@ void VideoInput::updateListOfDevices()
 
     if (!m_accessToDevices)
     {
-        m_debugPrintOut->printOut(L"UPDATING: There is not any suitable video device\n");
+        m_debugPrintOut->printOut("UPDATING: There is not any suitable video device\n");
     }
 }
 
 //--------------------------------------------------------------------------------
 VideoInput::~VideoInput(void)
 {
-	m_debugPrintOut->printOut(L"\n***** CLOSE VideoInput LIBRARY - 2013 *****\n\n");
+	m_debugPrintOut->printOut("\n***** CLOSE VideoInput LIBRARY - 2013 *****\n\n");
 }
 
 //--------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ IMFMediaSource *VideoInput::getMediaSource(unsigned int deviceID)
 
             if (!out)
             {
-                m_debugPrintOut->printOut(L"VideoDevice %i: There is not any suitable IMFMediaSource interface\n", deviceID);
+                m_debugPrintOut->printOut("VideoDevice %i: There is not any suitable IMFMediaSource interface\n", deviceID);
             }
 
 			return out;
@@ -156,7 +156,7 @@ IMFMediaSource *VideoInput::getMediaSource(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return NULL;
@@ -175,7 +175,7 @@ bool VideoInput::setupDevice(unsigned int deviceID, unsigned int id)
 
             if (!out)
             {
-                m_debugPrintOut->printOut(L"VideoDevice %i: This device cannot be started\n", deviceID);
+                m_debugPrintOut->printOut("VideoDevice %i: This device cannot be started\n", deviceID);
             }
 
 			return out;
@@ -183,7 +183,7 @@ bool VideoInput::setupDevice(unsigned int deviceID, unsigned int id)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return false;
@@ -202,7 +202,7 @@ bool VideoInput::setupDevice(unsigned int deviceID, unsigned int w, unsigned int
 
             if (!out)
             {
-                m_debugPrintOut->printOut(L"VideoDevice %i: this device cannot be started\n", deviceID);
+                m_debugPrintOut->printOut("VideoDevice %i: this device cannot be started\n", deviceID);
             }
 
 			return out;
@@ -210,7 +210,7 @@ bool VideoInput::setupDevice(unsigned int deviceID, unsigned int w, unsigned int
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n", deviceID);
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n", deviceID);
 	}
 
 	return false;
@@ -230,7 +230,7 @@ MediaType VideoInput::getFormat(unsigned int deviceID, unsigned int id)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return MediaType();
@@ -250,7 +250,7 @@ bool VideoInput::isDeviceSetup(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return false;
@@ -270,7 +270,7 @@ bool VideoInput::isDeviceMediaSource(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"Device(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("Device(s): There is not any suitable video device\n");
 	}
 
 	return false;
@@ -290,7 +290,7 @@ bool VideoInput::isDeviceRawDataSource(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return false;
@@ -316,7 +316,7 @@ bool VideoInput::isFrameNew(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return false;
@@ -336,7 +336,7 @@ size_t VideoInput::getCountFormats(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return 0;
@@ -365,7 +365,7 @@ void VideoInput::setParameters(unsigned int deviceID, CamParameters parameters)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 }
 
@@ -385,7 +385,7 @@ CamParameters VideoInput::getParameters(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 	
 	return out;
@@ -405,7 +405,7 @@ void VideoInput::closeDevice(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 }
 
@@ -423,7 +423,7 @@ unsigned int VideoInput::getWidth(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return 0;
@@ -443,7 +443,7 @@ unsigned int VideoInput::getHeight(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return 0;
@@ -470,7 +470,7 @@ wchar_t *VideoInput::getNameVideoDevice(unsigned int deviceID)
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return L"Empty";
@@ -493,31 +493,31 @@ unsigned int VideoInput::listDevices(bool silent)
 		out = m_videoDevices->getCount();
 
         if (!silent) {
-            m_debugPrintOut->printOut(L"\nVideoInput SPY MODE!\n\n");
+            m_debugPrintOut->printOut("\nVideoInput SPY MODE!\n\n");
         }
 
         if (!silent) {
-            m_debugPrintOut->printOut(L"SETUP: Looking For Capture Devices\n");
+            m_debugPrintOut->printOut("SETUP: Looking For Capture Devices\n");
         }
 
 		for(size_t i = 0; i < out; i++)
 		{
             if (!silent) 
             {
-                m_debugPrintOut->printOut(L"SETUP: %i) %s \n", i, getNameVideoDevice(i));
+                m_debugPrintOut->printOut("SETUP: %i) %s \n", i, getNameVideoDevice(i));
             }
 		}
 
         if (!silent)
         {
-            m_debugPrintOut->printOut(L"SETUP: %i Device(s) found\n\n", out); 
+            m_debugPrintOut->printOut("SETUP: %i Device(s) found\n\n", out); 
         }
 
 
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 
 	return out;
@@ -552,7 +552,7 @@ void VideoInput::setEmergencyStopEvent(unsigned int deviceID, void *userData, vo
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 }
 
@@ -584,18 +584,18 @@ bool VideoInput::getPixels(unsigned int deviceID, unsigned char * dstBuffer, boo
 				}
 				else
 				{
-					m_debugPrintOut->printOut(L"ERROR: GetPixels() - bufferSizes do not match!\n");
+					m_debugPrintOut->printOut("ERROR: GetPixels() - bufferSizes do not match!\n");
 				}
 			}
 			else
 			{
-				m_debugPrintOut->printOut(L"ERROR: GetPixels() - Unable to grab frame for device %i\n", deviceID);
+				m_debugPrintOut->printOut("ERROR: GetPixels() - Unable to grab frame for device %i\n", deviceID);
 			}				
 		}
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice(s): There is not any suitable video device\n");
+		m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
 	}
 		
 	return success;
@@ -621,7 +621,7 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 	
 		if (bFlip)
 		{
-			for(int y = 0; y < height; y++)
+			for (unsigned int y = 0; y < height; ++y)
 			{
 #if _WIN64
 	memcpy(dst + (y * widthInBytes), src + ( (height -y -1) * widthInBytes), widthInBytes);
@@ -675,7 +675,7 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 			int y = (height - 1) * widthInBytes;
 			src += y;
 			
-			for(unsigned int i = 0; i < numBytes; i+=3)
+			for (unsigned int i = 0; i < numBytes; i+=3)
 			{
 				if (x >= width)
 				{
@@ -698,7 +698,7 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 		}
 		else
 		{						
-			for(unsigned int i = 0; i < numBytes; i+=3)
+			for(unsigned int i = 0; i < numBytes; i += 3)
 			{
 				*dst = *(src+2);
 				dst++;

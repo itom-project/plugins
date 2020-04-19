@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <iostream>
 
 #include "DebugPrintOut.h"
 
 
 //-----------------------------------------------------------
-DebugPrintOut::DebugPrintOut(void):m_verbose(true)
+DebugPrintOut::DebugPrintOut(void):
+    m_verbose(false)
 {
 }
 
@@ -16,32 +18,19 @@ DebugPrintOut::~DebugPrintOut(void)
 }
 
 //-----------------------------------------------------------
-void DebugPrintOut::printOut(const wchar_t *format, ...)
+void DebugPrintOut::printOut(const char *format, ...)
 {
 	if (m_verbose)
 	{
-		int i = 0;
-
-		wchar_t *p = NULL;
-
 		va_list args;
 
 		va_start(args, format);
 
-		bool state = true;
+        char buffer[256];
 
-	
-		if (wcscmp(format, L"%i"))
-		{
-				i = va_arg (args, int);
-		}
- 
-		if (wcscmp(format, L"%s"))
-		{
-				p = va_arg (args, wchar_t *);
-		}
-		
-		wprintf(format, i,p);
+        vsprintf_s(buffer, 255, format, args);
+
+        std::cout << buffer << std::endl;
 
 		va_end (args);
 	}

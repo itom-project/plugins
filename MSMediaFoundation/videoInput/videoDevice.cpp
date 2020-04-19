@@ -212,7 +212,7 @@ long VideoDevice::resetDevice(IMFActivate *pActivate)
 		{			
 			m_pFriendlyName = NULL;
 
-			m_debugPrintOut->printOut(L"VideoDevice %i: IMFMediaSource interface cannot be created \n", m_currentNumber);
+			m_debugPrintOut->printOut("VideoDevice %i: IMFMediaSource interface cannot be created \n", m_currentNumber);
 		}
 	}
 
@@ -258,7 +258,7 @@ long VideoDevice::checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice)
 				{
 					if (wcscmp(newFriendlyName, m_pFriendlyName) != 0)
 					{
-						m_debugPrintOut->printOut(L"VideoDevice %i: Chosen device cannot be found \n", m_currentNumber);
+						m_debugPrintOut->printOut("VideoDevice %i: Chosen device cannot be found \n", m_currentNumber);
 
 						hr = -1;
 
@@ -273,13 +273,13 @@ long VideoDevice::checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice)
 				}
 				else
 				{
-					m_debugPrintOut->printOut(L"VideoDevice %i: Name of device cannot be gotten \n", m_currentNumber);
+					m_debugPrintOut->printOut("VideoDevice %i: Name of device cannot be gotten \n", m_currentNumber);
 				}
 
 			}
 			else
 			{
-				m_debugPrintOut->printOut(L"VideoDevice %i: Number of devices more than corrent number of the device \n", m_currentNumber);
+				m_debugPrintOut->printOut("VideoDevice %i: Number of devices more than corrent number of the device \n", m_currentNumber);
 
 				hr = -1;
 			}
@@ -296,7 +296,7 @@ long VideoDevice::checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice)
     }
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice %i: List of DeviceSources cannot be enumerated \n", m_currentNumber);
+		m_debugPrintOut->printOut("VideoDevice %i: List of DeviceSources cannot be enumerated \n", m_currentNumber);
 	}
 
 	return hr;
@@ -349,13 +349,13 @@ long VideoDevice::initDevice()
 		}
 		else
 		{
-			m_debugPrintOut->printOut(L"VideoDevice %i: Device there is not \n", m_currentNumber);
+			m_debugPrintOut->printOut("VideoDevice %i: Device there is not \n", m_currentNumber);
 		}
     }	
 	else
 	{
 
-		m_debugPrintOut->printOut(L"VideoDevice %i: The attribute of video cameras cannot be getting \n", m_currentNumber);
+		m_debugPrintOut->printOut("VideoDevice %i: The attribute of video cameras cannot be getting \n", m_currentNumber);
 	
 	}
 
@@ -418,7 +418,7 @@ void VideoDevice::closeDevice()
 		
 		vd_LockOut = OpenLock;	
 				
-		m_debugPrintOut->printOut(L"VideoDevice %i: Device is stopped \n", m_currentNumber);
+		m_debugPrintOut->printOut("VideoDevice %i: Device is stopped \n", m_currentNumber);
 	}
 }
 
@@ -603,7 +603,7 @@ RawImage * VideoDevice::getRawImageOut()
 			return m_pImGrTh->getImageGrabber()->getRawImage();	
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice %i: The instance of ImageGrabberThread class does not exist  \n", m_currentNumber);
+		m_debugPrintOut->printOut("VideoDevice %i: The instance of ImageGrabberThread class does not exist  \n", m_currentNumber);
 	}
 	return NULL;
 }
@@ -622,7 +622,7 @@ bool VideoDevice::isFrameNew()
 						
 			if (FAILED(hr))
 			{
-				m_debugPrintOut->printOut(L"VideoDevice %i: The instance of ImageGrabberThread class cannot be created.\n", m_currentNumber);
+				m_debugPrintOut->printOut("VideoDevice %i: The instance of ImageGrabberThread class cannot be created.\n", m_currentNumber);
 
 				return false;
 			}
@@ -677,7 +677,7 @@ bool VideoDevice::setupDevice(unsigned int id)
 			m_isSetuped = (SUCCEEDED(hr));
 
 			if (m_isSetuped)
-				m_debugPrintOut->printOut(L"\n\nVideoDevice %i: Device is setuped \n", m_currentNumber);
+				m_debugPrintOut->printOut("\n\nVideoDevice %i: Device is setuped \n", m_currentNumber);
 
 			m_prevParameters = getParameters();
 
@@ -685,14 +685,14 @@ bool VideoDevice::setupDevice(unsigned int id)
 		}
 		else
 		{
-			m_debugPrintOut->printOut(L"VideoDevice %i: Interface IMFMediaSource cannot be got \n", m_currentNumber);
+			m_debugPrintOut->printOut("VideoDevice %i: Interface IMFMediaSource cannot be got \n", m_currentNumber);
 
 			return false;
 		}
 	}
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevice %i: Device is setuped already \n", m_currentNumber);
+		m_debugPrintOut->printOut("VideoDevice %i: Device is setuped already \n", m_currentNumber);
 
 		return false;
 	}	

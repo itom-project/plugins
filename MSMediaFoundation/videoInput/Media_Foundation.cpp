@@ -16,7 +16,7 @@ Media_Foundation::Media_Foundation(QSharedPointer<DebugPrintOut> debugPrintOut) 
 
 	if (!SUCCEEDED(hr))
 	{
-		m_debugPrintOut->printOut(L"MEDIA FOUNDATION: It cannot be created!!!\n");
+		m_debugPrintOut->printOut("MEDIA FOUNDATION: It cannot be created!!!\n");
 	}
 }
 
@@ -27,7 +27,7 @@ Media_Foundation::~Media_Foundation(void)
 	
 	if (!SUCCEEDED(hr))
 	{
-		m_debugPrintOut->printOut(L"MEDIA FOUNDATION: Resources cannot be released\n");
+		m_debugPrintOut->printOut("MEDIA FOUNDATION: Resources cannot be released\n");
 	}
 }
 
@@ -56,7 +56,7 @@ bool Media_Foundation::buildListOfDevices(QSharedPointer<VideoDevices> videoDevi
     }	
 	else
 	{
-		m_debugPrintOut->printOut(L"MEDIA FOUNDATION: The access to the video cameras denied\n");
+		m_debugPrintOut->printOut("MEDIA FOUNDATION: The access to the video cameras denied\n");
 	
 	}
 

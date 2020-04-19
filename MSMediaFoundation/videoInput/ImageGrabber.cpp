@@ -58,7 +58,7 @@ ImageGrabber::~ImageGrabber(void)
     delete ig_RISecond;
     ig_RISecond = NULL;
 
-    m_debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: Destroying instance of the ImageGrabber class \n", ig_DeviceID);
+    m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Destroying instance of the ImageGrabber class \n", ig_DeviceID);
 
 }
 
@@ -207,7 +207,7 @@ void ImageGrabber::stopGrabbing()
 	}
 
 
-    m_debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: Stopping of of grabbing of images\n", ig_DeviceID);
+    m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Stopping of of grabbing of images\n", ig_DeviceID);
 }
 
 HRESULT ImageGrabber::startGrabbing(void)
@@ -222,18 +222,18 @@ HRESULT ImageGrabber::startGrabbing(void)
     CHECK_HR(hr = ig_pSession->SetTopology(0, ig_pTopology));
     CHECK_HR(hr = ig_pSession->Start(&GUID_NULL, &var));
 
-    m_debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: Start Grabbing of the images\n", ig_DeviceID);
+    m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Start Grabbing of the images\n", ig_DeviceID);
+
+    HRESULT hrStatus = S_OK;
+    MediaEventType met;
 
     while (1)
     {
-		
-        HRESULT hrStatus = S_OK;
-        MediaEventType met;
-
 		if (!ig_pSession)
 		{
 			break;
 		}
+
         hr = ig_pSession->GetEvent(MF_EVENT_FLAG_NO_WAIT, &pEvent);
 
 		if (hr == MF_E_NO_EVENTS_AVAILABLE)
@@ -245,7 +245,7 @@ HRESULT ImageGrabber::startGrabbing(void)
 				goto done;
 			}
 
-            Sleep(1);
+            Sleep(100);
 			continue;
 		}
 
@@ -272,7 +272,7 @@ HRESULT ImageGrabber::startGrabbing(void)
 
         if (met == MESessionEnded)
         {			
-            m_debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: MESessionEnded \n", ig_DeviceID);
+            m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MESessionEnded \n", ig_DeviceID);
 
 			ig_pSession->Stop();
             break;
@@ -280,14 +280,14 @@ HRESULT ImageGrabber::startGrabbing(void)
 
 		if (met == MESessionStopped)
         {
-            m_debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: MESessionStopped \n", ig_DeviceID);
+            m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MESessionStopped \n", ig_DeviceID);
             break;
         }
 
 
 		/*if (met == MEVideoCaptureDeviceRemoved)
         {
-			m_debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: MEVideoCaptureDeviceRemoved \n", ig_DeviceID);
+			m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MEVideoCaptureDeviceRemoved \n", ig_DeviceID);
 			
             break;       
         }*/
@@ -295,7 +295,7 @@ HRESULT ImageGrabber::startGrabbing(void)
         SafeRelease(&pEvent);
     }
 
-    m_debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: Finish startGrabbing \n", ig_DeviceID);
+    m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Finish startGrabbing \n", ig_DeviceID);
 			
 done:
     SafeRelease(&pEvent);
@@ -422,7 +422,7 @@ HRESULT ImageGrabber::CreateInstance(ImageGrabber **ppIG, unsigned int deviceID,
         return E_OUTOFMEMORY;
     }
 
-    debugPrintOut->printOut(L"IMAGEGRABBER VideoDevice %i: Creating instance of ImageGrabber\n", deviceID);
+    debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Creating instance of ImageGrabber\n", deviceID);
 
     return S_OK;
 }
@@ -489,7 +489,7 @@ STDMETHODIMP ImageGrabber::OnProcessSample(REFGUID guidMajorMediaType, DWORD dwS
     LONGLONG llSampleTime, LONGLONG llSampleDuration, const BYTE * pSampleBuffer,
     DWORD dwSampleSize)
 {	
-    //qDebug() << "OnProcessSample" << llSampleTime << llSampleDuration << dwSampleSize;
+    //qDebug() << "OnProcessSample" << ((double)llSampleTime/10000.0) << (double)llSampleDuration/10000.0 << dwSampleSize;
 
 	if (ig_RIE)
 	{

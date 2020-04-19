@@ -89,7 +89,7 @@ long VideoDevices::initDevices(IMFAttributes *pAttributes)
     }
 	else
 	{
-		m_debugPrintOut->printOut(L"VideoDevices: The instances of the VideoDevice class cannot be created\n");
+		m_debugPrintOut->printOut("VideoDevices: The instances of the VideoDevice class cannot be created\n");
 	}
 
 	return hr;

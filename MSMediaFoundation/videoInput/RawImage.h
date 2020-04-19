@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QAtomicInteger>
+
 typedef unsigned char BYTE;
 
 class RawImage
@@ -22,7 +24,7 @@ public:
 
 private:
 	
-	bool ri_new;
+	QAtomicInt ri_new;
 
 	unsigned int ri_size;
 

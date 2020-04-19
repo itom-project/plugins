@@ -8,7 +8,7 @@ public:
 
 	~DebugPrintOut();
 
-	void printOut(const wchar_t *format, ...);
+	void printOut(const char *format, ...);
 
 	void setVerbose(bool state);
 

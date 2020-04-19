@@ -566,6 +566,8 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     m_flipImage = paramsOpt->at(3).getVal<int>() > 0 ? true : false;
     QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase(paramsOpt->at(1)));
 
+    m_videoInput->setVerbose(false);
+
     int numDevices = m_videoInput->listDevices();
 
     if (m_deviceID >= numDevices)
@@ -1053,13 +1055,13 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
                 break;
             }
 
-            if (++i > 30)
+            if (++i > 200)
             {
                 m_timeout = true;
                 break;
             }
 
-            Sleep(1);
+            Sleep(3);
         }
     }
 
@@ -1104,18 +1106,6 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
     {
         if (!retValue.containsError())
         {
-            //int desiredChannel = m_params["channel"].getVal<int>();
-            //if (desiredChannel > 0 && m_imgChannels == 1)
-            //{
-            //    desiredChannel = 0; //no r,g,b channel in camera image available (grayscale camera)
-            //}
-
-            //int colorConversion = m_params["colorConversion"].getVal<int>();
-            //if (colorConversion == 1 /*rgb2gray*/ && (m_imgChannels == 1 || desiredChannel > 0)) 
-            //{
-            //    colorConversion = 0; //grayscale camera image or selected channel -> no conversion necessary
-            //}
-
             int desiredBpp = m_params["bpp"].getVal<int>();
             cv::Mat tempImage;
 
@@ -1124,11 +1114,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 resizeRequired = true;
             }
 
-            /*if (m_imgBpp != 8 && m_imgBpp != 16)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Error: bpp other than 8 or 16 not allowed.").toLatin1().data());
-            }
-            else */if (m_imgChannels != 1 && m_imgChannels != 3)
+            if (m_imgChannels != 1 && m_imgChannels != 3)
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("Error: channels sizes other than 1 or 3 not allowed.").toLatin1().data());
             }
@@ -1145,7 +1131,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 }
                 else
                 {
-                    cv::Range ranges[] = { cv::Range(y0,y0+curysize), cv::Range(x0,x0+curxsize) };
+                    cv::Range ranges[] = { cv::Range(y0, y0 + curysize), cv::Range(x0, x0 + curxsize) };
                     tempImage = cv::Mat(m_pDataMatBuffer, ranges);
                 }
 

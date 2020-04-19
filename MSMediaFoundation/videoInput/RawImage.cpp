@@ -7,7 +7,7 @@
 #include "RawImage.h"
 
 
-RawImage::RawImage(unsigned int size): ri_new(false), ri_pixels(NULL)
+RawImage::RawImage(unsigned int size): ri_new(0), ri_pixels(NULL)
 {
 	ri_size = size;
 
@@ -18,7 +18,7 @@ RawImage::RawImage(unsigned int size): ri_new(false), ri_pixels(NULL)
 
 bool RawImage::isNew()
 {
-	return ri_new;
+	return (ri_new > 0);
 }
 
 unsigned int RawImage::getSize()
@@ -48,7 +48,7 @@ void RawImage::setCopy(const BYTE * pSampleBuffer)
 {
 	memcpy(ri_pixels, pSampleBuffer, ri_size);
 
-	ri_new = true;
+	ri_new = 1;
 }
 
 void RawImage::fastCopy(const BYTE * pSampleBuffer)
@@ -76,13 +76,12 @@ void RawImage::fastCopy(const BYTE * pSampleBuffer)
 	}
 #endif
 
-	ri_new = true;
-
+	ri_new = 1;
 }
 
 unsigned char * RawImage::getpPixels()
 {
-	return ri_pixels;
+	ri_new = 0;
 
-	ri_new = false;
+    return ri_pixels;
 }
