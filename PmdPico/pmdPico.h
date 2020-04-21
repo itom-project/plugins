@@ -24,7 +24,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define PMDPICO_H
 
 #include "common/addInGrabber.h"
-#include "opencv/cv.h"
 #include <qsharedpointer.h>
 #include "pmdPico.h"
 #include "royale.hpp"

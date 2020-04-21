@@ -1,8 +1,8 @@
 /*****************************************************************************/
 /*! \file    ueye.h
-*   \author  (c) 2004-2018 by Imaging Development Systems GmbH
-*   \date    Date: 2018/01/09
-*   \version PRODUCTVERSION: 4.91
+*   \author  (c) 2004-2019 by Imaging Development Systems GmbH
+*   \date    Date: 2019/11/29
+*   \version PRODUCTVERSION: 4.93
 *
 *   \brief   Library interface for IDS uEye - camera family.
 *            definition of exported API functions and constants
@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 91, 0)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 93, 0)
 #endif
 
 
@@ -47,7 +47,6 @@ extern "C" {
 #else
 #   define DRIVER_DLL_NAME                  "ueye_api.dll"
 #endif
-
 
 // ----------------------------------------------------------------------------
 // Color modes
@@ -115,6 +114,9 @@ extern "C" {
 #define IS_SENSOR_UI1005_M          0x020A
 #define IS_SENSOR_UI1005_C          0x020B
 
+#define IS_SENSOR_UI1007_M          0x0076
+#define IS_SENSOR_UI1007_C          0x0077
+
 #define IS_SENSOR_UI1240_M          0x0050      // SXGA global shutter, monochrome
 #define IS_SENSOR_UI1240_C          0x0051      // SXGA global shutter, color
 #define IS_SENSOR_UI1240_NIR        0x0062      // SXGA global shutter, NIR
@@ -177,6 +179,7 @@ extern "C" {
 #define IS_SENSOR_UI1250ML_NIR      0x0202      // 2MP global shutter, NIR, single board
 
 #define IS_SENSOR_XS                0x020B      // 5MP rolling shutter, color
+#define IS_SENSOR_XS_R2             0x0077      // 5MP rolling shutter, color
 
 #define IS_SENSOR_UI1493_M_AR       0x0204
 #define IS_SENSOR_UI1493_C_AR       0x0205
@@ -246,6 +249,9 @@ extern "C" {
 
 #define IS_SENSOR_UI1160_M_S2       0x024A      // 2.3MP global shutter, monochrome
 #define IS_SENSOR_UI1160_C_S2       0x024B      // 2.3MP global shutter, color
+
+#define IS_SENSOR_UI1020_M          0x0250      // 0.4MP global shutter, monochrome
+#define IS_SENSOR_UI1020_C          0x0251      // 0.4MP global shutter, color
 
 // CCD Sensors
 #define IS_SENSOR_UI223X_M          0x0080      // Sony CCD sensor - XGA monochrome
@@ -518,6 +524,7 @@ extern "C" {
 #define IS_SEQ_BUFFER_IS_LOCKED                     208   // Operation is not possible because the sequence buffer is locked
 #define IS_FILE_PATH_DOES_NOT_EXIST                 209   // The file path does not exist
 #define IS_INVALID_WINDOW_HANDLE                    210   // invalid window handle
+#define IS_INVALID_IMAGE_PARAMETER                  211   // invalid image parameter (pos or size)
 
 
 // ----------------------------------------------------------------------------
@@ -1454,6 +1461,7 @@ extern "C" {
 #define IS_CAMERA_TYPE_UEYE_USB3_XC     IS_BOARD_TYPE_UEYE_USB3_XC
 #define IS_CAMERA_TYPE_UEYE_USB3_CP     IS_BOARD_TYPE_UEYE_USB3_CP
 #define IS_CAMERA_TYPE_UEYE_USB3_ML     IS_BOARD_TYPE_UEYE_USB3_ML
+#define IS_CAMERA_TYPE_UEYE_USB31_SE    IS_BOARD_TYPE_UEYE_USB3_CP
 
 #define IS_CAMERA_TYPE_UEYE_ETH         IS_BOARD_TYPE_UEYE_ETH_HE
 #define IS_CAMERA_TYPE_UEYE_ETH_HE      IS_BOARD_TYPE_UEYE_ETH_HE
@@ -1742,45 +1750,68 @@ extern "C" {
         #define __stdcall
         #define __cdecl
 
-#if defined (_IDS_EXPORT)
-        #define IDSEXP    __attribute__((visibility("default"))) INT
-        #define IDSEXPUL  __attribute__((visibility("default"))) ULONG
+#if defined (NO_WARN_DEPRECATED)
+    #define attribute_deprecated 
 #else
-        #define IDSEXP    INT
-        #define IDSEXPUL  ULONG
+    #define attribute_deprecated __attribute__((deprecated))
 #endif
 
-        typedef long (*WNDPROC) (HWND, UINT, WPARAM, LPARAM);
+#define DEPRECATED(X) X attribute_deprecated
+
+#if defined (_IDS_EXPORT)
+    #define IDSEXP    __attribute__((visibility("default"))) INT
+    #define IDSEXPUL  __attribute__((visibility("default"))) ULONG
+    #define IDSEXPDEP attribute_deprecated __attribute__((visibility("default"))) INT
+#else
+    #define IDSEXP    INT
+    #define IDSEXPUL  ULONG
+    #define IDSEXPDEP attribute_deprecated INT
+#endif
+
+    typedef long (*WNDPROC) (HWND, UINT, WPARAM, LPARAM);
 
     #define ZeroMemory(a,b)      memset((a), 0, (b))
     #define OutputDebugString(s) fprintf(stderr, s)
-
 
     #define INFINITE    -1
 #else
 
 #include <windows.h>
 
+#if defined (NO_WARN_DEPRECATED)
+    #define attribute_deprecated 
+#else
+    #define attribute_deprecated __declspec(deprecated)
+#endif
+
+#define DEPRECATED(X) attribute_deprecated X
+
 #if defined (_MSC_VER) || defined (__BORLANDC__) || defined (_WIN32_WCE)
   #if defined (_PURE_C) && !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)
-    #define IDSEXP     extern  __declspec(dllimport) INT __cdecl
-    #define IDSEXPUL   extern  __declspec(dllimport) ULONG __cdecl
+    #define IDSEXP    extern  __declspec(dllimport) INT __cdecl
+    #define IDSEXPDEP extern  __declspec(dllimport) attribute_deprecated INT __cdecl
+    #define IDSEXPUL  extern  __declspec(dllimport) ULONG __cdecl
   #elif defined (__STDC__) && !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)
-    #define IDSEXP   extern  __declspec(dllimport) INT __cdecl
-    #define IDSEXPUL extern  __declspec(dllimport) ULONG __cdecl
+    #define IDSEXP    extern  __declspec(dllimport) INT __cdecl
+    #define IDSEXPDEP extern  __declspec(dllimport) attribute_deprecated INT __cdecl
+    #define IDSEXPUL  extern  __declspec(dllimport) ULONG __cdecl
   #elif !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)   // using the DLL, not creating one
-    #define IDSEXP   extern "C" __declspec(dllimport) INT __cdecl
-    #define IDSEXPUL extern "C" __declspec(dllimport) ULONG __cdecl
+    #define IDSEXP    extern "C" __declspec(dllimport) INT __cdecl 
+    #define IDSEXPDEP extern "C" __declspec(dllimport) attribute_deprecated INT __cdecl
+    #define IDSEXPUL  extern "C" __declspec(dllimport) ULONG __cdecl
   #elif defined (_IDS_VBSTD) || defined (_FALC_VBSTD)     // for creating stdcall dll
     #define IDSEXP    extern __declspec(dllexport) INT __stdcall
+    #define IDSEXPDEP extern __declspec(dllexport) INT __stdcall
     #define IDSEXPUL  extern __declspec(dllexport) ULONG __stdcall
   #else            // for creating cdecl dll
     #define IDSEXP    extern  __declspec(dllexport) INT __cdecl
+    #define IDSEXPDEP extern  __declspec(dllexport) INT __cdecl
     #define IDSEXPUL  extern  __declspec(dllexport) ULONG __cdecl
   #endif
 #elif !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)  // using the DLL, not creating one
-  #define IDSEXP    extern  __declspec(dllimport) INT __cdecl
-  #define IDSEXPUL  extern  __declspec(dllimport) ULONG __cdecl
+    #define IDSEXP    extern  __declspec(dllimport) INT __cdecl
+    #define IDSEXPDEP extern  __declspec(dllimport) attribute_deprecated INT __cdecl
+    #define IDSEXPUL  extern  __declspec(dllimport) ULONG __cdecl
 #endif
 
 typedef int     INT;
@@ -2193,7 +2224,7 @@ typedef struct _DC_INFO
   IDSEXP   is_DisableEvent           (HIDS hCam, INT which);
 
   IDSEXP   is_SetExternalTrigger     (HIDS hCam, INT nTriggerMode);
-  IDSEXP   is_SetTriggerCounter      (HIDS hCam, INT nValue);
+  IDSEXPDEP is_SetTriggerCounter     (HIDS hCam, INT nValue);
   IDSEXP   is_SetRopEffect           (HIDS hCam, INT effect, INT param, INT reserved);
 
 
@@ -2269,7 +2300,7 @@ typedef struct _DC_INFO
   // new with driver version 2.21.0000
   IDSEXP is_SetGainBoost                (HIDS hCam, INT mode);
 
-  IDSEXP is_SetGlobalShutter            (HIDS hCam, INT mode);
+  IDSEXPDEP is_SetGlobalShutter         (HIDS hCam, INT mode);
   IDSEXP is_SetExtendedRegister         (HIDS hCam, INT index,WORD value);
   IDSEXP is_GetExtendedRegister         (HIDS hCam, INT index, WORD *pwValue);
 
@@ -2394,6 +2425,8 @@ typedef struct _DC_INFO
       DWORD                 dwImageWidth;
       DWORD                 dwHostProcessTime; /* Time spend processing this image in micro seconds */
       BYTE                  bySequencerIndex;
+      DWORD                 dwFocusValue;
+      BOOL                  bFocusing;
   } UEYEIMAGEINFO;
 
 
@@ -2461,7 +2494,7 @@ typedef struct _DC_INFO
     } IMAGE_FORMAT_LIST;
 
 
-IDSEXP is_FaceDetection (HIDS hCam, UINT nCommand, void *pParam, UINT nSizeOfParam);
+    IDSEXP is_FaceDetection (HIDS hCam, UINT nCommand, void *pParam, UINT nSizeOfParam);
 
 
     typedef enum E_FDT_CAPABILITY_FLAGS
@@ -2536,19 +2569,45 @@ IDSEXP is_FaceDetection (HIDS hCam, UINT nCommand, void *pParam, UINT nSizeOfPar
 
     } FDT_CMD;
 
+    typedef struct
+    {
+        INT s32X;
+        INT s32Y;
+    } IS_POINT_2D;
+
+    typedef struct
+    {
+        INT s32Width;
+        INT s32Height;
+    } IS_SIZE_2D;
+
+    typedef struct
+    {
+        INT s32X;
+        INT s32Y;
+        INT s32Width;
+        INT s32Height;
+    } IS_RECT;
 
     IDSEXP is_Focus (HIDS hCam, UINT nCommand, void *pParam, UINT nSizeOfParam);
 
 
     typedef enum E_FOCUS_CAPABILITY_FLAGS
     {
-        FOC_CAP_INVALID             = 0,
-        FOC_CAP_AUTOFOCUS_SUPPORTED = 0x00000001,   /* Auto focus supported.                                    */
-        FOC_CAP_MANUAL_SUPPORTED    = 0x00000002,   /* Manual focus supported.                                  */
-        FOC_CAP_GET_DISTANCE        = 0x00000004,   /* Support for query the distance of the focused object.    */
-        FOC_CAP_SET_AUTOFOCUS_RANGE = 0x00000008,   /* Support for setting focus ranges.                        */
-        FOC_CAP_AUTOFOCUS_FDT_AOI   = 0x00000010,   /* Use of face detection AOI for autofocus supported.       */
-        FOC_CAP_AUTOFOCUS_ZONE      = 0x00000020
+        FOC_CAP_INVALID                                   = 0,
+        FOC_CAP_AUTOFOCUS_SUPPORTED                       = 0x00000001,   /* Auto focus supported.                                                 */
+        FOC_CAP_MANUAL_SUPPORTED                          = 0x00000002,   /* Manual focus supported.                                               */
+        FOC_CAP_GET_DISTANCE                              = 0x00000004,   /* Support for query the distance of the focused object.                 */
+        FOC_CAP_SET_AUTOFOCUS_RANGE                       = 0x00000008,   /* Support for setting focus ranges.                                     */
+        FOC_CAP_AUTOFOCUS_FDT_AOI                         = 0x00000010,   /* Use of face detection AOI for autofocus supported.                    */
+        FOC_CAP_AUTOFOCUS_ZONE                            = 0x00000020,
+        FOC_CAP_AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM = 0x00000040,   /* Use of sharpness calculation algorithm for autofocus supported.       */
+        FOC_CAP_AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM      = 0x00000080,   /* Use of peak search algorithm for autofocus once supported.            */
+        FOC_CAP_AUTOFOCUS_AOI                             = 0x00000100,   /* Use of aoi for autofocus supported.                                   */
+        FOC_CAP_AUTOFOCUS_LIMIT                           = 0x00000200,   /* Use of limit for autofocus supported.                                 */
+        FOC_CAP_AUTOFOCUS_LENS_RESPONSE_TIME              = 0x00000400,   /* Use of lens response time for autofocus supported.                    */
+        FOC_CAP_AUTOFOCUS_HYSTERESIS                      = 0x00000800,   /* Use of hysteresis for autofocus supported.                            */
+        FOC_CAP_AUTOFOCUS_CALLBACK                        = 0x00001000    /* Use of  callback for autofocus supported.                             */
     } FOCUS_CAPABILITY_FLAGS;
 
 
@@ -2575,7 +2634,6 @@ IDSEXP is_FaceDetection (HIDS hCam, UINT nCommand, void *pParam, UINT nSizeOfPar
         FOC_ZONE_WEIGHT_WEAK        = 0x0021,
         FOC_ZONE_WEIGHT_MIDDLE      = 0x0032,
         FOC_ZONE_WEIGHT_STRONG      = 0x0042
-
     } FOCUS_ZONE_WEIGHT;
 
     /*!
@@ -2592,47 +2650,114 @@ IDSEXP is_FaceDetection (HIDS hCam, UINT nCommand, void *pParam, UINT nSizeOfPar
         FOC_ZONE_AOI_PRESET_BOTTOM_CENTER   = 0x0020,
         FOC_ZONE_AOI_PRESET_CENTER_LEFT     = 0x0040,
         FOC_ZONE_AOI_PRESET_CENTER_RIGHT    = 0x0080
-
     } FOCUS_ZONE_AOI_PRESET;
 
+    typedef enum E_AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM
+    {
+        AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM_TENENGRAD = 0x01,
+        AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM_MEAN_SCORE = 0x02,
+        AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM_HISTOGRAM_VARIANCE = 0x04
+    } AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM;
+
+    typedef enum E_AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM
+    {
+        AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM_GOLDEN_RATIO_SEARCH = 0x01,
+        AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM_HILL_CLIMBING_SEARCH = 0x02,
+        AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM_GLOBAL_SEARCH = 0x04,
+        AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM_FULL_SCAN = 0x08
+    } AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM;
+
+    typedef enum E_AUTOFOCUS_AOI_WEIGHT
+    {
+        AUTOFOCUS_AOI_WEIGHT_MIDDLE = 0x0042
+    } AUTOFOCUS_AOI_WEIGHT;
+
+    typedef struct S_AUTOFOCUS_AOI
+    {
+        UINT uNumberAOI;
+        IS_RECT rcAOI;
+        AUTOFOCUS_AOI_WEIGHT eWeight;
+    } AUTOFOCUS_AOI;
+
+    typedef enum E_AUTOFOCUS_AOI_PRESET
+    {
+        AUTOFOCUS_AOI_PRESET_CENTER = 0x01
+    } AUTOFOCUS_AOI_PRESET;
+
+    typedef struct S_AUTOFOCUS_LIMIT
+    {
+        INT sMin;
+        INT sMax;
+    } AUTOFOCUS_LIMIT;
+
+    typedef void(__cdecl *IS_AUTOFOCUS_CALLBACK_FUNC)(UINT, INT, void*);
+
+    typedef struct S_AUTOFOCUS_CALLBACK
+    {
+        IS_AUTOFOCUS_CALLBACK_FUNC pfFunc;
+        void* pContext;
+    } AUTOFOCUS_CALLBACK;
 
     typedef enum E_FOCUS_CMD
     {
-        FOC_CMD_GET_CAPABILITIES                            = 0,    /* Get focus capabilities.                                                              */
-        FOC_CMD_SET_DISABLE_AUTOFOCUS                       = 1,    /* Disable autofocus.                                                                   */
-        FOC_CMD_SET_ENABLE_AUTOFOCUS                        = 2,    /* Enable autofocus.                                                                    */
-        FOC_CMD_GET_AUTOFOCUS_ENABLE                        = 3,    /* Autofocus enabled?.                                                                  */
-        FOC_CMD_SET_AUTOFOCUS_RANGE                         = 4,    /* Preset autofocus range.                                                              */
-        FOC_CMD_GET_AUTOFOCUS_RANGE                         = 5,    /* Get preset of autofocus range.                                                       */
-        FOC_CMD_GET_DISTANCE                                = 6,    /* Get distance to focused object.                                                      */
-        FOC_CMD_SET_MANUAL_FOCUS                            = 7,    /* Set manual focus.                                                                    */
-        FOC_CMD_GET_MANUAL_FOCUS                            = 8,    /* Get the value for manual focus.                                                      */
-        FOC_CMD_GET_MANUAL_FOCUS_MIN                        = 9,    /* Get the minimum manual focus value.                                                  */
-        FOC_CMD_GET_MANUAL_FOCUS_MAX                        = 10,   /* Get the maximum manual focus value.                                                  */
-        FOC_CMD_GET_MANUAL_FOCUS_INC                        = 11,   /* Get the increment of the manual focus value.                                         */
-        FOC_CMD_SET_ENABLE_AF_FDT_AOI                       = 12,   /* Enable face detection AOI use for autofocus.                                         */
-        FOC_CMD_SET_DISABLE_AF_FDT_AOI                      = 13,   /* Disable face detection AOI use for autofocus                                         */
-        FOC_CMD_GET_AF_FDT_AOI_ENABLE                       = 14,   /* Use autofocus FDT AOI?                                                               */
-        FOC_CMD_SET_ENABLE_AUTOFOCUS_ONCE                   = 15,   /* Enable autofocus once                                                                */
-        FOC_CMD_GET_AUTOFOCUS_STATUS                        = 16,   /* Get the autofocus status                                                             */
-        FOC_CMD_SET_AUTOFOCUS_ZONE_AOI                      = 17,   /* Set the focus measurement window                                                     */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI                      = 18,   /* Get the focus measurement window                                                     */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_DEFAULT              = 19,   /* Get the default focus measurement window                                             */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MIN                  = 20,   /* Get the minimal position of the measurement window                                   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MAX                  = 21,   /* Get the maximal position of the measurement window                                   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_INC                  = 22,   /* Get the incrementation for the positions of the measurement window                   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MIN                 = 23,   /* Get the minimal size of the measurement window                                       */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MAX                 = 24,   /* Get the maxiaml size of the measurement window                                       */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_INC                 = 25,   /* Get the incrementation for the size of the measurement window                        */
-        FOC_CMD_SET_AUTOFOCUS_ZONE_WEIGHT                   = 26,   /* Set the weight for the different zones                                               */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT                   = 27,   /* Get the weight for the different zones                                               */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_COUNT             = 28,   /* Get the zone count                                                                   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_DEFAULT           = 29,   /* Get the default weight for the different zones                                       */
-        FOC_CMD_SET_AUTOFOCUS_ZONE_AOI_PRESET               = 30,   /* Set the focus measurement window specified by a preset /see FOCUS_ZONE_AOI_PRESET    */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_PRESET               = 31,   /* Get the focus measurement window specified by a preset                               */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_PRESET_DEFAULT       = 32,   /* Get the default focus measurement window                                             */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_ARBITRARY_AOI_SUPPORTED  = 33,   /* Returns if an arbritrary focus measurement window is supported                       */
-        FOC_CMD_SET_MANUAL_FOCUS_RELATIVE                   = 34    /* Set manual focus relative.                                                           */
+        FOC_CMD_GET_CAPABILITIES                                        = 0,    /* Get focus capabilities.                                                              */
+        FOC_CMD_SET_DISABLE_AUTOFOCUS                                   = 1,    /* Disable autofocus.                                                                   */
+        FOC_CMD_SET_ENABLE_AUTOFOCUS                                    = 2,    /* Enable autofocus.                                                                    */
+        FOC_CMD_GET_AUTOFOCUS_ENABLE                                    = 3,    /* Autofocus enabled?.                                                                  */
+        FOC_CMD_SET_AUTOFOCUS_RANGE                                     = 4,    /* Preset autofocus range.                                                              */
+        FOC_CMD_GET_AUTOFOCUS_RANGE                                     = 5,    /* Get preset of autofocus range.                                                       */
+        FOC_CMD_GET_DISTANCE                                            = 6,    /* Get distance to focused object.                                                      */
+        FOC_CMD_SET_MANUAL_FOCUS                                        = 7,    /* Set manual focus.                                                                    */
+        FOC_CMD_GET_MANUAL_FOCUS                                        = 8,    /* Get the value for manual focus.                                                      */
+        FOC_CMD_GET_MANUAL_FOCUS_MIN                                    = 9,    /* Get the minimum manual focus value.                                                  */
+        FOC_CMD_GET_MANUAL_FOCUS_MAX                                    = 10,   /* Get the maximum manual focus value.                                                  */
+        FOC_CMD_GET_MANUAL_FOCUS_INC                                    = 11,   /* Get the increment of the manual focus value.                                         */
+        FOC_CMD_SET_ENABLE_AF_FDT_AOI                                   = 12,   /* Enable face detection AOI use for autofocus.                                         */
+        FOC_CMD_SET_DISABLE_AF_FDT_AOI                                  = 13,   /* Disable face detection AOI use for autofocus                                         */
+        FOC_CMD_GET_AF_FDT_AOI_ENABLE                                   = 14,   /* Use autofocus FDT AOI?                                                               */
+        FOC_CMD_SET_ENABLE_AUTOFOCUS_ONCE                               = 15,   /* Enable autofocus once                                                                */
+        FOC_CMD_GET_AUTOFOCUS_STATUS                                    = 16,   /* Get the autofocus status                                                             */
+        FOC_CMD_SET_AUTOFOCUS_ZONE_AOI                                  = 17,   /* Set the focus measurement window                                                     */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI                                  = 18,   /* Get the focus measurement window                                                     */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_DEFAULT                          = 19,   /* Get the default focus measurement window                                             */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MIN                              = 20,   /* Get the minimal position of the measurement window                                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MAX                              = 21,   /* Get the maximal position of the measurement window                                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_INC                              = 22,   /* Get the incrementation for the positions of the measurement window                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MIN                             = 23,   /* Get the minimal size of the measurement window                                       */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MAX                             = 24,   /* Get the maxiaml size of the measurement window                                       */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_INC                             = 25,   /* Get the incrementation for the size of the measurement window                        */
+        FOC_CMD_SET_AUTOFOCUS_ZONE_WEIGHT                               = 26,   /* Set the weight for the different zones                                               */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT                               = 27,   /* Get the weight for the different zones                                               */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_COUNT                         = 28,   /* Get the zone count                                                                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_DEFAULT                       = 29,   /* Get the default weight for the different zones                                       */
+        FOC_CMD_SET_AUTOFOCUS_ZONE_AOI_PRESET                           = 30,   /* Set the focus measurement window specified by a preset /see FOCUS_ZONE_AOI_PRESET    */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_PRESET                           = 31,   /* Get the focus measurement window specified by a preset                               */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_PRESET_DEFAULT                   = 32,   /* Get the default focus measurement window                                             */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_ARBITRARY_AOI_SUPPORTED              = 33,   /* Returns if an arbritrary focus measurement window is supported                       */
+        FOC_CMD_SET_MANUAL_FOCUS_RELATIVE                               = 34,   /* Set manual focus relative.                                                           */
+        FOC_CMD_GET_AUTOFOCUS_SUPPORTED_SHARPNESS_CALCULATION_ALGORITHM = 35,   /* Get autofocus supported sharpness calculation algorithm                              */
+        FOC_CMD_SET_AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM           = 36,   /* Set autofocus sharpness calculation algorithm                                        */
+        FOC_CMD_GET_AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM           = 37,   /* Get autofocus sharpness calculation algorithm                                        */
+        FOC_CMD_GET_AUTOFOCUS_SHARPNESS_CALCULATION_ALGORITHM_DEFAULT   = 38,   /* Get autofocus default sharpness calculation algorithm                                */
+        FOC_CMD_GET_AUTOFOCUS_ONCE_SUPPORTED_PEAK_SEARCH_ALGORITHM      = 39,   /* Get autofocus once supported peak search algorithm                                   */
+        FOC_CMD_SET_AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM                = 40,   /* Set autofocus once peak search algorithm                                             */
+        FOC_CMD_GET_AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM                = 41,   /* Get autofocus once peak search algorithm                                             */
+        FOC_CMD_GET_AUTOFOCUS_ONCE_PEAK_SEARCH_ALGORITHM_DEFAULT        = 42,   /* Get autofocus once default peak search algorithm                                     */
+        FOC_CMD_GET_AUTOFOCUS_NUMBER_OF_SUPPORTED_AOIS                  = 43,   /* Get autofocus number of supported measurement windows                                */
+        FOC_CMD_SET_AUTOFOCUS_AOI                                       = 44,   /* Set autofocus measurement window                                                     */
+        FOC_CMD_GET_AUTOFOCUS_AOI                                       = 45,   /* Get autofocus measurement window                                                     */
+        FOC_CMD_GET_AUTOFOCUS_AOI_SIZE_MIN                              = 47,   /* Get the minimal size of the measurement window                                       */
+        FOC_CMD_SET_AUTOFOCUS_AOI_PRESET                                = 48,   /* Set the autofocus measurement window specified by a preset                           */
+        FOC_CMD_SET_AUTOFOCUS_LIMIT                                     = 49,   /* Set autofocus limit.                                                                 */
+        FOC_CMD_GET_AUTOFOCUS_LIMIT                                     = 50,   /* Get autofocus limit.                                                                 */
+        FOC_CMD_GET_AUTOFOCUS_LIMIT_DEFAULT                             = 51,   /* Get autofocus default                                                                */
+        FOC_CMD_SET_AUTOFOCUS_LENS_RESPONSE_TIME                        = 52,   /* Set autofocus lens response time                                                     */
+        FOC_CMD_GET_AUTOFOCUS_LENS_RESPONSE_TIME                        = 53,   /* Get autofocus lens reponse time                                                      */
+        FOC_CMD_GET_AUTOFOCUS_LENS_RESPONSE_TIME_DEFAULT                = 54,   /* Get autofocus default lens reponse time                                              */
+        FOC_CMD_SET_AUTOFOCUS_HYSTERESIS                                = 55,   /* Set autofocus hysteresis                                                             */
+        FOC_CMD_GET_AUTOFOCUS_HYSTERESIS                                = 56,   /* Get autofocus hysteresis                                                             */
+        FOC_CMD_GET_AUTOFOCUS_HYSTERESIS_DEFAULT                        = 57,   /* Get autofocus default hysteresis                                                     */
+        FOC_CMD_SET_AUTOFOCUS_CALLBACK                                  = 58    /* Set autofocus callback                                                               */
 
     } FOCUS_CMD;
 
@@ -2835,28 +2960,6 @@ typedef struct _OPENGL_DISPLAY
 IDSEXP is_DirectRenderer(HIDS hCam, UINT nMode, void *pParam, UINT SizeOfParam);
 
 IDSEXP is_HotPixel(HIDS hCam, UINT nMode, void *pParam, UINT SizeOfParam);
-
-
-typedef struct
-{
-    INT s32X;
-    INT s32Y;
-} IS_POINT_2D;
-
-typedef struct
-{
-    INT s32Width;
-    INT s32Height;
-} IS_SIZE_2D;
-
-typedef struct
-{
-    INT s32X;
-    INT s32Y;
-    INT s32Width;
-    INT s32Height;
-} IS_RECT;
-
 
 /*!
  * \brief Parameters of an AOI used in the AOI sequence mode
@@ -3283,7 +3386,9 @@ typedef enum E_DEVICE_FEATURE_CMD
     IS_DEVICE_FEATURE_CMD_SET_MEMORY_MODE_BUFFER_LIMIT                          = 109,
     IS_DEVICE_FEATURE_CMD_GET_FPN_CORRECTION_DATA_LOADING_DEFAULT               = 110,
     IS_DEVICE_FEATURE_CMD_GET_BLACKLEVEL_OFFSET_CORRECTION                      = 111,
-    IS_DEVICE_FEATURE_CMD_SET_BLACKLEVEL_OFFSET_CORRECTION                      = 112
+    IS_DEVICE_FEATURE_CMD_SET_BLACKLEVEL_OFFSET_CORRECTION                      = 112,
+    IS_DEVICE_FEATURE_CMD_GET_ALTERNATIVE_TRIGGER_MODE                          = 113,
+    IS_DEVICE_FEATURE_CMD_SET_ALTERNATIVE_TRIGGER_MODE                          = 114
 } DEVICE_FEATURE_CMD;
 
 
@@ -3688,28 +3793,30 @@ IDSEXP is_DeviceFeature(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfPar
  */
 typedef enum E_EXPOSURE_CMD
 {
-    IS_EXPOSURE_CMD_GET_CAPS                        = 1,
-    IS_EXPOSURE_CMD_GET_EXPOSURE_DEFAULT            = 2,
-    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MIN          = 3,
-    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MAX          = 4,
-    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_INC          = 5,
-    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE              = 6,
-    IS_EXPOSURE_CMD_GET_EXPOSURE                    = 7,
-    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE_MIN    = 8,
-    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE_MAX    = 9,
-    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE_INC    = 10,
-    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE        = 11,
-    IS_EXPOSURE_CMD_SET_EXPOSURE                    = 12,
-    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE_MIN     = 13,
-    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE_MAX     = 14,
-    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE_INC     = 15,
-    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE         = 16,
-    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_ENABLE        = 17,
-    IS_EXPOSURE_CMD_SET_LONG_EXPOSURE_ENABLE        = 18,
-    IS_EXPOSURE_CMD_GET_DUAL_EXPOSURE_RATIO_DEFAULT = 19,
-    IS_EXPOSURE_CMD_GET_DUAL_EXPOSURE_RATIO_RANGE   = 20,
-    IS_EXPOSURE_CMD_GET_DUAL_EXPOSURE_RATIO         = 21,
-    IS_EXPOSURE_CMD_SET_DUAL_EXPOSURE_RATIO         = 22
+    IS_EXPOSURE_CMD_GET_CAPS								= 1,
+    IS_EXPOSURE_CMD_GET_EXPOSURE_DEFAULT					= 2,
+    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MIN					= 3,
+    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MAX					= 4,
+    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_INC					= 5,
+    IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE						= 6,
+    IS_EXPOSURE_CMD_GET_EXPOSURE							= 7,
+    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE_MIN			= 8,
+    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE_MAX			= 9,
+    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE_INC			= 10,
+    IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE				= 11,
+    IS_EXPOSURE_CMD_SET_EXPOSURE							= 12,
+    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE_MIN				= 13,
+    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE_MAX				= 14,
+    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE_INC				= 15,
+    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE					= 16,
+    IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_ENABLE				= 17,
+    IS_EXPOSURE_CMD_SET_LONG_EXPOSURE_ENABLE				= 18,
+    IS_EXPOSURE_CMD_GET_DUAL_EXPOSURE_RATIO_DEFAULT			= 19,
+    IS_EXPOSURE_CMD_GET_DUAL_EXPOSURE_RATIO_RANGE			= 20,
+    IS_EXPOSURE_CMD_GET_DUAL_EXPOSURE_RATIO					= 21,
+    IS_EXPOSURE_CMD_SET_DUAL_EXPOSURE_RATIO					= 22,
+	IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_FRAMERATE_LIMIT		= 23,
+	IS_EXPOSURE_CMD_SET_LONG_EXPOSURE_FRAMERATE_LIMIT		= 24
 
 } EXPOSURE_CMD;
 
@@ -4927,26 +5034,46 @@ typedef struct S_IMGBUF_ITEM
 */
 IDSEXP is_ImageBuffer(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
+typedef enum E_MEASURE_SHARPNESS_CALCULATION_ALGORITHM
+{
+    IS_MEASURE_SHARPNESS_CALCULATION_ALGORITHM_TENENGRAD = 0x01,
+    IS_MEASURE_SHARPNESS_CALCULATION_ALGORITHM_MEAN_SCORE = 0x02,
+    IS_MEASURE_SHARPNESS_CALCULATION_ALGORITHM_HISTOGRAM_VARIANCE = 0x04,
+    IS_MEASURE_SHARPNESS_CALCULATION_ALGORITHM_SOBEL = 0x10
+
+} MEASURE_SHARPNESS_CALCULATION_ALGORITHM;
 
 /*!
  * \brief Info structure about the calculated sharpness value from the function \ref is_Measure.
 */
-typedef struct S_MEASURE_SHARPNESS_AOI_INFO
+struct S_MEASURE_SHARPNESS_AOI_INFO
 {
     UINT    u32NumberAOI;
     UINT    u32SharpnessValue;
     IS_RECT rcAOI;
 
-} MEASURE_SHARPNESS_AOI_INFO;
+};
+
+typedef DEPRECATED(struct S_MEASURE_SHARPNESS_AOI_INFO MEASURE_SHARPNESS_AOI_INFO);
+
+typedef struct S_MEASURE_SHARPNESS_INFO
+{
+    UINT    u32NumberAOI;
+    float   fSharpnessValue;
+    IS_RECT rcAOI;
+    char*   pcImageMem;
+
+} MEASURE_SHARPNESS_INFO;
 
 /*!
  * \brief Enumeration of commands of function \ref is_Measure.
 */
 typedef enum E_MEASURE_CMD
 {
-    IS_MEASURE_CMD_SHARPNESS_AOI_SET            = 1,
-    IS_MEASURE_CMD_SHARPNESS_AOI_INQUIRE        = 2,
-    IS_MEASURE_CMD_SHARPNESS_AOI_SET_PRESET     = 3
+    IS_MEASURE_CMD_SHARPNESS_AOI_SET                   = 1,
+    IS_MEASURE_CMD_SHARPNESS_AOI_INQUIRE               = 2,
+    IS_MEASURE_CMD_SHARPNESS_AOI_SET_PRESET            = 3,
+    IS_MEASURE_CMD_SHARPNESS_CALCULATION_ALGORITHM_SET = 4
 
 } MEASURE_CMD;
 

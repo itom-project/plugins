@@ -9,7 +9,7 @@
 #define THORLABSCCS_H
 
 #include "common/addInGrabber.h"
-#include "opencv/cv.h"
+//#include "opencv/cv.h"
 #include <qsharedpointer.h>
 #include "dialogThorlabsCCS.h"
 

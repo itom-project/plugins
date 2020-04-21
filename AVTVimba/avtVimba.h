@@ -25,7 +25,6 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #define AVTVIMBA_H
 
 #include "common/addInGrabber.h"
-#include "opencv/cv.h"
 #include <qsharedpointer.h>
 #include "dialogAvtVimba.h"
 #include <VimbaCPP/Include/VimbaCPP.h>
