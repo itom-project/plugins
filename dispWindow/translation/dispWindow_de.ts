@@ -152,7 +152,7 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+187"/>
+        <location filename="../dispWindow.cpp" line="+185"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -329,7 +329,7 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-970"/>
+        <location line="-968"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
@@ -430,7 +430,7 @@
 <context>
     <name>PrjWindow</name>
     <message>
-        <location filename="../projWindow.cpp" line="+1091"/>
+        <location filename="../projWindow.cpp" line="+889"/>
         <source>error out of memory (cosine init 7)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -445,7 +445,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1159"/>
+        <location line="+1140"/>
         <source>DataObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -453,7 +453,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1257"/>
+        <location line="-1238"/>
         <source>error out of memory (cosine init 1)</source>
         <translation type="unfinished"></translation>
     </message>

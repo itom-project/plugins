@@ -66,7 +66,7 @@
 <context>
     <name>ItomUSBDevice</name>
     <message>
-        <location filename="../ItomLibUSB.cpp" line="+145"/>
+        <location filename="../ItomLibUSB.cpp" line="+143"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -176,7 +176,7 @@
 <context>
     <name>ItomUSBDeviceInterface</name>
     <message>
-        <location line="-678"/>
+        <location line="-676"/>
         <source>itom-plugin for a usb port communication</source>
         <translation>itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>

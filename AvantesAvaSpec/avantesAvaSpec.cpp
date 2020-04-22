@@ -23,7 +23,6 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "avantesAvaSpec.h"
-#include "pluginVersion.h"
 
 #include <QFile>
 #include <qstring.h>
@@ -143,9 +142,7 @@ AvantesAvaSpecInterface::~AvantesAvaSpecInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(AvantesAvaSpecInterface, AvantesAvaSpecInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

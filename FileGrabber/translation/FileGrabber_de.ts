@@ -89,7 +89,7 @@
 <context>
     <name>FileGrabber</name>
     <message>
-        <location filename="../FileGrabber.cpp" line="+245"/>
+        <location filename="../FileGrabber.cpp" line="+237"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -148,7 +148,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+942"/>
+        <location line="+970"/>
         <source>Unable to load file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -158,7 +158,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-889"/>
+        <location line="-917"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,7 +188,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+488"/>
+        <location line="+512"/>
         <source>StopDevice of FileGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -216,7 +216,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1089"/>
+        <location line="-1111"/>
         <source>A virtual grabber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -258,7 +258,7 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+429"/>
+        <location line="+427"/>
         <source>Folder %1 does not contain any matching files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -273,17 +273,17 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-382"/>
+        <location line="-380"/>
         <source>File-Type, e.g. &apos;tif&apos;, &apos;png&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+409"/>
+        <location line="+407"/>
         <source>Stack object type must be UInt8, UInt16 or Int32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+212"/>
+        <location line="+236"/>
         <source>Image loading failed</source>
         <translation type="unfinished"></translation>
     </message>

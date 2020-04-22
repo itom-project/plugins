@@ -106,9 +106,7 @@ It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(SuperlumBLInterface, SuperlumBLInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SuperlumBL::showConfDialog(void)

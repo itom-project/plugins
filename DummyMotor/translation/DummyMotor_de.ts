@@ -85,7 +85,7 @@
 <context>
     <name>DummyMotor</name>
     <message>
-        <location filename="../DummyMotor.cpp" line="+162"/>
+        <location filename="../DummyMotor.cpp" line="+160"/>
         <source>Axis number to plot</source>
         <translation type="unfinished">Achsennummer des Plots</translation>
     </message>
@@ -125,7 +125,7 @@
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+244"/>
         <source>Axis and velocity vector differ in size.</source>
         <translation type="unfinished">Achse und Geschwindigkeitsvektor unterscheiden sich in der Größe.</translation>
     </message>
@@ -135,7 +135,7 @@
         <translation type="unfinished">Eine Joystick-Bewegung schlug fehl.</translation>
     </message>
     <message>
-        <location line="-613"/>
+        <location line="-618"/>
         <location line="+197"/>
         <source>axis index is out of bound</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
@@ -198,17 +198,17 @@
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs.</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+117"/>
         <source>interrupt occurred</source>
         <translation type="unfinished">Ein Fehler ist aufgetreten</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+75"/>
         <source>timeout occurred</source>
         <translation type="unfinished">Eine Zeitüberschreitung ist aufgetreten</translation>
     </message>
     <message>
-        <location line="-505"/>
+        <location line="-510"/>
         <location line="+59"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>
@@ -236,7 +236,7 @@
         <translation type="obsolete">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-580"/>
+        <location line="-578"/>
         <source>Number of axis for this motor</source>
         <translation type="unfinished">Anzahl der Achsen des Motors</translation>
     </message>

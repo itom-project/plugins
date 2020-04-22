@@ -82,7 +82,7 @@
 <context>
     <name>GWInstekPSP</name>
     <message>
-        <location filename="../GWInstekPSP.cpp" line="+201"/>
+        <location filename="../GWInstekPSP.cpp" line="+199"/>
         <source>Undefined answer from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -232,7 +232,7 @@
 <context>
     <name>GWInstekPSPInterface</name>
     <message>
-        <location line="-389"/>
+        <location line="-387"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished"></translation>
     </message>

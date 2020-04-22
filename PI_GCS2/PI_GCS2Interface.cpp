@@ -113,9 +113,3 @@ the default baudrate 0 forces the controller to connect with a default baudrate 
     m_initParamsOpt.append(ito::Param("baudRate", ito::ParamBase::Int, 0, 512000, 0, "baudrate to use for a RS232 or USB connection. If 0 is given, a default baudrate is used"));
     //this->m_initParamsMand.append
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PI_GCS2Interface with the name PIPiezoCtrlInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(PI_GCS2Interface, PI_GCS2Interface)
-#endif

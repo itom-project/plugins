@@ -1,6 +1,6 @@
 #include <new>
 #include <mfapi.h>
-
+#include <process.h>    /* _beginthread, _endthread */
 
 #include "ImageGrabberThread.h"
 #include "ImageGrabber.h"
@@ -10,7 +10,7 @@
 
 
 //----------------------------------------------------------------------------------------
-DWORD WINAPI MainThreadFunction( LPVOID lpParam )
+unsigned int WINAPI MainThreadFunction( LPVOID lpParam )
 {
 	ImageGrabberThread *pIGT = (ImageGrabberThread *)lpParam;
 
@@ -20,49 +20,55 @@ DWORD WINAPI MainThreadFunction( LPVOID lpParam )
 }
 
 //----------------------------------------------------------------------------------------
-HRESULT ImageGrabberThread::CreateInstance(ImageGrabberThread **ppIGT, IMFMediaSource *pSource, unsigned int deviceID)
+HRESULT ImageGrabberThread::CreateInstance(
+    ImageGrabberThread **ppIGT, 
+    IMFMediaSource *pSource, 
+    unsigned int deviceID,
+    QSharedPointer<DebugPrintOut> debugPrintOut)
 {
-	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-	*ppIGT = new (std::nothrow) ImageGrabberThread(pSource, deviceID);
+	*ppIGT = new (std::nothrow) ImageGrabberThread(pSource, deviceID, debugPrintOut);
 
     if (ppIGT == NULL)
     {
-		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Memory cannot be allocated\n", deviceID);
+		debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Memory cannot be allocated\n", deviceID);
 
         return E_OUTOFMEMORY;
     }
-	else
-		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Creating of the instance of ImageGrabberThread\n", deviceID);
+    else
+    {
+        debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Creating of the instance of ImageGrabberThread\n", deviceID);
+    }
 	
     return S_OK;
 }
 
 //----------------------------------------------------------------------------------------
-ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID): igt_Handle(NULL), igt_stop(false), igt_pImageGrabber(NULL)
+ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut):
+    m_igtHandle(0), 
+    m_igtStop(false), 
+    m_pIgtImageGrabber(NULL),
+    m_debugPrintOut(debugPrintOut)
 {
-	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-	HRESULT hr = ImageGrabber::CreateInstance(&igt_pImageGrabber, deviceID);
+	HRESULT hr = ImageGrabber::CreateInstance(&m_pIgtImageGrabber, deviceID, debugPrintOut);
 		
-	igt_DeviceID = deviceID;
+	m_igtDeviceID = deviceID;
 
-	if(SUCCEEDED(hr))
+	if (SUCCEEDED(hr))
 	{
-		hr = igt_pImageGrabber->initImageGrabber(pSource, MFVideoFormat_RGB24);
+		hr = m_pIgtImageGrabber->initImageGrabber(pSource, MFVideoFormat_RGB24);
 
-		if(!SUCCEEDED(hr))
+		if (!SUCCEEDED(hr))
 		{
-			DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: There is a problem with initialization of the instance of the ImageGrabber class\n", deviceID);
+            m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: There is a problem with initialization of the instance of the ImageGrabber class\n", deviceID);
 		}
 		else
 		{
-			DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Initialization of instance of the ImageGrabber class\n", deviceID);
+            m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Initialization of instance of the ImageGrabber class\n", deviceID);
 		}
 	}
 	else
 	{
-		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i There is a problem with creation of the instance of the ImageGrabber class\n", deviceID);
+        m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i There is a problem with creation of the instance of the ImageGrabber class\n", deviceID);
 	}
 }
 
@@ -70,92 +76,88 @@ ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int dev
 //----------------------------------------------------------------------------------------
 ImageGrabberThread::~ImageGrabberThread(void)
 {
-	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
+    m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Destroying ImageGrabberThread\n", m_igtDeviceID);
 
-	DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Destroing ImageGrabberThread\n", igt_DeviceID);
-
-	delete igt_pImageGrabber;
-	igt_pImageGrabber = NULL;
+	delete m_pIgtImageGrabber;
+	m_pIgtImageGrabber = NULL;
 }
 
 //----------------------------------------------------------------------------------------
 void ImageGrabberThread::setEmergencyStopEvent(void *userData, void(*func)(int, void *))
 {
-	if(func)
+	if (func)
 	{
-		igt_func = func;
+		m_igtFunc = func;
 
-		igt_userData = userData;
+		m_igtUserData = userData;
 	}
 }
 
 //----------------------------------------------------------------------------------------
 void ImageGrabberThread::stop()
 {
-	igt_stop = true;
+	m_igtStop = true;
 
-	if(igt_pImageGrabber)
+	if (m_pIgtImageGrabber)
 	{
-		igt_pImageGrabber->stopGrabbing();
+		m_pIgtImageGrabber->stopGrabbing();
 	}
 }
 
 //----------------------------------------------------------------------------------------
 void ImageGrabberThread::start()
 {
-	igt_Handle = CreateThread( 
+	m_igtHandle = _beginthreadex( 
             NULL,                   // default security attributes
             0,                      // use default stack size  
             MainThreadFunction,       // thread function name
             this,          // argument to thread function 
             0,                      // use default creation flags 
-            &igt_ThreadIdArray);   // returns the thread identifier 
+            &m_igtThreadIdArray);   // returns the thread identifier 
 }
 
 //----------------------------------------------------------------------------------------
 void ImageGrabberThread::run()
 {
-	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-	if(igt_pImageGrabber)
+	if (m_pIgtImageGrabber)
 	{
-		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Thread for grabbing images is started\n", igt_DeviceID);
+        m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Thread for grabbing images is started\n", m_igtDeviceID);
 
 		runMutex.lock();
 		
-		HRESULT hr = igt_pImageGrabber->startGrabbing();
+		HRESULT hr = m_pIgtImageGrabber->startGrabbing();
 
 		runMutex.unlock();
 
-		if(!SUCCEEDED(hr))		
+		if (!SUCCEEDED(hr))		
 		{
-			DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: There is a problem with starting the process of grabbing\n", igt_DeviceID);
+            m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: There is a problem with starting the process of grabbing\n", m_igtDeviceID);
 		}
 		
 	}
 	else
 	{
-		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i The thread is finished without execution of grabbing\n", igt_DeviceID);
+        m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i The thread is finished without execution of grabbing\n", m_igtDeviceID);
 	}
 
 
-	if(!igt_stop)
+	if (!m_igtStop)
 	{
-		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Emergency Stop thread\n", igt_DeviceID);
+        m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Emergency Stop thread\n", m_igtDeviceID);
 
-		if(igt_func)
+		if (m_igtFunc)
 		{
-			igt_func(igt_DeviceID, igt_userData);
+			m_igtFunc(m_igtDeviceID, m_igtUserData);
 		}
 	}
 	else
     {
-		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Finish thread\n", igt_DeviceID);
+        m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Finish thread\n", m_igtDeviceID);
     }
 }
 
 //----------------------------------------------------------------------------------------
 ImageGrabber *ImageGrabberThread::getImageGrabber()
 {
-	return igt_pImageGrabber;
+	return m_pIgtImageGrabber;
 }

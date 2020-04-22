@@ -127,17 +127,23 @@ MSMediaFoundationInterface::~MSMediaFoundationInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(msmediafoundationinterface, MSMediaFoundationInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void StopEvent(int deviceID, void *userData)
 {
-    VideoInput *VI = &VideoInput::getInstance();
- 
-    VI->closeDevice(deviceID);
+    QSharedPointer<VideoInput> vi = MSMediaFoundation::VideoInputInstance;
+
+    if (!vi.isNull())
+    {
+        vi->closeDevice(deviceID);
+    }
 }
+
+
+/*static*/ QMutex MSMediaFoundation::VideoInputCreateMutex;
+/*static*/ int MSMediaFoundation::VideoInputRefCount = 0;
+/*static*/ QSharedPointer<VideoInput> MSMediaFoundation::VideoInputInstance;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! shows the configuration dialog. This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
@@ -154,8 +160,21 @@ const ito::RetVal MSMediaFoundation::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_pVI(NULL), m_deviceID(0), m_camStatusChecked(false), m_initState(initNotTested)
+MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_deviceID(0), m_camStatusChecked(false), m_initState(initNotTested)
 {
+    VideoInputCreateMutex.lock();
+
+    if (VideoInputRefCount == 0)
+    {
+        QSharedPointer<DebugPrintOut> dpo(new DebugPrintOut());
+        VideoInputInstance = QSharedPointer<VideoInput>(new VideoInput(dpo));
+    }
+
+    VideoInputRefCount++;
+    m_videoInput = VideoInputInstance;
+
+    VideoInputCreateMutex.unlock();
+
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MSMediaFoundation", "name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -273,6 +292,18 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
 MSMediaFoundation::~MSMediaFoundation()
 {
    m_params.clear();
+
+   VideoInputCreateMutex.lock();
+
+   VideoInputRefCount--;
+   m_videoInput.clear();
+
+   if (VideoInputRefCount == 0)
+   {
+       VideoInputInstance.clear();
+   }
+
+   VideoInputCreateMutex.unlock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -288,8 +319,8 @@ ito::RetVal MSMediaFoundation::checkCameraAbilities()
     //camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
 
     m_imgChannels = 3;
-    m_imgCols = m_pVI->getWidth(m_deviceID);
-    m_imgRows = m_pVI->getHeight(m_deviceID);
+    m_imgCols = m_videoInput->getWidth(m_deviceID);
+    m_imgRows = m_videoInput->getHeight(m_deviceID);
     m_imgBpp = 8;
 
     static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(m_imgCols);
@@ -422,9 +453,9 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
                 retValue += updateCamParam(*(m_camParamsHash[key]), *val, m_params[key + "Auto"]);
             }
 
-            if (!retValue.containsError() && m_pVI)
+            if (!retValue.containsError() && m_videoInput)
             {
-                m_pVI->setParameters(m_deviceID, m_camParams);
+                m_videoInput->setParameters(m_deviceID, m_camParams);
             }
         }
 
@@ -535,8 +566,9 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     m_flipImage = paramsOpt->at(3).getVal<int>() > 0 ? true : false;
     QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase(paramsOpt->at(1)));
 
-    m_pVI = &VideoInput::getInstance();
-    int numDevices = m_pVI->listDevices();
+    m_videoInput->setVerbose(false);
+
+    int numDevices = m_videoInput->listDevices();
 
     if (m_deviceID >= numDevices)
     {
@@ -544,7 +576,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     }
     else
     {
-        QString deviceName = QString::fromUtf16((const ushort*)m_pVI->getNameVideoDevice(m_deviceID));
+        QString deviceName = QString::fromUtf16((const ushort*)m_videoInput->getNameVideoDevice(m_deviceID));
 
         if (deviceName == "Empty")
         {
@@ -564,9 +596,9 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
             int j = 0;
             int foundID = -1;
 
-            for (unsigned int i = 0; i < m_pVI->getCountFormats(m_deviceID); ++i)
+            for (unsigned int i = 0; i < m_videoInput->getCountFormats(m_deviceID); ++i)
             {
-                mediaType = m_pVI->getFormat(m_deviceID, i);
+                mediaType = m_videoInput->getFormat(m_deviceID, i);
 
                 if (wcscmp(mediaType.pMF_MT_MAJOR_TYPEName, L"MFMediaType_Video") == 0)
                 {
@@ -607,15 +639,15 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.").toLatin1().data());
             }
-            else if (!m_pVI->setupDevice(m_deviceID, foundID))
+            else if (!m_videoInput->setupDevice(m_deviceID, foundID))
             {
-                retValue += ito::RetVal::format(ito::retError, 0, tr("Camera (%i) could not be opened").toLatin1().data(), numDevices);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("Camera (%i) could not be opened").toLatin1().data(), m_deviceID);
             }
             else
             {
-                if (m_pVI->isFrameNew(m_deviceID))
+                if (m_videoInput->isFrameNew(m_deviceID))
                 {
-                    m_pVI->setEmergencyStopEvent(m_deviceID, NULL, StopEvent);
+                    m_videoInput->setEmergencyStopEvent(m_deviceID, NULL, StopEvent);
                 }
                 else
                 {
@@ -666,7 +698,7 @@ ito::RetVal MSMediaFoundation::checkInitState()
         int loopy = 3000/50; //max 3 seconds
         while (loopy > 0) 
         {
-            if (m_pVI->isFrameNew(m_deviceID))
+            if (m_videoInput->isFrameNew(m_deviceID))
             {
                 m_initState = initSuccessfull;
                 break;
@@ -743,9 +775,9 @@ ito::RetVal MSMediaFoundation::updateCamParam(Parameter &parameter, const ito::P
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MSMediaFoundation::synchronizeCameraParametersToParams(bool firstCall /*= false*/)
 {
-    if (m_pVI)
+    if (m_videoInput)
     {
-        m_camParams = m_pVI->getParameters(m_deviceID);
+        m_camParams = m_videoInput->getParameters(m_deviceID);
 
         if (m_camParams.Brightness.Available && m_camParams.Brightness.Max > m_camParams.Brightness.Min)
         {
@@ -933,7 +965,7 @@ ito::RetVal MSMediaFoundation::close(ItomSharedSemaphore *waitCond)
 
     retValue += stopDevice(NULL);
 
-    m_pVI->closeDevice(m_deviceID);
+    m_videoInput->closeDevice(m_deviceID);
 
     if (waitCond)
     {
@@ -1014,21 +1046,22 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
     if (!retValue.containsError())
     {
         int i = 0;
+
         while (1)
         {
-            if (m_pVI->isFrameNew(m_deviceID))
+            if (m_videoInput->isFrameNew(m_deviceID))
             {
-                m_pVI->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, m_flipImage); 
+                m_videoInput->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, m_flipImage); 
                 break;
             }
 
-            if (++i > 30)
+            if (++i > 200)
             {
                 m_timeout = true;
                 break;
             }
 
-            Sleep(1);
+            Sleep(3);
         }
     }
 
@@ -1073,18 +1106,6 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
     {
         if (!retValue.containsError())
         {
-            //int desiredChannel = m_params["channel"].getVal<int>();
-            //if (desiredChannel > 0 && m_imgChannels == 1)
-            //{
-            //    desiredChannel = 0; //no r,g,b channel in camera image available (grayscale camera)
-            //}
-
-            //int colorConversion = m_params["colorConversion"].getVal<int>();
-            //if (colorConversion == 1 /*rgb2gray*/ && (m_imgChannels == 1 || desiredChannel > 0)) 
-            //{
-            //    colorConversion = 0; //grayscale camera image or selected channel -> no conversion necessary
-            //}
-
             int desiredBpp = m_params["bpp"].getVal<int>();
             cv::Mat tempImage;
 
@@ -1093,11 +1114,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 resizeRequired = true;
             }
 
-            /*if (m_imgBpp != 8 && m_imgBpp != 16)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Error: bpp other than 8 or 16 not allowed.").toLatin1().data());
-            }
-            else */if (m_imgChannels != 1 && m_imgChannels != 3)
+            if (m_imgChannels != 1 && m_imgChannels != 3)
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("Error: channels sizes other than 1 or 3 not allowed.").toLatin1().data());
             }
@@ -1114,7 +1131,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 }
                 else
                 {
-                    cv::Range ranges[] = { cv::Range(y0,y0+curysize), cv::Range(x0,x0+curxsize) };
+                    cv::Range ranges[] = { cv::Range(y0, y0 + curysize), cv::Range(x0, x0 + curxsize) };
                     tempImage = cv::Mat(m_pDataMatBuffer, ranges);
                 }
 

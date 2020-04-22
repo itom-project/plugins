@@ -10,10 +10,10 @@
 #  <var-prefix>_WC_INFO - output of command `SubWCRev <dir>'
 # Example usage:
 #  FIND_PACKAGE(TortoiseSVN)
-#  IF(TortoiseSVN_FOUND)
+#  if(TortoiseSVN_FOUND)
 #    TortoiseSVN_WC_INFO(${PROJECT_SOURCE_DIR} Project)
-#    MESSAGE("Current revision is ${Project_WC_REVISION}")
-#  ENDIF(TortoiseSVN_FOUND)
+#    message("Current revision is ${Project_WC_REVISION}")
+#  endif(TortoiseSVN_FOUND)
 #
 #------------------------------------------------------------------------------
 #  Modifications:
@@ -22,17 +22,17 @@
 #    command to extract revision number.  More consistent results this way.
 #------------------------------------------------------------------------------
 
-SET(TortoiseSVN_FOUND FALSE)
+set(TortoiseSVN_FOUND FALSE)
 
-FIND_PROGRAM(TortoiseSVN_EXECUTABLE SubWCRev
+find_program(TortoiseSVN_EXECUTABLE SubWCRev
   DOC "Tortoise SVN client")
-MARK_AS_ADVANCED(TortoiseSVN_EXECUTABLE)
+mark_as_advanced(TortoiseSVN_EXECUTABLE)
 
-IF(TortoiseSVN_EXECUTABLE)
-  SET(TortoiseSVN_FOUND TRUE)
+if(TortoiseSVN_EXECUTABLE)
+  set(TortoiseSVN_FOUND TRUE)
 
   MACRO(TortoiseSVN_WC_INFO dir prefix)
-    FILE(WRITE "${VISIT_SOURCE_DIR}/svnrev.in" "$WCREV$")
+    file(WRITE "${VISIT_SOURCE_DIR}/svnrev.in" "$WCREV$")
        
     EXECUTE_PROCESS(COMMAND ${TortoiseSVN_EXECUTABLE} "." "${VISIT_SOURCE_DIR}/svnrev.in" "${VISIT_SOURCE_DIR}/svnrev"
       WORKING_DIRECTORY ${VISIT_SOURCE_DIR}
@@ -41,23 +41,23 @@ IF(TortoiseSVN_EXECUTABLE)
       RESULT_VARIABLE TortoiseSVN_info_result
       OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    IF(NOT ${TortoiseSVN_info_result} EQUAL 0)
-        MESSAGE(SEND_ERROR "Command \"${TortoiseSVN_EXECUTABLE} ${dir}\" failed with output:\n${TortoiseSVN_info_error}")
-    ELSE(NOT ${TortoiseSVN_info_result} EQUAL 0)
-        FILE(STRINGS ${VISIT_SOURCE_DIR}/svnrev ${prefix}_WC_REVISION)
-    ENDIF(NOT ${TortoiseSVN_info_result} EQUAL 0)
-    FILE(REMOVE ${VISIT_SOURCE_DIR}/svnrev.in ${VISIT_SOURCE_DIR}/svnrev)
+    if(NOT ${TortoiseSVN_info_result} EQUAL 0)
+        message(SEND_ERROR "Command \"${TortoiseSVN_EXECUTABLE} ${dir}\" failed with output:\n${TortoiseSVN_info_error}")
+    else(NOT ${TortoiseSVN_info_result} EQUAL 0)
+        file(STRINGS ${VISIT_SOURCE_DIR}/svnrev ${prefix}_WC_REVISION)
+    endif(NOT ${TortoiseSVN_info_result} EQUAL 0)
+    file(REMOVE ${VISIT_SOURCE_DIR}/svnrev.in ${VISIT_SOURCE_DIR}/svnrev)
   ENDMACRO(TortoiseSVN_WC_INFO)
 
-ENDIF(TortoiseSVN_EXECUTABLE)
+endif(TortoiseSVN_EXECUTABLE)
 
-IF(NOT TortoiseSVN_FOUND)
-  IF(NOT TortoiseSVN_FIND_QUIETLY)
-    MESSAGE(STATUS "TortoiseSVN was not found.")
-  ELSE(NOT TortoiseSVN_FIND_QUIETLY)
-    IF(TortoiseSVN_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "TortoiseSVN was not found.")
-    ENDIF(TortoiseSVN_FIND_REQUIRED)
-  ENDIF(NOT TortoiseSVN_FIND_QUIETLY)
-ENDIF(NOT TortoiseSVN_FOUND)
+if(NOT TortoiseSVN_FOUND)
+  if(NOT TortoiseSVN_FIND_QUIETLY)
+    message(STATUS "TortoiseSVN was not found.")
+  else(NOT TortoiseSVN_FIND_QUIETLY)
+    if(TortoiseSVN_FIND_REQUIRED)
+      message(FATAL_ERROR "TortoiseSVN was not found.")
+    endif(TortoiseSVN_FIND_REQUIRED)
+  endif(NOT TortoiseSVN_FIND_QUIETLY)
+endif(NOT TortoiseSVN_FOUND)
 

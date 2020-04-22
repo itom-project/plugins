@@ -4,7 +4,7 @@
 <context>
     <name>FFTWFilters</name>
     <message>
-        <location filename="../FFTWfilters.cpp" line="+2014"/>
+        <location filename="../FFTWfilters.cpp" line="+2012"/>
         <location line="+420"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
@@ -252,7 +252,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-3079"/>
+        <location line="-3077"/>
         <source>Wrapper for the FFTW</source>
         <translation type="unfinished"></translation>
     </message>
@@ -275,7 +275,7 @@ To build this plugin you will need the libs from the fftw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+570"/>
+        <location line="+568"/>
         <source>Perform fftshift as known from Python, Matlab and so on, i.e. make the 
 zero order of diffraction appear in the center.
 

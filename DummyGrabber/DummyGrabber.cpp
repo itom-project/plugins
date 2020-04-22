@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -184,9 +184,7 @@ DummyGrabberInterface::~DummyGrabberInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(DummyGrabberinterface, DummyGrabberInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

@@ -549,7 +549,6 @@ ito::RetVal BasicFilters::labeling(QVector<ito::ParamBase> *paramsMand, QVector<
 
     default:
         return ito::RetVal(ito::retError, 0, tr("input image should be normalized float (32 or 64) object").toLatin1().data());
-        break;
     }
 
     return retval;

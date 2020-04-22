@@ -75,9 +75,7 @@ ito::RetVal DemoAlgorithmsInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(demoalgorithmsinterface, DemoAlgorithmsInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -752,9 +750,7 @@ ito::RetVal DemoAlgorithms::demoTestActuator(QVector<ito::ParamBase> *paramsMand
             }
         }
 
-#if QT_VERSION >= 0x050000
         QThread::msleep(100);
-#endif
     }
 
     return retVal;

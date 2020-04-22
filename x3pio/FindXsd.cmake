@@ -3,24 +3,24 @@
 # path will be in XSD_EXECUTABLE. Look in the usual locations, as well as in
 # the 'bin' directory in the path given in the XSD_ROOT environment variable.
 # 
-IF (${CMAKE_VERSION} VERSION_GREATER "3.1.9") 
+if(${CMAKE_VERSION} VERSION_GREATER "3.1.9") 
     cmake_policy(SET CMP0053 NEW)
-ENDIF (${CMAKE_VERSION} VERSION_GREATER "3.1.9")
+endif(${CMAKE_VERSION} VERSION_GREATER "3.1.9")
 
-IF (XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
+if(XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
 # in cache already
-SET(XSD_FIND_QUIETLY TRUE)
-ENDIF (XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
+set(XSD_FIND_QUIETLY TRUE)
+endif(XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
 
-IF (BUILD_TARGET64)
+if(BUILD_TARGET64)
     set(POSTFIX, "64")
-ELSE (BUILD_TARGET64)
+else (BUILD_TARGET64)
     set(POSTFIX, "")
-ENDIF (BUILD_TARGET64)
+endif(BUILD_TARGET64)
 
 set(_pf_x86 "ProgramFiles(x86)")
 
-SET (XSD_POSSIBLE_ROOT_DIRS
+set(XSD_POSSIBLE_ROOT_DIRS
   "$ENV{XSDDIR}"
   "$ENV{XSDDIR}"
   /usr/local
@@ -41,7 +41,7 @@ SET (XSD_POSSIBLE_ROOT_DIRS
   "$ENV{PATH}"
   )
 
- FIND_PATH(XSD_ROOT_DIR 
+ find_path(XSD_ROOT_DIR 
   NAMES 
   include/xsd/cxx/parser/elements.hxx     
   PATHS ${XSD_POSSIBLE_ROOT_DIRS}
@@ -49,17 +49,17 @@ SET (XSD_POSSIBLE_ROOT_DIRS
 
 
 
-if (WIN32)
-  set (XSD_EXE_NAME xsd)
-endif (WIN32)
-if (UNIX)
-  set (XSD_EXE_NAME xsdcxx)
-endif (UNIX)
-if (APPLE)
-  set (XSD_EXE_NAME xsd)
-endif (APPLE)
+if(WIN32)
+  set(XSD_EXE_NAME xsd)
+endif(WIN32)
+if(UNIX)
+  set(XSD_EXE_NAME xsdcxx)
+endif(UNIX)
+if(APPLE)
+  set(XSD_EXE_NAME xsd)
+endif(APPLE)
 
-FIND_PATH(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
+find_path(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
   PATHS "[HKEY_CURRENT_USER\\software\\xsd\\include]"
   "[HKEY_CURRENT_USER]\\xsd\\include]"
   "$ENV{XSDDIR}/include"
@@ -78,7 +78,7 @@ FIND_PATH(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
   "${XSD_ROOT_DIR}"
 )
 
-FIND_PROGRAM(XSD_EXECUTABLE 
+find_program(XSD_EXECUTABLE 
   NAMES xsdcxx xsd
   PATHS "${XSD_ROOT_DIR}"
   "${XSD_ROOT_DIR}/bin"
@@ -93,55 +93,55 @@ FIND_PROGRAM(XSD_EXECUTABLE
   "$ENV{XSDDIR}/bin$POSTFIX"
 )
 
-IF (NOT XSD_INCLUDE_DIR)
- SET(XSD_VERSION "0")
-ELSE(NOT XSD_INCLUDE_DIR)
- FILE(READ ${XSD_INCLUDE_DIR}/xsd/cxx/version.hxx XVERHXX)
- STRING(REGEX MATCHALL "\n *#define XSD_INT_VERSION +[0-9]+" XVERINT ${XVERHXX})
- STRING(REGEX REPLACE "\n *#define XSD_INT_VERSION +" "" XVERINT ${XVERINT})
- STRING(REGEX REPLACE "....$" "" XVERINT ${XVERINT})
- STRING(REGEX MATCHALL "..$" XVERMIN ${XVERINT})
- STRING(REGEX REPLACE "..$" "" XVERMAJ ${XVERINT})
+if(NOT XSD_INCLUDE_DIR)
+ set(XSD_VERSION "0")
+else(NOT XSD_INCLUDE_DIR)
+ file(READ ${XSD_INCLUDE_DIR}/xsd/cxx/version.hxx XVERHXX)
+ string(REGEX MATCHALL "\n *#define XSD_INT_VERSION +[0-9]+" XVERINT ${XVERHXX})
+ string(REGEX REPLACE "\n *#define XSD_INT_VERSION +" "" XVERINT ${XVERINT})
+ string(REGEX REPLACE "....$" "" XVERINT ${XVERINT})
+ string(REGEX MATCHALL "..$" XVERMIN ${XVERINT})
+ string(REGEX REPLACE "..$" "" XVERMAJ ${XVERINT})
 
- SET(XSD_VERMAJ ${XVERMAJ})
- SET(XSD_VERMIN ${XVERMIN})
-ENDIF (NOT XSD_INCLUDE_DIR)
+ set(XSD_VERMAJ ${XVERMAJ})
+ set(XSD_VERMIN ${XVERMIN})
+endif(NOT XSD_INCLUDE_DIR)
 
-if (NOT XSD_INCLUDE_DIR)
-    IF(XSD_FIND_REQUIRED)
-        message (FATAL_ERROR "Unable to find xsd include files (xsd/cxx/parser/elements.hxx)")
-    ENDIF()
+if(NOT XSD_INCLUDE_DIR)
+    if(XSD_FIND_REQUIRED)
+        message(FATAL_ERROR "Unable to find xsd include files (xsd/cxx/parser/elements.hxx)")
+    endif()
 else (NOT XSD_INCLUDE_DIR)
   if(NOT XSD_FIND_QUIETLY)
-    message (STATUS "Found xsd: " ${XSD_INCLUDE_DIR})
-    message (STATUS "         : " ${XSD_EXECUTABLE})
-    message (STATUS "xsd Ver. : " ${XSD_VERMAJ} "." ${XSD_VERMIN})
-  endif (NOT XSD_FIND_QUIETLY)
-endif (NOT XSD_INCLUDE_DIR)
+    message(STATUS "Found xsd: " ${XSD_INCLUDE_DIR})
+    message(STATUS "         : " ${XSD_EXECUTABLE})
+    message(STATUS "xsd Ver. : " ${XSD_VERMAJ} "." ${XSD_VERMIN})
+  endif(NOT XSD_FIND_QUIETLY)
+endif(NOT XSD_INCLUDE_DIR)
 
-if (NOT XSD_EXECUTABLE)
-    IF(XSD_FIND_REQUIRED)
-        message (FATAL_ERROR "Unable to find xsd or xsdcxx executable")
-    ENDIF()
-    SET(XSD_EXECUTABLE)
-    UNSET(XSD_EXECUTABLE CACHE)
-endif (NOT XSD_EXECUTABLE)
+if(NOT XSD_EXECUTABLE)
+    if(XSD_FIND_REQUIRED)
+        message(FATAL_ERROR "Unable to find xsd or xsdcxx executable")
+    endif()
+    set(XSD_EXECUTABLE)
+    unset(XSD_EXECUTABLE CACHE)
+endif(NOT XSD_EXECUTABLE)
 
-IF ((NOT (XSD_VERMAJ GREATER 3)) AND (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2))))
-    SET(XSD_INCLUDE_DIR )
-    UNSET(XSD_INCLUDE_DIR CACHE)
-    IF(XSD_FIND_REQUIRED)
-        message (FATAL_ERROR "XSD version number mismatch")
-    ENDIF()
-ENDIF ((NOT (XSD_VERMAJ GREATER 3)) AND (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2))))
+if((NOT (XSD_VERMAJ GREATER 3)) AND (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2))))
+    set(XSD_INCLUDE_DIR )
+    unset(XSD_INCLUDE_DIR CACHE)
+    if(XSD_FIND_REQUIRED)
+        message(FATAL_ERROR "XSD version number mismatch")
+    endif()
+endif((NOT (XSD_VERMAJ GREATER 3)) AND (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2))))
 
 #
 # General CMake package configuration.
 #
-INCLUDE( FindPackageHandleStandardArgs )
+include( FindPackageHandleStandardArgs )
 FIND_PACKAGE_HANDLE_STANDARD_ARGS( XSD DEFAULT_MSG XSD_EXECUTABLE XSD_INCLUDE_DIR )
 
-MARK_AS_ADVANCED( XSD_INCLUDE_DIR XSD_EXECUTABLE )
+mark_as_advanced( XSD_INCLUDE_DIR XSD_EXECUTABLE )
 
 # 
 # Macro that attempts to generate C++ files from an XML schema. The NAME
@@ -159,31 +159,31 @@ MACRO( XSD_SCHEMA NAME FILE )
   #
   # Make a full path from the soource directory
   #
-  SET( xs_SRC "${FILE}" )
+  set( xs_SRC "${FILE}" )
 
   # 
   # XSD will generate two or three C++ files (*.cxx,*.hxx,*.ixx). Get the
   # destination file path sans any extension and then build paths to the
   # generated files.
   #
-  GET_FILENAME_COMPONENT( xs_FILE "${FILE}" NAME_WE )
-  SET( xs_CXX "${CMAKE_CURRENT_BINARY_DIR}/${xs_FILE}.cxx" )
-  SET( xs_HXX "${CMAKE_CURRENT_BINARY_DIR}/${xs_FILE}.hxx" )
-#  SET( xs_IXX "${CMAKE_CURRENT_BINARY_DIR}/${xs_FILE}.ixx" )
+  get_filename_component( xs_FILE "${FILE}" NAME_WE )
+  set( xs_CXX "${CMAKE_CURRENT_BINARY_DIR}/${xs_FILE}.cxx" )
+  set( xs_HXX "${CMAKE_CURRENT_BINARY_DIR}/${xs_FILE}.hxx" )
+#  set( xs_IXX "${CMAKE_CURRENT_BINARY_DIR}/${xs_FILE}.ixx" )
 
 
   #
   # Add the source files to the NAME variable, which presumably will be used to
   # define the source of another target.
   #
-  LIST( APPEND ${NAME} ${xs_CXX} )
+  list( APPEND ${NAME} ${xs_CXX} )
 
   #
   # Set up a generator for the output files from the given schema file using
   # the XSD cxx-tree command.
   #
-  ADD_CUSTOM_TARGET( genxmlxsd ALL)
-  ADD_CUSTOM_COMMAND( TARGET genxmlxsd PRE_BUILD
+  add_custom_target( genxmlxsd ALL)
+  add_custom_command( TARGET genxmlxsd PRE_BUILD
 			COMMAND ${XSD_EXECUTABLE}
 			ARGS "cxx-tree" ${ARGN} ${xs_SRC}
 			DEPENDS ${xs_SRC} )
@@ -191,7 +191,7 @@ MACRO( XSD_SCHEMA NAME FILE )
   #
   # Don't fail if a generated file does not exist.
   #
-  SET_SOURCE_FILES_PROPERTIES( "${xs_CXX}" "${xs_HXX}" "${xs_IXX}"
+  set_source_files_properties( "${xs_CXX}" "${xs_HXX}" "${xs_IXX}"
   							   PROPERTIES GENERATED TRUE )
 
 ENDMACRO( XSD_SCHEMA )

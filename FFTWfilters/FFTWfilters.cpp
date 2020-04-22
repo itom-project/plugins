@@ -103,9 +103,7 @@ FFTWFiltersInterface::~FFTWFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(FFTWFiltersInterface, FFTWFiltersInterface)
-#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Parameters for fftw filter

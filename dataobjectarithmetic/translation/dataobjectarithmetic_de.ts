@@ -4,7 +4,7 @@
 <context>
     <name>DataObjectArithmetic</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="+110"/>
+        <location filename="../dataobjectarithmetic.cpp" line="+108"/>
         <location line="+13"/>
         <location line="+3"/>
         <location line="+16"/>
@@ -388,7 +388,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="-1972"/>
+        <location filename="../dataobjectarithmetic.cpp" line="-1970"/>
         <source>Operations and arithmetic calculations of dataObject.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -407,7 +407,7 @@ This plugin does not have any unusual dependencies.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+93"/>
         <source>This filter calculates the global minimum value and its first location within the dataObject. 
 
 The returned value will be an integer for all fixed-point data types and float for all floating point types. 

@@ -97,7 +97,7 @@
 <context>
     <name>DummyGrabber</name>
     <message>
-        <location filename="../DummyGrabber.cpp" line="+236"/>
+        <location filename="../DummyGrabber.cpp" line="+234"/>
         <source>Minimum time between the start of two consecutive acquisitions [s], default: 0.0.</source>
         <translation type="unfinished">Mindestzeit zwischen zwei fortlaufenden Bildanforderungen [s], standard: 0,0.</translation>
     </message>
@@ -199,7 +199,7 @@
         <translation type="vanished">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-745"/>
+        <location line="-743"/>
         <source>Width of virtual sensor chip</source>
         <translation type="unfinished">Breite des virtuellen Sensors</translation>
     </message>

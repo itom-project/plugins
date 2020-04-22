@@ -117,11 +117,6 @@ ito::RetVal ThorlabsPowerMeterInterface::closeThisInst(ito::AddInBase **addInIns
    return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(ThorlabsPowerMeterInterface, ThorlabsPowerMeterInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
-#endif
-
 
 
 

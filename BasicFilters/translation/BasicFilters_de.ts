@@ -5,7 +5,7 @@
     <name>BasicFilters</name>
     <message>
         <location filename="../BasicSpecialFilters.cpp" line="+3456"/>
-        <location filename="../BasicFilters.cpp" line="+260"/>
+        <location filename="../BasicFilters.cpp" line="+258"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -801,7 +801,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="-207"/>
+        <location filename="../BasicFilters.cpp" line="-205"/>
         <source>ITO developed filter-functions for data objects</source>
         <translation type="unfinished"></translation>
     </message>
@@ -823,7 +823,7 @@ This plugin does not have any unusual dependencies.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+45"/>
         <source>replaces infinite and/or nan-values by values of second matrix. 
 
 </source>

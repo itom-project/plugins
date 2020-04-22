@@ -1,39 +1,46 @@
-SET (target_name Xeneth)
+set(target_name Xeneth)
 
-project(${target_name})
-
-message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1...3.15)
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
 #################################################################
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+#this is to automatically detect the SDK subfolder of the itom build directory.
+find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "C:/itom/build/itom/SDK"
+          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
+    DOC "path of SDK subfolder of itom root (build) directory")
 
-SET (XENETH_SDK_DIR "" CACHE PATH "base path to the Xeneth SDK (that contains the include folder)")
+if(NOT ITOM_SDK_DIR)
+    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif()
+
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+
+set(XENETH_SDK_DIR "" CACHE PATH "base path to the Xeneth SDK (that contains the include folder)")
 find_path(XENETH_INCLUDE_DIR XCamera.h PATHS ${XENETH_SDK_DIR} PATH_SUFFIXES include)
 
 
-IF (XENETH_INCLUDE_DIR)
+if(XENETH_INCLUDE_DIR)
 
     #################################################################
     # Automatic package detection
-    #   add here find_package commands for searching for 3rd party
+    #   add here FIND_PACKAGE commands for searching for 3rd party
     #   libraries
     #
-    #   for detecting Qt, use FIND_PACKAGE_QT instead of the
-    #   native command, since FIND_PACKAGE_QT detects the Qt4 or 5
+    #   for detecting Qt, use itom_find_package_qt instead of the
+    #   native command, since itom_find_package_qt detects the Qt4 or 5
     #   version.
     #################################################################
 
@@ -47,100 +54,57 @@ IF (XENETH_INCLUDE_DIR)
     # - pointcloud (pointCloud, point, polygonMesh...) (optional)
     # if no components are indicated, all components above are used
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-    include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake") #include this mandatory macro file (important)
     find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
-    find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
 
-    #usage of FIND_PACKAGE_QT(automoc component1, component2, ...)
+    #usage of itom_find_package_qt(automoc component1, component2, ...)
     # automoc is ON or OFF and only relevant for Qt5, usually set it to ON
     # possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
-    FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
+    itom_find_package_qt(ON Core LinguistTools Widgets)
 
-	IF(BUILD_TARGET64)
-		set( XENETH_LIBRARY ${XENETH_SDK_DIR}/Lib/xeneth64.lib )
-	ELSE(BUILD_TARGET64)
-		set( XENETH_LIBRARY ${XENETH_SDK_DIR}/Lib/xeneth.lib )
-	ENDIF(BUILD_TARGET64)
+    if(BUILD_TARGET64)
+        set( XENETH_LIBRARY ${XENETH_SDK_DIR}/Lib/xeneth64.lib )
+    else(BUILD_TARGET64)
+        set( XENETH_LIBRARY ${XENETH_SDK_DIR}/Lib/xeneth.lib )
+    endif(BUILD_TARGET64)
 
     #################################################################
     # General settings and preprocessor settings
     #################################################################
-    IF(BUILD_SHARED_LIBS)
-        SET(LIBRARY_TYPE SHARED)
-    ELSE(BUILD_SHARED_LIBS)
-        SET(LIBRARY_TYPE STATIC)
-    ENDIF(BUILD_SHARED_LIBS)
 
-    IF (BUILD_UNICODE)
-        ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-    ENDIF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DCMAKE)
-    ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
-
-    IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-        ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-    ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-
-    # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-    IF (DEFINED CMAKE_BUILD_TYPE)
-        SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-    ELSE(CMAKE_BUILD_TYPE)
-        SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-    ENDIF (DEFINED CMAKE_BUILD_TYPE)
-
-    # HANDLE VERSION (FROM GIT)
-    UNSET(GIT_FOUND CACHE)
-    find_package(Git)
-    IF(BUILD_GIT_TAG AND GIT_FOUND)
-    execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE GITVERSION
-        RESULT_VARIABLE GITRESULT
-        ERROR_VARIABLE GITERROR
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    #uncomment to enable output to cmake console
-    #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
-    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    ENDIF ()
-    IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    ENDIF ()
-
     #################################################################
     # List of include directories
     #
     # Hint: necessary Qt include directories are automatically added
-    #  via the find_package macro above
+    #  via the FIND_PACKAGE macro above
     #################################################################
-    INCLUDE_DIRECTORIES(
+    include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
         ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended) 
-        ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
-		${XENETH_INCLUDE_DIR}
+        ${XENETH_INCLUDE_DIR}
     )
 
     #################################################################
     # List of linker directories
     #
-    # Hint: libraries detected using find_package usually provide
+    # Hint: libraries detected using FIND_PACKAGE usually provide
     #  all necessary libraries in a specific variable (e.g.
     #  ${OpenCV_LIBS} or ${ITOM_SDK_LIBRARIES}). These variables
     #  already contain absolute pathes, therefore no link directory
     #  needs to be set for them. Simply add these variables to
     #  the link target command below.
     #################################################################
-    LINK_DIRECTORIES(
+    link_directories(
         #add all linker directories
     )
 
     #################################################################
     # List of header files, source files, ui files and rcc files
     #
-    # Add all header files to the plugin_HEADERS list.
-    # Add all source (cpp,...) files to the plugin_SOURCES list.
-    # Add all ui-files (Qt-Designer layouts) to the plugin_UI list.
+    # Add all header files to the PLUGIN_HEADERS list.
+    # Add all source (cpp,...) files to the PLUGIN_SOURCES list.
+    # Add all ui-files (Qt-Designer layouts) to the PLUGIN_UI list.
     #
     # Use absolute pathes, e.g. using one of the following variables:
     #
@@ -149,7 +113,7 @@ IF (XENETH_INCLUDE_DIR)
     # ${CMAKE_CURRENT_BINARY_DIR} is the build directory of this plugin
     #
     #################################################################
-    set(plugin_HEADERS
+    set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/DialogXeneth.h
         ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetXeneth.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Xeneth.h
@@ -159,7 +123,7 @@ IF (XENETH_INCLUDE_DIR)
         #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
-    set(plugin_SOURCES
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXeneth.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXeneth.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Xeneth.cpp
@@ -170,31 +134,18 @@ IF (XENETH_INCLUDE_DIR)
     #Append rc file to the source files for adding information about the plugin
     # to the properties of the DLL under Visual Studio.
     if(MSVC)
-        list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif(MSVC)
+        list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif()
 
-    set(plugin_UI
+    set(PLUGIN_UI
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXeneth.ui
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXeneth.ui
     )
 
-    set(plugin_RCC
+    set(PLUGIN_RCC
         #add absolute pathes to any *.qrc resource files here
     )
 
-    #################################################################
-    # Qt related pre-processing of the files above
-    # (These methods create the moc, rcc and uic process.)
-    #################################################################
-    if (QT5_FOUND)
-        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
-        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-        QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-    else (QT5_FOUND)
-        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-        QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-    endif (QT5_FOUND)
 
 
     #################################################################
@@ -214,29 +165,28 @@ IF (XENETH_INCLUDE_DIR)
     # 
     #################################################################
 
-    #search for all existing translation files in the translation subfolder
-    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
 
     #add all (generated) header and source files to the library (these files are compiled then)
-    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
     #link the compiled library
-    #append all libraries this plugin should be linked to at the end of the TARGET_LINK_LIBRARIES command
+    #append all libraries this plugin should be linked to at the end of the target_link_libraries command
     # Important variables are:
     # ${ITOM_SDK_LIBRARIES} -> all necessary libraries from find_package(ITOM_SDK)
-    # ${QT_LIBRARIES} -> all necessary libraries from FIND_PACKAGE_QT (Qt4 or Qt5)
+    # -> all necessary libraries from itom_find_package_qt (Qt4 or Qt5)
     # ${OpenCV_LIBS} -> all necessary libraries opencv libraries from find_package(OpenCV)
     #
-    # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
+    # if you want to link against one library whose directory is already added to link_directories above
     # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${XENETH_LIBRARY})
+    # Qt: enable all automoc, autouic and autorcc.
+    set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-    IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-        qt5_use_modules(${target_name} ${QT_COMPONENTS})
-    ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${XENETH_LIBRARY})
 
-    # SET_TARGET_PROPERTIES(${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:SC2_Cam.dll")
+
+
+    # set_target_properties(${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:SC2_Cam.dll")
 
     #################################################################
     # Plugin Translation
@@ -244,13 +194,13 @@ IF (XENETH_INCLUDE_DIR)
     # In the source directory of the plugin can be a subfolder 'docs'.
     # This folder can contain one or more *.rst files with the docu-
     # mentation of the plugin. CMake organizes the rest if you 
-    # indicate the name of the main documentation file (without
+    # indicate the name of the main documentation file(without
     # suffix rst) in the following command:
     # 
-    # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
+    # itom_configure_plugin_documentation(${target_name} nameOfTheFile)
     #################################################################
-    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-    PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+    set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
+    itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
     #################################################################
     # Plugin Documentation
@@ -258,12 +208,12 @@ IF (XENETH_INCLUDE_DIR)
     # In the source directory of the plugin can be a subfolder 'docs'.
     # This folder can contain one or more *.rst files with the docu-
     # mentation of the plugin. CMake organizes the rest if you 
-    # indicate the name of the main documentation file (without
+    # indicate the name of the main documentation file(without
     # suffix rst) in the following command:
     # 
-    # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
+    # itom_configure_plugin_documentation(${target_name} nameOfTheFile)
     #################################################################
-    PLUGIN_DOCUMENTATION(${target_name} xeneth)
+    itom_configure_plugin_documentation(${target_name} xeneth)
 
     #################################################################
     # Post-Build Copy Operations
@@ -274,17 +224,17 @@ IF (XENETH_INCLUDE_DIR)
     # At first pairs of sources and destinations are added
     # to the lists COPY_SOURCES and COPY_DESTINATIONS.
     # Afterwards, the post-build process is generated using
-    # POST_BUILD_COPY_FILES.
+    # itom_post_build_copy_files.
     #
     # The following macros can be used to fill up the source
     # and destination list:
     #
-    # ADD_PLUGINLIBRARY_TO_COPY_LIST 
+    # itom_add_pluginlibrary_to_copy_list 
     # - this is necessary for each plugin such that the library
     #   is automatically copied to the plugins folder of
     #   the itom build directory.
     #
-    # ADD_QM_FILES_TO_COPY_LIST
+    # itom_add_plugin_qm_files_to_copy_list
     # - installs the generated translation files (qm) at the
     #   right place in the itom build directory as well.
     #
@@ -292,11 +242,11 @@ IF (XENETH_INCLUDE_DIR)
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")
 
-    ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
-    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-ELSE(XENETH_INCLUDE_DIR)
+else(XENETH_INCLUDE_DIR)
     message(WARNING "XCamera.h for plugin ${target_name} could not be found. ${target_name} will not be build.")
-ENDIF(XENETH_INCLUDE_DIR)
+endif(XENETH_INCLUDE_DIR)

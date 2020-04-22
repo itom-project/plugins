@@ -1,20 +1,19 @@
 #pragma once
 
-/// Class for printing info into consol
+/// Class for printing info into console
 class DebugPrintOut
 {
 public:
-	~DebugPrintOut(void);
-	static DebugPrintOut& getInstance();
+    DebugPrintOut();
 
-	void printOut(const wchar_t *format, ...);
+	~DebugPrintOut();
+
+	void printOut(const char *format, ...);
 
 	void setVerbose(bool state);
-	
-	bool verbose;
 
-private:	
-	DebugPrintOut(void);	
+private:
+	bool m_verbose;
 		
 };
 

@@ -4,7 +4,7 @@
 <context>
     <name>PclTools</name>
     <message>
-        <location filename="../pclTools.cpp" line="+4517"/>
+        <location filename="../pclTools.cpp" line="+4515"/>
         <source>Point Cloud (*.pcd *.ply *.vtk *.xyz)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1402,7 +1402,7 @@
 <context>
     <name>PclToolsInterface</name>
     <message>
-        <location line="-4478"/>
+        <location line="-4473"/>
         <source>Filters and methods for pointClouds and polygonMeshes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1432,7 +1432,7 @@ by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1241"/>
+        <location line="+1236"/>
         <location line="+296"/>
         <location line="+119"/>
         <location line="+386"/>

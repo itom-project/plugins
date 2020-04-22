@@ -2,73 +2,18 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DockWidgetMyGrabber</name>
-    <message>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General Information</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>[Identifier]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Analog Input Task</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value [Volt]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>C h a n n e l </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Read Values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Analog Output Task</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Write</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Digital Task</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Write/Read</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Counter Task</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>QObject</name>
     <message>
         <source>niDAQmx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>licensed under LGPL</source>
+        <source>The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. 
+The installation needs the NI-DAQmx Library that can be downloaded from the NI website (http://www.ni.com/download/ni-daqmx-14.2/5046/en/)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. 
-The installation needs the NI-DAQmx Library that can be downloaded from the NI website (http://www.ni.com/download/ni-daqmx-14.2/5046/en/)</source>
+        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

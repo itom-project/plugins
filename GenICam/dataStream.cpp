@@ -356,9 +356,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 
                 if (err == GenTL::GC_ERR_RESOURCE_IN_USE)
                 {
-#if QT_VERSION >= 0x050000
                     QThread::msleep(50);
-#endif
                     err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
                     retval += checkGCError(err, "DataStream: DSAllocAndAnnounceBuffer (a2)");
                 }

@@ -94,11 +94,6 @@ ito::RetVal ThorlabsCCSInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(thorlabsccsinterface, ThorlabsCCSInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
-#endif
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of plugin.
 /*!
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params

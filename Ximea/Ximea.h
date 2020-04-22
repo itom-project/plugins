@@ -131,7 +131,8 @@ class Ximea : public ito::AddInGrabber
 			sGamma = 0x0200,
 			sSharpness = 0x0400,
             sGpiGpo = 0x0800,
-            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerSelector | sBpp | sFrameRate | sGamma | sSharpness | sGpiGpo 
+			sLens = 0x1000,
+            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerSelector | sBpp | sFrameRate | sGamma | sSharpness | sGpiGpo | sLens
         };
 
 		struct RoiMeta
@@ -247,9 +248,7 @@ class Ximea : public ito::AddInGrabber
 class XimeaInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
-#endif
     Q_INTERFACES(ito::AddInInterfaceBase)
 
     PLUGIN_ITOM_API

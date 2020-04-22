@@ -19,9 +19,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef CMAKE
-#include <config.h>
-#endif
+ /*#ifndef CMAKE
+ //This is a CMAKE build always
+ #include <config.h>
+ #endif*/
+
 #include "ptp.h"
 
 #include <stdlib.h>

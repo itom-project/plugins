@@ -163,7 +163,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+190"/>
+        <location filename="../MSMediaFoundation.cpp" line="+184"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -320,12 +320,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+456"/>
+        <location line="+458"/>
         <source>Timeout while acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+233"/>
+        <location line="+237"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -335,7 +335,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-981"/>
+        <location line="-987"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -410,7 +410,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+66"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -425,7 +425,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+52"/>
         <source>Error while converting data format. Unsupported format.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -453,7 +453,7 @@
 <context>
     <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-1274"/>
+        <location line="-1278"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>

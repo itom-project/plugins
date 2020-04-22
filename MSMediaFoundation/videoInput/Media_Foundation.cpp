@@ -8,31 +8,31 @@
 #include "DebugPrintOut.h"
 #include "Common.h"
 
-Media_Foundation::Media_Foundation(void)
+//----------------------------------------------------------------------
+Media_Foundation::Media_Foundation(QSharedPointer<DebugPrintOut> debugPrintOut) :
+    m_debugPrintOut(debugPrintOut)
 {
 	HRESULT hr = MFStartup(MF_VERSION);
 
-	if(!SUCCEEDED(hr))
+	if (!SUCCEEDED(hr))
 	{
-		DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-		DPO->printOut(L"MEDIA FOUNDATION: It cannot be created!!!\n");
+		m_debugPrintOut->printOut("MEDIA FOUNDATION: It cannot be created!!!\n");
 	}
 }
 
+//----------------------------------------------------------------------
 Media_Foundation::~Media_Foundation(void)
 {
 	HRESULT hr = MFShutdown();  
 	
-	if(!SUCCEEDED(hr))
+	if (!SUCCEEDED(hr))
 	{
-		DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-		DPO->printOut(L"MEDIA FOUNDATION: Resources cannot be released\n");
+		m_debugPrintOut->printOut("MEDIA FOUNDATION: Resources cannot be released\n");
 	}
 }
 
-bool Media_Foundation::buildListOfDevices()
+//----------------------------------------------------------------------
+bool Media_Foundation::buildListOfDevices(QSharedPointer<VideoDevices> videoDevices)
 {	
 	HRESULT hr = S_OK;
 	
@@ -52,27 +52,15 @@ bool Media_Foundation::buildListOfDevices()
 	
 	if (SUCCEEDED(hr))
     {
-		VideoDevices *vDs = &VideoDevices::getInstance();
-
-		hr = vDs->initDevices(pAttributes);
+		hr = videoDevices->initDevices(pAttributes);
     }	
 	else
 	{
-		DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-		DPO->printOut(L"MEDIA FOUNDATION: The access to the video cameras denied\n");
+		m_debugPrintOut->printOut("MEDIA FOUNDATION: The access to the video cameras denied\n");
 	
 	}
 
 	SafeRelease(&pAttributes);
 
 	return (SUCCEEDED(hr));
-}
-
-
-Media_Foundation& Media_Foundation::getInstance() 
-{
-	static Media_Foundation instance;
-
-	return instance;
 }

@@ -2,8 +2,10 @@
 
 #include <windows.h>
 #include <qmutex.h>
+#include <qsharedpointer.h>
+#include "DebugPrintOut.h"
 
-DWORD WINAPI MainThreadFunction( LPVOID lpParam );
+unsigned int WINAPI MainThreadFunction( LPVOID lpParam );
 
 class ImageGrabber;
 
@@ -14,12 +16,12 @@ typedef void(*emergensyStopEventCallback)(int, void *);
 /// Class for controlling of thread of the grabbing raw data from video device
 class ImageGrabberThread
 {
-	friend DWORD WINAPI MainThreadFunction( LPVOID lpParam );
+	friend unsigned int WINAPI MainThreadFunction( LPVOID lpParam );
 
 public:
 	~ImageGrabberThread(void);
 
-	static HRESULT CreateInstance(ImageGrabberThread **ppIGT, IMFMediaSource *pSource, unsigned int deviceID);
+	static HRESULT CreateInstance(ImageGrabberThread **ppIGT, IMFMediaSource *pSource, unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut);
 
 	void start();
 
@@ -37,21 +39,23 @@ protected:
 
 private:
 	
-	ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID);
+	ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut);
 
-	HANDLE igt_Handle;
+	uintptr_t m_igtHandle;
 	
-    DWORD   igt_ThreadIdArray;
+    unsigned int m_igtThreadIdArray;
 
-	ImageGrabber *igt_pImageGrabber;
+	ImageGrabber *m_pIgtImageGrabber;
 
-	emergensyStopEventCallback igt_func;
+	emergensyStopEventCallback m_igtFunc;
 
-	void *igt_userData;
+	void *m_igtUserData;
 
-	bool igt_stop;
+	bool m_igtStop;
 
-	unsigned int igt_DeviceID;
+	unsigned int m_igtDeviceID;
+
+    QSharedPointer<DebugPrintOut> m_debugPrintOut;
 
 };
 

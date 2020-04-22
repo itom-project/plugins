@@ -177,7 +177,7 @@
 <context>
     <name>SerialIO</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+71"/>
+        <location filename="../SerialIO.cpp" line="+69"/>
         <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
         <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
@@ -304,7 +304,7 @@
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <location line="-149"/>
+        <location line="-147"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>

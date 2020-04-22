@@ -2,6 +2,8 @@
 
 #include <mfidl.h>
 #include <qelapsedtimer.h>
+#include <qsharedpointer.h>
+#include "DebugPrintOut.h"
 
 struct IMFMediaSource;
 
@@ -11,7 +13,7 @@ class RawImage;
 class ImageGrabber : public IMFSampleGrabberSinkCallback
 {
 public:
-	~ImageGrabber(void);
+	~ImageGrabber();
 
 	HRESULT initImageGrabber(IMFMediaSource *pSource, GUID VideoFormat);
 
@@ -22,7 +24,7 @@ public:
 	RawImage *getRawImage();
 
 	// Function of creation of the instance of the class
-	static HRESULT CreateInstance(ImageGrabber **ppIG,unsigned int deviceID);
+	static HRESULT CreateInstance(ImageGrabber **ppIG,unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut);
 
 private:
 
@@ -47,8 +49,10 @@ private:
 	RawImage *ig_RIOut;
 
 	QElapsedTimer m_stopTimer;
+
+    QSharedPointer<DebugPrintOut> m_debugPrintOut;
 			
-	ImageGrabber(unsigned int deviceID);
+	ImageGrabber(unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut);
 			
 	HRESULT CreateTopology(IMFMediaSource *pSource, IMFActivate *pSinkActivate, IMFTopology **ppTopo);
 

@@ -107,9 +107,3 @@ ito::RetVal AndorSDK3Interface::closeThisInst( ito::AddInBase **addInInst )
    } */
    return ito::retOk;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// this macro registers the class AndorSDK3Interface with the name AndorSDK3 as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(AndorSDK3Interface, AndorSDK3Interface)
-#endif

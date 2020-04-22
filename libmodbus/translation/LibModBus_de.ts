@@ -35,7 +35,7 @@
 <context>
     <name>LibModBus</name>
     <message>
-        <location filename="../LibModBus.cpp" line="+140"/>
+        <location filename="../LibModBus.cpp" line="+138"/>
         <source>IP Adress or COM-Port of the target device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -103,7 +103,7 @@
 <context>
     <name>LibModBusInterface</name>
     <message>
-        <location line="-364"/>
+        <location line="-362"/>
         <source>itom-plugin for a modbus communication</source>
         <translation type="unfinished"></translation>
     </message>
@@ -221,7 +221,7 @@ If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be u
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+252"/>
+        <location line="+250"/>
         <source>Modbus-connect failed!</source>
         <translation type="unfinished"></translation>
     </message>
