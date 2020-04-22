@@ -239,9 +239,13 @@ Changelog
   under Windows it requires the Microsoft C++ Redistributable 2012
 * itom setup 3.1.0: This plugin has been compiled using the FlyCapture 2.11.3.425, 
   under Windows it requires the Microsoft C++ Redistributable 2012
-* itom setup >3.1.0: This plugin will be compiled using the FlyCapture 2.13.3.31, 
+* itom setup 3.1.0: This plugin will be compiled using the FlyCapture 2.13.3.31, 
   under Windows it requires the Microsoft C++ Redistributable 2012
+* itom setup 3.2.1: This plugin will be compiled using the FlyCapture 2.13.3.31, 
+  under Windows it requires the Microsoft C++ Redistributable 2012
+* itom setup 4.0.0: This plugin will be compiled using the FlyCapture 2.13.3.61, 
 
+  
 Linux
 ======
 
