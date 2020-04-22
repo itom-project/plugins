@@ -618,6 +618,11 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 		
 		int x = 0;
 		int y = 0;
+
+#ifndef _WIN64
+        int* dstInt = NULL;
+        int* srcInt = NULL;
+#endif
 	
 		if (bFlip)
 		{
