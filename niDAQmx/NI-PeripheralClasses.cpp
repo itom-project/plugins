@@ -71,7 +71,7 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
     QRegExp regExp(QString("^(\\w+)/(\\w+),([0-%1]),([+-]?\\d+),([+-]?\\d+)$").arg(NiAnalogInputChannel::NiAnInConfEndValue - 1));
     if (regExp.indexIn(configString) == -1)
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel,configMode [0-%i],minOutputVoltage,maxOutputVoltage",
+        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel,terminalMode [0-%i],minOutputVoltage,maxOutputVoltage",
             configString.toLatin1().data(), NiAnalogInputChannel::NiAnInConfEndValue - 1);
         return NULL;
     }
@@ -132,7 +132,7 @@ ito::RetVal NiAnalogInputChannel::addChannelToTask(TaskHandle taskHandle)
         }
         default:
         {
-            retValue += ito::RetVal::format(ito::retError, 0, "NiAnalogInputChannel::addChannelToTask: Configmode %i is not in range of 0 to %i", m_analogInputConfig, NiAnalogInputConfig::NiAnInConfEndValue - 1);
+            retValue += ito::RetVal::format(ito::retError, 0, "NiAnalogInputChannel::addChannelToTask: TerminalMode %i is not in range of 0 to %i", m_analogInputConfig, NiAnalogInputConfig::NiAnInConfEndValue - 1);
         }
     }
 

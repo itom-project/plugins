@@ -42,10 +42,6 @@
 
 #include "dockWidgetNI-DAQmx.h"
 
-//----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(niDAQmxinterface, NiDAQmxInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
-#endif
 
 //#include "dockWidgetniDAQmx.h"
 
@@ -1046,7 +1042,6 @@ ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
 
-    //this method can later be replaced by an official 'stop' method in the DataIO interface.
     if (!m_taskStarted)
     {
         retValue += ito::RetVal(ito::retError, 0, "Task not started.");
@@ -1565,6 +1560,7 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
                 while (1)
                 {
                     err = DAQmxWaitUntilTaskDone(m_taskHandle, 2);
+
                     if (err == 0)
                     {
                         break;
@@ -1587,7 +1583,12 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
 
                 if (!retValue.containsError())
                 {
-                    retValue += checkError(DAQmxReadAnalogF64(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::float64>(0, 0), m_data.getTotal(), &readNumSamples, NULL), "DAQmxReadAnalogF64");
+                    retValue += checkError(
+                        DAQmxReadAnalogF64(m_taskHandle, samples, timeout, 
+                            DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::float64>(0, 0), 
+                            m_data.getTotal(), &readNumSamples, NULL), 
+                        "DAQmxReadAnalogF64"
+                    );
                 }
             }
             else if (m_taskMode == NiTaskModeContinuous)
@@ -1597,11 +1598,17 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
                 if (!retValue.containsError())
                 {
                     err = DAQmxReadAnalogF64(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::float64>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
-                    if (err != DAQmxErrorSamplesNotYetAvailable || timeout == DAQmx_Val_WaitInfinitely) //-200284: timeout error, since less data available than 'requested'
+
+                    if (err == DAQmxErrorSamplesNotYetAvailable && timeout == 0.0)
                     {
+                        //no timeout given, instantaneous return requested. If less samples available
+                        //then requested, DAQmxErrorSamplesNotYetAvailable is returned. Ignore this.
+                    }
+                    else
+                    {
+                        //any other error
                         retValue += checkError(err, "DAQmxReadAnalogF64");
                     }
-
                 }
             }
             /*else if (m_taskMode == NiTaskModeOnDemand)
@@ -1725,8 +1732,14 @@ ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
                         break;
                     }
 
-                    if (err != DAQmxErrorSamplesNotYetAvailable || timeout == DAQmx_Val_WaitInfinitely) //-200284: timeout error, since less data available than 'requested'
+                    if (err == DAQmxErrorSamplesNotYetAvailable && timeout == 0.0)
                     {
+                        //no timeout given, instantaneous return requested. If less samples available
+                        //then requested, DAQmxErrorSamplesNotYetAvailable is returned. Ignore this.
+                    }
+                    else
+                    {
+                        //any other error
                         retValue += checkError(err, "DAQmxReadDigitalU8/16/32");
                     }
                     

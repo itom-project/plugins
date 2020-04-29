@@ -9,26 +9,28 @@
 
 set(target_name niDAQmx) #->replace PCI6115 by the name of your plugin (one word)
 
-project(${target_name})
+cmake_minimum_required(VERSION 3.1...3.15)
 
-message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
-
-message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
-
-cmake_minimum_required(VERSION 2.8)
-
-#################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
-#################################################################
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
+#this is to automatically detect the SDK subfolder of the itom build directory.
+find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "C:/itom/build/itom/SDK"
+          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
+    DOC "path of SDK subfolder of itom root (build) directory")
+
+if(NOT ITOM_SDK_DIR)
+    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif()
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
 
 #################################################################
@@ -51,43 +53,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR}
 # - pointcloud (pointCloud, point, polygonMesh...) (optional)
 # if no components are indicated, all components above are used
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake") #include this mandatory macro file(important)
-find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
-#       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
-#       directories and libraries to link agains are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
-find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
 find_package(NIDAQmx QUIET)
-
-#usage of FIND_PACKAGE_QT(automoc component1, component2, ...)
-# automoc is ON or OFF and only relevant for Qt5, usually set it to ON
-# possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
-FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
-
-#################################################################
-# General settings and preprocessor settings
-#################################################################
-if(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE SHARED)
-else(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE STATIC)
-endif(BUILD_SHARED_LIBS)
-
-# if(BUILD_UNICODE)
-#     add_definitions(-DUNICODE -D_UNICODE)
-# endif(BUILD_UNICODE)
-# add_definitions(-DCMAKE)
-# add_definitions(-DITOMWIDGETS_SHARED)
-
-# if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-#     add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
-# endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else(CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-endif(DEFINED CMAKE_BUILD_TYPE)
+itom_find_package_qt(ON Core LinguistTools Widgets)
 
 # if(BUILD_TARGET64)
 #     set(NI_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/lib64/NIDAQmx.lib )
@@ -102,33 +69,7 @@ endif(DEFINED CMAKE_BUILD_TYPE)
 #endif(WIN32)
 
 if(NIDAQMX_FOUND)
-    add_definitions(${QT_DEFINITIONS})
-    if(BUILD_UNICODE)
-        add_definitions(-DUNICODE -D_UNICODE)
-    endif(BUILD_UNICODE)
-    add_definitions(-DCMAKE)
-
-    if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-        add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
-    endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-
-    # HANDLE VERSION (FROM GIT)
-    UNset(GIT_FOUND CACHE)
-    find_package(Git)
-    if(BUILD_GIT_TAG AND GIT_FOUND)
-        execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h/%cD
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE GITVERSION
-        RESULT_VARIABLE GITRESULT
-        ERROR_VARIABLE GITERROR
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    #uncomment to enable output to cmake console
-    #message(STATUS "Git-Version: " ${GITVERSION} " Err: " ${GITRESULT} " RES: " ${GITERROR})
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    endif(BUILD_GIT_TAG AND GIT_FOUND)
-    if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h @ONLY)
-    endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
+    
     
 	#################################################################
 	# List of include directories
@@ -139,9 +80,7 @@ if(NIDAQMX_FOUND)
 	include_directories(
 		${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
 		${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-		${OpenCV_DIR}/include       #include directory of OpenCV
 		${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
-		${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
 		${NIDAQMX_INCLUDE_DIR}
 		#add further include directories here
 	)
@@ -174,7 +113,7 @@ if(NIDAQMX_FOUND)
 	# ${CMAKE_CURRENT_BINARY_DIR} is the build directory of this plugin
 	#
 	#################################################################
-	set(plugin_HEADERS
+	set(PLUGIN_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.h
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.h
 		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.h
@@ -185,7 +124,7 @@ if(NIDAQMX_FOUND)
 		#add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
 	)
 
-	set(plugin_SOURCES
+	set(PLUGIN_SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.cpp
@@ -197,32 +136,18 @@ if(NIDAQMX_FOUND)
 	#Append rc file to the source files for adding information about the plugin
 	# to the properties of the DLL under Visual Studio.
 	if(MSVC)
-		list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+		list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 	endif(MSVC)
 
-	set(plugin_UI
+	set(PLUGIN_UI
 		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.ui
 		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.ui
 	)
 
-	set(plugin_RCC
+	set(PLUGIN_RCC
 		#add absolute pathes to any *.qrc resource files here
 		${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
 	)
-
-	#################################################################
-	# Qt related pre-processing of the files above
-	# (These methods create the moc, rcc and uic process.)
-	#################################################################
-	if (QT5_FOUND)
-		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-		QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	else (QT5_FOUND)
-		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	endif (QT5_FOUND)
 
 
 	#################################################################
@@ -242,11 +167,12 @@ if(NIDAQMX_FOUND)
 	# 
 	#################################################################
 
-	#search for all existing translation files in the translation subfolder
-	file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
-
 	#add all (generated) header and source files to the library (these files are compiled then)
-	add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+	add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
+    
+    
+    # Qt: enable all automoc, autouic and autorcc.
+    set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 	#link the compiled library
 	#append all libraries this plugin should be linked to at the end of the target_link_libraries command
@@ -258,11 +184,7 @@ if(NIDAQMX_FOUND)
 	# if you want to link against one library whose directory is already added to link_directories above
 	# simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-	target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${NIDAQMX_LIBRARY})
-
-    if(QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-        qt5_use_modules(${target_name} ${QT_COMPONENTS})
-    endif(QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+	target_link_libraries(${target_name} ${QT5_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${NIDAQMX_LIBRARY})
 
 	#################################################################
 	# Plugin Translation
@@ -275,8 +197,9 @@ if(NIDAQMX_FOUND)
 	# 
 	# PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 	#################################################################
-	set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-	PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+	#translation
+    set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
+    itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
 	#################################################################
 	# Plugin Documentation
@@ -289,7 +212,7 @@ if(NIDAQMX_FOUND)
 	# 
 	# PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 	#################################################################
-	PLUGIN_DOCUMENTATION(${target_name} niDAQmx)
+	itom_configure_plugin_documentation(${target_name} niDAQmx)
 
 	#################################################################
 	# Post-Build Copy Operations
@@ -318,10 +241,10 @@ if(NIDAQMX_FOUND)
 	set(COPY_SOURCES "")
 	set(COPY_DESTINATIONS "")
 
-	ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-	ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+	itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+	itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
-	POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+	itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 	#if you want to copy one or more files to the lib-folder of
 	# the itom build directory, use the following macro:
