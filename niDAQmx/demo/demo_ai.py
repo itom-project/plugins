@@ -1,6 +1,8 @@
 # coding=utf8
 
-"""Demo script for acquiring a finite set of analog
+"""Finite analog input task.
+
+Demo script for acquiring a finite set of analog
 values with a National Instruments DAQ device.
 
 To test this script, the NI MAX (Measurement & Automation
@@ -15,9 +17,9 @@ ports was added in NI-MAX with the name "Dev3".
 The channel configuration string for analog input tasks always
 follows this pattern:
 
-DeviceName/PortName,ConnectionType,MinVoltage,MaxVoltage
+DeviceName/PortName,ConfigMode,MinVoltage,MaxVoltage
 
-where ConnectionType is an integer from this list
+where ConfigMode is an integer from this list
 (see also argument terminalConfig from command
 DAQmxCreateAIVoltageChan):
 
@@ -25,13 +27,24 @@ DAQmx_Val_Cfg_Default = 0,
 DAQmx_Val_Diff = 1, 
 DAQmx_Val_RSE = 2, 
 DAQmx_Val_NRSE = 3, 
-DAQmx_Val_PseudoDiff = 4,
+DAQmx_Val_PseudoDiff = 4
+
+
+Hint: It depends on the NI DAQ devices, if they allow
+integrating different devices into the same measurement
+task or not. Many devices do not allow this.
 """
 
 import time
 
 # Demo 1: Analog input task, finite acquisition, 80 samples / sec
-plugin=dataIO("NI-DAQmx","analogInput", taskName = "hallo2", taskMode = "finite", samplingRate = 80)
+plugin = dataIO(
+    "NI-DAQmx",
+    "analogInput",
+    taskName="myTaskName",
+    taskMode="finite",
+    samplingRate=80
+)
 
 # A total number of 800 samples should be acquired from each port
 plugin.setParam("samplesPerChannel", 800)
@@ -44,9 +57,12 @@ plugin.setParam("channels", "Dev1/ai0,2,-10,10;Dev1/ai2,0,-5,5")
 # enable a start trigger: here acquisition starts with a falling
 # edge on the digital trigger input PFI0 (simulated devices will
 # automatically send this trigger).
-plugin.setParam("startTriggerMode", "off")
+plugin.setParam("startTriggerMode", "digitalEdge")
 plugin.setParam("startTriggerSource", "PFI0")
 plugin.setParam("startTriggerRisingEdge", 0)
+
+# enable the on-board clock as continuous trigger
+plugin.setParam("sampleClockSource", "OnboardClock")
 
 # after having configured the task, start the device.
 # The task is then configured in the device. It will be
@@ -69,8 +85,10 @@ for i in range(0,5):
     print(time.time()-t)
 
 # plot the acquired values from both channels from the last run.
-# the output dataObject already contains the correct axes units, descriptions etc...
-plot1(a[-1], properties= {"legendPosition":"Right", "legendTitles":("AI0", "AI2")})
+# the output dataObject already contains the correct axes units,
+# descriptions etc...
+plot1(a[-1],
+      properties={"legendPosition": "Right", "legendTitles": ("AI0", "AI2")})
 
 # stop and remove the configured task
 plugin.stopDevice()

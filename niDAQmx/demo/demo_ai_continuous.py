@@ -1,3 +1,5 @@
+# coding=utf8
+
 import time
 import numpy as np
 
@@ -27,19 +29,25 @@ DAQmx_Val_RSE = 2,
 DAQmx_Val_NRSE = 3, 
 DAQmx_Val_PseudoDiff = 4
 
-
 Hint: It depends on the NI DAQ devices, if they allow
 integrating different devices into the same measurement
 task or not. Many devices do not allow this.
+
+Data from a continuous task can be obtained by regularily
+calling getVal / copyVal or by enabling the TDMS file logging
+technique.
+
+Reading TDMS files via Python is possible by the package npTDMS
+(https://pypi.org/project/npTDMS).
 """
 
 # initialize the plugin for continuous analog input tasks
-plugin=dataIO(
+plugin = dataIO(
     "NI-DAQmx",
     "analogInput",
     taskName="demoAiContinuous",
     taskMode="continuous",
-    samplingRate = 10000)
+    samplingRate=10000)
 
 # The NI-DAQ device uses the 'samplesPerChannel' in case of continuous
 # tasks to define the internal buffer size. However if the number of
@@ -90,7 +98,7 @@ plugin.startDevice()
 arrays = []
 
 # open an empty 1D plot
-[i,h] = plot1(dataObject())
+[i, h] = plot1(dataObject())
 
 # start the task
 plugin.acquire()
@@ -130,13 +138,17 @@ plot1(total)
 #    buffer size error.
 #
 #    The logging is enabled via the 'exec' function 'configureLogging'.
+#    This method can only be called if a task has already been created
+#    via startDevice.
 #
 #    The parameters are:
 #    
-#    loggingMode: 0 -> disable logging, 1 -> enable fast mode logging
-#                 (no simultaneous read via getVal/copyVal allowed),
-#                 2 -> standard logging enabled (getVal/copyVal can
-#                 optionally read the same values)
+#    loggingMode: 0 -> disable logging
+#                 1 -> enable fast mode logging
+#                      (no simultaneous read via getVal/copyVal allowed),
+#                 2 -> standard logging enabled (getVal/copyVal is possible,
+#                      however data will only streamed to file if it has been
+#                      obtained via getVal/copyVal).
 #    filePath: path to output tdms file.
 #    groupName: The name of the group to create within the TDMS file
 #    operation (optional, default: createOrReplace):
@@ -149,12 +161,12 @@ plot1(total)
 #                       will be deleted first.
 #                 create: create a new file and raises an exception if it
 #                       already exists.
-
 plugin.exec(
     "configureLogging",
     loggingMode=1,
     filePath="D:/temp/demo_ai_continuous.tdms",
-    groupName="group1"
+    groupName="group1",
+    operation="createOrReplace"
 )
 
 # start the continuous task again

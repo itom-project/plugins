@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -139,10 +139,6 @@ NiDAQmxInterface::~NiDAQmxInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NiDAQmxInterface::getAddInInst(ito::AddInBase **addInInst)
 {
     NEW_PLUGININSTANCE(NiDAQmx) //the argument of the macro is the classname of the plugin
@@ -232,7 +228,7 @@ NiDAQmx::NiDAQmx() :
     
     paramVal = ito::Param("samplesPerChannel", ito::ParamBase::Int | ito::ParamBase::In, 0,std::numeric_limits<int>::max(), 
                                             20000, 
-                                            tr("The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size.").toLatin1().data());
+                                            tr("The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size. This parameter is ignored for output tasks.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("inputBufferSize", ito::ParamBase::Int | ito::ParamBase::In, -1, std::numeric_limits<int>::max(), -1,
@@ -266,23 +262,6 @@ NiDAQmx::NiDAQmx() :
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
-
-    registerExecFunc("help", pMand, pOpt, pOut, tr("Prints information on plugin methods."));
-    registerExecFunc("help:name", pMand, pOpt, pOut, tr("Prints information about name plugin method."));
-    registerExecFunc("help:taskName", pMand, pOpt, pOut, tr("Prints information about parameter 'taskName'."));
-    registerExecFunc("help:availableDevices", pMand, pOpt, pOut, tr("Prints information about parameter 'taskName'."));
-    registerExecFunc("help:channel", pMand, pOpt, pOut, tr("Prints information about channel plugin method."));
-    registerExecFunc("help:chAssociated", pMand, pOpt, pOut, tr("Prints information about chAssociated plugin method."));
-    registerExecFunc("help:ChParams", pMand, pOpt, pOut, tr("Prints information about ChannelParameters."));
-    registerExecFunc("help:aiChParams", pMand, pOpt, pOut, tr("Prints information aiChParameters."));
-    registerExecFunc("help:getParam", pMand, pOpt, pOut, tr("Prints information about getParam plugin method."));
-    registerExecFunc("help:setParam", pMand, pOpt, pOut, tr("Prints information setParam plugin method."));
-    registerExecFunc("help:startDevice", pMand, pOpt, pOut, tr("Prints information startDevice plugin method."));
-    registerExecFunc("help:stopDevice", pMand, pOpt, pOut, tr("Prints information stopDevice plugin method."));
-    registerExecFunc("help:setValMode", pMand, pOpt, pOut, tr("Prints information setValMode plugin method."));
-    registerExecFunc("help:acquire", pMand, pOpt, pOut, tr("Prints information acquire plugin method."));
-    registerExecFunc("help:getVal", pMand, pOpt, pOut, tr("Prints information getVal plugin method."));
-    registerExecFunc("help:copyVal", pMand, pOpt, pOut, tr("Prints information copyVal plugin method."));
 
     pMand << ito::Param("loggingMode", ito::ParamBase::Int, 0, 2, 0, tr("0: logging is disabled, 1: logging is enabled with disabled read (fast, but no data can simultaneously read via getVal/copyVal), 2: logging is enabled with allowed reading of data.").toLatin1().data());
     pMand << ito::Param("filePath", ito::ParamBase::String, "", tr("path to the tdms file").toLatin1().data());
@@ -1711,7 +1690,6 @@ ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
             }
             else if (m_taskMode == NiTaskModeContinuous)
             {
-                int minSamplesPerChannel = m_params["minSamplesPerChannel"].getVal<int>();
                 readNumSamples = -1;
                 int32 err;
                 if (!retValue.containsError())
@@ -1777,20 +1755,18 @@ ito::RetVal NiDAQmx::writeAnalog(const ito::DataObject *dataObj)
 {
     ito::RetVal retValue(ito::retOk);
     int channels = m_channels.size();
-    int samples = m_params["samplesPerChannel"].getVal<int>();
     double samplingRate = m_params["samplingRate"].getVal<double>();
     int32 smplW = -1;
 
     if (dataObj->getDims() != 2 ||
         dataObj->getSize(0) != channels ||
-        dataObj->getSize(1) > samples ||
         dataObj->getType() != ito::tFloat64)
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "%i x M, float64 dataObject required with M <= %i", channels, samples);
+        retValue += ito::RetVal::format(ito::retError, 0, "%i x M, float64 dataObject required with M > 0.", channels);
     }
     else
     {
-        samples = dataObj->getSize(1);
+        int samples = dataObj->getSize(1);
         retValue += checkError(DAQmxWriteAnalogF64(m_taskHandle, samples, false, 0, DAQmx_Val_GroupByChannel, dataObj->rowPtr<ito::float64>(0, 0), &smplW, NULL), "DAQmxWriteAnalogF64");
     }
 
@@ -1804,32 +1780,30 @@ ito::RetVal NiDAQmx::writeDigital(const ito::DataObject *dataObj)
 {
     ito::RetVal retValue(ito::retOk);
     int channels = m_channels.size();
-    int samples = m_params["samplesPerChannel"].getVal<int>();
     double samplingRate = m_params["samplingRate"].getVal<double>();
     int32 smplW = -1;
 
     if (dataObj->getDims() != 2 ||
         dataObj->getSize(0) != channels ||
-        dataObj->getSize(1) > samples ||
         dataObj->getType() != m_digitalChannelDataType)
     {
         switch (m_digitalChannelDataType)
         {
         case ito::tUInt8:
-            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, uint8 dataObject required with M <= %i", channels, samples);
+            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, uint8 dataObject required with M <= %i", channels);
             break;
         case ito::tUInt16:
-            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, uint16 dataObject required with M <= %i", channels, samples);
+            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, uint16 dataObject required with M <= %i", channels);
             break;
         case ito::tInt32:
-            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, int32 dataObject required with M <= %i", channels, samples);
+            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, int32 dataObject required with M <= %i", channels);
             break;
         }
         
     }
     else
     {
-        samples = dataObj->getSize(1);
+        int samples = dataObj->getSize(1);
 
         switch (m_digitalChannelDataType)
         {
@@ -1868,18 +1842,7 @@ ito::RetVal NiDAQmx::execFunc(const QString helpCommand, QSharedPointer<QVector<
     QString function = parts[0];
     QString empty("");
 
-    if (function == "help")
-    {
-        if(parts.size() == 1)
-        {
-             retValue += help(empty);
-        }
-        else
-        {
-            retValue += help(parts[1]);
-        }
-    }
-    else if (function == "configureLogging")
+    if (function == "configureLogging")
     {
         int mode = paramsMand->at(0).getVal<int>();
         QByteArray filePath = paramsMand->at(1).getVal<const char*>();
@@ -1954,130 +1917,6 @@ ito::RetVal NiDAQmx::execFunc(const QString helpCommand, QSharedPointer<QVector<
         waitCond->release();
         waitCond->deleteSemaphore();
         waitCond = NULL;
-    }
-
-    return retValue;
-}
-
-//--------------------------------------------------------------------------------------------------------
-ito::RetVal NiDAQmx::help(const QString &helpTopic)
-{
-    ito::RetVal retValue = ito::retOk;
-
-    if (helpTopic == "")
-    {
-        std::cout << "The NiDAQmx plugin provides data acquistion and control using\n" << std::endl;
-        std::cout << "National Instruments computer interface hardware.\n" << std::endl;
-        std::cout << "The plugin supports the following methods: name, getParam, setParam,\n" << std::endl;
-        std::cout << "startDevice, stopDevice, acquire, setValMode, getVal, copyVal,\n" << std::endl;
-        std::cout << "channel, and chAssociated. startDevice and stopDevice are NOOPs in this plugin.\n\n" << std::endl;
-        std::cout << "Each method is documented separately with online help commands.\n" << std::endl;
-        std::cout << "For example, setParam method documentation is accessed using\n" << std::endl;
-        std::cout << "the command: <plugin ref>.exec('help:setParam').\n\n" << std::endl;
-        std::cout << "An example acquisition would start with plugin=dataIO('NiDAQmx');\n" << std::endl;
-        std::cout << "Followed by plugin.setParam('aiTaskParams','20000,100,0');\n" << std::endl;
-        std::cout << "Then, plugin.setParam('aiChParams','Dev1/ai0,3,-10,10');\n" << std::endl;
-        std::cout << "After setting these parameters, execute the command plugin.acquire(1);\n" << std::endl;
-        std::cout << "(the number 1 indicates that the analog input task is the acquire target)\n" << std::endl;
-        std::cout << "This call will immediately return and at a later time the following\n" << std::endl;
-        std::cout << "commands retrieve the data: d=dataObject(); followed by plugin.getVal(d);\n" << std::endl;
-        std::cout << "If getVal is called before the acquistion is finished, it will wait until\n" << std::endl;
-        std::cout << "all data is acquired before returning.\n\n" << std::endl;
-    }
-    else if (helpTopic == "name")
-    {
-        std::cout << "\nTODO: name description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "getParam")
-    {
-        std::cout << "\nTODO: getParam description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "setParam")
-    {
-        std::cout << "\nTODO: setParam description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "startDevice")
-    {
-        std::cout << "\nTODO: startDevice description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "stopDevice")
-    {
-        std::cout << "\nTODO: stopDevice description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "setValMode")
-    {
-        std::cout << "\nTODO: setValMode description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "acquire")
-    {
-        std::cout << "\nTODO: acquire description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "getVal")
-    {
-        std::cout << "\nTODO: getVal description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "copyVal")
-    {
-        std::cout << "\nTODO: copyVal description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "channel")
-    {
-        std::cout << "\nTODO: channel description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "chAssociated")
-    {
-        std::cout << "\nTODO: chAssociated description.\n\n" << std::endl;
-    }
-    else if (helpTopic == "TaskParams")
-    {
-        std::cout << "TaskParams are specified as follows:\n\n" << std::endl;
-        std::cout << "xxTaskParams, where xx is one of 'ai', 'ao', 'di', 'do', 'ci', 'do',\n" << std::endl;
-        std::cout << "these abbreviations corresponding respectively to 'analog input', 'analog output',\n" << std::endl;
-        std::cout << "'digital input', 'digital output', 'counter input', and 'counter output'.\n" << std::endl;
-        std::cout << "These are set using setParam() and read using getParam().For more information\n" << std::endl;
-        std::cout << "on specific TaskParmeters, type <plugin ref>.exec('help:xxTaskParams');\n" << std::endl;
-        std::cout << "for example, <plugin ref>.exec('help:aiTaskParams').\n\n" << std::endl;
-    }
-    else if (helpTopic == "aiTaskParams")
-    {
-        std::cout << "The aiTaskParams argument takes the following parameters:\n\n" << std::endl;
-        std::cout << "'SR, S, M, TC(optional)', where SR is the sample rate in Hz; S is the number \n" << std::endl;
-        std::cout << "of samples to collect; M is the mode the acquisition will use;\n" << std::endl;
-        std::cout << "and TC, an optional parameter, specifies an external trigger channel.\n" << std::endl;
-        std::cout << "Mode may take one of the following values: 0 - finite, which means\n" << std::endl;
-        std::cout << "stop when S samples are collected; 1 - continuous, which means continue\n" << std::endl;
-        std::cout << "collecting samples until the task is stopped; and 2 - on demand, which\n" << std::endl;
-        std::cout << "means (What?). TC is specified as: <TriggerChannel>,<rising/falling>,\n" << std::endl;
-        std::cout << "where <TriggerChannel> is of the form /Device/. <rising/falling>\n" << std::endl;
-        std::cout << "is either the word 'rising' or 'falling' (no quotes). The <TriggerChannel> \n" << std::endl;
-        std::cout << "value may also have Programmable Function Interface identifier attached, \n" << std::endl;
-        std::cout << "for example, PFI0 or PFI1. An example aiTaskParams argument is:\n" << std::endl;
-        std::cout << "'20000,100,0,/Dev1/PFI0,rising', which means sample at 20,000 samples per second;\n" << std::endl;
-        std::cout << "collect 100 samples using mode 0 and use the 0th Programmable Function Interface\n" << std::endl;
-        std::cout << "on Device 1 with rising triggering. For example, this argument could be used in the setParam\n" << std::endl;
-        std::cout << "command as follows: <plugin ref>.setParam('aiTaskParams','20000,100,0,/Dev1/PFI0,rising').\n" << std::endl;
-        std::cout << "Without the TC optional parameter the command would be:\n" << std::endl;
-        std::cout << "<plugin ref>.setParam('aiTaskParams','20000,100,0')\n\n" << std::endl;
-    }
-    else if (helpTopic == "ChParams")
-    {
-        std::cout << "ChParams are specified as follows:\n\n" << std::endl;
-        std::cout << "xxChParams, where xx is one of 'ai', 'ao', 'di', 'do', 'ci', 'do',\n" << std::endl;
-        std::cout << "these abbreviations corresponding respectively to 'analog input', 'analog output',\n" << std::endl;
-        std::cout << "'digital input', 'digital output', 'counter input', and 'counter output'.\n" << std::endl;
-        std::cout << "These are set using setParam() and read using getParam().For more information\n" << std::endl;
-        std::cout << "on specific ChParmeters, type <plugin ref>.exec('help:xxChParams');\n" << std::endl;
-        std::cout << "for example, <plugin ref>.exec('help:aiChParams').\n\n" << std::endl;
-    }
-    else if (helpTopic == "aiChParams")
-    {
-        std::cout << "The aiChParams argument takes the following parameters:\n\n" << std::endl;
-        std::cout << "'Dev/Ch, M, minV, maxV', where Dev/Ch is the device and channel to apply the remaining\n" << std::endl;
-        std::cout << "parameters; M is the mode; minV is the minimum of the voltage range and\n" << std::endl;
-        std::cout << "maxV is the maximum of the voltage range. Mode may take one of the\n" << std::endl;
-        std::cout << "following values: 0 -  default; 1 - differential; 2 - RSE mode; 3 - NRSE; 4 - Pseudodiff.\n" << std::endl;
-        std::cout << "For example, these arguments could be used in the setParam command as follows:\n" << std::endl;
-        std::cout << "<plugin ref>.setParam('aiChParams','Dev1/ai0,3,-10,10')\n\n" << std::endl;
     }
 
     return retValue;

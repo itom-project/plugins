@@ -163,9 +163,6 @@ class NiDAQmx : public ito::AddInDataIO
         ito::RetVal writeAnalog(const ito::DataObject *dataObj);
         ito::RetVal writeDigital(const ito::DataObject *dataObj);
         ito::RetVal writeCounter(const ito::DataObject *dataObj);
- 
-        // Exec definition and helper functions
-        ito::RetVal help(const QString &helpTopic);
         
     public slots:
         //!< Get ADC-Parameter
