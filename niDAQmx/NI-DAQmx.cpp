@@ -191,6 +191,9 @@ NiDAQmx::NiDAQmx() :
     paramVal = ito::Param("taskStarted", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is currently running (1) or stopped / inactive (0).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("taskConfigured", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is properly configured (1, all task related parameters where accepted) or not (0).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -275,7 +278,7 @@ NiDAQmx::NiDAQmx() :
     paramVal.setMeta(sm, true);
     pOpt << paramVal;
 
-    registerExecFunc("configureLogging", pMand, pOpt, pOut, tr("Configures, en- or disables logging of input tasks to National Instruments tdms files."));
+    registerExecFunc("configureLogging", pMand, pOpt, pOut, tr("Configures, en- or disables logging of input tasks to National Instruments tdms files. Can only be called if task is already configured."));
 
     //end register Exec Functions
     if (hasGuiSupport())
@@ -424,12 +427,11 @@ ito::RetVal NiDAQmx::stopTask()
         retValue += checkError(DAQmxStopTask(m_taskHandle), "stopTask: DAQmxStopTask.");
 
         m_taskStarted = false;
-        m_params["taskStarted"].setVal<int>(m_taskStarted ? 1 : 0);
+        m_params["taskStarted"].setVal<int>(0);
+        m_params["loggingActive"].setVal<int>(0);
+        m_params["taskConfigured"].setVal<int>(0);
 
-        if (!retValue.containsError())
-        {
-            emit parametersChanged(m_params);
-        }
+        emit parametersChanged(m_params);
     }
 
     return retValue;
@@ -441,6 +443,9 @@ void NiDAQmx::taskStopped(TaskHandle taskHandle, int32 status)
     if (taskHandle == m_taskHandle && m_params["taskStarted"].getVal<int>() > 0)
     {
         m_params["taskStarted"].setVal<int>(0);
+        m_params["loggingActive"].setVal<int>(0);
+        m_params["taskConfigured"].setVal<int>(0);
+
         emit parametersChanged(m_params);
     }
 }
@@ -715,6 +720,9 @@ ito::RetVal NiDAQmx::configTask()
                 retValue += checkError(DAQmxCfgAnlgEdgeStartTrig(m_taskHandle, m_params["startTriggerSource"].getVal<const char*>(), edge, triggerLevel), "Create analog start trigger");
             }
         }
+
+        m_params["taskConfigured"].setVal<int>(retValue.containsError() ? 0 : 1);
+        emit parametersChanged(m_params);
     }
 
     return retValue;

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -47,8 +47,6 @@ class DockWidgetNIDAQmx : public ito::AbstractAddInDockWidget
     public slots:
         void identifierChanged(const QString &identifier);
         void parametersChanged(QMap<QString, ito::Param> params);
-
-
 };
 
 #endif

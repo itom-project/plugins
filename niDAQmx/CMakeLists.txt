@@ -140,8 +140,8 @@ if(NIDAQMX_FOUND)
 	endif(MSVC)
 
 	set(PLUGIN_UI
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.ui
-		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.ui
+		"${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.ui"
+		"${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.ui"
 	)
 
 	set(PLUGIN_RCC

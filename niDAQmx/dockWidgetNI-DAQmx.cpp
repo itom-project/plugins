@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -58,13 +58,14 @@ void DockWidgetNIDAQmx::parametersChanged(QMap<QString, ito::Param> params)
 
     ui.listChannels->clear();
     QStringList channels = QString(params["channels"].getVal<const char*>()).split(";");
+    
     foreach(const QString &c, channels)
     {
         ui.listChannels->addItem(c.split(",")[0]);
     }
 
     ui.ledRunning->setChecked(params["taskStarted"].getVal<int>() > 0);
-
+    ui.ledConfigured->setChecked(params["taskConfigured"].getVal<int>() > 0);
     ui.ledLogging->setChecked(params["loggingActive"].getVal<int>() > 0);
 
     QByteArray taskType = params["taskType"].getVal<const char*>();
