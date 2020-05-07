@@ -172,37 +172,23 @@ NiDAQmx::NiDAQmx() :
 
     // General Parameters
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "NI-DAQmx", NULL);
-    //paramVal.getMeta()->setCategory("General");
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("taskName", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("name of the NI task that is related to this instance").toLatin1().data());
-    //paramVal.getMeta()->setCategory("General");
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("availableDevices", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and available devices").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("availableTerminals", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and available terminals (e.g. for 'sampleClockSource' or 'startTriggerSource'). The standard sample clock source OnboardClock is not contained in this list.").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("loggingActive", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 2, 0, tr("indicates if TDMS file logging has been enabled (see exec function 'configureLogging') for this input task.").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("taskStarted", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is currently running (1) or stopped / inactive (0).").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("taskConfigured", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is properly configured (1, all task related parameters where accepted) or not (0).").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("channels", ito::ParamBase::String | ito::ParamBase::In, "", tr("semicolon-separated list of all channels that should be part of this task. Every item is a comma separated string that defines and parameterizes every channel.").toLatin1().data());
+    paramVal = ito::Param("availableTerminals", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and available terminals (e.g. for 'sampleClockSource' or 'startTriggerSource'). The standard sample clock source 'OnboardClock' is not contained in this list.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("taskMode", ito::ParamBase::String | ito::ParamBase::In, "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
-    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
-    sm->addItem("finite");
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "finite", "General");
     sm->addItem("continuous");
     sm->addItem("onDemand");
     paramVal.setMeta(sm, true);
@@ -210,55 +196,83 @@ NiDAQmx::NiDAQmx() :
     m_taskMode = NiTaskModeFinite;
 
     paramVal = ito::Param("taskType", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "analogInput", tr("task type: analogInput, analogOutput, digitalInput, digitalOutput").toLatin1().data());
-    sm = new ito::StringMeta(ito::StringMeta::String);
-    sm->addItem("analogInput");
+    sm = new ito::StringMeta(ito::StringMeta::String, "analogInput", "General");
     sm->addItem("analogOutput");
     sm->addItem("digitalInput");
     sm->addItem("digitalOutput");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("loggingActive", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 2, 0, tr("indicates if TDMS file logging has been enabled (see exec function 'configureLogging') for this input task.").toLatin1().data());
+    paramVal.getMeta()->setCategory("Status");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("taskStarted", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is currently running (1) or stopped / inactive (0).").toLatin1().data());
+    paramVal.getMeta()->setCategory("Status");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("taskConfigured", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is properly configured (1, all task related parameters where accepted) or not (0).").toLatin1().data());
+    paramVal.getMeta()->setCategory("Status");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "Channels"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("channels", ito::ParamBase::String | ito::ParamBase::In, "", tr("semicolon-separated list of all channels that should be part of this task. Every item is a comma separated string that defines and parameterizes every channel.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "Channels"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("samplingRate", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000000.0, 100.0, tr("The sampling rate in samples per second per channel. If you use an external source for the Sample Clock, set this value to the maximum expected rate of that clock.").toLatin1().data());
+    paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("readTimeout", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 100000.0, -1.0, 
         tr("Timeout when reading up to 'samplesPerChannel' values (per channel) in seconds. If -1.0 (default), the timeout is set to infinity (recommended for finite tasks). If 0.0, getVal/copyVal will return all values which have been recorded up to this call.").toLatin1().data());
+    paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("setValWaitForFinish", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0,
         tr("If 1, the setVal call will block until all data has been written (only valid for finite tasks). If 0, setVal will return immediately, then use 'taskStarted' to verify if the operation has been finished.").toLatin1().data());
+    paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
     
     paramVal = ito::Param("samplesPerChannel", ito::ParamBase::Int | ito::ParamBase::In, 0,std::numeric_limits<int>::max(), 
                                             20000, 
                                             tr("The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size. This parameter is ignored for output tasks.").toLatin1().data());
+    paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("inputBufferSize", ito::ParamBase::Int | ito::ParamBase::In, -1, std::numeric_limits<int>::max(), -1,
         tr("Sets and changes the automatic input buffer allocation mode. If -1 (default), the automatic allocation is enabled. Else defines the number of samples the buffer can hold for each channel (only recommended for continuous acquisition). In automatic mode and continuous acquisition, the standard is a buffer size of 1 kS for a sampling rate < 100 S/s, 10 kS for 100-10000 S/s, 100 kS for 10-1000 kS/s and 1 MS else.").toLatin1().data());
+    paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sampleClockSource", ito::ParamBase::String | ito::ParamBase::In, "OnboardClock", tr("The source terminal of the Sample Clock. To use the internal clock of the device, use an empty string or 'OnboardClock' (default). An example for an external clock source is 'PFI0' or PFI1'.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "SampleClock"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sampleClockRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If 1, samples are acquired on a rising edge of the sample clock (default), else they are acquired on a falling edge.").toLatin1().data());
+    paramVal.getMeta()->setCategory("SampleClock");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("startTriggerMode", ito::ParamBase::String | ito::ParamBase::In, "off", tr("Specifies the start trigger mode. 'off': software-based start trigger, 'digitalEdge': The start of acquiring or generating samples is given if the 'startTriggerSource' is activated (based on 'startTriggerRisingEdge'), 'analogEdge': similar to 'digitalEdge', but the analog input 'startTriggerSource' has to pass the value 'startTriggerLevel'.").toLatin1().data());
-    sm = new ito::StringMeta(ito::StringMeta::String);
-    sm->addItem("off");
+    sm = new ito::StringMeta(ito::StringMeta::String, "off", "StartTrigger");
     sm->addItem("digitalEdge");
     sm->addItem("analogEdge");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("startTriggerSource", ito::ParamBase::String | ito::ParamBase::In, "/Dev1/PFI0", tr("The source terminal of the trigger source (if 'startTriggerMode' is set to 'digitalEdge' or 'analogEdge').").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "StartTrigger"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("startTriggerRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Specifies on which slope of the signal to start acquiring or generating samples. 1: rising edge (default), 0: falling edge.").toLatin1().data());
+    paramVal.getMeta()->setCategory("StartTrigger");
     m_params.insert(paramVal.getName(), paramVal);
     
     paramVal = ito::Param("startTriggerLevel", ito::ParamBase::Double | ito::ParamBase::In, -1000.0, 1000.0, 1.0, tr("Only for 'startTriggerMode' == 'analogEdge': The threshold at which to start acquiring or generating samples. Specify this value in the units of the measurement or generation.").toLatin1().data());
+    paramVal.getMeta()->setCategory("StartTrigger");
     m_params.insert(paramVal.getName(), paramVal);
 
     // Register Exec Functions
@@ -1377,7 +1391,7 @@ void NiDAQmx::dockWidgetVisibilityChanged(bool visible)
 */
 const ito::RetVal NiDAQmx::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogNiDAQmx(this, (void*)this));
+    return apiShowConfigurationDialog(this, new DialogNiDAQmx(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1487,7 +1501,15 @@ ito::RetVal NiDAQmx::scanForAvailableDevicesAndSupportedChannels()
 
         if (!tempRetValue.containsError())
         {
-            m_supportedChannels << QString(buffer).split(", ") << QString(buffer2).split(", ");
+            QStringList temp = QStringList() << QString(buffer).split(", ") << QString(buffer2).split(", ");
+
+            foreach(const QString &t, temp)
+            {
+                if (t != "")
+                {
+                    m_supportedChannels << t;
+                }
+            } 
         }
         else
         {

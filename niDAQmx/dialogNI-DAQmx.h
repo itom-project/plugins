@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "niDAQmx" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-    Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2020, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -19,21 +19,20 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGIDS_H
-#define DIALOGIDS_H
+#ifndef DIALOGNIDAQMX_H
+#define DIALOGNIDAQMX_H
 
 #include "common/param.h"
 #include "common/retVal.h"
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
-#include "dialogNI-DAQmx.h"
-
 #include "ui_dialogNI-DAQmx.h"
 
 #include <qstring.h>
 #include <qmap.h>
 #include <qabstractbutton.h>
+#include <qtreewidget.h>
 
 #include "NI-DAQmx.h"
 
@@ -48,45 +47,24 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-        DialogNiDAQmx(ito::AddInBase *grabber, void *plugin);
+        DialogNiDAQmx(ito::AddInBase *adda);
         ~DialogNiDAQmx() {};
 
         ito::RetVal applyParameters();
 
     private:
         void enableDialog(bool enabled);
-        
-        void *m_pPlugin;
-
         bool m_firstRun;
-        QMap<QString, ito::Param> m_params;
-        
+
         Ui::niDAQmx ui;
+        QMap<QString, QTreeWidgetItem*> m_channelItems;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
-        void on_taskApplyButton_clicked(bool checked = false);
-        void on_taskCombo_currentIndexChanged(int index);
-
-        void on_aiApplyButton_clicked(bool checked = false);
-        void on_aiChannelCombo_currentIndexChanged(int index);
-        
-        void on_aoApplyButton_clicked(bool checked = false);
-        void on_aoChannelCombo_currentIndexChanged(int index);
-
-        void on_dioApplyButton_clicked(bool checked = false);
-        void on_dioChannelCombo_currentIndexChanged(int index);
-
-        void on_cioApplyButton_clicked(bool checked = false);
-        void on_cioChannelCombo_currentIndexChanged(int index);
-
-        void on_aiBitCombo_currentIndexChanged(int index);
-        void on_aiRangeCombo_currentIndexChanged(int index);
-
-        void calculateResolution();
-
+        void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_comboStartTriggerMode_currentTextChanged(QString text);
 };
 
 #endif

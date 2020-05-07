@@ -27,298 +27,290 @@
 #include <qvector.h>
 #include <qsharedpointer.h>
 #include <qmath.h>
+#include <qtreewidget.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *grabber, void *plugin) :
-    m_pPlugin(plugin),
-    AbstractAddInConfigDialog(grabber),
+DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *adda) :
+    AbstractAddInConfigDialog(adda),
     m_firstRun(true)
 {
     ui.setupUi(this);
 
-    // Analog Input Config
-    ui.aiConfigCombo->insertItem(0, QIcon(), "PseudoDiff = 4", 4);
-    ui.aiConfigCombo->insertItem(0, QIcon(), "NRSE = 3", 3);
-    ui.aiConfigCombo->insertItem(0, QIcon(), "RSE = 2", 2);
-    ui.aiConfigCombo->insertItem(0, QIcon(), "Differential = 1", 1);
-    ui.aiConfigCombo->insertItem(0, QIcon(), "Default = 0", 0);
+    enableDialog(false);
 
-    // Voltage Ranges
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±0.2 V", 0.2);
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±0.5 V", 0.5);
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±1.0 V", 1.0);
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±2.0V" , 2.0);
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±5.0 V" , 5.0);
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±10.0 V", 10.0);
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±20.0V" , 20.0);
-    ui.aiRangeCombo->insertItem(0, QIcon(), "±42.0 V", 42.0);
-
-    // ADC-Bit
-    ui.aiBitCombo->insertItem(0, QIcon(), "18 Bit", 18);
-    ui.aiBitCombo->insertItem(0, QIcon(), "16 Bit", 16);
-    ui.aiBitCombo->insertItem(0, QIcon(), "12 Bit", 12);
-    
+    // Task Mode
+    ui.comboTaskMode->addItem(tr("finite"), "finite");
+    ui.comboTaskMode->addItem(tr("continuous"), "continuous");
+    ui.comboTaskMode->addItem(tr("onDemand"), "onDemand");
 };
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
 {
-    // Populate channel boxes
-    m_params.clear();
-    m_params = params;
+    m_currentParameters = params;
 
-    // different Tasks
-    QString p;
-    QMap<QString, QString> tasks;
-    tasks.insert("Counter write", "co");
-    tasks.insert("Counter read", "ci");
-    tasks.insert("Digital write", "do");
-    tasks.insert("Digital read", "di");
-    tasks.insert("Analog write", "ao");
-    tasks.insert("Analog read", "ai");
-
-    ui.taskCombo->clear();
-    foreach(const QString &t, tasks)
+    if (m_firstRun)
     {
-        p = QString(params["taskStatus"].getVal<char*>());
-        QString post = "";
-        if (p.split(";").filter(t)[0].split(",")[1] == "-1")
+        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+
+        // Tab General, Group General
+        ui.lblName->setText(params["taskName"].getVal<const char*>());
+        ui.lblType->setText(params["taskType"].getVal<const char*>());
+
+        // Tab General, Group Acquisition / Data Write
+        ui.doubleSpinReadTimeout->setEnabled(ui.lblName->text().endsWith("Input"));
+        ui.lblReadTimeout->setEnabled(ui.lblName->text().endsWith("Input"));
+        ui.checkSetValWaitForFinish->setEnabled(ui.lblName->text().endsWith("Output"));
+
+        // Tab General, Start Trigger
+        ito::StringMeta *sm = params["startTriggerMode"].getMetaT<ito::StringMeta>();
+        for (int i = 0; i < sm->getLen(); ++i)
         {
-            if (t == "ai")
-            {
-                ui.aiApplyButton->setEnabled(false);
-            }
-            else if (t == "ao")
-            {
-                ui.aoApplyButton->setEnabled(false);
-            }
-            else if (t[0] == 'd')
-            {
-                ui.dioApplyButton->setEnabled(false);
-            }
-            else if (t[0] == 'c')
-            {
-                ui.cioApplyButton->setEnabled(false);
-            }
-            post = " (not initialized)";
+            ui.comboStartTriggerMode->addItem(sm->getString(i));
         }
-        else 
+        
+
+        QStringList availChannels = QString(params["supportedChannels"].getVal<const char*>()).split(",");
+        availChannels.sort(Qt::CaseInsensitive);
+
+        QList<QTreeWidgetItem*> items;
+        QTreeWidgetItem* currentDeviceItem = NULL;
+        QString currentDevice;
+        QString device;
+        QString port;
+        QTreeWidgetItem* child = NULL;
+
+        foreach(const QString &channel, availChannels)
         {
-            if (t == "ai")
+            if (channel != "")
             {
-                ui.aiApplyButton->setEnabled(true);
-            }
-            else if (t == "ao")
-            {
-                ui.aoApplyButton->setEnabled(true);
-            }
-            else if (t[0] == 'd')
-            {
-                ui.dioApplyButton->setEnabled(true);
-            }
-            else if (t[0] == 'c')
-            {
-                ui.cioApplyButton->setEnabled(true);
+                device = channel.split("/")[0];
+                port = channel.mid(device.size() + 1);
+
+                if (device != currentDevice)
+                {
+                    currentDeviceItem = new QTreeWidgetItem();
+                    currentDeviceItem->setText(0, device);
+                    items.append(currentDeviceItem);
+                    currentDeviceItem->setFlags(Qt::ItemIsEnabled);
+                    currentDevice = device;
+                }
+
+                child = new QTreeWidgetItem();
+                m_channelItems[channel] = child;
+                currentDeviceItem->addChild(child);
+                child->setText(0, port);
+                child->setData(0, Qt::UserRole, channel);
+                child->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
             }
         }
-        ui.taskCombo->insertItem(0, QIcon(), tasks.key(t)+post, t);
+
+        ui.treeChannels->addTopLevelItems(items);
+
+        QStringList availTerminals = QString(params["availableTerminals"].getVal<const char*>()).split(",");
+
+        ui.comboSampleClockSource->addItem("OnboardClock");
+        ui.comboSampleClockSource->addItems(availTerminals);
+
+        ui.comboStartTriggerSource->addItem("OnboardClock");
+        ui.comboStartTriggerSource->addItems(availTerminals);
+
+        m_firstRun = false;
     }
-    ui.taskCombo->model()->sort(0);
 
-    ui.aiChannelCombo->clear();
-    ui.aoChannelCombo->clear();
-    ui.dioChannelCombo->clear();
-    ui.cioChannelCombo->clear();
-    QString channel = QString(params["channel"].getVal<char*>());
-    QString associated = QString(params["chAssociated"].getVal<char*>());
-    foreach(const QString &s, channel.split(","))
+    // Tab General, Group General
+    QByteArray taskMode = params["taskMode"].getVal<const char*>();
+
+    for (int i = 0; i < ui.comboTaskMode->count(); ++i)
     {
-        QString ch = s;
-        if (!associated.contains(ch))
+        if (ui.comboTaskMode->itemData(i, Qt::UserRole).toByteArray() == taskMode)
         {
-            ch.append(" (not created yet)");
-        }
-
-        if (ch.contains("ai"))
-        {
-            ui.aiChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
-        }
-        else if (ch.contains("ao"))
-        {
-            ui.aoChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
-        }
-        else if (ch.contains("port"))
-        {
-            ui.dioChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
-        }
-        else if (ch.contains("ctr"))
-        {
-            ui.cioChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
+            ui.comboTaskMode->setCurrentIndex(i);
+            break;
         }
     }
+
+    // Tab General, Group Acquisition / Data Write
+    ui.doubleSpinSamplingRate->setValue(params["samplingRate"].getVal<double>());
+    ui.doubleSpinReadTimeout->setValue(params["readTimeout"].getVal<double>());
+    ui.checkSetValWaitForFinish->setChecked(params["setValWaitForFinish"].getVal<int>() > 0);
+    ui.spinSamplesPerChannel->setValue(params["samplesPerChannel"].getVal<int>());
+    ui.spinInputBufferSize->setValue(params["inputBufferSize"].getVal<int>());
+
+    // Tab General, Sample Clock
+    ui.comboSampleClockSource->setCurrentText(params["sampleClockSource"].getVal<const char*>());
+    ui.checkSampleClockRisingEdge->setChecked(params["sampleClockRisingEdge"].getVal<int>() > 0);
+
+    // Tab General, Start Trigger
+    ui.comboStartTriggerSource->setCurrentText(params["startTriggerSource"].getVal<const char*>());
+    ui.checkStartTriggerRisingEdge->setChecked(params["startTriggerRisingEdge"].getVal<int>() > 0);
+    ui.comboStartTriggerMode->setCurrentText(params["startTriggerMode"].getVal<const char*>());
+
+    ui.doubleSpinStartTriggerLevel->setEnabled(ui.comboStartTriggerMode->currentText() == "analogEdge");
+    ui.lblStartTriggerLevel->setEnabled(ui.comboStartTriggerMode->currentText() == "analogEdge");
+    ui.doubleSpinStartTriggerLevel->setValue(params["startTriggerLevel"].getVal<double>());
+    
+    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
+    enableDialog(true);
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogNiDAQmx::applyParameters()
 {
-    return ito::retOk;
-}
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    int boolVal;
+    QByteArray byteArrayVal;
 
-
-// Task Slots
-void DialogNiDAQmx::on_taskApplyButton_clicked(bool checked)
-{
-    NiDAQmx *plugin = (NiDAQmx*) m_pPlugin;
-    QString p = ui.taskCombo->itemData(ui.taskCombo->currentIndex()).toString()+"TaskParams";
-    QStringList params;
-    params.append(QString::number(ui.taskRateSpin->value()));
-    params.append(QString::number(ui.taskSampleSpin->value()));
-    params.append(QString::number(0));
-    plugin->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(p.toLatin1().data(), ito::ParamBase::String, params.join(",").toLatin1().data())),0);
-}
-
-void DialogNiDAQmx::on_taskCombo_currentIndexChanged(int index)
-{
-    ui.taskChannelList->clear();
-    QString prefix = ui.taskCombo->itemData(index).toString();
-    if (m_params.contains(prefix+"TaskParams"))
+    // Tab General, Group General
+    if (ui.comboTaskMode->currentData(Qt::UserRole).toByteArray() 
+        != m_currentParameters["taskMode"].getVal<const char*>())
     {
-        QString params = QString(m_params[prefix+"TaskParams"].getVal<char*>());
-        if (params != "-1")
-        {
-            QStringList pL = params.split(",", QString::SkipEmptyParts);
-            ui.taskRateSpin->setValue(pL[0].toInt());
-            ui.taskSampleSpin->setValue(pL[1].toInt());
-            // get corresponding channels
-            if (m_params.contains("chAssociated"))
-            {
-                QStringList channels = QString(m_params["chAssociated"].getVal<char*>()).split(";", QString::SkipEmptyParts);
-                foreach(const QString &ch, channels)
-                {
-                    if (ch.contains(prefix))
-                    {
-                        ui.taskChannelList->insertItems(0,ch.split(","));
-                    }
-                }
-            }
-        }
-        else
-        {
-            ui.taskRateSpin->setValue(1);
-            ui.taskSampleSpin->setValue(1);
-        }
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("taskMode", ito::ParamBase::String, 
+                ui.comboTaskMode->currentData(Qt::UserRole).toByteArray().data())
+            );
+    }
+
+    // Tab General, Group Acquisition / Data Write
+    if (std::abs(ui.doubleSpinSamplingRate->value()
+        - m_currentParameters["samplingRate"].getVal<double>()) 
+        > std::numeric_limits<double>::epsilon())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("samplingRate", ito::ParamBase::Double,
+                ui.doubleSpinSamplingRate->value())
+            );
+    }
+
+    if (std::abs(ui.doubleSpinReadTimeout->value()
+        - m_currentParameters["readTimeout"].getVal<double>())
+        > std::numeric_limits<double>::epsilon())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("readTimeout", ito::ParamBase::Double,
+                ui.doubleSpinReadTimeout->value())
+            );
+    }
+
+    boolVal = ui.checkSetValWaitForFinish->isChecked() ? 1 : 0;
+    if (boolVal != m_currentParameters["setValWaitForFinish"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("setValWaitForFinish", ito::ParamBase::Int,
+                boolVal)
+            );
+    }
+
+    if (ui.spinSamplesPerChannel->value()
+        != m_currentParameters["samplesPerChannel"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("samplesPerChannel", ito::ParamBase::Int,
+                ui.spinSamplesPerChannel->value())
+            );
+    }
+
+    if (ui.spinInputBufferSize->value()
+        != m_currentParameters["inputBufferSize"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("inputBufferSize", ito::ParamBase::Int,
+                ui.spinInputBufferSize->value())
+            );
+    }
+
+    // Tab General, Sample Clock
+    boolVal = ui.checkSampleClockRisingEdge->isChecked() ? 1 : 0;
+    if (boolVal != m_currentParameters["sampleClockRisingEdge"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("sampleClockRisingEdge", ito::ParamBase::Int,
+                boolVal)
+            );
+    }
+
+    byteArrayVal = ui.comboSampleClockSource->currentText().toLatin1();
+    if (byteArrayVal != m_currentParameters["sampleClockSource"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("sampleClockSource", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    // Tab General, Start Trigger
+    boolVal = ui.checkStartTriggerRisingEdge->isChecked() ? 1 : 0;
+    if (boolVal != m_currentParameters["startTriggerRisingEdge"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("startTriggerRisingEdge", ito::ParamBase::Int,
+                boolVal)
+            );
+    }
+
+    byteArrayVal = ui.comboStartTriggerSource->currentText().toLatin1();
+    if (byteArrayVal != m_currentParameters["startTriggerSource"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("startTriggerSource", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    byteArrayVal = ui.comboStartTriggerMode->currentText().toLatin1();
+    if (byteArrayVal != m_currentParameters["startTriggerMode"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("startTriggerMode", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    if (std::abs(ui.doubleSpinStartTriggerLevel->value()
+        - m_currentParameters["startTriggerLevel"].getVal<double>())
+        > std::numeric_limits<double>::epsilon())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("startTriggerLevel", ito::ParamBase::Double,
+                ui.doubleSpinStartTriggerLevel->value())
+            );
+    }
+
+    return setPluginParameters(values, msgLevelWarningAndError);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_buttonBox_clicked(QAbstractButton* btn)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
+
+    if (role == QDialogButtonBox::RejectRole)
+    {
+        reject(); //close dialog with reject
+    }
+    else if (role == QDialogButtonBox::AcceptRole)
+    {
+        accept(); //AcceptRole
+    }
+    else
+    {
+        applyParameters(); //ApplyRole
     }
 }
 
-
-// Analog Input Slots
-void DialogNiDAQmx::on_aiApplyButton_clicked(bool checked)
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_comboStartTriggerMode_currentTextChanged(QString text)
 {
-    NiDAQmx *plugin = (NiDAQmx*) m_pPlugin;
-    QString channel = ui.aiChannelCombo->itemData(ui.aiChannelCombo->currentIndex()).toString();
-    QStringList params;
-    params.append(channel);
-    params.append(ui.aiConfigCombo->itemData(ui.aiConfigCombo->currentIndex()).toString());
-    params.append(ui.aiRangeCombo->itemData(ui.aiRangeCombo->currentIndex()).toString());
-    plugin->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("aiChParams", ito::ParamBase::String, params.join(",").toLatin1().data())),0);
+    ui.doubleSpinStartTriggerLevel->setEnabled(text == "analogEdge");
+    ui.lblStartTriggerLevel->setEnabled(text == "analogEdge");
 }
 
-void DialogNiDAQmx::on_aiChannelCombo_currentIndexChanged(int index)
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::enableDialog(bool enabled)
 {
-    QStringList chParams = QString(m_params["aiChParams"].getVal<char*>()).split(";", QString::SkipEmptyParts);
-    if (chParams.size() > 0)
-    {
-        bool found = false;
-        foreach(const QString &ch, chParams)
-        {
-            if (ch.split(",")[0]+"/"+ch.split(",")[1] == ui.aiChannelCombo->itemData(index).toString())
-            {
-                ui.aiConfigCombo->setCurrentIndex(ch.split(",")[2].toInt());
-                ui.aiRangeCombo->setCurrentIndex(ch.split(",")[3].toInt());
-                found = true;
-            }
-        }
-        if (!found)
-        {
-            ui.aiConfigCombo->setCurrentIndex(-1);
-            ui.aiRangeCombo->setCurrentIndex(0);
-        }
-    }
-}
-
-void DialogNiDAQmx::on_aiBitCombo_currentIndexChanged(int index)
-{
-    calculateResolution();
-}
-
-void DialogNiDAQmx::on_aiRangeCombo_currentIndexChanged(int index)
-{
-    calculateResolution();
-}
-
-void DialogNiDAQmx::calculateResolution()
-{
-    double range = 2*ui.aiRangeCombo->itemData(ui.aiRangeCombo->currentIndex()).toDouble();
-    int bit = ui.aiBitCombo->itemData(ui.aiBitCombo->currentIndex()).toInt();
-    ui.aiResolutionLabel->setText(QString::number(range/qPow(2,bit)*1000)+" mV/bit");
-}
-
-// Analog Output Slots
-void DialogNiDAQmx::on_aoApplyButton_clicked(bool checked)
-{
-    NiDAQmx *plugin = (NiDAQmx*) m_pPlugin;
-    QString channel = ui.aoChannelCombo->itemData(ui.aoChannelCombo->currentIndex()).toString();
-    QStringList params;
-    params.append(channel);
-    params.append(QString::number(ui.aoMinSpin->value()));
-    params.append(QString::number(ui.aoMaxSpin->value()));
-    plugin->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("aoChParams", ito::ParamBase::String, params.join(",").toLatin1().data())),0);
-}
-
-void DialogNiDAQmx::on_aoChannelCombo_currentIndexChanged(int index)
-{
-    QStringList chParams = QString(m_params["aoChParams"].getVal<char*>()).split(";", QString::SkipEmptyParts);
-    if (chParams.size() > 0)
-    {
-        bool found = false;
-        foreach(const QString &ch, chParams)
-        {
-            if (ch.split(",")[0]+"/"+ch.split(",")[1] == ui.aoChannelCombo->itemData(index).toString())
-            {
-                ui.aoMinSpin->setValue(ch.split(",")[2].toInt());
-                ui.aoMaxSpin->setValue(ch.split(",")[3].toInt());
-                found = true;
-            }
-        }
-        if (!found)
-        {
-            ui.aoMinSpin->setValue(-10);
-            ui.aoMaxSpin->setValue(10);
-        }
-    }
+    ui.tabWidget->setEnabled(enabled);
 }
 
 
-// Digital Slots
-void DialogNiDAQmx::on_dioApplyButton_clicked(bool checked)
-{
-
-}
-
-void DialogNiDAQmx::on_dioChannelCombo_currentIndexChanged(int index)
-{
-    // just copy the code from the ai comboBox and adjust the parameters
-}
-
-
-// Counter Slots
-void DialogNiDAQmx::on_cioApplyButton_clicked(bool checked)
-{
-
-}
-
-void DialogNiDAQmx::on_cioChannelCombo_currentIndexChanged(int index)
-{
-    // just copy the code from the ai comboBox and adjust the parameters
-}
