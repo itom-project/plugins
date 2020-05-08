@@ -58,6 +58,21 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
 
         Ui::niDAQmx ui;
         QMap<QString, QTreeWidgetItem*> m_channelItems;
+        bool m_channelsModified;
+
+        //!< the m_channelItems contain additional information in user roles. These are:
+        enum ChannelRole
+        {
+            CrPhysicalName = Qt::UserRole,
+            CrConfigStr = Qt::UserRole + 1,
+            CrModified = Qt::UserRole + 2
+        };
+
+        void disableChannelProps();
+        void setChannelPropsAI(int terminalConfig, double minV, double maxV);
+        void setChannelPropsAO(double minV, double maxV);
+        void setChannelPropsDI();
+        void setChannelPropsDO();
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
@@ -65,6 +80,8 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
         void on_comboStartTriggerMode_currentTextChanged(QString text);
+        void on_treeChannels_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+        void on_treeChannels_itemChanged(QTreeWidgetItem *item, int column);
 };
 
 #endif

@@ -84,14 +84,14 @@ class NiAnalogInputChannel : public NiBaseChannel
 {
     public:
         
-        enum NiAnalogInputConfig 
+        enum NiAITerminalConfig 
         {
-            NiAnInConfDefault = 0, 
-            NiAnInConfDifferential = 1, 
-            NiAnInConfRSE = 2, 
-            NiAnInConfNRSE = 3, 
-            NiAnInConfPseudoDiff = 4,
-            NiAnInConfEndValue = 5 //never used, but this number is always the end of the enumeration in order to check for valid input.
+            NiTerminalConfDefault = 0, 
+            NiTerminalConfDifferential = 1, 
+            NiTerminalConfRSE = 2, 
+            NiTerminalConfNRSE = 3, 
+            NiTerminalConfPseudoDiff = 4,
+            NiTerminalConfEndValue = 5 //never used, but this number is always the end of the enumeration in order to check for valid input.
         };
 
         NiAnalogInputChannel(const QString &physicalName);
@@ -99,22 +99,22 @@ class NiAnalogInputChannel : public NiBaseChannel
         
         static NiBaseChannel* fromConfigurationString(const QString &configString, ito::RetVal &retValue);
 
-        int getMaxOutputLim(){return m_maxOutputLim;}
-        void setMaxOutputLim(const int max){m_maxOutputLim = max;}
+        double getMaxInputLim() { return m_maxInputLim; }
+        void setMaxInputLim(const double max) { m_maxInputLim = max; }
 
-        int getMinOutputLim(){return m_minOutputLim;}
-        void setMinOutputLim(const int min){m_minOutputLim = min;}
+        double getMinInputLim() { return m_minInputLim; }
+        void setMinInputLim(const double min) { m_minInputLim = min; }
 
-        NiAnalogInputConfig getAnalogInputConfig(){return m_analogInputConfig;}
-        void setAnalogInputConfig(const NiAnalogInputConfig conf){m_analogInputConfig = conf;}
+        NiAITerminalConfig getTerminalConfig() { return m_terminalConfig; }
+        void setTerminalConfig(const NiAITerminalConfig conf) { m_terminalConfig = conf; }
 
         virtual ito::RetVal addChannelToTask(TaskHandle taskHandle);
         virtual QString getConfigurationString() const;
 
     private:
-        NiAnalogInputConfig m_analogInputConfig;
-        double m_maxOutputLim;
-        double m_minOutputLim;
+        NiAITerminalConfig m_terminalConfig;
+        double m_maxInputLim;
+        double m_minInputLim;
         bool m_analogInParamsInitialized = false;
 
 };
@@ -143,18 +143,18 @@ class NiAnalogOutputChannel : public NiBaseChannel
 
         static NiBaseChannel* fromConfigurationString(const QString &configString, ito::RetVal &retValue);
 
-        int getMaxOutputLim(){return m_maxOutputLim;};
-        void setMaxOutputLim(const int max){m_maxOutputLim = max;};
+        double getMaxOutputLim() { return m_maxOutputLim; };
+        void setMaxOutputLim(const double max) { m_maxOutputLim = max; };
 
-        int getMinOutputLim(){return m_minOutputLim;};
-        void setMinOutputLim(const int min){m_minOutputLim = min;};
+        double getMinOutputLim() { return m_minOutputLim; };
+        void setMinOutputLim(const double min) { m_minOutputLim = min; };
 
         virtual ito::RetVal addChannelToTask(TaskHandle taskHandle);
         virtual QString getConfigurationString() const;
 
     private:
-        int m_maxOutputLim;
-        int m_minOutputLim;
+        double m_maxOutputLim;
+        double m_minOutputLim;
 };
 
 //---------------------------------------------------------------------------

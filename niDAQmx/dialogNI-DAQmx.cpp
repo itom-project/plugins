@@ -28,11 +28,14 @@
 #include <qsharedpointer.h>
 #include <qmath.h>
 #include <qtreewidget.h>
+#include <qdebug.h>
+#include "NI-PeripheralClasses.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *adda) :
     AbstractAddInConfigDialog(adda),
-    m_firstRun(true)
+    m_firstRun(true),
+    m_channelsModified(false)
 {
     ui.setupUi(this);
 
@@ -41,7 +44,7 @@ DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *adda) :
     // Task Mode
     ui.comboTaskMode->addItem(tr("finite"), "finite");
     ui.comboTaskMode->addItem(tr("continuous"), "continuous");
-    ui.comboTaskMode->addItem(tr("onDemand"), "onDemand");
+    ui.comboTaskMode->addItem(tr("onDemand (not supported yet)"), "onDemand");
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -58,9 +61,9 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
         ui.lblType->setText(params["taskType"].getVal<const char*>());
 
         // Tab General, Group Acquisition / Data Write
-        ui.doubleSpinReadTimeout->setEnabled(ui.lblName->text().endsWith("Input"));
-        ui.lblReadTimeout->setEnabled(ui.lblName->text().endsWith("Input"));
-        ui.checkSetValWaitForFinish->setEnabled(ui.lblName->text().endsWith("Output"));
+        ui.doubleSpinReadTimeout->setEnabled(ui.lblType->text().endsWith("Input"));
+        ui.lblReadTimeout->setEnabled(ui.lblType->text().endsWith("Input"));
+        ui.checkSetValWaitForFinish->setEnabled(ui.lblType->text().endsWith("Output"));
 
         // Tab General, Start Trigger
         ito::StringMeta *sm = params["startTriggerMode"].getMetaT<ito::StringMeta>();
@@ -100,7 +103,9 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
                 m_channelItems[channel] = child;
                 currentDeviceItem->addChild(child);
                 child->setText(0, port);
-                child->setData(0, Qt::UserRole, channel);
+                child->setData(0, CrPhysicalName, channel);
+                child->setData(0, CrConfigStr, "");
+                child->setData(0, CrModified, false);
                 child->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
             }
         }
@@ -149,6 +154,51 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
     ui.doubleSpinStartTriggerLevel->setEnabled(ui.comboStartTriggerMode->currentText() == "analogEdge");
     ui.lblStartTriggerLevel->setEnabled(ui.comboStartTriggerMode->currentText() == "analogEdge");
     ui.doubleSpinStartTriggerLevel->setValue(params["startTriggerLevel"].getVal<double>());
+
+    // Tab Channels
+    QStringList channels = QString(params["channels"].getVal<const char*>()).split(";");
+    QStringList channelFullnames;
+    int idx;
+    m_channelsModified = true;
+
+    foreach(const QString &c, channels)
+    {
+        idx = c.indexOf(",");
+
+        if (idx >= 0)
+        {
+            channelFullnames << c.left(idx);
+        }
+    }
+
+    // 1. uncheck all items
+    foreach(QTreeWidgetItem *item, m_channelItems)
+    {
+        idx = channelFullnames.indexOf(item->data(0, CrPhysicalName).toString());
+
+        if (idx == -1)
+        {
+            item->setCheckState(0, Qt::Unchecked);
+            item->setData(0, CrConfigStr, "");
+            item->setData(0, CrModified, false);
+        }
+        else
+        {
+            item->setCheckState(0, Qt::Checked);
+            item->setData(0, CrConfigStr, channels[idx]); //full string with physical name
+            item->setData(0, CrModified, false);
+            ui.treeChannels->expandItem(item);
+        }
+    }
+
+    if (ui.treeChannels->selectedItems().size() > 0)
+    {
+        on_treeChannels_currentItemChanged(ui.treeChannels->selectedItems()[0], NULL);
+    }
+    else
+    {
+        on_treeChannels_currentItemChanged(NULL, NULL);
+    }
     
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
@@ -276,6 +326,8 @@ ito::RetVal DialogNiDAQmx::applyParameters()
             );
     }
 
+    
+
     return setPluginParameters(values, msgLevelWarningAndError);
 }
 
@@ -312,5 +364,123 @@ void DialogNiDAQmx::enableDialog(bool enabled)
 {
     ui.tabWidget->setEnabled(enabled);
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_treeChannels_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem * /*previous*/)
+{
+    QString configString;
+    ito::RetVal retVal;
+
+    if (m_channelItems.values().contains(current) && current->checkState(0) == Qt::Checked)
+    {
+        if (ui.lblType->text().endsWith("Input"))
+        {
+            if (ui.lblType->text().startsWith("analog"))
+            {
+                NiAnalogInputChannel* chn = static_cast<NiAnalogInputChannel*>(
+                    NiAnalogInputChannel::fromConfigurationString(current->data(0, CrConfigStr).toString(), retVal));
+
+                if (chn && !retVal.containsError())
+                {
+                    setChannelPropsAI(chn->getTerminalConfig(), chn->getMinInputLim(), chn->getMaxInputLim());
+                }
+                else
+                {
+                    disableChannelProps();
+                }
+
+                DELETE_AND_SET_NULL(chn);
+            }
+            else
+            {
+                setChannelPropsDI();
+            }
+        }
+        else //Output
+        {
+            if (ui.lblType->text().startsWith("analog"))
+            {
+                NiAnalogOutputChannel* chn = static_cast<NiAnalogOutputChannel*>(
+                    NiAnalogOutputChannel::fromConfigurationString(current->data(0, CrConfigStr).toString(), retVal));
+
+                if (chn && !retVal.containsError())
+                {
+                    setChannelPropsAO(chn->getMinOutputLim(), chn->getMaxOutputLim());
+                }
+                else
+                {
+                    disableChannelProps();
+                }
+
+                DELETE_AND_SET_NULL(chn);
+            }
+            else
+            {
+                setChannelPropsDO();
+            }
+        }
+    }
+    else
+    {
+        disableChannelProps();
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_treeChannels_itemChanged(QTreeWidgetItem *item, int column)
+{
+    qDebug() << "itemChanged" << item << column;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::disableChannelProps()
+{
+    ui.lblTerminalConfig->setVisible(false);
+    ui.comboTerminalConfig->setVisible(false);
+    ui.lblMinimumVoltage->setVisible(false);
+    ui.doubleSpinMinimumVoltage->setVisible(false);
+    ui.lblMaximumVoltage->setVisible(false);
+    ui.doubleSpinMaximumVoltage->setVisible(false);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::setChannelPropsAI(int terminalConfig, double minV, double maxV)
+{
+    ui.lblTerminalConfig->setVisible(true);
+    ui.comboTerminalConfig->setVisible(true);
+    ui.lblMinimumVoltage->setVisible(true);
+    ui.doubleSpinMinimumVoltage->setVisible(true);
+    ui.lblMaximumVoltage->setVisible(true);
+    ui.doubleSpinMaximumVoltage->setVisible(true);
+    ui.comboTerminalConfig->setCurrentIndex(terminalConfig);
+    ui.doubleSpinMinimumVoltage->setValue(minV);
+    ui.doubleSpinMaximumVoltage->setValue(maxV);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::setChannelPropsAO(double minV, double maxV)
+{
+    ui.lblTerminalConfig->setVisible(false);
+    ui.comboTerminalConfig->setVisible(false);
+    ui.lblMinimumVoltage->setVisible(true);
+    ui.doubleSpinMinimumVoltage->setVisible(true);
+    ui.lblMaximumVoltage->setVisible(true);
+    ui.doubleSpinMaximumVoltage->setVisible(true);
+    ui.doubleSpinMinimumVoltage->setValue(minV);
+    ui.doubleSpinMaximumVoltage->setValue(maxV);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::setChannelPropsDI()
+{
+    disableChannelProps();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::setChannelPropsDO()
+{
+    disableChannelProps();
+}
+
 
 

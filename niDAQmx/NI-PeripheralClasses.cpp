@@ -68,11 +68,11 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
 /*static*/ NiBaseChannel* NiAnalogInputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel,inConfig, MinOutputVoltage, MaxOutputVoltage)
-    QRegExp regExp(QString("^(\\w+)/(\\w+),([0-%1]),([+-]?\\d+),([+-]?\\d+)$").arg(NiAnalogInputChannel::NiAnInConfEndValue - 1));
+    QRegExp regExp(QString("^(\\w+)/(\\w+),([0-%1]),([+-]?\\d+\\.?\\d*),([+-]?\\d+\\.?\\d*)$").arg(NiAnalogInputChannel::NiTerminalConfEndValue - 1));
     if (regExp.indexIn(configString) == -1)
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel,terminalMode [0-%i],minOutputVoltage,maxOutputVoltage",
-            configString.toLatin1().data(), NiAnalogInputChannel::NiAnInConfEndValue - 1);
+        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel,terminalMode [0-%i],minInputVoltage,maxInputVoltage",
+            configString.toLatin1().data(), NiAnalogInputChannel::NiTerminalConfEndValue - 1);
         return NULL;
     }
     else
@@ -86,12 +86,12 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
         }
 
         int inConfig = regExp.cap(3).toInt();
-        int minOutputVoltage = regExp.cap(4).toInt();
-        int maxOutputVoltage = regExp.cap(5).toInt();
+        double minInputVoltage = regExp.cap(4).toDouble();
+        double maxInputVoltage = regExp.cap(5).toDouble();
         NiAnalogInputChannel *ai = new NiAnalogInputChannel(physicalName);
-        ai->setAnalogInputConfig((NiAnalogInputConfig)inConfig);
-        ai->setMinOutputLim(minOutputVoltage);
-        ai->setMaxOutputLim(maxOutputVoltage);
+        ai->setTerminalConfig((NiAITerminalConfig)inConfig);
+        ai->setMinInputLim(minInputVoltage);
+        ai->setMaxInputLim(maxInputVoltage);
         return ai;
     }
 }
@@ -103,36 +103,36 @@ ito::RetVal NiAnalogInputChannel::addChannelToTask(TaskHandle taskHandle)
     ito::RetVal retValue;
 
     int config = 0;
-    switch (m_analogInputConfig)
+    switch (m_terminalConfig)
     {
-        case NiAnInConfDefault:
+        case NiTerminalConfDefault:
         {
             config = DAQmx_Val_Cfg_Default;
             break;
         }
-        case NiAnInConfDifferential:
+        case NiTerminalConfDifferential:
         {
             config = DAQmx_Val_Diff;
             break;
         }
-        case NiAnInConfRSE:
+        case NiTerminalConfRSE:
         {
             config = DAQmx_Val_RSE;
             break;
         }
-        case NiAnInConfNRSE:
+        case NiTerminalConfNRSE:
         {
             config = DAQmx_Val_NRSE;
             break;
         }
-        case NiAnInConfPseudoDiff:
+        case NiTerminalConfPseudoDiff:
         {
             config = DAQmx_Val_PseudoDiff;
             break;
         }
         default:
         {
-            retValue += ito::RetVal::format(ito::retError, 0, "NiAnalogInputChannel::addChannelToTask: TerminalMode %i is not in range of 0 to %i", m_analogInputConfig, NiAnalogInputConfig::NiAnInConfEndValue - 1);
+            retValue += ito::RetVal::format(ito::retError, 0, "NiAnalogInputChannel::addChannelToTask: TerminalMode %i is not in range of 0 to %i", m_terminalConfig, NiAITerminalConfig::NiTerminalConfEndValue - 1);
         }
     }
 
@@ -140,7 +140,7 @@ ito::RetVal NiAnalogInputChannel::addChannelToTask(TaskHandle taskHandle)
     {
         // TODO: Check if parameters are in Range and min is smaller than max
         QByteArray name = physicalName().toLatin1();
-        int err = DAQmxCreateAIVoltageChan(taskHandle, name.constData(), "", config, m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
+        int err = DAQmxCreateAIVoltageChan(taskHandle, name.constData(), "", config, m_minInputLim, m_maxInputLim, DAQmx_Val_Volts, NULL);
         retValue += checkError(err, "NiAnalogInputChannel::addChannelToTask: NI routine reported a create channel abnormality -");
     }
 
@@ -151,7 +151,7 @@ ito::RetVal NiAnalogInputChannel::addChannelToTask(TaskHandle taskHandle)
 // returnParameters
 QString NiAnalogInputChannel::getConfigurationString() const
 {
-    QString config = m_physicalName + QString(",%1,%2,%3").arg(m_analogInputConfig).arg(m_minOutputLim).arg(m_maxOutputLim);
+    QString config = m_physicalName + QString(",%1,%2,%3").arg(m_terminalConfig).arg(m_minInputLim).arg(m_maxInputLim);
     return config;
 }
 
@@ -177,7 +177,7 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
 /*static*/ NiBaseChannel* NiAnalogOutputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel,minInLim,maxInLim)
-    QRegExp regExp(QString("^(\\w+)/(\\w+),([+-]?\\d+),([+-]?\\d+)$"));
+    QRegExp regExp(QString("^(\\w+)/(\\w+),([+-]?\\d+\\.?\\d*),([+-]?\\d+\\.?\\d*)$"));
     if (regExp.indexIn(configString) == -1)
     {
         retValue += ito::RetVal::format(ito::retError, 0, "Errorneous analog output channel format '%s'. Required format: device/channel,minOutputVoltage,maxOutputVoltage", configString.toLatin1().data());
@@ -193,8 +193,8 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
             return NULL;
         }
 
-        int minOutputVoltage = regExp.cap(3).toInt();
-        int maxOutputVoltage = regExp.cap(4).toInt();
+        double minOutputVoltage = regExp.cap(3).toDouble();
+        double maxOutputVoltage = regExp.cap(4).toDouble();
         NiAnalogOutputChannel *ai = new NiAnalogOutputChannel(physicalName);
         ai->setMinOutputLim(minOutputVoltage);
         ai->setMaxOutputLim(maxOutputVoltage);
