@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -447,6 +447,27 @@
            </widget>
           </item>
           <item>
+           <widget class="Line" name="lineChannelCfgStr">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblChannelCfgStr">
+            <property name="text">
+             <string>Current Channel Configuration String:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txtChannelCfgStr">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -478,6 +499,26 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>comboTaskMode</tabstop>
+  <tabstop>doubleSpinSamplingRate</tabstop>
+  <tabstop>doubleSpinReadTimeout</tabstop>
+  <tabstop>checkSetValWaitForFinish</tabstop>
+  <tabstop>spinSamplesPerChannel</tabstop>
+  <tabstop>spinInputBufferSize</tabstop>
+  <tabstop>comboSampleClockSource</tabstop>
+  <tabstop>checkSampleClockRisingEdge</tabstop>
+  <tabstop>comboStartTriggerMode</tabstop>
+  <tabstop>comboStartTriggerSource</tabstop>
+  <tabstop>checkStartTriggerRisingEdge</tabstop>
+  <tabstop>doubleSpinStartTriggerLevel</tabstop>
+  <tabstop>treeChannels</tabstop>
+  <tabstop>doubleSpinMinimumVoltage</tabstop>
+  <tabstop>doubleSpinMaximumVoltage</tabstop>
+  <tabstop>comboTerminalConfig</tabstop>
+  <tabstop>txtChannelCfgStr</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

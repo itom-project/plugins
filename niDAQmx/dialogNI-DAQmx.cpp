@@ -35,7 +35,9 @@
 DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *adda) :
     AbstractAddInConfigDialog(adda),
     m_firstRun(true),
-    m_channelsModified(false)
+    m_channelsModified(false),
+    m_taskType(TypeUnknown),
+    m_channelPropsChanging(false)
 {
     ui.setupUi(this);
 
@@ -58,12 +60,31 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
 
         // Tab General, Group General
         ui.lblName->setText(params["taskName"].getVal<const char*>());
-        ui.lblType->setText(params["taskType"].getVal<const char*>());
+
+        QString taskType = params["taskType"].getVal<const char*>();
+        ui.lblType->setText(taskType);
+
+        if (taskType == "analogInput")
+        {
+            m_taskType = TypeAnalogInput;
+        }
+        else if (taskType == "analogOutput")
+        {
+            m_taskType = TypeAnalogOutput;
+        }
+        else if (taskType == "digitalInput")
+        {
+            m_taskType = TypeDigitalInput;
+        }
+        else if (taskType == "digitalOutput")
+        {
+            m_taskType = TypeDigitalOutput;
+        }
 
         // Tab General, Group Acquisition / Data Write
-        ui.doubleSpinReadTimeout->setEnabled(ui.lblType->text().endsWith("Input"));
-        ui.lblReadTimeout->setEnabled(ui.lblType->text().endsWith("Input"));
-        ui.checkSetValWaitForFinish->setEnabled(ui.lblType->text().endsWith("Output"));
+        ui.doubleSpinReadTimeout->setEnabled(m_taskType & TypeInput);
+        ui.lblReadTimeout->setEnabled(m_taskType & TypeInput);
+        ui.checkSetValWaitForFinish->setEnabled(m_taskType & TypeOutput);
 
         // Tab General, Start Trigger
         ito::StringMeta *sm = params["startTriggerMode"].getMetaT<ito::StringMeta>();
@@ -159,7 +180,7 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
     QStringList channels = QString(params["channels"].getVal<const char*>()).split(";");
     QStringList channelFullnames;
     int idx;
-    m_channelsModified = true;
+    m_channelsModified = false;
 
     foreach(const QString &c, channels)
     {
@@ -187,9 +208,17 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
             item->setCheckState(0, Qt::Checked);
             item->setData(0, CrConfigStr, channels[idx]); //full string with physical name
             item->setData(0, CrModified, false);
+
+            if (item->parent())
+            {
+                ui.treeChannels->expandItem(item->parent());
+            }
+
             ui.treeChannels->expandItem(item);
         }
     }
+
+    m_channelsModified = false;
 
     if (ui.treeChannels->selectedItems().size() > 0)
     {
@@ -326,7 +355,26 @@ ito::RetVal DialogNiDAQmx::applyParameters()
             );
     }
 
-    
+    // Channels
+    if (m_channelsModified)
+    {
+        QStringList channelsCfgStrings;
+
+        foreach(const QTreeWidgetItem* item, m_channelItems)
+        {
+            if (item && item->checkState(0) == Qt::Checked)
+            {
+                channelsCfgStrings << item->data(0, CrConfigStr).toString();
+            }
+        }
+
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("channels", ito::ParamBase::String,
+                channelsCfgStrings.join(";").toLatin1().data())
+            );
+    }
+
+    m_channelsModified = false;
 
     return setPluginParameters(values, msgLevelWarningAndError);
 }
@@ -373,9 +421,9 @@ void DialogNiDAQmx::on_treeChannels_currentItemChanged(QTreeWidgetItem *current,
 
     if (m_channelItems.values().contains(current) && current->checkState(0) == Qt::Checked)
     {
-        if (ui.lblType->text().endsWith("Input"))
+        switch (m_taskType)
         {
-            if (ui.lblType->text().startsWith("analog"))
+        case TypeAnalogInput:
             {
                 NiAnalogInputChannel* chn = static_cast<NiAnalogInputChannel*>(
                     NiAnalogInputChannel::fromConfigurationString(current->data(0, CrConfigStr).toString(), retVal));
@@ -391,14 +439,11 @@ void DialogNiDAQmx::on_treeChannels_currentItemChanged(QTreeWidgetItem *current,
 
                 DELETE_AND_SET_NULL(chn);
             }
-            else
-            {
-                setChannelPropsDI();
-            }
-        }
-        else //Output
-        {
-            if (ui.lblType->text().startsWith("analog"))
+            break;
+        case TypeDigitalInput:
+            setChannelPropsDI();
+            break;
+        case TypeAnalogOutput:
             {
                 NiAnalogOutputChannel* chn = static_cast<NiAnalogOutputChannel*>(
                     NiAnalogOutputChannel::fromConfigurationString(current->data(0, CrConfigStr).toString(), retVal));
@@ -414,11 +459,13 @@ void DialogNiDAQmx::on_treeChannels_currentItemChanged(QTreeWidgetItem *current,
 
                 DELETE_AND_SET_NULL(chn);
             }
-            else
-            {
-                setChannelPropsDO();
-            }
+            break;
+        case TypeDigitalOutput:
+            setChannelPropsDO();
+            break;
         }
+
+        updateChannelCfg();
     }
     else
     {
@@ -429,23 +476,50 @@ void DialogNiDAQmx::on_treeChannels_currentItemChanged(QTreeWidgetItem *current,
 //---------------------------------------------------------------------------------------------------------------------
 void DialogNiDAQmx::on_treeChannels_itemChanged(QTreeWidgetItem *item, int column)
 {
-    qDebug() << "itemChanged" << item << column;
+    if (item)
+    {
+        if (item->checkState(0) == Qt::Checked)
+        {
+            if (item->data(0, CrConfigStr).toString() == "")
+            {
+                qDebug() << "Channels Modified";
+                m_channelsModified = true;
+            }
+        }
+        else
+        {
+            if (item->data(0, CrConfigStr).toString() != "")
+            {
+                qDebug() << "Channels Modified";
+                item->setData(0, CrConfigStr, "");
+                m_channelsModified = true;
+            }
+        }
+    }
+
+    on_treeChannels_currentItemChanged(item, NULL);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogNiDAQmx::disableChannelProps()
 {
+    m_channelPropsChanging = true;
     ui.lblTerminalConfig->setVisible(false);
     ui.comboTerminalConfig->setVisible(false);
     ui.lblMinimumVoltage->setVisible(false);
     ui.doubleSpinMinimumVoltage->setVisible(false);
     ui.lblMaximumVoltage->setVisible(false);
     ui.doubleSpinMaximumVoltage->setVisible(false);
+    ui.lineChannelCfgStr->setVisible(false);
+    ui.lblChannelCfgStr->setVisible(false);
+    ui.txtChannelCfgStr->setVisible(false);
+    m_channelPropsChanging = false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogNiDAQmx::setChannelPropsAI(int terminalConfig, double minV, double maxV)
 {
+    m_channelPropsChanging = true;
     ui.lblTerminalConfig->setVisible(true);
     ui.comboTerminalConfig->setVisible(true);
     ui.lblMinimumVoltage->setVisible(true);
@@ -455,11 +529,16 @@ void DialogNiDAQmx::setChannelPropsAI(int terminalConfig, double minV, double ma
     ui.comboTerminalConfig->setCurrentIndex(terminalConfig);
     ui.doubleSpinMinimumVoltage->setValue(minV);
     ui.doubleSpinMaximumVoltage->setValue(maxV);
+    ui.lineChannelCfgStr->setVisible(true);
+    ui.lblChannelCfgStr->setVisible(true);
+    ui.txtChannelCfgStr->setVisible(true);
+    m_channelPropsChanging = false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogNiDAQmx::setChannelPropsAO(double minV, double maxV)
 {
+    m_channelPropsChanging = true;
     ui.lblTerminalConfig->setVisible(false);
     ui.comboTerminalConfig->setVisible(false);
     ui.lblMinimumVoltage->setVisible(true);
@@ -468,6 +547,10 @@ void DialogNiDAQmx::setChannelPropsAO(double minV, double maxV)
     ui.doubleSpinMaximumVoltage->setVisible(true);
     ui.doubleSpinMinimumVoltage->setValue(minV);
     ui.doubleSpinMaximumVoltage->setValue(maxV);
+    ui.lineChannelCfgStr->setVisible(true);
+    ui.lblChannelCfgStr->setVisible(true);
+    ui.txtChannelCfgStr->setVisible(true);
+    m_channelPropsChanging = false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -480,6 +563,102 @@ void DialogNiDAQmx::setChannelPropsDI()
 void DialogNiDAQmx::setChannelPropsDO()
 {
     disableChannelProps();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::updateChannelCfg()
+{
+    QTreeWidgetItem *current = ui.treeChannels->currentItem();
+    QString cfgString;
+
+    double minV = ui.doubleSpinMinimumVoltage->value();
+    double maxV = ui.doubleSpinMaximumVoltage->value();
+    int terminalCfg = ui.comboTerminalConfig->currentIndex();
+
+    if (current != NULL)
+    {
+        switch (m_taskType)
+        {
+        case TypeAnalogInput:
+        {
+            NiAnalogInputChannel chn(current->data(0, CrPhysicalName).toString());
+
+            chn.setMaxInputLim(maxV);
+            chn.setMinInputLim(minV);
+
+            switch (terminalCfg)
+            {
+            case NiAnalogInputChannel::NiTerminalConfDefault:
+            default:
+                chn.setTerminalConfig(NiAnalogInputChannel::NiTerminalConfDefault);
+                break;
+            case NiAnalogInputChannel::NiTerminalConfDifferential:
+                chn.setTerminalConfig(NiAnalogInputChannel::NiTerminalConfDifferential);
+                break;
+            case NiAnalogInputChannel::NiTerminalConfRSE:
+                chn.setTerminalConfig(NiAnalogInputChannel::NiTerminalConfRSE);
+                break;
+            case NiAnalogInputChannel::NiTerminalConfNRSE:
+                chn.setTerminalConfig(NiAnalogInputChannel::NiTerminalConfNRSE);
+                break;
+            case NiAnalogInputChannel::NiTerminalConfPseudoDiff:
+                chn.setTerminalConfig(NiAnalogInputChannel::NiTerminalConfPseudoDiff);
+                break;
+            }
+            
+            cfgString = chn.getConfigurationString();
+        }
+        break;
+        case TypeAnalogOutput:
+        {
+            NiAnalogOutputChannel chn(current->data(0, CrPhysicalName).toString());
+
+            chn.setMaxOutputLim(maxV);
+            chn.setMinOutputLim(minV);
+            cfgString = chn.getConfigurationString();
+        }
+        break;
+        case TypeDigitalInput:
+        case TypeDigitalOutput:
+            cfgString = current->data(0, CrPhysicalName).toString();
+            break;
+        
+        }
+    }
+
+    if (!m_channelPropsChanging && current != NULL && cfgString != "")
+    {
+        ui.treeChannels->blockSignals(true);
+
+        if (current->data(0, CrConfigStr).toString() != cfgString)
+        {
+            qDebug() << "Channels Modified";
+            current->setData(0, CrConfigStr, cfgString);
+            m_channelsModified = true;
+        }
+
+        ui.treeChannels->blockSignals(false);
+    }
+
+    ui.txtChannelCfgStr->setText(cfgString);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_comboTerminalConfig_currentIndexChanged(int index)
+{
+    updateChannelCfg();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_doubleSpinMaximumVoltage_valueChanged(double value)
+{
+    updateChannelCfg();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_doubleSpinMinimumVoltage_valueChanged(double value)
+{
+    updateChannelCfg();
 }
 
 

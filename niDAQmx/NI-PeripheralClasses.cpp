@@ -53,7 +53,10 @@ NiBaseChannel::~NiBaseChannel()
 //------------------------------------------------------------------------------------------------------
 // Constructor, protected
 NiAnalogInputChannel::NiAnalogInputChannel(const QString &physicalName) :
-    NiBaseChannel(physicalName, NiBaseChannel::ChTypeAnalog, NiBaseChannel::ChIoInput)
+    NiBaseChannel(physicalName, NiBaseChannel::ChTypeAnalog, NiBaseChannel::ChIoInput),
+    m_maxInputLim(0.0),
+    m_minInputLim(0.0),
+    m_terminalConfig(NiTerminalConfDefault)
 {
 }
 
@@ -162,7 +165,9 @@ QString NiAnalogInputChannel::getConfigurationString() const
 //------------------------------------------------------------------------------------------------------
 // Constructor
 NiAnalogOutputChannel::NiAnalogOutputChannel(const QString &physicalName) :
-    NiBaseChannel(physicalName, NiBaseChannel::ChTypeAnalog, NiBaseChannel::ChIoOutput)
+    NiBaseChannel(physicalName, NiBaseChannel::ChTypeAnalog, NiBaseChannel::ChIoOutput),
+    m_maxOutputLim(0.0),
+    m_minOutputLim(0.0)
 {
 }
 
