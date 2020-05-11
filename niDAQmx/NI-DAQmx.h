@@ -118,9 +118,8 @@ class NiDAQmx : public ito::AddInDataIO
             NiTaskModeOnDemand = 2 */
         };
 
-        void taskStopped(TaskHandle taskHandle, int32 status);
-
         static QVector<void*> ActiveInstances;
+        static QMutex ActiveInstancesAccess;
 
     private:
         static int InstanceCounter; /*!< used to give an auto-incremented taskName if no one is given as initialization parameter */
@@ -134,6 +133,7 @@ class NiDAQmx : public ito::AddInDataIO
         ito::RetVal createChannelsForTask();
         ito::RetVal configTask();
         ito::RetVal startTask();
+        ito::RetVal configLogging(bool emitParametersChanged = true);
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
         bool m_taskStarted;
@@ -193,6 +193,8 @@ class NiDAQmx : public ito::AddInDataIO
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+
+        void taskStopped(TaskHandle taskHandle);
 };
 
 #endif // niDAQmx_H

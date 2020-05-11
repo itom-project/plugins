@@ -102,6 +102,8 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
         void on_comboTerminalConfig_currentIndexChanged(int index);
         void on_doubleSpinMaximumVoltage_valueChanged(double value);
         void on_doubleSpinMinimumVoltage_valueChanged(double value);
+
+        void on_comboStartTriggerMode_currentIndexChanged(QString text);
 };
 
 #endif

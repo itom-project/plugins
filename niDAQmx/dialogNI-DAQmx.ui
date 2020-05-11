@@ -485,6 +485,112 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>TDMS Logging</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QGroupBox" name="groupLoggingMode">
+         <property name="title">
+          <string>Logging Mode</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QRadioButton" name="radioLoggingOff">
+            <property name="text">
+             <string>Off</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioLoggingFast">
+            <property name="text">
+             <string>Automatic, fast logging enabled. No simultaneous getVal / copyVal operation possible.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioLoggingNormal">
+            <property name="text">
+             <string>Default logging enabled. Data is only logged upon each getVal / copyVal call.</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupLoggingOptions">
+         <property name="title">
+          <string>Logging Options</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>TDMS Group Name:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txtLoggingGroupName">
+            <property name="toolTip">
+             <string>If empty, the task name is taken</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>TDMS Filename:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="PathLineEdit" name="pathLoggingFilename">
+            <property name="label">
+             <string/>
+            </property>
+            <property name="nameFilters">
+             <stringlist>
+              <string>TDMS-File (*.tdms)</string>
+              <string>All Files (*.*)</string>
+             </stringlist>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Operation Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboLoggingOperation"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>209</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -499,6 +605,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PathLineEdit</class>
+   <extends>QWidget</extends>
+   <header>pathLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>comboTaskMode</tabstop>

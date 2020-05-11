@@ -141,6 +141,13 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
         ui.comboStartTriggerSource->addItem("OnboardClock");
         ui.comboStartTriggerSource->addItems(availTerminals);
 
+        // Tab Logging
+        sm = params["loggingOperation"].getMetaT<ito::StringMeta>();
+        for (int i = 0; i < sm->getLen(); ++i)
+        {
+            ui.comboLoggingOperation->addItem(sm->getString(i));
+        }
+
         m_firstRun = false;
     }
 
@@ -227,6 +234,25 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
     else
     {
         on_treeChannels_currentItemChanged(NULL, NULL);
+    }
+
+    // Tab Logging
+    ui.comboLoggingOperation->setCurrentText(params["loggingOperation"].getVal<const char*>());
+    ui.pathLoggingFilename->setCurrentPath(params["loggingFilePath"].getVal<const char*>());
+    ui.txtLoggingGroupName->setText(params["loggingGroupName"].getVal<const char*>());
+
+    switch (params["loggingMode"].getVal<int>())
+    {
+    default:
+    case 0:
+        ui.radioLoggingOff->setChecked(true);
+        break;
+    case 1:
+        ui.radioLoggingFast->setChecked(true);
+        break;
+    case 2:
+        ui.radioLoggingNormal->setChecked(true);
+        break;
     }
     
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
@@ -375,6 +401,55 @@ ito::RetVal DialogNiDAQmx::applyParameters()
     }
 
     m_channelsModified = false;
+
+    // Tab Logging
+    byteArrayVal = ui.txtLoggingGroupName->text().toLatin1();
+    if (byteArrayVal != m_currentParameters["loggingGroupName"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("loggingGroupName", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    byteArrayVal = ui.comboLoggingOperation->currentText().toLatin1();
+    if (byteArrayVal != m_currentParameters["loggingOperation"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("loggingOperation", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    byteArrayVal = ui.pathLoggingFilename->currentPath().toLatin1();
+    if (byteArrayVal != m_currentParameters["loggingFilePath"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("loggingFilePath", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    int intVal = 0;
+
+    if (ui.radioLoggingFast->isChecked())
+    {
+        intVal = 1;
+    }
+    else if (ui.radioLoggingNormal->isChecked())
+    {
+        intVal = 2;
+    }
+
+    if (intVal != m_currentParameters["loggingMode"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("loggingMode", ito::ParamBase::Int,
+                boolVal)
+            );
+    }
+
+    
 
     return setPluginParameters(values, msgLevelWarningAndError);
 }
@@ -659,6 +734,12 @@ void DialogNiDAQmx::on_doubleSpinMaximumVoltage_valueChanged(double value)
 void DialogNiDAQmx::on_doubleSpinMinimumVoltage_valueChanged(double value)
 {
     updateChannelCfg();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void DialogNiDAQmx::on_comboStartTriggerMode_currentIndexChanged(QString text)
+{
+    ui.doubleSpinStartTriggerLevel->setEnabled(text == "analogEdge");
 }
 
 

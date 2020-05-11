@@ -42,9 +42,6 @@
 
 #include "dockWidgetNI-DAQmx.h"
 
-
-//#include "dockWidgetniDAQmx.h"
-
 /*callback function to receive an event when a task stops due to an error or when a finite acquisition 
 task or finite generation task completes execution. A Done event does not occur 
 when a task is stopped explicitly, such as by calling DAQmxStopTask.
@@ -52,10 +49,11 @@ when a task is stopped explicitly, such as by calling DAQmxStopTask.
 This callback function is called synchronously, hence, in the thread that registered the event*/
 int32 CVICALLBACK DoneEventCallback(TaskHandle taskHandle, int32 status, void *callbackData)
 {
+    QMutexLocker lock(&NiDAQmx::ActiveInstancesAccess);
     NiDAQmx *instance = (NiDAQmx*)callbackData;
     if (instance && NiDAQmx::ActiveInstances.contains(instance))
     {
-        instance->taskStopped(taskHandle, status);
+        QMetaObject::invokeMethod(instance, "taskStopped", Q_ARG(TaskHandle, taskHandle));
     }
     return 0;
 }
@@ -70,32 +68,10 @@ NiDAQmxInterface::NiDAQmxInterface()
     m_type = ito::typeDataIO | ito::typeADDA; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
     setObjectName("NI-DAQmx");
 
-    m_description = QObject::tr("NI-DAQmx");
+    m_description = QObject::tr("Analog and digital input and output tasks for National Instruments devices, based on NI DAQmx.");
 
-    char pathSeparator[] =
-    #if defined(__linux__) || defined(__APPLE__)
-        "/";
-    #else
-        "\\";
-    #endif
-
-    char docstring[512];
-    memset(&docstring, '\0', sizeof(docstring));
-    std::string filepath (__FILE__);
-    std::string dirpath = filepath.substr(0, filepath.rfind(pathSeparator));
-    char first[] = "The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. \n\
-The installation needs the NI-DAQmx Library that can be downloaded from the NI website \n(https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html).\n\n\
-Basic plugin documentation is found in ";
-    char last[] = ". \nOnline help is available through <plugin_ref>.exec('help').";
-    strcpy (docstring, first);
-    strcat (docstring, dirpath.c_str());
-    strcat (docstring, pathSeparator);
-    strcat (docstring, "doc");
-    strcat (docstring, pathSeparator);
-    strcat (docstring, "NiDAQmx.rst");
-    strcat (docstring, last);
-
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr("The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. \n\
+The installation needs the NI-DAQmx Library that can be downloaded from the NI website \n(https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html).");
 
     m_author = PLUGIN_AUTHOR;
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -157,6 +133,7 @@ ito::RetVal NiDAQmxInterface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ int NiDAQmx::InstanceCounter = 0;
 /*static*/ QVector<void*> NiDAQmx::ActiveInstances = QVector<void*>();
+/*static*/ QMutex NiDAQmx::ActiveInstancesAccess;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 NiDAQmx::NiDAQmx() : 
@@ -167,27 +144,38 @@ NiDAQmx::NiDAQmx() :
     m_taskStarted(false),
     m_digitalChannelDataType(ito::tUInt8)
 {
-    InstanceCounter++;
-    ActiveInstances << this;
+    qRegisterMetaType<TaskHandle>("TaskHandle");
+
+    {
+        QMutexLocker lock(&ActiveInstancesAccess);
+        InstanceCounter++;
+        ActiveInstances << this;
+    }
 
     // General Parameters
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "NI-DAQmx", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        "NI-DAQmx", NULL);
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("taskName", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("name of the NI task that is related to this instance").toLatin1().data());
+    paramVal = ito::Param("taskName", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        "", tr("name of the NI task that is related to this instance").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("availableDevices", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and available devices").toLatin1().data());
+    paramVal = ito::Param("availableDevices", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        "", tr("comma-separated list of all detected and available devices").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("availableTerminals", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and available terminals (e.g. for 'sampleClockSource' or 'startTriggerSource'). The standard sample clock source 'OnboardClock' is not contained in this list.").toLatin1().data());
+    paramVal = ito::Param("availableTerminals", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        "", tr("comma-separated list of all detected and available terminals (e.g. for 'sampleClockSource' or "
+               "'startTriggerSource'). The standard sample clock source 'OnboardClock' is not contained in this list.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("taskMode", ito::ParamBase::String | ito::ParamBase::In, "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
+    paramVal = ito::Param("taskMode", ito::ParamBase::String | ito::ParamBase::In, 
+        "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "finite", "General");
     sm->addItem("continuous");
     sm->addItem("onDemand");
@@ -195,7 +183,8 @@ NiDAQmx::NiDAQmx() :
     m_params.insert(paramVal.getName(), paramVal);
     m_taskMode = NiTaskModeFinite;
 
-    paramVal = ito::Param("taskType", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "analogInput", tr("task type: analogInput, analogOutput, digitalInput, digitalOutput").toLatin1().data());
+    paramVal = ito::Param("taskType", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, 
+        "analogInput", tr("task type: analogInput, analogOutput, digitalInput, digitalOutput").toLatin1().data());
     sm = new ito::StringMeta(ito::StringMeta::String, "analogInput", "General");
     sm->addItem("analogOutput");
     sm->addItem("digitalInput");
@@ -203,96 +192,142 @@ NiDAQmx::NiDAQmx() :
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("loggingActive", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 2, 0, tr("indicates if TDMS file logging has been enabled (see exec function 'configureLogging') for this input task.").toLatin1().data());
+    paramVal = ito::Param("loggingActive", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        0, 2, 0, tr("Indicates if TDMS file logging has been enabled and which mode was accepted by the device. The value has the same meaning than 'loggingMode'.").toLatin1().data());
     paramVal.getMeta()->setCategory("Status");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("taskStarted", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is currently running (1) or stopped / inactive (0).").toLatin1().data());
+    paramVal = ito::Param("taskStarted", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        0, 1, 0, tr("Indicates if the task is currently running (1) or stopped / inactive (0).").toLatin1().data());
     paramVal.getMeta()->setCategory("Status");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("taskConfigured", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 0, 1, 0, tr("Indicates if the task is properly configured (1, all task related parameters where accepted) or not (0).").toLatin1().data());
+    paramVal = ito::Param("taskConfigured", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        0, 1, 0, tr("Indicates if the task is properly configured (1, all task related parameters where accepted) or not (0).").toLatin1().data());
     paramVal.getMeta()->setCategory("Status");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "", tr("comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name").toLatin1().data());
+    paramVal = ito::Param("supportedChannels", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, 
+        "", tr("comma-separated list of all detected and supported channels with respect to the task type. "
+               "Every item consists of the device name / channel name").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "Channels"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("channels", ito::ParamBase::String | ito::ParamBase::In, "", tr("semicolon-separated list of all channels that should be part of this task. Every item is a comma separated string that defines and parameterizes every channel.").toLatin1().data());
+    paramVal = ito::Param("channels", ito::ParamBase::String | ito::ParamBase::In, 
+        "", tr("semicolon-separated list of all channels that should be part of this task. "
+               "Every item is a comma separated string that defines and parameterizes every channel.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "Channels"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("samplingRate", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000000.0, 100.0, tr("The sampling rate in samples per second per channel. If you use an external source for the Sample Clock, set this value to the maximum expected rate of that clock.").toLatin1().data());
+    paramVal = ito::Param("samplingRate", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000000.0, 100.0, 
+        tr("The sampling rate in samples per second per channel. If you use an external source for "
+            "the Sample Clock, set this value to the maximum expected rate of that clock.").toLatin1().data());
     paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("readTimeout", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 100000.0, -1.0, 
-        tr("Timeout when reading up to 'samplesPerChannel' values (per channel) in seconds. If -1.0 (default), the timeout is set to infinity (recommended for finite tasks). If 0.0, getVal/copyVal will return all values which have been recorded up to this call.").toLatin1().data());
+        tr("Timeout when reading up to 'samplesPerChannel' values (per channel) in seconds. "
+           "If -1.0 (default), the timeout is set to infinity (recommended for finite tasks). "
+           "If 0.0, getVal/copyVal will return all values which have been recorded up to this call.").toLatin1().data());
     paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("setValWaitForFinish", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0,
-        tr("If 1, the setVal call will block until all data has been written (only valid for finite tasks). If 0, setVal will return immediately, then use 'taskStarted' to verify if the operation has been finished.").toLatin1().data());
+        tr("If 1, the setVal call will block until all data has been written (only valid for finite "
+           "tasks). If 0, setVal will return immediately, then use 'taskStarted' to verify if the "
+           "operation has been finished.").toLatin1().data());
     paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
     
-    paramVal = ito::Param("samplesPerChannel", ito::ParamBase::Int | ito::ParamBase::In, 0,std::numeric_limits<int>::max(), 
-                                            20000, 
-                                            tr("The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size. This parameter is ignored for output tasks.").toLatin1().data());
+    paramVal = ito::Param("samplesPerChannel", ito::ParamBase::Int | ito::ParamBase::In, 
+        0, std::numeric_limits<int>::max(), 20000, 
+        tr("The number of samples to acquire or generate for each channel in the task "
+           "(if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this "
+           "value to determine the buffer size. This parameter is ignored for output tasks.").toLatin1().data());
     paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("inputBufferSize", ito::ParamBase::Int | ito::ParamBase::In, -1, std::numeric_limits<int>::max(), -1,
-        tr("Sets and changes the automatic input buffer allocation mode. If -1 (default), the automatic allocation is enabled. Else defines the number of samples the buffer can hold for each channel (only recommended for continuous acquisition). In automatic mode and continuous acquisition, the standard is a buffer size of 1 kS for a sampling rate < 100 S/s, 10 kS for 100-10000 S/s, 100 kS for 10-1000 kS/s and 1 MS else.").toLatin1().data());
+        tr("Sets and changes the automatic input buffer allocation mode. If -1 (default), "
+           "the automatic allocation is enabled. Else defines the number of samples the buffer "
+           "can hold for each channel (only recommended for continuous acquisition). In automatic "
+           "mode and continuous acquisition, the standard is a buffer size of 1 kS for a sampling "
+           "rate < 100 S/s, 10 kS for 100-10000 S/s, 100 kS for 10-1000 kS/s and 1 MS else.").toLatin1().data());
     paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sampleClockSource", ito::ParamBase::String | ito::ParamBase::In, "OnboardClock", tr("The source terminal of the Sample Clock. To use the internal clock of the device, use an empty string or 'OnboardClock' (default). An example for an external clock source is 'PFI0' or PFI1'.").toLatin1().data());
+    paramVal = ito::Param("sampleClockSource", ito::ParamBase::String | ito::ParamBase::In, "OnboardClock", 
+        tr("The source terminal of the Sample Clock. To use the internal clock of the device, use "
+           "an empty string or 'OnboardClock' (default). An example for an external clock source "
+           "is 'PFI0' or PFI1'.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "SampleClock"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sampleClockRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If 1, samples are acquired on a rising edge of the sample clock (default), else they are acquired on a falling edge.").toLatin1().data());
+    paramVal = ito::Param("sampleClockRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, 
+        tr("If 1, samples are acquired on a rising edge of the sample clock (default), "
+           "else they are acquired on a falling edge.").toLatin1().data());
     paramVal.getMeta()->setCategory("SampleClock");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("startTriggerMode", ito::ParamBase::String | ito::ParamBase::In, "off", tr("Specifies the start trigger mode. 'off': software-based start trigger, 'digitalEdge': The start of acquiring or generating samples is given if the 'startTriggerSource' is activated (based on 'startTriggerRisingEdge'), 'analogEdge': similar to 'digitalEdge', but the analog input 'startTriggerSource' has to pass the value 'startTriggerLevel'.").toLatin1().data());
+    paramVal = ito::Param("startTriggerMode", ito::ParamBase::String | ito::ParamBase::In, "off", 
+        tr("Specifies the start trigger mode. 'off': software-based start trigger, 'digitalEdge': "
+           "The start of acquiring or generating samples is given if the 'startTriggerSource' is "
+           "activated (based on 'startTriggerRisingEdge'), 'analogEdge': similar to 'digitalEdge', "
+           "but the analog input 'startTriggerSource' has to pass the value 'startTriggerLevel'.").toLatin1().data());
     sm = new ito::StringMeta(ito::StringMeta::String, "off", "StartTrigger");
     sm->addItem("digitalEdge");
     sm->addItem("analogEdge");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("startTriggerSource", ito::ParamBase::String | ito::ParamBase::In, "/Dev1/PFI0", tr("The source terminal of the trigger source (if 'startTriggerMode' is set to 'digitalEdge' or 'analogEdge').").toLatin1().data());
+    paramVal = ito::Param("startTriggerSource", ito::ParamBase::String | ito::ParamBase::In, "/Dev1/PFI0", 
+        tr("The source terminal of the trigger source (if 'startTriggerMode' is set to 'digitalEdge' or 'analogEdge').").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "StartTrigger"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("startTriggerRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Specifies on which slope of the signal to start acquiring or generating samples. 1: rising edge (default), 0: falling edge.").toLatin1().data());
+    paramVal = ito::Param("startTriggerRisingEdge", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, 
+        tr("Specifies on which slope of the signal to start acquiring or generating samples. "
+           "1: rising edge (default), 0: falling edge.").toLatin1().data());
     paramVal.getMeta()->setCategory("StartTrigger");
     m_params.insert(paramVal.getName(), paramVal);
     
-    paramVal = ito::Param("startTriggerLevel", ito::ParamBase::Double | ito::ParamBase::In, -1000.0, 1000.0, 1.0, tr("Only for 'startTriggerMode' == 'analogEdge': The threshold at which to start acquiring or generating samples. Specify this value in the units of the measurement or generation.").toLatin1().data());
+    paramVal = ito::Param("startTriggerLevel", ito::ParamBase::Double | ito::ParamBase::In, -1000.0, 1000.0, 1.0, 
+        tr("Only for 'startTriggerMode' == 'analogEdge': The threshold at which to start acquiring "
+           "or generating samples. Specify this value in the units of the measurement or generation.").toLatin1().data());
     paramVal.getMeta()->setCategory("StartTrigger");
     m_params.insert(paramVal.getName(), paramVal);
 
-    // Register Exec Functions
-    QVector<ito::Param> pMand = QVector<ito::Param>();
-    QVector<ito::Param> pOpt = QVector<ito::Param>();
-    QVector<ito::Param> pOut = QVector<ito::Param>();
+    paramVal = ito::Param("loggingMode", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0,
+        tr("0: logging is disabled (default), 1: logging is enabled with disabled read"
+           " (fast, but no data can simultaneously read via getVal/copyVal), 2: "
+           "logging is enabled with allowed reading of data.").toLatin1().data());
+    paramVal.getMeta()->setCategory("Logging");
+    m_params.insert(paramVal.getName(), paramVal);
 
-    pMand << ito::Param("loggingMode", ito::ParamBase::Int, 0, 2, 0, tr("0: logging is disabled, 1: logging is enabled with disabled read (fast, but no data can simultaneously read via getVal/copyVal), 2: logging is enabled with allowed reading of data.").toLatin1().data());
-    pMand << ito::Param("filePath", ito::ParamBase::String, "", tr("path to the tdms file").toLatin1().data());
-    pOpt << ito::Param("groupName", ito::ParamBase::String, "", tr("The name of the group to create within the TDMS file for data from this task.").toLatin1().data());
-    paramVal = ito::Param("operation", ito::ParamBase::String, "createOrReplace", tr("Specifies how to open the TDMS file.").toLatin1().data());
-    sm = new ito::StringMeta(ito::StringMeta::String);
-    sm->addItem("open");
+    paramVal = ito::Param("loggingOperation", ito::ParamBase::String | ito::ParamBase::In, "createOrReplace",
+        tr("Specifies how to open the TDMS file. 'open': Always appends data to an existing TDMS file. "
+           "If it does not exist yet, the task start operation will return with an error; 'openOrCreate': "
+           "Creates a new TDMS file or appends data to the existing one;'createOrReplace' (default): "
+           "Creates a new TDMS file or replaces an existing one; 'create': Newly creates the TDMS file. "
+           "If it already exists a task start operation will return with an error.").toLatin1().data());
+    sm = new ito::StringMeta(ito::StringMeta::String, "open", "Logging");
     sm->addItem("openOrCreate");
     sm->addItem("createOrReplace");
     sm->addItem("create");
     paramVal.setMeta(sm, true);
-    pOpt << paramVal;
+    m_params.insert(paramVal.getName(), paramVal);
 
-    registerExecFunc("configureLogging", pMand, pOpt, pOut, tr("Configures, en- or disables logging of input tasks to National Instruments tdms files. Can only be called if task is already configured."));
+    paramVal = ito::Param("loggingGroupName", ito::ParamBase::String | ito::ParamBase::In, "",
+        tr("The name of the group to create within the TDMS file for data from this task. "
+           "If empty, the task name is taken. If data is appended to a TDMS file, a number "
+           "symbol (e.g. Task #1, Task #2...) is added at each run.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "Logging"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("loggingFilePath", ito::ParamBase::String | ito::ParamBase::In, "",
+        tr("The path to the TDMS file to which you want to log data. ").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "Logging"), true);
+    m_params.insert(paramVal.getName(), paramVal);
 
     //end register Exec Functions
     if (hasGuiSupport())
@@ -418,8 +453,11 @@ ito::RetVal NiDAQmx::close(ItomSharedSemaphore *waitCond)
     //for safety only
     retValue += deleteTask();
 
-    //if this instance is removed from ActiveInstances, the callback function DoneEventCallback becomes invalid!
-    ActiveInstances.removeOne(this);
+    {
+        QMutexLocker lock(&ActiveInstancesAccess);
+        //if this instance is removed from ActiveInstances, the callback function DoneEventCallback becomes invalid!
+        ActiveInstances.removeOne(this);
+    }
 
     if (waitCond)
     {
@@ -452,7 +490,7 @@ ito::RetVal NiDAQmx::stopTask()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void NiDAQmx::taskStopped(TaskHandle taskHandle, int32 status)
+void NiDAQmx::taskStopped(TaskHandle taskHandle)
 {
     if (taskHandle == m_taskHandle && m_params["taskStarted"].getVal<int>() > 0)
     {
@@ -515,7 +553,8 @@ ito::RetVal NiDAQmx::createTask()
             m_params["taskName"].setVal<const char*>(buf);
         }
 
-        retValue += checkError(DAQmxRegisterDoneEvent(m_taskHandle, DAQmx_Val_SynchronousEventCallbacks, DoneEventCallback, this), "DAQmxRegisterDoneEvent");
+        // the callback is called in the own thread of NI. Only this option is available in both Linux and Windows.
+        retValue += checkError(DAQmxRegisterDoneEvent(m_taskHandle, 0, DoneEventCallback, this), "DAQmxRegisterDoneEvent");
 
         if (!retValue.containsError())
         {
@@ -735,7 +774,87 @@ ito::RetVal NiDAQmx::configTask()
             }
         }
 
+        retValue += configLogging(false);
+
         m_params["taskConfigured"].setVal<int>(retValue.containsError() ? 0 : 1);
+        emit parametersChanged(m_params);
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NiDAQmx::configLogging(bool emitParametersChanged /*= true*/)
+{
+    ito::RetVal retValue;
+
+    if (!m_taskHandle)
+    {
+        return retValue;
+    }
+
+    int mode = m_params["loggingMode"].getVal<int>(); // 0: off, 1: fast logging with disabled getVal / copyVal, 2: logging plus getVal / copyVal
+    QByteArray filePath = m_params["loggingFilePath"].getVal<const char*>();
+    QByteArray groupName = m_params["loggingGroupName"].getVal<const char*>();
+    QByteArray operation = m_params["loggingOperation"].getVal<const char*>();
+
+    if (!m_taskHandle)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "Task not available.");
+    }
+    else if (mode == 0)
+    {
+        m_params["loggingActive"].setVal<int>(0);
+
+        if (m_taskType & Input)
+        {
+            retValue += checkError(DAQmxConfigureLogging(m_taskHandle, "", DAQmx_Val_Off, "", DAQmx_Val_CreateOrReplace), "DAQmxConfigureLogging");
+        }
+    }
+    else if (m_taskType & Input)
+    {
+        int32 op = DAQmx_Val_CreateOrReplace;
+
+        if (operation == "open")
+        {
+            op = DAQmx_Val_Open;
+        }
+        else if (operation == "openOrCreate")
+        {
+            op = DAQmx_Val_OpenOrCreate;
+        }
+        else if (operation == "create")
+        {
+            op = DAQmx_Val_Create;
+        }
+
+        int32 mode_ = mode == 1 ? DAQmx_Val_Log : DAQmx_Val_LogAndRead;
+
+        retValue += checkError(DAQmxConfigureLogging(m_taskHandle, filePath.constData(), mode_, groupName.constData(), op), "DAQmxConfigureLogging");
+
+        int32 mode = DAQmx_Val_Off;
+        DAQmxGetLoggingMode(m_taskHandle, &mode);
+
+        switch (mode)
+        {
+        case DAQmx_Val_Log:
+            m_params["loggingActive"].setVal<int>(1);
+            break;
+        case DAQmx_Val_LogAndRead:
+            m_params["loggingActive"].setVal<int>(2);
+            break;
+        default:
+            m_params["loggingActive"].setVal<int>(0);
+            break;
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, "Logging can only be enabled for input tasks");
+    }
+
+    if (emitParametersChanged)
+    {
         emit parametersChanged(m_params);
     }
 
@@ -819,17 +938,29 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         else if (key == "samplingRate" || 
             key == "sampleClockSource" ||
             key == "samplesPerChannel" ||
+            key == "inputBufferSize" ||
+            key == "sampleClockSource" ||
             key == "sampleClockRisingEdge" ||
             key == "startTriggerMode" ||
             key == "startTriggerSource" ||
             key == "startTriggerRisingEdge" ||
-            key == "startTriggerLevel" ||
-            key == "continuousTaskBufferFactor")
+            key == "startTriggerLevel")
         {
             retValue += it->copyValueFrom(&(*val));
             if (!retValue.containsError() && m_deviceStartedCounter > 0)
             {
                 retValue += configTask();
+            }
+        }
+        else if (key == "loggingMode" ||
+            key == "loggingOperation" ||
+            key == "loggingGroupName" ||
+            key == "loggingFilePath")
+        {
+            retValue += it->copyValueFrom(&(*val));
+            if (!retValue.containsError() && m_deviceStartedCounter > 0)
+            {
+                retValue += configLogging(true);
             }
         }
         else if (key == "taskMode")
@@ -1087,6 +1218,13 @@ ito::RetVal NiDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     int error = -1;
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
+    if (m_params["loggingActive"].getVal<int>() == 1)
+    {
+        // fast logging mode enabled, no getVal can be called since data is
+        // automatically (and only) recorded into the TDMS file
+        retValue += ito::RetVal(ito::retError, 0, "No 'getVal' available in fast logging mode (loggingMode = 1).");
+    }
+
     if (!retValue.containsError())
     {
         retValue += retrieveData();
@@ -1125,6 +1263,13 @@ ito::RetVal NiDAQmx::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *externalDataObject = reinterpret_cast<ito::DataObject *>(vpdObj);
+
+    if (m_params["loggingActive"].getVal<int>() == 1)
+    {
+        // fast logging mode enabled, no getVal can be called since data is
+        // automatically (and only) recorded into the TDMS file
+        retValue += ito::RetVal(ito::retError, 0, "No 'copyVal' available in fast logging mode (loggingMode = 1).");
+    }
 
     if (!externalDataObject)
     {
@@ -1864,89 +2009,14 @@ ito::RetVal NiDAQmx::writeCounter(const ito::DataObject *dataObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NiDAQmx::execFunc(const QString helpCommand, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retValue = ito::retOk;
-
-    QStringList parts = helpCommand.split(":");
-    QString function = parts[0];
-    QString empty("");
-
-    if (function == "configureLogging")
-    {
-        int mode = paramsMand->at(0).getVal<int>();
-        QByteArray filePath = paramsMand->at(1).getVal<const char*>();
-        QByteArray groupName = paramsOpt->at(0).getVal<const char*>();
-        QByteArray operation = paramsOpt->at(1).getVal<const char*>();
-
-        if (!m_taskHandle)
-        {
-            retValue += ito::RetVal(ito::retError, 0, "Task not available.");
-        }
-        else if (mode == 0)
-        {
-            m_params["loggingActive"].setVal<int>(0);
-
-            if (m_taskType & Input)
-            {
-                retValue += checkError(DAQmxConfigureLogging(m_taskHandle, "", DAQmx_Val_Off, "", DAQmx_Val_CreateOrReplace), "DAQmxConfigureLogging");
-            }
-        }
-        else if (m_taskType & Input)
-        {
-            int32 op = DAQmx_Val_CreateOrReplace;
-
-            if (operation == "open")
-            {
-                op = DAQmx_Val_Open;
-            }
-            else if (operation == "openOrCreate")
-            {
-                op = DAQmx_Val_OpenOrCreate;
-            }
-            else if (operation == "create")
-            {
-                op = DAQmx_Val_Create;
-            }
-
-            int32 mode_ = mode == 1 ? DAQmx_Val_Log : DAQmx_Val_LogAndRead;
-
-            retValue += checkError(DAQmxConfigureLogging(m_taskHandle, filePath.constData(), mode_, groupName.constData(), op), "DAQmxConfigureLogging");
-
-            int32 mode = DAQmx_Val_Off;
-            DAQmxGetLoggingMode(m_taskHandle, &mode);
-            switch (mode)
-            {
-            case DAQmx_Val_Log:
-                m_params["loggingActive"].setVal<int>(1);
-                break;
-            case DAQmx_Val_LogAndRead:
-                m_params["loggingActive"].setVal<int>(2);
-                break;
-            default:
-                m_params["loggingActive"].setVal<int>(0);
-                break;
-            }
-            
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, "Logging can only be enabled for input tasks");
-        }
-
-        emit parametersChanged(m_params);
-    }
-    else
-    {
-        retValue += ito::RetVal::format(ito::retError,0,tr("function name '%s' does not exist").toLatin1().data(), helpCommand.toLatin1().data());
-    }
+    ito::RetVal retValue;
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
     }
 
     return retValue;
