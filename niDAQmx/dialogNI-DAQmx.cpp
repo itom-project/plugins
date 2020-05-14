@@ -557,7 +557,6 @@ void DialogNiDAQmx::on_treeChannels_itemChanged(QTreeWidgetItem *item, int colum
         {
             if (item->data(0, CrConfigStr).toString() == "")
             {
-                qDebug() << "Channels Modified";
                 m_channelsModified = true;
             }
         }
@@ -565,7 +564,6 @@ void DialogNiDAQmx::on_treeChannels_itemChanged(QTreeWidgetItem *item, int colum
         {
             if (item->data(0, CrConfigStr).toString() != "")
             {
-                qDebug() << "Channels Modified";
                 item->setData(0, CrConfigStr, "");
                 m_channelsModified = true;
             }

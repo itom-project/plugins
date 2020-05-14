@@ -58,6 +58,12 @@ int32 CVICALLBACK DoneEventCallback(TaskHandle taskHandle, int32 status, void *c
     return 0;
 }
 
+int32 CVICALLBACK NSampleOutputCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)
+{
+    qDebug() << "samples written " << nSamples;
+    return 0;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
@@ -142,7 +148,8 @@ NiDAQmx::NiDAQmx() :
     m_taskHandle(NULL),
     m_deviceStartedCounter(0),
     m_taskStarted(false),
-    m_digitalChannelDataType(ito::tUInt8)
+    m_digitalChannelDataType(ito::tUInt8),
+    m_nSampleEventRegistered(false)
 {
     qRegisterMetaType<TaskHandle>("TaskHandle");
 
@@ -637,6 +644,23 @@ ito::RetVal NiDAQmx::createChannelsForTask()
             {
                 break;
             }
+
+            if (channels.size() > 0)
+            {
+                if (m_nSampleEventRegistered)
+                {
+                    //unregister it
+                    DAQmxRegisterEveryNSamplesEvent(m_taskHandle, DAQmx_Val_Transferred_From_Buffer, 100, 0, 0, this);
+                    m_nSampleEventRegistered = false;
+                }
+
+                retValue += checkError(DAQmxRegisterEveryNSamplesEvent(m_taskHandle, DAQmx_Val_Transferred_From_Buffer, 100, 0, NSampleOutputCallback, this), "DAQmxRegisterEveryNSamplesEvent");
+
+                if (retValue == ito::retOk)
+                {
+                    m_nSampleEventRegistered = true;
+                }
+            }
         }
 
         const uInt32 bufferSize = 1024;
@@ -925,8 +949,8 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     {
         if (key == "channels")
         {
-            QString currentValue = it->getVal<const char*>();
-            QString newValue = val->getVal<const char*>();
+            QByteArray currentValue = it->getVal<const char*>();
+            QByteArray newValue = val->getVal<const char*>();
 
             retValue += it->copyValueFrom(&(*val));
 
@@ -947,6 +971,7 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             key == "startTriggerLevel")
         {
             retValue += it->copyValueFrom(&(*val));
+
             if (!retValue.containsError() && m_deviceStartedCounter > 0)
             {
                 retValue += configTask();
@@ -958,9 +983,10 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             key == "loggingFilePath")
         {
             retValue += it->copyValueFrom(&(*val));
-            if (!retValue.containsError() && m_deviceStartedCounter > 0)
+
+            if (!retValue.containsError())
             {
-                retValue += configLogging(true);
+                restartDevice = true;
             }
         }
         else if (key == "taskMode")
@@ -1014,12 +1040,19 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
         if (m_deviceStartedCounter > 0)
         {
+            bool taskStarted = m_taskStarted;
             m_deviceStartedCounter = 1;
-            retValue += stopDevice(NULL);
+
+            retValue += stopDevice(NULL); //!< stop and deletes task
 
             if (!retValue.containsError())
             {
-                retValue += startDevice(NULL);
+                retValue += startDevice(NULL); //!< creates and configs task and logging
+            }
+
+            if (!retValue.containsError() && taskStarted)
+            {
+                retValue += startTask();
             }
             
             if (!retValue.containsError())
@@ -1176,7 +1209,7 @@ ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
 
     if (!m_taskStarted)
     {
-        retValue += ito::RetVal(ito::retError, 0, "Task not started.");
+        retValue += ito::RetVal(ito::retWarning, 0, "Task cannot be stopped, since it is currently not started.");
     }
     else if (!m_taskHandle)
     {
@@ -1442,13 +1475,16 @@ ito::RetVal NiDAQmx::setVal(const char *data, const int /*length*/, ItomSharedSe
         retValue += startTask();
     }
 
-    if (m_taskMode == NiTaskMode::NiTaskModeFinite && m_params["setValWaitForFinish"].getVal<int>() > 0)
+    if (!retValue.containsError() && 
+        m_taskMode == NiTaskMode::NiTaskModeFinite && 
+        m_params["setValWaitForFinish"].getVal<int>() > 0)
     {
-        int samples = m_params["samplesPerChannel"].getVal<int>();
+        //int samples = dObj->getSize(1);
         double samplingRate = m_params["samplingRate"].getVal<double>();
+        int numberSamplesPerChannel = m_params["samplesPerChannel"].getVal<int>();
 
         //wait for task to be finished
-        qint64 estimatedAcquisitionTimeMs = 1000.0 * samples / samplingRate;
+        qint64 estimatedAcquisitionTimeMs = 2000.0 + 1000.0 * numberSamplesPerChannel / samplingRate;
         QElapsedTimer timer;
         timer.start();
         int err;
@@ -1467,9 +1503,10 @@ ito::RetVal NiDAQmx::setVal(const char *data, const int /*length*/, ItomSharedSe
                 break;
             }
 
-            if (timer.elapsed() > 2 * estimatedAcquisitionTimeMs)
+            if (timer.elapsed() > estimatedAcquisitionTimeMs)
             {
                 retValue += ito::RetVal(ito::retError, 0, "timeout while waiting for end of output operation");
+                break;
             }
             else
             {

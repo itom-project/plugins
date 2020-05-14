@@ -162,7 +162,7 @@
           <item row="4" column="0">
            <widget class="QLabel" name="lblReadTimeout_2">
             <property name="text">
-             <string>Samples per Buffer:</string>
+             <string>Samples Per Channel:</string>
             </property>
            </widget>
           </item>
@@ -182,6 +182,9 @@
           </item>
           <item row="4" column="1">
            <widget class="QSpinBox" name="spinSamplesPerChannel">
+            <property name="toolTip">
+             <string>This corresponds to the number of samples that are read or written during one acquire() / setVal() for finite tasks</string>
+            </property>
             <property name="maximum">
              <number>999999999</number>
             </property>

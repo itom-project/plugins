@@ -46,13 +46,15 @@ plugin = dataIO(
     samplingRate=80
 )
 
+plugin.showToolbox()
+
 # A total number of 800 samples should be acquired from each port
 plugin.setParam("samplesPerChannel", 800)
 
 # Configure the channels (semicolon-separated list of single channel config strings):
 # Ch1: Dev1, AI0, connection type 2 (RSE), -10V..+10V
 # Ch2: Dev1, AI2, connection type 0 (Default), -5V..+5V
-plugin.setParam("channels", "Dev1/ai0,2,-10,10;Dev1/ai2,0,-5,5")
+plugin.setParam("channels", "Dev1/ai0,2,-10.0,10.0;Dev1/ai2,0,-5,5")
 
 # enable a start trigger: here acquisition starts with a falling
 # edge on the digital trigger input PFI0 (simulated devices will

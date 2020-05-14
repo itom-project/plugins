@@ -136,6 +136,7 @@ class NiDAQmx : public ito::AddInDataIO
         ito::RetVal configLogging(bool emitParametersChanged = true);
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
+        bool m_nSampleEventRegistered;
         bool m_taskStarted;
         int m_deviceStartedCounter; /*!< counts how often the device is started, every call to startDevice will increments this, stopDevice will decrement it. The task is really stopped if it drops to zero again. */
         ito::tDataType m_digitalChannelDataType; /*!< only relevant for digital ports, defines the necessary data type to hold the maximum number of lines that are connected for every port. (<= 8 lines : uint8, <= 16 : uint16, else int32) */

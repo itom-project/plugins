@@ -27,28 +27,47 @@ plugin = dataIO(
     "analogOutput",
     taskName="analogOutput",
     taskMode="finite",
-    samplingRate=800)
+    samplingRate=200)
 
 # select two channels.
-plugin.setParam("channels", "Dev1/ao0,-10,10;Dev1/ao1,-5,5")
-plugin.setParam("startTriggerMode", "digitalEdge")
+plugin.setParam("channels", "Dev4/ao0,-10,10;Dev4/ao1,-5,5;Dev4/ao2,-5,5")
+plugin.setParam("startTriggerMode", "off")
 plugin.setParam("startTriggerSource", "PFI0")
 plugin.setParam("startTriggerRisingEdge", 0)
 
+plugin.showToolbox()
+
 plugin.startDevice()
 
-a = dataObject.randN([2,100],'float64')
+a = dataObject.randN([3,400],'float64')
+
+# It is very important to the samplesPerChannel accordingly,
+# since the columns of the dataObject to write will be repeated
+# during one setVal operation until the number of samples per
+# channel have been written.
+plugin.setParam("samplesPerChannel", 400)
 plugin.setVal(a)
+
+t = time.time()
 
 while(plugin.getParam("taskStarted") > 0):
     print(".", end = '')
-    plugin.stop()
-    time.sleep(0.5)
-print("done")
+    time.sleep(0.2)
+print("done in %.2f s" % (time.time() - t))
+plugin.stop()
+
+time.sleep(0.5)
+
+
+# the setVal command will now block until all 
+# 'samplesPerChannel' values have been written
 plugin.setParam("setValWaitForFinish", 1)
+a = dataObject.randN([3,20000],'float64')
+# if a has more columns than 'samplesPerChannel',
+# a will be cropped.
+plugin.setParam("samplesPerChannel", 2)
 
-
-a = dataObject.randN([2,100],'float64')
+t = time.time()
 plugin.setVal(a)
-print("done")
+print("done in %.2f s" % (time.time() - t))
 plugin.stopDevice()
