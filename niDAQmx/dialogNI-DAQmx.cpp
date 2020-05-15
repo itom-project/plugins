@@ -168,7 +168,7 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
     ui.doubleSpinReadTimeout->setValue(params["readTimeout"].getVal<double>());
     ui.checkSetValWaitForFinish->setChecked(params["setValWaitForFinish"].getVal<int>() > 0);
     ui.spinSamplesPerChannel->setValue(params["samplesPerChannel"].getVal<int>());
-    ui.spinInputBufferSize->setValue(params["inputBufferSize"].getVal<int>());
+    ui.spinBufferSize->setValue(params["bufferSize"].getVal<int>());
 
     // Tab General, Sample Clock
     ui.comboSampleClockSource->setCurrentText(params["sampleClockSource"].getVal<const char*>());
@@ -315,12 +315,12 @@ ito::RetVal DialogNiDAQmx::applyParameters()
             );
     }
 
-    if (ui.spinInputBufferSize->value()
-        != m_currentParameters["inputBufferSize"].getVal<int>())
+    if (ui.spinBufferSize->value()
+        != m_currentParameters["bufferSize"].getVal<int>())
     {
         values << QSharedPointer<ito::ParamBase>(
-            new ito::ParamBase("inputBufferSize", ito::ParamBase::Int,
-                ui.spinInputBufferSize->value())
+            new ito::ParamBase("bufferSize", ito::ParamBase::Int,
+                ui.spinBufferSize->value())
             );
     }
 

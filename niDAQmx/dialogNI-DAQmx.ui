@@ -110,7 +110,7 @@
           <item row="5" column="0">
            <widget class="QLabel" name="lblReadTimeout_3">
             <property name="text">
-             <string>Input Buffer Size:</string>
+             <string>Input / Output Buffer Size:</string>
             </property>
            </widget>
           </item>
@@ -191,7 +191,10 @@
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QSpinBox" name="spinInputBufferSize">
+           <widget class="QSpinBox" name="spinBufferSize">
+            <property name="toolTip">
+             <string>If -1, the buffer sizes are automatically chosen (default)</string>
+            </property>
             <property name="minimum">
              <number>-1</number>
             </property>
@@ -622,7 +625,6 @@
   <tabstop>doubleSpinReadTimeout</tabstop>
   <tabstop>checkSetValWaitForFinish</tabstop>
   <tabstop>spinSamplesPerChannel</tabstop>
-  <tabstop>spinInputBufferSize</tabstop>
   <tabstop>comboSampleClockSource</tabstop>
   <tabstop>checkSampleClockRisingEdge</tabstop>
   <tabstop>comboStartTriggerMode</tabstop>

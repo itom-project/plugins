@@ -247,19 +247,24 @@ NiDAQmx::NiDAQmx() :
     m_params.insert(paramVal.getName(), paramVal);
     
     paramVal = ito::Param("samplesPerChannel", ito::ParamBase::Int | ito::ParamBase::In, 
-        0, std::numeric_limits<int>::max(), 20000, 
+        1, std::numeric_limits<int>::max(), 20000, 
         tr("The number of samples to acquire or generate for each channel in the task "
            "(if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this "
-           "value to determine the buffer size. This parameter is ignored for output tasks.").toLatin1().data());
+           "value to determine the buffer size. This parameter is ignored for output tasks."
+           "If 'samplesPerChannel' is 1, one single value is read or written by a"
+           "software trigger only. The parameters 'samplingRate', 'bufferSize', "
+           "'sampleClockSource' and 'sampleClockRisingEdge' are ignored then.").toLatin1().data());
     paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("inputBufferSize", ito::ParamBase::Int | ito::ParamBase::In, -1, std::numeric_limits<int>::max(), -1,
-        tr("Sets and changes the automatic input buffer allocation mode. If -1 (default), "
+    paramVal = ito::Param("bufferSize", ito::ParamBase::Int | ito::ParamBase::In, -1, std::numeric_limits<int>::max(), -1,
+        tr("Sets and changes the automatic input / output buffer allocation mode. If -1 (default), "
            "the automatic allocation is enabled. Else defines the number of samples the buffer "
            "can hold for each channel (only recommended for continuous acquisition). In automatic "
            "mode and continuous acquisition, the standard is a buffer size of 1 kS for a sampling "
-           "rate < 100 S/s, 10 kS for 100-10000 S/s, 100 kS for 10-1000 kS/s and 1 MS else.").toLatin1().data());
+           "rate < 100 S/s, 10 kS for 100-10000 S/s, 100 kS for 10-1000 kS/s and 1 MS else. For "
+           "input tasks, this size changes the input buffer size of the device, else the output "
+           "buffer size.").toLatin1().data());
     paramVal.getMeta()->setCategory("Acquisition/Write");
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -645,22 +650,22 @@ ito::RetVal NiDAQmx::createChannelsForTask()
                 break;
             }
 
-            if (channels.size() > 0)
-            {
-                if (m_nSampleEventRegistered)
-                {
-                    //unregister it
-                    DAQmxRegisterEveryNSamplesEvent(m_taskHandle, DAQmx_Val_Transferred_From_Buffer, 100, 0, 0, this);
-                    m_nSampleEventRegistered = false;
-                }
+            //if (channels.size() > 0)
+            //{
+            //    if (m_nSampleEventRegistered)
+            //    {
+            //        //unregister it
+            //        DAQmxRegisterEveryNSamplesEvent(m_taskHandle, DAQmx_Val_Transferred_From_Buffer, 100, 0, 0, this);
+            //        m_nSampleEventRegistered = false;
+            //    }
 
-                retValue += checkError(DAQmxRegisterEveryNSamplesEvent(m_taskHandle, DAQmx_Val_Transferred_From_Buffer, 100, 0, NSampleOutputCallback, this), "DAQmxRegisterEveryNSamplesEvent");
+            //    retValue += checkError(DAQmxRegisterEveryNSamplesEvent(m_taskHandle, DAQmx_Val_Transferred_From_Buffer, 100, 0, NSampleOutputCallback, this), "DAQmxRegisterEveryNSamplesEvent");
 
-                if (retValue == ito::retOk)
-                {
-                    m_nSampleEventRegistered = true;
-                }
-            }
+            //    if (retValue == ito::retOk)
+            //    {
+            //        m_nSampleEventRegistered = true;
+            //    }
+            //}
         }
 
         const uInt32 bufferSize = 1024;
@@ -737,41 +742,55 @@ ito::RetVal NiDAQmx::configTask()
     {
         double rateHz = m_params["samplingRate"].getVal<double>();
         int samplesPerChannel = m_params["samplesPerChannel"].getVal<int>();
-        QByteArray clockSignal = m_params["sampleClockSource"].getVal<const char*>();
-        const char* clock = NULL; //default: OnboardClock
-        if (clockSignal != "")
-        {
-            clock = clockSignal.constData();
-        }
 
-        int32 activeEdge = m_params["sampleClockRisingEdge"].getVal<int>() > 0 ? DAQmx_Val_Rising : DAQmx_Val_Falling;
-        
-        //configure task
-        switch (m_taskMode)
+        if (samplesPerChannel > 1)
         {
-        case NiTaskModeFinite: //finite
-        {
-            // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or do not use it.
-            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_FiniteSamps, samplesPerChannel), "configure sample clock timing");
-            break;
-        }
-        case NiTaskModeContinuous: //continuous
-        {
-            retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_ContSamps, samplesPerChannel), "configure sample clock timing");
-            break;
-        }
-        //case NiTaskModeOnDemand: // Hardware Timed Single Point
-        //{
-        //    retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
-        //    break;
-        //}
-        }
+            QByteArray clockSignal = m_params["sampleClockSource"].getVal<const char*>();
+            const char* clock = NULL; //default: OnboardClock
 
-        int inputBufferSize = m_params["inputBufferSize"].getVal<int>();
+            if (clockSignal != "")
+            {
+                clock = clockSignal.constData();
+            }
 
-        if (!retValue.containsError() && inputBufferSize >= 0)
-        {
-            retValue += checkError(DAQmxCfgInputBuffer(m_taskHandle, inputBufferSize), "DAQmxCfgInputBuffer");
+            int32 activeEdge = m_params["sampleClockRisingEdge"].getVal<int>() > 0 ? DAQmx_Val_Rising : DAQmx_Val_Falling;
+
+            //configure task
+            switch (m_taskMode)
+            {
+            case NiTaskModeFinite: //finite
+            {
+                // Notice that the onboardclock is not supported for DigitalIn. Either you implement it, or do not use it.
+                retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_FiniteSamps, samplesPerChannel), "configure sample clock timing");
+                break;
+            }
+            case NiTaskModeContinuous: //continuous
+            {
+                retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_ContSamps, samplesPerChannel), "configure sample clock timing");
+                break;
+            }
+            //case NiTaskModeOnDemand: // Hardware Timed Single Point
+            //{
+            //    retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
+            //    break;
+            //}
+            }
+
+            int bufferSize = m_params["bufferSize"].getVal<int>();
+
+            if (!retValue.containsError() && bufferSize >= 0)
+            {
+                if ((int)m_taskType & TaskSubTypes::Input)
+                {
+                    // Overrides the automatic input buffer allocation that NI-DAQmx performs.
+                    retValue += checkError(DAQmxCfgInputBuffer(m_taskHandle, bufferSize), "DAQmxCfgInputBuffer");
+                }
+                else if ((int)m_taskType & TaskSubTypes::Output)
+                {
+                    // Overrides the automatic output buffer allocation that NI-DAQmx performs.
+                    retValue += checkError(DAQmxCfgOutputBuffer(m_taskHandle, bufferSize), "DAQmxCfgOutputBuffer");
+                }
+            }
         }
 
         if (!retValue.containsError())
@@ -962,7 +981,7 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         else if (key == "samplingRate" || 
             key == "sampleClockSource" ||
             key == "samplesPerChannel" ||
-            key == "inputBufferSize" ||
+            key == "bufferSize" ||
             key == "sampleClockSource" ||
             key == "sampleClockRisingEdge" ||
             key == "startTriggerMode" ||
