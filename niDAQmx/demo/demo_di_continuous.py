@@ -87,16 +87,13 @@ plot1(np.hstack(alldata))
 #                 create: create a new file and raises an exception if it
 #                       already exists.
 
+plugin.setParam("loggingMode", 1)
+plugin.setParam("loggingFilePath", "D:/temp/demo_di_continuous.tdms")
+plugin.setParam("loggingOperation", "createOrReplace")
+plugin.setParam("loggingGroupName", "group1")
+
 # create and configure the task
 plugin.startDevice()
-
-# configure the logging of the created task
-plugin.exec(
-    "configureLogging",
-    loggingMode=1,
-    filePath="D:/temp/demo_di_continuous.tdms",
-    groupName="group1"
-)
 
 # start the continuous task again
 plugin.acquire()

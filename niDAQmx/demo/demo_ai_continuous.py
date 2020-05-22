@@ -66,7 +66,7 @@ plugin.setParam("samplesPerChannel", 5000)
 # buffer size depending on the samplingRate and the parameter
 # 'samplesPerChannel'. Else, the internal buffer size can be overwritten
 # by this parameter.
-plugin.setParam("inputBufferSize", -1)
+plugin.setParam("bufferSize", -1)
 
 # the readTimeout is important for continuous acquisitions.
 # It is considered during getVal/copyVal.
@@ -100,27 +100,28 @@ arrays = []
 # open an empty 1D plot
 [i, h] = plot1(dataObject())
 
-# start the task
-plugin.acquire()
-
-for i in range(0, 10):
-    t = time.time()
-    # the following sleep must not be too long, since NI raises
-    # an exception if the internal intermediate buffer gets full.
-    # The programmer has to assure, that this buffer is continuously
-    # read out using getVal or copyVal.
-    time.sleep(0.5)
-    d = dataObject()
-    # getVal will only return a reference to the internal object.
-    # since we want to store the intermediate result for later
-    # processing, we would like to get an unmutable array. Therefore: copyVal.
-    plugin.copyVal(d)
-    print(time.time() - t)
-    h["source"] = d  # update the plot
-    arrays.append(d)
-
-# stop the task
-plugin.stop()
+for j in range(0, 2):
+    # start the task
+    plugin.acquire()
+    
+    for i in range(0, 5):
+        t = time.time()
+        # the following sleep must not be too long, since NI raises
+        # an exception if the internal intermediate buffer gets full.
+        # The programmer has to assure, that this buffer is continuously
+        # read out using getVal or copyVal.
+        time.sleep(0.5)
+        d = dataObject()
+        # getVal will only return a reference to the internal object.
+        # since we want to store the intermediate result for later
+        # processing, we would like to get an unmutable array. Therefore: copyVal.
+        plugin.copyVal(d)
+        print(time.time() - t)
+        h["source"] = d  # update the plot
+        arrays.append(d)
+    
+    # stop the task
+    plugin.stop()
 
 # print the shapes of all subobjects
 print([i.shape for i in arrays])
@@ -161,22 +162,27 @@ plot1(total)
 #                       will be deleted first.
 #                 create: create a new file and raises an exception if it
 #                       already exists.
-plugin.exec(
-    "configureLogging",
-    loggingMode=1,
-    filePath="D:/temp/demo_ai_continuous.tdms",
-    groupName="group1",
-    operation="createOrReplace"
-)
 
-# start the continuous task again
-plugin.acquire()
+plugin.setParam("loggingMode", 1)
+plugin.setParam("loggingFilePath", "D:/temp/demo_ai_continuous.tdms")
+plugin.setParam("loggingGroupName", "group1")
+plugin.setParam("loggingOperation", "createOrReplace")
 
-# wait for 5 seconds (data are acquired and stored into the file)
-time.sleep(5)
-
-# stop the task
-plugin.stop()
+for i in range(0, 3):
+    print(f"logged acquisition {i+1}/3: ", end="")
+    
+    # start the continuous task again
+    plugin.acquire()
+    
+    # wait for 3 seconds (data are acquired and stored into the file)
+    for j in range(0, 3):
+        print(".", end="")
+        time.sleep(1)
+    
+    # stop the task
+    plugin.stop()
+    
+    print(" done")
 
 # stop the device (if there are still running \
 # tasks, they will also be stopped here)

@@ -114,8 +114,8 @@ class NiDAQmx : public ito::AddInDataIO
         enum NiTaskMode 
         { 
             NiTaskModeFinite = 0, 
-            NiTaskModeContinuous = 1/*, 
-            NiTaskModeOnDemand = 2 */
+            NiTaskModeContinuous = 1, 
+            NiTaskModeOnDemand = 2
         };
 
         static QVector<void*> ActiveInstances;
@@ -140,15 +140,14 @@ class NiDAQmx : public ito::AddInDataIO
         bool m_taskStarted;
         int m_deviceStartedCounter; /*!< counts how often the device is started, every call to startDevice will increments this, stopDevice will decrement it. The task is really stopped if it drops to zero again. */
         ito::tDataType m_digitalChannelDataType; /*!< only relevant for digital ports, defines the necessary data type to hold the maximum number of lines that are connected for every port. (<= 8 lines : uint8, <= 16 : uint16, else int32) */
-        
+        ito::RetVal m_retrieveRetVal;
         ito::DataObject m_data; //source of data
         ito::DataObject m_dataView; //in finite task, this is a shallow copy of m_data, for continuous tasks this is always a ROI (as shallow copy of m_data) containing the really acquired values.
-		QString m_configForTesting;
 
-        //NEW
         TaskType m_taskType; /*!< type of this NI-DAQmx instance */
         QStringList m_availableDevices; /*!< list of all detected devices */
         QStringList m_supportedChannels; /*!< list of all detectable and supported channels (with respect to the TaskType of this instance */
+        bool m_sampClkTimingConfigured;
 
         TaskHandle m_taskHandle;
         QList<NiBaseChannel*> m_channels;

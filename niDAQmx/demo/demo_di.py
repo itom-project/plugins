@@ -72,7 +72,7 @@ for i in range(0,5):
 plot1(dataObject.dstack(a).squeeze(), properties = {"curveStyle":"Steps"})
 
 
-# change so parameters on the fly...
+# change some parameters on the fly...
 plugin.setParam("sampleClockSource", "PFI0")
 
 # do not acquire an entire port, but single lines.

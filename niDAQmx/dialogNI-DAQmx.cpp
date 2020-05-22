@@ -46,7 +46,7 @@ DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *adda) :
     // Task Mode
     ui.comboTaskMode->addItem(tr("finite"), "finite");
     ui.comboTaskMode->addItem(tr("continuous"), "continuous");
-    ui.comboTaskMode->addItem(tr("onDemand (not supported yet)"), "onDemand");
+    ui.comboTaskMode->addItem(tr("onDemand"), "onDemand");
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>326</width>
+    <width>277</width>
     <height>316</height>
    </rect>
   </property>
@@ -121,7 +121,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Task started and configured:</string>
+            <string>Task configured:</string>
            </property>
           </widget>
          </item>

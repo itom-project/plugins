@@ -66,7 +66,7 @@ plugin.setParam("samplesPerChannel", 5000)
 # buffer size depending on the samplingRate and the parameter
 # 'samplesPerChannel'. Else, the internal buffer size can be overwritten
 # by this parameter.
-plugin.setParam("inputBufferSize", -1)
+plugin.setParam("bufferSize", -1)
 
 # the readTimeout is important for continuous acquisitions.
 # It is considered during getVal/copyVal.
@@ -130,10 +130,8 @@ for i in range(0, 10):
 # switch to loggingMode 2: Here only data that has been received
 # via getVal / copyVal is additionally stored in the tdms file
 plugin.setParam("loggingMode", 2)
-
 plugin.setParam("loggingFilePath", "D:/temp/demo_ai_continuous2.tdms")
 plugin.setParam("loggingOperation", "createOrReplace")
-plugin.setParam("loggingMode", 2)
 
 
 # start the continuous task again

@@ -43,57 +43,50 @@ import time
 # create the plugin instance
 plugin = dataIO(
     "NI-DAQmx",
-    "digitalOutput",
-    taskName="digitalOutput",
-    taskMode="finite",
+    "analogOutput",
+    taskName="analogOutput",
+    taskMode="continuous",
     samplingRate=800)
 
 # select three channels.
 # The channel description for an analog output
 # channel description is: dev-name
-plugin.setParam("channels", "Dev4/port0")
+plugin.setParam("channels", "Dev4/ao0,-10,10;Dev4/ao1,-5,5;Dev4/ao2,-5,5")
 
 # show the toolbox
 plugin.showToolbox()
 
+# The NI-DAQ device uses the 'samplesPerChannel' in case of continuous
+# tasks to define the internal buffer size. However if the number of
+# samples, obtained by 'samplesPerChannel' * noOfChannels is lower
+# than the values in the following table, NI-DAQ uses the values from
+# the table:
+# 
+# no sampling rate:      10000 samples
+# 0 - 100 samples / sec: 1 kS
+# 101 - 10000 S/s:       10 kS
+# 10001 - 1000000 S/s:   100 kS
+# else:                  1 MS
+plugin.setParam("samplesPerChannel", 5000)
 
-plugin.setParam("startTriggerMode", "off")
-plugin.setParam("setValWaitForFinish", 0)
+# if this value is -1, the NI-DAQ device will calculate the internal
+# buffer size depending on the samplingRate and the parameter
+# 'samplesPerChannel'. Else, the internal buffer size can be overwritten
+# by this parameter.
+plugin.setParam("bufferSize", -1)
 
 plugin.startDevice()
 
-# Example 1: Non-blocking setVal command
+a = dataObject.randN([3,800], 'float64')
 
-a = dataObject.randN([1,100], 'int32')
-plugin.setParam("samplesPerChannel", 1000)
-plugin.setVal(a)
-
-while(plugin.getParam("taskStarted") > 0):
-    print(".", end = '')
-    time.sleep(0.5)
-print("Example 1:done")
-
-# Example 2: blocking setVal command
-plugin.setParam("setValWaitForFinish", 1)
-a = dataObject.randN([1,100],'int32')
-plugin.setVal(a)
-print("Example 2: done")
-
-# Example 3: single value setVal
-plugin.setParam("setValWaitForFinish", 1)
-a = dataObject.randN([1,1],'int32')
-plugin.setParam("samplesPerChannel", 1)
-
-for i in range(0,100):
+for i in range(0,3):
     plugin.setVal(a)
-print("Example 3: done")
-
-# Example 4: single line output
-plugin.setParam("channels", "Dev4/port0/line0")
-plugin.setParam("setValWaitForFinish", 1)
-a = dataObject.randN([1,100],'int32')
-plugin.setParam("samplesPerChannel", 1000)
-plugin.setVal(a)
-print("Example 4: done")
-
-plugin.stopDevice()
+    
+    print("write for 3 sec", end="")
+    
+    for i in range(0, 3):
+        print(".", end="")
+        time.sleep(1)
+    
+    print(" done")
+    plugin.stop()

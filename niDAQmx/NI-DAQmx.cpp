@@ -101,7 +101,7 @@ The installation needs the NI-DAQmx Library that can be downloaded from the NI w
     sm = new ito::StringMeta(ito::StringMeta::String);
     sm->addItem("finite");
     sm->addItem("continuous");
-    //sm->addItem("onDemand");
+    sm->addItem("onDemand");
     paramVal.setMeta(sm, true);
     m_initParamsOpt << paramVal;
 
@@ -149,7 +149,8 @@ NiDAQmx::NiDAQmx() :
     m_deviceStartedCounter(0),
     m_taskStarted(false),
     m_digitalChannelDataType(ito::tUInt8),
-    m_nSampleEventRegistered(false)
+    m_nSampleEventRegistered(false),
+    m_sampClkTimingConfigured(false)
 {
     qRegisterMetaType<TaskHandle>("TaskHandle");
 
@@ -383,11 +384,11 @@ ito::RetVal NiDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         m_params["setValWaitForFinish"].setFlags(ito::ParamBase::Readonly | ito::ParamBase::In);
         break;
     }
-    /*case 'o': // Hardware Timed Single Point
+    case 'o': // Hardware Timed Single Point
     {
         m_taskMode = NiTaskModeOnDemand;
         break;
-    }*/
+    }
     default:
     {
         retValue += ito::RetVal::format(ito::retError, 0, "configure sample clock timing: Task mode '%s' is not supported.", m_params["taskMode"].getVal<const char*>());
@@ -488,14 +489,18 @@ ito::RetVal NiDAQmx::stopTask()
 
     if (m_taskStarted && m_taskHandle)
     {
-        retValue += checkError(DAQmxStopTask(m_taskHandle), "stopTask: DAQmxStopTask.");
+        if (m_taskStarted)
+        {
+            retValue += checkError(DAQmxStopTask(m_taskHandle), "stopTask: DAQmxStopTask.");
 
-        m_taskStarted = false;
-        m_params["taskStarted"].setVal<int>(0);
-        m_params["loggingActive"].setVal<int>(0);
-        m_params["taskConfigured"].setVal<int>(0);
+            m_taskStarted = false;
+            m_params["taskStarted"].setVal<int>(0);
+            m_params["loggingActive"].setVal<int>(0);
 
-        emit parametersChanged(m_params);
+            emit parametersChanged(m_params);
+        }
+        
+        DAQmxStopTask(m_taskHandle); //just to be sure
     }
 
     return retValue;
@@ -504,13 +509,18 @@ ito::RetVal NiDAQmx::stopTask()
 //----------------------------------------------------------------------------------------------------------------------------------
 void NiDAQmx::taskStopped(TaskHandle taskHandle)
 {
-    if (taskHandle == m_taskHandle && m_params["taskStarted"].getVal<int>() > 0)
+    if (taskHandle == m_taskHandle)
     {
-        m_params["taskStarted"].setVal<int>(0);
-        m_params["loggingActive"].setVal<int>(0);
-        m_params["taskConfigured"].setVal<int>(0);
+        if (m_taskStarted)
+        {
+            m_taskStarted = false;
+            m_params["taskStarted"].setVal<int>(0);
+            m_params["loggingActive"].setVal<int>(0);
 
-        emit parametersChanged(m_params);
+            emit parametersChanged(m_params);
+        }
+
+        DAQmxStopTask(m_taskHandle); //just to be sure
     }
 }
 
@@ -535,6 +545,10 @@ ito::RetVal NiDAQmx::deleteTask()
         retValue += checkError(DAQmxClearTask(m_taskHandle), "deleteTask: DAQmxClearTask.");
         m_taskHandle = NULL;
     }
+
+    m_params["taskConfigured"].setVal<int>(0);
+
+    emit parametersChanged(m_params);
     
     return retValue;
 }
@@ -733,6 +747,7 @@ ito::RetVal NiDAQmx::createChannelsForTask()
 ito::RetVal NiDAQmx::configTask()
 {
     ito::RetVal retValue;
+    m_sampClkTimingConfigured = false;
 
     if (!m_taskHandle)
     {
@@ -769,12 +784,14 @@ ito::RetVal NiDAQmx::configTask()
                 retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_ContSamps, samplesPerChannel), "configure sample clock timing");
                 break;
             }
-            //case NiTaskModeOnDemand: // Hardware Timed Single Point
-            //{
-            //    retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
-            //    break;
-            //}
+            case NiTaskModeOnDemand: // Hardware Timed Single Point
+            {
+                retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
+                break;
             }
+            }
+
+            m_sampClkTimingConfigured = true;
 
             int bufferSize = m_params["bufferSize"].getVal<int>();
 
@@ -980,8 +997,6 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         }
         else if (key == "samplingRate" || 
             key == "sampleClockSource" ||
-            key == "samplesPerChannel" ||
-            key == "bufferSize" ||
             key == "sampleClockSource" ||
             key == "sampleClockRisingEdge" ||
             key == "startTriggerMode" ||
@@ -996,7 +1011,9 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 retValue += configTask();
             }
         }
-        else if (key == "loggingMode" ||
+        else if (key == "samplesPerChannel" ||
+            key == "bufferSize" ||
+            key == "loggingMode" ||
             key == "loggingOperation" ||
             key == "loggingGroupName" ||
             key == "loggingFilePath")
@@ -1028,11 +1045,12 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     m_params["setValWaitForFinish"].setFlags(ito::ParamBase::Readonly | ito::ParamBase::In);
                     break;
                 }
-                /*case 'o': // Hardware Timed Single Point
+                case 'o': // Hardware Timed Single Point
                 {
                     m_taskMode = NiTaskModeOnDemand;
+                    m_params["setValWaitForFinish"].setFlags(ito::ParamBase::In);
                     break;
-                }*/
+                }
                 default:
                 {
                     retValue += ito::RetVal::format(ito::retError, 0, "configure sample clock timing: Task mode '%s' is not supported.", m_params["taskMode"].getVal<const char*>());
@@ -1167,6 +1185,7 @@ ito::RetVal NiDAQmx::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCon
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
     m_isgrabbing = false;
+    m_retrieveRetVal = ito::retOk;
 
     if (m_deviceStartedCounter <= 0)
     {
@@ -1182,6 +1201,8 @@ ito::RetVal NiDAQmx::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCon
     }
     else
     {
+        m_dataView = ito::DataObject();
+
         if (m_taskMode == NiTaskMode::NiTaskModeFinite)
         {
             if (m_taskStarted)
@@ -1215,6 +1236,19 @@ ito::RetVal NiDAQmx::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCon
         waitCond->release();
     }
 
+    if (m_taskMode == NiTaskMode::NiTaskModeFinite)
+    {
+        //if a finite task is started, the NI read methods have to be called
+        //while the task is still running. Else, an error occurs. Therefore,
+        //retrieveData is called here, that reads the data from the device (after
+        //having released the waitCond) and stores it in m_dataView.
+
+        if (!retValue.containsError() && m_params["loggingActive"].getVal<int>() != 1)
+        {
+            m_retrieveRetVal = retrieveData();
+        }
+    }
+
     return retValue;
 }
 
@@ -1236,7 +1270,34 @@ ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
     }
     else
     {
-        retValue += stopTask();
+        //a continuous output task must be stopped and deleted, such that the next setVal command works well
+        if ((m_taskMode == NiTaskModeContinuous) && (m_taskType | Output))
+        {
+            retValue += stopTask();
+
+            retValue += deleteTask();
+
+            //if an output task is still running, we cannot only stop it using 'stopTask', but we have to clear it and
+            //re-initialize it... (like calling startDevice)
+            //really start the device
+            retValue += createTask();
+
+            if (!retValue.containsError())
+            {
+                retValue += createChannelsForTask();
+            }
+
+            if (!retValue.containsError())
+            {
+                retValue += configTask();
+            }
+
+            retValue += checkInternalData();
+        }
+        else
+        {
+            retValue += stopTask();
+        }
     }
 
     if (waitCond)
@@ -1266,8 +1327,7 @@ ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
 ito::RetVal NiDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    int error = -1;
+    ito::RetVal retValue = m_retrieveRetVal;
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
     if (m_params["loggingActive"].getVal<int>() == 1)
@@ -1276,16 +1336,27 @@ ito::RetVal NiDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         // automatically (and only) recorded into the TDMS file
         retValue += ito::RetVal(ito::retError, 0, "No 'getVal' available in fast logging mode (loggingMode = 1).");
     }
-
-    if (!retValue.containsError())
+    else if (!m_isgrabbing)
     {
-        retValue += retrieveData();
+        retValue += ito::RetVal(ito::retError, 0, tr("'getVal' - cannot read data because none was acquired.").toLatin1().data());
+    }
+
+    if (!retValue.containsError() && m_dataView.getDims() == 0)
+    {
+        retValue += retrieveData(); //retrieve data from device and store it in m_data
     }
 
     if (!retValue.containsError())
     {
         *dObj = m_dataView; //dObj is now a shallow copy of the internal object m_data.
     }
+
+    if (m_taskMode == NiTaskMode::NiTaskModeFinite)
+    {
+        m_isgrabbing = false;
+    }
+
+    m_dataView = ito::DataObject();
 
     if (waitCond) 
     {
@@ -1313,7 +1384,7 @@ ito::RetVal NiDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 ito::RetVal NiDAQmx::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue = m_retrieveRetVal;
     ito::DataObject *externalDataObject = reinterpret_cast<ito::DataObject *>(vpdObj);
 
     if (m_params["loggingActive"].getVal<int>() == 1)
@@ -1322,13 +1393,17 @@ ito::RetVal NiDAQmx::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         // automatically (and only) recorded into the TDMS file
         retValue += ito::RetVal(ito::retError, 0, "No 'copyVal' available in fast logging mode (loggingMode = 1).");
     }
+    else if (!m_isgrabbing)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("'copyVal' - cannot read data because none was acquired.").toLatin1().data());
+    }
 
     if (!externalDataObject)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::copyVal - Empty object handle provided by caller").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("'copyVal' - Empty object handle provided by caller").toLatin1().data());
     }
 
-    if (!retValue.containsError())
+    if (!retValue.containsError() && m_dataView.getDims() == 0)
     {
         retValue += retrieveData(); //retrieve data from device and store it in m_data
     }
@@ -1346,6 +1421,13 @@ ito::RetVal NiDAQmx::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         // (since the externalDataObject might have more dimensions than m_data)
         m_dataView.copyAxisTagsTo(*externalDataObject);
     }
+
+    if (m_taskMode == NiTaskMode::NiTaskModeFinite)
+    {
+        m_isgrabbing = false;
+    }
+
+    m_dataView = ito::DataObject();
 
     if (waitCond) 
     {
@@ -1376,7 +1458,7 @@ ito::RetVal NiDAQmx::retrieveData()
     {
         retValue += ito::RetVal(ito::retError, 0, "Task is an output task. No data acquisition is possible.");
     }
-    else if( !m_isgrabbing )
+    else if(!m_isgrabbing)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::retrieveData - cannot retrieve data because none was acquired.").toLatin1().data());
     }
@@ -1416,7 +1498,6 @@ ito::RetVal NiDAQmx::retrieveData()
 
     if (m_taskMode == NiTaskMode::NiTaskModeFinite)
     {
-        m_isgrabbing = false;
         retValue += stopTask();
     }
 
@@ -1469,6 +1550,14 @@ ito::RetVal NiDAQmx::setVal(const char *data, const int /*length*/, ItomSharedSe
         }
     }
 
+    if (!m_sampClkTimingConfigured && !retValue.containsError() && !m_taskStarted)
+    {
+        //if no sample clock timing is configured (single value output),
+        //the task must be started before writing. The single write operation is
+        //then a blocking operation.
+        retValue += startTask();
+    }
+
     if (!retValue.containsError())
     {
         if (m_taskType & TaskSubTypes::Analog)
@@ -1489,12 +1578,16 @@ ito::RetVal NiDAQmx::setVal(const char *data, const int /*length*/, ItomSharedSe
         }
     }
 
-    if (!retValue.containsError())
+    if (m_sampClkTimingConfigured && !retValue.containsError() && !m_taskStarted)
     {
+        //if more than one sample is written per channel, this is a buffered
+        //operation. The task must be started after the write operation and
+        //we can wait for the task to be finished below
         retValue += startTask();
     }
 
-    if (!retValue.containsError() && 
+    if (m_sampClkTimingConfigured &&
+        !retValue.containsError() &&
         m_taskMode == NiTaskMode::NiTaskModeFinite && 
         m_params["setValWaitForFinish"].getVal<int>() > 0)
     {
@@ -1533,6 +1626,10 @@ ito::RetVal NiDAQmx::setVal(const char *data, const int /*length*/, ItomSharedSe
             }
         }
 
+        retValue += stopTask();
+    }
+    else if (!m_sampClkTimingConfigured)
+    {
         retValue += stopTask();
     }
 
@@ -1627,11 +1724,48 @@ ito::RetVal NiDAQmx::checkExternalDataToView(ito::DataObject *externalData)
     }
     else if (externalData->calcNumMats() > 1)
     {
-        return ito::RetVal(ito::retError, 0, tr("NiDAQmx::checkData - Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Error during check data: The given dataObject "
+                    "must have one plane or an empty dataObject, that is then created "
+                    "with the right shape and type.").toLatin1().data());
     }
-    else if (externalData->getSize(dims - 2) != (unsigned int)channels || externalData->getSize(dims - 1) != (unsigned int)samples || externalData->getType() != futureType)
+    else if (externalData->getType() != futureType)
     {
-        return ito::RetVal(ito::retError, 0, tr("NiDAQmx::checkData - Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+        switch (futureType)
+        {
+        case ito::tFloat64:
+            return ito::RetVal(ito::retError, 0, tr("Error during check data: The given dataObject "
+                "must be of type 'float64' or an empty dataObject, that is then created "
+                "with the right shape and type.").toLatin1().data());
+            break;
+        case ito::tUInt8:
+            return ito::RetVal(ito::retError, 0, tr("Error during check data: The given dataObject "
+                "must be of type 'uint8' or an empty dataObject, that is then created "
+                "with the right shape and type.").toLatin1().data());
+            break;
+        case ito::tUInt16:
+            return ito::RetVal(ito::retError, 0, tr("Error during check data: The given dataObject "
+                "must be of type 'uint16' or an empty dataObject, that is then created "
+                "with the right shape and type.").toLatin1().data());
+            break;
+        case ito::tInt32:
+            return ito::RetVal(ito::retError, 0, tr("Error during check data: The given dataObject "
+                "must be of type 'int32' or an empty dataObject, that is then created "
+                "with the right shape and type.").toLatin1().data());
+            break;
+        default:
+            return ito::RetVal(ito::retError, 0, tr("Error during check data: The given dataObject "
+                "has the wrong data type. Allocate it with the right type or pass an empty dataObject, "
+                "that is then created with the right shape and type.").toLatin1().data());
+            break;
+        }
+    }
+    else if (externalData->getSize(dims - 2) != (unsigned int)channels 
+        || externalData->getSize(dims - 1) != (unsigned int)samples)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error during check data: The given dataObject "
+            "has the wrong shape. Pass an object with the right shape (%1 x %2) or pass an empty "
+            "dataObject, that is then created with the right shape and type").
+            arg(externalData->getSize(dims - 2)).arg(externalData->getSize(dims - 1)).toLatin1().data());
     }
 
     return ito::retOk;
@@ -1758,10 +1892,10 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
 
         if (!retValue.containsError())
         {
-            if (m_taskMode == NiTaskModeFinite)
+            if (m_taskMode == NiTaskModeFinite || m_taskMode == NiTaskModeOnDemand)
             {
                 readNumSamples = -1;
-                qint64 estimatedAcquisitionTimeMs = 1000.0 * samples / samplingRate;
+                qint64 estimatedAcquisitionTimeMs = 2000.0 + 1000.0 * samples / samplingRate;
                 QElapsedTimer timer;
                 timer.start();
                 int err;
@@ -1781,7 +1915,7 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
                         break;
                     }
 
-                    if (timer.elapsed() > 2 * estimatedAcquisitionTimeMs)
+                    if (timer.elapsed() > estimatedAcquisitionTimeMs)
                     {
                         retValue += ito::RetVal(ito::retError, 0, "timeout while waiting for finished acquisition");
                     }
@@ -1807,7 +1941,9 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
                 int32 err;
                 if (!retValue.containsError())
                 {
-                    err = DAQmxReadAnalogF64(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::float64>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
+                    err = DAQmxReadAnalogF64(m_taskHandle, samples, timeout,
+                            DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::float64>(0, 0),
+                            m_data.getTotal(), &readNumSamples, NULL);
 
                     if (err == DAQmxErrorSamplesNotYetAvailable && timeout == 0.0)
                     {
@@ -1867,7 +2003,7 @@ ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
     {
         if (!retValue.containsError())
         {
-            if (m_taskMode == NiTaskModeFinite)
+            if (m_taskMode == NiTaskModeFinite || m_taskMode == NiTaskModeOnDemand)
             {
                 readNumSamples = -1;
                 qint64 estimatedAcquisitionTimeMs = 1000.0 * samples / samplingRate;
@@ -1904,13 +2040,19 @@ ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
                     switch (m_digitalChannelDataType)
                     {
                     case ito::tUInt8:
-                        retValue += checkError(DAQmxReadDigitalU8(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::uint8>(0, 0), m_data.getTotal(), &readNumSamples, NULL), "DAQmxReadDigitalU8");
+                        retValue += checkError(DAQmxReadDigitalU8(m_taskHandle, samples, timeout, 
+                            DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::uint8>(0, 0), 
+                            m_data.getTotal(), &readNumSamples, NULL), "DAQmxReadDigitalU8");
                         break;
                     case ito::tUInt16:
-                        retValue += checkError(DAQmxReadDigitalU16(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::uint16>(0, 0), m_data.getTotal(), &readNumSamples, NULL), "DAQmxReadDigitalU16");
+                        retValue += checkError(DAQmxReadDigitalU16(m_taskHandle, samples, timeout, 
+                            DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::uint16>(0, 0), 
+                            m_data.getTotal(), &readNumSamples, NULL), "DAQmxReadDigitalU16");
                         break;
                     case ito::tInt32:
-                        retValue += checkError(DAQmxReadDigitalU32(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, (uInt32*)m_data.rowPtr<ito::int32>(0, 0), m_data.getTotal(), &readNumSamples, NULL), "DAQmxReadDigitalU32");
+                        retValue += checkError(DAQmxReadDigitalU32(m_taskHandle, samples, timeout, 
+                            DAQmx_Val_GroupByChannel, (uInt32*)m_data.rowPtr<ito::int32>(0, 0), 
+                            m_data.getTotal(), &readNumSamples, NULL), "DAQmxReadDigitalU32");
                         break;
                     default:
                         retValue += ito::RetVal(ito::retError, 0, "unsupported datatype for digital channel");
@@ -1928,13 +2070,16 @@ ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
                     switch (m_digitalChannelDataType)
                     {
                     case ito::tUInt8:
-                        err = DAQmxReadDigitalU8(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::uint8>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
+                        err = DAQmxReadDigitalU8(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, 
+                            m_data.rowPtr<ito::uint8>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
                         break;
                     case ito::tUInt16:
-                        err = DAQmxReadDigitalU16(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, m_data.rowPtr<ito::uint16>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
+                        err = DAQmxReadDigitalU16(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, 
+                            m_data.rowPtr<ito::uint16>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
                         break;
                     case ito::tInt32:
-                        err = DAQmxReadDigitalU32(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, (uInt32*)m_data.rowPtr<ito::int32>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
+                        err = DAQmxReadDigitalU32(m_taskHandle, samples, timeout, DAQmx_Val_GroupByChannel, 
+                            (uInt32*)m_data.rowPtr<ito::int32>(0, 0), m_data.getTotal(), &readNumSamples, NULL);
                         break;
                     default:
                         retValue += ito::RetVal(ito::retError, 0, "unsupported datatype for digital channel");
@@ -2015,46 +2160,35 @@ ito::RetVal NiDAQmx::writeDigital(const ito::DataObject *dataObj)
     int32 smplW = -1;
 
     if (dataObj->getDims() != 2 ||
-        dataObj->getSize(0) != channels ||
-        dataObj->getType() != m_digitalChannelDataType)
+        dataObj->getSize(0) != channels)
     {
-        switch (m_digitalChannelDataType)
-        {
-        case ito::tUInt8:
-            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, uint8 dataObject required with M <= %i", channels);
-            break;
-        case ito::tUInt16:
-            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, uint16 dataObject required with M <= %i", channels);
-            break;
-        case ito::tInt32:
-            retValue += ito::RetVal::format(ito::retError, 0, "%i x M, int32 dataObject required with M <= %i", channels);
-            break;
-        }
-        
+        retValue += ito::RetVal::format(ito::retError, 0, "The selected channel requires a %i x M, uint8, uint16 or int32 dataObject with M > 0.", channels);        
     }
     else
     {
         int samples = dataObj->getSize(1);
 
-        switch (m_digitalChannelDataType)
+        switch (dataObj->getType())
         {
         case ito::tUInt8:
-            retValue += checkError(DAQmxWriteDigitalU8(m_taskHandle, samples, false, 0, DAQmx_Val_GroupByChannel, dataObj->rowPtr<const ito::uint8>(0, 0), &smplW, NULL), "DAQmxWriteDigitalU8");
+            retValue += checkError(DAQmxWriteDigitalU8(m_taskHandle, samples, false, 0, 
+                DAQmx_Val_GroupByChannel, dataObj->rowPtr<const ito::uint8>(0, 0), &smplW, NULL), "DAQmxWriteDigitalU8");
             break;
         case ito::tUInt16:
-            retValue += checkError(DAQmxWriteDigitalU16(m_taskHandle, samples, false, 0, DAQmx_Val_GroupByChannel, dataObj->rowPtr<const ito::uint16>(0, 0), &smplW, NULL), "DAQmxWriteDigitalU16");
+            retValue += checkError(DAQmxWriteDigitalU16(m_taskHandle, samples, false, 0, 
+                DAQmx_Val_GroupByChannel, dataObj->rowPtr<const ito::uint16>(0, 0), &smplW, NULL), "DAQmxWriteDigitalU16");
             break;
         case ito::tInt32:
-            retValue += checkError(DAQmxWriteDigitalU32(m_taskHandle, samples, false, 0, DAQmx_Val_GroupByChannel, (const uInt32*)dataObj->rowPtr<const ito::int32>(0, 0), &smplW, NULL), "DAQmxWriteDigitalU32");
+            retValue += checkError(DAQmxWriteDigitalU32(m_taskHandle, samples, false, 0, 
+                DAQmx_Val_GroupByChannel, (const uInt32*)dataObj->rowPtr<const ito::int32>(0, 0), &smplW, NULL), "DAQmxWriteDigitalU32");
             break;
         default:
-            retValue += ito::RetVal(ito::retError, 0, "invalid digital channel data type.");
+            retValue += ito::RetVal(ito::retError, 0, "Invalid digital channel data type (uint8, uint16 or int32 allowed).");
             break;
         }
     }
 
     //task must then be started
-
     return retValue;
 }
 
@@ -2065,7 +2199,12 @@ ito::RetVal NiDAQmx::writeCounter(const ito::DataObject *dataObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NiDAQmx::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
+ito::RetVal NiDAQmx::execFunc(
+    const QString funcName,
+    QSharedPointer<QVector<ito::ParamBase> > paramsMand,
+    QSharedPointer<QVector<ito::ParamBase> > paramsOpt,
+    QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/,
+    ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue;
 
