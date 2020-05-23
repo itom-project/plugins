@@ -97,11 +97,10 @@ The installation needs the NI-DAQmx Library that can be downloaded from the NI w
 
     m_initParamsOpt << ito::Param("taskName", ito::ParamBase::String, "", tr("desired name of the underlying NI task (this might be changed by the NI task creation method)").toLatin1().data());
 
-    paramVal = ito::Param("taskMode", ito::ParamBase::String, "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
+    paramVal = ito::Param("taskMode", ito::ParamBase::String, "finite", tr("mode of the task recording / data generation: finite, continuous").toLatin1().data());
     sm = new ito::StringMeta(ito::StringMeta::String);
     sm->addItem("finite");
     sm->addItem("continuous");
-    sm->addItem("onDemand");
     paramVal.setMeta(sm, true);
     m_initParamsOpt << paramVal;
 
@@ -183,10 +182,9 @@ NiDAQmx::NiDAQmx() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("taskMode", ito::ParamBase::String | ito::ParamBase::In, 
-        "finite", tr("mode of the task recording / data generation: finite, continuous, onDemand").toLatin1().data());
+        "finite", tr("mode of the task recording / data generation: finite, continuous").toLatin1().data());
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "finite", "General");
     sm->addItem("continuous");
-    sm->addItem("onDemand");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
     m_taskMode = NiTaskModeFinite;
@@ -382,11 +380,6 @@ ito::RetVal NiDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     {
         m_taskMode = NiTaskModeContinuous;
         m_params["setValWaitForFinish"].setFlags(ito::ParamBase::Readonly | ito::ParamBase::In);
-        break;
-    }
-    case 'o': // Hardware Timed Single Point
-    {
-        m_taskMode = NiTaskModeOnDemand;
         break;
     }
     default:
@@ -784,11 +777,6 @@ ito::RetVal NiDAQmx::configTask()
                 retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_ContSamps, samplesPerChannel), "configure sample clock timing");
                 break;
             }
-            case NiTaskModeOnDemand: // Hardware Timed Single Point
-            {
-                retValue += checkError(DAQmxCfgSampClkTiming(m_taskHandle, clock /*OnboardClock*/, rateHz, activeEdge, DAQmx_Val_HWTimedSinglePoint, samplesPerChannel), "configure sample clock timing");
-                break;
-            }
             }
 
             m_sampClkTimingConfigured = true;
@@ -1045,12 +1033,6 @@ ito::RetVal NiDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     m_params["setValWaitForFinish"].setFlags(ito::ParamBase::Readonly | ito::ParamBase::In);
                     break;
                 }
-                case 'o': // Hardware Timed Single Point
-                {
-                    m_taskMode = NiTaskModeOnDemand;
-                    m_params["setValWaitForFinish"].setFlags(ito::ParamBase::In);
-                    break;
-                }
                 default:
                 {
                     retValue += ito::RetVal::format(ito::retError, 0, "configure sample clock timing: Task mode '%s' is not supported.", m_params["taskMode"].getVal<const char*>());
@@ -1271,7 +1253,7 @@ ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
     else
     {
         //a continuous output task must be stopped and deleted, such that the next setVal command works well
-        if ((m_taskMode == NiTaskModeContinuous) && (m_taskType | Output))
+        if ((m_taskMode == NiTaskModeContinuous) && (m_taskType & Output))
         {
             retValue += stopTask();
 
@@ -1892,7 +1874,7 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
 
         if (!retValue.containsError())
         {
-            if (m_taskMode == NiTaskModeFinite || m_taskMode == NiTaskModeOnDemand)
+            if (m_taskMode == NiTaskModeFinite)
             {
                 readNumSamples = -1;
                 qint64 estimatedAcquisitionTimeMs = 2000.0 + 1000.0 * samples / samplingRate;
@@ -1957,10 +1939,6 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
                     }
                 }
             }
-            /*else if (m_taskMode == NiTaskModeOnDemand)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readAnalog - On demand mode is not yet supported").toLatin1().data());
-            }*/
             else
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readAnalog - internal error invalid mode passed to readAnalog").toLatin1().data());
@@ -2003,7 +1981,7 @@ ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
     {
         if (!retValue.containsError())
         {
-            if (m_taskMode == NiTaskModeFinite || m_taskMode == NiTaskModeOnDemand)
+            if (m_taskMode == NiTaskModeFinite)
             {
                 readNumSamples = -1;
                 qint64 estimatedAcquisitionTimeMs = 1000.0 * samples / samplingRate;
@@ -2099,10 +2077,6 @@ ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
                     
                 }
             }
-            /*else if (m_taskMode == NiTaskModeOnDemand)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readDigital - On demand mode is not yet supported").toLatin1().data());
-            }*/
             else
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("NiDAQmx::readDigital - internal error invalid mode passed to readDigital").toLatin1().data());

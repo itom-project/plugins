@@ -124,7 +124,7 @@ print("done in %.2f s" % (time.time() - t))
 #    Hint: Repeating the input dataObject is only possible if it
 #    has more than one column. Else a single value, unbuffered,
 #    write operation is assumed.
-a = dataObject.randN([3,2],'float64')
+a = dataObject.randN([3, 2], 'float64')
 plugin.setParam("samplesPerChannel", 200)
 
 t = time.time()

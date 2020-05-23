@@ -1,6 +1,6 @@
 # coding=utf8
 
-"""Finite analog input task.
+"""Finite analog input task for single value acquisitions.
 
 Demo script for acquiring exactly one analog value
 per channel per acquire() command 
@@ -11,9 +11,6 @@ Explorer) has been used to create simulated devices.
 
 In this test, a simulated device NI PCIe-6321 with 16 analog input (AI)
 ports was created and named "Dev1".
-
-Additionally, one other device NI PCI-6111 with 2 analog input (AI)
-ports was added in NI-MAX with the name "Dev3".
 
 The channel configuration string for analog input tasks always
 follows this pattern:
@@ -71,10 +68,10 @@ a = dataObject.zeros([2, 50], 'float64')
 t = time.time()
 
 # repeat the configured acquisition task 5x.
-for i in range(0,50):
+for i in range(0, 50):
     # start the acquisition of the given number of samples per channel.
     plugin.acquire()
-    d=dataObject()
+    
     # getVal will return if all samples have been acquired (or timeout)
     plugin.copyVal(a[:, i])
 

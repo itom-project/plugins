@@ -25,7 +25,7 @@ groupObject= file.object(file.groups()[0])
 
 data = []
 
-for obj in file.group_channels('groupMarc'):
+for obj in file.group_channels('group1'):
     data.append(obj.data)
 
 total2= np.vstack(data)

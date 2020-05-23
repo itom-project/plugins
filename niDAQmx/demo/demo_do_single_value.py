@@ -1,15 +1,15 @@
 # coding=utf8
 
-"""Finite digital input task for single value input.
+"""Finite digital output task for software triggered single value output.
 
-Demo script for acquiring exactly one digital value
-per channel per acquire() command 
+Demo script for writing exactly one digital value
+per channel per setVal() command 
 with a National Instruments DAQ device.
 
 To test this script, the NI MAX (Measurement & Automation
 Explorer) has been used to create simulated devices.
 
-In this test, a simulated device NI PCIe-6321 with 3x8 digital input (DI)
+In this test, a simulated device NI PCIe-6321 with 3x8 digital output (DO)
 ports was created and named "Dev1".
 
 At the end of this demo, "Dev5" (NI PCI-6520) with 1 digital input
@@ -37,7 +37,7 @@ import time
 # the sampling rate is unimportant
 plugin = dataIO(
     "NI-DAQmx",
-    "digitalInput",
+    "digitalOutput",
     taskName="myTaskName",
     taskMode="finite"
 )
@@ -54,6 +54,7 @@ plugin.setParam("channels", "Dev1/port0;Dev1/port1")
 # trigger must be off, since this acquisition on demand only operates
 # upon a software trigger.
 plugin.setParam("startTriggerMode", "off")
+plugin.setParam("setValWaitForFinish", 1)
 
 
 # after having configured the task, start the device.
@@ -61,31 +62,23 @@ plugin.setParam("startTriggerMode", "off")
 # started with plugin.acquire() later.
 plugin.startDevice()
 
-a = dataObject.zeros([2, 500], 'uint8')
+a = dataObject.randN([2, 1], 'uint8')
 t = time.time()
 
 # repeat the configured acquisition task 5x.
 for i in range(0,500):
-    # start the acquisition of the given number of samples per channel.
-    plugin.acquire()
-    d=dataObject()
-    # getVal will return if all samples have been acquired (or timeout)
-    plugin.copyVal(a[:, i])
+    # start the single value output
+    plugin.setVal(a)
 
-print(time.time()-t)
+print("Write 500 values to two ports in %.2f s" % (time.time() - t))
 
-# plot the acquired values from both channels from the last run.
-# the output dataObject already contains the correct axes units,
-# descriptions etc...
-plot1(a,
-      properties={"legendPosition": "Right", "legendTitles": ("DI0", "DI2")})
 
 # stop and remove the configured task
 plugin.stopDevice()
 
 
-# Switch now to the simple device Dev5 and acquire 8 lines from port0
-plugin.setParam("channels", "Dev5/port0")
+# Switch now to the simple device Dev5 and write 8 lines to port1
+plugin.setParam("channels", "Dev5/port1")
 
 # number of finite samples: 1
 plugin.setParam("samplesPerChannel", 1)
@@ -93,26 +86,23 @@ plugin.setParam("samplesPerChannel", 1)
 # configure the task in the device
 plugin.startDevice()
 
-# acquire 500 x 1 samples
-a = []
-print("acquire 500x 1 sample from Dev5/port0...", end="")
+# write 500 x 1 samples
+a = dataObject.randN([1,1], 'uint8')
+print("write 500 x 1 sample to Dev5/port1...", end="")
 t = time.time()
 
 for i in range(0, 500):
     # start the finite task
-    plugin.acquire()
-    d = dataObject()
+    plugin.setVal(a)
     
-    # getVal waits for the finite task to be finished and reads out the values.
-    plugin.copyVal(d)
-    a.append(d)
+    # single value write task is always automatically stopped
+    # after setVal.
 
 print(" done in %.2f sec" % (time.time() - t))
 
-plot1(dataObject.dstack(a).squeeze(), properties={"curveStyle": "Steps"})
 
-# Switch now to the simple device Dev5 and acquire lines 3 and 6 from port 0
-plugin.setParam("channels", "Dev5/port0/line3;Dev5/port0/line6")
+# Switch now to the simple device Dev5 and write to lines 3 and 6 from port 1
+plugin.setParam("channels", "Dev5/port1/line3;Dev5/port1/line6")
 
 # number of finite samples: 1
 plugin.setParam("samplesPerChannel", 1)
@@ -120,20 +110,13 @@ plugin.setParam("samplesPerChannel", 1)
 # configure the task in the device
 plugin.startDevice()
 
-# acquire 500 x 1 samples
-a = []
-print("acquire 500x 1 sample from Dev5/port0/line3 and line6...", end="")
+# write 500 x 1 samples
+a = dataObject.randN([2, 1], 'uint8')
+print("write 500 x 1 sample to Dev5/port1/line3 and line6...", end="")
 t = time.time()
 
 for i in range(0, 500):
     # start the finite task
-    plugin.acquire()
-    d = dataObject()
-    
-    # getVal waits for the finite task to be finished and reads out the values.
-    plugin.copyVal(d)
-    a.append(d)
+    plugin.setVal(a)
 
 print(" done in %.2f sec" % (time.time() - t))
-
-plot1(dataObject.dstack(a).squeeze(), properties={"curveStyle": "Steps"})

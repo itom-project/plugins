@@ -87,7 +87,7 @@ plugin.setParam("readTimeout", 0.0)
 # assign some channels
 plugin.setParam("channels", "Dev1/ai0,0,-10,10;Dev1/ai1,0,-8,8")
 
-# LoggingMode is a fast logging, in this mode, all acquired samples
+# Step 1: LoggingMode is a fast logging, in this mode, all acquired samples
 # are automatically logged into the given tdms file. You must not use
 # getVal or copyVal in this logging mode.
 plugin.setParam("loggingMode", 1)
@@ -106,22 +106,28 @@ plugin.setParam("loggingGroupName", "group1")
 #                              one.
 # 'create': Newly creates the TDMS file. If it already exists, a task start 
 #           operation will return with an error.
-plugin.setParam("loggingOperation", "openOrCreate")
+plugin.setParam("loggingOperation", "createOrReplace")
 
 # configure the task based on the configurations above.
 plugin.startDevice()
 
 for i in range(0, 10):
+    
+    t = time.time()
+    print(f"Fast, direct logging run {i+1}/10...", end="")
     # start the continuous task again
     plugin.acquire()
     
-    # wait for 5 seconds (data are acquired and stored into the file)
-    time.sleep(0.5)
+    # wait for 1 seconds (data are acquired and stored into the file)
+    time.sleep(1)
     
     # stop the task
     plugin.stop()
+    print(" done in %.3f s" % (time.time() - t))
+    
+    
 
-# choose another logging type. Usually it is recommended to
+# Step 2: choose another logging type. Usually it is recommended to
 # stop the device before chaning the logging modes. However,
 # it the device is still started if the logging parameters
 # will be changed, it will automatically be stopped and restarted
@@ -134,19 +140,27 @@ plugin.setParam("loggingFilePath", "D:/temp/demo_ai_continuous2.tdms")
 plugin.setParam("loggingOperation", "createOrReplace")
 
 
+print(f"Simultaneous logging during getVal/copyVal (5sec)...", end="")
+t = time.time()
+
 # start the continuous task again
 plugin.acquire()
 
 for i in range(0, 10):
     # wait a little bit
+    
     time.sleep(0.5)
     
     # receive data that is automatically stored in the file, too
-    print("read data")
+    # getVal has to be called faster than the internal buffer of
+    # the device will exceed.
     plugin.getVal(dataObject())
+    
     
 # stop the task
 plugin.stop()
+
+print(" done in %.2f s" % (time.time() - t))
 
 # stop the device (if there are still running \
 # tasks, they will also be stopped here)

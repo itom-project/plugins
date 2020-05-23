@@ -1,6 +1,6 @@
 # coding=utf8
 
-"""Finite analog output task.
+"""Finite digital output task.
 
 Demo script for sending a series of number to different
 channels of a National Instruments DAQ device.
@@ -8,7 +8,7 @@ channels of a National Instruments DAQ device.
 To test this script, the NI MAX (Measurement & Automation
 Explorer) has been used to create simulated devices.
 
-In this test, a simulated device NI PCIe-6323 with 4 analog output (AO)
+In this test, a simulated device NI PCIe-6323 with 1 digital port (DO)
 ports was created and named "Dev4".
 
 Values are always written by a uint8, uint16 or int32 dataObject, that is passed
@@ -17,9 +17,9 @@ and the number of rows must be equal to the number of channels. The int32
 object is internally casted to uint32 (however int32 is no valid dataObject
 data type). The datatype itself depends on the number of lines of each
 selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines 
-uint16, else int32.
+uint16, else int32 (usually uint8).
 
-The number of samples that is written to each channel for each setVal
+The number of samples that are written to each channel for each setVal
 command is mainly determined by the 'samplesPerChannel' argument.
 
 There are two cases to handle:
@@ -48,9 +48,7 @@ plugin = dataIO(
     taskMode="finite",
     samplingRate=800)
 
-# select three channels.
-# The channel description for an analog output
-# channel description is: dev-name
+# Select port0 (32 lines from Dev4)
 plugin.setParam("channels", "Dev4/port0")
 
 # show the toolbox
@@ -64,18 +62,18 @@ plugin.startDevice()
 
 # Example 1: Non-blocking setVal command
 
-a = dataObject.randN([1,100], 'int32')
+a = dataObject.randN([1, 100], 'int32')
 plugin.setParam("samplesPerChannel", 1000)
 plugin.setVal(a)
 
 while(plugin.getParam("taskStarted") > 0):
-    print(".", end = '')
+    print(".", end='')
     time.sleep(0.5)
 print("Example 1:done")
 
 # Example 2: blocking setVal command
 plugin.setParam("setValWaitForFinish", 1)
-a = dataObject.randN([1,100],'int32')
+a = dataObject.randN([1, 100], 'int32')
 plugin.setVal(a)
 print("Example 2: done")
 

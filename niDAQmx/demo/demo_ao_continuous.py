@@ -1,6 +1,6 @@
 # coding=utf8
 
-"""Finite analog output task.
+"""Continuous analog output task.
 
 Demo script for sending a series of number to different
 channels of a National Instruments DAQ device.

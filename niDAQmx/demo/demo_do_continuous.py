@@ -1,6 +1,6 @@
 # coding=utf8
 
-"""Finite analog output task.
+"""Continuous digital output task.
 
 Demo script for sending a series of number to different
 channels of a National Instruments DAQ device.
@@ -8,8 +8,9 @@ channels of a National Instruments DAQ device.
 To test this script, the NI MAX (Measurement & Automation
 Explorer) has been used to create simulated devices.
 
-In this test, a simulated device NI PCIe-6323 with 4 analog output (AO)
-ports was created and named "Dev4".
+In this test, a simulated device NI PCIe-6323 (Dev4) with 1 digital output 
+port (DO) with 32 lines (buffered) and two other ports (port 1 and port 2), that
+support only unbuffered outputs.
 
 Values are always written by a uint8, uint16 or int32 dataObject, that is passed
 as argument to the 'setVal' method. This dataObject must be 2-dimensional
@@ -48,9 +49,7 @@ plugin = dataIO(
     taskMode="continuous",
     samplingRate=800)
 
-# select three channels.
-# The channel description for an analog output
-# channel description is: dev-name
+# select port 0 (32 lines) from Dev4.
 plugin.setParam("channels", "Dev4/port0")
 
 # show the toolbox
@@ -79,14 +78,15 @@ plugin.startDevice()
 
 a = dataObject.randN([1,100], 'int32')
 
-for i in range(0,3):
-    plugin.setVal(a)
-    
-    print(f"iteration {i+1}/3: write for 3 sec ", end="")
-    
-    for i in range(0, 3):
-        print(".", end="")
-        time.sleep(1)
-    
-    print(" done")
-    plugin.stop()
+for j in range(0,2):
+    for i in range(0,3):
+        plugin.setVal(a)
+        
+        print(f"Run {j+1}/2, iteration {i+1}/3: write for 3 sec ", end="")
+        
+        for i in range(0, 3):
+            print(".", end="")
+            time.sleep(1)
+        
+        print(" done")
+        plugin.stop()

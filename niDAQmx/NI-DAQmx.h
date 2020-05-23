@@ -114,8 +114,7 @@ class NiDAQmx : public ito::AddInDataIO
         enum NiTaskMode 
         { 
             NiTaskModeFinite = 0, 
-            NiTaskModeContinuous = 1, 
-            NiTaskModeOnDemand = 2
+            NiTaskModeContinuous = 1
         };
 
         static QVector<void*> ActiveInstances;

@@ -101,6 +101,9 @@ arrays = []
 [i, h] = plot1(dataObject())
 
 for j in range(0, 2):
+    
+    print(f"Run {j+1}/2...", end="")
+    
     # start the task
     plugin.acquire()
     
@@ -116,12 +119,14 @@ for j in range(0, 2):
         # since we want to store the intermediate result for later
         # processing, we would like to get an unmutable array. Therefore: copyVal.
         plugin.copyVal(d)
-        print(time.time() - t)
+        print(f", step {i+1}/5 in %.2f s" % (time.time() - t), end="")
         h["source"] = d  # update the plot
         arrays.append(d)
     
     # stop the task
     plugin.stop()
+    
+    print(" done")
 
 # print the shapes of all subobjects
 print([i.shape for i in arrays])
@@ -138,11 +143,8 @@ plot1(total)
 #    getVal/copyVal values in order to not raise a timeout / unsufficient
 #    buffer size error.
 #
-#    The logging is enabled via the 'exec' function 'configureLogging'.
-#    This method can only be called if a task has already been created
-#    via startDevice.
-#
-#    The parameters are:
+#    The logging is enabled via the parameters 'loggingMode', 
+#    'loggingFilePath', 'loggingGroupName' and 'loggingOperation':
 #    
 #    loggingMode: 0 -> disable logging
 #                 1 -> enable fast mode logging

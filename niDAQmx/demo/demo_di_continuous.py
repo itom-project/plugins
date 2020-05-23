@@ -9,12 +9,16 @@ Demo script for acquiring a continuous set of digital
 values with a National Instruments DAQ device.
 
 For understanding this demo, one is referred to the documentations
-in the scripts demo_di.py and demo_ai_continuous.py. Together, they are
+in the scripts demo_di_finite.py and demo_ai_continuous.py. Together, they are
 very similar to this script.
 
 Data from a continuous task can be obtained by regularily
 calling getVal / copyVal or by enabling the TDMS file logging
 technique.
+
+If an entire port is read, the data type is either uint8, uint16 or int32,
+depending on the number of lines per port (usually uint8). If single lines
+are read, each line is written to one row (usually to an uint8 dataObject, too).
 
 Reading TDMS files via Python is possible by the package npTDMS
 (https://pypi.org/project/npTDMS).
@@ -60,13 +64,8 @@ plot1(np.hstack(alldata))
 #    getVal/copyVal values in order to not raise a timeout / unsufficient
 #    buffer size error.
 #
-#    The logging is enabled via the 'exec' function 'configureLogging'.
-#    This method can only be called if a task has already been created
-#    via startDevice.
-#
-#    The logging is enabled via the 'exec' function 'configureLogging'.
-#
-#    The parameters are:
+#    The logging is enabled via the parameters 'loggingMode', 
+#    'loggingFilePath', 'loggingGroupName' and 'loggingOperation':
 #    
 #    loggingMode: 0 -> disable logging
 #                 1 -> enable fast mode logging

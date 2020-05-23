@@ -97,7 +97,7 @@ plugin.stopDevice()
 
 # change the analog input task to another channel and
 # another trigger condition.
-plugin.setParam("channels", "Dev2/ai3,1,-6,8")
+plugin.setParam("channels", "Dev3/ai1,4,-6,8")
 plugin.setParam("startTriggerMode", "off")
 plugin.setParam("startTriggerSource", "PFI0")
 plugin.setParam("startTriggerRisingEdge", 0)

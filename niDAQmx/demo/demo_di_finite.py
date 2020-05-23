@@ -8,7 +8,7 @@ values with a National Instruments DAQ device.
 To test this script, the NI MAX (Measurement & Automation
 Explorer) has been used to create simulated devices.
 
-In this test, a simulated device NI PCI-6220 with 3x8 digital
+In this test, a simulated device NI PCI-6220 (Dev2) with 3x8 digital
 inputs is used. These inputs are distributed over 3 ports
 (ports0, ports1, ports2). Every port has 8 bit (line0-line7).
 
@@ -25,6 +25,10 @@ DeviceName/PortName
 or
 
 DeviceName/PortName/LineName
+
+If an entire port is read, the data type is either uint8, uint16 or int32,
+depending on the number of lines per port (usually uint8). If single lines
+are read, each line is written to one row (usually to an uint8 dataObject, too).
 
 Hint: It depends on the NI DAQ devices, if they allow
 integrating different devices into the same measurement
@@ -58,18 +62,23 @@ plugin.startDevice()
 # acquire 5x 800 samples with 800 samples / second
 a = []
 
-for i in range(0,5):
+print("acquire 5x800 samples...")
+
+for i in range(0, 5):
+    print(f"run {i+1}/5...", end="")
     t = time.time()
     
     # start the finite task
     plugin.acquire()
-    d=dataObject()
+    d = dataObject()
     
     # getVal waits for the finite task to be finished and reads out the values.
     plugin.getVal(d)
     a.append(d)
-    print(time.time() - t)
-plot1(dataObject.dstack(a).squeeze(), properties = {"curveStyle":"Steps"})
+    print("done in %.2f s" % (time.time() - t))
+
+print("datatype:", d.dtype)
+plot1(dataObject.dstack(a).squeeze(), properties={"curveStyle": "Steps"})
 
 
 # change some parameters on the fly...
@@ -84,9 +93,11 @@ plugin.setParam("samplingRate", 1600)
 # the device is still started (however due to the change of channels,
 # it was internally stopped and restarted)
 
-for i in range(0,10):
+for i in range(0, 10):
+    print(f"acquire run {i+1}/10...", end="")
     plugin.acquire()
     plugin.getVal(d)
+    print(" done")
 
 plot1(d)
 
