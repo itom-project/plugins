@@ -35,72 +35,58 @@ These parameters are available and can be used to configure the **niDAQmx** inst
 parameters can be changed using *setParam*. In general the string returned is a semicolon comma separated string. Groups are separated by semicolon, elements inside groups with a comma. 
 Example: the answer of taskStatus => "ai,0;ao,0;ci,-1;co,-1;di,-1;do,-1"
 
+**availableDevices**: {str}, read-only
+    comma-separated list of all detected and available devices
+**availableTerminals**: {str}, read-only
+    comma-separated list of all detected and available terminals (e.g. for 'sampleClockSource' or 'startTriggerSource'). The standard sample clock source 'OnboardClock' is not contained in this list.
+**bufferSize**: {int}
+    Sets and changes the automatic input / output buffer allocation mode. If -1 (default), the automatic allocation is enabled. Else defines the number of samples the buffer can hold for each channel (only recommended for continuous acquisition). In automatic mode and continuous acquisition, the standard is a buffer size of 1 kS for a sampling rate < 100 S/s, 10 kS for 100-10000 S/s, 100 kS for 10-1000 kS/s and 1 MS else. For input tasks, this size changes the input buffer size of the device, else the output buffer size.
+**channels**: {str}
+    semicolon-separated list of all channels that should be part of this task. Every item is a comma separated string that defines and parameterizes every channel.
+**loggingActive**: {int}, read-only
+    Indicates if TDMS file logging has been enabled and which mode was accepted by the device. The value has the same meaning than 'loggingMode'.
+**loggingFilePath**: {str}
+    The path to the TDMS file to which you want to log data. 
+**loggingGroupName**: {str}
+    The name of the group to create within the TDMS file for data from this task. If empty, the task name is taken. If data is appended to a TDMS file, a number symbol (e.g. Task #1, Task #2...) is added at each run.
+**loggingMode**: {int}
+    0: logging is disabled (default), 1: logging is enabled with disabled read (fast, but no data can simultaneously read via getVal/copyVal), 2: logging is enabled with allowed reading of data.
+**loggingOperation**: {str}
+    Specifies how to open the TDMS file. 'open': Always appends data to an existing TDMS file. If it does not exist yet, the task start operation will return with an error; 'openOrCreate': Creates a new TDMS file or appends data to the existing one;'createOrReplace' (default): Creates a new TDMS file or replaces an existing one; 'create': Newly creates the TDMS file. If it already exists a task start operation will return with an error.
 **name**: {str}, read-only
-    name of the plugin
-**channel**: {str}, read-only
-    returns the channels your device supports as a comma separated string. ("Dev1/ai0,Dev1/ai1,...")
-**chAssociated**: {str}, read-only
-    Lists all the port that are associated to a their corresponding task.
-    "Dev1/ai0" means that this channel is created and connected to the analog input task.
-**XXTaskParams**
-    The XX can be replaced by ai, ao, di, do, ci, co to set and get the parameters of the corresponding task.
-    "<Frequency in Hz>,<SamplesToRead>,<mode=0>" always use mode 0, other modes are not tested yet!    
-    Example:("aiTaskParams", "250000,100,0")
-    aiTaskParams: {str},
-    Initializes the analog input task. The parameters are:
-    "<samplesPerSec>,<NoOfSamples>,<mode>" and optional for an external trigger: "</TriggerChannel>,<rising/falling>".
-    <mode> can be a number from 0 to 2
-    0 = finite (best for usage with itom. Size of dataobject can be defined and read when task is done)
-    1 = continuous (not tested)
-    2 = on demand (not tested)
-    The optional parameters are for an external trigger. The trigger can be connected to PFIX for example. The task will be triggered after if a <rising/falling> (digital) edge occurs on the defined trigger input. 
-    Pay attention to the naming of the trigger input: /Dev1/ with a leading "/"
-    Example: "20000,100,0"
-    Example: "20000,100,0,/Dev1/PFI0,rising"
-    aoTaskParams    : {str},
-    Not tested yet.
-    ciTaskParams: {str},
-    Not implemented yet.
-    coTaskParams: {str},
-    Not implemented yet.
-    diTaskParams: {str},
-    Not implemented yet.
-    doTaskParams: {str},
-    Not implemented yet.
-**aiChParams**: {str},
-    Set/Get the parameters for an analog input channel. For further information refer to the gui dialog.
-    "<device>/<channel>,<mode>,<+-VoltageRange>" 
-    <mode> can be a number from 0 to 4
-    0 = default
-    1 = differential
-    2 = RSE
-    3 = NRSE
-    4 = Pseudodiff
-    Example: "Dev1/ai0,3,10"
-**aoChParams**: {str},
-    Set/Get the parameters for an analog input channel. For further information refer to the gui dialog. !Not tested yet!
-    "<device>/<channel>,<minVolt>,<maxVolt>" 
-    Example: "Dev1/ao0,4,-2,3"
-**diChParams**: {str},
-    Not implemented yet.
-**doChParams**: {str},
-    Not implemented yet.
-**ciChParams**: {str},
-    Not implemented yet.
-**coChParams**: {str},
-    Not implemented yet.
-**taskStatus**: {str}, read-only
-    Returns a list of all taks with their actual status:
-    -1 = not initialized
-    0 = initialized
-    1 = running (not tested yet)
-**setValMode**: {str},
-    This parameter is important for writing any kind of data to an output. The setVal method doesn't support a parameter for the kind of data you want to write (analog, digital, counter). There for this parameter defines where to send the data you set via setVal. 
-    1 = Analog
-    2 = Digital
-    3 = Counter
-    Note: 
-    This parameter is only required for writing data. When reading data the type of data you want to read is defined by a parameter of the acquire command.
+    
+**readTimeout**: {float}
+    Timeout when reading up to 'samplesPerChannel' values (per channel) in seconds. If -1.0 (default), the timeout is set to infinity (recommended for finite tasks). If 0.0, getVal/copyVal will return all values which have been recorded up to this call.
+**sampleClockRisingEdge**: {int}
+    If 1, samples are acquired on a rising edge of the sample clock (default), else they are acquired on a falling edge.
+**sampleClockSource**: {str}
+    The source terminal of the Sample Clock. To use the internal clock of the device, use an empty string or 'OnboardClock' (default). An example for an external clock source is 'PFI0' or PFI1'.
+**samplesPerChannel**: {int}
+    The number of samples to acquire or generate for each channel in the task (if taskMode is 'finite'). If taskMode is 'continuous', NI-DAQmx uses this value to determine the buffer size. This parameter is ignored for output tasks.If 'samplesPerChannel' is 1, one single value is read or written by asoftware trigger only. The parameters 'samplingRate', 'bufferSize', 'sampleClockSource' and 'sampleClockRisingEdge' are ignored then.
+**samplingRate**: {float}
+    The sampling rate in samples per second per channel. If you use an external source for the Sample Clock, set this value to the maximum expected rate of that clock.
+**setValWaitForFinish**: {int}
+    If 1, the setVal call will block until all data has been written (only valid for finite tasks). If 0, setVal will return immediately, then use 'taskStarted' to verify if the operation has been finished.
+**startTriggerLevel**: {float}
+    Only for 'startTriggerMode' == 'analogEdge': The threshold at which to start acquiring or generating samples. Specify this value in the units of the measurement or generation.
+**startTriggerMode**: {str}
+    Specifies the start trigger mode. 'off': software-based start trigger, 'digitalEdge': The start of acquiring or generating samples is given if the 'startTriggerSource' is activated (based on 'startTriggerRisingEdge'), 'analogEdge': similar to 'digitalEdge', but the analog input 'startTriggerSource' has to pass the value 'startTriggerLevel'.
+**startTriggerRisingEdge**: {int}
+    Specifies on which slope of the signal to start acquiring or generating samples. 1: rising edge (default), 0: falling edge.
+**startTriggerSource**: {str}
+    The source terminal of the trigger source (if 'startTriggerMode' is set to 'digitalEdge' or 'analogEdge').
+**supportedChannels**: {str}, read-only
+    comma-separated list of all detected and supported channels with respect to the task type. Every item consists of the device name / channel name
+**taskConfigured**: {int}, read-only
+    Indicates if the task is properly configured (1, all task related parameters where accepted) or not (0).
+**taskMode**: {str}
+    mode of the task recording / data generation: finite, continuous, onDemand
+**taskName**: {str}, read-only
+    name of the NI task that is related to this instance
+**taskStarted**: {int}, read-only
+    Indicates if the task is currently running (1) or stopped / inactive (0).
+**taskType**: {str}, read-only
+    task type: analogInput, analogOutput, digitalInput, digitalOutput
 
 
 Example
@@ -136,9 +122,7 @@ Create new Instance:
 Known Issues
 ============
 
-- Digital and Counter tasks, channels, etc are not implemented yet.
-
-- After the analog input task is done and the data read, the task is erased from the memory. So it´s not possible to start that task again. The task must be recreated using plugin.setParam("aiTaskParams", "20000,100,0"). 
+- Counter tasks are not implemented yet.
 
 Changelog
 =========
