@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>579</width>
-    <height>573</height>
+    <width>597</width>
+    <height>725</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -305,6 +305,89 @@
             </property>
             <property name="value">
              <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupRefTrigger">
+         <property name="title">
+          <string>Reference Trigger (Stop Trigger)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="2" column="1" colspan="2">
+           <widget class="QComboBox" name="comboRefTriggerSource">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Reference Trigger Source:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="3">
+           <widget class="QCheckBox" name="checkRefTriggerRisingEdge">
+            <property name="text">
+             <string>Trigger on Rising Edge</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinRefTriggerLevel">
+            <property name="suffix">
+             <string/>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lblRefTriggerLevel">
+            <property name="text">
+             <string>Reference Trigger Level:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Reference Trigger Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="2">
+           <widget class="QComboBox" name="comboRefTriggerMode"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="lblStartTriggerLevel_3">
+            <property name="text">
+             <string>Number of Pre-Trigger Samples:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="2">
+           <widget class="QSpinBox" name="spinRefTriggerPreTriggerSamples">
+            <property name="toolTip">
+             <string>The number of post-trigger samples is equal to &quot;Samples Per Channel&quot; - &quot;Number of Pre-Trigger Samples&quot;</string>
+            </property>
+            <property name="maximum">
+             <number>999999999</number>
             </property>
            </widget>
           </item>

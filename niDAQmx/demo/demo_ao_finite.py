@@ -81,7 +81,7 @@ for i in range(0, 2):
     plugin.setVal(a)
     
     t = time.time()
-    print("run %i " % i, end='')
+    print(f"run {i+1}/2 ", end='')
     
     # check if already finished...
     while(plugin.getParam("taskStarted") > 0):

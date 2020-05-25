@@ -90,7 +90,6 @@ plugin.setParam("channels", "Dev1/ai0,0,-10,10;Dev1/ai1,0,-8,8")
 # configure the task based on the configurations above.
 plugin.startDevice()
 
-
 # 1. sub-demo: Start the continuous task and get all new values
 #    every 500ms. Update a plot with the new values. Repeat this
 #    10 times and then stop the task. Afterwards concatenate all

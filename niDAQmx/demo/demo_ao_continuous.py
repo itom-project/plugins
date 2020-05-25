@@ -82,7 +82,7 @@ a = dataObject.randN([3,800], 'float64')
 for i in range(0,3):
     plugin.setVal(a)
     
-    print("write for 3 sec", end="")
+    print(f"run {i+1}/3: write for 3 sec", end="")
     
     for i in range(0, 3):
         print(".", end="")

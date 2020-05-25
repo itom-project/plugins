@@ -91,6 +91,13 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
         {
             ui.comboStartTriggerMode->addItem(sm->getString(i));
         }
+
+        // Tab General, Ref Trigger
+        sm = params["refTriggerMode"].getMetaT<ito::StringMeta>();
+        for (int i = 0; i < sm->getLen(); ++i)
+        {
+            ui.comboRefTriggerMode->addItem(sm->getString(i));
+        }
         
 
         QStringList availChannels = QString(params["supportedChannels"].getVal<const char*>()).split(",");
@@ -181,6 +188,17 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
     ui.doubleSpinStartTriggerLevel->setEnabled(ui.comboStartTriggerMode->currentText() == "analogEdge");
     ui.lblStartTriggerLevel->setEnabled(ui.comboStartTriggerMode->currentText() == "analogEdge");
     ui.doubleSpinStartTriggerLevel->setValue(params["startTriggerLevel"].getVal<double>());
+
+    // Tab General, Ref Trigger
+    ui.groupRefTrigger->setEnabled(params["refTriggerMode"].getFlags() == 0);
+    ui.comboRefTriggerSource->setCurrentText(params["refTriggerSource"].getVal<const char*>());
+    ui.checkRefTriggerRisingEdge->setChecked(params["refTriggerRisingEdge"].getVal<int>() > 0);
+    ui.comboRefTriggerMode->setCurrentText(params["refTriggerMode"].getVal<const char*>());
+
+    ui.doubleSpinRefTriggerLevel->setEnabled(ui.comboRefTriggerMode->currentText() == "analogEdge");
+    ui.lblRefTriggerLevel->setEnabled(ui.comboRefTriggerMode->currentText() == "analogEdge");
+    ui.doubleSpinRefTriggerLevel->setValue(params["refTriggerLevel"].getVal<double>());
+    ui.spinRefTriggerPreTriggerSamples->setValue(params["refTriggerPreTriggerSamples"].getVal<int>());
 
     // Tab Channels
     QStringList channels = QString(params["channels"].getVal<const char*>()).split(";");
@@ -377,6 +395,53 @@ ito::RetVal DialogNiDAQmx::applyParameters()
         values << QSharedPointer<ito::ParamBase>(
             new ito::ParamBase("startTriggerLevel", ito::ParamBase::Double,
                 ui.doubleSpinStartTriggerLevel->value())
+            );
+    }
+
+    // Tab General, Ref Trigger
+    boolVal = ui.checkRefTriggerRisingEdge->isChecked() ? 1 : 0;
+    if (boolVal != m_currentParameters["refTriggerRisingEdge"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("refTriggerRisingEdge", ito::ParamBase::Int,
+                boolVal)
+            );
+    }
+
+    byteArrayVal = ui.comboRefTriggerSource->currentText().toLatin1();
+    if (byteArrayVal != m_currentParameters["refTriggerSource"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("refTriggerSource", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    byteArrayVal = ui.comboRefTriggerMode->currentText().toLatin1();
+    if (byteArrayVal != m_currentParameters["refTriggerMode"].getVal<const char*>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("refTriggerMode", ito::ParamBase::String,
+                byteArrayVal.data())
+            );
+    }
+
+    if (std::abs(ui.doubleSpinRefTriggerLevel->value()
+        - m_currentParameters["refTriggerLevel"].getVal<double>())
+        > std::numeric_limits<double>::epsilon())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("refTriggerLevel", ito::ParamBase::Double,
+                ui.doubleSpinRefTriggerLevel->value())
+            );
+    }
+
+    if (ui.spinRefTriggerPreTriggerSamples->value()
+        != m_currentParameters["refTriggerPreTriggerSamples"].getVal<int>())
+    {
+        values << QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("refTriggerPreTriggerSamples", ito::ParamBase::Int,
+                ui.spinRefTriggerPreTriggerSamples->value())
             );
     }
 
