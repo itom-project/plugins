@@ -76,7 +76,7 @@ NiDAQmxInterface::NiDAQmxInterface()
 
     m_description = QObject::tr("Analog and digital input and output tasks for National Instruments devices, based on NI DAQmx.");
 
-    m_detaildescription = QObject::tr("The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. \n\
+    m_detaildescription = QObject::tr("The plugin implements the DAQmx functions for analog and digital I/O devices from National Instruments. \n\
 The installation needs the NI-DAQmx Library that can be downloaded from the NI website \n(https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html).");
 
     m_author = PLUGIN_AUTHOR;
@@ -162,7 +162,7 @@ NiDAQmx::NiDAQmx() :
 
     // General Parameters
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, 
-        "NI-DAQmx", NULL);
+        "NI-DAQmx", "NI-DAQmx");
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 

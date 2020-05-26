@@ -98,7 +98,7 @@ while plugin.getParam("taskStarted"):
     plugin.copyVal(d)
     a.append(d)
 
-print("The ref. trigger conditions are fullfilled.")
+print("The ref. trigger conditions are fulfilled.")
 
 # plot the acquired values from both channels from the last run.
 # the output dataObject already contains the correct axes units,

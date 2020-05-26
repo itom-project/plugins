@@ -210,9 +210,11 @@ if(NIDAQMX_FOUND)
 	# indicate the name of the main documentation file(without
 	# suffix rst) in the following command:
 	# 
-	# PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
+	# itom_configure_plugin_documentation(${target_name} nameOfTheFile)
 	#################################################################
-	itom_configure_plugin_documentation(${target_name} niDAQmx)
+    
+    # the target-name differs from the plugin name of this plugin!
+	itom_configure_plugin_documentation(${target_name} niDAQmx "NI-DAQmx")
 
 	#################################################################
 	# Post-Build Copy Operations
