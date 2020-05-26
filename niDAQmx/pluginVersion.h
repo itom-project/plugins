@@ -8,16 +8,16 @@
 #ifndef PLUGINVERSION_H
 #define PLUGINVERSION_H
 
-#define PLUGIN_VERSION_MAJOR 0
-#define PLUGIN_VERSION_MINOR 2
+#define PLUGIN_VERSION_MAJOR 1
+#define PLUGIN_VERSION_MINOR 0
 #define PLUGIN_VERSION_PATCH 1
 #define PLUGIN_VERSION_REVISION 0
 
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_COMPANY        "ITO Uni Stuttgart"
-#define PLUGIN_AUTHOR         "M. Hoppe (ITO Uni Stuttgart)"
-#define PLUGIN_COPYRIGHT      "(C) 2014, ITO Uni Stuttgart"
+#define PLUGIN_AUTHOR         "Martin Hoppe, ITO, University Stuttgart; Dan Nessett, Unaffiliated; Marc Gronle, Unaffiliated"
+#define PLUGIN_COPYRIGHT      "(C) 2020, ITO Uni Stuttgart"
 #define PLUGIN_NAME           "NI-DAQmx"
 
 //----------------------------------------------------------------------------------------------------------------------------------

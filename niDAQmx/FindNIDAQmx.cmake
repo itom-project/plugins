@@ -12,23 +12,28 @@
 # #########################################################################
 # Useful variables
 
-if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-  list(APPEND NIDAQMX_DIR 
-	"C:/Program Files (x86)/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
-	"C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
-  set(SUFFIXES "lib/msvc"
-		"lib32/msvc")
-else ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-  list(APPEND NIDAQMX_DIR 
-	"C:/Program Files/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
-	"C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
-  set(SUFFIXES "lib/msvc"
-		"lib64/msvc")
-endif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+if(WIN32)
+    if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+      list(APPEND NIDAQMX_DIR 
+	    "C:/Program Files (x86)/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
+	    "C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
+      set(SUFFIXES "lib/msvc"
+		    "lib32/msvc")
+    else()
+      list(APPEND NIDAQMX_DIR 
+	    "C:/Program Files/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
+	    "C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
+      set(SUFFIXES "lib/msvc"
+		    "lib64/msvc")
+    endif()
+else()
+    set(NIDAQMX_DIR "/usr/include" "/usr/lib/x86_64-linux-gnu")
+    set(SUFFIXES "")
+endif()
 
 # Find installed library using CMake functions
 find_library(NIDAQMX_LIBRARY
-	NAMES "NIDAQmx"
+	NAMES "NIDAQmx" "nidaqmx"
 	PATHS ${NIDAQMX_DIR}
 	PATH_SUFFIXES ${SUFFIXES})
 
