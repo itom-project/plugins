@@ -18,6 +18,11 @@ Overview
 .. pluginsummaryextended::
     :plugin: NI-DAQmx
 
+This plugin has mainly be tested with simulated NI I/O devices under Windows (using the NI Measurement and
+Automation Explorer software - NI MAX). Simulated tested devices were: NI PCIe-6321, NI PCI-6220, NI PCI-6111,
+NI PCIe-6323 and NI PCI-6520.
+
+
 Driver Installation
 ====================
 
@@ -39,7 +44,7 @@ If you also want to compile the plugin, make sure that you enable the option
 by modifying the installation using the tab **Progam and Features** in the Windows Control Panel
 (see https://knowledge.ni.com/KnowledgeArticleDetails?id=kA00Z000000P9udSAC ).
 
-The itom **niDAQmx** plugin has mainly been developped and tested using **NI-DAQmx 18.06.0**.
+The itom **niDAQmx** plugin has mainly been developed and tested using **NI-DAQmx 18.06.0**.
 
 
 Linux
@@ -72,6 +77,9 @@ following combinations (of course multiple instances can be run in parallel):
 * Digital input task with continuous acquisition (from start to stop signal)
 * Digital output task with a finite number of written samples (per run)
 * Digital output task with continuous write (from start to stop signal)
+
+All analog tasks are created as voltage tasks, only. Transforming voltages into other physical units
+must be done within the script.
 
 It is not possible to combine analog and digital ports within one task, hence, once instance
 of the plugin. Finite input tasks can also have a **reference trigger**, that is usually used
@@ -206,8 +214,190 @@ writeable parameters can be changed using *setParam*.
 Usage
 ======
 
-todo
+Channels
+---------
 
+Every task can consist of one or multiple channels, that are given as semicolon-separated list in the
+**channels** parameter. Please note, that a digital task can only consist of digital channels and analog tasks
+only of analog channels. Read the parameter **supportedChannels** to get all available channel names for
+your task.
+
+Every channel item in the semicolon-separated list consists of a configuration string (see examples below),
+whose exact meaning depend on the task mode and type. The configuration string is a comma-separated list of items.
+The first item is always the physical name of the channel, that usually consists of the device name (e.g. Dev1),
+followed by a slash and the port name (e.g. AI0). For digital tasks, the physical name can also consist of
+the device name, the port name and the line name (divided by slashes) if one single line (pin) of a port should
+be used only (e.g. Dev0/port0/line1). All possible physical names are listed in **supportedChannels**.
+
+For analog input and output tasks, a certain minimum and maximum voltage must be given (as integer or floating point number).
+
+Analog input tasks have an additional parameter **ConfigMode**, that defines the input terminal configuration
+of the channel. Possible values are:
+
+.. code-block::
+    
+    DAQmx_Val_Cfg_Default = 0, 
+    DAQmx_Val_Diff = 1, 
+    DAQmx_Val_RSE = 2, 
+    DAQmx_Val_NRSE = 3, 
+    DAQmx_Val_PseudoDiff = 4
+
+The possible configuration strings for one channel are:
+
+* **Analog input channel**: PhysicalName,ConfigMode,MinVoltage,MaxVoltage
+* **Analog output channel**: PhysicalName,MinVoltage,MaxVoltage
+* **Digital input channel**: PhysicalName
+* **Digital output channel**: PhysicalName
+
+Data Types
+-----------
+
+Analog input or output tasks are always based on 2-dimensional dataObjects of dtype **float64**.
+The rows corresponds to the channels in the active task and the columns correspond to the acquired samples.
+
+Digital input or output tasks are always based on 2-dimensional dataObjects of dtypes **uint8**, **uint16** or
+**int32**. The type **int32** is internally casted to **uint32** (however uint32 is not officially supported for
+dataObjects). The correct bitdepth depend on whether a channel is assigned to a single line or an entire port.
+In the first case, the datatype is usually **uint8**, in the latter case, the bitdepth depend on the number of
+lines, that are covered by the port. If the wrong datatype is used, an appropriate error message will appear,
+that indicates the desired bitdepth.
+
+General
+--------
+
+The general approach to use a NI I/O device can be seen in one of the examples below. In general, it is 
+recommended to configure a plugin instance as far as possible. Then the task will be created and configured using
+the **startDevice** command. In case of invalid parameters, **startDevice** will raise an exception, whose
+error message usually gives detailed information about an invalid parameterization and possible different solutions.
+
+The task can finally be deleted using **stopDevice**.
+
+Input tasks will always be started using **acquire**. If a start trigger is given, the real acquisition will
+be started if the trigger event is signalled (but after having called **acquire**). Finite tasks will automatically be 
+stopped if the requested number of samples per channel (**samplesPerChannel**) are acquired (if no reference 
+trigger is given). The values can then be obtained via **getVal** or **copyVal** (like for any other grabber or 
+dataIO device).
+
+The acquisition of **continuous** tasks is also started by **acquire** (and an optional start trigger). Then all
+data is temporarily stored into an internal buffer of the NI driver. The buffer size is usually automatically
+determined based on **samplesPerChannel** (as far as this value is big enough, else NI determines its own internal
+buffer size; see also the parameter **bufferSize**). As far as no fast TDMS logging is enabled, you have to 
+continuously receive the latest data via **getVal** or **copyVal** in order to avoid that the internal buffer
+overflows. The continuous task is then stopped via **stop**.
+
+For output tasks, a **MxN** data object must be passed to **setVal**, where **M** must correspond to the number
+of channels in the task. **N** are the number of samples. However **N** is **not** the number that defines the
+number of transmitted samples per channel. This is again defined by the parameter **samplesPerChannel**. If
+**samplesPerChannel** is smaller than **N**, only the **samplesPerChannel** columns are written to the output
+channels (using the sampling rate or sample clock). If **samplesPerChannel** is bigger than **N**, the write
+operation restarts at the first column once the last column of the dataObject has been written.
+
+For **finite output tasks**, it is possible to block the call of **setVal** until all samples have been
+written by setting **setValWaitForFinish** to 1. Else **setVal** will return immediately. The end of the task
+can then be continously checked by getting the parameter **taskStarted** and check if it drops to 0 again.
+
+Continuous output tasks will continuously write the columns and restart from the beginning until the task
+will be stopped via **stop**.
+
+Reference Trigger
+------------------
+
+The reference trigger can be configured in order to stop a task upon a certain trigger signal. This
+reference trigger can only be applied to finite input tasks. Although the parameter **refTriggerMode** can
+only be set to something else than **off** for finite input tasks, such a task will then behave like a continuous
+input task. That means, that the task will be started via **acquire** and data will be continously recorded
+until the stop trigger condition is fulfilled (or the internal buffer overflows). To avoid the latter, it is
+again necessary to continously get intermediate data via **getVal** / **copyVal** or enable a fast TDMS logging.
+
+The reference trigger listens to either a falling or raising edge of a digital line, or when an analog trigger
+input jumps over (or below) a certain threshold value. However the task is only stopped if three different conditions
+are met:
+
+1. The trigger must be signalled (see **refTriggerSource**, **refTriggerMode**, **refTriggerRisingEdge** and **refTriggerLevel**)
+2. A certain number of samples per channel must have been recorded (see **refTriggerPreTriggerSamples**)
+3. If cond 1 and 2 are met, a certain number of post trigger samples will be recorded before stopping the task.
+   This number is defined by **samplesPerChannel** - **refTriggerPreTriggerSamples**.
+
+
+TDMS Logging
+=============
+
+NI provides a possibility to record all acquired values from all **input tasks** in the NI file format **TDMS**
+(see https://www.ni.com/en-US/support/documentation/supplemental/07/tdms-file-format-internal-structure.html).
+
+The filename of the tdms file, that should be used for the upcoming logging can be set by the parameter
+**loggingFilePath**. The TDMS file format can contain multiple arrays from different recordings. Each array
+is a two dimensional array, where each row belongs to one channel and the columns are the recorded samples.
+Each array is stored under a certain path, where each node of the path is denoted as group.
+Separate the different group names by a single slash, to provide a full path. The group name of the upcoming
+recording is set via **loggingGroupName**. If the group name already exists in the tdms file, a suffix **#1**, **#2**, ...
+is added to the leaf group name.
+There are different options how to open or create a **TDMS** file. These can be set via **loggingOperation**.
+It is for instance possible to always create a new file, to append data to an existing file among others.
+
+The logging itself must be enabled by the parameter **loggingMode**. Set this value to 0 in order to disable logging.
+Set it to 1 in order to enable a fast logging. Then all data is automatically logged into the TDMS file after
+having called **acquire**, but it is not possible to simultaneously get the recorded data via **getVal** or **copyVal**.
+The recording is done via background thread in the NI driver. The last possible value is 2. Then the task is
+started like an ordinary task and whenever data is received via **getVal** or **copyVal**, the same data is
+stored into TDMS file, too. No data is recorded if **getVal** or **copyVal** are not called.
+
+It is recommended to set all logging parameters before calling **startDevice**. If one of these parameters
+is changed later, the device is internally stopped, then the parameters are changed and the device is
+reconfigured with the new logging properties.
+
+If the logging is activated, the parameter **loggingActive** will be set to the currently active **loggingMode**.
+
+See the example **demo_ai_tdms_logging.py** for a demo about the TDMS logging.
+
+A TDMS file can for instance be read via the Python package **npTDMS** (https://pypi.org/project/npTDMS):
+
+.. code-block:: python
+    
+    # coding=utf8
+
+    """Demo to load and read a TDMS file
+
+    Here, we read the TMDS files, that have been created
+    by the ai_continuous and di_continuous demo scripts.
+
+    This script requires the Python package npTDMS
+    (https://pypi.org/project/npTDMS).
+    """
+
+    import nptdms as tdms
+    import numpy as np
+
+    # step 1: read the file demo_ai_continuous.tdms
+
+    file = tdms.TdmsFile(r"D:\temp\demo_ai_continuous.tdms")
+
+    print("Available groups:")
+    print(file.groups())
+
+    # access group object
+    groupObject= file.object(file.groups()[0])
+
+
+    data = []
+
+    for obj in file.group_channels('group1'):
+        data.append(obj.data)
+
+    total2= np.vstack(data)
+    plot1(total2)
+
+Configuration Dialog and Toolbox
+==================================
+
+The plugin provides both a configuration dialog as well as a toolbox.
+
+The toolbox comes with an overview panel, that shows some basic information about connected channels
+and about the current run state of the task. In a 2nd tab, a general list of all parameters is displayed
+by means of a generic parameter widget.
+
+The configuration dialog let you configure all channels as well as provide access to all major
+parameters, separated into different groups (like start trigger, reference trigger, sample clock etc.).
 
 Compilation
 ============
@@ -227,8 +417,8 @@ variables:
 the directory, that contains the file **NIDAQmx.h** and **NIDAQMX_LIBRARY** must point to the
 linkable library of NIDAQmx, e.g. **NIDAQmx.lib** under Windows.
 
-Example
-=======
+Examples
+=========
 
 All these examples can also be found in the **demo** folder of the **niDAQmx** plugin sources:
 
@@ -1954,9 +2144,6 @@ Digital Output Tasks
         plugin.setVal(a)
 
     print(" done in %.2f sec" % (time.time() - t))
-
-
-
     
 Known Issues
 ============
@@ -1972,4 +2159,4 @@ Changelog
 * itom setup 3.1.0: This plugin has been compiled using the NI-DAQmx 18.1.0 (Linux)
 * itom setup 3.1.0: This plugin has been compiled using the NI-DAQmx 18.6.0 (Windows)
 * itom setup 4.0.0: Complete renewed plugin implementation. This plugin is incompatible to earlier version of
-  this plugin and provides much more features. It has been compiled using the NI-DAQmx 18.6.0 (Windows)
+  this plugin and provides much more features. It has been compiled using NI-DAQmx 18.6.0 (Windows)
