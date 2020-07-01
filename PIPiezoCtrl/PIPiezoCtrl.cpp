@@ -976,8 +976,19 @@ ito::RetVal PIPiezoCtrl::PICheckStatus(void)
     {
         return ito::RetVal(ito::retError, 0, tr("controller device unknown").toLatin1().data());
     }
+    else if (m_ctrlType == C663Family)
+    {
+        m_identifier = QString("C663 (%1)").arg(getID());
+        /*retVal += PISendQuestionWithAnswerDouble("*STB?", answerDbl, 200);
+        int* piControllerReady;
+        if (!PI_IsControllerReady(m_deviceID, piControllerReady))
+        {
+            ito::RetVal(ito::retError, 0, tr("controller not ready").toLatin1().data());
+        }*/
+    }
     else if (m_ctrlType == E662Family)
     {
+
         m_identifier = QString("E662 (%1)").arg(getID());
         retVal += PISendQuestionWithAnswerDouble("*STB?", answerDbl, 200);
         if (!retVal.containsError())
@@ -1229,7 +1240,7 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
 
         if (!retValue.containsError())
         {
-            if (m_ctrlType == E662Family)
+            if (m_ctrlType == E662Family || m_ctrlType == C663Family)
             {
                 //buffer has form ErrorCode, "ErrorMsg"
                 pos = buffer.indexOf(",");
@@ -1553,14 +1564,15 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     if (answer.contains("E-662"))
     {
         m_ctrlType = E662Family;
-
+        m_params["ctrlType"].setVal<char*>("E662", (int)strlen("E662"));
+        
         m_AbsPosCmd = "POS";
         m_RelPosCmd = "POS:REL";
         m_PosQust = "POS?";
 
         m_params["hasLocalRemote"].setVal<int>(1.0);
         m_params["hasOnTargetFlag"].setVal<int>(0.0);
-        m_params["ctrlType"].setVal<char*>("E662", (int)strlen("E662"));
+        
         m_hasHardwarePositionLimit = true;
 
         //set remote mode
@@ -1596,6 +1608,28 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         retval += PIGetLastErrors(lastErrors);
         retval += convertPIErrorsToRetVal(lastErrors);
+    }
+    else if (answer.contains("C-663"))
+    {
+        m_ctrlType = C663Family;
+        m_params["ctrlType"].setVal<char*>("C663", (int)strlen("C663"));
+
+        m_AbsPosCmd = "MOV 1";
+        m_RelPosCmd = "MVR 1";
+        m_PosQust = "POS? 1";
+
+        retval += PISendCommand("SVO 1 1"); //activates servo
+        m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
+
+        retval += PISendCommand("MOV 1 0"); //dummy drive to get max pos
+
+        m_hasHardwarePositionLimit = false;
+
+        //set remote mode
+        retval += PIGetLastErrors(lastErrors);
+        retval += convertPIErrorsToRetVal(lastErrors);
+
+        
     }
     else if (answer.contains("E816") || answer.contains("E625"))
     {
@@ -1684,6 +1718,18 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
     switch (m_ctrlType)
     {
     case E662Family:
+        if (localNotRemote)
+        {
+            m_params["local"].setVal<int>(1);
+            retValue += PISendCommand("SYST:DEV:CONT LOC");
+        }
+        else
+        {
+            m_params["local"].setVal<int>(0);
+            retValue += PISendCommand("SYST:DEV:CONT REM");
+        }
+        break;
+    case C663Family:
         if (localNotRemote)
         {
             m_params["local"].setVal<int>(1);
@@ -1857,7 +1903,7 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     {
         while(!atTarget && !retVal.containsError())
         {
-            if (m_ctrlType == E753Family)
+            if (m_ctrlType == E753Family || m_ctrlType == C663Family)
             {
                 ontRetVal = PISendQuestionWithAnswerDouble2("ONT? 1", 1, answerDbl, 50);
             }
