@@ -169,6 +169,9 @@ This plugin can also be used as template for other grabber.");
 
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
+
+    param = ito::Param("dummyImageType", ito::ParamBase::Int, 0, 1, 0, tr("type of dummy image. 0: noise (default), 1: Gaussian").toLatin1().data());
+    m_initParamsOpt.append(param);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -223,7 +226,9 @@ DummyGrabber::DummyGrabber() :
     AddInGrabber(),
     m_isgrabbing(false),
     m_totalBinning(1),
-    m_lineCamera(false)
+    m_lineCamera(false),
+    m_hasDummyImage(false),
+    m_dummyImage(ito::DataObject())
 {
     ito::DoubleMeta *dm;
 
@@ -338,6 +343,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
     int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
+
     if (sizeY > 1 && sizeY % 4 != 0)
     {
         retVal += ito::RetVal(ito::retError, 0, "maxYSize must be 1 or dividable by 4");
@@ -379,6 +385,13 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
         checkData(); //check if image must be reallocated
 
         emit parametersChanged(m_params);
+    }
+
+    int createDummyImage = paramsOpt->at(3).getVal<int>();
+    if (createDummyImage == 1) //create Gaussian dummy image
+    {
+        createDummyGauss();
+        m_hasDummyImage = true;
     }
 
     setIdentifier(QString::number(getID()));
@@ -825,6 +838,64 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
             }
         }
 
+        if (m_hasDummyImage)
+        {
+
+            int planeID = m_data.seekMat(0);   //get internal plane number for the first plane
+            int height = m_data.getSize(0);
+            int width = m_data.getSize(1);
+
+            if (bpp < 9)
+            {
+                ito::int8* rowPtr1 = NULL;
+                ito::int8* rowPtr2 = NULL;
+
+                for (int y = 0; y < height; y++)
+                {
+                    rowPtr1 = (ito::int8*)m_dummyImage.rowPtr(planeID, y);
+                    rowPtr2 = (ito::int8*)m_data.rowPtr(planeID, y);
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        rowPtr2[x] = rowPtr1[x];
+                    }
+                }
+            }
+            else if (bpp < 17)
+            {
+                ito::int16* rowPtr1 = NULL;
+                ito::int16* rowPtr2 = NULL;
+
+                for (int y = 0; y < height; y++)
+                {
+                    rowPtr1 = (ito::int16*)m_dummyImage.rowPtr(planeID, y);
+                    rowPtr2 = (ito::int16*)m_data.rowPtr(planeID, y);
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        rowPtr2[x] = rowPtr1[x];
+                    }
+                }
+            }
+            else if (bpp < 32)
+            {
+                ito::int16* rowPtr1 = NULL;
+                ito::int16* rowPtr2 = NULL;
+
+                for (int y = 0; y < height; y++)
+                {
+                    rowPtr1 = (ito::int16*)m_dummyImage.rowPtr(planeID, y);
+                    rowPtr2 = (ito::int16*)m_data.rowPtr(planeID, y);
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        rowPtr2[x] = rowPtr1[x];
+                    }
+                }
+            }
+
+        }
+
         if (integration_time > 0.0)
         {
             double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
@@ -950,6 +1021,74 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DummyGrabber::createDummyGauss()
+{
+    int width = m_data.getSize(1);
+    int height = m_data.getSize(0);
+    int type = m_data.getType();
+    m_dummyImage = ito::DataObject(height, width, type);
+
+    int bpp = m_params["bpp"].getVal<int>();
+    float xval, yval;
+
+    float sigmaX = 50.0f;
+    float sigmaY = 50.0f;
+
+    int planeID = m_dummyImage.seekMat(0);
+
+    if (bpp < 9)
+    {
+        ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+        ito::int8* rowPtr = NULL;
+
+        for (int y = 0; y < height; y++)
+        {
+            rowPtr = (ito::int8*)m_dummyImage.rowPtr(planeID, y);
+            yval = ((y - height  / 2) * ((float)y - height / 2)) / (2.0f * sigmaY * sigmaY);
+            for (int x = 0; x < width; x++)
+            {
+                xval = ((x - width / 2) * ((float)x - width / 2)) / (2.0f * sigmaX * sigmaX);
+                rowPtr[x] = (float)amplitude * exp(-(xval + yval));
+            }
+        }
+    }
+    else if (bpp < 17)
+    {
+        ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+        ito::int16* rowPtr = NULL;
+
+        for (int y = 0; y < height; y++)
+        {
+            rowPtr = (ito::int16*)m_dummyImage.rowPtr(planeID, y);
+            yval = ((y - height / 2) * ((float)y - height / 2)) / (2.0f * sigmaY * sigmaY);
+            for (int x = 0; x < width; x++)
+            {
+                xval = ((x - width / 2) * ((float)x - width / 2)) / (2.0f * sigmaX * sigmaX);
+                rowPtr[x] = (float)amplitude * exp(-(xval + yval));
+            }
+        }
+    }
+    else if (bpp < 32)
+    {
+        ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+        ito::int32* rowPtr = NULL;
+
+        for (int y = 0; y < height; y++)
+        {
+            rowPtr = (ito::int32*)m_dummyImage.rowPtr(planeID, y);
+            yval = ((y - height / 2) * ((float)y - height / 2)) / (2.0f * sigmaY * sigmaY);
+            for (int x = 0; x < width; x++)
+            {
+                xval = ((x - width / 2) * ((float)x - width / 2)) / (2.0f * sigmaX * sigmaX);
+                rowPtr[x] = (float)amplitude * exp(-(xval + yval));
+            }
+        }
+    }
+
+    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
