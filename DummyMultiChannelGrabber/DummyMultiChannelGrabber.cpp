@@ -170,8 +170,8 @@ This plugin can also be used as template for other grabber.");
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
 
-	param = ito::Param("numberOfChannels", ito::ParamBase::Int, 2, new ito::IntMeta(2, 30, 1), tr("Number of channels").toLatin1().data());
-	m_initParamsOpt.append(param);
+    param = ito::Param("numberOfChannels", ito::ParamBase::Int, 2, new ito::IntMeta(2, 30, 1), tr("Number of channels").toLatin1().data());
+    m_initParamsOpt.append(param);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -259,9 +259,9 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
     dm->setCategory("AcquisitionControl");
     dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
     m_params.insert(paramVal.getName(), paramVal);
-	
-	paramVal = ito::Param("defaultChannel", ito::ParamBase::String, "", tr("indicates the current default channel").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    
+    paramVal = ito::Param("defaultChannel", ito::ParamBase::String, "", tr("indicates the current default channel").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel, binning = x-factor * 100 + y-factor").toLatin1().data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
@@ -306,14 +306,14 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
     m_params.insert(paramVal.getName(), paramVal);
 
 
-	if (hasGuiSupport())
-	{
-		//now create dock widget for this plugin
-		DockWidgetDummyMultiChannelGrabber *dw = new DockWidgetDummyMultiChannelGrabber(this);
-		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
-	}
+    if (hasGuiSupport())
+    {
+        //now create dock widget for this plugin
+        DockWidgetDummyMultiChannelGrabber *dw = new DockWidgetDummyMultiChannelGrabber(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -344,7 +344,7 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
 
     int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
     int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
-	int numChannel = paramsOpt->at(3).getVal<int>(); //third optional parameter, corresponding to the number of channels
+    int numChannel = paramsOpt->at(3).getVal<int>(); //third optional parameter, corresponding to the number of channels
     if (sizeY > 1 && sizeY % 4 != 0)
     {
         retVal += ito::RetVal(ito::retError, 0, "maxYSize must be 1 or dividable by 4");
@@ -368,16 +368,17 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
             m_lineCamera = false;
             m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
         }
-		QString tempName;
-		//add channels to map
-		for (int i = 0; i < numChannel; ++i)
-		{
-			tempName = QString("Channel_%1").arg(i);
-			m_data[tempName] = ChannelContainer(m_params["sizex"], m_params["sizey"], m_params["bpp"]);
-		}
-		m_params["defaultChannel"].setVal<char*>("Channel_0");
+        QString tempName;
+
+        m_params["defaultChannel"].setVal<char*>("Channel_0");
         int roi[] = {0, 0, sizeX, sizeY};
         m_params["roi"].setVal<int*>(roi, 4);
+        //add channels to map
+        for (int i = 0; i < numChannel; ++i)
+        {
+            tempName = QString("Channel_%1").arg(i);
+            m_data[tempName] = ChannelContainer(m_params["sizex"], m_params["sizey"], m_params["bpp"], m_params["roi"]);
+        }
         if (sizeY == 1)
         {
             m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
@@ -519,6 +520,19 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
 
     if (!retValue.containsError())
     {
+        if (key == "defaultChannel")
+        {
+            retValue += it->copyValueFrom(&(*val));
+            if (m_data.find(it->getVal<char*>()) != m_data.end())
+            {
+                m_params["defaultChannel"].setVal<char*>(it->getVal<char*>());
+                syncMultiChannelParams();
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("Unknown channel: %1").arg(it->getVal<char*>()).toLatin1().data());
+            }
+        }
         //first check parameters that influence the size or data type of m_data
         if (key == "roi" || key == "binning" || key == "bpp")
         {
@@ -541,14 +555,18 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                 if (!hasIndex)
                 {
                     retValue += it->copyValueFrom(&(*val));
-                    m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
-                    m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
+                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"].setVal<int>(it->getVal<int*>()[3]);
+                    /*m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                    m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);*/
                 }
                 else
                 {
                     it->getVal<int*>()[index] = val->getVal<int>();
-                    m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
-                    m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
+                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"].setVal<int>(it->getVal<int*>()[3]);
+                    /*m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                    m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);*/
                 }
             }
             else if (key == "binning")
@@ -579,30 +597,32 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                         int oldX = (oldval - oldY) / 100;
                         float factorX = (float)oldX / (float)newX;
                         float factorY = (float)oldY / (float)newY;
+                        ChannelContainer iterParam;
+                        int width, height, maxWidth, maxHeight, sizex, sizey, offsetx, offsety;
+                        foreach(iterParam, m_data)
+                        {
+                            width = m_params["sizex"].getVal<int>() * factorX;
+                            height = m_params["sizey"].getVal<int>() * factorY;
 
-                        int width = m_params["sizex"].getVal<int>() * factorX;
-                        int height = m_params["sizey"].getVal<int>() * factorY;
+                            maxWidth = m_params["sizex"].getMax();
+                            maxHeight = m_params["sizey"].getMax();
+                            iterParam.m_channelParam["sizex"].setVal<int>(width);
+                            iterParam.m_channelParam["sizex"].setMeta(new ito::IntMeta(4 / newX, maxWidth * factorX, 4 / newX), true);
+                            iterParam.m_channelParam["sizey"].setVal<int>(height);
+                            iterParam.m_channelParam["sizey"].setMeta(new ito::IntMeta(4 / newY, maxHeight * factorY, 4 / newY), true);
 
-                        int maxWidth = m_params["sizex"].getMax();
-                        int maxHeight = m_params["sizey"].getMax();
-
-                        m_params["sizex"].setVal<int>(width);
-                        m_params["sizex"].setMeta(new ito::IntMeta(4/newX, maxWidth * factorX, 4/newX), true);
-
-                        m_params["sizey"].setVal<int>(height);
-                        m_params["sizey"].setMeta(new ito::IntMeta(4/newY, maxHeight * factorY, 4/newY), true);
-
-                        int sizeX = m_params["roi"].getVal<int*>()[2] * factorX;
-                        int sizeY = m_params["roi"].getVal<int*>()[3] * factorY;
-                        int offsetX = m_params["roi"].getVal<int*>()[0] * factorX;
-                        int offsetY = m_params["roi"].getVal<int*>()[1] * factorY;
-                        int roi[] = {offsetX, offsetY, sizeX, sizeY};
-                        m_params["roi"].setVal<int*>(roi, 4);
-                        m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, width - 1,4/newX,4/newX,maxWidth * factorX,4/newX), ito::RangeMeta(0, height - 1,4/newY,4/newY,maxHeight * factorY,4/newY)), true);
+                            int sizeX = m_params["roi"].getVal<int*>()[2] * factorX;
+                            int sizeY = m_params["roi"].getVal<int*>()[3] * factorY;
+                            int offsetX = m_params["roi"].getVal<int*>()[0] * factorX;
+                            int offsetY = m_params["roi"].getVal<int*>()[1] * factorY;
+                            int roi[] = { offsetX, offsetY, sizeX, sizeY };
+                            iterParam.m_channelParam["roi"].setVal<int*>(roi, 4);
+                            iterParam.m_channelParam["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, width - 1, 4 / newX, 4 / newX, maxWidth * factorX, 4 / newX), ito::RangeMeta(0, height - 1, 4 / newY, 4 / newY, maxHeight * factorY, 4 / newY)), true);
+                        }
                     }
                 }
             }
-
+            syncMultiChannelParams();
             retValue += checkData(); //check if image must be reallocated
 
             if (running)
@@ -761,8 +781,8 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             {
                 ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
                 ito::uint8 *linePtr;
-				char* a = m_params["defaultChannel"].getVal<char*>();
-				ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
+                char* a = m_params["defaultChannel"].getVal<char*>();
+                ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
                 for (int m = 0; m < channelObj.getSize(0); ++m)
                 {
                     linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
@@ -776,7 +796,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             {
                 ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
                 ito::uint16 *linePtr;
-				ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
+                ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
                 for (int m = 0; m < channelObj.getSize(0); ++m)
                 {
                     linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
@@ -790,7 +810,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             {
                 ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
                 ito::int32 *linePtr;
-				ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
+                ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
                 for (int m = 0; m < channelObj.getSize(0); ++m)
                 {
                     linePtr = (ito::int32*)channelObj.rowPtr(0, m);
@@ -807,7 +827,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             {
                 ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
                 ito::uint8 *linePtr;
-				ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
+                ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
                 for (int m = 0; m < channelObj.getSize(0); ++m)
                 {
                     linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
@@ -821,7 +841,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             {
                 ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
                 ito::uint16 *linePtr;
-				ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
+                ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
                 for (int m = 0; m < channelObj.getSize(0); ++m)
                 {
                     linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
@@ -835,7 +855,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             {
                 ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
                 ito::int32 *linePtr;
-				ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
+                ito::DataObject &channelObj = m_data[m_params["defaultChannel"].getVal<char*>()].data;
                 for (int m = 0; m < channelObj.getSize(0); ++m)
                 {
                     linePtr = (ito::int32*)channelObj.rowPtr(0, m);
@@ -965,7 +985,7 @@ ito::RetVal DummyMultiChannelGrabber::retrieveData(ito::DataObject *externalData
     {
         if (externalDataObject)
         {
-			m_data[m_params["defaultChannel"].getVal<char*>()].data.deepCopyPartial(*externalDataObject);
+            m_data[m_params["defaultChannel"].getVal<char*>()].data.deepCopyPartial(*externalDataObject);
         }
 
         m_isgrabbing = false;
@@ -991,3 +1011,13 @@ void DummyMultiChannelGrabber::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+void DummyMultiChannelGrabber::syncMultiChannelParams()
+{
+    m_params["sizex"].setVal<int>(m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"].getVal<int>());
+    m_params["sizey"].setVal<int>(m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"].getVal<int>());
+    m_params["bpp"].setVal<int>(m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["bpp"].getVal<int>());
+    m_params["roi"].setVal<int*>(m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["roi"].getVal<int*>());
+        
+}
+

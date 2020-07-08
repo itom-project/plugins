@@ -87,6 +87,7 @@ class DummyMultiChannelGrabber : public ito::AddInMultiChannelGrabber
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+        void syncMultiChannelParams();
 
 
 };
