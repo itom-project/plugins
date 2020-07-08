@@ -39,7 +39,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 //#include "NITPlayer.h"
 //#include "NITAutomaticGainControl.h"
 
-#include "cv.h"
 #include "opencv2/opencv.hpp"
 
 using namespace NITLibrary;

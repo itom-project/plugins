@@ -95,5 +95,7 @@ The maintainer from XSD promised in a forum that this bug will be fixed in the 4
 Changelog
 =========
 
-* itom setup >=3.1.0: This plugin has been compiled using the XSD 4.0
+* itom setup 3.1.0: This plugin has been compiled using the XSD 4.0
+* itom setup 3.2.1: This plugin has been compiled using the XSD 4.0
+* itom setup 4.0.0: This plugin has been compiled using the XSD 4.0
 

@@ -214,7 +214,8 @@ Changelog
 ==========
 
 * itom setup 3.1.0: This plugin has been compiled using GenICam 3.0.2
-* itom setup >3.1.0: This plugin has been compiled using GenICam GenAPI 3.1.0
+* itom setup 3.2.1: This plugin has been compiled using GenICam GenAPI 3.1.0
+* itom setup 4.0.0: This plugin has been compiled using GenICam GenAPI 3.2.0
 
 Workaround
 ==========

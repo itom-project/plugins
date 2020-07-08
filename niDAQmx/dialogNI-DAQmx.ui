@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>432</width>
-    <height>342</height>
+    <width>597</width>
+    <height>725</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,623 +15,668 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_12">
    <item>
-    <widget class="QSplitter" name="splitter">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>General</string>
+      </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QTabWidget" name="tabWidget">
-         <property name="enabled">
-          <bool>true</bool>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
-         <property name="tabPosition">
-          <enum>QTabWidget::North</enum>
+         <property name="title">
+          <string>General</string>
          </property>
-         <property name="tabShape">
-          <enum>QTabWidget::Rounded</enum>
-         </property>
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <property name="documentMode">
-          <bool>false</bool>
-         </property>
-         <property name="tabsClosable">
-          <bool>false</bool>
-         </property>
-         <widget class="QWidget" name="tab_5">
-          <attribute name="title">
-           <string>Tasks</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QComboBox" name="taskCombo"/>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_2">
-             <property name="title">
-              <string>Task parameters</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>Frequenz</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <spacer name="horizontalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>128</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="0" column="2">
-               <widget class="QSpinBox" name="taskRateSpin">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>1000000</number>
-                </property>
-                <property name="value">
-                 <number>20000</number>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>[Hz]</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>Samples to read</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <spacer name="horizontalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>128</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="1" column="2">
-               <widget class="QSpinBox" name="taskSampleSpin">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>1000000</number>
-                </property>
-                <property name="value">
-                 <number>20000</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3">
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>[1]</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox">
-             <property name="title">
-              <string>Assigned channels</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QListWidget" name="taskChannelList"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <item>
-              <spacer name="horizontalSpacer_7">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="taskApplyButton">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>Apply Settings</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tab">
-          <attribute name="title">
-           <string>Analog Input</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QComboBox" name="aiChannelCombo">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_3">
-             <property name="title">
-              <string>Channel settings</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_5">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="text">
-                   <string>Input config mode:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_6">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="aiConfigCombo">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <item>
-                 <widget class="QLabel" name="aiVoltageRangeLabel">
-                  <property name="text">
-                   <string>Voltage range:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>124</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="aiRangeCombo"/>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <widget class="QLabel" name="label_6">
-                  <property name="text">
-                   <string>Hardware Resolution (device specivic):</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_12">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="aiBitCombo"/>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_9">
-                <item>
-                 <widget class="QLabel" name="label_7">
-                  <property name="text">
-                   <string>Resolution (Volt/Bit):</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_13">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QLabel" name="aiResolutionLabel">
-                  <property name="text">
-                   <string>range/2^bit</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <spacer name="horizontalSpacer">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="aiApplyButton">
-               <property name="text">
-                <string>Apply Settings</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tab_2">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <attribute name="title">
-           <string>Analog Output</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
-            <widget class="QComboBox" name="aoChannelCombo"/>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_6">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="title">
-              <string>Channel settings</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9">
-              <item>
-               <layout class="QGridLayout" name="gridLayout_3">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="aiMinLabel_2">
-                  <property name="text">
-                   <string>min. voltage:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <spacer name="horizontalSpacer_10">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>124</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QSpinBox" name="aoMinSpin">
-                  <property name="minimum">
-                   <number>-10</number>
-                  </property>
-                  <property name="maximum">
-                   <number>10</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="aiMaxLabel_2">
-                  <property name="text">
-                   <string>max. voltage:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <spacer name="horizontalSpacer_11">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>124</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QSpinBox" name="aoMaxSpin">
-                  <property name="minimum">
-                   <number>-10</number>
-                  </property>
-                  <property name="maximum">
-                   <number>10</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>291</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="aoApplyButton">
-               <property name="text">
-                <string>Apply Settings</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tab_3">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <attribute name="title">
-           <string>Digital</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <item>
-            <widget class="QComboBox" name="dioChannelCombo">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_5">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="title">
-              <string>Channel settings (not implemented yet)</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_10"/>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>345</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_7">
-             <item>
-              <spacer name="horizontalSpacer_8">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="dioApplyButton">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Apply Settings</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tab_4">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <attribute name="title">
-           <string>Counter</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_8">
-           <item>
-            <widget class="QComboBox" name="cioChannelCombo"/>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_4">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="title">
-              <string>Channel settings (not implemented yet)</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_11"/>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>345</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
-             <item>
-              <spacer name="horizontalSpacer_9">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="cioApplyButton">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Apply Settings</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Task mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Task name:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Task type:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="comboTaskMode"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="lblType">
+            <property name="text">
+             <string>[Type]</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="lblName">
+            <property name="text">
+             <string>[Identifier]</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Acquisition / Data Write</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="5" column="0">
+           <widget class="QLabel" name="lblReadTimeout_3">
+            <property name="text">
+             <string>Input / Output Buffer Size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinSamplingRate">
+            <property name="suffix">
+             <string> Hz</string>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>0.001000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinReadTimeout">
+            <property name="suffix">
+             <string> s</string>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-1.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>-1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QCheckBox" name="checkSetValWaitForFinish">
+            <property name="text">
+             <string>Block 'setVal' until all data is written</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lblReadTimeout_2">
+            <property name="text">
+             <string>Samples Per Channel:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblReadTimeout">
+            <property name="text">
+             <string>Data Read Timeout:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Sampling Rate:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="spinSamplesPerChannel">
+            <property name="toolTip">
+             <string>This corresponds to the number of samples that are read or written during one acquire() / setVal() for finite tasks</string>
+            </property>
+            <property name="maximum">
+             <number>999999999</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="spinBufferSize">
+            <property name="toolTip">
+             <string>If -1, the buffer sizes are automatically chosen (default)</string>
+            </property>
+            <property name="minimum">
+             <number>-1</number>
+            </property>
+            <property name="maximum">
+             <number>999999999</number>
+            </property>
+            <property name="value">
+             <number>-1</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Sample Clock</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Sample Clock Source:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="comboSampleClockSource">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCheckBox" name="checkSampleClockRisingEdge">
+            <property name="text">
+             <string>Sample Clock on Rising Edge</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Start Trigger</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Start Trigger Source:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="3">
+           <widget class="QCheckBox" name="checkStartTriggerRisingEdge">
+            <property name="text">
+             <string>Trigger on Rising Edge</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Start Trigger Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="2">
+           <widget class="QComboBox" name="comboStartTriggerMode"/>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="QComboBox" name="comboStartTriggerSource">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lblStartTriggerLevel">
+            <property name="text">
+             <string>Start Trigger Level:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinStartTriggerLevel">
+            <property name="suffix">
+             <string/>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupRefTrigger">
+         <property name="title">
+          <string>Reference Trigger (Stop Trigger)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="2" column="1" colspan="2">
+           <widget class="QComboBox" name="comboRefTriggerSource">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Reference Trigger Source:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="3">
+           <widget class="QCheckBox" name="checkRefTriggerRisingEdge">
+            <property name="text">
+             <string>Trigger on Rising Edge</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinRefTriggerLevel">
+            <property name="suffix">
+             <string/>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lblRefTriggerLevel">
+            <property name="text">
+             <string>Reference Trigger Level:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Reference Trigger Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="2">
+           <widget class="QComboBox" name="comboRefTriggerMode"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="lblStartTriggerLevel_3">
+            <property name="text">
+             <string>Number of Pre-Trigger Samples:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="2">
+           <widget class="QSpinBox" name="spinRefTriggerPreTriggerSamples">
+            <property name="toolTip">
+             <string>The number of post-trigger samples is equal to &quot;Samples Per Channel&quot; - &quot;Number of Pre-Trigger Samples&quot;</string>
+            </property>
+            <property name="maximum">
+             <number>999999999</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Channels</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QTreeWidget" name="treeChannels">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>false</bool>
+         </property>
+         <attribute name="headerVisible">
+          <bool>false</bool>
+         </attribute>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Properties</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="lblMinimumVoltage">
+            <property name="text">
+             <string>Minimum Voltage:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="doubleSpinMinimumVoltage">
+            <property name="suffix">
+             <string> V</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>-5.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblMaximumVoltage">
+            <property name="text">
+             <string>Maximum Voltage:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="doubleSpinMaximumVoltage">
+            <property name="suffix">
+             <string> V</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>-5.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblTerminalConfig">
+            <property name="text">
+             <string>Terminal Config:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboTerminalConfig">
+            <item>
+             <property name="text">
+              <string>Default = 0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Diff = 1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>RSE = 2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>NRSE = 3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PseudoDiff = 4</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="lineChannelCfgStr">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblChannelCfgStr">
+            <property name="text">
+             <string>Current Channel Configuration String:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txtChannelCfgStr">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>311</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>TDMS Logging</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QGroupBox" name="groupLoggingMode">
+         <property name="title">
+          <string>Logging Mode</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QRadioButton" name="radioLoggingOff">
+            <property name="text">
+             <string>Off</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioLoggingFast">
+            <property name="text">
+             <string>Automatic, fast logging enabled. No simultaneous getVal / copyVal operation possible.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioLoggingNormal">
+            <property name="text">
+             <string>Default logging enabled. Data is only logged upon each getVal / copyVal call.</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupLoggingOptions">
+         <property name="title">
+          <string>Logging Options</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>TDMS Group Name:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txtLoggingGroupName">
+            <property name="toolTip">
+             <string>If empty, the task name is taken</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>TDMS Filename:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="PathLineEdit" name="pathLoggingFilename">
+            <property name="label">
+             <string/>
+            </property>
+            <property name="nameFilters">
+             <stringlist>
+              <string>TDMS-File (*.tdms)</string>
+              <string>All Files (*.*)</string>
+             </stringlist>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Operation Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboLoggingOperation"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>209</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -639,22 +684,42 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="locale">
-      <locale language="German" country="Germany"/>
-     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Close</set>
-     </property>
-     <property name="centerButtons">
-      <bool>false</bool>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PathLineEdit</class>
+   <extends>QWidget</extends>
+   <header>pathLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>comboTaskMode</tabstop>
+  <tabstop>doubleSpinSamplingRate</tabstop>
+  <tabstop>doubleSpinReadTimeout</tabstop>
+  <tabstop>checkSetValWaitForFinish</tabstop>
+  <tabstop>spinSamplesPerChannel</tabstop>
+  <tabstop>comboSampleClockSource</tabstop>
+  <tabstop>checkSampleClockRisingEdge</tabstop>
+  <tabstop>comboStartTriggerMode</tabstop>
+  <tabstop>comboStartTriggerSource</tabstop>
+  <tabstop>checkStartTriggerRisingEdge</tabstop>
+  <tabstop>doubleSpinStartTriggerLevel</tabstop>
+  <tabstop>treeChannels</tabstop>
+  <tabstop>doubleSpinMinimumVoltage</tabstop>
+  <tabstop>doubleSpinMaximumVoltage</tabstop>
+  <tabstop>comboTerminalConfig</tabstop>
+  <tabstop>txtChannelCfgStr</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

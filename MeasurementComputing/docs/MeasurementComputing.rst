@@ -357,4 +357,6 @@ Changelog
 * itom setup 2.2.0: This plugin has been compiled using CBW library version 1.83
 * itom setup 2.2.1: This plugin has been compiled using CBW library version 1.89
 * itom setup 3.0.0: This plugin has been compiled using CBW library version 1.89
-* itom setup >=3.1.0: This plugin has been compiled using CBW library version 1.89
+* itom setup 3.1.0: This plugin has been compiled using CBW library version 1.89
+* itom setup 3.2.1: This plugin has been compiled using CBW library version 1.89
+* itom setup 4.0.0: This plugin has been compiled using CBW library version 1.89
