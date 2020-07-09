@@ -70,7 +70,6 @@ class DummyGrabber : public ito::AddInGrabber
         ito::uint8 m_totalBinning;
         bool m_lineCamera;
         bool m_hasDummyImage;
-        ito::DataObject m_dummyImage;
 
     signals:
 
@@ -89,7 +88,6 @@ class DummyGrabber : public ito::AddInGrabber
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
-        void createDummyGauss();
 
 };
 

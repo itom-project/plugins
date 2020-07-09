@@ -80,6 +80,37 @@ template<typename _Tp> inline _Tp fastrand_mean(cv::RNG &rng, _Tp maxval, ito::u
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** @func   gaussFunc
+*   @brief  function for 2d Gaussian function
+*
+*   This function delivers a 2d dataObject with a Gaussian function
+*/
+template<typename _Tp> ito::RetVal gaussFunc(cv::RNG &rng, ito::DataObject dObj, float sigmaX, float sigmaY, float amplitude)
+{
+    int width = dObj.getSize(1);
+    int height = dObj.getSize(0);
+    _Tp* rowPtr;
+    float xval, yval;
+    int planeID = dObj.seekMat(0);
+
+    float yRandOffset = rng.uniform(0.f, 20.f);
+    float xRandOffset = rng.uniform(0.f, 20.f);
+    float aRandOfset = rng.uniform(-20.f, -5.f);
+
+    for (int y = 0; y < height; y++)
+    {
+        rowPtr = (_Tp*)dObj.rowPtr(planeID, y);
+        yval = ((y - height / 2) * ((float)y - height / 2 + yRandOffset)) / (2.0f * sigmaY * sigmaY);
+        for (int x = 0; x < width; x++)
+        {
+            xval = ((x - width / 2) * ((float)x - width / 2 + xRandOffset)) / (2.0f * sigmaX * sigmaX);
+            rowPtr[x] = (float)(amplitude + aRandOfset) * exp(-(xval + yval));
+        }
+    }
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class DummyGrabberInterface
     \brief Small interface class for class DummyGrabber. This class contains basic information about DummyGrabber as is able to
@@ -227,8 +258,7 @@ DummyGrabber::DummyGrabber() :
     m_isgrabbing(false),
     m_totalBinning(1),
     m_lineCamera(false),
-    m_hasDummyImage(false),
-    m_dummyImage(ito::DataObject())
+    m_hasDummyImage(false)
 {
     ito::DoubleMeta *dm;
 
@@ -390,7 +420,6 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     int createDummyImage = paramsOpt->at(3).getVal<int>();
     if (createDummyImage == 1) //create Gaussian dummy image
     {
-        createDummyGauss();
         m_hasDummyImage = true;
     }
 
@@ -753,149 +782,129 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         //ito::uint32 seed = m_startOfLastAcquisition % std::numeric_limits<ito::uint32>::max();
         cv::RNG &rng = cv::theRNG();
 
-        if (m_totalBinning == 1)
-        {
-            if (bpp < 9)
-            {
-                ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
-                ito::uint8 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint8*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 17)
-            {
-                ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
-                ito::uint16 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint16*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 32)
-            {
-                ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
-                ito::int32 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::int32*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand<ito::int32>(rng, maxInt, offset, gain);
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (bpp < 9)
-            {
-                ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
-                ito::uint8 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint8*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand_mean<ito::uint8>(rng, maxInt, m_totalBinning, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 17)
-            {
-                ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
-                ito::uint16 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint16*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand_mean<ito::uint16>(rng, maxInt,m_totalBinning, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 32)
-            {
-                ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
-                ito::int32 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::int32*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand_mean<ito::int32>(rng, maxInt, m_totalBinning, offset, gain);
-                    }
-                }
-            }
-        }
 
-        if (m_hasDummyImage)
+        if (!m_hasDummyImage)
         {
 
-            int planeID = m_data.seekMat(0);   //get internal plane number for the first plane
-            int height = m_data.getSize(0);
+            if (m_totalBinning == 1)
+            {
+                if (bpp < 9)
+                {
+                    ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
+                    ito::uint8 *linePtr;
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = (ito::uint8*)m_data.rowPtr(0, m);
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 17)
+                {
+                    ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
+                    ito::uint16 *linePtr;
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = (ito::uint16*)m_data.rowPtr(0, m);
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 32)
+                {
+                    ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
+                    ito::int32 *linePtr;
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = (ito::int32*)m_data.rowPtr(0, m);
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand<ito::int32>(rng, maxInt, offset, gain);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (bpp < 9)
+                {
+                    ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
+                    ito::uint8 *linePtr;
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = (ito::uint8*)m_data.rowPtr(0, m);
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand_mean<ito::uint8>(rng, maxInt, m_totalBinning, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 17)
+                {
+                    ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
+                    ito::uint16 *linePtr;
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = (ito::uint16*)m_data.rowPtr(0, m);
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand_mean<ito::uint16>(rng, maxInt,m_totalBinning, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 32)
+                {
+                    ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
+                    ito::int32 *linePtr;
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = (ito::int32*)m_data.rowPtr(0, m);
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand_mean<ito::int32>(rng, maxInt, m_totalBinning, offset, gain);
+                        }
+                    }
+                }
+            }
+
+        }
+        else //create dummy Gaussian image
+        {
             int width = m_data.getSize(1);
+            int height = m_data.getSize(0);
+            int type = m_data.getType();
+
+            int bpp = m_params["bpp"].getVal<int>();
+
+            float sigmaX = 50.0f;
+            float sigmaY = 50.0f;
+
+            int planeID = m_data.seekMat(0);
+
+            cv::RNG& rng = cv::theRNG();
 
             if (bpp < 9)
             {
-                ito::int8* rowPtr1 = NULL;
-                ito::int8* rowPtr2 = NULL;
-
-                for (int y = 0; y < height; y++)
-                {
-                    rowPtr1 = (ito::int8*)m_dummyImage.rowPtr(planeID, y);
-                    rowPtr2 = (ito::int8*)m_data.rowPtr(planeID, y);
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        rowPtr2[x] = rowPtr1[x];
-                    }
-                }
+                ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+                gaussFunc<ito::uint8>(rng, m_data, sigmaX, sigmaY, amplitude);
             }
             else if (bpp < 17)
             {
-                ito::int16* rowPtr1 = NULL;
-                ito::int16* rowPtr2 = NULL;
-
-                for (int y = 0; y < height; y++)
-                {
-                    rowPtr1 = (ito::int16*)m_dummyImage.rowPtr(planeID, y);
-                    rowPtr2 = (ito::int16*)m_data.rowPtr(planeID, y);
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        rowPtr2[x] = rowPtr1[x];
-                    }
-                }
+                ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+                gaussFunc<ito::uint16>(rng, m_data, sigmaX, sigmaY, amplitude);
             }
             else if (bpp < 32)
             {
-                ito::int16* rowPtr1 = NULL;
-                ito::int16* rowPtr2 = NULL;
-
-                for (int y = 0; y < height; y++)
-                {
-                    rowPtr1 = (ito::int16*)m_dummyImage.rowPtr(planeID, y);
-                    rowPtr2 = (ito::int16*)m_data.rowPtr(planeID, y);
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        rowPtr2[x] = rowPtr1[x];
-                    }
-                }
+                ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+                gaussFunc<ito::uint32>(rng, m_data, sigmaX, sigmaY, amplitude);
             }
-
         }
 
+            
         if (integration_time > 0.0)
         {
             double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
@@ -1021,74 +1030,6 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
     }
 
     return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DummyGrabber::createDummyGauss()
-{
-    int width = m_data.getSize(1);
-    int height = m_data.getSize(0);
-    int type = m_data.getType();
-    m_dummyImage = ito::DataObject(height, width, type);
-
-    int bpp = m_params["bpp"].getVal<int>();
-    float xval, yval;
-
-    float sigmaX = 50.0f;
-    float sigmaY = 50.0f;
-
-    int planeID = m_dummyImage.seekMat(0);
-
-    if (bpp < 9)
-    {
-        ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
-        ito::int8* rowPtr = NULL;
-
-        for (int y = 0; y < height; y++)
-        {
-            rowPtr = (ito::int8*)m_dummyImage.rowPtr(planeID, y);
-            yval = ((y - height  / 2) * ((float)y - height / 2)) / (2.0f * sigmaY * sigmaY);
-            for (int x = 0; x < width; x++)
-            {
-                xval = ((x - width / 2) * ((float)x - width / 2)) / (2.0f * sigmaX * sigmaX);
-                rowPtr[x] = (float)amplitude * exp(-(xval + yval));
-            }
-        }
-    }
-    else if (bpp < 17)
-    {
-        ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
-        ito::int16* rowPtr = NULL;
-
-        for (int y = 0; y < height; y++)
-        {
-            rowPtr = (ito::int16*)m_dummyImage.rowPtr(planeID, y);
-            yval = ((y - height / 2) * ((float)y - height / 2)) / (2.0f * sigmaY * sigmaY);
-            for (int x = 0; x < width; x++)
-            {
-                xval = ((x - width / 2) * ((float)x - width / 2)) / (2.0f * sigmaX * sigmaX);
-                rowPtr[x] = (float)amplitude * exp(-(xval + yval));
-            }
-        }
-    }
-    else if (bpp < 32)
-    {
-        ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
-        ito::int32* rowPtr = NULL;
-
-        for (int y = 0; y < height; y++)
-        {
-            rowPtr = (ito::int32*)m_dummyImage.rowPtr(planeID, y);
-            yval = ((y - height / 2) * ((float)y - height / 2)) / (2.0f * sigmaY * sigmaY);
-            for (int x = 0; x < width; x++)
-            {
-                xval = ((x - width / 2) * ((float)x - width / 2)) / (2.0f * sigmaX * sigmaX);
-                rowPtr[x] = (float)amplitude * exp(-(xval + yval));
-            }
-        }
-    }
-
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
