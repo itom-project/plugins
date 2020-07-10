@@ -378,7 +378,8 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
         for (int i = 0; i < numChannel; ++i)
         {
             tempName = QString("Channel_%1").arg(i);
-            m_data[tempName] = ChannelContainer(m_params["sizex"], m_params["sizey"], m_params["bpp"], m_params["roi"]);
+            m_data[tempName] = ChannelContainer(m_params["sizex"], m_params["sizey"], m_params["bpp"]);
+            m_data[tempName].m_channelParam.insert("roi", m_params["roi"]);
             if (sizeY == 1)
             {
                 m_data[tempName].m_channelParam["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
