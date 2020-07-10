@@ -1614,14 +1614,14 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_ctrlType = C663Family;
         m_params["ctrlType"].setVal<char*>("C663", (int)strlen("C663"));
 
-        m_AbsPosCmd = "MOV 1";
-        m_RelPosCmd = "MVR 1";
-        m_PosQust = "POS? 1";
+        m_AbsPosCmd = "MOV A";
+        m_RelPosCmd = "MVR A";
+        m_PosQust = "POS? A";
 
-        retval += PISendCommand("SVO 1 1"); //activates servo
+        retval += PISendCommand("SVO A 1"); //activates servo
         m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
 
-        retval += PISendCommand("MOV 1 0"); //dummy drive to get max pos
+        retval += PISendCommand("MOV A 0"); //dummy drive to get max pos
 
         m_hasHardwarePositionLimit = false;
 
