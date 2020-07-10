@@ -85,7 +85,7 @@ template<typename _Tp> inline _Tp fastrand_mean(cv::RNG &rng, _Tp maxval, ito::u
 *
 *   This function delivers a 2d dataObject with a Gaussian function
 */
-template<typename _Tp> ito::RetVal gaussFunc(cv::RNG &rng, ito::DataObject dObj, float sigmaX, float sigmaY, float amplitude)
+template<typename _Tp> ito::RetVal gaussFunc(cv::RNG &rng, ito::DataObject dObj, float amplitude)
 {
     int width = dObj.getSize(1);
     int height = dObj.getSize(0);
@@ -95,16 +95,19 @@ template<typename _Tp> ito::RetVal gaussFunc(cv::RNG &rng, ito::DataObject dObj,
 
     float yRandOffset = rng.uniform(0.f, 20.f);
     float xRandOffset = rng.uniform(0.f, 20.f);
-    float aRandOfset = rng.uniform(-20.f, -5.f);
+    float aRandOfset = rng.uniform(0.f, 20.f);
+
+    float sigmaX = width * 0.1;
+    float sigmaY = height * 0.1;
 
     for (int y = 0; y < height; y++)
     {
         rowPtr = (_Tp*)dObj.rowPtr(planeID, y);
-        yval = ((y - height / 2) * ((float)y - height / 2 + yRandOffset)) / (2.0f * sigmaY * sigmaY);
+        yval = ((y - height / 2 + yRandOffset) * ((float)y - height / 2 + yRandOffset)) / (2.0f * sigmaY * sigmaY);
         for (int x = 0; x < width; x++)
         {
-            xval = ((x - width / 2) * ((float)x - width / 2 + xRandOffset)) / (2.0f * sigmaX * sigmaX);
-            rowPtr[x] = (float)(amplitude + aRandOfset) * exp(-(xval + yval));
+            xval = ((x - width / 2 + xRandOffset) * ((float)x - width / 2 + xRandOffset)) / (2.0f * sigmaX * sigmaX);
+            rowPtr[x] = (float)(amplitude - aRandOfset) * exp(-(xval + yval));
         }
     }
     return ito::retOk;
@@ -874,33 +877,23 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         }
         else //create dummy Gaussian image
         {
-            int width = m_data.getSize(1);
-            int height = m_data.getSize(0);
-            int type = m_data.getType();
-
-            int bpp = m_params["bpp"].getVal<int>();
-
-            float sigmaX = 50.0f;
-            float sigmaY = 50.0f;
-
-            int planeID = m_data.seekMat(0);
 
             cv::RNG& rng = cv::theRNG();
 
             if (bpp < 9)
             {
                 ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
-                gaussFunc<ito::uint8>(rng, m_data, sigmaX, sigmaY, amplitude);
+                gaussFunc<ito::uint8>(rng, m_data, amplitude);
             }
             else if (bpp < 17)
             {
                 ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
-                gaussFunc<ito::uint16>(rng, m_data, sigmaX, sigmaY, amplitude);
+                gaussFunc<ito::uint16>(rng, m_data, amplitude);
             }
             else if (bpp < 32)
             {
                 ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
-                gaussFunc<ito::uint32>(rng, m_data, sigmaX, sigmaY, amplitude);
+                gaussFunc<ito::uint32>(rng, m_data, amplitude);
             }
         }
 
