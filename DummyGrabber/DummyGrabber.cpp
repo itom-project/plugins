@@ -179,7 +179,9 @@ This plugin can also be used as template for other grabber.";*/
 "The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
-The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera \
+You can choose between different dummy image types (noise, GaussianSpot). \
+The value range is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). \
+The GaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera \
 image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
 \n\
 You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
