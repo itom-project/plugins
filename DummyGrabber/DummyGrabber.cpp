@@ -204,7 +204,10 @@ This plugin can also be used as template for other grabber.");
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("dummyImageType", ito::ParamBase::Int, 0, 1, 0, tr("type of dummy image. 0: noise (default), 1: Gaussian").toLatin1().data());
+    param = ito::Param("dummyImageType", ito::ParamBase::String | ito::ParamBase::In, "noise", tr("Available dummy image types: noise (default), GaussianSpot").toLatin1().data());
+    ito::StringMeta sm(ito::StringMeta::String, "noise");
+    sm.addItem("GaussianSpot");
+    param.setMeta(&sm, false);
     m_initParamsOpt.append(param);
 }
 
@@ -261,7 +264,7 @@ DummyGrabber::DummyGrabber() :
     m_isgrabbing(false),
     m_totalBinning(1),
     m_lineCamera(false),
-    m_hasDummyImage(false)
+    m_dummyImageType(noise)
 {
     ito::DoubleMeta *dm;
 
@@ -420,10 +423,15 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
         emit parametersChanged(m_params);
     }
 
-    int createDummyImage = paramsOpt->at(3).getVal<int>();
-    if (createDummyImage == 1) //create Gaussian dummy image
+    // get type of dummy image
+    QString type = paramsOpt->at(3).getVal<char*>();
+    if (type == "noise") 
     {
-        m_hasDummyImage = true;
+        m_dummyImageType = noise;
+    }
+    else if (type == "GaussianSpot")
+    {
+        m_dummyImageType = GaussianSpot;
     }
 
     setIdentifier(QString::number(getID()));
@@ -786,7 +794,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         cv::RNG &rng = cv::theRNG();
 
 
-        if (!m_hasDummyImage)
+        if (m_dummyImageType == noise)
         {
 
             if (m_totalBinning == 1)
@@ -875,7 +883,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
             }
 
         }
-        else //create dummy Gaussian image
+        else if(m_dummyImageType == GaussianSpot) //create dummy Gaussian image
         {
 
             cv::RNG& rng = cv::theRNG();
