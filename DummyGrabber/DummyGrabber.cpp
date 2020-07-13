@@ -181,7 +181,7 @@ This plugin can also be used as template for other grabber.";*/
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
 You can choose between different dummy image types (noise, GaussianSpot). \
 The value range is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). \
-The GaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera \
+The gaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera \
 image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
 \n\
 You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
@@ -206,9 +206,9 @@ This plugin can also be used as template for other grabber.");
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("dummyImageType", ito::ParamBase::String | ito::ParamBase::In, "noise", tr("Available dummy image types: noise (default), GaussianSpot").toLatin1().data());
+    param = ito::Param("dummyImageType", ito::ParamBase::String | ito::ParamBase::In, "noise", tr("Available dummy image types: noise (default), gaussianSpot").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String, "noise");
-    sm.addItem("GaussianSpot");
+    sm.addItem("gaussianSpot");
     param.setMeta(&sm, false);
     m_initParamsOpt.append(param);
 }
@@ -431,9 +431,9 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     {
         m_dummyImageType = noise;
     }
-    else if (type == "GaussianSpot")
+    else if (type == "gaussianSpot")
     {
-        m_dummyImageType = GaussianSpot;
+        m_dummyImageType = gaussianSpot;
     }
 
     setIdentifier(QString::number(getID()));
@@ -885,7 +885,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
             }
 
         }
-        else if(m_dummyImageType == GaussianSpot) //create dummy Gaussian image
+        else if(m_dummyImageType == gaussianSpot) //create dummy Gaussian image
         {
 
             cv::RNG& rng = cv::theRNG();
