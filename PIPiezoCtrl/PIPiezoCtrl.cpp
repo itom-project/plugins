@@ -135,6 +135,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("velocity", ito::ParamBase::Double, 0.0, 80.0, 80.0, tr("velocity of the stage in mm per s.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     m_targetPos = QVector<double>(1,0.0);
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
     m_currentPos = QVector<double>(1,0.0);
@@ -429,6 +432,29 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 else
                 {
                     retValue += it->copyValueFrom(&(*val));
+                }
+                break;
+            default:
+                retValue += it->copyValueFrom(&(*val));
+                break;
+            }
+        }
+        else if (key == "velocity")
+        {
+            switch (m_ctrlType)
+            {
+            case C663Family:
+                retValue += PISendCommand(m_VelCmd.append(QByteArray::number(val->getVal<double>())));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    double currentVel;
+                    retValue += this->PISendQuestionWithAnswerDouble2(m_VelQust, 1, currentVel, 1000);
+                    m_params["velocity"].setVal<double>(currentVel);
                 }
                 break;
             default:
@@ -1617,6 +1643,13 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_AbsPosCmd = "MOV 1";
         m_RelPosCmd = "MVR 1";
         m_PosQust = "POS? 1";
+        m_VelCmd = "Vel 1 ";
+        m_VelQust = "Vel? 1";
+
+        double currentVel;
+
+        retval += this->PISendQuestionWithAnswerDouble2(m_VelQust, 1, currentVel, 1000);
+        m_params["velocity"].setVal<double>(currentVel);
 
         retval += PISendCommand("SVO 1 1"); //activates servo
 
