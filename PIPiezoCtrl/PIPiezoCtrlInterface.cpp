@@ -61,7 +61,7 @@ PIPiezoCtrlInterface::PIPiezoCtrlInterface()
 
     setObjectName("PIPiezoCtrl");
 
-    m_description = QObject::tr("PI Piezos E662, E-816, E-621, E-625, E665");
+    m_description = QObject::tr("PI Piezos E-662, E-816, E-621, E-625, E-665, C-663");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
@@ -75,7 +75,7 @@ WARNING: The calibration between applied voltage and desired position is dependi
 PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination.";
     m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr("The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.\
-Different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) are implemented.\n\
+Different PI-Piezo Controller (E-816, E-621, E-625, E-665, E-662 or C-663) are implemented.\n\
 \n\
 It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. \
 The parameters of the serial port (besides port number) are set automatically during initialization. \n\
@@ -86,7 +86,7 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
 WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum avaiable position.\
 In the case of a higher maximum position, set the plugin parameter \"posLimitHigh\". ");
 
-    m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
+    m_author = "W. Lyda, M. Gronle, J. Krauter, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

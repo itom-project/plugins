@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`PIPiezoCtrl`
 **License**:    :pluginlicense:`PIPiezoCtrl`
 **Platforms**:  Windows, Linux
-**Devices**:    Piezo controller E662, E-816, E-621, E-625, E665 from Physik Instrumente
+**Devices**:    Piezo controller E-662, E-816, E-621, E-625, E-665, C-663 from Physik Instrumente
 **Author**:     :pluginauthor:`PIPiezoCtrl`
 **Requires**:   Plugin SerialIO
 =============== ========================================================================================================
@@ -69,4 +69,3 @@ parameters can be changed using *setParam*.
 **PI_CMD**: {str}
     Special parameter that can be used to directly set or read parameters from the PI device. Use this parameter followed by :YourCommand in order to read/write value 
     from/to device (e.g. PI_CMD:ERR?)
-

@@ -107,9 +107,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("piezoName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("piezo information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
+    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
+    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("delayProp", ito::ParamBase::Double, 0.0, 10.0, m_delayProp, tr("delay [s] per step size [mm] (e.g. value of 1 means that a delay of 100ms is set for a step of 100mu)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -763,7 +763,7 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
     }
     else
     {
-        if (m_ctrlType == E753Family)
+        if (m_ctrlType == E753Family || m_ctrlType == C663Family)
         {
             retval += PISendQuestionWithAnswerDouble2(m_PosQust, 1, axpos, 200);
         }
@@ -1614,14 +1614,20 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_ctrlType = C663Family;
         m_params["ctrlType"].setVal<char*>("C663", (int)strlen("C663"));
 
-        m_AbsPosCmd = "MOV A";
-        m_RelPosCmd = "MVR A";
-        m_PosQust = "POS? A";
+        m_AbsPosCmd = "MOV 1";
+        m_RelPosCmd = "MVR 1";
+        m_PosQust = "POS? 1";
 
-        retval += PISendCommand("SVO A 1"); //activates servo
+        retval += PISendCommand("SVO 1 1"); //activates servo
+
         m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
+        m_params["posLimitHigh"].setVal<double>(10000.0 / 1000.0);
 
-        retval += PISendCommand("MOV A 0"); //dummy drive to get max pos
+        retval += PISendCommand("MOV 1 0"); 
+
+        m_params["ctrlName"].setVal<char*>(answer.data(), answer.length());
+        answer = "unknown";
+        m_params["piezoName"].setVal<char*>(answer.data(), answer.length());
 
         m_hasHardwarePositionLimit = false;
 
