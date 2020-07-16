@@ -62,12 +62,16 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
         m_unit = u8" µm";
         ui.dblSpinPosLimitLow->setSuffix(m_unit);
         ui.dblSpinPosLimitHigh->setSuffix(m_unit);
+        ui.label_Velocity->setVisible(false);
+        ui.dblSpinBox_Velocity->setVisible(false);
+        
     }
 
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
     ui.lblDevice1->setText(params["ctrlType"].getVal<char*>());
     ui.lblDevice2->setText(params["ctrlName"].getVal<char*>());
     ui.lblPiezo->setText(params["piezoName"].getVal<char*>());
+    ui.dblSpinBox_Velocity->setValue(params["velocity"].getVal<double>());
 
     bool hasMode = params["hasLocalRemote"].getVal<int>() > 0;
     ui.comboMode->setVisible(hasMode);
@@ -147,6 +151,12 @@ ito::RetVal DialogPIPiezoCtrl::applyParameters()
     if (m_currentParameters["delayProp"].getVal<double>() != v)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayProp", ito::ParamBase::Double, v)));
+    }
+
+    v = ui.dblSpinBox_Velocity->value();
+    if (m_currentParameters["velocity"].getVal<double>() != v)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("velocity", ito::ParamBase::Double, v)));
     }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
