@@ -97,8 +97,9 @@ template<typename _Tp> ito::RetVal gaussFunc(cv::RNG &rng, ito::DataObject dObj,
     float xRandOffset = rng.uniform(0.f, 20.f);
     float aRandOfset = rng.uniform(0.f, 20.f);
 
-    float sigmaX = width * 0.1;
-    float sigmaY = height * 0.1;
+    float sigmaX = width * rng.uniform(0.09f, 0.11f);
+
+    float sigmaY = height * rng.uniform(0.09f, 0.11f);
 
     for (int y = 0; y < height; y++)
     {
