@@ -74,7 +74,7 @@ class DummyGrabber : public ito::AddInGrabber
         enum dummyImageType
         {
             noise,
-            GaussianSpot,
+            gaussianSpot,
         };
 
     signals:
