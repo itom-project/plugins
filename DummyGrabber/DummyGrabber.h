@@ -69,12 +69,12 @@ class DummyGrabber : public ito::AddInGrabber
         int64 m_startOfLastAcquisition;
         ito::uint8 m_totalBinning;
         bool m_lineCamera;
-        int m_dummyImageType;
+        int m_imageType;
 
         enum dummyImageType
         {
-            noise,
-            gaussianSpot,
+            imgTypeNoise,
+            imgTypeGaussianSpot,
         };
 
     signals:

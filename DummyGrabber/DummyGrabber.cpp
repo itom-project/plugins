@@ -98,19 +98,20 @@ template<typename _Tp> ito::RetVal gaussFunc(cv::RNG &rng, ito::DataObject dObj,
     float aRandOfset = rng.uniform(0.f, 20.f);
 
     float sigmaX = width * rng.uniform(0.09f, 0.11f);
-
     float sigmaY = height * rng.uniform(0.09f, 0.11f);
 
     for (int y = 0; y < height; y++)
     {
-        rowPtr = (_Tp*)dObj.rowPtr(planeID, y);
+        rowPtr = dObj.rowPtr<_Tp>(planeID, y);
         yval = ((y - height / 2 + yRandOffset) * ((float)y - height / 2 + yRandOffset)) / (2.0f * sigmaY * sigmaY);
+
         for (int x = 0; x < width; x++)
         {
             xval = ((x - width / 2 + xRandOffset) * ((float)x - width / 2 + xRandOffset)) / (2.0f * sigmaX * sigmaX);
             rowPtr[x] = (float)(amplitude - aRandOfset) * exp(-(xval + yval));
         }
     }
+
     return ito::retOk;
 }
 
@@ -180,7 +181,7 @@ This plugin can also be used as template for other grabber.";*/
 "The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
-You can choose between different dummy image types (noise, GaussianSpot). \
+You can choose between different image types (noise, GaussianSpot). \
 The value range is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). \
 The gaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera \
 image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
@@ -207,7 +208,7 @@ This plugin can also be used as template for other grabber.");
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("dummyImageType", ito::ParamBase::String | ito::ParamBase::In, "noise", tr("Available dummy image types: noise (default), gaussianSpot").toLatin1().data());
+    param = ito::Param("imageType", ito::ParamBase::String | ito::ParamBase::In, "noise", tr("Available dummy image types: noise (default), gaussianSpot").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String, "noise");
     sm.addItem("gaussianSpot");
     param.setMeta(&sm, false);
@@ -267,7 +268,7 @@ DummyGrabber::DummyGrabber() :
     m_isgrabbing(false),
     m_totalBinning(1),
     m_lineCamera(false),
-    m_dummyImageType(noise)
+    m_imageType(imgTypeNoise)
 {
     ito::DoubleMeta *dm;
 
@@ -427,14 +428,15 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     }
 
     // get type of dummy image
-    QString type = paramsOpt->at(3).getVal<char*>();
+    QString type = paramsOpt->at(3).getVal<const char*>();
+
     if (type == "noise") 
     {
-        m_dummyImageType = noise;
+        m_imageType = imgTypeNoise;
     }
     else if (type == "gaussianSpot")
     {
-        m_dummyImageType = gaussianSpot;
+        m_imageType = imgTypeGaussianSpot;
     }
 
     setIdentifier(QString::number(getID()));
@@ -797,7 +799,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         cv::RNG &rng = cv::theRNG();
 
 
-        if (m_dummyImageType == noise)
+        if (m_imageType == imgTypeNoise)
         {
 
             if (m_totalBinning == 1)
@@ -806,9 +808,11 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                 {
                     ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
                     ito::uint8 *linePtr;
+
                     for (int m = 0; m < m_data.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint8*)m_data.rowPtr(0, m);
+                        linePtr = m_data.rowPtr<ito::uint8>(0, m);
+
                         for (int n = 0; n < m_data.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
@@ -819,9 +823,11 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                 {
                     ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
                     ito::uint16 *linePtr;
+
                     for (int m = 0; m < m_data.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint16*)m_data.rowPtr(0, m);
+                        linePtr = m_data.rowPtr<ito::uint16>(0, m);
+
                         for (int n = 0; n < m_data.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
@@ -832,9 +838,11 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                 {
                     ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
                     ito::int32 *linePtr;
+
                     for (int m = 0; m < m_data.getSize(0); ++m)
                     {
-                        linePtr = (ito::int32*)m_data.rowPtr(0, m);
+                        linePtr = m_data.rowPtr<ito::int32>(0, m);
+
                         for (int n = 0; n < m_data.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand<ito::int32>(rng, maxInt, offset, gain);
@@ -848,9 +856,11 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                 {
                     ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
                     ito::uint8 *linePtr;
+
                     for (int m = 0; m < m_data.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint8*)m_data.rowPtr(0, m);
+                        linePtr = m_data.rowPtr<ito::uint8>(0, m);
+
                         for (int n = 0; n < m_data.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand_mean<ito::uint8>(rng, maxInt, m_totalBinning, offset, gain);
@@ -861,9 +871,11 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                 {
                     ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
                     ito::uint16 *linePtr;
+
                     for (int m = 0; m < m_data.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint16*)m_data.rowPtr(0, m);
+                        linePtr = m_data.rowPtr<ito::uint16>(0, m);
+
                         for (int n = 0; n < m_data.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand_mean<ito::uint16>(rng, maxInt,m_totalBinning, offset, gain);
@@ -874,9 +886,11 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                 {
                     ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
                     ito::int32 *linePtr;
+
                     for (int m = 0; m < m_data.getSize(0); ++m)
                     {
-                        linePtr = (ito::int32*)m_data.rowPtr(0, m);
+                        linePtr = m_data.rowPtr<ito::int32>(0, m);
+
                         for (int n = 0; n < m_data.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand_mean<ito::int32>(rng, maxInt, m_totalBinning, offset, gain);
@@ -886,7 +900,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
             }
 
         }
-        else if(m_dummyImageType == gaussianSpot) //create dummy Gaussian image
+        else if(m_imageType == imgTypeGaussianSpot) //create dummy Gaussian image
         {
 
             cv::RNG& rng = cv::theRNG();
