@@ -12,6 +12,8 @@
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
+#define NOMINMAX // https://stackoverflow.com/questions/22744262/cant-call-stdmax-because-minwindef-h-defines-max
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qplugin.h>
@@ -92,6 +94,12 @@ m_opened(false)
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("description of the device").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("serial number of the device").toLatin1().data()));
     
+    m_params.insert("pollingInterval", ito::Param("pollingInterval", ito::ParamBase::Int, 200, new ito::IntMeta(1, 10000, 1, "pollingInterval"), tr("device polling interval in ms").toLatin1().data()));
+
+    m_params.insert("position", ito::Param("position", ito::ParamBase::Int, FF_Positions::Position1, \
+        new ito::IntMeta(FF_Positions::Position1, FF_Positions::Position2, FF_Positions::Position1, "position"), \
+        tr("position of the device (position1: %2, position2: %3)").arg(FF_Positions::Position1).arg(FF_Positions::Position2).toLatin1().data()));
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -100,6 +108,7 @@ m_opened(false)
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
     }
+    memset(m_serialNo, '\0', sizeof(m_serialNo));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -200,24 +209,30 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         }
     }
 
-    if (!retValue.containsError())
+    if (!retValue.containsError()) //open device
     {
         if (deviceInfo.isKnownType && (deviceInfo.typeID == 37 /*Filter Flipper*/))
         {
-            memcpy(m_serialNo, serialNo.data(), (size_t)serialNo.size());
+            memcpy(m_serialNo, serialNo.data(), std::min((size_t)serialNo.size(), sizeof(m_serialNo)));
             retValue += checkError(FF_Open(m_serialNo), "open device");
 
             if (!retValue.containsError())
             {
                 m_opened = true;
                 openedDevices.append(m_serialNo);
-                
             }
+
+            FF_StartPolling(m_serialNo, m_params["pollingInterval"].getVal<int>());//start device polling at pollingInterval intervals 
         }
         else
         {
             retValue += ito::RetVal(ito::retError, 0, "the type of the device is not among the supported devices (Long Travel Stage, Labjack, Cage Rotator)");
         }
+    }
+
+    if (!retValue.containsError()) // get current position
+    {
+        m_params["position"].setVal<int>(FF_GetPosition(m_serialNo));
     }
     
 
@@ -243,9 +258,8 @@ ito::RetVal ThorlabsFF::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     
-    //todo:
-    // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
+    FF_StopPolling(m_serialNo);
+    FF_Close(m_serialNo);
 
     if (waitCond)
     {
@@ -323,15 +337,20 @@ ito::RetVal ThorlabsFF::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
     if (!retValue.containsError())
     {
-        if (key == "demoKey1")
+        if (key == "position")
         {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
-        }
-        else if (key == "demoKey2")
-        {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
+            FF_MoveToPosition(m_serialNo, val->getVal<int>() == 1 ? FF_Positions::Position2 : FF_Positions::Position1);
+
+            int position = FF_GetPosition(m_serialNo);
+            if (position == FF_Positions::FF_PositionError)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "position error");
+            }
+            else
+            {
+                it->setVal<int>(position);
+            }
+            
         }
         else
         {
@@ -380,6 +399,7 @@ const ito::RetVal ThorlabsFF::showConfDialog(void)
     return apiShowConfigurationDialog(this, new DialogThorlabsFF(this));
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------- 
 ito::RetVal ThorlabsFF::checkError(short value, const char* message)
 {
     if (value == 0)

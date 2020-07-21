@@ -76,6 +76,14 @@ This plugin has been tested with the flipper MFF101.</source>
         <source>serial number of the device</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>device polling interval in ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>position of the device (position1: %2, position2: %3)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ThorlabsFFInterface</name>
