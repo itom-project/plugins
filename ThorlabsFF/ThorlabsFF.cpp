@@ -19,6 +19,10 @@
 
 #include "dockWidgetThorlabsFF.h"
 
+#include "Thorlabs.MotionControl.FilterFlipper.h"
+
+QList<QByteArray> ThorlabsFF::openedDevices = QList<QByteArray>();
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
@@ -26,27 +30,29 @@
 */
 ThorlabsFFInterface::ThorlabsFFInterface()
 {
-    m_type = ito::typeDataIO; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
+    m_type = ito::typeDataIO | ito::typeRawIO; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
     setObjectName("ThorlabsFF");
 
     m_description = QObject::tr("ThorlabsFF");
 
-    //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
-"This template can be used for implementing a new type of camera or grabber plugin \n\
+    m_detaildescription = QObject::tr("ThorlabsFF is an plugin to controll the Thorlabs Filter Flipper: \n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
-    m_detaildescription = QObject::tr(docstring);
+* Filter Flipper (MFF101) \n\
+\n\
+It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.IntegratedStepperMotors.\n\
+\n\
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. \n\
+\n\
+This plugin has been tested with the flipper MFF101.");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION); 
 
-    //add mandatory and optional parameters for the initialization here.
-    //append them to m_initParamsMand or m_initParamsOpt.
+    m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -79,28 +85,12 @@ ito::RetVal ThorlabsFFInterface::closeThisInst(ito::AddInBase **addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
     in this constructor or later in the init method
 */
-ThorlabsFF::ThorlabsFF() : AddInDataIO()
+ThorlabsFF::ThorlabsFF() : AddInDataIO(),
+m_opened(false)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsFF", NULL);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
+    m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsFF", tr("name of the plugin").toLatin1().data()));
+    m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("description of the device").toLatin1().data()));
+    m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("serial number of the device").toLatin1().data()));
     
     if (hasGuiSupport())
     {
@@ -119,29 +109,123 @@ ThorlabsFF::~ThorlabsFF()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
-/*!
-    \sa close
-*/
 ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    //steps todo:
-    // - get all initialization parameters
-    // - try to detect your device
-    // - establish a connection to the device
-    // - synchronize the current parameters of the device with the current values of parameters inserted in m_params
-    // - if an identifier string of the device is available, set it via setIdentifier("yourIdentifier")
-    // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
-    // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
-    // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
+    QByteArray serialNo = paramsOpt->at(0).getVal<char*>();
+
+    retValue += checkError(TLI_BuildDeviceList(), "build device list");
+    QByteArray existingSerialNo("", 256);
+    TLI_DeviceInfo deviceInfo;
+
+    if (!retValue.containsError())
+    {
+        short numDevices = TLI_GetDeviceListSize();
+
+        if (numDevices == 0)
+        {
+            retValue += ito::RetVal(ito::retError, 0, "no Thorlabs device detected");
+        }
+        else
+        {
+            retValue += checkError(TLI_GetDeviceListExt(existingSerialNo.data(), existingSerialNo.size()), "get device list");
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        int idx = existingSerialNo.indexOf("\0");
+        if (idx > 0)
+        {
+            existingSerialNo = existingSerialNo.left(idx); //serial number found 
+        }
+
+        QList<QByteArray> serialNumbers = existingSerialNo.split(','); // Thorlabs really!?
+
+        if (serialNo == "") // no serial number input
+        {
+            bool found = false;
+            for (int cnt = 0; cnt < serialNumbers.size(); cnt++)
+            {
+                if (!openedDevices.contains(serialNumbers[cnt]))
+                {
+                    serialNo = serialNumbers[cnt];
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "no free Thorlabs device found.");
+            }
+
+        }
+        else // serial number input given
+        {
+            bool found = false;
+            for each (const QByteArray &s in serialNumbers)
+            {
+                if (s == serialNo && s != "")
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, "no device with the serial number '%s' found", serialNo.data());
+            }
+            else if (openedDevices.contains(serialNo))
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, "Thorlabs device with the serial number '%s' already in use.", serialNo.data());
+            }
+        }
+    }
+
+    if (!retValue.containsError()) // open the device
+    {
+        if (TLI_GetDeviceInfo(serialNo.data(), &deviceInfo) == 0)
+        {
+            retValue += ito::RetVal(ito::retError, 0, "error obtaining device information.");
+        }
+        else
+        {
+            m_params["serialNumber"].setVal<char*>(serialNo.data()); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
+            setIdentifier(QLatin1String(serialNo.data())); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
+            m_params["deviceName"].setVal<char*>(deviceInfo.description);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        if (deviceInfo.isKnownType && (deviceInfo.typeID == 37 /*Filter Flipper*/))
+        {
+            memcpy(m_serialNo, serialNo.data(), (size_t)serialNo.size());
+            retValue += checkError(FF_Open(m_serialNo), "open device");
+
+            if (!retValue.containsError())
+            {
+                m_opened = true;
+                openedDevices.append(m_serialNo);
+                
+            }
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError, 0, "the type of the device is not among the supported devices (Long Travel Stage, Labjack, Cage Rotator)");
+        }
+    }
     
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -154,9 +238,6 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! shutdown of plugin
-/*!
-    \sa init
-*/
 ito::RetVal ThorlabsFF::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -275,12 +356,6 @@ ito::RetVal ThorlabsFF::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot called if the dock widget of the plugin becomes (in)visible
-/*!
-    Overwrite this method if the plugin has a dock widget. If so, you can connect the parametersChanged signal of the plugin
-    with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
-    a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
-*/
 void ThorlabsFF::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -300,26 +375,35 @@ void ThorlabsFF::dockWidgetVisibilityChanged(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to show the configuration dialog
-/*!
-    This method is called from the main thread from itom and should show the configuration dialog of the plugin.
-    If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
-    of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
-    m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
-    The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
-    If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
-    If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
-    the things mentioned in this description.
-    
-    Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
-    has a configuration dialog.
-    
-    \sa hasConfDialog
-*/
 const ito::RetVal ThorlabsFF::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogThorlabsFF(this));
+}
+
+ito::RetVal ThorlabsFF::checkError(short value, const char* message)
+{
+    if (value == 0)
+    {
+        return ito::retOk;
+    }
+    else
+    {
+        switch (value)
+        {
+        case 1:
+            return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
+        case 2:
+            return ito::RetVal::format(ito::retError, 1, "%s: The device could not be found.", message);
+        case 3:
+            return ito::RetVal::format(ito::retError, 1, "%s: The device must be opened before it can be accessed.", message);
+        case 37:
+            return ito::RetVal::format(ito::retError, 1, "%s: The device cannot perform the function until it has been homed (call calib() before).", message);
+        case 38:
+            return ito::RetVal::format(ito::retError, 1, "%s: The function cannot be performed as it would result in an illegal position.", message);
+        case 39:
+            return ito::RetVal::format(ito::retError, 1, "%s: An invalid velocity parameter was supplied. The velocity must be greater than zero. ", message);
+        default:
+            return ito::RetVal::format(ito::retError, value, "%s: unknown error %i.", message, value);
+        }
+    }
 }

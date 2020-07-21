@@ -53,18 +53,17 @@ class ThorlabsFF : public ito::AddInDataIO
         //! Constructor
         ThorlabsFF();
         
-        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-        
     public:
         friend class ThorlabsFFInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
         
-        char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
-
     private:
-        bool m_isgrabbing; /*!< Check if acquire was executed */
+        static QList<QByteArray> openedDevices;
+        bool m_opened;
+        char m_serialNo[16];
 
+        ito::RetVal checkError(short value, const char *message);
         
     public slots:
         //!< Get Camera-Parameter

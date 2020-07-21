@@ -46,42 +46,41 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The plugin&apos;s license string</source>
+        <source>ThorlabsFF is an plugin to controll the Thorlabs Filter Flipper: 
+
+* Filter Flipper (MFF101) 
+
+It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.IntegratedStepperMotors.
+
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
+
+This plugin has been tested with the flipper MFF101.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ThorlabsFF</name>
     <message>
-        <source>first pixel index in ROI (x-direction)</source>
+        <source>name of the plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>first pixel index in ROI (y-direction)</source>
+        <source>description of the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>last pixel index in ROI (x-direction)</source>
+        <source>serial number of the device</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>ThorlabsFFInterface</name>
     <message>
-        <source>last pixel index in ROI (y-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>width of ROI (x-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>height of ROI (y-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>bpp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Integrationtime of CCD [0..1] (no unit)</source>
+        <source>Serial number of the device to be loaded, if empty, the first device that can be opened will be opened</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
