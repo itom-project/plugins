@@ -69,6 +69,13 @@ class DummyGrabber : public ito::AddInGrabber
         int64 m_startOfLastAcquisition;
         ito::uint8 m_totalBinning;
         bool m_lineCamera;
+        int m_imageType;
+
+        enum dummyImageType
+        {
+            imgTypeNoise,
+            imgTypeGaussianSpot,
+        };
 
     signals:
 
@@ -87,7 +94,6 @@ class DummyGrabber : public ito::AddInGrabber
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
-
 
 };
 
