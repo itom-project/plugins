@@ -1,8 +1,23 @@
 /* ********************************************************************
-    Template for a camera / grabber plugin for the software itom
-    
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+Plugin "ThorlabsFF" for itom software
+URL: http://www.uni-stuttgart.de/ito
+Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+Universitaet Stuttgart, Germany
+
+This file is part of a plugin for the measurement software itom.
+
+This itom-plugin is free software; you can redistribute it and/or modify it
+under the terms of the GNU Library General Public Licence as published by
+the Free Software Foundation; either version 2 of the Licence, or (at
+your option) any later version.
+
+itom and its plugins are distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+General Public Licence for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #define ITOM_IMPORT_API
@@ -26,10 +41,6 @@
 QList<QByteArray> ThorlabsFF::openedDevices = QList<QByteArray>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of Interface Class.
-/*!
-    \todo add necessary information about your plugin here.
-*/
 ThorlabsFFInterface::ThorlabsFFInterface()
 {
     m_type = ito::typeDataIO | ito::typeRawIO; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
@@ -58,10 +69,6 @@ This plugin has been tested with the flipper MFF101.");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Destructor of Interface Class.
-/*!
-    
-*/
 ThorlabsFFInterface::~ThorlabsFFInterface()
 {
 }
@@ -82,11 +89,6 @@ ito::RetVal ThorlabsFFInterface::closeThisInst(ito::AddInBase **addInInst)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of plugin.
-/*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
-    in this constructor or later in the init method
-*/
 ThorlabsFF::ThorlabsFF() : AddInDataIO(),
 m_opened(false)
 {
@@ -94,11 +96,16 @@ m_opened(false)
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("description of the device").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("serial number of the device").toLatin1().data()));
     
-    m_params.insert("pollingInterval", ito::Param("pollingInterval", ito::ParamBase::Int, 200, new ito::IntMeta(1, 10000, 1, "pollingInterval"), tr("device polling interval in ms").toLatin1().data()));
+    m_params.insert("pollingInterval", ito::Param("pollingInterval", ito::ParamBase::Int | ito::ParamBase::Readonly, 200, new ito::IntMeta(1, 10000, 1, "pollingInterval"), tr("device polling interval in ms").toLatin1().data()));
 
     m_params.insert("position", ito::Param("position", ito::ParamBase::Int, FF_Positions::Position1, \
         new ito::IntMeta(FF_Positions::Position1, FF_Positions::Position2, FF_Positions::Position1, "position"), \
         tr("position of the device (position1: %2, position2: %3)").arg(FF_Positions::Position1).arg(FF_Positions::Position2).toLatin1().data()));
+
+    m_params.insert("transitTime", ito::Param("transitTime", ito::ParamBase::Int, 300, new ito::IntMeta(300, 2800, 1, "transitTime"), tr("transit time of the device in ms").toLatin1().data()));
+
+    m_params.insert("firmwareVersion", ito::Param("firmwareVersion", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("firmware version of the connected device").toLatin1().data()));
+    m_params.insert("softwareVersion", ito::Param("softwareVersion", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("software version of the connected device").toLatin1().data()));
 
     if (hasGuiSupport())
     {
@@ -117,7 +124,6 @@ ThorlabsFF::~ThorlabsFF()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! initialization of plugin
 ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -230,9 +236,15 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         }
     }
 
-    if (!retValue.containsError()) // get current position
+    if (!retValue.containsError()) // get current parameters
     {
         m_params["position"].setVal<int>(FF_GetPosition(m_serialNo));
+        m_params["firmwareVersion"].setVal<int>((int)FF_GetFirmwareVersion(m_serialNo));
+        m_params["softwareVersion"].setVal<int>((int)FF_GetSoftwareVersion(m_serialNo));
+
+        retValue += checkError(FF_SetTransitTime(m_serialNo, (unsigned int)m_params["transitTime"].getMin()), "setting transit time");
+
+        m_params["transitTime"].setVal<int>((int)FF_GetTransitTime(m_serialNo));
     }
     
 
@@ -252,7 +264,6 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shutdown of plugin
 ito::RetVal ThorlabsFF::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -260,6 +271,9 @@ ito::RetVal ThorlabsFF::close(ItomSharedSemaphore *waitCond)
     
     FF_StopPolling(m_serialNo);
     FF_Close(m_serialNo);
+
+    m_opened = false;
+    openedDevices.removeOne(m_serialNo);
 
     if (waitCond)
     {
@@ -292,10 +306,14 @@ ito::RetVal ThorlabsFF::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
     if (!retValue.containsError())
     {
-        //put your switch-case.. for getting the right value here
-
-        //finally, save the desired value in the argument val (this is a shared pointer!)
-        *val = it.value();
+        if (key == "transitTime")
+        {
+            val->setVal<int>((unsigned int)FF_GetTransitTime(m_serialNo));
+        }
+        else
+        {
+            *val = it.value();
+        }
     }
 
     if (waitCond)
@@ -329,9 +347,6 @@ ito::RetVal ThorlabsFF::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
     if (!retValue.containsError())
     {
-        //here the new parameter is checked whether its type corresponds or can be cast into the
-        // value in m_params and whether the new type fits to the requirements of any possible
-        // meta structure.
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
@@ -352,10 +367,15 @@ ito::RetVal ThorlabsFF::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             }
             
         }
+        else if (key == "transitTime")
+        {
+            unsigned int time = (unsigned int)val->getVal<int>();
+
+            retValue += checkError(FF_SetTransitTime(m_serialNo, time), "setting transit time");
+            m_params["transitTime"].setVal<int>((int)FF_GetTransitTime(m_serialNo));
+        }
         else
         {
-            //all parameters that don't need further checks can simply be assigned
-            //to the value in m_params (the rest is already checked above)
             retValue += it->copyValueFrom( &(*val) );
         }
     }
@@ -391,12 +411,6 @@ void ThorlabsFF::dockWidgetVisibilityChanged(bool visible)
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal ThorlabsFF::showConfDialog(void)
-{
-    return apiShowConfigurationDialog(this, new DialogThorlabsFF(this));
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 

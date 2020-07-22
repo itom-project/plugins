@@ -22,7 +22,7 @@ class DockWidgetThorlabsFF : public ito::AbstractAddInDockWidget
     Q_OBJECT
 
     public:
-        DockWidgetThorlabsFF(ito::AddInDataIO *grabber);
+        DockWidgetThorlabsFF(ito::AddInDataIO *flipper);
         ~DockWidgetThorlabsFF() {};
 
     private:
@@ -37,7 +37,9 @@ class DockWidgetThorlabsFF : public ito::AbstractAddInDockWidget
     private slots:
         //add here slots connected to changes of any widget
         //example:
-        //void on_contrast_valueChanged(int i);
+        void on_sBoxTransitTime_valueChanged(int i);
+        void on_btnPos1_clicked();
+        void on_btnPos2_clicked();
 };
 
 #endif

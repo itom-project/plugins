@@ -59,7 +59,6 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
 
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsFF.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsFF.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsFF.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
@@ -67,7 +66,6 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     )
 
     set(PLUGIN_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsFF.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsFF.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsFF.cpp
         #add further source files here
@@ -80,7 +78,6 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     endif()
 
     set(PLUGIN_UI
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsFF.ui
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsFF.ui
     )
 

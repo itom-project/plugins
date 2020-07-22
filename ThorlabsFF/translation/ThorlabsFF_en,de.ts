@@ -2,25 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en,de">
 <context>
-    <name>DialogThorlabsFF</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>DockWidgetThorlabsFF</name>
     <message>
         <source>Form</source>
@@ -36,6 +17,34 @@
     </message>
     <message>
         <source>[Identifier]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[deviceName]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>deviceName:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>transit time [ms]:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Positions:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -82,6 +91,18 @@ This plugin has been tested with the flipper MFF101.</source>
     </message>
     <message>
         <source>position of the device (position1: %2, position2: %3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>firmware version of the connected device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>transit time of the device in ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>software version of the connected device</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

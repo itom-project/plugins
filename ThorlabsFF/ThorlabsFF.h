@@ -10,7 +10,6 @@
 
 #include "common/addInInterface.h"
 #include <qsharedpointer.h>
-#include "dialogThorlabsFF.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
@@ -55,9 +54,7 @@ class ThorlabsFF : public ito::AddInDataIO
         
     public:
         friend class ThorlabsFFInterface;
-        const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
-        
+ 
     private:
         static QList<QByteArray> openedDevices;
         bool m_opened;
