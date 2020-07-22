@@ -107,9 +107,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("piezoName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("piezo information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
+    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
+    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("delayProp", ito::ParamBase::Double, 0.0, 10.0, m_delayProp, tr("delay [s] per step size [mm] (e.g. value of 1 means that a delay of 100ms is set for a step of 100mu)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -134,16 +134,6 @@ PIPiezoCtrl::PIPiezoCtrl() :
 
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-
-    ito::DoubleMeta *dm = new ito::DoubleMeta(0.1, 80.0, 80.0, "");
-    dm->setDisplayPrecision(1);
-    dm->setRepresentation(ito::ParamMeta::Linear);
-    dm->setUnit("mm/s");
-    dm->setStepSize(0.1);
-    paramVal = ito::Param("velocity", ito::ParamBase::Double | ito::ParamBase::In, 0.5, \
-        dm, tr("velocity of the stage in mm per s").toLatin1().constData());
-    m_params.insert(paramVal.getName(), paramVal);
-
 
     m_targetPos = QVector<double>(1,0.0);
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
@@ -1650,6 +1640,17 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_AbsPosCmd = "MOV 1";
         m_RelPosCmd = "MVR 1";
         m_PosQust = "POS? 1";
+
+
+        ito::DoubleMeta *dm = new ito::DoubleMeta(0.1, 80.0, 80.0, "");
+        dm->setDisplayPrecision(1);
+        dm->setRepresentation(ito::ParamMeta::Linear);
+        dm->setUnit("mm/s");
+        dm->setStepSize(0.1);
+        ito::Param paramVal = ito::Param("velocity", ito::ParamBase::Double | ito::ParamBase::In, 0.5, \
+            dm, tr("velocity of the stage in mm per s").toLatin1().constData());
+        m_params.insert(paramVal.getName(), paramVal);
+
         m_VelCmd = "Vel 1 ";
         m_VelQust = "Vel? 1";
 
@@ -1661,7 +1662,9 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         retval += PISendCommand("SVO 1 1"); //activates servo
 
         m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
+        m_params["posLimitLow"].setInfo(tr("lower position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
         m_params["posLimitHigh"].setVal<double>(10000.0 / 1000.0);
+        m_params["posLimitHigh"].setInfo(tr("lower position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
 
         retval += PISendCommand("MOV 1 0"); 
 
