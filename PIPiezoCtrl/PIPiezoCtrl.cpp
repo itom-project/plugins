@@ -398,6 +398,18 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             switch(m_ctrlType)
             {
+            case C663Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number(val->getVal<double>())));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
             case E662Family:
                 retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number(val->getVal<double>() * 1000)));
                 if (retValue.containsError())
@@ -419,6 +431,18 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             switch(m_ctrlType)
             {
+            case C663Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number(val->getVal<double>())));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
             case E662Family:
                 retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number(val->getVal<double>() * 1000)));
                 if (retValue.containsError())
@@ -795,8 +819,17 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
             retval += PISendQuestionWithAnswerDouble(m_PosQust, axpos, 200);
         }
 
-        *pos = (double)axpos / 1000;
-        m_currentPos[0] = *pos;
+        if (m_ctrlType == C663Family)
+        {
+            *pos = (double)axpos;
+            m_currentPos[0] = *pos;
+        }
+        else
+        {
+            *pos = (double)axpos / 1000;
+            m_currentPos[0] = *pos;
+        }
+        
     }
 
     if (waitCond)
@@ -1661,10 +1694,8 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         retval += PISendCommand("SVO 1 1"); //activates servo
 
-        m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
-        m_params["posLimitLow"].setInfo(tr("lower position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
-        m_params["posLimitHigh"].setVal<double>(10000.0 / 1000.0);
-        m_params["posLimitHigh"].setInfo(tr("lower position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
+        m_params["posLimitLow"].setVal<double>(0.0);
+        m_params["posLimitHigh"].setVal<double>(10000.0); //mm
 
         retval += PISendCommand("MOV 1 0"); 
 
@@ -1812,7 +1843,16 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 */
 ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
 {
-    double dpos_temp = posMM * 1e3;    // Round value by m_scale
+    double dpos_temp;
+    if (m_ctrlType == C663Family)
+    {
+        dpos_temp = posMM;
+    }
+    else
+    {
+        dpos_temp = posMM * 1e3;    // Round value by m_scale
+    }
+     
     ito::RetVal retval = ito::retOk;
     bool released = false;
     bool outOfRange = false;
@@ -1834,7 +1874,15 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
     {
         retval += PIDummyRead();
 
-        delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
+        if (m_ctrlType == C663Family)
+        {
+            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/;
+        }
+        else
+        {
+            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
+        }
+        
 
         if (relNotAbs)
         {

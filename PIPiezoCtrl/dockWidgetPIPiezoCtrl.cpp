@@ -43,7 +43,7 @@ void DockWidgetPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
 
     if (QString::compare(m_ctrlType, "C663") == 0)
     {
-        m_scale = 1000.0f;
+        m_scale = 1.0f;
         m_unit = u8" mm";
         ui.spinBoxTargetPos->setSuffix(m_unit);
         ui.spinBoxActPos->setSuffix(m_unit);
