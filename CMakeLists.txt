@@ -427,6 +427,14 @@ if(WIN32)
     endif(PLUGIN_ThorlabsBP)
 endif()
 
+# ThorlabsFF benchtop piezo
+if(WIN32)
+    option(PLUGIN_ThorlabsFF "Build with this plugin." OFF)
+    if(PLUGIN_ThorlabsFF)
+        add_subdirectory(ThorlabsFF)
+    endif(PLUGIN_ThorlabsFF)
+endif()
+
 # ThorlabsKCubePA KCube position aligner
 if(WIN32)
     option(PLUGIN_ThorlabsKCubePA "Build with this plugin." OFF)
