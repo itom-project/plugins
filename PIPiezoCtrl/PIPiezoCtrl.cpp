@@ -135,6 +135,15 @@ PIPiezoCtrl::PIPiezoCtrl() :
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    ito::DoubleMeta *dm = new ito::DoubleMeta(0.1, 80.0, 80.0, "");
+    dm->setDisplayPrecision(1);
+    dm->setRepresentation(ito::ParamMeta::Linear);
+    dm->setUnit("mm/s");
+    dm->setStepSize(0.1);
+    paramVal = ito::Param("velocity", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Readonly, 0.5, \
+        dm, tr("velocity of the stage for the controller type C663 in mm per s").toLatin1().constData());
+    m_params.insert(paramVal.getName(), paramVal);
+
     m_targetPos = QVector<double>(1,0.0);
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
     m_currentPos = QVector<double>(1,0.0);
@@ -1674,15 +1683,9 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_RelPosCmd = "MVR 1";
         m_PosQust = "POS? 1";
 
+        m_params["velocity"].setFlags(!ito::ParamBase::Readonly);
 
-        ito::DoubleMeta *dm = new ito::DoubleMeta(0.1, 80.0, 80.0, "");
-        dm->setDisplayPrecision(1);
-        dm->setRepresentation(ito::ParamMeta::Linear);
-        dm->setUnit("mm/s");
-        dm->setStepSize(0.1);
-        ito::Param paramVal = ito::Param("velocity", ito::ParamBase::Double | ito::ParamBase::In, 0.5, \
-            dm, tr("velocity of the stage in mm per s").toLatin1().constData());
-        m_params.insert(paramVal.getName(), paramVal);
+
 
         m_VelCmd = "Vel 1 ";
         m_VelQust = "Vel? 1";

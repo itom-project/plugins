@@ -74,5 +74,5 @@ parameters can be changed using *setParam*.
 **posLimitLow**: {float}
     lower position limit [m] of piezo (this can be supported by the device or by this
     plugin)
-**velocity**: {float}
-    velocity of the stage in mm per s
+**velocity**: {float}, read-only
+    velocity of the stage for the controller type C663 in mm per s
