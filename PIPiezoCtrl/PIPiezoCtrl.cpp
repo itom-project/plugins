@@ -107,9 +107,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("piezoName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("piezo information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
+    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [m] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
+    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("delayProp", ito::ParamBase::Double, 0.0, 10.0, m_delayProp, tr("delay [s] per step size [mm] (e.g. value of 1 means that a delay of 100ms is set for a step of 100mu)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -140,10 +140,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     dm->setRepresentation(ito::ParamMeta::Linear);
     dm->setUnit("mm/s");
     dm->setStepSize(0.1);
-    paramVal = ito::Param("velocity", ito::ParamBase::Double | ito::ParamBase::In, 0.5, \
-        dm, tr("velocity of the stage in mm per s").toLatin1().constData());
+    paramVal = ito::Param("velocity", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Readonly, 0.5, \
+        dm, tr("velocity of the stage for the controller type C663 in mm per s").toLatin1().constData());
     m_params.insert(paramVal.getName(), paramVal);
-
 
     m_targetPos = QVector<double>(1,0.0);
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
@@ -408,6 +407,18 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             switch(m_ctrlType)
             {
+            case C663Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number(val->getVal<double>())));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
             case E662Family:
                 retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number(val->getVal<double>() * 1000)));
                 if (retValue.containsError())
@@ -429,6 +440,18 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             switch(m_ctrlType)
             {
+            case C663Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number(val->getVal<double>())));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
             case E662Family:
                 retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number(val->getVal<double>() * 1000)));
                 if (retValue.containsError())
@@ -805,8 +828,17 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
             retval += PISendQuestionWithAnswerDouble(m_PosQust, axpos, 200);
         }
 
-        *pos = (double)axpos / 1000;
-        m_currentPos[0] = *pos;
+        if (m_ctrlType == C663Family)
+        {
+            *pos = (double)axpos;
+            m_currentPos[0] = *pos;
+        }
+        else
+        {
+            *pos = (double)axpos / 1000;
+            m_currentPos[0] = *pos;
+        }
+        
     }
 
     if (waitCond)
@@ -1650,6 +1682,11 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_AbsPosCmd = "MOV 1";
         m_RelPosCmd = "MVR 1";
         m_PosQust = "POS? 1";
+
+        m_params["velocity"].setFlags(!ito::ParamBase::Readonly);
+
+
+
         m_VelCmd = "Vel 1 ";
         m_VelQust = "Vel? 1";
 
@@ -1660,8 +1697,8 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         retval += PISendCommand("SVO 1 1"); //activates servo
 
-        m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
-        m_params["posLimitHigh"].setVal<double>(10000.0 / 1000.0);
+        m_params["posLimitLow"].setVal<double>(0.0);
+        m_params["posLimitHigh"].setVal<double>(10000.0); //mm
 
         retval += PISendCommand("MOV 1 0"); 
 
@@ -1809,7 +1846,16 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 */
 ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
 {
-    double dpos_temp = posMM * 1e3;    // Round value by m_scale
+    double dpos_temp;
+    if (m_ctrlType == C663Family)
+    {
+        dpos_temp = posMM;
+    }
+    else
+    {
+        dpos_temp = posMM * 1e3;    // Round value by m_scale
+    }
+     
     ito::RetVal retval = ito::retOk;
     bool released = false;
     bool outOfRange = false;
@@ -1831,7 +1877,15 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
     {
         retval += PIDummyRead();
 
-        delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
+        if (m_ctrlType == C663Family)
+        {
+            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/;
+        }
+        else
+        {
+            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
+        }
+        
 
         if (relNotAbs)
         {
