@@ -482,6 +482,18 @@ ito::RetVal GenTLDataStream::flushBuffers(GenTL::ACQ_QUEUE_TYPE queueType /*= Ge
     }
 
     retval += checkGCError(DSFlushQueue(m_handle, queueType), "discard all buffers in input and ouput buffers");
+
+    if (m_verbose >= VERBOSE_ALL)
+    {
+        if (retval == ito::retOk)
+        {
+            std::cout << "Flushed all buffers. Type " << queueType << "\n" << std::endl;
+        }
+        else
+        {
+            std::cout << "Error flushing all buffers. Type " << queueType << ". Error message: " << retval.errorMessage() << "\n" << std::endl;
+        }
+    }
                    
 
     return retval;
@@ -568,6 +580,8 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 
     if (m_verbose >= VERBOSE_ALL)
     {
+        std::cout << "WaitForNewestBuffer with timeout " << m_timeoutMS << " ms\n" << std::endl;
+
         std::cout << "Buffer info before new-buffer-event:\n" << std::endl;
         foreach(const GenTL::BUFFER_HANDLE &buf, m_buffers)
         {
@@ -611,6 +625,15 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 
     if (err == GenTL::GC_ERR_TIMEOUT)
     {
+        if (m_verbose >= VERBOSE_ALL)
+        {
+            std::cout << "Buffer info after new buffer event timeout:\n" << std::endl;
+            foreach(const GenTL::BUFFER_HANDLE &buf, m_buffers)
+            {
+                printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf, 0, 16).toLatin1().constData(), buf);
+            }
+        }
+
         flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
 
         if (checkForErrorEvent(retval, "Timeout occurred"))

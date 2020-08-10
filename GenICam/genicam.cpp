@@ -125,7 +125,7 @@ a list of all auto-detected vendors and models is returned.");
     paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states)).").toLatin1().constData());
+    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR + 5, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states), higher: special debug values).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("accessLevel", ito::ParamBase::Int, GenTL::DEVICE_ACCESS_READONLY, GenTL::DEVICE_ACCESS_EXCLUSIVE, GenTL::DEVICE_ACCESS_EXCLUSIVE, tr("Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).").arg(GenTL::DEVICE_ACCESS_READONLY).arg(GenTL::DEVICE_ACCESS_CONTROL).arg(GenTL::DEVICE_ACCESS_EXCLUSIVE).toLatin1().constData());
@@ -148,7 +148,8 @@ GenICamInterface::~GenICamInterface()
 GenICamClass::GenICamClass() : AddInGrabber(),
     m_hasTriggerSource(false),
     m_newImageAvailable(false),
-    m_acquisitionStartCommandByStartDevice(false)
+    m_acquisitionStartCommandByStartDevice(false),
+    m_verbose(0)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "GenICam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -823,7 +824,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     int streamIndex = paramsOpt->at(3).getVal<int>();
     int visibilityLevel = paramsOpt->at(4).getVal<int>();
     int portIndex = paramsOpt->at(5).getVal<int>();
-    int verbose = paramsOpt->at(6).getVal<int>();
+    m_verbose = paramsOpt->at(6).getVal<int>();
     int accessLevel_ = paramsOpt->at(7).getVal<int>();
 
     try
@@ -847,7 +848,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     
         if (!retValue.containsError())
         {
-            m_system->setVerbose(verbose);
+            m_system->setVerbose(m_verbose);
             m_interface = m_system->getInterface(interfaceType, retValue);
         }
 
@@ -872,7 +873,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
         {
             ito::RetVal streamRetVal;
             QByteArray streamTlType = m_stream->getTLType(&streamRetVal);
-            if (streamRetVal.containsError() && (verbose >= VERBOSE_DEBUG))
+            if (streamRetVal.containsError() && (m_verbose >= VERBOSE_DEBUG))
             {
                 std::cerr << streamRetVal.errorMessage() << "\n" << std::endl;
             }
@@ -881,7 +882,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
             {
                 streamTlType = m_system->getInterfaceInfo(GenTL::INTERFACE_INFO_TLTYPE, m_interface->getIfaceID(), retValue);
 
-                if (verbose >= VERBOSE_DEBUG)
+                if (m_verbose >= VERBOSE_DEBUG)
                 {
                     std::cout << "Interface: TLType: " << streamTlType.constData() << "\n" << std::endl;
                 }
@@ -1060,10 +1061,16 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                 if (!retValue.containsError())
                 {
                     retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+
                     if (!retValue.containsWarning())
                     {
                         m_acquisitionStartCommandByStartDevice = true;
-                        m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+
+                        if (m_verbose <= VERBOSE_ALL)
+                        {
+                            // this should usually be called. However it can be ignored by verbose > VERBOSE_ALL
+                            m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+                        }
                     }
                 }
                 else if (revertAllocateIfError)
@@ -1123,6 +1130,11 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
             setGrabberStarted(0);
 
             m_device->setParamsLocked(0);
+
+            if (m_framegrabber)
+            {
+                m_framegrabber->setParamsLocked(0);
+            }
 
             QThread::msleep(100);
         }
