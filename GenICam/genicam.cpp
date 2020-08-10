@@ -125,7 +125,7 @@ a list of all auto-detected vendors and models is returned.");
     paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR + 5, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states), higher: special debug values).").toLatin1().constData());
+    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL + 5, VERBOSE_ERROR, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states), higher: special debug values).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("accessLevel", ito::ParamBase::Int, GenTL::DEVICE_ACCESS_READONLY, GenTL::DEVICE_ACCESS_EXCLUSIVE, GenTL::DEVICE_ACCESS_EXCLUSIVE, tr("Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).").arg(GenTL::DEVICE_ACCESS_READONLY).arg(GenTL::DEVICE_ACCESS_CONTROL).arg(GenTL::DEVICE_ACCESS_EXCLUSIVE).toLatin1().constData());
