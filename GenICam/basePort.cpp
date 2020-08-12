@@ -682,7 +682,7 @@ ito::RetVal BasePort::createParamsFromDevice(QMap<QString, ito::Param> &params, 
             catch (GenericException & ex)
             {
                 //
-                if (m_verbose >= VERBOSE_ALL)
+                if (m_verbose >= VERBOSE_DEBUG)
                 {
                     std::cerr << name.constData() << "::" << ex.what() << "\n" << std::endl;
                 }
@@ -1064,7 +1064,7 @@ ito::RetVal BasePort::invokeCommandNode(const gcstring &name, ito::tRetValue err
         {
             GenApi::CCommandPtr &command = m_commandNodes[name];
 
-            if (m_verbose >= VERBOSE_ALL && command->GetNode())
+            if (m_verbose >= VERBOSE_DEBUG && command->GetNode())
             {
                 std::cout << m_deviceName.constData() << ": invoke command " << command->GetNode()->GetName() << ", access: " << command->GetNode()->GetAccessMode() << " (" << command->GetAccessMode() << ")\n" << std::endl;
             }
@@ -1073,7 +1073,7 @@ ito::RetVal BasePort::invokeCommandNode(const gcstring &name, ito::tRetValue err
         }
         catch (GenericException &ex)
         {
-            if (m_verbose >= VERBOSE_ALL)
+            if (m_verbose >= VERBOSE_DEBUG)
             {
                 std::cout << m_deviceName.constData() << ": error invoking command " << name.c_str() << " Description: " << ex.GetDescription();
             }
@@ -1092,7 +1092,7 @@ ito::RetVal BasePort::invokeCommandNode(const gcstring &name, ito::tRetValue err
     }
     else
     {
-        if (m_verbose >= VERBOSE_ALL)
+        if (m_verbose >= VERBOSE_DEBUG)
         {
             std::cout << m_deviceName.constData() << ": command cannot be invoked since not available: " << name.c_str();
         }

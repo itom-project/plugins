@@ -62,6 +62,14 @@ public:
 
     ito::RetVal copyBufferToDataObject(const GenTL::BUFFER_HANDLE buffer, ito::DataObject &dobj);
 
+    bool flushAllBuffersToInput() const {
+        return m_flushAllBuffersToInput;
+    }
+
+    void setFlushAllBuffersToInput(bool enable) {
+        m_flushAllBuffersToInput = enable;
+    }
+
 protected:
     ito::RetVal copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
@@ -102,6 +110,7 @@ protected:
     ito::int8 m_usePreAllocatedBuffer; //0 if the image buffer is allocated by the camera, 1 if the buffer is allocated by the itom-plugin and has to be deleted after revoking the buffer, -1 if not decided yet
     bool m_endianessChanged;
     int m_verbose;
+    bool m_flushAllBuffersToInput; //see init parameter with the same name
     
 };
 
