@@ -75,6 +75,7 @@ class DummyGrabber : public ito::AddInGrabber
         {
             imgTypeNoise,
             imgTypeGaussianSpot,
+            imgTypeGaussianSpotArray,
         };
 
     signals:

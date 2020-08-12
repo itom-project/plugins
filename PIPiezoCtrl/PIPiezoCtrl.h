@@ -74,7 +74,7 @@ class PIPiezoCtrl : public ito::AddInActuator
 
     private:
 
-        enum tControllerType { E662Family, E625Family, E753Family, EUnknown };
+        enum tControllerType { E662Family, C663Family, E625Family, E753Family, EUnknown };
 
         bool m_useOnTarget;
         bool m_getStatusInScan;
@@ -101,6 +101,8 @@ class PIPiezoCtrl : public ito::AddInActuator
         QByteArray m_AbsPosCmd;        /*!< This contains the command for absolut positioning. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
         QByteArray m_RelPosCmd;        /*!< This contains the command for relative positioning. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
         QByteArray m_PosQust;        /*!< This contains the command for position request. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
+        QByteArray m_VelCmd;        /*!< This contains the command for position request. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (C-663) */
+        QByteArray m_VelQust;        /*!< This contains the command for position request. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (C-663) */
 
         ito::RetVal PIDummyRead(void); /*!< reads buffer of serial port without delay in order to clear it */
         ito::RetVal PIGetLastErrors( QVector<QPair<int,QByteArray> > &lastErrors );

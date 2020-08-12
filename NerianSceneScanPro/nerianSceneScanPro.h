@@ -24,7 +24,11 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define NERIANSCENESCANPRO_H
 
 #include "common/addInGrabber.h"
-#include "opencv/cv.h"
+#if CV_MAJOR_VERSION >= 4
+#include "opencv2/opencv.hpp"
+#else
+#include <opencv/cv.h>
+#endif
 #include <qsharedpointer.h>
 #include "dialogNerianSceneScanPro.h"
 

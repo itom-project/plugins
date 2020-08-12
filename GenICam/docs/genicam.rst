@@ -54,6 +54,8 @@ get a list of all currently connected devices.
 
 Information about possible ports and streams can be obtained by choosing a high verbosity level as initialization parameter 'verbose'.
 
+.. note:: With some cameras it may be necessary to set the parameter **numBuffers** to a value of 2 (e. g. FLIR AX5).
+
 Parameters
 ===========
 

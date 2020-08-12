@@ -59,6 +59,10 @@ class DialogPIPiezoCtrl : public ito::AbstractAddInConfigDialog
         //ito::AddInActuator *m_pPIPiezo;
         //QMap<QString, ito::Param> m_actualParameters;
 
+        QString m_ctrlType;
+        float m_scale;
+        QString m_unit;
+
         Ui::DialogPIPiezoCtrl ui;
         bool m_firstRun;
 

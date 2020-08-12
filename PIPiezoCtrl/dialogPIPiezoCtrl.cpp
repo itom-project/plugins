@@ -44,11 +44,34 @@ DialogPIPiezoCtrl::DialogPIPiezoCtrl(ito::AddInBase *grabber) :
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
 {
-//    QString temp;
+    
+    QString m_ctrlType = params["ctrlType"].getVal<char*>();
+
+    if (QString::compare(m_ctrlType, "C663") == 0)
+    {
+        m_scale = 1.0f;
+        m_unit = u8" mm";
+        ui.dblSpinPosLimitLow->setSuffix(m_unit);
+        ui.dblSpinPosLimitHigh->setSuffix(m_unit);
+        ui.label_Piezo->setVisible(false);
+        ui.lblPiezo->setVisible(false);
+    }
+    else
+    {
+        m_scale = 1000.0f;
+        m_unit = u8" µm";
+        ui.dblSpinPosLimitLow->setSuffix(m_unit);
+        ui.dblSpinPosLimitHigh->setSuffix(m_unit);
+        ui.label_Velocity->setVisible(false);
+        ui.dblSpinBox_Velocity->setVisible(false);
+        
+    }
+
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
     ui.lblDevice1->setText(params["ctrlType"].getVal<char*>());
     ui.lblDevice2->setText(params["ctrlName"].getVal<char*>());
     ui.lblPiezo->setText(params["piezoName"].getVal<char*>());
+    ui.dblSpinBox_Velocity->setValue(params["velocity"].getVal<double>());
 
     bool hasMode = params["hasLocalRemote"].getVal<int>() > 0;
     ui.comboMode->setVisible(hasMode);
@@ -64,15 +87,15 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
     }
 
     ui.checkAsync->setChecked(params["async"].getVal<int>() > 0);
-    ui.dblSpinPosLimitHigh->setValue(params["posLimitHigh"].getVal<double>() * 1000);
-    ui.dblSpinPosLimitLow->setValue(params["posLimitLow"].getVal<double>() * 1000);
+    ui.dblSpinPosLimitHigh->setValue(params["posLimitHigh"].getVal<double>() * m_scale);
+    ui.dblSpinPosLimitLow->setValue(params["posLimitLow"].getVal<double>() * m_scale);
 
     ui.spinDelayOffset->setMinimum(0);
-    ui.spinDelayOffset->setMaximum(params["delayOffset"].getMax() * 1000);
-    ui.spinDelayOffset->setValue(params["delayOffset"].getVal<double>() * 1000);
+    ui.spinDelayOffset->setMaximum(params["delayOffset"].getMax() * m_scale);
+    ui.spinDelayOffset->setValue(params["delayOffset"].getVal<double>() * m_scale);
 
     ui.spinDelayProp->setMinimum(0);
-    ui.spinDelayProp->setMaximum(params["delayProp"].getMax() * 1000);
+    ui.spinDelayProp->setMaximum(params["delayProp"].getMax() * m_scale);
     ui.spinDelayProp->setValue(params["delayProp"].getVal<double>());
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
@@ -102,8 +125,8 @@ ito::RetVal DialogPIPiezoCtrl::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, i)));
     }
 
-    double v_high = ui.dblSpinPosLimitHigh->value() / 1000.0;
-    double v_low = ui.dblSpinPosLimitLow->value() / 1000.0;
+    double v_high = ui.dblSpinPosLimitHigh->value() / m_scale;
+    double v_low = ui.dblSpinPosLimitLow->value() / m_scale;
     if (v_high < v_low)
     {
         std::swap(v_high,v_low);
@@ -118,7 +141,7 @@ ito::RetVal DialogPIPiezoCtrl::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitLow", ito::ParamBase::Double, v_low)));
     }
 
-    double v = ui.spinDelayOffset->value() / 1000.0;
+    double v = ui.spinDelayOffset->value() / m_scale;
     if (m_currentParameters["delayOffset"].getVal<double>() != v)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayOffset", ito::ParamBase::Double, v)));
@@ -128,6 +151,12 @@ ito::RetVal DialogPIPiezoCtrl::applyParameters()
     if (m_currentParameters["delayProp"].getVal<double>() != v)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayProp", ito::ParamBase::Double, v)));
+    }
+
+    v = ui.dblSpinBox_Velocity->value();
+    if (m_currentParameters["velocity"].getVal<double>() != v)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("velocity", ito::ParamBase::Double, v)));
     }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);

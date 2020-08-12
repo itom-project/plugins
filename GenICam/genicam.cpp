@@ -89,6 +89,7 @@ This plugin has been tested with the following cameras: \n\
 * Allied Vision, Goldeye G-008 SWIR (GigE) \n\
 * Basler puA1280-54uc (USB3)\n\
 * Baumer TXG12 (GigE) \n\
+* FLIR AX5 (GigE) \n\
 * Mikrotron (CoaXPress) with Active Silicon Framegrabber (FireBird) \n\
 * Vistek, exo174MU3 (USB3) \n\
 * Vistek, exo174MGE (GigE)\n\

@@ -211,6 +211,7 @@ This plugin can also be used as template for other grabber.");
     param = ito::Param("imageType", ito::ParamBase::String | ito::ParamBase::In, "noise", tr("Available dummy image types: noise (default), gaussianSpot").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String, "noise");
     sm.addItem("gaussianSpot");
+    sm.addItem("gaussianSpotArray");
     param.setMeta(&sm, false);
     m_initParamsOpt.append(param);
 }
@@ -437,6 +438,10 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     else if (type == "gaussianSpot")
     {
         m_imageType = imgTypeGaussianSpot;
+    }
+    else if (type == "gaussianSpotArray")
+    {
+        m_imageType = imgTypeGaussianSpotArray;
     }
 
     setIdentifier(QString::number(getID()));
@@ -921,8 +926,131 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                 gaussFunc<ito::uint32>(rng, m_data, amplitude);
             }
         }
+        else if (m_imageType == imgTypeGaussianSpotArray) //create dummy Gaussian image
+        {
+            ito::DataObject droi;
+            cv::RNG& rng = cv::theRNG();
+
+            int width = m_data.getSize(1);
+            int height = m_data.getSize(0);
+
+            int roiwidth = (int)width / 2;
+            int roiheight = (int)height / 2;
+
+            int roi[4][4] = {   { -0, -roiheight, -roiwidth, 0 },
+                                { -0, -roiheight, 0, -roiwidth },
+                                { -roiheight, 0, -roiwidth, 0 },
+                                { -roiheight, 0, 0, -roiwidth } };
+            
+            for (int cnt = 0; cnt < 4; cnt++)
+            {
+                droi = m_data;
+                droi = droi.adjustROI(roi[cnt][0], roi[cnt][1], roi[cnt][2], roi[cnt][3]);
+
+                if (bpp < 9)
+                {
+                    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+                    gaussFunc<ito::uint8>(rng, droi, amplitude);
+                }
+                else if (bpp < 17)
+                {
+                    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+                    gaussFunc<ito::uint16>(rng, droi, amplitude);
+                }
+                else if (bpp < 32)
+                {
+                    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+                    gaussFunc<ito::uint32>(rng, droi, amplitude);
+                }
+            }
+            
+            
+
+
+            //// take 1 rechts oben
+            //droi = droi.adjustROI(- 0, - roiheight, -roiwidth, 0); // rechts unten
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+            //// take 2 
+            //droi = m_data;
+            //droi = droi.adjustROI(-0, -roiheight, 0, - roiwidth); // links unten
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+            //// take 3 
+            //droi = m_data;
+            //droi = droi.adjustROI(- roiheight, 0, - roiwidth, 0); // rechts oben
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+            //// take 4
+            //droi = m_data;
+            //droi = droi.adjustROI(-roiheight, 0, 0, -roiwidth); // links oben
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+
 
             
+        }
+                    
         if (integration_time > 0.0)
         {
             double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();

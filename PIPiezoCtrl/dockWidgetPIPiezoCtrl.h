@@ -42,6 +42,10 @@ class DockWidgetPIPiezoCtrl : public ito::AbstractAddInDockWidget
     private:
         void enableWidget(bool enabled);
 
+        QString m_ctrlType;
+        float m_scale;
+        QString m_unit;
+
         Ui::DockWidgetPIPiezoCtrl ui;
 
     public slots:
