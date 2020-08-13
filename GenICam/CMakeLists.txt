@@ -52,7 +52,7 @@ if(GENICAM_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dataStream.h
         ${CMAKE_CURRENT_SOURCE_DIR}/deviceContainer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/datatypes.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/GenTL_v1_6.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/GenTL_v1_5.h
         ${CMAKE_CURRENT_SOURCE_DIR}/PFNC.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
