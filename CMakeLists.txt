@@ -435,6 +435,14 @@ if(WIN32)
     endif(PLUGIN_ThorlabsFF)
 endif()
 
+# ThorlabsKCubeIM KCube inertial motor
+if(WIN32)
+    option(PLUGIN_ThorlabsKCubeIM "Build with this plugin." OFF)
+    if(PLUGIN_ThorlabsKCubeIM)
+        add_subdirectory(ThorlabsKCubeIM)
+    endif(PLUGIN_ThorlabsKCubeIM)
+endif()
+
 # ThorlabsKCubePA KCube position aligner
 if(WIN32)
     option(PLUGIN_ThorlabsKCubePA "Build with this plugin." OFF)
