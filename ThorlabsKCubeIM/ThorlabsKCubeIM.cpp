@@ -254,10 +254,6 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         }
         else
         {
-            int num = sizeof(KIM_Channels);
-            
-            m_params["numaxis"].setVal<int>(4);
-            m_numaxis = 4;
             m_params["serialNumber"].setVal<char*>(serial.data()); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
             setIdentifier(QLatin1String(serial.data())); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
             m_params["deviceName"].setVal<char*>(deviceInfo.description);
@@ -293,6 +289,10 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             retval += ito::RetVal(ito::retError, 0, "error starting position and status polling.");
         }
+        
+        //get num of axis
+        // num = sizeof(KIM_Channels); does not work
+        m_numaxis = m_params["numaxis"].getVal<int>();
         
         // get the device parameter here
         bool deviceCanLockFrontPanel = KIM_CanDeviceLockFrontPanel(m_serialNo) ? 1 : 0;
