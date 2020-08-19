@@ -153,14 +153,6 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>1 if actuator is &apos;homed&apos;, else 0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Any motor axis is moving. The motor is locked.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>interrupt occurred</source>
         <translation type="unfinished"></translation>
     </message>
