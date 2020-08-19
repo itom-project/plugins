@@ -100,7 +100,6 @@ This plugin has been tested with the cage rotator KIM101.");
     m_aboutThis = QObject::tr(GITVERSION);    
     
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
-    m_initParamsOpt.append(ito::Param("additionalGearFactor", ito::ParamBase::Double, 0.0000000001, 1.0e12, 1.0, tr("There seems to be an additional conversion factor for some devices between device and real world units. This can be given here.").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -126,6 +125,8 @@ m_opened(false)
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 20.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("homed", ito::Param("homed", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if actuator is 'homed', else 0").toLatin1().data()));
+
+    m_params.insert("lockFrontPanel", ito::Param("lockFrontPanel", ito::ParamBase::Int, 0, 1, 0, tr("1 to lock the front panel, else 0").toLatin1().data()));
 
     m_currentPos.fill(0.0, 1);
     m_currentStatus.fill(0, 1);
@@ -165,7 +166,6 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     ito::RetVal retval = ito::retOk;
 
     QByteArray serial = paramsOpt->at(0).getVal<char*>();
-    double additionalGearFactor = paramsOpt->at(1).getVal<double>();
 
     retval += checkError(TLI_BuildDeviceList(), "build device list");
     QByteArray existingSerialNumbers("", 256);
@@ -253,7 +253,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     if (!retval.containsError())
     {
-        if (deviceInfo.isKnownType && (deviceInfo.typeID == 45 /*KCube Inertial Motor*/)) //TODO check typeID
+        if (deviceInfo.isKnownType && (deviceInfo.typeID == 97 /*KCube Inertial Motor*/)) //TODO check typeID
         {
             memcpy(m_serialNo, serial.data(), std::min((size_t)serial.size(), sizeof(m_serialNo)));
             retval += checkError(KIM_Open(m_serialNo), "open device");
@@ -282,7 +282,15 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         }
         
         // get the device parameter here
+        bool deviceCanLockFrontPanel = KIM_CanDeviceLockFrontPanel(m_serialNo) ? 1 : 0;
+        m_params["lockFrontPanel"].setVal<int>(KIM_GetFrontPanelLocked(m_serialNo) ? 1 : 0);
+        if (!deviceCanLockFrontPanel)
+        {
+            m_params["lockFrontPanel"].setFlags(ito::ParamBase::Readonly);
+        }
         
+        
+        KIM_GetFrontPanelLocked(m_serialNo);
     }
 
     if (!retval.containsError())
@@ -447,6 +455,11 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             Sleep(400);
             QSharedPointer<QVector<int> > status(new QVector<int>(1, 0));
             retValue += getStatus(status, NULL);
+        }
+        else if (key == "lockFrontPanel")
+        {
+            retValue += checkError(KIM_SetFrontPanelLock(m_serialNo, val->getVal<int>() ? true : false), "setParam to lock frontpanel");
+            val->setVal<int>(KIM_GetFrontPanelLocked(m_serialNo) ? 1 : 0);
         }
 
         //---------------------------

@@ -64,20 +64,10 @@ void DialogThorlabsKCubeIM::parametersChanged(QMap<QString, ito::Param> params)
         ui.lblDevice->setText(params["deviceName"].getVal<char*>());
         ui.lblSerial->setText(QString("%1").arg(params["serialNumber"].getVal<char*>()));
 
-        ui.spinSpeed->setSuffix(" mm/s");
-        QString suffix(" mm/s_");
-        suffix.replace("_", QLatin1String("\u00B2")); //power of two symbol
-        ui.spinAccel->setSuffix(suffix);
-
         m_firstRun = false;
     }
 
-    ui.spinMoveCurrent->setValue(params["moveCurrent"].getVal<int>());
-    ui.spinRestCurrent->setValue(params["restCurrent"].getVal<int>());
     ui.spinTimeout->setValue(params["timeout"].getVal<int>());
-
-    ui.spinSpeed->setValue(params["speed"].getVal<double>());
-    ui.spinAccel->setValue(params["accel"].getVal<double>());
 
     ui.checkAsync->setChecked(params["async"].getVal<int>());
     ui.checkEnabled->setChecked(params["enabled"].getVal<int>());
@@ -115,35 +105,11 @@ ito::RetVal DialogThorlabsKCubeIM::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, async)));
     }
 
-    int current = ui.spinMoveCurrent->value();
-    if (current != m_currentParameters["moveCurrent"].getVal<int>())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("moveCurrent", ito::ParamBase::Int, current)));
-    }
-
-    current = ui.spinRestCurrent->value();
-    if (current != m_currentParameters["restCurrent"].getVal<int>())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("restCurrent", ito::ParamBase::Int, current)));
-    }
-
     double timeout = ui.spinTimeout->value();
     if (std::abs(timeout - m_currentParameters["timeout"].getVal<double>()) > std::numeric_limits<double>::epsilon())
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
-    }
-
-    double speed = ui.spinSpeed->value();
-    if (std::abs(speed - m_currentParameters["speed"].getVal<double>()) > std::numeric_limits<double>::epsilon())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Double, speed)));
-    }
-
-    double accel = ui.spinAccel->value();
-    if (std::abs(accel - m_currentParameters["accel"].getVal<double>()) > std::numeric_limits<double>::epsilon())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Double, accel)));
-    }
+    }    
     
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
@@ -174,7 +140,6 @@ void DialogThorlabsKCubeIM::on_buttonBox_clicked(QAbstractButton* btn)
 void DialogThorlabsKCubeIM::enableDialog(bool enabled)
 {
     ui.groupSettings->setEnabled(enabled);
-    ui.groupMotorPower->setEnabled(enabled);
     ui.groupMode->setEnabled(enabled);
     ui.btnCalib->setEnabled(enabled);
 }

@@ -32,23 +32,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Speed:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> mm/s²</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Timeout:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> mm/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -57,22 +41,6 @@
     </message>
     <message>
         <source> s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Motor Power Management</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>move current:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> %</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>rest current:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -209,10 +177,6 @@ This plugin has been tested with the cage rotator KIM101.</source>
     <name>ThorlabsKCubeIMInterface</name>
     <message>
         <source>Serial number of the device to be loaded, if empty, the first device that can be opened will be opened</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>There seems to be an additional conversion factor for some devices between device and real world units. This can be given here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
