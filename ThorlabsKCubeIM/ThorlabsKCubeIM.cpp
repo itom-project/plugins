@@ -111,18 +111,19 @@ This plugin has been tested with the cage rotator KIM101.");
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ThorlabsISM::init. The widged window is created at this position.
 */
 ThorlabsKCubeIM::ThorlabsKCubeIM() :
-AddInActuator(),
-m_async(0),
-m_opened(false)
+    AddInActuator(),
+    m_async(0),
+    m_opened(false),
+    m_numaxis(0)
 {
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsKCubeIM", tr("Name of the plugin").toLatin1().data()));
-    m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("number of axes (channels)").toLatin1().data()));
+    m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 4, 0, tr("number of axes (channels)").toLatin1().data()));
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Description of the device").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
     m_params.insert("enabled", ito::Param("enabled", ito::ParamBase::Int, 0, 1, 1, tr("If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.").toLatin1().data()));
     
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
-    m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 20.0, tr("timeout for move operations in sec").toLatin1().data()));
+    m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("homed", ito::Param("homed", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if actuator is 'homed', else 0").toLatin1().data()));
 
@@ -144,9 +145,20 @@ m_opened(false)
     memset(m_serialNo, '\0', sizeof(m_serialNo));
 }
 
-KIM_Channels WhatChannel(int num) 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! function to map axis number to KIM_Channels enum
+*/
+std::map<unsigned int, KIM_Channels> KIMChannelMap
 {
-    return static_cast<KIM_Channels>(num);
+    { 0, KIM_Channels::Channel1 },
+    { 1, KIM_Channels::Channel2 },
+    { 2, KIM_Channels::Channel3 },
+    { 3, KIM_Channels::Channel4 }
+};
+
+KIM_Channels WhatChannel(unsigned int num) 
+{
+    return KIMChannelMap[num];
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -244,7 +256,8 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         }
         else
         {
-            m_params["numaxis"].setVal<int>(sizeof(KIM_Channels));
+            m_params["numaxis"].setVal<int>(4);
+            m_numaxis = 4;
             m_params["serialNumber"].setVal<char*>(serial.data()); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
             setIdentifier(QLatin1String(serial.data())); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
             m_params["deviceName"].setVal<char*>(deviceInfo.description);
@@ -288,9 +301,20 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             m_params["lockFrontPanel"].setFlags(ito::ParamBase::Readonly);
         }
-        
-        
-        KIM_GetFrontPanelLocked(m_serialNo);
+
+        Sleep(200);
+
+        m_currentPos.resize(m_numaxis);
+        m_currentStatus.resize(m_numaxis);
+        m_targetPos.resize(m_numaxis);
+
+        for (int i = 0; i < m_currentPos.size(); i++)
+        {
+            m_currentPos[i] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(i));
+            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+            m_targetPos[i] = m_currentPos[i];
+        }
+
     }
 
     if (!retval.containsError())
@@ -484,115 +508,72 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
-
-    \param [in] axis    Number of axis to calibrate
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-    \sa ItomSharedSemaphore
+//! calib
+/*!
+the given axis should be calibrated (e.g. by moving to a reference switch).
 */
 ito::RetVal ThorlabsKCubeIM::calib(const int axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    // Home device                    
-    KIM_ClearMessageQueue(m_serialNo);
-    ito::RetVal retval;
+    ito::RetVal retValue(ito::retOk);
 
-    if (axis != 0)
-    {
-        retval += ito::RetVal(ito::retError, 0, "This motor device has only a single axis with index 0");
-    }
-    else
-    {
-        KIM_ClearMessageQueue(m_serialNo);
-        retval += checkError(KIM_Home(m_serialNo, WhatChannel(axis)), "start homing");
-    }
-
-    DWORD s = KIM_GetStatusBits(m_serialNo, WhatChannel(axis));
-
-    if ((s & 0x80000000) == 0)
-    {
-        retval += ito::RetVal(ito::retError, 0, "homing not possible if the axis is not enabled.");
-    }
-
-    if (!retval.containsError())
-    {
-        // wait for completion                    
-        WORD messageType;
-        WORD messageId;
-        DWORD messageData;
-        bool interrupted = false;
-
-        do
-        {
-            while (KIM_MessageQueueSize(m_serialNo) == 0)
-            {
-                setAlive();
-
-                if (isInterrupted())
-                {
-                    retval += ito::RetVal(ito::retError, 0, "Homing interrupted");
-                    interrupted = true;
-                    break;
-                }
-                Sleep(100);
-            }
-
-            if (!interrupted)
-            {
-                KIM_WaitForMessage(m_serialNo, &messageType, &messageId, &messageData);
-            }
-            
-        } while (!interrupted && (messageType != 2 || messageId != 0));
-
-        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-    }
-
-    Sleep(200); //due to position polling, the current position will be available after 200ms at the latest
-    QSharedPointer<double> pos(new double);
-    retval += getPos(0, pos, NULL);
-
-    QSharedPointer<QVector<int> > status(new QVector<int>(1, 0));
-    retval += getStatus(status, NULL);
+    retValue += calib(QVector<int>(1, axis));
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
-
-    \param [in] axis    Vector this numbers of axis to calibrate
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-    \sa ItomSharedSemaphore
+//! calib
+/*!
+the given axes should be calibrated (e.g. by moving to a reference switch).
 */
 ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
+    ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("calibration not possible").toLatin1().data());
 
-    if (axis.size() != 1 || axis[0] != 0)
+    if (isMotorMoving())
     {
-        retval += ito::RetVal(ito::retError, 0, "This motor device only supports one axis with index 0");
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
     }
-    else
+
+    if (!retValue.containsError())
     {
-        retval += calib(axis[0], NULL);        
+        //todo:
+        //start calibrating the given axes and don't forget to regularily call setAlive().
+        //this is important if the calibration needs more time than the timeout time of itom (e.g. 5sec).
+        //itom regularily checks the alive flag and only drops to a timeout if setAlive() is not regularily called (at least all 3-4 secs).
+
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        sendStatusUpdate();
+
+        retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis); //should drop into timeout
+        retValue = ito::retOk;
+
+        foreach(const int& i, axis)
+        {
+            retValue += checkError(KIM_Home(m_serialNo, WhatChannel(i)), "homeing of axis");
+            m_currentPos[i] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(i));
+            setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+        }
+
+        sendStatusUpdate();
     }
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
+
     }
 
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -672,185 +653,149 @@ ito::RetVal ThorlabsKCubeIM::getStatus(QSharedPointer<QVector<int>> status, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
-
-    \param [in] axis        Axisnumber
-    \param [out] pos        Current position in mm
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-*/
 ito::RetVal ThorlabsKCubeIM::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
+    ito::RetVal retValue(ito::retOk);
 
-    if (axis != 0)
+    if ((axis >= m_numaxis) || axis < 0)
     {
-        retval += ito::RetVal(ito::retError, 0, "This motor device has only a single axis with index 0");
+        retValue = ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toLatin1().data());
     }
     else
     {
         *pos = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axis));
-        m_currentPos[0] = *pos;
-        sendStatusUpdate(false);
+        retValue = ito::retOk;
     }
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
-            In this case if more than one axis is specified this function returns an error.
-
-    \param [in] axis        Vector with axis numbers
-    \param [out] pos        Current positions in mm
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-*/
 ito::RetVal ThorlabsKCubeIM::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval = ito::retOk;
+    ito::RetVal retValue(ito::retOk);
 
-    if (axis.size() != 1 || axis[0] != 0)
+    for (int naxis = 0; naxis < axis.size(); naxis++)
     {
-        retval += ito::RetVal(ito::retError, 0, "This motor device only supports one axis with index 0");
-    }
-    else
-    {
-        QSharedPointer<double> pos_(new double);
-        retval += getPos(axis[0], pos_, NULL);
-        (*pos)[0] = *pos_;
+        if ((axis[naxis] >= m_numaxis) || axis[naxis] < 0)
+        {
+            retValue = ito::RetVal(ito::retError, 1, tr("at least one axis index is out of bound").toLatin1().data());
+        }
+        else
+        {
+            QSharedPointer<double> pos_(new double);
+            retValue += getPos(axis[naxis], pos_, NULL);
+            (*pos)[naxis] = *pos_;
+        }
     }
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
     }
-
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
-            This function calls ThorlabsISM::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
+//! setPosAbs
+/*!
+starts moving the given axis to the desired absolute target position
 
-    \param [in] axis     axis number
-    \param [in] pos      absolute target position in mm
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \sa SMCSetPos
-    \return retOk
+depending on m_async this method directly returns after starting the movement (async = 1) or
+only returns if the axis reached the given target position (async = 0)
+
+In some cases only relative movements are possible, then get the current position, determine the
+relative movement and call the method relatively move the axis.
 */
 ito::RetVal ThorlabsKCubeIM::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
+    return setPosAbs(QVector<int>(1, axis), QVector<double>(1, pos), waitCond);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! setPosAbs
+/*!
+starts moving all given axes to the desired absolute target positions
+
+depending on m_async this method directly returns after starting the movement (async = 1) or
+only returns if all axes reached their given target positions (async = 0)
+
+In some cases only relative movements are possible, then get the current position, determine the
+relative movement and call the method relatively move the axis.
+*/
+ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
+{
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
+    ito::RetVal retValue(ito::retOk);
+    bool released = false;
 
-    if (axis != 0)
+    if (isMotorMoving())
     {
-        retval += ito::RetVal(ito::retError, 0, "This motor device has only a single axis with index 0");
-    }
-    else if (isMotorMoving())
-    {
-        retval += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toLatin1().data());
-
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
     }
     else
     {
-        QVector<int> axis_(1, 0);
-        double newPosition = pos; //real world unit
-
-        if (newPosition < m_params["stagePosMin"].getVal<double>() || newPosition > m_params["stagePosMax"].getVal<double>())
+        int cntPos = 0;
+        foreach(const int i, axis)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "new position out of range of stage [%f,%f].", m_params["stagePosMin"].getVal<double>(), m_params["stagePosMax"].getVal<double>());
-        }
-        else
-        {
-            m_targetPos[0] = newPosition;
-            sendTargetUpdate();
- 
-            if (!retval.containsError())
+            if (i < 0 || i >= m_numaxis)
             {
-                retval += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis), pos), "move absolute");
+                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+            }
+            else
+            {
+                m_targetPos[i] = pos[cntPos]; //todo: set the absolute target position to the desired value in mm or degree
+            }
+            cntPos++;
+        }
 
-                if (!retval.containsError())
-                {
-                    setStatus(axis_, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                    sendStatusUpdate();
+        if (!retValue.containsError())
+        {
+            //set status of all given axes to moving and keep all flags related to the status and switches
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
 
-                    if (m_async && waitCond)
-                    {
-                        waitCond->returnValue = retval;
-                        waitCond->release();
-                        waitCond = NULL;
-                    }
+            //todo: start the movement
+            foreach (const int axisNum, axis)
+            {
+                retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
 
-                    retval += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis_); //drops into timeout
-                }
+                //emit the signal targetChanged with m_targetPos as argument, such that all connected slots gets informed about new targets
+                sendTargetUpdate();
 
-                if (!retval.containsError())
-                {
-                    replaceStatus(axis_, ito::actuatorMoving, ito::actuatorAtTarget);
-                    sendStatusUpdate();
-                }
+                targetChanged(m_targetPos);
 
-                if (!m_async && waitCond)
-                {
-                    waitCond->returnValue = retval;
-                    waitCond->release();
-                    waitCond = NULL;
-                }
+                //call waitForDone in order to wait until all axes reached their target or a given timeout expired
+                //the m_currentPos and m_currentStatus vectors are updated within this function
+                retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum); //WaitForAnswer(60000, axis);
+            }
+                                                  //release the wait condition now, if async is false (itom waits until now if async is false, hence in the synchronous mode)
+            if (!m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+                released = true;
             }
         }
     }
 
-    if (waitCond)
+    //if the wait condition has not been released yet, do it now
+    if (waitCond && !released)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
-            If the size of the vector is more then 1 element, this function returns an error.
-            This function calls ThorlabsISM::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
-
-    \param [in] axis    1 Element Vector with axis numbers
-    \param [in] pos        1 Element Vector with absolute positions in mm
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \sa SMCSetPos
-    \return retOk
-*/
-ito::RetVal ThorlabsKCubeIM::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retval;
-
-    if (axis.size() != 1 || axis[0] != 0)
-    {
-        ItomSharedSemaphoreLocker locker(waitCond);
-        retval += ito::RetVal(ito::retError, 0, "This motor device only supports one axis with index 0");
-        if (waitCond)
-        {
-            waitCond->returnValue = retval;
-            waitCond->release();
-        }
-    }
-    else
-    {
-        retval += setPosAbs(axis[0], pos[0], waitCond);
-    }
-
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -996,6 +941,13 @@ ito::RetVal ThorlabsKCubeIM::requestStatusAndPosition(bool sendCurrentPos, bool 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------
+ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const int axis)
+{
+    ito::RetVal retVal;
+    retVal += waitForDone(timeoutMS, QVector<int>(1, axis));
+    return retVal;
+}
 
 //----------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int> axis /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
@@ -1030,26 +982,33 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         }
         else
         {
-            status = KIM_GetStatusBits(m_serialNo, WhatChannel(axis[0]));
-            setStatus(axis, ito::actuatorAvailable | ((status & 0x80000000) ? ito::actuatorEnabled : 0), ito::actMovingMask | ito::actSwitchesMask);
-
-            if (status & (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008))
+            foreach(const int axisNum, axis)
             {
-                setStatus(axis, ito::actuatorEndSwitch, ito::actMovingMask | ito::actStatusMask);
-                done = true;
-                retval += ito::RetVal(ito::retError, 0, tr("end switch reached").toLatin1().data());
-            }
-            else if ((status & (0x00000010 | 0x00000020)) == 0)
-            {
-                //motor is at target
-                done = true;
+                status = KIM_GetStatusBits(m_serialNo, WhatChannel(axisNum));
+                setStatus(axis, ito::actuatorAvailable | ((status & 0x80000000) ? ito::actuatorEnabled : 0), ito::actMovingMask | ito::actSwitchesMask);
+            
+                if (status & (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008))
+                {
+                    setStatus(axis, ito::actuatorEndSwitch, ito::actMovingMask | ito::actStatusMask);
+                    done = true;
+                    retval += ito::RetVal(ito::retError, 0, tr("end switch reached").toLatin1().data());
+                }
+                else if ((status & (0x00000010 | 0x00000020)) == 0)
+                {
+                    //motor is at target
+                    done = true;
+                }
             }
 
             if (done)
             {   // Position reached and movement done
                 replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
                 sendStatusUpdate(true);
-                m_currentPos[0] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axis[0]));
+                foreach(const int axisNum, axis)
+                {
+                    m_currentPos[axisNum] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axisNum));
+                }
+                
                 sendStatusUpdate(false);
                 break;
             }
@@ -1057,7 +1016,10 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
             {
                 if ((timer.elapsed() - lastTime) > 250.0)
                 {
-                    m_currentPos[0] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axis[0]));
+                    foreach(const int axisNum, axis)
+                    {
+                        m_currentPos[axisNum] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axisNum));
+                    }
                     sendStatusUpdate(false);
                     lastTime = timer.elapsed();
                 }

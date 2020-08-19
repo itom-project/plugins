@@ -172,6 +172,34 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <source>end switch reached</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>1 to lock the front panel, else 0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>motor is running. Additional actions are not possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>axis %i not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>calibration not possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>motor is running. Further action is not possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>axis index is out of bound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>at least one axis index is out of bound</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ThorlabsKCubeIMInterface</name>

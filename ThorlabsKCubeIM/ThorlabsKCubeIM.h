@@ -59,9 +59,6 @@ class ThorlabsKCubeIMInterface : public ito::AddInInterfaceBase
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
 
-        ito::RetVal loadDLL();
-        ito::RetVal unloadDLL();
-
         QLibrary mLib;
 
     signals:
@@ -89,18 +86,12 @@ class ThorlabsKCubeIM : public ito::AddInActuator
     private:
         bool m_async;
         bool m_opened;
+        int m_numaxis;
         char m_serialNo[16];
 
         static QList<QByteArray> openedDevices;
 
-        std::map<int, KIM_Channels> ChannelMap
-        {
-            {0, KIM_Channels::Channel1},
-            {1, KIM_Channels::Channel2},
-            {2, KIM_Channels::Channel3},
-            {3, KIM_Channels::Channel4}
-        };
-
+        ito::RetVal waitForDone(const int timeoutMS = -1, const int axis = -1);
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
         ito::RetVal checkError(short value, const char *message);
         
