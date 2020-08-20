@@ -120,6 +120,8 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 4, 4, tr("number of axes (channels), default 4").toLatin1().data()));
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Description of the device").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
+    m_params.insert("firmwareVersion", ito::Param("firmwareVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Firmware version of the device").toLatin1().data()));
+    m_params.insert("softwareVersion", ito::Param("softwareVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Software version of the device").toLatin1().data()));
     m_params.insert("enabled", ito::Param("enabled", ito::ParamBase::Int, 0, 1, 1, tr("If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.").toLatin1().data()));
     
     ito::int32 voltage[4] = { 112, 112, 112, 112};
@@ -298,7 +300,25 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             retval += ito::RetVal(ito::retError, 0, "error starting position and status polling.");
         }
-        
+
+        // get firmware version
+        std::string verionStr = std::to_string(KIM_GetFirmwareVersion(m_serialNo));
+        char * versionChar = new char[verionStr.size() + 1];
+        std::copy(verionStr.begin(), verionStr.end(), versionChar);
+        versionChar[verionStr.size()] = '\0'; // don't forget the terminating 0
+
+        m_params["firmwareVersion"].setVal<char*>(versionChar);
+        delete[] versionChar;
+
+        // get software version
+        verionStr = std::to_string(KIM_GetSoftwareVersion(m_serialNo));
+        versionChar = new char[verionStr.size() + 1];
+        std::copy(verionStr.begin(), verionStr.end(), versionChar);
+        versionChar[verionStr.size()] = '\0'; // don't forget the terminating 0
+
+        m_params["softwareVersion"].setVal<char*>(versionChar);
+        delete[] versionChar;
+
         //get num of axis
         // num = sizeof(KIM_Channels); does not work
         m_numaxis = m_params["numaxis"].getVal<int>();
@@ -340,7 +360,8 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         m_params["maxVoltage"].setVal<int*>(maxVol, 4);
         m_params["stepRate"].setVal<int*>(stepRate, 4);
         m_params["acceleration"].setVal<int*>(accel, 4);
-   
+
+        
     }
 
     if (!retval.containsError())
