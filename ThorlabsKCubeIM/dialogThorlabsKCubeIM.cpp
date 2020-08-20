@@ -129,7 +129,6 @@ void DialogThorlabsKCubeIM::parametersChanged(QMap<QString, ito::Param> params)
     ui.spinTimeout->setValue(params["timeout"].getVal<int>());
 
     ui.checkAsync->setChecked(params["async"].getVal<int>());
-    ui.checkEnabled->setChecked(params["enabled"].getVal<int>());
     ui.checkFrontPanel->setChecked(params["lockFrontPanel"].getVal<int>());
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
@@ -141,12 +140,6 @@ ito::RetVal DialogThorlabsKCubeIM::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
-
-    int enabled = ui.checkEnabled->isChecked() ? 1 : 0;
-    if (enabled != m_currentParameters["enabled"].getVal<int>())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("enabled", ito::ParamBase::Int, enabled)));
-    }
 
     int frontPanel = ui.checkFrontPanel->isChecked() ? 1 : 0;
     if (frontPanel != m_currentParameters["lockFrontPanel"].getVal<int>())

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>390</width>
-    <height>237</height>
+    <width>397</width>
+    <height>336</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -140,26 +140,30 @@
       <item>
        <widget class="MotorAxisController" name="motorAxisController">
         <property name="numAxis">
-         <number>1</number>
+         <number>4</number>
         </property>
         <property name="defaultAxisUnit">
-         <enum>MotorAxisController::UnitDeg</enum>
+         <enum>MotorAxisController::UnitAU</enum>
         </property>
         <property name="defaultAxisType">
-         <enum>MotorAxisController::TypeRotational</enum>
+         <enum>MotorAxisController::TypeLinear</enum>
         </property>
         <property name="refreshAvailable">
          <bool>true</bool>
         </property>
+        <property name="axisNames">
+         <stringlist>
+          <string>Mot1</string>
+          <string>Mot2</string>
+          <string>Mot3</string>
+          <string>Mot4</string>
+         </stringlist>
+        </property>
+        <property name="defaultDecimals">
+         <number>0</number>
+        </property>
         <property name="movementType">
          <enum>MotorAxisController::MovementAbsolute</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblHomed">
-        <property name="text">
-         <string>TextLabel</string>
         </property>
        </widget>
       </item>

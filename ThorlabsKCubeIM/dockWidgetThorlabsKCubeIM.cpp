@@ -51,22 +51,14 @@ void DockWidgetThorlabsKCubeIM::parametersChanged(QMap<QString, ito::Param> para
         for (int i = 0; i < ui.motorAxisController->numAxis(); ++i)
         {
             ui.motorAxisController->setAxisType(i, MotorAxisController::TypeLinear);
-            ui.motorAxisController->setAxisUnit(i, MotorAxisController::UnitMum);
+            ui.motorAxisController->setAxisUnit(i, MotorAxisController::UnitAU);
+            
         }
 
         m_firstRun = false;
     }
+    enableWidget(true);
 
-    ui.motorAxisController->setEnabled(params["enabled"].getVal<int>() > 0);
-
-    if (params["homed"].getVal<int>() > 0)
-    {
-        ui.lblHomed->setText("The device is homed.");
-    }
-    else
-    {
-        ui.lblHomed->setText("The device is currently not homed.");
-    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -90,4 +82,28 @@ void DockWidgetThorlabsKCubeIM::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetThorlabsKCubeIM::targetChanged(QVector<double> targetPositions)
+{
+    if (targetPositions.size() > 0)
+    {
+        ui.motorAxisController->setEnabled(true);
+        ui.motorAxisController->setAxisEnabled(0, true);
+    }
+}
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetThorlabsKCubeIM::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
+{
+    bool running = false;
+
+    for (int i = 0; i < status.size(); i++)
+    {
+        if (status[i] & ito::actuatorMoving)
+        {
+            running = true;
+        }
+    }
+
+    ui.motorAxisController->setEnabled(!running);
+}

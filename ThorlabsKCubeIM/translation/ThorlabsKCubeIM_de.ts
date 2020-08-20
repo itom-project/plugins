@@ -84,10 +84,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable Motor </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Lock FrontPanel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -127,7 +123,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>TextLabel</source>
+        <source>Mot1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mot2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mot3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mot4</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -166,10 +174,6 @@ This plugin has been tested with the cage rotator KIM101.</source>
     </message>
     <message>
         <source>Serial number of the device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

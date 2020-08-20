@@ -50,7 +50,8 @@ class DockWidgetThorlabsKCubeIM : public ito::AbstractAddInDockWidget
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier) { };
         void dockWidgetVisibilityChanged(bool visible);
-
+        void actuatorStatusChanged(QVector<int> status, QVector<double> positions);
+        void targetChanged(QVector<double> targetPositions);
 };
 
 #endif
