@@ -28,15 +28,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Timeout:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable Motor (if disabled, move by hand is possible)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -52,15 +44,55 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Home</source>
+        <source>Firmware:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cancel</source>
+        <source>Software:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>TextLabel</source>
+        <source>set current positions to zero</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>axis 0:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>axis 1:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>axis 2:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>axis 3:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Step rate settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Motor </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lock FrontPanel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum voltage settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -202,6 +234,14 @@ This plugin has been tested with the cage rotator KIM101.</source>
     </message>
     <message>
         <source>acceleration Steps/s�</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Firmware version of the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Software version of the device</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

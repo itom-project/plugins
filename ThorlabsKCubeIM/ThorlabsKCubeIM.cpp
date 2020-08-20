@@ -150,7 +150,7 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
     }
-
+    
     memset(m_serialNo, '\0', sizeof(m_serialNo));
 }
 

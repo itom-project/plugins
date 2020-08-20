@@ -61,7 +61,9 @@ class DialogThorlabsKCubeIM : public ito::AbstractAddInConfigDialog
 
         Ui::DialogThorlabsKCubeIM ui;
         bool m_firstRun;
-        ito::AddInActuator *m_pAia;
+        ito::AddInActuator *m_actuator;
+
+        int m_numaxis;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
@@ -69,7 +71,6 @@ class DialogThorlabsKCubeIM : public ito::AbstractAddInConfigDialog
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
         void on_btnCalib_clicked();
-		void on_btnCalibInterrupt_clicked();
 
 };
 
