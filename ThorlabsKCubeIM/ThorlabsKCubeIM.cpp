@@ -632,6 +632,7 @@ ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore 
         }
 
         sendStatusUpdate();
+
     }
 
     if (waitCond)
