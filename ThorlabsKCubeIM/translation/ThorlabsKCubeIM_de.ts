@@ -129,10 +129,6 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>number of axes (channels)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Description of the device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -190,6 +186,22 @@ This plugin has been tested with the cage rotator KIM101.</source>
     </message>
     <message>
         <source>at least one axis index is out of bound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>number of axes (channels), default 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>maximum voltage of axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>step rate in Steps/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>acceleration Steps/s�</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

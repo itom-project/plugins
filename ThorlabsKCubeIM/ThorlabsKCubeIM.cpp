@@ -117,20 +117,29 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     m_numaxis(0)
 {
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsKCubeIM", tr("Name of the plugin").toLatin1().data()));
-    m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 4, 0, tr("number of axes (channels)").toLatin1().data()));
+    m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 4, 4, tr("number of axes (channels), default 4").toLatin1().data()));
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Description of the device").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
     m_params.insert("enabled", ito::Param("enabled", ito::ParamBase::Int, 0, 1, 1, tr("If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.").toLatin1().data()));
     
+    ito::int32 voltage[4] = { 112, 112, 112, 112};
+    m_params.insert("maxVoltage", ito::Param("maxVoltage", ito::ParamBase::IntArray, 4, voltage, new ito::IntArrayMeta(85, 125, 1, 4, 4), tr("maximum voltage of axis").toLatin1().data()));
+    
+    ito::int32 steps[4] = { 500, 500, 500, 500 };
+    m_params.insert("stepRate", ito::Param("stepRate", ito::ParamBase::IntArray, 4, steps, new ito::IntArrayMeta(1, 2000, 1, 4, 4), tr("step rate in Steps/s").toLatin1().data()));
+
+    ito::int32 accel[4] = { 1000, 1000, 1000, 1000 };
+    m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::IntArray, 4, accel, new ito::IntArrayMeta(1, 100000, 1, 4, 4), tr("acceleration Steps/s²").toLatin1().data()));
+
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("lockFrontPanel", ito::Param("lockFrontPanel", ito::ParamBase::Int, 0, 1, 0, tr("1 to lock the front panel, else 0").toLatin1().data()));
 
-    m_currentPos.fill(0.0, 1);
-    m_currentStatus.fill(0, 1);
-    m_targetPos.fill(0.0, 1);
-
+    m_currentPos.fill(0.0, 4);
+    m_currentStatus.fill(0, 4);
+    m_targetPos.fill(0.0, 4);
+    
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -316,9 +325,22 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_targetPos[i] = m_currentPos[i];
         }
 
+        // get the drive parameters
         Sleep(200);
+        int maxVol[4];
+        int stepRate[4];
+        int accel[4];
+        for(int axis = 0; axis < m_numaxis; axis++)
+        {    
+            short vol;
+            retval += checkError(KIM_GetDriveOPParameters(m_serialNo, WhatChannel(axis), vol, stepRate[axis], accel[axis]), "get drive OP Parameter");
+            maxVol[axis] = int(vol);
+        }
 
-        
+        m_params["maxVoltage"].setVal<int*>(maxVol, 4);
+        m_params["stepRate"].setVal<int*>(stepRate, 4);
+        m_params["acceleration"].setVal<int*>(accel, 4);
+   
     }
 
     if (!retval.containsError())
@@ -442,7 +464,6 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
     QVector<QPair<int, QByteArray> > lastitError;
-    double realValue;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -488,6 +509,41 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
         {
             retValue += checkError(KIM_SetFrontPanelLock(m_serialNo, val->getVal<int>() ? true : false), "setParam to lock frontpanel");
             val->setVal<int>(KIM_GetFrontPanelLocked(m_serialNo) ? 1 : 0);
+        }
+        else if (key == "maxVoltage")
+        {
+            int *maxVol = val->getVal<int*>();
+
+            for (int axis = 0; axis < m_numaxis; axis++)
+            {
+                retValue += checkError(KIM_SetDriveOPParameters(m_serialNo, WhatChannel(axis), maxVol[axis], m_params["stepRate"].getVal<int*>()[axis], m_params["acceleration"].getVal<int*>()[axis]), "set max voltage");
+            }
+
+            retValue += it->copyValueFrom(&(*val));
+
+        }
+        else if (key == "stepRate")
+        {
+            int *stepRate = val->getVal<int*>();
+
+            for (int axis = 0; axis < m_numaxis; axis++)
+            {
+                retValue += checkError(KIM_SetDriveOPParameters(m_serialNo, WhatChannel(axis), m_params["maxVoltage"].getVal<int*>()[axis], stepRate[axis], m_params["acceleration"].getVal<int*>()[axis]), "set step rate");
+            }
+
+            retValue += it->copyValueFrom(&(*val));
+
+        }
+        else if (key == "acceleration")
+        {
+            int *accel = val->getVal<int*>();
+
+            for (int axis = 0; axis < m_numaxis; axis++)
+            {
+                retValue += checkError(KIM_SetDriveOPParameters(m_serialNo, WhatChannel(axis), m_params["maxVoltage"].getVal<int*>()[axis], m_params["stepRate"].getVal<int*>()[axis], accel[axis]), "set acceleration");
+            }
+
+            retValue += it->copyValueFrom(&(*val));
         }
 
         //---------------------------
@@ -635,26 +691,30 @@ ito::RetVal ThorlabsKCubeIM::getStatus(QSharedPointer<QVector<int>> status, Itom
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
-    DWORD s = KIM_GetStatusBits(m_serialNo, WhatChannel(0));
-
-    m_currentStatus[0] = (s & (0x00000010 | 0x00000020)) ? ito::actuatorMoving : ito::actuatorAtTarget;
-    m_currentStatus[0] |= (s & (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008)) ? ito::actuatorEndSwitch : 0;
-    m_currentStatus[0] |= ito::actuatorAvailable; //the connected flag is not always set
-
-    if (s & 0x80000000)
+    for (int axis = 0; axis < m_numaxis; axis++)
     {
-        m_currentStatus[0] |= ito::actuatorEnabled;
-    }
+        DWORD s = KIM_GetStatusBits(m_serialNo, WhatChannel(axis));
 
-    int enabled = (s & 0x80000000) ? 1 : 0;
+        m_currentStatus[axis] = (s & (0x00000010 | 0x00000020)) ? ito::actuatorMoving : ito::actuatorAtTarget;
+        m_currentStatus[axis] |= (s & (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008)) ? ito::actuatorEndSwitch : 0;
+        m_currentStatus[axis] |= ito::actuatorAvailable; //the connected flag is not always set
+
+        if (s & 0x80000000)
+        {
+            m_currentStatus[axis] |= ito::actuatorEnabled;
+        }
+
+        int enabled = (s & 0x80000000) ? 1 : 0;
     
-    if (m_params["enabled"].getVal<int>() != enabled)
-    {
-        m_params["enabled"].setVal<int>(enabled);
-        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-    }
+        if (m_params["enabled"].getVal<int>() != enabled)
+        {
+            m_params["enabled"].setVal<int>(enabled);
+            emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+        }
 
-    *status = m_currentStatus;
+        *status = m_currentStatus;
+    }
+    
 
     if (waitCond)
     {
