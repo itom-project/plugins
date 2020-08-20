@@ -838,7 +838,7 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
 
                 //call waitForDone in order to wait until all axes reached their target or a given timeout expired
                 //the m_currentPos and m_currentStatus vectors are updated within this function
-                retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum); //WaitForAnswer(60000, axis);
+                retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
                 
             }
 
@@ -912,8 +912,7 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             }
             else
             {
-                m_targetPos[i] = pos[cntPos]; //todo: set the absolute target position to the desired value in mm or degree 
-                                      //(obtain the absolute position with respect to the given relative distances)
+                m_targetPos[i] = m_currentPos[i] + pos[cntPos]; //todo: set the absolute target position to the desired value in mm or degree 
             }
             cntPos++;
         }
@@ -927,14 +926,15 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             sendStatusUpdate();
 
             //todo: start the movement
+            cntPos = 0;
             foreach(const int axisNum, axis)
             {
-                retValue += checkError(KIM_MoveRelative(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
+                retValue += checkError(KIM_MoveRelative(m_serialNo, WhatChannel(axisNum), pos[cntPos]), "move relative");
 
                 //call waitForDone in order to wait until all axes reached their target or a given timeout expired
                 //the m_currentPos and m_currentStatus vectors are updated within this function
-                retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum); //WaitForAnswer(60000, axis);
-                
+                retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Relative); //WaitForAnswer(60000, axis);
+                cntPos++;
             }
 
             replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
@@ -992,10 +992,10 @@ ito::RetVal ThorlabsKCubeIM::requestStatusAndPosition(bool sendCurrentPos, bool 
 }
 
 //----------------------------------------------------------------------------------------------------------------
-ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const int axis)
+ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const int axis, const int flags)
 {
     ito::RetVal retVal;
-    retVal += waitForDone(timeoutMS, QVector<int>(1, axis));
+    retVal += waitForDone(timeoutMS, QVector<int>(1, axis), flags);
     return retVal;
 }
 
@@ -1044,15 +1044,20 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         motor = 0;
         foreach(const int &i, axis)
         {
-            if (std::abs(m_targetPos[i] - m_currentPos[i]) > 0.05)
+            if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05) && (flags == MoveType::Absolute || flags == -1))
             {
-                setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                done = false; //not done yet
+                setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                done = true; //not done yet
             }
-            else
+            else if (std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05 && flags == MoveType::Relative)
             {
                 setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
+            }
+            else
+            {
+                setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                done = false;
             }
         }
 

@@ -91,8 +91,10 @@ class ThorlabsKCubeIM : public ito::AddInActuator
 
         static QList<QByteArray> openedDevices;
 
-        ito::RetVal waitForDone(const int timeoutMS = -1, const int axis = -1);
-        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
+        enum MoveType { Absolute = 0, Relative = 1 };
+
+        ito::RetVal waitForDone(const int timeoutMS = -1, const int axis = -1, const int flags = -1 /*for your use*/);
+        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = -1 /*for your use*/);
         ito::RetVal checkError(short value, const char *message);
         
     public slots:
