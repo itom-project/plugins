@@ -185,18 +185,6 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>interrupt occurred</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>timeout occurred</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>end switch reached</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>1 to lock the front panel, else 0</source>
         <translation type="unfinished"></translation>
     </message>
@@ -206,10 +194,6 @@ This plugin has been tested with the cage rotator KIM101.</source>
     </message>
     <message>
         <source>axis %i not available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>calibration not possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -237,15 +221,15 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>acceleration Steps/s�</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Firmware version of the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Software version of the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>acceleration Steps/s<byte value="x0"/>x5E2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

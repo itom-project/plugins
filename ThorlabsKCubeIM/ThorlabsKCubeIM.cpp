@@ -130,7 +130,7 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     m_params.insert("stepRate", ito::Param("stepRate", ito::ParamBase::IntArray, 4, steps, new ito::IntArrayMeta(1, 2000, 1, 4, 4), tr("step rate in Steps/s").toLatin1().data()));
 
     ito::int32 accel[4] = { 1000, 1000, 1000, 1000 };
-    m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::IntArray, 4, accel, new ito::IntArrayMeta(1, 100000, 1, 4, 4), tr("acceleration Steps/s²").toLatin1().data()));
+    m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::IntArray, 4, accel, new ito::IntArrayMeta(1, 100000, 1, 4, 4), tr("acceleration Steps/s\0x5E2").toLatin1().data()));
 
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
@@ -605,7 +605,7 @@ the given axes should be calibrated (e.g. by moving to a reference switch).
 ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("calibration not possible").toLatin1().data());
+    ito::RetVal retValue = ito::retOk;
 
     if (isMotorMoving())
     {
@@ -627,10 +627,10 @@ ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore 
         foreach(const int& i, axis)
         {
             retValue += checkError(KIM_ZeroPosition(m_serialNo, WhatChannel(i)), "set position as new zero");
+            m_targetPos[i] = 0.0;
             retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis); //should drop into timeout
             m_currentPos[i] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(i));
             setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-            m_targetPos[i] = 0.0;
         }
 
         sendStatusUpdate();
@@ -699,31 +699,20 @@ ito::RetVal ThorlabsKCubeIM::setOrigin(QVector<int> axis, ItomSharedSemaphore *w
     \return retOk
     \todo define the status value
 */
-ito::RetVal ThorlabsKCubeIM::getStatus(QSharedPointer<QVector<int>> status, ItomSharedSemaphore *waitCond)
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ThorlabsKCubeIM::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
+    ito::RetVal retValue(ito::retOk);
 
-    for (int axis = 0; axis < m_numaxis; axis++)
-    {
-        DWORD s = KIM_GetStatusBits(m_serialNo, WhatChannel(axis));
-
-        m_currentStatus[axis] = (s & (0x00000010 | 0x00000020)) ? ito::actuatorMoving : ito::actuatorAtTarget;
-        m_currentStatus[axis] |= (s & (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008)) ? ito::actuatorEndSwitch : 0;
-        m_currentStatus[axis] |= ito::actuatorAvailable; //the connected flag is not always set
-
-        *status = m_currentStatus;
-
-    }
-    
+    *status = m_currentStatus;
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
     }
-
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -768,9 +757,11 @@ ito::RetVal ThorlabsKCubeIM::getPos(const QVector<int> axis, QSharedPointer<QVec
         {
             QSharedPointer<double> pos_(new double);
             retValue += getPos(axis[naxis], pos_, NULL);
-            (*pos)[naxis] = *pos_;
+            (*pos)[naxis] = *pos_;         
         }
     }    
+
+    sendStatusUpdate(false);
 
     if (waitCond)
     {
@@ -835,6 +826,8 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
 
         if (!retValue.containsError())
         {
+            sendTargetUpdate();
+
             //set status of all given axes to moving and keep all flags related to the status and switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
             sendStatusUpdate();
@@ -847,11 +840,11 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
                 //call waitForDone in order to wait until all axes reached their target or a given timeout expired
                 //the m_currentPos and m_currentStatus vectors are updated within this function
                 retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum); //WaitForAnswer(60000, axis);
-                replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+                
             }
 
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
             sendStatusUpdate();
-            sendTargetUpdate();
                                                   
             if (!m_async && waitCond && !released)
             {
@@ -928,6 +921,8 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
 
         if (!retValue.containsError())
         {
+            sendTargetUpdate();
+
             //set status of all given axes to moving and keep all flags related to the status and switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
             sendStatusUpdate();
@@ -940,11 +935,12 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
                 //call waitForDone in order to wait until all axes reached their target or a given timeout expired
                 //the m_currentPos and m_currentStatus vectors are updated within this function
                 retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum); //WaitForAnswer(60000, axis);
-                replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+                
             }
 
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
             sendStatusUpdate();
-            sendTargetUpdate();
+
             //release the wait condition now, if async is false (itom waits until now if async is false, hence in the synchronous mode)
             if (!m_async && waitCond && !released)
             {
@@ -978,7 +974,10 @@ ito::RetVal ThorlabsKCubeIM::requestStatusAndPosition(bool sendCurrentPos, bool 
     if (sendCurrentPos)
     {
         QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
-        retval += getPos(0, sharedpos, NULL);
+        for (int axis = 0; axis < m_numaxis; axis++)
+        {
+            retval += getPos(axis, sharedpos, NULL);
+        }
     }
     else
     {
@@ -1001,94 +1000,104 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const int axis)
     return retVal;
 }
 
-//----------------------------------------------------------------------------------------------------------------
-ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int> axis /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
+//---------------------------------------------------------------------------------------------------------------------------------- 
+//! method must be overwritten from ito::AddInActuator
+/*!
+WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is indicated) have stopped or a timeout or user interruption
+occurred. The timeout can be given in milliseconds, or -1 if no timeout should be considered. The flag-parameter can be used for your own purpose.
+*/
+ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
-    ito::RetVal retval(ito::retOk);
+    ito::RetVal retVal(ito::retOk);
     bool done = false;
-    DWORD status;
-    Sleep(250); //to be sure that the first requested status is correct
-    QElapsedTimer timer;
+    bool timeout = false;
+    char motor;
+    QTime timer;
+    QMutex waitMutex;
+    QWaitCondition waitCondition;
+    
+    long delay = 100; //[ms]
+
     timer.start();
-    qint64 lastTime = timer.elapsed();
 
-
-    while (!done && !retval.containsWarningOrError())
-    {   
-        if (isInterrupted())
+    //if axis is empty, all axes should be observed by this method
+    QVector<int> _axis = axis;
+    if (_axis.size() == 0) //all axis
+    {
+        for (int i = 0; i < m_numaxis; i++)
         {
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
-
-            retval += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
-            done = true;
-
-            sendStatusUpdate(true);
-        }
-        else if (timer.elapsed() > timeoutMS)
-        {
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
-            retval += ito::RetVal(ito::retError, 0, tr("timeout occurred").toLatin1().data());
-            done = true;
-
-            sendStatusUpdate(true);
-        }
-        else
-        {
-            foreach(const int axisNum, axis)
-            {
-                status = KIM_GetStatusBits(m_serialNo, WhatChannel(axisNum));
-                setStatus(axis, ito::actuatorAvailable | ((status & 0x80000000) ? ito::actuatorEnabled : 0), ito::actMovingMask | ito::actSwitchesMask);
-            
-                if (status & (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008))
-                {
-                    setStatus(axis, ito::actuatorEndSwitch, ito::actMovingMask | ito::actStatusMask);
-                    done = true;
-                    retval += ito::RetVal(ito::retError, 0, tr("end switch reached").toLatin1().data());
-                }
-                else if ((status & (0x00000010 | 0x00000020)) == 0)
-                {
-                    //motor is at target
-                    done = true;
-                }
-            }
-
-            if (done)
-            {   // Position reached and movement done
-                replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-                sendStatusUpdate(true);
-                
-                foreach(const int axisNum, axis)
-                {
-                    m_currentPos[axisNum] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axisNum));
-                    m_targetPos[axisNum] = m_currentPos[axisNum];
-                }
-                
-                sendStatusUpdate(false);
-                sendTargetUpdate();
-                break;
-            }
-            else
-            {
-                if ((timer.elapsed() - lastTime) > 250.0)
-                {
-                    foreach(const int axisNum, axis)
-                    {
-                        m_currentPos[axisNum] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axisNum));
-                    }
-                    sendStatusUpdate(false);
-                    lastTime = timer.elapsed();
-                }
-               
-            }
-
-            if (!retval.containsError())
-            {
-                setAlive();
-            }
+            _axis.append(i);
         }
     }
 
-    return retval;
+    while (!done && !timeout)
+    {
+        //todo: obtain the current position, status... of all given axes
+        
+        foreach(const int &i, axis)
+        {
+            QSharedPointer<double> pos_(new double);
+            retVal += getPos(i, pos_, NULL);
+            m_currentPos[i] = *pos_;
+        }
+
+        done = true; //assume all axes at target
+        motor = 0;
+        foreach(const int &i, axis)
+        {
+            if (std::abs(m_targetPos[i] - m_currentPos[i]) > 0.05)
+            {
+                setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                done = false; //not done yet
+            }
+            else
+            {
+                setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                done = true;
+            }
+        }
+
+        //emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
+        sendStatusUpdate(false);
+
+        //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
+        if (!done && isInterrupted())
+        {
+            //todo: force all axes to stop
+
+            //set the status of all axes from moving to interrupted (only if moving was set before)
+            replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
+            sendStatusUpdate(true);
+
+            retVal += ito::RetVal(ito::retError, 0, "interrupt occurred");
+            done = true;
+            return retVal;
+        }
+
+        //short delay
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, delay);
+        waitMutex.unlock();
+
+        //raise the alive flag again, this is necessary such that itom does not drop into a timeout if the
+        //positioning needs more time than the allowed timeout time.
+        setAlive();
+
+        if (timeoutMS > -1)
+        {
+            if (timer.elapsed() > timeoutMS) timeout = true;
+        }
+    }
+
+    if (timeout)
+    {
+        //timeout occured, set the status of all currently moving axes to timeout
+        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
+        retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
+        sendStatusUpdate(true);
+    }
+
+    return retVal;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
@@ -1103,18 +1112,17 @@ void ThorlabsKCubeIM::dockWidgetVisibilityChanged(bool visible)
             if (visible)
             {
                 connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-                connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-                connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
+                connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), w, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+                connect(this, SIGNAL(targetChanged(QVector<double>)), w, SLOT(targetChanged(QVector<double>)));
                 emit parametersChanged(m_params);
                 sendTargetUpdate();
-                sendStatusUpdate();
-
+                sendStatusUpdate(false);
             }
             else
             {
                 disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-                disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-                disconnect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
+                disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), w, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+                disconnect(this, SIGNAL(targetChanged(QVector<double>)), w, SLOT(targetChanged(QVector<double>)));
             }
         }
     }

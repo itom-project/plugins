@@ -52,7 +52,7 @@ void DockWidgetThorlabsKCubeIM::parametersChanged(QMap<QString, ito::Param> para
         {
             ui.motorAxisController->setAxisType(i, MotorAxisController::TypeLinear);
             ui.motorAxisController->setAxisUnit(i, MotorAxisController::UnitAU);
-            
+            requestActuatorStatusAndPositions(true, true);
         }
 
         m_firstRun = false;
@@ -83,13 +83,9 @@ void DockWidgetThorlabsKCubeIM::dockWidgetVisibilityChanged(bool visible)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsKCubeIM::targetChanged(QVector<double> targetPositions)
+void DockWidgetThorlabsKCubeIM::targetChanged(QVector<double> targetPos)
 {
-    if (targetPositions.size() > 0)
-    {
-        ui.motorAxisController->setEnabled(true);
-        ui.motorAxisController->setAxisEnabled(0, true);
-    }
+    int i = 0;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

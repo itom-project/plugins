@@ -23,6 +23,8 @@
 #ifndef DOCKWIDGETTHORLABSKCUBEIM_H
 #define DOCKWIDGETTHORLABSKCUBEIM_H
 
+#define NOMINMAX // https://stackoverflow.com/questions/22744262/cant-call-stdmax-because-minwindef-h-defines-max
+
 #include "common/abstractAddInDockWidget.h"
 #include "common/addInInterface.h"
 
@@ -50,7 +52,8 @@ class DockWidgetThorlabsKCubeIM : public ito::AbstractAddInDockWidget
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier) { };
         void dockWidgetVisibilityChanged(bool visible);
-        void actuatorStatusChanged(QVector<int> status, QVector<double> positions);
+
+        void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
         void targetChanged(QVector<double> targetPositions);
 };
 
