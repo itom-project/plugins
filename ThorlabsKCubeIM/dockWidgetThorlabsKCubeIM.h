@@ -44,6 +44,7 @@ class DockWidgetThorlabsKCubeIM : public ito::AbstractAddInDockWidget
     private:
         void enableWidget(bool enabled);
         bool m_firstRun;
+        int m_numaxis;
         ito::AddInActuator *m_pActuator;
 
         Ui::DockWidgetThorlabsKCubeIM ui;
@@ -55,6 +56,7 @@ class DockWidgetThorlabsKCubeIM : public ito::AbstractAddInDockWidget
 
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
         void targetChanged(QVector<double> targetPositions);
+        void on_btnCalib_clicked();
 };
 
 #endif

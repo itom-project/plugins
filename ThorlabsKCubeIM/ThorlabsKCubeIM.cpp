@@ -622,14 +622,12 @@ ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore 
         setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
         sendStatusUpdate();
 
-        retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis); //should drop into timeout
-
         foreach(const int& i, axis)
         {
             retValue += checkError(KIM_ZeroPosition(m_serialNo, WhatChannel(i)), "set position as new zero");
             m_targetPos[i] = 0.0;
+            
             retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis); //should drop into timeout
-            m_currentPos[i] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(i));
             setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
         }
 

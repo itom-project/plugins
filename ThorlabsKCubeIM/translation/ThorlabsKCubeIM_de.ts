@@ -138,6 +138,10 @@
         <source>Mot4</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>set current Positions to zero</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>

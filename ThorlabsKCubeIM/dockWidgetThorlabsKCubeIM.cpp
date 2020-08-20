@@ -32,7 +32,8 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetThorlabsKCubeIM::DockWidgetThorlabsKCubeIM(ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator),
     m_firstRun(true),
-    m_pActuator(actuator)
+    m_pActuator(actuator),
+    m_numaxis(0)
 {
     ui.setupUi(this); 
     
@@ -45,6 +46,7 @@ void DockWidgetThorlabsKCubeIM::parametersChanged(QMap<QString, ito::Param> para
     ui.lblDevice->setText(params["deviceName"].getVal<char*>());
     ui.lblSerial->setText(params["serialNumber"].getVal<char*>());
     ui.motorAxisController->setNumAxis(params["numaxis"].getVal<int>());
+    m_numaxis = params["numaxis"].getVal<int>();
 
     if (m_firstRun)
     {
@@ -102,4 +104,28 @@ void DockWidgetThorlabsKCubeIM::actuatorStatusChanged(QVector<int> status, QVect
     }
 
     ui.motorAxisController->setEnabled(!running);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DockWidgetThorlabsKCubeIM::on_btnCalib_clicked()
+{
+    if (m_pActuator)
+    {
+        int i;
+        QVector<int> axis;
+
+        for (i = 0; i < m_numaxis; i++)
+        {
+            axis << i;
+        }
+
+        enableWidget(false);
+        
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(m_pActuator, "calib", Q_ARG(QVector<int>, axis), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        ui.btnCalib->setVisible(false);
+        observeInvocation(locker.getSemaphore(), ito::AbstractAddInDockWidget::msgLevelWarningAndError);
+        enableWidget(true);
+        ui.btnCalib->setVisible(true);
+    }
 }
