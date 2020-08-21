@@ -978,8 +978,6 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
             return retVal;
         }
 
-        //QCoreApplication::processEvents();
-
         //short delay
         waitMutex.lock();
         waitCondition.wait(&waitMutex, delay);
@@ -1041,7 +1039,6 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
             }
         }
 
-        QCoreApplication::processEvents();
     }
 
     if (timeout)
