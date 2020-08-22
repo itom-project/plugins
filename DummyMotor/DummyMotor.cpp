@@ -243,6 +243,11 @@ DummyMotor::DummyMotor() :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+DummyMotor::~DummyMotor() //!< Destructor        
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotor::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -962,9 +967,9 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
     QWaitCondition waitCondition;
     long delay = 10; //[ms]
 
-    int *useLimits = m_params["useLimits"].getVal<int*>();
-    double *limitLow = m_params["limitNeg"].getVal<double*>();
-    double *limitHigh = m_params["limitPos"].getVal<double*>();
+    const int *useLimits = m_params["useLimits"].getVal<const int*>();
+    const double *limitLow = m_params["limitNeg"].getVal<const double*>();
+    const double *limitHigh = m_params["limitPos"].getVal<const double*>();
     double cur_speed = m_params["speed"].getVal<double>();
 
     while (!done && !timeout)
