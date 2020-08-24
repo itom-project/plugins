@@ -8,6 +8,7 @@
 #ifndef OPHIRPLUGIN_H
 #define OPHIRPLUGIN_H
 
+#include "OphirLMMeasurement.h"
 
 #include "common/addInInterface.h"
 #include <qsharedpointer.h>
@@ -57,10 +58,12 @@ class OphirPlugin : public ito::AddInDataIO
         friend class OphirPluginInterface;
  
     private:
-        static QList<QByteArray> openedDevices;
+        static QList<std::wstring> openedDevices;
+
+        OphirLMMeasurement m_OphirLM;
 
         bool m_opened;
-        char m_serialNo[16];
+        std::wstring m_serialNo;
 
         ito::RetVal checkError(short value, const char *message);
         

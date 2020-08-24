@@ -32,6 +32,8 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 
 itom_find_package_qt(ON Core Widgets LinguistTools)
 
+
+
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)

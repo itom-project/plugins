@@ -23,7 +23,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "OphirLMMeasurement.h"
+
 
 #include <iostream>
 #include <iomanip>
@@ -41,7 +41,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "dockWidgetOphir.h"
 
-QList<QByteArray> OphirPlugin::openedDevices = QList<QByteArray>();
+QList<std::wstring> OphirPlugin::openedDevices = QList<std::wstring>();
 
 struct CoInitializer
 {
@@ -116,7 +116,8 @@ m_opened(false)
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
     }
-    memset(m_serialNo, '\0', sizeof(m_serialNo));
+
+    //memset(m_serialNo, '\0', sizeof(m_serialNo));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -124,47 +125,21 @@ OphirPlugin::~OphirPlugin()
 {
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
+    
     QByteArray serialNo = paramsOpt->at(0).getVal<char*>();
-
-    CoInitializer initializer; // must call for COM initialization and deinitialization
-    OphirLMMeasurement OphirLM;
-
-    std::vector<std::wstring> serialConnected;
-
-    OphirLM.ScanUSB(serialConnected);
-
-    QByteArray serialToCompare;
-    for (int idx = 0; idx < serialConnected.size(); idx++)
-    {
-        serialToCompare.append(reinterpret_cast<const char>(serialConnected[idx].c_str()));
-    }
+    std::vector<std::wstring> serialsFound;
 
     
-    if (serialConnected.size() > 0) // connected device found
-    {
+    m_OphirLM.ScanUSB(serialsFound);
 
-        if (serialNo.size() > 0) // serialnumber optional input 
-        {
-            if (serialNo.contains(serialToCompare)) // input serial found
-            {
 
-            }
-        }
-        else // connect to first found device
-        {
-
-        }
-    }
-    else // no connected device found
-    {
-        retValue += ito::RetVal(ito::retError, 0, "no Ophir device detected");
-    }
 
 
     if (!retValue.containsError())

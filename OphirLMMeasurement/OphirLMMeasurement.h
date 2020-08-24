@@ -20,6 +20,7 @@
 
 #import "progid:OphirLMMeasurement.CoLMMeasurement"
 
+
 class OphirLMMeasurement : private IDispatch
 {
 public:
