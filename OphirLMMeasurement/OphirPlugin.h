@@ -59,7 +59,6 @@ class OphirPlugin : public ito::AddInDataIO
  
     private:
         static QList<std::wstring> openedDevices;
-
         OphirLMMeasurement m_OphirLM;
 
         bool m_opened;

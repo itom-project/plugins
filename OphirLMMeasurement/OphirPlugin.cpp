@@ -166,6 +166,7 @@ ito::RetVal OphirPlugin::close(ItomSharedSemaphore *waitCond)
     m_opened = false;
     openedDevices.removeOne(m_serialNo);
 
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;

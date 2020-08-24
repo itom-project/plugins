@@ -32,8 +32,6 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 
 itom_find_package_qt(ON Core Widgets LinguistTools)
 
-
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
@@ -84,6 +82,15 @@ add_library(${target_name} SHARED
 
 # Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
+
+
+# multi-processor compilation must be deactivate 
+# https://docs.microsoft.com/en-us/previous-versions/bb385193(v=vs.140)?redirectedfrom=MSDN#The-MSBUILD-exe-Tool
+mark_as_advanced(MULTITHREADED_BUILD)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP")
+string( REPLACE "/MP" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
+message(STATUS "Deleted /MP flag from CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 
 
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
