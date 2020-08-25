@@ -38,7 +38,6 @@ class OphirPluginInterface : public ito::AddInInterfaceBase
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    OphirPlugin
@@ -58,13 +57,16 @@ class OphirPlugin : public ito::AddInDataIO
         friend class OphirPluginInterface;
  
     private:
+        QSharedPointer<OphirLMMeasurement> m_OphirLM;
         static QList<std::wstring> openedDevices;
-        OphirLMMeasurement m_OphirLM;
-
+        long m_handle;
         bool m_opened;
         std::wstring m_serialNo;
+        char *m_charBuffer;
 
-        ito::RetVal checkError(short value, const char *message);
+        ito::RetVal checkError(const int &e, const char *message);
+        int wCharToChar(const wchar_t *input);
+        
         
     public slots:
         //!< Get Camera-Parameter
