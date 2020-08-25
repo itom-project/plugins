@@ -57,7 +57,7 @@ class OphirPlugin : public ito::AddInDataIO
         friend class OphirPluginInterface;
  
     private:
-        QSharedPointer<OphirLMMeasurement> m_OphirLM;
+        OphirLMMeasurement m_OphirLM;
         static QList<std::wstring> openedDevices;
         long m_handle;
         bool m_opened;
@@ -65,7 +65,7 @@ class OphirPlugin : public ito::AddInDataIO
         char *m_charBuffer;
 
         ito::RetVal checkError(const int &e, const char *message);
-        int wCharToChar(const wchar_t *input);
+        char* wCharToChar(const wchar_t *input);
         
         
     public slots:

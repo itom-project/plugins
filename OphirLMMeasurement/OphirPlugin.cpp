@@ -146,13 +146,10 @@ ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     LPVOID pvReserved = NULL;
     HRESULT result;
-    DWORD dwCoInit = COINIT_MULTITHREADED;
     result = CoInitialize(pvReserved);
-    m_OphirLM = QSharedPointer<OphirLMMeasurement>(new OphirLMMeasurement);
+    OphirLMMeasurement m_OphirLM;
 
-
-    m_OphirLM->ScanUSB(serialsFound);
-    serialsFound.push_back(L"123456");
+    m_OphirLM.ScanUSB(serialsFound);
 
     if (serialsFound.size() > 0) // found connected devices
     {
@@ -166,8 +163,8 @@ ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             bool found = false;
             for (int idx = 0; idx < serialsFound.size(); idx++)
             {
-                wCharToChar(serialsFound[idx].c_str());
-                QByteArray data = QByteArray::fromRawData(m_charBuffer, sizeof(m_charBuffer));
+                
+                QByteArray data = QByteArray::fromRawData(wCharToChar(serialsFound[idx].c_str()), sizeof(m_charBuffer));
 
                 if (serialNoOptional.contains(m_charBuffer)) // option serial found
                 {
@@ -191,11 +188,11 @@ ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if (!retValue.containsError()) // open device
     {
-        /*try
+        try
         {
             m_OphirLM.OpenUSBDevice(m_serialNo, m_handle);
         }
-        catch (const int &e)
+        catch (int &e)
         {
             retValue += checkError(e, "Open usb device");
         }
@@ -204,40 +201,27 @@ ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         long channel;
         bool exists;
-        m_ophirLM.IsSensorExists(m_handle, channel, exists);
+        m_OphirLM.IsSensorExists(m_handle, channel, exists);
 
         if (!exists)
         {
             retValue += ito::RetVal(ito::retError, 0, "no sensor connected to the device");
-        }*/
+        }
     }
 
     if (!retValue.containsError()) // get device infos
     {
         std::wstring deviceName, romVersion, serialNumber;
         std::wstring info, headSN, headType, headName, version;
-        //m_ophirLM.GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
-        
-        /*wCharToChar(deviceName.c_str());
-        m_params["deviceName"].setVal<char>(*m_charBuffer);
+        m_OphirLM.GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);      
+        m_params["deviceName"].setVal<char>(*wCharToChar(deviceName.c_str()));
+        m_params["romVersion"].setVal<char>(*wCharToChar(romVersion.c_str()));
+        m_params["serialNumber"].setVal<char>(*wCharToChar(serialNumber.c_str()));
 
-        wCharToChar(romVersion.c_str());
-        m_params["romVersion"].setVal<char>(*m_charBuffer);
-
-        wCharToChar(serialNumber.c_str());
-        m_params["serialNumber"].setVal<char>(*m_charBuffer);
-
-        m_ophirLM.GetSensorInfo(m_handle, 0, headSN, headType, headName);
-
-        wCharToChar(headSN.c_str());
-        m_params["headSerialNumber"].setVal<char>(*m_charBuffer);
-
-        wCharToChar(headType.c_str());
-        m_params["headType"].setVal<char>(*m_charBuffer);
-
-        wCharToChar(headName.c_str());
-        m_params["headName"].setVal<char>(*m_charBuffer);*/
-
+        m_OphirLM.GetSensorInfo(m_handle, 0, headSN, headType, headName);
+        m_params["headSerialNumber"].setVal<char>(*wCharToChar(headSN.c_str()));
+        m_params["headType"].setVal<char>(*wCharToChar(headType.c_str()));
+        m_params["headName"].setVal<char>(*wCharToChar(headName.c_str()));
         
     }
 
@@ -263,21 +247,19 @@ ito::RetVal OphirPlugin::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     
-    //if (m_opened)
-    //{
-    //    m_ophirLM.StopAllStreams(); //stop measuring
-    //    m_ophirLM.CloseAll(); //close device
-    //    m_opened = false;
-    //    openedDevices.removeOne(m_serialNo);
-    //}
+    if (m_opened)
+    {
+        m_OphirLM.StopAllStreams(); //stop measuring
+        m_OphirLM.CloseAll(); //close device
+        m_opened = false;
+        openedDevices.removeOne(m_serialNo);
+    }
 
     // Free multibyte character buffer
     if (m_charBuffer)
     {
         free(m_charBuffer);
     }
-
-    //m_ophirLM.clear();
 
     if (waitCond)
     {
@@ -441,9 +423,10 @@ ito::RetVal OphirPlugin::checkError(const int &e, const char* message)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
-int OphirPlugin::wCharToChar(const wchar_t *input)
+char* OphirPlugin::wCharToChar(const wchar_t *input)
 {
     size_t  i;
     // Conversion
-    return wcstombs_s(&i, m_charBuffer, (size_t)BUFFER_SIZE, input, (size_t)BUFFER_SIZE);
+    wcstombs_s(&i, m_charBuffer, (size_t)BUFFER_SIZE, input, (size_t)BUFFER_SIZE);
+    return m_charBuffer;
 }
