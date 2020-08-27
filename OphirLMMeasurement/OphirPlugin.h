@@ -66,8 +66,9 @@ class OphirPlugin : public ito::AddInDataIO
 
         ito::RetVal checkError(const int &e, const char *message);
         char* wCharToChar(const wchar_t *input);
-        
-        
+
+        void dataReadyCallback(long hDevice, long channel);
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);

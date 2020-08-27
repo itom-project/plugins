@@ -24,13 +24,10 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define ITOM_IMPORT_PLOTAPI
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
-#include <objbase.h>
-
 #include <Windows.h>
+
+#include <iostream>
+#include <iomanip>
 
 #include "OphirPlugin.h"
 #include "pluginVersion.h"
@@ -133,6 +130,25 @@ OphirPlugin::~OphirPlugin()
 }
 
 
+//---------------------------------------------------------------------------------------------------------------------------------- 
+void plugAndPlayCallback()
+{
+    std::cout << "Device has been removed from the USB. \n" << std::endl;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------- 
+void OphirPlugin::dataReadyCallback(long hDevice, long channel)
+{
+    std::vector<double> values;
+    std::vector<double> timestamps;
+    std::vector<OphirLMMeasurement::Status> statuses;
+
+    m_OphirLM.GetData(hDevice, channel, values, timestamps, statuses);
+    for (size_t i = 0; i < values.size(); ++i)
+        std::wcout << L"Timestamp: " << std::fixed << std::setprecision(3) << timestamps[i]
+        << L" Reading: " << std::scientific << values[i] << L" Status: " << m_OphirLM.StatusString(statuses[i]) << L"\n";
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
@@ -222,7 +238,16 @@ ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["headSerialNumber"].setVal<char>(*wCharToChar(headSN.c_str()));
         m_params["headType"].setVal<char>(*wCharToChar(headType.c_str()));
         m_params["headName"].setVal<char>(*wCharToChar(headName.c_str()));
+    }
+
+    if(!retValue.containsError())
+    {
+        m_OphirLM.RegisterPlugAndPlay(plugAndPlayCallback);
+        //m_OphirLM.RegisterDataReady(*reinterpret_cast<std::function<void(long hDevice, long channel)>*>(dataReadyCallback));
+        //m_OphirLM.RegisterDataReady(dataReadyCallback);
+
         
+        m_OphirLM.StartStream(m_handle, 0);
     }
 
 
@@ -430,3 +455,4 @@ char* OphirPlugin::wCharToChar(const wchar_t *input)
     wcstombs_s(&i, m_charBuffer, (size_t)BUFFER_SIZE, input, (size_t)BUFFER_SIZE);
     return m_charBuffer;
 }
+
