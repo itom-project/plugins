@@ -30,7 +30,7 @@ option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 
-itom_find_package_qt(ON Core Widgets LinguistTools)
+itom_find_package_qt(ON Core Widgets LinguistTools AxBase AxContainer)
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)

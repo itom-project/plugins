@@ -40,6 +40,11 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "dockWidgetOphir.h"
 
+#include <qaxbase.h>
+#include <qaxobject.h>
+#include <quuid.h>
+#include <qobject.h>
+
 #define BUFFER_SIZE 100
 
 QList<std::wstring> OphirPlugin::openedDevices = QList<std::wstring>();
@@ -131,19 +136,19 @@ OphirPlugin::~OphirPlugin()
 
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
-void plugAndPlayCallback()
+std::function<void()> OphirPlugin::plugAndPlayCallback()
 {
     std::cout << "Device has been removed from the USB. \n" << std::endl;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
-void OphirPlugin::dataReadyCallback(long hDevice, long channel)
+std::function<void(long handle, long channel)> OphirPlugin::dataReadyCallback()
 {
     std::vector<double> values;
     std::vector<double> timestamps;
     std::vector<OphirLMMeasurement::Status> statuses;
 
-    m_OphirLM.GetData(hDevice, channel, values, timestamps, statuses);
+    m_OphirLM.GetData(m_handle, 0, values, timestamps, statuses);
     for (size_t i = 0; i < values.size(); ++i)
         std::wcout << L"Timestamp: " << std::fixed << std::setprecision(3) << timestamps[i]
         << L" Reading: " << std::scientific << values[i] << L" Status: " << m_OphirLM.StatusString(statuses[i]) << L"\n";
@@ -159,10 +164,33 @@ ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     QByteArray serialNoOptional = paramsOpt->at(0).getVal<char*>();
     std::vector<std::wstring> serialsFound;
     
+    QAxObject m_axObject("OphirLMMeasurement.CoLMMeasurement");
 
-    LPVOID pvReserved = NULL;
-    HRESULT result;
-    result = CoInitialize(pvReserved);
+    QString str = m_axObject.generateDocumentation();
+
+    QVariant v = m_axObject.dynamicCall("CloseAll()");
+
+    QVariantList params;
+    QVariant v2;
+    params << v2;
+    m_axObject.dynamicCall("ScanUSB(QVariant&)", params);
+    std::vector<std::wstring> data = params[0].value<std::vector<std::wstring>>();
+
+    //QVarianList params;
+    //QVariant res = object.dynamicCall("GetFlyerTemperature(double&, double&, int&)", params);
+
+    params.clear();
+    params << QVariant();
+    m_axObject.dynamicCall("GetVersion(int&)", params);
+    std::cout << "version: " <<  params[0].toInt() << std::endl;
+
+    params.clear();
+    params << QVariant();
+    m_axObject.dynamicCall("GetDriverVersion(QString&)", params);
+    std::cout << "driver serion: " << params[0].toString().constData() << std::endl;
+
+    std::vector<std::wstring> serialNumbers;
+
     OphirLMMeasurement m_OphirLM;
 
     m_OphirLM.ScanUSB(serialsFound);
@@ -242,11 +270,8 @@ ito::RetVal OphirPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if(!retValue.containsError())
     {
-        m_OphirLM.RegisterPlugAndPlay(plugAndPlayCallback);
-        //m_OphirLM.RegisterDataReady(*reinterpret_cast<std::function<void(long hDevice, long channel)>*>(dataReadyCallback));
-        //m_OphirLM.RegisterDataReady(dataReadyCallback);
-
-        
+        m_OphirLM.RegisterPlugAndPlay(plugAndPlayCallback());
+        m_OphirLM.RegisterDataReady(dataReadyCallback());
         m_OphirLM.StartStream(m_handle, 0);
     }
 

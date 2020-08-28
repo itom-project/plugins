@@ -13,6 +13,17 @@
 #include "common/addInInterface.h"
 #include <qsharedpointer.h>
 
+#include <qaxbase.h>
+#include <qaxobject.h>
+#include <quuid.h>
+
+#include <string>
+#include <vector>
+#include <qfile.h>
+#include <qmetatype.h>
+
+Q_DECLARE_METATYPE(std::vector<std::wstring>);
+
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    OphirPluginInterface 
@@ -57,6 +68,7 @@ class OphirPlugin : public ito::AddInDataIO
         friend class OphirPluginInterface;
  
     private:
+        QAxObject m_axObject;
         OphirLMMeasurement m_OphirLM;
         static QList<std::wstring> openedDevices;
         long m_handle;
@@ -66,8 +78,6 @@ class OphirPlugin : public ito::AddInDataIO
 
         ito::RetVal checkError(const int &e, const char *message);
         char* wCharToChar(const wchar_t *input);
-
-        void dataReadyCallback(long hDevice, long channel);
 
     public slots:
         //!< Get Camera-Parameter
@@ -81,6 +91,8 @@ class OphirPlugin : public ito::AddInDataIO
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+		std::function<void()> plugAndPlayCallback();
+		std::function<void(long handle, long channel)> dataReadyCallback();
 };
 
 #endif // OPHIRPLUGIN_H
