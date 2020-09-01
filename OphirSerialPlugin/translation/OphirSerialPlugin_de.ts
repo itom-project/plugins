@@ -62,10 +62,6 @@
 <context>
     <name>OphirSerialPlugin</name>
     <message>
-        <source>Name of plugin.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -86,15 +82,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The current com-port ID of this specific device. -1 means undefined.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not read port number from serial port or port number invalid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1 if battery is OK, 0 if battery is low.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -106,15 +94,35 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>request timeout, default 1000 ms.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>return answer %1 for rquest $HT not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name of plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The current com-port ID of this specific device. -1 means undefined</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 if battery is OK, 0 if battery is low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request timeout, default 1000 ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial number of the device shown on display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Given serial number (%1) does not match the received number (%2)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -122,6 +130,10 @@
     <name>OphirSerialPluginInterface</name>
     <message>
         <source>An opened serial port (the right communcation parameters will be set by this plugin).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial number of the device to be loaded, if empty, the first device that is detected will be opened</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

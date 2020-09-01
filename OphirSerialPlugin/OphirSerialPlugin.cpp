@@ -81,6 +81,8 @@ Tested devices: VEGA");
     ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this plugin).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
+
+    m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that is detected will be opened").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,15 +100,14 @@ m_pSer(NULL),
 m_delayAfterSendCommandMS(0), 
 m_dockWidget(NULL)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "OphirSerialPlugin", tr("Name of plugin.").toLatin1().data());
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "OphirSerialPlugin", tr("Name of plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined.").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("battery", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if battery is OK, 0 if battery is low.").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("request timeout, default 1000 ms.").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data()); 
+    m_params.insert("comPort", ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data()));
+    m_params.insert("battery", ito::Param("battery", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if battery is OK, 0 if battery is low").toLatin1().data()));
+    m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("Request timeout, default 1000 ms").toLatin1().data()));
+    m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device shown on display").toLatin1().data()));
+
+    paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data()); 
     ito::StringMeta sm(ito::StringMeta::String, "headType");
     sm.addItem("BC20");
     sm.addItem("beam track");
@@ -172,67 +173,100 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
-    if (!retval.containsError())
+    if (!retval.containsError()) // get information
     {
+        QByteArray serialNoInput = paramsOpt->at(0).getVal<char*>();
+        bool found = false;
         QByteArray answer;
         QByteArray headType = "";
-        QByteArray request = QByteArray("$HT");
+        QByteArray serialNum = "";
+        QByteArray request = QByteArray("$HI");
         retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
 
-        if (answer.contains("BC"))
-        {
-            headType = "BC20";
+        QRegExp reg("(\\d+)"); // matches numbers
+
+        QStringList list;
+        int pos = 0;
+
+        while ((pos = reg.indexIn(answer, pos)) != -1) {
+            list << reg.cap(1);
+            pos += reg.matchedLength();
         }
-        else if (answer.contains("BT"))
+        QByteArray foundSerialNo = list.at(0).toLatin1();
+        
+        if (serialNoInput == "")
         {
-            headType = "beam track";
+            found = true;
         }
-        else if (answer.contains("CR"))
+        else if (serialNoInput.contains(foundSerialNo) && serialNoInput.length() == foundSerialNo.length())
         {
-            headType = "RM9";
-        }
-        else if (answer.contains("CP") || answer.contains("PY"))
-        {
-            headType = "pyroelectric";
-        }
-        else if (answer.contains("FX"))
-        {
-            headType = "axial sensor";
-        }
-        else if (answer.contains("LX"))
-        {
-            headType = "PD300-CIE sensor";
-        }
-        else if (answer.contains("NJ"))
-        {
-            headType = "nanoJoule meter";
-        }
-        else if (answer.contains("RM"))
-        {
-            headType = "PD300RM";
-        }
-        else if (answer.contains("SI"))
-        {
-            headType = "photodiode";
-        }
-        else if (answer.contains("TH"))
-        {
-            headType = "thermopile";
-        }
-        else if (answer.contains("TP"))
-        {
-            headType = "temperature probe";
-        }
-        else if (answer.contains("XX"))
-        {
-            headType = "no sensor connected";
+            found = true;
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Given serial number %1 does not match the received number %2").arg(serialNoInput.data()).arg(foundSerialNo.data()).toLatin1().data());
         }
 
-        m_params["headType"].setVal<char*>(headType.data());
+        if (!retval.containsError() && found)
+        {
+            m_params["serialNumber"].setVal<char*>(foundSerialNo.data());
+
+            if (answer.contains("BC"))
+            {
+                headType = "BC20";
+            }
+            else if (answer.contains("BT"))
+            {
+                headType = "beam track";
+            }
+            else if (answer.contains("CR"))
+            {
+                headType = "RM9";
+            }
+            else if (answer.contains("CP") || answer.contains("PY"))
+            {
+                headType = "pyroelectric";
+            }
+            else if (answer.contains("FX"))
+            {
+                headType = "axial sensor";
+            }
+            else if (answer.contains("LX"))
+            {
+                headType = "PD300-CIE sensor";
+            }
+            else if (answer.contains("NJ"))
+            {
+                headType = "nanoJoule meter";
+            }
+            else if (answer.contains("RM"))
+            {
+                headType = "PD300RM";
+            }
+            else if (answer.contains("SI"))
+            {
+                headType = "photodiode";
+            }
+            else if (answer.contains("TH"))
+            {
+                headType = "thermopile";
+            }
+            else if (answer.contains("TP"))
+            {
+                headType = "temperature probe";
+            }
+            else if (answer.contains("XX"))
+            {
+                headType = "no sensor connected";
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+            }
+
+            m_params["headType"].setVal<char*>(headType.data());
+        }
+
     }
 
     if (waitCond)
