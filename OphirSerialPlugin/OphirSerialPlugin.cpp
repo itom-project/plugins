@@ -195,7 +195,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         request = QByteArray("$HI");
         retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
 
-        QRegExp reg("(\\d+)"); // matches numbers
+        QRegExp reg("(\\S+)"); // matches numbers
 
         QStringList list;
         int pos = 0;
