@@ -122,7 +122,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Given serial number (%1) does not match the received number (%2)</source>
+        <source>Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Given serial number %1 does not match the received number %2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

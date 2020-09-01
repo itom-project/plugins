@@ -107,21 +107,31 @@ m_dockWidget(NULL)
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("Request timeout, default 1000 ms").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device shown on display").toLatin1().data()));
 
+    paramVal = ito::Param("deviceType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)").toLatin1().data());
+    ito::StringMeta sm(ito::StringMeta::String, "deviceType");
+    sm.addItem("NOVA");
+    sm.addItem("VEGA");
+    sm.addItem("LASERSTAR-S");
+    sm.addItem("LASERSTAR-D channel A");
+    sm.addItem("LASERSTAR-D channel B");
+    sm.addItem("NOVA-II");
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data()); 
-    ito::StringMeta sm(ito::StringMeta::String, "headType");
-    sm.addItem("BC20");
-    sm.addItem("beam track");
-    sm.addItem("RM9");
-    sm.addItem("axial sensor");
-    sm.addItem("PD300-CIE sensor");
-    sm.addItem("nanoJoule meter");
-    sm.addItem("pyroelectric");
-    sm.addItem("PD300RM");
-    sm.addItem("photodiode");
-    sm.addItem("thermopile");
-    sm.addItem("temperature probe");
-    sm.addItem("no sensor connected");
-    paramVal.setMeta(&sm, false);
+    ito::StringMeta sm2(ito::StringMeta::String, "headType");
+    sm2.addItem("BC20");
+    sm2.addItem("beam track");
+    sm2.addItem("RM9");
+    sm2.addItem("axial sensor");
+    sm2.addItem("PD300-CIE sensor");
+    sm2.addItem("nanoJoule meter");
+    sm2.addItem("pyroelectric");
+    sm2.addItem("PD300RM");
+    sm2.addItem("photodiode");
+    sm2.addItem("thermopile");
+    sm2.addItem("temperature probe");
+    sm2.addItem("no sensor connected");
+    paramVal.setMeta(&sm2, false);
     m_params.insert(paramVal.getName(), paramVal);
     
     if (hasGuiSupport())
@@ -139,6 +149,8 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
+    QByteArray answer;
+    QByteArray request;
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
     {
@@ -177,10 +189,10 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
     {
         QByteArray serialNoInput = paramsOpt->at(0).getVal<char*>();
         bool found = false;
-        QByteArray answer;
+        
         QByteArray headType = "";
         QByteArray serialNum = "";
-        QByteArray request = QByteArray("$HI");
+        request = QByteArray("$HI");
         retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
 
         QRegExp reg("(\\d+)"); // matches numbers
@@ -267,6 +279,43 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
             m_params["headType"].setVal<char*>(headType.data());
         }
 
+    }
+
+    if (!retval.containsError()) // instrument information
+    {
+        QByteArray type;
+        request = QByteArray("$II");
+        retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+        
+        if (!retval.containsError())
+        {
+            if (answer.contains("NOVA"))
+            {
+                type = "NOVA";
+            }
+            else if (answer.contains("VEGA"))
+            {
+                type = "VEGA";
+            }
+            else if (answer.contains("LS-A 54545"))
+            {
+                type = "LASERSTAR-S";
+            }
+            else if (answer.contains("LS-A 23452"))
+            {
+                type = "LASERSTAR-D channel A";
+            }
+            else if (answer.contains("LS-B 23453"))
+            {
+                type = "LASERSTAR-D channel B";
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+            }
+
+            m_params["deviceType"].setVal<char*>(type.data());
+        }
     }
 
     if (waitCond)
