@@ -106,6 +106,22 @@ m_dockWidget(NULL)
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("request timeout, default 1000 ms.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data()); 
+    ito::StringMeta sm(ito::StringMeta::String, "headType");
+    sm.addItem("BC20");
+    sm.addItem("beam track");
+    sm.addItem("RM9");
+    sm.addItem("axial sensor");
+    sm.addItem("PD300-CIE sensor");
+    sm.addItem("nanoJoule meter");
+    sm.addItem("pyroelectric");
+    sm.addItem("PD300RM");
+    sm.addItem("photodiode");
+    sm.addItem("thermopile");
+    sm.addItem("temperature probe");
+    sm.addItem("no sensor connected");
+    paramVal.setMeta(&sm, false);
+    m_params.insert(paramVal.getName(), paramVal);
     
     if (hasGuiSupport())
     {
@@ -116,6 +132,119 @@ m_dockWidget(NULL)
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::retOk;
+
+    if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
+    {
+        m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")), NULL);
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
+    }
+
+    if (!retval.containsError())
+    {
+        QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>());
+        m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
+        m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
+
+        QSharedPointer<ito::Param> param(new ito::Param("port"));
+        retval += m_pSer->getParam(param, NULL);
+        if (retval.containsError() || param->getVal<int>() < 1)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
+        }
+        else
+        {
+            m_params["comPort"].setVal<int>(param->getVal<int>());
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        QByteArray answer;
+        QByteArray headType = "";
+        QByteArray request = QByteArray("$HT");
+        retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+        if (answer.contains("BC"))
+        {
+            headType = "BC20";
+        }
+        else if (answer.contains("BT"))
+        {
+            headType = "beam track";
+        }
+        else if (answer.contains("CR"))
+        {
+            headType = "RM9";
+        }
+        else if (answer.contains("CP") || answer.contains("PY"))
+        {
+            headType = "pyroelectric";
+        }
+        else if (answer.contains("FX"))
+        {
+            headType = "axial sensor";
+        }
+        else if (answer.contains("LX"))
+        {
+            headType = "PD300-CIE sensor";
+        }
+        else if (answer.contains("NJ"))
+        {
+            headType = "nanoJoule meter";
+        }
+        else if (answer.contains("RM"))
+        {
+            headType = "PD300RM";
+        }
+        else if (answer.contains("SI"))
+        {
+            headType = "photodiode";
+        }
+        else if (answer.contains("TH"))
+        {
+            headType = "thermopile";
+        }
+        else if (answer.contains("TP"))
+        {
+            headType = "temperature probe";
+        }
+        else if (answer.contains("XX"))
+        {
+            headType = "no sensor connected";
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+        }
+
+        m_params["headType"].setVal<char*>(headType.data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retval;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OphirSerialPlugin::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
@@ -225,56 +354,6 @@ ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
-{   
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval = ito::retOk;
-    QByteArray answer;
-
-    if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
-    {    
-        m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();   
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)), NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)), NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)), NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")), NULL);
-    }
-    else
-    {
-        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
-    }
-
-    if (!retval.containsError())
-    {
-        QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>());
-        m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-        m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-
-        QSharedPointer<ito::Param> param(new ito::Param("port"));
-        retval += m_pSer->getParam(param, NULL);
-        if (retval.containsError() || param->getVal<int>() < 1)
-        {
-            retval += ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
-        }
-        else
-        {
-            m_params["comPort"].setVal<int>(param->getVal<int>());
-        }
-    }
-    
-    if (waitCond)
-    {
-        waitCond->returnValue = retval;
-        waitCond->release();
-    }
-
-    setInitialized(true); //init method has been finished (independent on retval)
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OphirSerialPlugin::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -381,6 +460,26 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerInt(QByteArray questionComm
     if (retValue.containsError() || !ok)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toLatin1().data());
+    }
+
+    return retValue;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------- 
+ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS)
+{
+    int readSigns;
+    ito::RetVal retValue = SerialSendCommand(questionCommand);
+    retValue += readString(answer, readSigns, timeoutMS);
+
+    if (answer[0] == '*')
+    {
+        answer.remove(0, 1);
+    }
+
+    if (retValue.errorCode() == READTIMEOUT)
+    {
+        retValue = ito::RetVal(ito::retError, READTIMEOUT, tr("timeout").toLatin1().data());
     }
 
     return retValue;

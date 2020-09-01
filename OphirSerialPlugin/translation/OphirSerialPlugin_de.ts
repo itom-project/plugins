@@ -109,6 +109,14 @@
         <source>request timeout, default 1000 ms.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>return answer %1 for rquest $HT not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirSerialPluginInterface</name>
