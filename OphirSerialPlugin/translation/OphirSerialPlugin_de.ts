@@ -74,23 +74,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>function not defined</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>timeout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not read port number from serial port or port number invalid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>value could not be parsed to a double value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -135,6 +119,46 @@
     </message>
     <message>
         <source>Current measured power in unit of parameter unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current measured energy in unit of parameter unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty object handle retrieved from caller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tried to get picture without triggering exposure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>StartDevice not necessary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>StopDevice not necessary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>value could not be parsed to a double value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

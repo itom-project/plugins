@@ -1,23 +1,28 @@
 ﻿/* ********************************************************************
-    Plugin "OphirSerialPlugin" for itom software
-    URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+itom software
+URL: http://www.uni-stuttgart.de/ito
+Copyright (C) 2020, Institut fuer Technische Optik (ITO),,
+Universit�t Stuttgart, Germany
 
-    This file is part of a plugin for the measurement software itom.
-  
-    This itom-plugin is free software; you can redistribute it and/or modify it
-    under the terms of the GNU Library General Public Licence as published by
-    the Free Software Foundation; either version 2 of the Licence, or (at
-    your option) any later version.
+This file is part of itom and its software development toolkit (SDK).
 
-    itom and its plugins are distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
-    General Public Licence for more details.
+itom is free software; you can redistribute it and/or modify it
+under the terms of the GNU Library General Public Licence as published by
+the Free Software Foundation; either version 2 of the Licence, or (at
+your option) any later version.
 
-    You should have received a copy of the GNU Library General Public License
-    along with itom. If not, see <http://www.gnu.org/licenses/>.
+In addition, as a special exception, the Institut f�r Technische
+Optik (ITO) gives you certain additional rights.
+These rights are described in the ITO LGPL Exception version 1.0,
+which can be found in the file LGPL_EXCEPTION.txt in this package.
+
+itom is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+General Public Licence for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #define ITOM_IMPORT_API
@@ -32,36 +37,16 @@
 #include <qplugin.h>
 #include <QtCore/QtPlugin>
 #include <qregexp.h>
-#include <qwaitcondition.h>
-#include <qmutex.h>
-#include <QTime>
 
 #include "common/helperCommon.h"
 #include "common/apiFunctionsInc.h"
-//#include "iostream"
 
 #include "dockWidgetOphirSerialPlugin.h"
-
-#define READTIMEOUT 1000
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirSerialPluginInterface::getAddInInst(ito::AddInBase **addInInst)
-{
-    NEW_PLUGININSTANCE(OphirSerialPlugin)
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirSerialPluginInterface::closeThisInst(ito::AddInBase **addInInst)
-{
-   REMOVE_PLUGININSTANCE(OphirSerialPlugin)
-   return ito::retOk;
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirSerialPluginInterface::OphirSerialPluginInterface()
 {
-    m_type = ito::typeDataIO  | ito::typeRawIO;
+    m_type = ito::typeDataIO | ito::typeADDA;
     setObjectName("OphirSerialPlugin");
 
     m_description = QObject::tr("Plugin for Ophir Powermeters.");
@@ -76,8 +61,8 @@ Tested devices: VEGA");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION); 
+
     ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this plugin).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
@@ -86,26 +71,33 @@ Tested devices: VEGA");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-
+ito::RetVal OphirSerialPluginInterface::getAddInInst(ito::AddInBase **addInInst)
+{
+    NEW_PLUGININSTANCE(OphirSerialPlugin) //the argument of the macro is the classname of the plugin
+    return ito::retOk;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal OphirSerialPlugin::showConfDialog(void)
+ito::RetVal OphirSerialPluginInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    return apiShowConfigurationDialog(this, new DialogOphirSerialPlugin(this));
+   REMOVE_PLUGININSTANCE(OphirSerialPlugin) //the argument of the macro is the classname of the plugin
+   return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirSerialPlugin::OphirSerialPlugin() : AddInDataIO(), 
-m_pSer(NULL), 
-m_delayAfterSendCommandMS(0), 
-m_dockWidget(NULL)
+m_pSer(NULL),
+m_delayAfterSendCommandMS(0),
+m_dockWidget(NULL),
+m_isgrabbing(false),
+m_data(ito::DataObject())
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "OphirSerialPlugin", tr("Name of plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     m_params.insert("comPort", ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data()));
     m_params.insert("battery", ito::Param("battery", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if battery is OK, 0 if battery is low").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("Request timeout, default 1000 ms").toLatin1().data()));
-    
+
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device shown on display").toLatin1().data()));
 
     paramVal = ito::Param("deviceType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)").toLatin1().data());
@@ -118,7 +110,7 @@ m_dockWidget(NULL)
     sm.addItem("NOVA-II");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data()); 
+    paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data());
     ito::StringMeta sm2(ito::StringMeta::String, "headType");
     sm2.addItem("BC20");
     sm2.addItem("beam track");
@@ -148,7 +140,8 @@ m_dockWidget(NULL)
     m_params.insert(paramVal.getName(), paramVal);
 
     m_params.insert("power", ito::Param("power", ito::ParamBase::Double | ito::ParamBase::Readonly, std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0.0, tr("Current measured power in unit of parameter unit").toLatin1().data()));
-    
+    m_params.insert("energy", ito::Param("energy", ito::ParamBase::Double | ito::ParamBase::Readonly, std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0.0, tr("Current measured energy in unit of parameter unit").toLatin1().data()));
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -160,6 +153,10 @@ m_dockWidget(NULL)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! initialization of plugin
+/*!
+    \sa close
+*/
 ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -193,18 +190,18 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         if (retval.containsError() || param->getVal<int>() < 1)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
-        }
+    }
         else
         {
             m_params["comPort"].setVal<int>(param->getVal<int>());
         }
-    }
+}
 
     if (!retval.containsError()) // get information
     {
         QByteArray serialNoInput = paramsOpt->at(0).getVal<char*>();
         bool found = false;
-        
+
         QByteArray headType = "";
         QByteArray serialNum = "";
         request = QByteArray("$HI");
@@ -220,7 +217,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
             pos += reg.matchedLength();
         }
         QByteArray foundSerialNo = list.at(1).toLatin1();
-        
+
         if (serialNoInput == "")
         {
             found = true;
@@ -277,7 +274,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
             else if (answer.contains("TH"))
             {
                 headType = "thermopile";
-            }
+        }
             else if (answer.contains("TP"))
             {
                 headType = "temperature probe";
@@ -301,7 +298,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         QByteArray type;
         request = QByteArray("$II");
         retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
-        
+
         if (!retval.containsError())
         {
             if (answer.contains("NOVA"))
@@ -378,6 +375,11 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
+    if (!retval.containsError()) // set the size of the m_data object
+    {
+        m_data = ito::DataObject(1, 1, ito::tFloat64);
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -385,126 +387,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
     }
 
     setInitialized(true); //init method has been finished (independent on retval)
-    return retval;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirSerialPlugin::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
-    QByteArray request;
-    
-
-    if (key == "")
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
-    }
-    else if (key == "battery")
-    {
-        int answer;
-        request = QByteArray("$BC");
-        retValue += SendQuestionWithAnswerInt(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
-
-        if (!retValue.containsError())
-        {
-            val->setVal<int>(answer);
-        }
-    }
-    else if (key == "power")
-    {
-        double answer;
-        request = QByteArray("$SP");
-        retValue += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
-
-        if (!retValue.containsError())
-        {
-            val->setVal<double>(answer);
-        }
-    }
-    else
-    {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
-        {
-            *val = paramIt.value();
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
-        }
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-   return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
-
-    QString paramName;
-    bool hasIndex;
-    int index;
-    QString additionalTag;
-    QString suffix;
-    QMap<QString, ito::Param>::iterator it;
-
-    retValue += apiParseParamName(key, paramName, hasIndex, index, additionalTag);
-
-
-    //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
-
-    if (!retValue.containsError())
-    {
-        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
-        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
-    }
-
-    if (!retValue.containsError())
-    {
-        retValue += apiValidateParam(*it, *val, false, true);
-    }
-
-    if (!retValue.containsError())
-    {
-        if (key == "")
-        {
-
-        }
-        else if (key == "")
-        {
-
-        }
-        else
-        {
-            retValue += it->copyValueFrom(&(*val));
-        }
-    }
-
-    if (!retValue.containsError())
-    {
-        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-    }
-
-    if (waitCond) 
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }    
-
-    return retValue;
+    return retval;    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -518,83 +401,361 @@ ito::RetVal OphirSerialPlugin::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-
+    
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirSerialPlugin::waitForDone(const int timeoutMS, const QVector<int> /*axis*/ /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
+ito::RetVal OphirSerialPlugin::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retVal(ito::retOk);
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-    bool atTarget = false;
-    int timeoutMS_ = timeoutMS;
-    ito::RetVal ontRetVal;
-    int ontIterations = 10;
-    QSharedPointer<double> actPos = QSharedPointer<double>(new double);
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
+    QByteArray request;
 
-    while(timeoutMS_ > 0 && !atTarget)
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if (retValue == ito::retOk)
     {
-        //short delay
-        waitMutex.lock();
-        if (timeoutMS > 1000)
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+    }
+
+    if (!retValue.containsError())
+    {
+        if (key == "")
         {
-            waitCondition.wait(&waitMutex, 1000);
-            timeoutMS_ -= 1000;
+            retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
+        }
+        else if (key == "battery")
+        {
+            int answer;
+            request = QByteArray("$BC");
+            retValue += SendQuestionWithAnswerInt(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+            if (!retValue.containsError())
+            {
+                val->setVal<int>(answer);
+            }
         }
         else
         {
-            waitCondition.wait(&waitMutex, timeoutMS);
-            timeoutMS_ = 0;
+            QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
+            if (paramIt != m_params.constEnd())
+            {
+                *val = paramIt.value();
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            }
         }
-        waitMutex.unlock();
-        setAlive();
     }
 
-    return retVal;
-}
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirSerialPlugin::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
-{
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError, 0, tr("function not defined").toLatin1().data());
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
+
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+
+    if (!retValue.containsError())
+    {
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+    }
+
+    if (!retValue.containsError())
+    {
+        //here the new parameter is checked whether its type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
+    }
+
+    if (!retValue.containsError())
+    {
+        if (key == "")
+        {
+
+        }
+        else
+        {
+            //all parameters that don't need further checks can simply be assigned
+            //to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom( &(*val) );
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::startDevice(ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StartDevice not necessary").toLatin1().data());
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+    }
+
+    return retval;
+}
+         
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::stopDevice(ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StopDevice not necessary").toLatin1().data());
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+    }
+    return retval;
+}
+         
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::acquire(const int trigger, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval(ito::retOk);
+
+
+
+    double answer;
+    QByteArray request = QByteArray("$SP");
+    retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+
+    //if (key == "power")
+    //{
+    //    double answer;
+    //    request = QByteArray("$SP");
+    //    retValue += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+    //    if (!retValue.containsError())
+    //    {
+    //        val->setVal<double>(answer);
+    //    }
+    //}
+    //else if (key == "energy")
+    //{
+    //    double answer;
+    //    request = QByteArray("$SE");
+    //    retValue += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+    //    if (!retValue.containsError())
+    //    {
+    //        val->setVal<double>(answer);
+    //    }
+    //}
+
+    if (!retval.containsError())
+    {
+        m_data.at<ito::float64>(0, 0) = answer;
+        m_isgrabbing = true;
+        m_data.setValueUnit(m_params["unit"].getVal<char*>());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::retrieveData(ito::DataObject *externalDataObject)
+{
+    //todo: this is just a basic example for getting the buffered image to m_data or the externally given data object
+    //enhance it and adjust it for your needs
+    ito::RetVal retValue(ito::retOk);
+
+    if (m_isgrabbing == false)
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
+        return retValue;
+    }
+
+    m_isgrabbing = false;
+
+    if (externalDataObject == NULL)
+    {
+        return retValue;
+    }
+    else
+    {
+        retValue += checkData(externalDataObject);
+
+        if (!retValue.containsError())
+        {
+            retValue += m_data.deepCopyPartial(*externalDataObject);
+        }
+    }
+
+    return retValue;
+}
+
+//-------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::checkData(ito::DataObject *externalDataObject)
+{
+    int futureHeight = 1;
+    int futureWidth = 1;
+    int futureType = ito::tFloat64;
+    ito::RetVal retval;
+
+    if (externalDataObject == NULL)
+    {
+        if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+        {
+            m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+        }
+    }
+    else
+    {
+        int dims = externalDataObject->getDims();
+        if (externalDataObject->getDims() == 0)
+        {
+            *externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+        }
+        else if (externalDataObject->calcNumMats() != 1)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.").toLatin1().data());
+        }
+        else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.").toLatin1().data());
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Returns the grabbed camera frame as reference.
+ito::RetVal OphirSerialPlugin::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
+
+    //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
+    retValue += retrieveData();
+
+    if (!retValue.containsError())
+    {
+        if (dObj)
+        {
+            (*dObj) = m_data; //copy reference to externally given object
+        }
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirSerialPlugin::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
+
+    if (!dObj)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
+        //by the camera directly into the given, external dataObject
+        retValue += retrieveData(dObj);
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void OphirSerialPlugin::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
-        QWidget *w = getDockWidget()->widget(); //your toolbox instance
+        QWidget *widget = getDockWidget()->widget();
         if (visible)
         {
-            QObject::connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
-                SLOT(parametersChanged(QMap<QString, ito::Param>)));
-            emit parametersChanged(m_params); //send current parameters
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            connect(this, SIGNAL(visibilityChanged(bool)), widget, SLOT(manageTimer(bool)));
+            
 
-            //actuators only
-            QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), w, \
-                SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), w, \
-                SLOT(targetChanged(QVector<double>)));
-            requestStatusAndPosition(true,true); //send current status, positions and targets
+            emit visibilityChanged(visible);
+            emit parametersChanged(m_params);
         }
         else
         {
-            QObject::disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
-                SLOT(parametersChanged(QMap<QString, ito::Param>)));
-
-            //actuators only
-            QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), w, \
-                SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), w, \
-                SLOT(targetChanged(QVector<double>)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            emit visibilityChanged(visible);
+            disconnect(this, SIGNAL(visibilityChanged(bool)), widget, SLOT(manageTimer(bool)));
         }
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal OphirSerialPlugin::showConfDialog(void)
+{
+    return apiShowConfigurationDialog(this, new DialogOphirSerialPlugin(this));
+}
+
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
 ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerInt(QByteArray questionCommand, int &answer, int timeoutMS)
@@ -632,6 +793,7 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerDouble(QByteArray questionC
     {
         _answer.remove(0, 1);
     }
+
     answer = _answer.toDouble(&ok);
 
     if (retValue.containsError() || !ok)
@@ -652,11 +814,6 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerString(QByteArray questionC
     if (answer[0] == '*')
     {
         answer.remove(0, 1);
-    }
-
-    if (retValue.errorCode() == READTIMEOUT)
-    {
-        retValue = ito::RetVal(ito::retError, READTIMEOUT, tr("timeout").toLatin1().data());
     }
 
     return retValue;
@@ -715,7 +872,7 @@ ito::RetVal OphirSerialPlugin::readString(QByteArray &result, int &len, int time
 
         if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
         {
-            retValue += ito::RetVal(ito::retError, READTIMEOUT, tr("timeout").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("timeout").toLatin1().data());
         }
 
         len = result.length();
@@ -734,7 +891,7 @@ ito::RetVal OphirSerialPlugin::SerialSendCommand(QByteArray command)
         QMutex mutex;
         mutex.lock();
         QWaitCondition waitCondition;
-        waitCondition.wait(&mutex,m_delayAfterSendCommandMS);
+        waitCondition.wait(&mutex, m_delayAfterSendCommandMS);
         mutex.unlock();
     }
 
