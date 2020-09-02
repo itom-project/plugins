@@ -62,6 +62,7 @@ class OphirSerialPlugin : public ito::AddInDataIO
         ito::RetVal SerialSendCommand(QByteArray command);
         ito::RetVal readString(QByteArray &result, int &len, int timeoutMS);
         ito::RetVal SendQuestionWithAnswerInt(QByteArray questionCommand, int &answer, int timeoutMS);
+        ito::RetVal SendQuestionWithAnswerDouble(QByteArray questionCommand, double &answer, int timeoutMS);
         ito::RetVal SendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS);
         //ito::RetVal SetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         //ito::RetVal CheckStatus(void);

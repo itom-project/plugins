@@ -129,6 +129,14 @@
         <source>Given serial number %1 does not match the received number %2</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>unit of device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current measured power in unit of parameter unit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirSerialPluginInterface</name>

@@ -105,6 +105,7 @@ m_dockWidget(NULL)
     m_params.insert("comPort", ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data()));
     m_params.insert("battery", ito::Param("battery", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if battery is OK, 0 if battery is low").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("Request timeout, default 1000 ms").toLatin1().data()));
+    
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device shown on display").toLatin1().data()));
 
     paramVal = ito::Param("deviceType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)").toLatin1().data());
@@ -133,6 +134,20 @@ m_dockWidget(NULL)
     sm2.addItem("no sensor connected");
     paramVal.setMeta(&sm2, false);
     m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("unit", ito::ParamBase::String, "", tr("unit of device").toLatin1().data());
+    ito::StringMeta sm3(ito::StringMeta::String, "unit");
+    sm3.addItem("dBm");
+    sm3.addItem("A");
+    sm3.addItem("J");
+    sm3.addItem("V");
+    sm3.addItem("W");
+    sm3.addItem("Lux");
+    sm3.addItem("fc");
+    paramVal.setMeta(&sm2, false);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert("power", ito::Param("power", ito::ParamBase::Double | ito::ParamBase::Readonly, std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0.0, tr("Current measured power in unit of parameter unit").toLatin1().data()));
     
     if (hasGuiSupport())
     {
@@ -204,7 +219,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
             list << reg.cap(1);
             pos += reg.matchedLength();
         }
-        QByteArray foundSerialNo = list.at(0).toLatin1();
+        QByteArray foundSerialNo = list.at(1).toLatin1();
         
         if (serialNoInput == "")
         {
@@ -318,6 +333,51 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
+    if (!retval.containsError()) // get unit of measurement
+    {
+        QByteArray unit;
+        request = QByteArray("$SI");
+        retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+        if (!retval.containsError())
+        {
+            if (answer.contains("W"))
+            {
+                unit = "W";
+            }
+            else if (answer.contains("V"))
+            {
+                unit = "V";
+            }
+            else if (answer.contains("A"))
+            {
+                unit = "A";
+            }
+            else if (answer.contains("d"))
+            {
+                unit = "dBm";
+            }
+            else if (answer.contains("l"))
+            {
+                unit = "Lux";
+            }
+            else if (answer.contains("c"))
+            {
+                unit = "fc";
+            }
+            else if (answer.contains("J"))
+            {
+                unit = "J";
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+            }
+
+            m_params["unit"].setVal<char*>(unit.data());
+        }
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -351,6 +411,17 @@ ito::RetVal OphirSerialPlugin::getParam(QSharedPointer<ito::Param> val, ItomShar
         if (!retValue.containsError())
         {
             val->setVal<int>(answer);
+        }
+    }
+    else if (key == "power")
+    {
+        double answer;
+        request = QByteArray("$SP");
+        retValue += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+        if (!retValue.containsError())
+        {
+            val->setVal<double>(answer);
         }
     }
     else
@@ -539,6 +610,29 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerInt(QByteArray questionComm
         _answer.remove(0, 1);
     }
     answer = _answer.toInt(&ok);
+
+    if (retValue.containsError() || !ok)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toLatin1().data());
+    }
+
+    return retValue;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------- 
+ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerDouble(QByteArray questionCommand, double &answer, int timeoutMS)
+{
+    int readSigns;
+    bool ok;
+    QByteArray _answer;
+    ito::RetVal retValue = SerialSendCommand(questionCommand);
+    retValue += readString(_answer, readSigns, timeoutMS);
+
+    if (_answer[0] == '*')
+    {
+        _answer.remove(0, 1);
+    }
+    answer = _answer.toDouble(&ok);
 
     if (retValue.containsError() || !ok)
     {
