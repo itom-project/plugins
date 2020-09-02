@@ -108,39 +108,47 @@ m_data(ito::DataObject())
     sm.addItem("LASERSTAR-D channel A");
     sm.addItem("LASERSTAR-D channel B");
     sm.addItem("NOVA-II");
+    paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data());
-    ito::StringMeta sm2(ito::StringMeta::String, "headType");
-    sm2.addItem("BC20");
-    sm2.addItem("beam track");
-    sm2.addItem("RM9");
-    sm2.addItem("axial sensor");
-    sm2.addItem("PD300-CIE sensor");
-    sm2.addItem("nanoJoule meter");
-    sm2.addItem("pyroelectric");
-    sm2.addItem("PD300RM");
-    sm2.addItem("photodiode");
-    sm2.addItem("thermopile");
-    sm2.addItem("temperature probe");
-    sm2.addItem("no sensor connected");
-    paramVal.setMeta(&sm2, false);
+    sm.setCategory("headType");
+    sm.clearItems();
+    sm.addItem("BC20");
+    sm.addItem("beam track");
+    sm.addItem("RM9");
+    sm.addItem("axial sensor");
+    sm.addItem("PD300-CIE sensor");
+    sm.addItem("nanoJoule meter");
+    sm.addItem("pyroelectric");
+    sm.addItem("PD300RM");
+    sm.addItem("photodiode");
+    sm.addItem("thermopile");
+    sm.addItem("temperature probe");
+    sm.addItem("no sensor connected");
+    paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("unit", ito::ParamBase::String, "", tr("unit of device").toLatin1().data());
-    ito::StringMeta sm3(ito::StringMeta::String, "unit");
-    sm3.addItem("dBm");
-    sm3.addItem("A");
-    sm3.addItem("J");
-    sm3.addItem("V");
-    sm3.addItem("W");
-    sm3.addItem("Lux");
-    sm3.addItem("fc");
-    paramVal.setMeta(&sm2, false);
+    paramVal = ito::Param("unit", ito::ParamBase::String, "", tr("Unit of device").toLatin1().data());
+    sm.setCategory("unit");
+    sm.clearItems();
+    sm.addItem("dBm");
+    sm.addItem("A");
+    sm.addItem("J");
+    sm.addItem("V");
+    sm.addItem("W");
+    sm.addItem("Lux");
+    sm.addItem("fc");
+    paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
-
-    m_params.insert("power", ito::Param("power", ito::ParamBase::Double | ito::ParamBase::Readonly, std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0.0, tr("Current measured power in unit of parameter unit").toLatin1().data()));
-    m_params.insert("energy", ito::Param("energy", ito::ParamBase::Double | ito::ParamBase::Readonly, std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0.0, tr("Current measured energy in unit of parameter unit").toLatin1().data()));
+    
+    paramVal = ito::Param("measurementType", ito::ParamBase::String, "power", tr("Measurement type (energy or power).").toLatin1().data());
+    sm.setCategory("measurementType");
+    sm.clearItems();
+    sm.addItem("energy");
+    sm.addItem("power");
+    paramVal.setMeta(&sm, false);
+    m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())
     {
@@ -161,7 +169,8 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
-    QByteArray answer;
+    QByteArray answerStr;
+
     QByteArray request;
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
@@ -205,14 +214,14 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         QByteArray headType = "";
         QByteArray serialNum = "";
         request = QByteArray("$HI");
-        retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+        retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
 
         QRegExp reg("(\\S+)"); // matches numbers
 
         QStringList list;
         int pos = 0;
 
-        while ((pos = reg.indexIn(answer, pos)) != -1) {
+        while ((pos = reg.indexIn(answerStr, pos)) != -1) {
             list << reg.cap(1);
             pos += reg.matchedLength();
         }
@@ -235,57 +244,57 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         {
             m_params["serialNumber"].setVal<char*>(foundSerialNo.data());
 
-            if (answer.contains("BC"))
+            if (answerStr.contains("BC"))
             {
                 headType = "BC20";
             }
-            else if (answer.contains("BT"))
+            else if (answerStr.contains("BT"))
             {
                 headType = "beam track";
             }
-            else if (answer.contains("CR"))
+            else if (answerStr.contains("CR"))
             {
                 headType = "RM9";
             }
-            else if (answer.contains("CP") || answer.contains("PY"))
+            else if (answerStr.contains("CP") || answerStr.contains("PY"))
             {
                 headType = "pyroelectric";
             }
-            else if (answer.contains("FX"))
+            else if (answerStr.contains("FX"))
             {
                 headType = "axial sensor";
             }
-            else if (answer.contains("LX"))
+            else if (answerStr.contains("LX"))
             {
                 headType = "PD300-CIE sensor";
             }
-            else if (answer.contains("NJ"))
+            else if (answerStr.contains("NJ"))
             {
                 headType = "nanoJoule meter";
             }
-            else if (answer.contains("RM"))
+            else if (answerStr.contains("RM"))
             {
                 headType = "PD300RM";
             }
-            else if (answer.contains("SI"))
+            else if (answerStr.contains("SI"))
             {
                 headType = "photodiode";
             }
-            else if (answer.contains("TH"))
+            else if (answerStr.contains("TH"))
             {
                 headType = "thermopile";
         }
-            else if (answer.contains("TP"))
+            else if (answerStr.contains("TP"))
             {
                 headType = "temperature probe";
             }
-            else if (answer.contains("XX"))
+            else if (answerStr.contains("XX"))
             {
                 headType = "no sensor connected";
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
             }
 
             m_params["headType"].setVal<char*>(headType.data());
@@ -297,33 +306,33 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
     {
         QByteArray type;
         request = QByteArray("$II");
-        retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+        retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
 
         if (!retval.containsError())
         {
-            if (answer.contains("NOVA"))
+            if (answerStr.contains("NOVA"))
             {
                 type = "NOVA";
             }
-            else if (answer.contains("VEGA"))
+            else if (answerStr.contains("VEGA"))
             {
                 type = "VEGA";
             }
-            else if (answer.contains("LS-A 54545"))
+            else if (answerStr.contains("LS-A 54545"))
             {
                 type = "LASERSTAR-S";
             }
-            else if (answer.contains("LS-A 23452"))
+            else if (answerStr.contains("LS-A 23452"))
             {
                 type = "LASERSTAR-D channel A";
             }
-            else if (answer.contains("LS-B 23453"))
+            else if (answerStr.contains("LS-B 23453"))
             {
                 type = "LASERSTAR-D channel B";
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
             }
 
             m_params["deviceType"].setVal<char*>(type.data());
@@ -334,51 +343,65 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
     {
         QByteArray unit;
         request = QByteArray("$SI");
-        retval += SendQuestionWithAnswerString(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+        retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
 
         if (!retval.containsError())
         {
-            if (answer.contains("W"))
+            if (answerStr.contains("W"))
             {
                 unit = "W";
             }
-            else if (answer.contains("V"))
+            else if (answerStr.contains("V"))
             {
                 unit = "V";
             }
-            else if (answer.contains("A"))
+            else if (answerStr.contains("A"))
             {
                 unit = "A";
             }
-            else if (answer.contains("d"))
+            else if (answerStr.contains("d"))
             {
                 unit = "dBm";
             }
-            else if (answer.contains("l"))
+            else if (answerStr.contains("l"))
             {
                 unit = "Lux";
             }
-            else if (answer.contains("c"))
+            else if (answerStr.contains("c"))
             {
                 unit = "fc";
             }
-            else if (answer.contains("J"))
+            else if (answerStr.contains("J"))
             {
                 unit = "J";
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answer.data()).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
             }
 
             m_params["unit"].setVal<char*>(unit.data());
         }
     }
 
+    if (!retval.containsError()) // request if energy or power measurement
+    {
+        request = QByteArray("$FP");
+        retval += SerialSendCommand(request); // does not return a value
+
+        m_params["measuremenType"].setVal<char*>("power");
+        
+        
+    }
+
     if (!retval.containsError()) // set the size of the m_data object
     {
         m_data = ito::DataObject(1, 1, ito::tFloat64);
+        m_data.setValueUnit(m_params["unit"].getVal<char*>());
+        m_data.setValueDescription("power");
     }
+
+    Sleep(1000); //give the device some time
 
     if (waitCond)
     {
@@ -428,11 +451,11 @@ ito::RetVal OphirSerialPlugin::getParam(QSharedPointer<ito::Param> val, ItomShar
 
     if (!retValue.containsError())
     {
-        if (key == "")
+        if (key.compare("") == 0)
         {
             retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
         }
-        else if (key == "battery")
+        else if (key.compare("battery") == 0)
         {
             int answer;
             request = QByteArray("$BC");
@@ -475,6 +498,7 @@ ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, Itom
     bool hasIndex;
     int index;
     QString suffix;
+    QByteArray request;
     QMap<QString, ito::Param>::iterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
@@ -496,9 +520,44 @@ ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, Itom
 
     if (!retValue.containsError())
     {
-        if (key == "")
+        if (key.compare("measurementType") == 0)
         {
+            QString type = QLatin1String(val->getVal<char*>());
+            if (type.compare("energy") == 0)
+            {
+                request = "$FE";
+                retValue += SerialSendCommand(request);
 
+                if (!retValue.containsError())
+                {
+                    it->setVal<char*>("energy");
+                    
+                    m_data.setValueDescription("energy");
+                }
+            }
+            else if (type.compare("power") == 0)
+            {
+                request = "$FP";
+                retValue += SerialSendCommand(request);
+
+                if (!retValue.containsError())
+                {
+                    it->setVal<char*>("power");
+                    m_data.setValueDescription("power");
+                }
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, tr("Parameter value: %1 is unknown.").arg(val->getVal<char*>()).toLatin1().data());
+            }
+
+            if (!retValue.containsError())
+            {
+                QSharedPointer<ito::Param> param(new ito::Param("unit"));
+                retValue += this->getParam(param, NULL);
+                m_data.setValueUnit(param->getVal<char*>());
+            }
+            
         }
         else
         {
@@ -556,35 +615,29 @@ ito::RetVal OphirSerialPlugin::acquire(const int trigger, ItomSharedSemaphore *w
 {
     ito::RetVal retval(ito::retOk);
 
-
-
     double answer;
-    QByteArray request = QByteArray("$SP");
+    QByteArray request;
+    QTime timer;
+    int ready;
+    bool done = false;
+
+    QString type = QLatin1String(m_params["measurementType"].getVal<char*>());
+
+    if (type.compare("energy") == 0)
+    {
+        request = QByteArray("$SE");
+    }
+    else if (type.compare("power") == 0)
+    {
+        request = QByteArray("$SP");
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("given measurement type %1 is unknown.").arg(type).toLatin1().data());
+    }
+
     retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
 
-
-    //if (key == "power")
-    //{
-    //    double answer;
-    //    request = QByteArray("$SP");
-    //    retValue += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
-
-    //    if (!retValue.containsError())
-    //    {
-    //        val->setVal<double>(answer);
-    //    }
-    //}
-    //else if (key == "energy")
-    //{
-    //    double answer;
-    //    request = QByteArray("$SE");
-    //    retValue += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
-
-    //    if (!retValue.containsError())
-    //    {
-    //        val->setVal<double>(answer);
-    //    }
-    //}
 
     if (!retval.containsError())
     {
@@ -770,7 +823,17 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerInt(QByteArray questionComm
     {
         _answer.remove(0, 1);
     }
-    answer = _answer.toInt(&ok);
+
+    if (_answer.length() > 0)
+    {
+        answer = _answer.toInt(&ok);
+    }
+    else
+    {
+        std::cout << "empty answer\n" << std::endl;
+        answer = 0;
+        ok = true;
+    }
 
     if (retValue.containsError() || !ok)
     {
