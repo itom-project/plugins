@@ -54,6 +54,8 @@ class dialogSerialIO : public ito::AbstractAddInConfigDialog
         QStringList m_historyList;
         int m_historyListPointer;
 
+        ito::RetVal parseOutString(char *buf, int *length);
+
     protected:
         bool eventFilter(QObject *obj, QEvent *event);
 

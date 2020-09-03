@@ -26,7 +26,9 @@ Features are:
 - Endline characters can automatically appended to each sent string and are split from received strings.
 - Any string can be sent with a certain delay in between each character (useful for older devices).
 - A debugging parameter allows displaying the entire data transfer in the optional toolbox.
-- The configuration dialog can be used to send user-defined strings via the opened connection.
+- The configuration dialog can be used to send user-defined strings via the opened connection. 
+  
+  Use the checkBox **enable $(ascii-code) statement parsing** to enable ASCII code parsing to *$(ascii-code) statement*. 
 
 Initialization
 ==============
