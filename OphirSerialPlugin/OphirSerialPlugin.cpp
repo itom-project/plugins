@@ -102,7 +102,7 @@ m_data(ito::DataObject())
     m_params.insert("ROMVersion", ito::Param("ROMVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Version of ROM software.").toLatin1().data()));
 
     paramVal = ito::Param("deviceType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)").toLatin1().data());
-    ito::StringMeta sm(ito::StringMeta::String, "deviceType");
+    ito::StringMeta sm(ito::StringMeta::String);
     sm.addItem("NOVA");
     sm.addItem("VEGA");
     sm.addItem("LASERSTAR-S");
@@ -422,7 +422,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
 
         if(list.at(0).contains("DISCRETE"))
         {
-            ito::StringMeta sm(ito::StringMeta::String, "wavelength");
+            ito::StringMeta sm(ito::StringMeta::String);
 
             QString discreteWavelengths;
             int currentWaveIdx = list.at(1).toInt();

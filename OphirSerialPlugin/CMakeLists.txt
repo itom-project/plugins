@@ -1,4 +1,4 @@
-set(target_name OphirSerialPlugin)
+set(target_name OphirSerialPlugin) 
 
 
 cmake_minimum_required(VERSION 3.1...3.15)

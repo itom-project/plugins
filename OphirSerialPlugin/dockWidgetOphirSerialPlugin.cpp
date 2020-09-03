@@ -46,12 +46,51 @@ DockWidgetOphirSerialPlugin::DockWidgetOphirSerialPlugin(int uniqueID, ito::AddI
     if (m_firstRun)
     {
 
-        ui.lblComPort->setText(params["comPort"].getVal<char*>());
+        ui.lblComPort->setText(QString::number(params["comPort"].getVal<int>()));
         ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
         ui.lblROM->setText(params["ROMVersion"].getVal<char*>());
         ui.lblDeviceType->setText(params["deviceType"].getVal<char*>());
         ui.lblHead->setText(params["headType"].getVal<char*>());
 
+		ito::IntMeta *intmeta = static_cast<ito::IntMeta*>(params["range"].getMeta());
+		ui.comboBoxRange->clear();
+		int count = 0;
+		for (int i = intmeta->getMin(); i <= intmeta->getMax(); i += intmeta->getStepSize())
+		{
+			ui.comboBoxRange->addItem(QString::number(i));
+		}
+		int index = ui.comboBoxRange->findText(QString::number(params["range"].getVal<int>()));
+		ui.comboBoxRange->setCurrentIndex(index);
+
+		ito::StringMeta* sm = (ito::StringMeta*)(params["measurementType"].getMeta());
+		for (int x = 0; x < sm->getLen(); x++)
+		{
+			ui.comboBoxMeasurementType->addItem(sm->getString(x));
+			int index = ui.comboBoxMeasurementType->findText(params["measurementType"].getVal<char*>());
+			ui.comboBoxMeasurementType->setCurrentIndex(index);
+		}
+
+		char* set = params["wavelengthSet"].getVal<char*>();
+		ui.lblWavelengthSet->setText(set);
+
+		if (QString::fromLatin1(set).compare("CONTINUOUS") == 0)
+		{
+			ui.stackedWidgetWavelengthSet->setCurrentIndex(0);
+		}
+		else
+		{
+			ui.stackedWidgetWavelengthSet->setCurrentIndex(1);
+
+			ito::StringMeta* sm = (ito::StringMeta*)(params["wavelength"].getMeta());
+			for (int x = 0; x < sm->getLen(); x++)
+			{
+				ui.comboBoxWavelength->addItem(sm->getString(x));
+			}
+			int index = ui.comboBoxWavelength->findText(params["wavelength"].getVal<char*>());
+			ui.comboBoxWavelength->setCurrentIndex(index);
+		}
+
+		ui.lblUnit->setText(params["unit"].getVal<char*>());
 
         m_firstRun = false;
     }

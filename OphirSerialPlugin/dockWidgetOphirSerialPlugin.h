@@ -40,6 +40,7 @@
 #include <qwidget.h>
 #include <qsharedpointer.h>
 #include <qmetaobject.h>
+#include <qstackedwidget.h>
 
 class DockWidgetOphirSerialPlugin : public ito::AbstractAddInDockWidget
 {
