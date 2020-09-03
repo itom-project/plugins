@@ -391,7 +391,13 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
 
         m_params["measuremenType"].setVal<char*>("power");
         
-        
+        Sleep(1000); //give the device some time
+
+        // dummy read 
+        double answer;
+        QByteArray request;
+        request = QByteArray("$SP");
+        retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
     }
 
     if (!retval.containsError()) // set the size of the m_data object
@@ -401,7 +407,6 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         m_data.setValueDescription("power");
     }
 
-    Sleep(1000); //give the device some time
 
     if (waitCond)
     {
@@ -618,7 +623,6 @@ ito::RetVal OphirSerialPlugin::acquire(const int trigger, ItomSharedSemaphore *w
     double answer;
     QByteArray request;
     QTime timer;
-    int ready;
     bool done = false;
 
     QString type = QLatin1String(m_params["measurementType"].getVal<char*>());
@@ -847,7 +851,7 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerInt(QByteArray questionComm
 ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerDouble(QByteArray questionCommand, double &answer, int timeoutMS)
 {
     int readSigns;
-    bool ok;
+    bool ok = false;
     QByteArray _answer;
     ito::RetVal retValue = SerialSendCommand(questionCommand);
     retValue += readString(_answer, readSigns, timeoutMS);
@@ -857,7 +861,16 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerDouble(QByteArray questionC
         _answer.remove(0, 1);
     }
 
-    answer = _answer.toDouble(&ok);
+    if (_answer.length() > 0)
+    {
+        answer = _answer.toDouble(&ok);
+    }
+    else
+    {
+        answer = std::numeric_limits<double>::quiet_NaN();
+        ok = true;
+    }
+    
 
     if (retValue.containsError() || !ok)
     {
