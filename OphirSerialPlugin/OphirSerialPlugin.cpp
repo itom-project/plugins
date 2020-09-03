@@ -658,7 +658,19 @@ ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, Itom
             }
             else // CONTINUOUS
             {
+                QByteArray request = "$WL ";
 
+                int wave = val->getVal<int>();
+                QByteArray setVal;
+                setVal.setNum(wave);
+                request.append(setVal);
+
+                retValue += SerialSendCommand(request);
+
+                if (!retValue.containsError())
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
             }
 
         }
