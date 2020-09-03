@@ -52,7 +52,7 @@ class DockWidgetOphirSerialPlugin : public ito::AbstractAddInDockWidget
     private:
         void enableWidget(bool enabled);
 
-        Ui::DockWidgetOphirSerialPlugin ui;
+        Ui::dockWidgetOphirSerialPlugin ui;
 
         bool m_inEditing;
         bool m_firstRun;

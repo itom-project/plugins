@@ -45,7 +45,14 @@ DockWidgetOphirSerialPlugin::DockWidgetOphirSerialPlugin(int uniqueID, ito::AddI
 {
     if (m_firstRun)
     {
-        
+
+        ui.lblComPort->setText(params["comPort"].getVal<char*>());
+        ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
+        ui.lblROM->setText(params["ROMVersion"].getVal<char*>());
+        ui.lblDeviceType->setText(params["deviceType"].getVal<char*>());
+        ui.lblHead->setText(params["headType"].getVal<char*>());
+
+
         m_firstRun = false;
     }
 
@@ -63,7 +70,7 @@ DockWidgetOphirSerialPlugin::DockWidgetOphirSerialPlugin(int uniqueID, ito::AddI
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetOphirSerialPlugin::identifierChanged(const QString &identifier)
 {
-    ui.lblID->setText(identifier);
+    ui.lblIdentifier->setText(identifier);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

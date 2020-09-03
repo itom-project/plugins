@@ -1,117 +1,235 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DockWidgetOphirSerialPlugin</class>
- <widget class="QWidget" name="DockWidgetOphirSerialPlugin">
+ <class>dockWidgetOphirSerialPlugin</class>
+ <widget class="QWidget" name="dockWidgetOphirSerialPlugin">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>291</width>
-    <height>172</height>
+    <width>281</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_11">
-   <item>
-    <widget class="QGroupBox" name="groupBox">
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupInfo">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
       <string>General Information</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>3</number>
-      </property>
+     <layout class="QGridLayout" name="gridLayout_2">
       <property name="topMargin">
-       <number>3</number>
-      </property>
-      <property name="rightMargin">
-       <number>3</number>
+       <number>6</number>
       </property>
       <property name="bottomMargin">
-       <number>3</number>
+       <number>6</number>
       </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_8">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>ID:</string>
+         <string>com Port:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="lblID">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl1">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="text">
-         <string>unknown</string>
+         <string>Identifier:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
+      <item row="0" column="1" colspan="2">
+       <widget class="QLabel" name="lblIdentifier">
         <property name="text">
-         <string>Name:</string>
+         <string>[Identifier]</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLabel" name="label_device_name">
+       <widget class="QLabel" name="lblComPort">
         <property name="text">
-         <string>unknown</string>
+         <string>[comPort]</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>serial Nr.: </string>
+         <string>device type:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_Device">
+      <item row="4" column="1">
+       <widget class="QLabel" name="lblDeviceType">
         <property name="text">
-         <string>unknown</string>
+         <string>[device]</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="label_9">
         <property name="text">
-         <string>COM Port:</string>
+         <string>ROM:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLabel" name="label_COM_Port">
+       <widget class="QLabel" name="lblROM">
         <property name="text">
-         <string>unknown</string>
+         <string>[ROM]</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="2">
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>serial number:</string>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="lblSerialNo">
+        <property name="text">
+         <string>[serialNo]</string>
         </property>
-       </spacer>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>head type:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLabel" name="lblHead">
+        <property name="text">
+         <string>[headType]</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item>
-    <spacer name="verticalSpacer_5">
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxSettings">
+     <property name="title">
+      <string>Settings</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0" colspan="2">
+       <widget class="SliderWidget" name="sliderPowerRange" native="true">
+        <property name="decimals" stdset="0">
+         <number>9</number>
+        </property>
+        <property name="suffix" stdset="0">
+         <string>mW</string>
+        </property>
+        <property name="tracking" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Wavelength</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="dspinWavelength">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
+        <property name="suffix">
+         <string> nm</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="checkAutograbbing">
+        <property name="text">
+         <string>Autograbbing</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="btnZero">
+        <property name="text">
+         <string>ZERO</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>measurement type:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBoxMeasurementType"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLCDNumber" name="lcdNumber">
+     <property name="lineWidth">
+      <number>0</number>
+     </property>
+     <property name="smallDecimalPoint">
+      <bool>false</bool>
+     </property>
+     <property name="digitCount">
+      <number>6</number>
+     </property>
+     <property name="segmentStyle">
+      <enum>QLCDNumber::Filled</enum>
+     </property>
+     <property name="value" stdset="0">
+      <double>0.000000000000000</double>
+     </property>
+     <property name="intValue" stdset="0">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLabel" name="labelVal">
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -125,8 +243,13 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="superlumBS.qrc"/>
- </resources>
+ <customwidgets>
+  <customwidget>
+   <class>SliderWidget</class>
+   <extends>QWidget</extends>
+   <header>sliderWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
  <connections/>
 </ui>
