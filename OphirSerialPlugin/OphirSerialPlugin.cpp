@@ -941,7 +941,7 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerInt(QByteArray questionComm
 ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerDouble(QByteArray questionCommand, double &answer, int timeoutMS)
 {
     int readSigns;
-    bool ok = false;
+    bool ok;
     QByteArray _answer;
     ito::RetVal retValue = SerialSendCommand(questionCommand);
     retValue += readString(_answer, readSigns, timeoutMS);
@@ -964,7 +964,11 @@ ito::RetVal OphirSerialPlugin::SendQuestionWithAnswerDouble(QByteArray questionC
 
     if (retValue.containsError() || !ok)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toLatin1().data());
+        if (answer != 0.0)
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toLatin1().data());
+        }
+        
     }
 
     return retValue;
