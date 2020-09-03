@@ -475,7 +475,7 @@ dialogSerialIO::~dialogSerialIO()
 { }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal parseOutString(char *buf, int *length)
+ito::RetVal dialogSerialIO::parseOutString(char *buf, int *length)
 {
     ito::RetVal ret = ito::retOk;
     int len = (int)strlen(buf);
@@ -487,54 +487,59 @@ ito::RetVal parseOutString(char *buf, int *length)
 
     buf1 = buf;
     buf2 = strstr(buf1, "$");
-    while (buf2 && ((buf2 - buf) < (len - 1)))
+    if (ui.checkAsciiParsing->isChecked())
     {
-        if (*(buf2 + 1) == '$')
+        
+        while (buf2 && ((buf2 - buf) < (len - 1)))
         {
-            strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
-            outbuf += strlen(outbuf);
-            buf2++; 
-            buf2++;                                 // eat the $$
-            buf1 = buf2;
-            buf2 = strstr(buf2, "$");               // search for next
-        }
-        else if (*(buf2 + 1) == '(')
-        {
-            strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
-            outbuf += strlen(outbuf);
-            // try to read number
-            buf2++;                                 
-            buf2++;                                 // eat the $(
-            int charnum = 0;
-            char charbuf[4] = {0, 0, 0, 0};
-
-            // read character number until either the character token is closed, three numbers are read 
-            // or the end of the string is reached
-            while ((charnum < 3) && (*buf2 != ')') && ((buf2 - buf) < len - 1))
+            if (*(buf2 + 1) == '$')
             {
-                charbuf[charnum] = *buf2;
-                charnum++;
-                buf2++;
+                strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
+                outbuf += strlen(outbuf);
+                buf2++; 
+                buf2++;                                 // eat the $$
+                buf1 = buf2;
+                buf2 = strstr(buf2, "$");               // search for next
             }
-            if ((*buf2 != ')') || (atoi(charbuf) > 255))    // char token not closed correctly or number to big -> end with error
+            else if (*(buf2 + 1) == '(')
+            {
+                strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
+                outbuf += strlen(outbuf);
+                // try to read number
+                buf2++;                                 
+                buf2++;                                 // eat the $(
+                int charnum = 0;
+                char charbuf[4] = {0, 0, 0, 0};
+
+                // read character number until either the character token is closed, three numbers are read 
+                // or the end of the string is reached
+                while ((charnum < 3) && (*buf2 != ')') && ((buf2 - buf) < len - 1))
+                {
+                    charbuf[charnum] = *buf2;
+                    charnum++;
+                    buf2++;
+                }
+                if ((*buf2 != ')') || (atoi(charbuf) > 255))    // char token not closed correctly or number to big -> end with error
+                {
+                    free(out);
+                    return ito::RetVal(ito::retError, 0, QObject::tr("Char token not closed correctly or number to big.").toLatin1().data());
+                    //return ito::retError;
+                }
+
+                *outbuf = atoi(charbuf);
+                outbuf++;
+                buf2++;                                 // eat the closing ')'
+                buf1 = buf2;
+                buf2 = strstr(buf2, "$");               // search for next $
+            }
+            else
             {
                 free(out);
-                return ito::RetVal(ito::retError, 0, QObject::tr("Char token not closed correctly or number to big.").toLatin1().data());
-                //return ito::retError;
+                return ito::RetVal(ito::retError, 0, QObject::tr("Undefined error.").toLatin1().data());
             }
-
-            *outbuf = atoi(charbuf);
-            outbuf++;
-            buf2++;                                 // eat the closing ')'
-            buf1 = buf2;
-            buf2 = strstr(buf2, "$");               // search for next $
-        }
-        else
-        {
-            free(out);
-            return ito::RetVal(ito::retError, 0, QObject::tr("Undefined error.").toLatin1().data());
         }
     }
+    
     *length = outbuf - out + len - (buf1 - buf);
     memcpy(outbuf, buf1, len - (buf1 - buf));
 //    strncpy(outbuf, buf1, len - (buf1 - buf));  // copy remaining string
