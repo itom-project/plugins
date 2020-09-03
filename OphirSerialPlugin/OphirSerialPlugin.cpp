@@ -99,6 +99,7 @@ m_data(ito::DataObject())
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("Request timeout, default 1000 ms").toLatin1().data()));
 
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device shown on display").toLatin1().data()));
+    m_params.insert("ROMVersion", ito::Param("ROMVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Version of ROM software.").toLatin1().data()));
 
     paramVal = ito::Param("deviceType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String, "deviceType");
@@ -311,6 +312,13 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
             m_params["headType"].setVal<char*>(headType.data());
         }
 
+    }
+
+    if (!retval.containsError())
+    {
+        request = QByteArray("$VE");
+        retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
+        m_params["ROMVersion"].setVal<char*>(answerStr.data());
     }
 
     if (!retval.containsError()) // instrument information
