@@ -150,6 +150,15 @@ m_data(ito::DataObject())
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("wavelengthSet", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Setting of the measurement wavelength (DISCRETE or CONTINUOUS).").toLatin1().data());
+    sm.setCategory("wavelengthSet");
+    sm.clearItems();
+    sm.addItem("DISCRETE");
+    sm.addItem("CONTINUOUS");
+    paramVal.setMeta(&sm, false);
+    m_params.insert(paramVal.getName(), paramVal);
+
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -199,12 +208,13 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         if (retval.containsError() || param->getVal<int>() < 1)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
-    }
+        }
         else
         {
             m_params["comPort"].setVal<int>(param->getVal<int>());
         }
-}
+    }
+
 
     if (!retval.containsError()) // get information
     {
@@ -384,12 +394,68 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
+    if (!retval.containsError()) // get the wavelength settings
+    {
+        request = QByteArray("$AW");
+        retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
+
+        QRegExp reg("(\\S+)"); // matches numbers
+
+        QStringList list;
+        int pos = 0;
+
+        while ((pos = reg.indexIn(answerStr, pos)) != -1) {
+            list << reg.cap(1);
+            pos += reg.matchedLength();
+        }
+
+        m_params["wavelengthSet"].setVal<char*>(list.at(0).toLatin1().data());
+
+        if(list.at(0).contains("DISCRETE"))
+        {
+            ito::StringMeta sm(ito::StringMeta::String, "wavelength");
+
+            QString discreteWavelengths;
+            int currentWaveIdx = list.at(1).toInt();
+            for (int idx = 2; idx < list.size(); idx++)
+            {
+                discreteWavelengths += " "; //space 
+                if (!list.at(idx).contains("NONE"))
+                {
+                    sm.addItem(list.at(idx).toLatin1().data());
+                    discreteWavelengths += list.at(idx).toLatin1().data();
+                }
+                
+            }
+
+            ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, list.at(currentWaveIdx + 1).toLatin1().data(), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
+            
+            paramVal.setMeta(&sm, false);
+            m_params.insert(paramVal.getName(), paramVal);
+
+        }
+        else if(list.at(0).contains("CONTINUOUS"))
+        {  
+            int waveMin = list.at(1).toInt();
+            int waveMax = list.at(2).toInt();
+            int waveCur = list.at(list.at(3).toInt() + 3).toInt();            
+
+            ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::Int, 0, new ito::IntMeta(waveMin, waveMax), tr("Set Wavelengths [nm] continuous between: %1 - %2.").arg(waveMin).arg(waveMax).toLatin1().data());
+            m_params.insert(paramVal.getName(), paramVal);
+            m_params["wavelength"].setVal<int>(waveCur);
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Wavelength is not available.").toLatin1().data());
+        }
+    }
+
     if (!retval.containsError()) // request if energy or power measurement
     {
         request = QByteArray("$FP");
         retval += SerialSendCommand(request); // does not return a value
 
-        m_params["measuremenType"].setVal<char*>("power");
+        m_params["measurementType"].setVal<char*>("power");
         
         Sleep(1000); //give the device some time
 
@@ -551,6 +617,7 @@ ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, Itom
                     m_data.setValueDescription("power");
                 }
             }
+
             else
             {
                 return ito::RetVal(ito::retError, 0, tr("Parameter value: %1 is unknown.").arg(val->getVal<char*>()).toLatin1().data());
@@ -563,6 +630,29 @@ ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, Itom
                 m_data.setValueUnit(param->getVal<char*>());
             }
             
+        }
+        else if (key.compare("wavelength") == 0)
+        {
+            QString setWave = QString::fromLatin1(m_params["wavelengthSet"].getVal<char*>());
+
+            if (setWave.compare("DISCRETE") == 0)
+            {
+                QByteArray request = "$WW "; 
+                request.append(val->getVal<char*>());
+
+                retValue += SerialSendCommand(request);
+
+                if (!retValue.containsError())
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+
+            }
+            else // CONTINUOUS
+            {
+
+            }
+
         }
         else
         {
