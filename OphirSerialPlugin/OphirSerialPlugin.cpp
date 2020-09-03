@@ -158,6 +158,7 @@ m_data(ito::DataObject())
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
+    m_params.insert("range", ito::Param("range", ito::ParamBase::Int, -2, 2, 0, tr("Measurement range (-2: dBm autoranging, -1: autoranging, 0: highest range, 1: second range, 2: next highest range).").toLatin1().data()));
 
     if (hasGuiSupport())
     {
@@ -179,7 +180,7 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     QByteArray answerStr;
-
+    int answerInt;
     QByteArray request;
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
@@ -450,6 +451,13 @@ ito::RetVal OphirSerialPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
+    if (!retval.containsError())
+    {
+        request = QByteArray("$RN");
+        retval += SendQuestionWithAnswerInt(request, answerInt, m_params["timeout"].getVal<int>());  //optical output check query
+        m_params["range"].setVal<int>(answerInt);
+    }
+
     if (!retval.containsError()) // request if energy or power measurement
     {
         request = QByteArray("$FP");
@@ -653,6 +661,22 @@ ito::RetVal OphirSerialPlugin::setParam(QSharedPointer<ito::ParamBase> val, Itom
 
             }
 
+        }
+        else if (key.compare("range") == 0)
+        {
+            QByteArray request = "$WN ";
+            
+            int idx = val->getVal<int>();
+            QByteArray setVal;
+            setVal.setNum(idx);
+            request.append(setVal);
+
+            retValue += SerialSendCommand(request);
+
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else
         {
