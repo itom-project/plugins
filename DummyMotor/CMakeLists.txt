@@ -46,7 +46,8 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/DummyMotor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-    ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
+
 )
 
 set(PLUGIN_UI
