@@ -307,13 +307,11 @@ if(PLUGIN_OpenCVGrabber)
     add_subdirectory(OpenCVGrabber)
 endif(PLUGIN_OpenCVGrabber)
 
-# OphirPlugin for StarLite, StarBright, Juno, Nova-II, Vega, USBI, and Pulsar 
-if(WIN32)
-    option(PLUGIN_OphirLMMeasurement "Build with this plugin." OFF)
-    if(PLUGIN_OphirLMMeasurement)
-        add_subdirectory(OphirLMMeasurement)
-    endif(PLUGIN_OphirLMMeasurement)
-endif()
+# OphirSerialPlugin
+option(PLUGIN_OphirSerialPlugin "Build with this plugin." ON)
+if(PLUGIN_OphirSerialPlugin)
+    add_subdirectory(OphirSerialPlugin)
+endif(PLUGIN_OphirSerialPlugin)
 
 # PclTools
 option(PLUGIN_PclTools "Build with this plugin." ON)

@@ -96,10 +96,6 @@
         <translation>Fehler beim Setzten des Timeouts</translation>
     </message>
     <message>
-        <source>invalid endline character</source>
-        <translation type="vanished">Ungültiges Terminierungszeichen</translation>
-    </message>
-    <message>
         <location line="+86"/>
         <location line="+25"/>
         <location line="+15"/>
@@ -158,10 +154,6 @@
         <location line="+106"/>
         <source>licensed under LGPL</source>
         <translation></translation>
-    </message>
-    <message>
-        <source>N.A.</source>
-        <translation type="vanished">K.A.</translation>
     </message>
     <message>
         <location filename="../dialogSerialIO.cpp" line="+522"/>
@@ -275,10 +267,6 @@
         <location line="+225"/>
         <source>timeout while reading from serial port.</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen vom Serial-Port.</translation>
-    </message>
-    <message>
-        <source>timeout</source>
-        <translation type="vanished">Zeitüberschreitung</translation>
     </message>
     <message>
         <location line="-138"/>
