@@ -38,12 +38,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QtPlugin>
 #include <qregexp.h>
 
-
-#include <qaxbase.h>
-#include <qaxobject.h>
-#include <quuid.h>
-#include <qobject.h>
-
 #include "common/helperCommon.h"
 #include "common/apiFunctionsInc.h"
 
@@ -128,6 +122,9 @@ m_handle(0)
     sm.addItem("NOVA-II");
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert("headSerialNumber", ito::Param("headSerialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head serial number connected to the device").toLatin1().data()));
+    m_params.insert("headName", ito::Param("headName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head name connected to the device").toLatin1().data()));
 
     paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data());
     sm.setCategory("headType");
@@ -508,40 +505,16 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
         }
     }
-    else //connect to USB Powermeter type
+    else //connect to USB powermeter type
     {
         m_connection = connectionType::USB;
+        OphirLMMeasurement OphirLM;
 
-        QAxObject m_axObject("OphirLMMeasurement.CoLMMeasurement");
         std::vector<std::wstring> serialsFound;
-        QString str = m_axObject.generateDocumentation();
 
-        QVariant v = m_axObject.dynamicCall("CloseAll()");
-
-        QVariantList params;
-        QVariant v2;
-        params << v2;
-        m_axObject.dynamicCall("ScanUSB(QVariant&)", params);
-        std::vector<std::wstring> data = params[0].value<std::vector<std::wstring>>();
-
-        //QVarianList params;
-        //QVariant res = object.dynamicCall("GetFlyerTemperature(double&, double&, int&)", params);
-
-        params.clear();
-        params << QVariant();
-        m_axObject.dynamicCall("GetVersion(int&)", params);
-        std::cout << "version: " << params[0].toInt() << std::endl;
-
-        params.clear();
-        params << QVariant();
-        m_axObject.dynamicCall("GetDriverVersion(QString&)", params);
-        std::cout << "driver serion: " << params[0].toString().constData() << std::endl;
-
-        std::vector<std::wstring> serialNumbers;
-
-        OphirLMMeasurement m_OphirLM;
-
-        m_OphirLM.ScanUSB(serialsFound);
+        // Scan for connected Devices
+        OphirLM.ScanUSB(serialsFound);
+        std::wcout << serialsFound.size() << L" Ophir USB devices found. \n";
 
         if (serialsFound.size() > 0) // found connected devices
         {
@@ -606,14 +579,15 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             std::wstring deviceName, romVersion, serialNumber;
             std::wstring info, headSN, headType, headName, version;
             m_OphirLM.GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
-            m_params["deviceName"].setVal<char>(*wCharToChar(deviceName.c_str()));
-            m_params["romVersion"].setVal<char>(*wCharToChar(romVersion.c_str()));
-            m_params["serialNumber"].setVal<char>(*wCharToChar(serialNumber.c_str()));
+
+            m_params["deviceType"].setVal<char*>(wCharToChar(deviceName.c_str()));
+            m_params["ROMVersion"].setVal<char*>(wCharToChar(romVersion.c_str()));
+            m_params["serialNumber"].setVal<char*>(wCharToChar(serialNumber.c_str()));
 
             m_OphirLM.GetSensorInfo(m_handle, 0, headSN, headType, headName);
-            m_params["headSerialNumber"].setVal<char>(*wCharToChar(headSN.c_str()));
-            m_params["headType"].setVal<char>(*wCharToChar(headType.c_str()));
-            m_params["headName"].setVal<char>(*wCharToChar(headName.c_str()));
+            m_params["headSerialNumber"].setVal<char*>(wCharToChar(headSN.c_str()));
+            m_params["headType"].setVal<char*>(wCharToChar(headType.c_str()));
+            m_params["headName"].setVal<char*>(wCharToChar(headName.c_str()));
         }
 
         if (!retval.containsError()) // set RS232 params to readonly

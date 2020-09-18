@@ -198,6 +198,14 @@
         <source>The given input serial %1 has not been found in serial number of connected devices</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Head serial number connected to the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Head name connected to the device</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirPowermeterInterface</name>
@@ -213,10 +221,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>Plugin for Ophir Powermeters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. 
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. 
 
@@ -225,6 +229,10 @@ Tested devices: VEGA</source>
     </message>
     <message>
         <source>licensed under LGPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plugin for Ophir Powermeter.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

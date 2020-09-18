@@ -307,11 +307,11 @@ if(PLUGIN_OpenCVGrabber)
     add_subdirectory(OpenCVGrabber)
 endif(PLUGIN_OpenCVGrabber)
 
-# OphirSerialPlugin
-option(PLUGIN_OphirSerialPlugin "Build with this plugin." ON)
-if(PLUGIN_OphirSerialPlugin)
-    add_subdirectory(OphirSerialPlugin)
-endif(PLUGIN_OphirSerialPlugin)
+# OphirPowermeter
+option(PLUGIN_OphirPowermeter "Build with this plugin." ON)
+if(PLUGIN_OphirPowermeter)
+    add_subdirectory(OphirPowermeter)
+endif(PLUGIN_OphirPowermeter)
 
 # PclTools
 option(PLUGIN_PclTools "Build with this plugin." ON)

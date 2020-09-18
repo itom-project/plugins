@@ -39,10 +39,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qpair.h>
 #include <qbytearray.h>
 
-#include <qaxbase.h>
-#include <qaxobject.h>
-#include <quuid.h>
-
 #include "DataObject/dataobj.h"
 
 #include "OphirLMMeasurement.h"
@@ -78,7 +74,6 @@ class OphirPowermeter : public ito::AddInDataIO
 
         static QList<std::wstring> openedDevices;
         std::wstring m_serialNo;
-        QAxObject m_axObject;
         bool m_opened;
         OphirLMMeasurement m_OphirLM;
         long m_handle;
