@@ -99,18 +99,6 @@ void PlugAndPlayCallback()
     std::cout << "Device has been removed from the USB. \n" << std::endl;
 }
 
-void DataReadyCallback(long hDevice, long channel)
-{
-    std::vector<double> values;
-    std::vector<double> timestamps;
-    std::vector<OphirLMMeasurement::Status> statuses;
-
-    /*OphirLM.GetData(hDevice, channel, values, timestamps, statuses);
-    for (size_t i = 0; i < values.size(); ++i)
-        std::wcout << L"Timestamp: " << std::fixed << std::setprecision(3) << timestamps[i]
-        << L" Reading: " << std::scientific << values[i] << L" Status: " << OphirLM.StatusString(statuses[i]) << L"\n";*/
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirPowermeter::OphirPowermeter() : AddInDataIO(),
 m_pSer(NULL),
@@ -637,8 +625,10 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             //start measuring on first device
             m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
-            m_OphirLM.RegisterDataReady(DataReadyCallback);
+            //m_OphirLM.RegisterDataReady(DataReadyCallback);
             m_OphirLM.StartStream(m_handle, m_channel);
+
+
 
         }
 
@@ -971,6 +961,27 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
     }
     else
     {
+        std::vector<double> values;
+        std::vector<double> timestamps;
+        std::vector<OphirLMMeasurement::Status> statuses;
+
+        for (int i = 0; i < 10; i++)
+        {
+            Sleep(0.2);
+
+            m_OphirLM.GetData(m_handle, m_channel, values, timestamps, statuses);
+
+            if (values.size() > 0)
+            {
+                for (size_t i = 0; i < values.size(); ++i)
+                {
+                    std::cout << "Timestamp: " << std::fixed << std::setprecision(3) << timestamps[i]
+                    << " Reading: " << std::scientific << values[i] << " Status: " << m_OphirLM.StatusString(statuses[i]).c_str() << "\n" << std::endl;
+                }
+                    
+            }
+            
+        }
         
     }
     
