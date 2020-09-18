@@ -94,6 +94,24 @@ ito::RetVal OphirPowermeterInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void PlugAndPlayCallback()
+{
+    std::cout << "Device has been removed from the USB. \n" << std::endl;
+}
+
+void DataReadyCallback(long hDevice, long channel)
+{
+    std::vector<double> values;
+    std::vector<double> timestamps;
+    std::vector<OphirLMMeasurement::Status> statuses;
+
+    /*OphirLM.GetData(hDevice, channel, values, timestamps, statuses);
+    for (size_t i = 0; i < values.size(); ++i)
+        std::wcout << L"Timestamp: " << std::fixed << std::setprecision(3) << timestamps[i]
+        << L" Reading: " << std::scientific << values[i] << L" Status: " << OphirLM.StatusString(statuses[i]) << L"\n";*/
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 OphirPowermeter::OphirPowermeter() : AddInDataIO(),
 m_pSer(NULL),
 m_delayAfterSendCommandMS(0),
@@ -101,7 +119,8 @@ m_dockWidget(NULL),
 m_isgrabbing(false),
 m_data(ito::DataObject()),
 m_opened(false),
-m_handle(0)
+m_handle(0),
+m_channel(0)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "OphirPowermeter", tr("Name of plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -564,9 +583,8 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
             m_opened = true;
 
-            long channel = 0;
             bool exists;
-            m_OphirLM.IsSensorExists(m_handle, channel, exists);
+            m_OphirLM.IsSensorExists(m_handle, m_channel, exists);
 
             if (!exists)
             {
@@ -588,6 +606,40 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_params["headSerialNumber"].setVal<char*>(wCharToChar(headSN.c_str()));
             m_params["headType"].setVal<char*>(wCharToChar(headType.c_str()));
             m_params["headName"].setVal<char*>(wCharToChar(headName.c_str()));
+        }
+
+        // get wavelengths
+        if (!retval.containsError())
+        {
+
+            LONG index;
+            std::vector<std::wstring> options;
+            OphirLM.GetWavelengths(m_handle, m_channel, index, options);
+
+            ito::StringMeta sm(ito::StringMeta::String);
+
+            QString discreteWavelengths;
+            for (int idx = 0; idx < options.size(); idx++)
+            {
+                discreteWavelengths += " "; //space 
+                sm.addItem(wCharToChar(options[idx].c_str()));
+                discreteWavelengths += wCharToChar(options[idx].c_str());
+            }
+
+            ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String | ito::ParamBase::Readonly, wCharToChar(options.at(0).c_str()), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
+            paramVal.setMeta(&sm, false);
+            m_params.insert(paramVal.getName(), paramVal);
+
+            OphirLM.SetWavelength(m_handle, 0, 0); //set first wavelength
+        }
+
+        if (!retval.containsError())
+        {
+            //start measuring on first device
+            m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
+            m_OphirLM.RegisterDataReady(DataReadyCallback);
+            m_OphirLM.StartStream(m_handle, m_channel);
+
         }
 
         if (!retval.containsError()) // set RS232 params to readonly
@@ -889,30 +941,39 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
     QTime timer;
     bool done = false;
 
-    QString type = QLatin1String(m_params["measurementType"].getVal<char*>());
 
-    if (type.compare("energy") == 0)
+    if (m_connection == connectionType::RS232)
     {
-        request = QByteArray("$SE");
-    }
-    else if (type.compare("power") == 0)
-    {
-        request = QByteArray("$SP");
+        QString type = QLatin1String(m_params["measurementType"].getVal<char*>());
+
+        if (type.compare("energy") == 0)
+        {
+            request = QByteArray("$SE");
+        }
+        else if (type.compare("power") == 0)
+        {
+            request = QByteArray("$SP");
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("given measurement type %1 is unknown.").arg(type).toLatin1().data());
+        }
+
+        retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+
+        if (!retval.containsError())
+        {
+            m_data.at<ito::float64>(0, 0) = answer;
+            m_isgrabbing = true;
+            m_data.setValueUnit(m_params["unit"].getVal<char*>());
+        }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("given measurement type %1 is unknown.").arg(type).toLatin1().data());
+        
     }
-
-    retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
-
-
-    if (!retval.containsError())
-    {
-        m_data.at<ito::float64>(0, 0) = answer;
-        m_isgrabbing = true;
-        m_data.setValueUnit(m_params["unit"].getVal<char*>());
-    }
+    
 
     if (waitCond)
     {

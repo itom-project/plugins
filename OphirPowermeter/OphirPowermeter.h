@@ -77,6 +77,7 @@ class OphirPowermeter : public ito::AddInDataIO
         bool m_opened;
         OphirLMMeasurement m_OphirLM;
         long m_handle;
+        long m_channel;
 
         enum connectionType
         {
