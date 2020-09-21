@@ -625,12 +625,18 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             //start measuring on first device
             m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
-            //m_OphirLM.RegisterDataReady(DataReadyCallback);
+            
+            m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
+            m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
+
+
             m_OphirLM.StartStream(m_handle, m_channel);
 
 
 
         }
+
+        Sleep(1000); //give the device some time
 
         if (!retval.containsError()) // set RS232 params to readonly
         {
@@ -973,11 +979,9 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
 
             if (values.size() > 0)
             {
-                for (size_t i = 0; i < values.size(); ++i)
-                {
-                    std::cout << "Timestamp: " << std::fixed << std::setprecision(3) << timestamps[i]
-                    << " Reading: " << std::scientific << values[i] << " Status: " << m_OphirLM.StatusString(statuses[i]).c_str() << "\n" << std::endl;
-                }
+                m_data.at<ito::float64>(0, 0) = values[0];
+                m_isgrabbing = true;
+                
                     
             }
             
