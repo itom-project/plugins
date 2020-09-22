@@ -191,10 +191,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No serialIO plugin instance given!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The given input serial %1 has not been found in serial number of connected devices</source>
         <translation type="unfinished"></translation>
     </message>
@@ -204,6 +200,10 @@
     </message>
     <message>
         <source>Head name connected to the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No serialIO plugin instance given. A SerialIO instance is needed to use the RS232 type of powermeter.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

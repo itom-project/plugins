@@ -179,9 +179,7 @@ m_channel(0)
     sm.addItem("CONTINUOUS");
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
-
-    m_params.insert("range", ito::Param("range", ito::ParamBase::Int, -2, 2, 0, tr("Measurement range (-2: dBm autoranging, -1: autoranging, 0: highest range, 1: second range, 2: next highest range).").toLatin1().data()));
-
+    
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -228,7 +226,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 1, tr("No serialIO plugin instance given!").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 1, tr("No serialIO plugin instance given. A SerialIO instance is needed to use the RS232 type of powermeter.").toLatin1().data());
         }
 
         if (!retval.containsError())
@@ -493,6 +491,9 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             request = QByteArray("$RN");
             retval += SendQuestionWithAnswerInt(request, answerInt, m_params["timeout"].getVal<int>());  //optical output check query
+
+            ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, -2, 2, 0, tr("Measurement range (-2: dBm autoranging, -1: autoranging, 0: highest range, 1: second range, 2: next highest range).").toLatin1().data());
+            m_params.insert(paramVal.getName(), paramVal);
             m_params["range"].setVal<int>(answerInt);
         }
 
@@ -621,6 +622,35 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             OphirLM.SetWavelength(m_handle, 0, 0); //set first wavelength
         }
 
+        // get ranges
+        if (!retval.containsError())
+        {
+            long index;
+            std::vector<std::wstring> options;
+            m_OphirLM.GetRanges(m_handle, m_channel, index, options);
+            
+            std::wstring docu = L"Measurement range (";
+            std::vector<std::wstring>::iterator it;
+
+            int idx = 0;
+            for (it = options.begin(); it != options.end(); ++it)
+            {
+                docu += std::to_wstring(idx);
+                docu += L": ";
+                docu += *it;
+                docu += L", ";
+                idx += 1;
+            }
+            docu.pop_back();  // delete "; " again
+            docu.pop_back();
+
+            docu += L").";
+
+            ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, 0, idx, index, tr(wCharToChar(docu.c_str())).toLatin1().data());
+            m_params.insert(paramVal.getName(), paramVal);
+        }
+        
+
         if (!retval.containsError())
         {
             //start measuring on first device
@@ -629,8 +659,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
             m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
 
-
-            m_OphirLM.StartStream(m_handle, m_channel);
+            m_OphirLM.StartStream(m_handle, m_channel); // start stream 
 
 
 
@@ -862,14 +891,25 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
         }
         else if (key.compare("range") == 0)
         {
-            QByteArray request = "$WN ";
+            if (m_connection == connectionType::RS232)
+            {
+                QByteArray request = "$WN ";
             
-            int idx = val->getVal<int>();
-            QByteArray setVal;
-            setVal.setNum(idx);
-            request.append(setVal);
+                int idx = val->getVal<int>();
+                QByteArray setVal;
+                setVal.setNum(idx);
+                request.append(setVal);
 
-            retValue += SerialSendCommand(request);
+                retValue += SerialSendCommand(request);
+
+                
+            }
+            else
+            {
+                m_OphirLM.StopAllStreams();
+                m_OphirLM.SetRange(m_handle, m_channel, val->getVal<int>());
+                m_OphirLM.StartStream(m_handle, m_channel);
+            }
 
             if (!retValue.containsError())
             {
