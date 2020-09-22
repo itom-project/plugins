@@ -238,7 +238,26 @@ void DockWidgetOphirPowermeter::on_pushButtonZeroing_clicked()
     if (!m_inEditing)
     {
         m_inEditing = true;
-        
-        m_inEditing = false;
+        ito::RetVal retval(ito::retOk);
+        enableWidget(false);
+        ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retval;
+            waitCond->release();
+        }
+
+        QMetaObject::invokeMethod(m_plugin, "zeroing", Q_ARG(ItomSharedSemaphore*, waitCond));
+
+        // connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
     }
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::zeroingFinished()
+{
+    enableWidget(true);
+    m_inEditing = false;
 }

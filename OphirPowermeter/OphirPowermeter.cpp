@@ -234,19 +234,61 @@ ito::RetVal OphirPowermeter::zeroing(ItomSharedSemaphore *waitCond/*=NULL*/)
 
     if (m_connection == connectionType::RS232)
     {
+        m_isgrabbing = true;
+        QElapsedTimer timer;
         QByteArray request = QByteArray("$ZE");
         retval = SerialSendCommand(request);
+        bool finished = false;
+
+        QByteArray answer;
+        timer.start();
+
+        while (!timer.hasExpired(60000) && !finished)
+        {
+            
+            Sleep(500);
+            retval += SendQuestionWithAnswerString("$ZQ", answer, m_params["timeout"].getVal<int>());  //optical output check query
+
+            if (answer.contains("ZEROING COMPLETED"))
+            {
+                Sleep(200);
+                QByteArray forceScreen;
+                QByteArray type = m_params["measurementType"].getVal<char*>();
+                if (type.contains("power"))
+                {
+                    forceScreen = "$FS 0";
+                }
+                else
+                {
+                    forceScreen = "$FS 1";
+                }
+                retval += SerialSendCommand(forceScreen);
+                Sleep(200);
+                finished = true;
+            }
+        }
+
+        if (!finished)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Timeout while zeroing.").toLatin1().data());
+        }
+        
     }
     else
     {
         retval += ito::RetVal(ito::retError, 0, tr("Zeroing for USB can not be implemented due to missing fuction.").toLatin1().data());
     }
 
+    m_isgrabbing = false;
+
+    emit zeroingFinished();
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -1564,7 +1606,7 @@ void OphirPowermeter::dockWidgetVisibilityChanged(bool visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             connect(this, SIGNAL(visibilityChanged(bool)), widget, SLOT(manageTimer(bool)));
-            
+            connect(this, SIGNAL(zeroingFinished()), widget, SLOT(zeroingFinished));
 
             emit visibilityChanged(visible);
             emit parametersChanged(m_params);
@@ -1574,6 +1616,7 @@ void OphirPowermeter::dockWidgetVisibilityChanged(bool visible)
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             emit visibilityChanged(visible);
             disconnect(this, SIGNAL(visibilityChanged(bool)), widget, SLOT(manageTimer(bool)));
+            disconnect(this, SIGNAL(zeroingfinished(), dw, SLOT(zeroingfinished())));
         }
     }
 }

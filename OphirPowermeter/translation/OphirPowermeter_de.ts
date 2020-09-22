@@ -167,6 +167,10 @@
         <source>Function to set the zero value of the device.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Timeout while zeroing.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirPowermeterInterface</name>

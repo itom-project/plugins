@@ -134,6 +134,7 @@ class OphirPowermeter : public ito::AddInDataIO
         void dockWidgetVisibilityChanged(bool visible);
     signals:
         void visibilityChanged(bool visible);
+        void zeroingFinished();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

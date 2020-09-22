@@ -248,6 +248,9 @@
         </property>
         <item>
          <widget class="QLCDNumber" name="lcdNumber">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="lineWidth">
            <number>0</number>
           </property>

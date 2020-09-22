@@ -69,6 +69,7 @@ class DockWidgetOphirPowermeter : public ito::AbstractAddInDockWidget
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
         void manageTimer(const bool &val);
+        void zeroingFinished();
 
     private slots:
         void on_checkAutograbbing_stateChanged(int val);
