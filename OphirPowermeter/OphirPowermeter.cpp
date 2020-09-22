@@ -610,12 +610,13 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             QString discreteWavelengths;
             for (int idx = 0; idx < options.size(); idx++)
             {
+                m_discreteWavelengths.insert(wCharToChar(options[idx].c_str()), idx);
                 discreteWavelengths += " "; //space 
                 sm.addItem(wCharToChar(options[idx].c_str()));
                 discreteWavelengths += wCharToChar(options[idx].c_str());
             }
 
-            ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String | ito::ParamBase::Readonly, wCharToChar(options.at(0).c_str()), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
+            ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, wCharToChar(options.at(0).c_str()), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
             paramVal.setMeta(&sm, false);
             m_params.insert(paramVal.getName(), paramVal);
 
@@ -649,7 +650,12 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, 0, idx, index, tr(wCharToChar(docu.c_str())).toLatin1().data());
             m_params.insert(paramVal.getName(), paramVal);
         }
-        
+
+        // get unit
+        if (!retval.containsError())
+        {
+
+        }        
 
         if (!retval.containsError())
         {
@@ -660,8 +666,6 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
 
             m_OphirLM.StartStream(m_handle, m_channel); // start stream 
-
-
 
         }
 
@@ -856,37 +860,48 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
         }
         else if (key.compare("wavelength") == 0)
         {
-            QString setWave = QString::fromLatin1(m_params["wavelengthSet"].getVal<char*>());
-
-            if (setWave.compare("DISCRETE") == 0)
+            if (m_connection == connectionType::RS232)
             {
-                QByteArray request = "$WW "; 
-                request.append(val->getVal<char*>());
+                QString setWave = QString::fromLatin1(m_params["wavelengthSet"].getVal<char*>());
 
-                retValue += SerialSendCommand(request);
-
-                if (!retValue.containsError())
+                if (setWave.compare("DISCRETE") == 0)
                 {
-                    retValue += it->copyValueFrom(&(*val));
-                }
+                    QByteArray request = "$WW "; 
+                    request.append(val->getVal<char*>());
 
+                    retValue += SerialSendCommand(request);
+
+                    if (!retValue.containsError())
+                    {
+                        retValue += it->copyValueFrom(&(*val));
+                    }
+
+                }
+                else // CONTINUOUS
+                {
+                    QByteArray request = "$WL ";
+
+                    int wave = val->getVal<int>();
+                    QByteArray setVal;
+                    setVal.setNum(wave);
+                    request.append(setVal);
+
+                    retValue += SerialSendCommand(request);
+
+                    if (!retValue.containsError())
+                    {
+                        retValue += it->copyValueFrom(&(*val));
+                    }
+                }
             }
-            else // CONTINUOUS
+            else
             {
-                QByteArray request = "$WL ";
 
-                int wave = val->getVal<int>();
-                QByteArray setVal;
-                setVal.setNum(wave);
-                request.append(setVal);
-
-                retValue += SerialSendCommand(request);
-
-                if (!retValue.containsError())
-                {
-                    retValue += it->copyValueFrom(&(*val));
-                }
+                m_OphirLM.StopAllStreams();
+                m_OphirLM.SetWavelength(m_handle, m_channel, m_discreteWavelengths.value(val->getVal<char*>()));
+                m_OphirLM.StartStream(m_handle, m_channel);
             }
+            
 
         }
         else if (key.compare("range") == 0)

@@ -38,6 +38,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qvector.h>
 #include <qpair.h>
 #include <qbytearray.h>
+#include <qmap.h>
 
 #include "DataObject/dataobj.h"
 
@@ -85,6 +86,8 @@ class OphirPowermeter : public ito::AddInDataIO
             USB
         };
         connectionType m_connection;
+
+        QMap<QString, int> m_discreteWavelengths;
 
         DockWidgetOphirPowermeter *m_dockWidget;
         ito::RetVal SerialSendCommand(QByteArray command);
