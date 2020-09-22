@@ -151,6 +151,22 @@
         <source>return answer %1 not found.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>function to set the zero value of the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zeroing for USB can not be implemented due to missing fuction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The given input serial %1 is already connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The given serial number %1 is already connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirPowermeterInterface</name>
@@ -285,6 +301,14 @@ Tested devices: 1-channel VEGA (USB, RS232)</source>
     </message>
     <message>
         <source>[headSerialNumber]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>calibration due date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[calibrationDueDate]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

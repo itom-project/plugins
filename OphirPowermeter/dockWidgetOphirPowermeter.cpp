@@ -54,6 +54,7 @@ DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInDat
         ui.lblDeviceType->setText(params["deviceType"].getVal<char*>());
         ui.lblHead->setText(params["headType"].getVal<char*>());
         ui.lblHeadSerialNumber->setText(params["headSerialNumber"].getVal<char*>());
+        ui.lblCalibrationDueDate->setText(params["calibrationDueDate"].getVal<char*>());
 
 		ito::IntMeta *intmeta = static_cast<ito::IntMeta*>(params["range"].getMeta());
 		ui.comboBoxRange->clear();
@@ -157,7 +158,7 @@ void DockWidgetOphirPowermeter::manageTimer(const bool &visible)
     {
         killTimer(m_timerId);
         m_timerIsRunning = false;
-        ui.labelVal->setText(QString("").toLatin1().data());
+        ui.lblUnit->setText(QString("").toLatin1().data());
     }
 }
 
@@ -176,7 +177,7 @@ void DockWidgetOphirPowermeter::timerEvent(QTimerEvent *event)
         if (!retval.containsError())
         {
             ui.lcdNumber->display(*value);
-            ui.labelVal->setText(*unit);
+            ui.lblUnit->setText(*unit);
         }
     }
     waitCond->deleteSemaphore();

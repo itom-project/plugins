@@ -71,7 +71,7 @@ class OphirPowermeter : public ito::AddInDataIO
         int m_delayAfterSendCommandMS;
         ito::DataObject m_data;
 
-        static QList<std::wstring> openedDevices;
+        static QList<QByteArray> openedDevices;
         std::wstring m_serialNo;
         bool m_opened;
         OphirLMMeasurement m_OphirLM;
@@ -125,6 +125,10 @@ class OphirPowermeter : public ito::AddInDataIO
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal acquireAutograbbing(QSharedPointer<double> value, QSharedPointer<QString> unit, ItomSharedSemaphore *waitCond);
+
+        ito::RetVal zeroing(ItomSharedSemaphore *waitCond = NULL);
+        
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

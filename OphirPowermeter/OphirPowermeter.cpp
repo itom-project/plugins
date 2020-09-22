@@ -46,7 +46,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #define BUFFER_SIZE 100
 
-QList<std::wstring> OphirPowermeter::openedDevices = QList<std::wstring>();
+QList<QByteArray> OphirPowermeter::openedDevices = QList<QByteArray>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirPowermeterInterface::OphirPowermeterInterface()
@@ -191,6 +191,12 @@ m_channel(0)
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
+    //register exec functions
+    QVector<ito::Param> pMand;
+    QVector<ito::Param> pOpt;
+    QVector<ito::Param> pOut;
+    registerExecFunc("zeroing", pMand, pOpt, pOut, tr("function to set the zero value of the device").toLatin1().data());
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -201,6 +207,47 @@ m_channel(0)
     }
 
     m_charBuffer = (char *)malloc(BUFFER_SIZE);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirPowermeter::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> >paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval(ito::retOk);
+    if (funcName == "zeroing")
+    {
+        retval += zeroing();
+    }
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OphirPowermeter::zeroing(ItomSharedSemaphore *waitCond/*=NULL*/)
+{
+    ito::RetVal retval(ito::retOk);
+
+    if (m_connection == connectionType::RS232)
+    {
+        QByteArray request = QByteArray("$ZE");
+        retval = SerialSendCommand(request);
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Zeroing for USB can not be implemented due to missing fuction.").toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -220,343 +267,356 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     QByteArray serialNoInput = paramsOpt->at(1).getVal<char*>();
 
-    if (type == "RS232")  // init as RS232 powermeter type
+    if (openedDevices.contains(serialNoInput)) // exit here if device with serial number already connected
     {
-        m_connection = connectionType::RS232; 
-        m_params["connection"].setVal<char*>("RS232");
-        
-        // check serialIO and set parameters
-        if (reinterpret_cast<ito::AddInBase *>((*paramsOpt)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
-        {
-            m_pSer = (ito::AddInDataIO *)(*paramsOpt)[0].getVal<void *>();
-            retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)), NULL);
-            retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
-            retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)), NULL);
-            retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
-            retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)), NULL);
-            retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")), NULL);
-        }
-        else
-        {
-            retval += ito::RetVal(ito::retError, 1, tr("No serialIO plugin instance given. A SerialIO instance is needed to use the RS232 type of powermeter.").toLatin1().data());
-        }
-
-        if (!retval.containsError())
-        {
-            QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>());
-            m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-            m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-
-            QSharedPointer<ito::Param> param(new ito::Param("port"));
-            retval += m_pSer->getParam(param, NULL);
-            if (retval.containsError() || param->getVal<int>() < 1)
-            {
-                retval += ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
-            }
-            else
-            {
-                m_params["comPort"].setVal<int>(param->getVal<int>());
-            }
-        }
-
-        if (!retval.containsError()) // get information
-        {
-            bool found = false;
-
-            QByteArray headType = "";
-            QByteArray serialNum = "";
-            request = QByteArray("$HI");
-            retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
-
-            QRegExp reg("(\\S+)"); // matches numbers
-
-            QStringList list;
-            int pos = 0;
-
-            while ((pos = reg.indexIn(answerStr, pos)) != -1) {
-                list << reg.cap(1);
-                pos += reg.matchedLength();
-            }
-            QByteArray foundSerialNo = list.at(1).toLatin1();
-
-            if (serialNoInput == "")
-            {
-                found = true;
-            }
-            else if (serialNoInput.contains(foundSerialNo) && serialNoInput.length() == foundSerialNo.length())
-            {
-                found = true;
-            }
-            else
-            {
-                retval += ito::RetVal(ito::retError, 0, tr("Given serial number %1 does not match the received number %2").arg(serialNoInput.data()).arg(foundSerialNo.data()).toLatin1().data());
-            }
-
-            if (!retval.containsError() && found)
-            {
-                m_params["serialNumber"].setVal<char*>(foundSerialNo.data());
-
-                if (answerStr.contains("BC"))
-                {
-                    headType = "BC20";
-                }
-                else if (answerStr.contains("BT"))
-                {
-                    headType = "beam track";
-                }
-                else if (answerStr.contains("CR"))
-                {
-                    headType = "RM9";
-                }
-                else if (answerStr.contains("CP") || answerStr.contains("PY"))
-                {
-                    headType = "pyroelectric";
-                }
-                else if (answerStr.contains("FX"))
-                {
-                    headType = "axial sensor";
-                }
-                else if (answerStr.contains("LX"))
-                {
-                    headType = "PD300-CIE sensor";
-                }
-                else if (answerStr.contains("NJ"))
-                {
-                    headType = "nanoJoule meter";
-                }
-                else if (answerStr.contains("RM"))
-                {
-                    headType = "PD300RM";
-                }
-                else if (answerStr.contains("SI"))
-                {
-                    headType = "photodiode";
-                }
-                else if (answerStr.contains("TH"))
-                {
-                    headType = "thermopile";
-                }
-                else if (answerStr.contains("TP"))
-                {
-                    headType = "temperature probe";
-                }
-                else if (answerStr.contains("XX"))
-                {
-                    headType = "no sensor connected";
-                }
-                else
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
-                }
-
-                m_params["headType"].setVal<char*>(headType.data());
-            }
-
-        }
-
-        if (!retval.containsError())
-        {
-            request = QByteArray("$VE");
-            retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
-            m_params["ROMVersion"].setVal<char*>(answerStr.data());
-        }
-
-        if (!retval.containsError()) // instrument information
-        {
-            QByteArray type;
-            request = QByteArray("$II");
-            retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
-
-            if (!retval.containsError())
-            {
-                if (answerStr.contains("NOVA"))
-                {
-                    type = "NOVA";
-                }
-                else if (answerStr.contains("VEGA"))
-                {
-                    type = "VEGA";
-                }
-                else if (answerStr.contains("LS-A 54545"))
-                {
-                    type = "LASERSTAR-S";
-                }
-                else if (answerStr.contains("LS-A 23452"))
-                {
-                    type = "LASERSTAR-D channel A";
-                }
-                else if (answerStr.contains("LS-B 23453"))
-                {
-                    type = "LASERSTAR-D channel B";
-                }
-                else
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
-                }
-
-                m_params["deviceType"].setVal<char*>(type.data());
-            }
-        }
-
-        if (!retval.containsError()) // get unit of measurement
-        {
-            QByteArray unit;
-            request = QByteArray("$SI");
-            retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
-
-            if (!retval.containsError())
-            {
-                if (answerStr.contains("W"))
-                {
-                    unit = "W";
-                }
-                else if (answerStr.contains("V"))
-                {
-                    unit = "V";
-                }
-                else if (answerStr.contains("A"))
-                {
-                    unit = "A";
-                }
-                else if (answerStr.contains("d"))
-                {
-                    unit = "dBm";
-                }
-                else if (answerStr.contains("l"))
-                {
-                    unit = "Lux";
-                }
-                else if (answerStr.contains("c"))
-                {
-                    unit = "fc";
-                }
-                else if (answerStr.contains("J"))
-                {
-                    unit = "J";
-                }
-                else
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
-                }
-
-                m_params["unit"].setVal<char*>(unit.data());
-            }
-        }
-
-        if (!retval.containsError()) // get the wavelength settings
-        {
-            request = QByteArray("$AW");
-            retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
-
-            QRegExp reg("(\\S+)"); // matches numbers
-
-            QStringList list;
-            int pos = 0;
-
-            while ((pos = reg.indexIn(answerStr, pos)) != -1) {
-                list << reg.cap(1);
-                pos += reg.matchedLength();
-            }
-
-            m_params["wavelengthSet"].setVal<char*>(list.at(0).toLatin1().data());
-
-            if (list.at(0).contains("DISCRETE"))
-            {
-                ito::StringMeta sm(ito::StringMeta::String);
-
-                QString discreteWavelengths;
-                int currentWaveIdx = list.at(1).toInt();
-                for (int idx = 2; idx < list.size(); idx++)
-                {
-                    discreteWavelengths += " "; //space 
-                    if (!list.at(idx).contains("NONE"))
-                    {
-                        sm.addItem(list.at(idx).toLatin1().data());
-                        discreteWavelengths += list.at(idx).toLatin1().data();
-                    }
-
-                }
-
-                ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, list.at(currentWaveIdx + 1).toLatin1().data(), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
-
-                paramVal.setMeta(&sm, false);
-                m_params.insert(paramVal.getName(), paramVal);
-
-            }
-            else if (list.at(0).contains("CONTINUOUS"))
-            {
-                int waveMin = list.at(1).toInt();
-                int waveMax = list.at(2).toInt();
-                int waveCur = list.at(list.at(3).toInt() + 3).toInt();
-
-                ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::Int, 0, new ito::IntMeta(waveMin, waveMax), tr("Set Wavelengths [nm] continuous between: %1 - %2.").arg(waveMin).arg(waveMax).toLatin1().data());
-                m_params.insert(paramVal.getName(), paramVal);
-                m_params["wavelength"].setVal<int>(waveCur);
-            }
-            else
-            {
-                retval += ito::RetVal(ito::retError, 0, tr("Wavelength is not available.").toLatin1().data());
-            }
-        }
-
-        if (!retval.containsError())
-        {
-            request = QByteArray("$RN");
-            retval += SendQuestionWithAnswerInt(request, answerInt, m_params["timeout"].getVal<int>());  //optical output check query
-
-            ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, -2, 2, 0, tr("Measurement range (-2: dBm autoranging, -1: autoranging, 0: highest range, 1: second range, 2: next highest range).").toLatin1().data());
-            m_params.insert(paramVal.getName(), paramVal);
-            m_params["range"].setVal<int>(answerInt);
-        }
-
-        if (!retval.containsError()) // request if energy or power measurement
-        {
-            request = QByteArray("$FP");
-            retval += SerialSendCommand(request); // does not return a value
-
-            m_params["measurementType"].setVal<char*>("power");
-
-            Sleep(1000); //give the device some time
-
-            // dummy read 
-            double answer;
-            QByteArray request;
-            request = QByteArray("$SP");
-            retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
-        }
+        retval += ito::RetVal(ito::retError, 0, tr("The given serial number %1 is already connected.").arg(serialNoInput.data()).toLatin1().data());
     }
-    else //connect to USB powermeter type
+
+    if (!retval.containsError())
     {
-        m_connection = connectionType::USB;
-        m_params["connection"].setVal<char*>("USB");
-        OphirLMMeasurement OphirLM;
-
-        std::vector<std::wstring> serialsFound;
-
-        // Scan for connected Devices
-        OphirLM.ScanUSB(serialsFound);
-        std::wcout << serialsFound.size() << L" Ophir USB devices found. \n";
-
-        if (serialsFound.size() > 0) // found connected devices
+        if (type == "RS232")  // init as RS232 powermeter type
         {
-            if (serialNoInput.size() == 0) // optional serial not given, connect to first device
+            m_connection = connectionType::RS232; 
+            m_params["connection"].setVal<char*>("RS232");
+        
+            // check serialIO and set parameters
+            if (reinterpret_cast<ito::AddInBase *>((*paramsOpt)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
             {
-                m_serialNo = serialsFound[0];
-                openedDevices.append(m_serialNo);
+                m_pSer = (ito::AddInDataIO *)(*paramsOpt)[0].getVal<void *>();
+                retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)), NULL);
+                retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
+                retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)), NULL);
+                retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
+                retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)), NULL);
+                retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")), NULL);
             }
             else
+            {
+                retval += ito::RetVal(ito::retError, 1, tr("No serialIO plugin instance given. A SerialIO instance is needed to use the RS232 type of powermeter.").toLatin1().data());
+            }
+
+            if (!retval.containsError())
+            {
+                QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>());
+                m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
+                m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
+
+                QSharedPointer<ito::Param> param(new ito::Param("port"));
+                retval += m_pSer->getParam(param, NULL);
+                if (retval.containsError() || param->getVal<int>() < 1)
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
+                }
+                else
+                {
+                    m_params["comPort"].setVal<int>(param->getVal<int>());
+                }
+            }
+
+            if (!retval.containsError()) // get information
             {
                 bool found = false;
-                for (int idx = 0; idx < serialsFound.size(); idx++)
+
+                QByteArray headType = "";
+                QByteArray serialNum = "";
+                request = QByteArray("$HI");
+                retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
+
+                QRegExp reg("(\\S+)"); // matches numbers
+
+                QStringList list;
+                int pos = 0;
+
+                while ((pos = reg.indexIn(answerStr, pos)) != -1) {
+                    list << reg.cap(1);
+                    pos += reg.matchedLength();
+                }
+                QByteArray foundSerialNo = list.at(1).toLatin1();
+
+                if (serialNoInput == "")
                 {
+                    found = true;
+                }
+                else if (serialNoInput.contains(foundSerialNo) && serialNoInput.length() == foundSerialNo.length())
+                {
+                    found = true;
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Given serial number %1 does not match the received number %2").arg(serialNoInput.data()).arg(foundSerialNo.data()).toLatin1().data());
+                }
 
-                    QByteArray data = QByteArray::fromRawData(wCharToChar(serialsFound[idx].c_str()), sizeof(m_charBuffer));
+                if (!retval.containsError() && found)
+                {
+                    m_params["serialNumber"].setVal<char*>(foundSerialNo.data());
 
-                    if (serialNoInput.contains(m_charBuffer)) // option serial found
+                    if (answerStr.contains("BC"))
+                    {
+                        headType = "BC20";
+                    }
+                    else if (answerStr.contains("BT"))
+                    {
+                        headType = "beam track";
+                    }
+                    else if (answerStr.contains("CR"))
+                    {
+                        headType = "RM9";
+                    }
+                    else if (answerStr.contains("CP") || answerStr.contains("PY"))
+                    {
+                        headType = "pyroelectric";
+                    }
+                    else if (answerStr.contains("FX"))
+                    {
+                        headType = "axial sensor";
+                    }
+                    else if (answerStr.contains("LX"))
+                    {
+                        headType = "PD300-CIE sensor";
+                    }
+                    else if (answerStr.contains("NJ"))
+                    {
+                        headType = "nanoJoule meter";
+                    }
+                    else if (answerStr.contains("RM"))
+                    {
+                        headType = "PD300RM";
+                    }
+                    else if (answerStr.contains("SI"))
+                    {
+                        headType = "photodiode";
+                    }
+                    else if (answerStr.contains("TH"))
+                    {
+                        headType = "thermopile";
+                    }
+                    else if (answerStr.contains("TP"))
+                    {
+                        headType = "temperature probe";
+                    }
+                    else if (answerStr.contains("XX"))
+                    {
+                        headType = "no sensor connected";
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
+                    }
+
+                    m_params["headType"].setVal<char*>(headType.data());
+                }
+
+            }
+
+            if (!retval.containsError())
+            {
+                request = QByteArray("$VE");
+                retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
+                m_params["ROMVersion"].setVal<char*>(answerStr.data());
+            }
+
+            if (!retval.containsError()) // instrument information
+            {
+                QByteArray type;
+                request = QByteArray("$II");
+                retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
+
+                if (!retval.containsError())
+                {
+                    if (answerStr.contains("NOVA"))
+                    {
+                        type = "NOVA";
+                    }
+                    else if (answerStr.contains("VEGA"))
+                    {
+                        type = "VEGA";
+                    }
+                    else if (answerStr.contains("LS-A 54545"))
+                    {
+                        type = "LASERSTAR-S";
+                    }
+                    else if (answerStr.contains("LS-A 23452"))
+                    {
+                        type = "LASERSTAR-D channel A";
+                    }
+                    else if (answerStr.contains("LS-B 23453"))
+                    {
+                        type = "LASERSTAR-D channel B";
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
+                    }
+
+                    m_params["deviceType"].setVal<char*>(type.data());
+                }
+            }
+
+            if (!retval.containsError()) // get unit of measurement
+            {
+                QByteArray unit;
+                request = QByteArray("$SI");
+                retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
+
+                if (!retval.containsError())
+                {
+                    if (answerStr.contains("W"))
+                    {
+                        unit = "W";
+                    }
+                    else if (answerStr.contains("V"))
+                    {
+                        unit = "V";
+                    }
+                    else if (answerStr.contains("A"))
+                    {
+                        unit = "A";
+                    }
+                    else if (answerStr.contains("d"))
+                    {
+                        unit = "dBm";
+                    }
+                    else if (answerStr.contains("l"))
+                    {
+                        unit = "Lux";
+                    }
+                    else if (answerStr.contains("c"))
+                    {
+                        unit = "fc";
+                    }
+                    else if (answerStr.contains("J"))
+                    {
+                        unit = "J";
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("return answer %1 for rquest $HT not found.").arg(answerStr.data()).toLatin1().data());
+                    }
+
+                    m_params["unit"].setVal<char*>(unit.data());
+                }
+            }
+
+            if (!retval.containsError()) // get the wavelength settings
+            {
+                request = QByteArray("$AW");
+                retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
+
+                QRegExp reg("(\\S+)"); // matches numbers
+
+                QStringList list;
+                int pos = 0;
+
+                while ((pos = reg.indexIn(answerStr, pos)) != -1) {
+                    list << reg.cap(1);
+                    pos += reg.matchedLength();
+                }
+
+                m_params["wavelengthSet"].setVal<char*>(list.at(0).toLatin1().data());
+
+                if (list.at(0).contains("DISCRETE"))
+                {
+                    ito::StringMeta sm(ito::StringMeta::String);
+
+                    QString discreteWavelengths;
+                    int currentWaveIdx = list.at(1).toInt();
+                    for (int idx = 2; idx < list.size(); idx++)
+                    {
+                        discreteWavelengths += " "; //space 
+                        if (!list.at(idx).contains("NONE"))
+                        {
+                            sm.addItem(list.at(idx).toLatin1().data());
+                            discreteWavelengths += list.at(idx).toLatin1().data();
+                        }
+
+                    }
+
+                    ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, list.at(currentWaveIdx + 1).toLatin1().data(), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
+
+                    paramVal.setMeta(&sm, false);
+                    m_params.insert(paramVal.getName(), paramVal);
+
+                }
+                else if (list.at(0).contains("CONTINUOUS"))
+                {
+                    int waveMin = list.at(1).toInt();
+                    int waveMax = list.at(2).toInt();
+                    int waveCur = list.at(list.at(3).toInt() + 3).toInt();
+
+                    ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::Int, 0, new ito::IntMeta(waveMin, waveMax), tr("Set Wavelengths [nm] continuous between: %1 - %2.").arg(waveMin).arg(waveMax).toLatin1().data());
+                    m_params.insert(paramVal.getName(), paramVal);
+                    m_params["wavelength"].setVal<int>(waveCur);
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Wavelength is not available.").toLatin1().data());
+                }
+            }
+
+            if (!retval.containsError())
+            {
+                request = QByteArray("$RN");
+                retval += SendQuestionWithAnswerInt(request, answerInt, m_params["timeout"].getVal<int>());  //optical output check query
+
+                ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, -2, 2, 0, tr("Measurement range (-2: dBm autoranging, -1: autoranging, 0: highest range, 1: second range, 2: next highest range).").toLatin1().data());
+                m_params.insert(paramVal.getName(), paramVal);
+                m_params["range"].setVal<int>(answerInt);
+            }
+
+            if (!retval.containsError()) // request if energy or power measurement
+            {
+                request = QByteArray("$FP");
+                retval += SerialSendCommand(request); // does not return a value
+
+                m_params["measurementType"].setVal<char*>("power");
+
+                Sleep(1000); //give the device some time
+
+                // dummy read 
+                double answer;
+                QByteArray request;
+                request = QByteArray("$SP");
+                retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+            }
+        }
+        else //connect to USB powermeter type
+        {
+            m_connection = connectionType::USB;
+            m_params["connection"].setVal<char*>("USB");
+            OphirLMMeasurement m_OphirLM;
+            std::vector<std::wstring> serialsFound;
+
+            // Scan for connected Devices
+            try
+            {
+                m_OphirLM.StopAllStreams();
+                m_OphirLM.ScanUSB(serialsFound);
+
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not scan USB devices.");
+            }
+
+
+            if (serialsFound.size() > 0) // found some connected devices
+            {
+                bool found = false;
+                for (int idx = 0; idx < serialsFound.size(); idx++) // iterate through alle serialnumbers
+                {
+                    if (openedDevices.contains(wCharToChar(serialsFound[idx].c_str())))  // already connected
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("The given input serial %1 is already connected.").arg(wCharToChar(serialsFound[idx].c_str())).toLatin1().data());
+                    }
+                    else if (serialNoInput.size() > 0 && serialNoInput.contains(wCharToChar(serialsFound[idx].c_str())))  //connected to input serial number
                     {
                         m_serialNo = serialsFound[idx];
                         found = true;
-                        break;
+                    }
+                    else
+                    {
+                        m_serialNo = serialsFound[0]; // connected to first found serial number
+                        found = true;
                     }
                 }
 
@@ -564,306 +624,311 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 {
                     retval += ito::RetVal(ito::retError, 0, tr("The given input serial %1 has not been found in serial number of connected devices").arg((serialNoInput).data()).toLatin1().data());
                 }
-
-            }
-        }
-        else
-        {
-            retval += ito::RetVal(ito::retError, 0, "no connected Ophir device detected");
-        }
-
-        if (!retval.containsError()) // open device
-        {
-            try
-            {
-                m_OphirLM.OpenUSBDevice(m_serialNo, m_handle);
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "Cannot open USB device.");
-            }
-
-            m_opened = true;
-
-            bool exists;
-            try
-            {
-                m_OphirLM.IsSensorExists(m_handle, m_channel, exists);
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "no sensor exists.");
-            }
-            
-
-            if (!exists)
-            {
-                retval += ito::RetVal(ito::retError, 0, "no sensor connected to the device");
-            }
-        }
-
-        if (!retval.containsError()) // get device infos
-        {
-            std::wstring deviceName, romVersion, serialNumber;
-            std::wstring info, headSN, headType, headName, version;
-            try
-            {
-                m_OphirLM.GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "can not get device infos");
-            }
-            
-
-            m_params["deviceType"].setVal<char*>(wCharToChar(deviceName.c_str()));
-            m_params["ROMVersion"].setVal<char*>(wCharToChar(romVersion.c_str()));
-            m_params["serialNumber"].setVal<char*>(wCharToChar(serialNumber.c_str()));
-
-            try
-            {
-                m_OphirLM.GetSensorInfo(m_handle, 0, headSN, headType, headName);
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "can not get sensor infos");
-            }
-            
-            m_params["headSerialNumber"].setVal<char*>(wCharToChar(headSN.c_str()));
-            m_params["headType"].setVal<char*>(wCharToChar(headType.c_str()));
-            m_params["headName"].setVal<char*>(wCharToChar(headName.c_str()));
-        }
-
-        // get wavelengths
-        if (!retval.containsError())
-        {
-
-            bool modifiable;
-            long waveMin;
-            long waveMax;
-            try
-            {
-                m_OphirLM.GetWavelengthsExtra(m_handle, m_channel, modifiable, waveMin, waveMax);
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "can not get the wavelength extra infos");
-            }
-           
-
-            if (modifiable) // continuous
-            {
-
-                ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::Int, 0, new ito::IntMeta(waveMin, waveMax), tr("Set Wavelengths [nm] continuous between: %1 - %2.").arg(waveMin).arg(waveMax).toLatin1().data());
-                m_params.insert(paramVal.getName(), paramVal);
-
-                try
+                else
                 {
-                    m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, waveMin);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, "can not modifie the wavelength");
-                }
-                
-
-                m_params["wavelength"].setVal<int>(waveMin);
-                m_params["wavelengthSet"].setVal<char*>("CONTINUOUS");
-            }
-            else //discrete
-            {
-                LONG index;
-                std::vector<std::wstring> options;
-                OphirLM.GetWavelengths(m_handle, m_channel, index, options);
-
-                ito::StringMeta sm(ito::StringMeta::String);
-
-                QString discreteWavelengths;
-                for (int idx = 0; idx < options.size(); idx++)
-                {
-                    m_discreteWavelengths.insert(wCharToChar(options[idx].c_str()), idx);
-                    discreteWavelengths += " "; //space 
-                    sm.addItem(wCharToChar(options[idx].c_str()));
-                    discreteWavelengths += wCharToChar(options[idx].c_str());
+                    openedDevices.append(wCharToChar(m_serialNo.c_str()));
                 }
 
-                ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, wCharToChar(options.at(0).c_str()), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
-                paramVal.setMeta(&sm, false);
-                m_params.insert(paramVal.getName(), paramVal);
-
-                try
-                {
-                    m_OphirLM.SetWavelength(m_handle, m_channel, 0); //set first wavelength
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, "can not set the wavelength");
-                }
-
-                
-                m_params["wavelengthSet"].setVal<char*>("DISCRETE");
-            }
-
-            
-        }
-
-        // get calibration due date
-        if (!retval.containsError())
-        {
-            std::tm dueDate;
-
-            try
-            {
-                m_OphirLM.GetDeviceCalibrationDueDate(m_handle, dueDate);
-                m_params["calibrationDueDate"].setVal<char*>(QString("%1:%L2:%L3").arg(dueDate.tm_year).arg(dueDate.tm_mon).arg(dueDate.tm_mday).toLatin1().data());
-                
-            }
-            catch (const _com_error& e)
-            {
-                m_params["calibrationDueDate"].setVal<char*>("not available");
-            }
-
-        }
-
-        // get ranges
-        if (!retval.containsError())
-        {
-            long index;
-            std::vector<std::wstring> options;
-            try
-            {
-                m_OphirLM.GetRanges(m_handle, m_channel, index, options);
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "can not get ranges.");
-            }
-
-            
-            
-            std::wstring docu = L"Measurement range (";
-            std::vector<std::wstring>::iterator it;
-
-            int idx = 0;
-            for (it = options.begin(); it != options.end(); ++it)
-            {
-                docu += std::to_wstring(idx);
-                docu += L": ";
-                docu += *it;
-                docu += L", ";
-                idx += 1;
-            }
-            docu.pop_back();  // delete "; " again
-            docu.pop_back();
-
-            docu += L").";
-
-            ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, 0, idx, index, tr(wCharToChar(docu.c_str())).toLatin1().data());
-            m_params.insert(paramVal.getName(), paramVal);
-
-            // there is no OphirLM function to get the unit 
-            // here is some workaround
-            QByteArray unit;
-            QByteArray opt = wCharToChar(options[idx - 1].c_str());
-            if (opt.contains("W"))
-            {
-                unit = "W";
-            }
-            else if (opt.contains("V"))
-            {
-                unit = "V";
-            }
-            else if (opt.contains("A"))
-            {
-                unit = "A";
-            }
-            else if (opt.contains("d"))
-            {
-                unit = "dBm";
-            }
-            else if (opt.contains("l"))
-            {
-                unit = "Lux";
-            }
-            else if (opt.contains("c"))
-            {
-                unit = "fc";
-            }
-            else if (opt.contains("J"))
-            {
-                unit = "J";
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 not found.").arg(opt.data()).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, "no connected Ophir device detected");
             }
 
-            m_params["unit"].setVal<char*>(unit.data());
-        }
+            if (!retval.containsError()) // open device
+            {
+                try
+                {
+                    m_OphirLM.OpenUSBDevice(m_serialNo, m_handle);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "Cannot open USB device.");
+                }
 
-        // get measurement mode
-        if (!retval.containsError())
-        {
-            long index;
-            std::vector<std::wstring> options;
-            try
-            {
-                m_OphirLM.GetMeasurementMode(m_handle, m_channel, index, options);
+                m_opened = true;
+
+                bool exists;
+                try
+                {
+                    m_OphirLM.IsSensorExists(m_handle, m_channel, exists);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "no sensor exists.");
+                }
+            
+
+                if (!exists)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "no sensor connected to the device");
+                }
             }
-            catch (const _com_error& e)
+
+            if (!retval.containsError()) // get device infos
             {
-                retval += ito::RetVal(ito::retError, 0, "can not get measuremnt mode.");
+                std::wstring deviceName, romVersion, serialNumber;
+                std::wstring info, headSN, headType, headName, version;
+                try
+                {
+                    m_OphirLM.GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not get device infos");
+                }
+            
+
+                m_params["deviceType"].setVal<char*>(wCharToChar(deviceName.c_str()));
+                m_params["ROMVersion"].setVal<char*>(wCharToChar(romVersion.c_str()));
+                m_params["serialNumber"].setVal<char*>(wCharToChar(serialNumber.c_str()));
+
+                try
+                {
+                    m_OphirLM.GetSensorInfo(m_handle, 0, headSN, headType, headName);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not get sensor infos");
+                }
+            
+                m_params["headSerialNumber"].setVal<char*>(wCharToChar(headSN.c_str()));
+                m_params["headType"].setVal<char*>(wCharToChar(headType.c_str()));
+                m_params["headName"].setVal<char*>(wCharToChar(headName.c_str()));
             }
+
+            // get wavelengths
+            if (!retval.containsError())
+            {
+
+                bool modifiable;
+                long waveMin;
+                long waveMax;
+                try
+                {
+                    m_OphirLM.GetWavelengthsExtra(m_handle, m_channel, modifiable, waveMin, waveMax);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not get the wavelength extra infos");
+                }
+           
+
+                if (modifiable) // continuous
+                {
+
+                    ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::Int, 0, new ito::IntMeta(waveMin, waveMax), tr("Set Wavelengths [nm] continuous between: %1 - %2.").arg(waveMin).arg(waveMax).toLatin1().data());
+                    m_params.insert(paramVal.getName(), paramVal);
+
+                    try
+                    {
+                        m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, waveMin);
+                    }
+                    catch (const _com_error& e)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "can not modifie the wavelength");
+                    }
+                
+
+                    m_params["wavelength"].setVal<int>(waveMin);
+                    m_params["wavelengthSet"].setVal<char*>("CONTINUOUS");
+                }
+                else //discrete
+                {
+                    LONG index;
+                    std::vector<std::wstring> options;
+                    m_OphirLM.GetWavelengths(m_handle, m_channel, index, options);
+
+                    ito::StringMeta sm(ito::StringMeta::String);
+
+                    QString discreteWavelengths;
+                    for (int idx = 0; idx < options.size(); idx++)
+                    {
+                        m_discreteWavelengths.insert(wCharToChar(options[idx].c_str()), idx);
+                        discreteWavelengths += " "; //space 
+                        sm.addItem(wCharToChar(options[idx].c_str()));
+                        discreteWavelengths += wCharToChar(options[idx].c_str());
+                    }
+
+                    ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, wCharToChar(options.at(0).c_str()), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
+                    paramVal.setMeta(&sm, false);
+                    m_params.insert(paramVal.getName(), paramVal);
+
+                    try
+                    {
+                        m_OphirLM.SetWavelength(m_handle, m_channel, 0); //set first wavelength
+                    }
+                    catch (const _com_error& e)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "can not set the wavelength");
+                    }
+
+                
+                    m_params["wavelengthSet"].setVal<char*>("DISCRETE");
+                }
+
+            
+            }
+
+            // get calibration due date
+            if (!retval.containsError())
+            {
+                std::tm dueDate;
+
+                try
+                {
+                    m_OphirLM.GetDeviceCalibrationDueDate(m_handle, dueDate);
+                    m_params["calibrationDueDate"].setVal<char*>(QString("%1:%L2:%L3").arg(dueDate.tm_year).arg(dueDate.tm_mon).arg(dueDate.tm_mday).toLatin1().data());
+                
+                }
+                catch (const _com_error& e)
+                {
+                    m_params["calibrationDueDate"].setVal<char*>("not available");
+                }
+
+            }
+
+            // get ranges
+            if (!retval.containsError())
+            {
+                long index;
+                std::vector<std::wstring> options;
+                try
+                {
+                    m_OphirLM.GetRanges(m_handle, m_channel, index, options);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not get ranges.");
+                }
 
             
             
-            for (int idx = 0; idx < options.size(); idx++)
-            {
-                m_measurementModes.insert(wCharToChar(options[idx].c_str()), idx);
+                std::wstring docu = L"Measurement range (";
+                std::vector<std::wstring>::iterator it;
+
+                int idx = 0;
+                for (it = options.begin(); it != options.end(); ++it)
+                {
+                    docu += std::to_wstring(idx);
+                    docu += L": ";
+                    docu += *it;
+                    docu += L", ";
+                    idx += 1;
+                }
+                docu.pop_back();  // delete "; " again
+                docu.pop_back();
+
+                docu += L").";
+
+                ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, 0, idx, index, tr(wCharToChar(docu.c_str())).toLatin1().data());
+                m_params.insert(paramVal.getName(), paramVal);
+
+                // there is no OphirLM function to get the unit 
+                // here is some workaround
+                QByteArray unit;
+                QByteArray opt = wCharToChar(options[idx - 1].c_str());
+                if (opt.contains("W"))
+                {
+                    unit = "W";
+                }
+                else if (opt.contains("V"))
+                {
+                    unit = "V";
+                }
+                else if (opt.contains("A"))
+                {
+                    unit = "A";
+                }
+                else if (opt.contains("d"))
+                {
+                    unit = "dBm";
+                }
+                else if (opt.contains("l"))
+                {
+                    unit = "Lux";
+                }
+                else if (opt.contains("c"))
+                {
+                    unit = "fc";
+                }
+                else if (opt.contains("J"))
+                {
+                    unit = "J";
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("return answer %1 not found.").arg(opt.data()).toLatin1().data());
+                }
+
+                m_params["unit"].setVal<char*>(unit.data());
             }
-            try
+
+            // get measurement mode
+            if (!retval.containsError())
             {
-                m_OphirLM.SetMeasurementMode(m_handle, m_channel, 0);
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "can not set measuremnt mode.");
-            }
+                long index;
+                std::vector<std::wstring> options;
+                try
+                {
+                    m_OphirLM.GetMeasurementMode(m_handle, m_channel, index, options);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not get measuremnt mode.");
+                }
 
             
-        }        
+            
+                for (int idx = 0; idx < options.size(); idx++)
+                {
+                    m_measurementModes.insert(wCharToChar(options[idx].c_str()), idx);
+                }
+                try
+                {
+                    m_OphirLM.SetMeasurementMode(m_handle, m_channel, 0);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not set measuremnt mode.");
+                }
 
-        if (!retval.containsError())
-        {
-            try
+            
+            }        
+
+            if (!retval.containsError())
             {
-                //start measuring on first device
-                m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
-                m_OphirLM.StopAllStreams(); //stop streams first
+                try
+                {
+                    //start measuring on first device
+                    m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
+                    m_OphirLM.StopAllStreams(); //stop streams first
 
-                m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
-                m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
+                    m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
+                    m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
 
-                m_OphirLM.StartStream(m_handle, m_channel); // start stream 
-            }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, "can not start stream.");
-            }
+                    m_OphirLM.StartStream(m_handle, m_channel); // start stream 
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not start stream.");
+                }
             
 
-        }
+            }
 
-        Sleep(2000); //give the device some time
+            Sleep(2000); //give the device some time
 
         
-        if (!retval.containsError()) // set RS232 params to readonly
-        {
-            m_params["comPort"].setFlags(ito::ParamBase::Readonly);
-            m_params["comPort"].setVal<int>(-1);
-        }
+            if (!retval.containsError()) // set RS232 params to readonly
+            {
+                m_params["comPort"].setFlags(ito::ParamBase::Readonly);
+                m_params["comPort"].setVal<int>(-1);
+            }
 
+        }
     }
+    
 
     if (!retval.containsError()) // set the size of the m_data object
     {
@@ -903,7 +968,7 @@ ito::RetVal OphirPowermeter::close(ItomSharedSemaphore *waitCond)
         }
         
         m_opened = false;
-        openedDevices.removeOne(m_serialNo);
+        openedDevices.removeOne(wCharToChar(m_serialNo.c_str()));
 
     }
 

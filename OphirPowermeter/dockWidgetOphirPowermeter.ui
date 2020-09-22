@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>286</width>
-    <height>417</height>
+    <width>262</width>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -136,13 +136,6 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>headSerialNumber</string>
-        </property>
-       </widget>
-      </item>
       <item row="6" column="1">
        <widget class="QLabel" name="lblHeadSerialNumber">
         <property name="text">
@@ -150,10 +143,31 @@
         </property>
        </widget>
       </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>headSerialNumber</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>calibration due date:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLabel" name="lblCalibrationDueDate">
+        <property name="text">
+         <string>[calibrationDueDate]</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxSettings">
      <property name="enabled">
       <bool>false</bool>
@@ -284,24 +298,6 @@
        </widget>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="labelVal">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-      </font>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="textFormat">
-      <enum>Qt::RichText</enum>
-     </property>
     </widget>
    </item>
    <item row="3" column="0">
