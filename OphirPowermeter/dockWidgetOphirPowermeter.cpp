@@ -28,10 +28,12 @@
 #include <qmetaobject.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInBase *actuator) :
-    AbstractAddInDockWidget(actuator),  
+DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInDataIO *adda) :
+    AbstractAddInDockWidget(adda),
     m_inEditing(false),  
-    m_firstRun(true)
+    m_plugin(adda),
+    m_firstRun(true),
+    m_timerIsRunning(false)
 {
      ui.setupUi(this); 
 
@@ -45,12 +47,13 @@ DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInBas
 {
     if (m_firstRun)
     {
-
+        m_inEditing = true;
         ui.lblComPort->setText(QString::number(params["comPort"].getVal<int>()));
         ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
         ui.lblROM->setText(params["ROMVersion"].getVal<char*>());
         ui.lblDeviceType->setText(params["deviceType"].getVal<char*>());
         ui.lblHead->setText(params["headType"].getVal<char*>());
+        ui.lblHeadSerialNumber->setText(params["headSerialNumber"].getVal<char*>());
 
 		ito::IntMeta *intmeta = static_cast<ito::IntMeta*>(params["range"].getMeta());
 		ui.comboBoxRange->clear();
@@ -60,22 +63,23 @@ DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInBas
 			ui.comboBoxRange->addItem(QString::number(i));
 		}
 		int index = ui.comboBoxRange->findText(QString::number(params["range"].getVal<int>()));
-		ui.comboBoxRange->setCurrentIndex(index);
 
 		ito::StringMeta* sm = (ito::StringMeta*)(params["measurementType"].getMeta());
 		for (int x = 0; x < sm->getLen(); x++)
 		{
 			ui.comboBoxMeasurementType->addItem(sm->getString(x));
 			int index = ui.comboBoxMeasurementType->findText(params["measurementType"].getVal<char*>());
-			ui.comboBoxMeasurementType->setCurrentIndex(index);
 		}
 
 		char* set = params["wavelengthSet"].getVal<char*>();
-		ui.lblWavelengthSet->setText(set);
 
 		if (QString::fromLatin1(set).compare("CONTINUOUS") == 0)
 		{
-			ui.stackedWidgetWavelengthSet->setCurrentIndex(0);
+            ito::IntMeta *im;
+            im = static_cast<ito::IntMeta*>(params["wavelength"].getMeta());
+            ui.spinBoxWavelength->setSingleStep(im->getStepSize());
+            ui.spinBoxWavelength->setMinimum(im->getMin());
+            ui.spinBoxWavelength->setMaximum(im->getMax());
 		}
 		else
 		{
@@ -87,12 +91,13 @@ DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInBas
 				ui.comboBoxWavelength->addItem(sm->getString(x));
 			}
 			int index = ui.comboBoxWavelength->findText(params["wavelength"].getVal<char*>());
-			ui.comboBoxWavelength->setCurrentIndex(index);
 		}
 
 		ui.lblUnit->setText(params["unit"].getVal<char*>());
 
         m_firstRun = false;
+        m_inEditing = false;
+        enableWidget(true);
     }
 
     //__________________________________________________________________________________________________________ Editing
@@ -100,6 +105,22 @@ DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInBas
     {
         m_inEditing = true;
 
+        int index = ui.comboBoxRange->findText(QString::number(params["range"].getVal<int>()));
+        ui.comboBoxRange->setCurrentIndex(index);
+
+        char* set = params["wavelengthSet"].getVal<char*>();
+        ui.lblWavelengthSet->setText(set);
+
+        if (QString::fromLatin1(set).compare("CONTINUOUS") == 0)
+        {
+            ui.spinBoxWavelength->setValue(params["wavelength"].getVal<int>());
+        }
+        else
+        {
+            ui.comboBoxWavelength->setCurrentIndex(ui.comboBoxWavelength->findText(params["wavelength"].getVal<char*>()));
+        }
+
+        ui.comboBoxMeasurementType->setCurrentIndex(ui.comboBoxMeasurementType->findText(params["measurementType"].getVal<char*>()));
         
         m_inEditing = false;
     }
@@ -115,5 +136,108 @@ void DockWidgetOphirPowermeter::identifierChanged(const QString &identifier)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetOphirPowermeter::enableWidget(bool enabled)
 {
-    
+    ui.groupBoxSettings->setEnabled(enabled);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::on_checkAutograbbing_stateChanged(int val)
+{
+    manageTimer(true);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::manageTimer(const bool &visible)
+{
+    if (visible && ui.checkAutograbbing->checkState() == Qt::Checked)
+    {
+        m_timerId = startTimer(100);
+        m_timerIsRunning = true;
+    }
+    else if (m_timerIsRunning)
+    {
+        killTimer(m_timerId);
+        m_timerIsRunning = false;
+        ui.labelVal->setText(QString("").toLatin1().data());
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::timerEvent(QTimerEvent *event)
+{
+    ito::RetVal retval(ito::retOk);
+    ItomSharedSemaphore* waitCond = new ItomSharedSemaphore();
+    QSharedPointer<double> value = QSharedPointer<double>(new double);
+    QSharedPointer<QString> unit = QSharedPointer<QString>(new QString);
+
+    QMetaObject::invokeMethod(m_plugin, "acquireAutograbbing", Q_ARG(QSharedPointer<double>, value), Q_ARG(QSharedPointer<QString>, unit), Q_ARG(ItomSharedSemaphore*, waitCond));
+    if (waitCond->waitAndProcessEvents(10000))
+    {
+        retval += waitCond->returnValue;
+        if (!retval.containsError())
+        {
+            ui.lcdNumber->display(*value);
+            ui.labelVal->setText(*unit);
+        }
+    }
+    waitCond->deleteSemaphore();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::on_spinBoxWavelength_valueChanged(double val)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("wavelength", ito::ParamBase::Double, val));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::on_comboBoxWavelength_currentIndexChanged(int val)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("wavelength", ito::ParamBase::String, ui.comboBoxWavelength->currentText().toLatin1().data()));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::on_comboBoxRange_currentIndexChanged(int val)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("range", ito::ParamBase::Int, val));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::on_comboBoxMeasurementType_currentIndexChanged(int val)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("measurementType", ito::ParamBase::Int, ui.comboBoxWavelength->currentText().toLatin1().data()));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetOphirPowermeter::on_pushButtonZeroing_clicked()
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        
+        m_inEditing = false;
+    }
 }

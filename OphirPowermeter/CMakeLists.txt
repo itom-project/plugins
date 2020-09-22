@@ -37,7 +37,6 @@ include_directories(
 )
 
 set(PLUGIN_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogOphirPowermeter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetOphirPowermeter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirPowermeter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
@@ -46,12 +45,10 @@ set(PLUGIN_HEADERS
 )
 
 set(PLUGIN_UI
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogOphirPowermeter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetOphirPowermeter.ui
 )
 
 set(PLUGIN_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogOphirPowermeter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetOphirPowermeter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirPowermeter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirLMMeasurement.cpp

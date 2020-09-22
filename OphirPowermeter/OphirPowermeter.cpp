@@ -37,6 +37,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qplugin.h>
 #include <QtCore/QtPlugin>
 #include <qregexp.h>
+#include <qelapsedtimer.h>
 
 #include "common/helperCommon.h"
 #include "common/apiFunctionsInc.h"
@@ -183,6 +184,13 @@ m_channel(0)
     paramVal = ito::Param("calibrationDueDate", ito::ParamBase::String | ito::ParamBase::Readonly, "date not available", tr("Calibration due date").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    sm.clearItems();
+    paramVal = ito::Param("connection", ito::ParamBase::String | ito::ParamBase::Readonly, "RS232", "type of the connection ('RS232', 'USB')");
+    sm.addItem("RS232");
+    sm.addItem("USB");
+    paramVal.setMeta(&sm, false);
+    m_params.insert(paramVal.getName(), paramVal);
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -215,6 +223,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     if (type == "RS232")  // init as RS232 powermeter type
     {
         m_connection = connectionType::RS232; 
+        m_params["connection"].setVal<char*>("RS232");
         
         // check serialIO and set parameters
         if (reinterpret_cast<ito::AddInBase *>((*paramsOpt)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
@@ -509,7 +518,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
             Sleep(1000); //give the device some time
 
-                         // dummy read 
+            // dummy read 
             double answer;
             QByteArray request;
             request = QByteArray("$SP");
@@ -519,6 +528,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     else //connect to USB powermeter type
     {
         m_connection = connectionType::USB;
+        m_params["connection"].setVal<char*>("USB");
         OphirLMMeasurement OphirLM;
 
         std::vector<std::wstring> serialsFound;
@@ -576,7 +586,15 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_opened = true;
 
             bool exists;
-            m_OphirLM.IsSensorExists(m_handle, m_channel, exists);
+            try
+            {
+                m_OphirLM.IsSensorExists(m_handle, m_channel, exists);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "no sensor exists.");
+            }
+            
 
             if (!exists)
             {
@@ -588,13 +606,29 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             std::wstring deviceName, romVersion, serialNumber;
             std::wstring info, headSN, headType, headName, version;
-            m_OphirLM.GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
+            try
+            {
+                m_OphirLM.GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not get device infos");
+            }
+            
 
             m_params["deviceType"].setVal<char*>(wCharToChar(deviceName.c_str()));
             m_params["ROMVersion"].setVal<char*>(wCharToChar(romVersion.c_str()));
             m_params["serialNumber"].setVal<char*>(wCharToChar(serialNumber.c_str()));
 
-            m_OphirLM.GetSensorInfo(m_handle, 0, headSN, headType, headName);
+            try
+            {
+                m_OphirLM.GetSensorInfo(m_handle, 0, headSN, headType, headName);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not get sensor infos");
+            }
+            
             m_params["headSerialNumber"].setVal<char*>(wCharToChar(headSN.c_str()));
             m_params["headType"].setVal<char*>(wCharToChar(headType.c_str()));
             m_params["headName"].setVal<char*>(wCharToChar(headName.c_str()));
@@ -607,8 +641,15 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             bool modifiable;
             long waveMin;
             long waveMax;
-            m_OphirLM.GetWavelengthsExtra(m_handle, m_channel, modifiable, waveMin, waveMax);
-
+            try
+            {
+                m_OphirLM.GetWavelengthsExtra(m_handle, m_channel, modifiable, waveMin, waveMax);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not get the wavelength extra infos");
+            }
+           
 
             if (modifiable) // continuous
             {
@@ -616,7 +657,15 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::Int, 0, new ito::IntMeta(waveMin, waveMax), tr("Set Wavelengths [nm] continuous between: %1 - %2.").arg(waveMin).arg(waveMax).toLatin1().data());
                 m_params.insert(paramVal.getName(), paramVal);
 
-                m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, waveMin);
+                try
+                {
+                    m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, waveMin);
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not modifie the wavelength");
+                }
+                
 
                 m_params["wavelength"].setVal<int>(waveMin);
                 m_params["wavelengthSet"].setVal<char*>("CONTINUOUS");
@@ -642,7 +691,16 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 paramVal.setMeta(&sm, false);
                 m_params.insert(paramVal.getName(), paramVal);
 
-                m_OphirLM.SetWavelength(m_handle, m_channel, 0); //set first wavelength
+                try
+                {
+                    m_OphirLM.SetWavelength(m_handle, m_channel, 0); //set first wavelength
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "can not set the wavelength");
+                }
+
+                
                 m_params["wavelengthSet"].setVal<char*>("DISCRETE");
             }
 
@@ -672,7 +730,16 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             long index;
             std::vector<std::wstring> options;
-            m_OphirLM.GetRanges(m_handle, m_channel, index, options);
+            try
+            {
+                m_OphirLM.GetRanges(m_handle, m_channel, index, options);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not get ranges.");
+            }
+
+            
             
             std::wstring docu = L"Measurement range (";
             std::vector<std::wstring>::iterator it;
@@ -694,7 +761,8 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, 0, idx, index, tr(wCharToChar(docu.c_str())).toLatin1().data());
             m_params.insert(paramVal.getName(), paramVal);
 
-
+            // there is no OphirLM function to get the unit 
+            // here is some workaround
             QByteArray unit;
             QByteArray opt = wCharToChar(options[idx - 1].c_str());
             if (opt.contains("W"))
@@ -738,33 +806,61 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             long index;
             std::vector<std::wstring> options;
-            m_OphirLM.GetMeasurementMode(m_handle, m_channel, index, options);
+            try
+            {
+                m_OphirLM.GetMeasurementMode(m_handle, m_channel, index, options);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not get measuremnt mode.");
+            }
+
+            
             
             for (int idx = 0; idx < options.size(); idx++)
             {
                 m_measurementModes.insert(wCharToChar(options[idx].c_str()), idx);
             }
+            try
+            {
+                m_OphirLM.SetMeasurementMode(m_handle, m_channel, 0);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not set measuremnt mode.");
+            }
 
-            m_OphirLM.SetMeasurementMode(m_handle, m_channel, 0);
+            
         }        
 
         if (!retval.containsError())
         {
-            //start measuring on first device
-            m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
-            
-            m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
-            m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
+            try
+            {
+                //start measuring on first device
+                m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
+                m_OphirLM.StopAllStreams(); //stop streams first
 
-            m_OphirLM.StartStream(m_handle, m_channel); // start stream 
+                m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
+                m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
+
+                m_OphirLM.StartStream(m_handle, m_channel); // start stream 
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not start stream.");
+            }
+            
 
         }
 
-        Sleep(1000); //give the device some time
+        Sleep(2000); //give the device some time
 
+        
         if (!retval.containsError()) // set RS232 params to readonly
         {
             m_params["comPort"].setFlags(ito::ParamBase::Readonly);
+            m_params["comPort"].setVal<int>(-1);
         }
 
     }
@@ -795,8 +891,17 @@ ito::RetVal OphirPowermeter::close(ItomSharedSemaphore *waitCond)
 
     if (m_connection == connectionType::USB)
     {
-        m_OphirLM.StopAllStreams(); //stop measuring
-        m_OphirLM.CloseAll(); //close device
+        try
+        {
+            
+            m_OphirLM.StopAllStreams(); //stop measuring
+            m_OphirLM.CloseAll(); //close device
+        }
+        catch (const _com_error& e)
+        {
+            retValue += ito::RetVal(ito::retError, 0, "can not start stream.");
+        }
+        
         m_opened = false;
         openedDevices.removeOne(m_serialNo);
 
@@ -952,9 +1057,18 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             }
             else
             {
-                m_OphirLM.StopAllStreams();
-                m_OphirLM.SetMeasurementMode(m_handle, m_channel, m_measurementModes.value(val->getVal<char*>()));
-                m_OphirLM.StartStream(m_handle, m_channel);
+                try
+                {
+                    m_OphirLM.StopAllStreams();
+                    m_OphirLM.SetMeasurementMode(m_handle, m_channel, m_measurementModes.value(val->getVal<char*>()));
+                    m_OphirLM.StartStream(m_handle, m_channel);
+                }
+                catch (const _com_error& e)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "can not set measurement mode.");
+                }
+                
+                Sleep(0.2);
             }
             
             
@@ -998,17 +1112,26 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             else
             {
                 QString setWave = QString::fromLatin1(m_params["wavelengthSet"].getVal<char*>());
-                if (setWave.compare("DISCRETE") == 0)
+                try
                 {
                     m_OphirLM.StopAllStreams();
-                    m_OphirLM.SetWavelength(m_handle, m_channel, m_discreteWavelengths.value(val->getVal<char*>()));
+                    Sleep(0.5);
+                    if (setWave.compare("DISCRETE") == 0)
+                    {
+                        
+                        m_OphirLM.SetWavelength(m_handle, m_channel, m_discreteWavelengths.value(val->getVal<char*>()));
+                    }
+                    else
+                    {
+                        m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, val->getVal<int>());
+                        
+                    }
+                    Sleep(0.5);
                     m_OphirLM.StartStream(m_handle, m_channel);
                 }
-                else
+                catch (const _com_error& e)
                 {
-                    m_OphirLM.StopAllStreams();
-                    m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, val->getVal<int>());
-                    m_OphirLM.StartStream(m_handle, m_channel);
+                    retValue += ito::RetVal(ito::retError, 0, "can not modify wavelength.");
                 }
                 
             }
@@ -1032,9 +1155,18 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             }
             else
             {
-                m_OphirLM.StopAllStreams();
-                m_OphirLM.SetRange(m_handle, m_channel, val->getVal<int>());
-                m_OphirLM.StartStream(m_handle, m_channel);
+                try
+                {
+                    m_OphirLM.StopAllStreams();
+                    Sleep(0.5);
+                    m_OphirLM.SetRange(m_handle, m_channel, val->getVal<int>());
+                    Sleep(0.5);
+                    m_OphirLM.StartStream(m_handle, m_channel);
+                }
+                catch (const _com_error& e)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "can not set range.");
+                }
             }
 
             if (!retValue.containsError())
@@ -1092,18 +1224,32 @@ ito::RetVal OphirPowermeter::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool OphirPowermeter::definitelyGreaterThan(const double &a, const double &b)
+{
+    return (a - b) > ((std::abs(a) < std::abs(b) ? std::abs(b) : std::abs(a)) * std::numeric_limits<double>::epsilon());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool OphirPowermeter::definitelyLessThan(const double &a, const double &b)
+{
+    return (b - a) > ((std::abs(a) < std::abs(b) ? std::abs(b) : std::abs(a)) * std::numeric_limits<double>::epsilon());
+}
          
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retval(ito::retOk);
 
-    double answer;
     QByteArray request;
     QTime timer;
     bool done = false;
 
+    double value;
+    
 
+    m_isgrabbing = true;
     if (m_connection == connectionType::RS232)
     {
         QString type = QLatin1String(m_params["measurementType"].getVal<char*>());
@@ -1121,40 +1267,64 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
             retval += ito::RetVal(ito::retError, 0, tr("given measurement type %1 is unknown.").arg(type).toLatin1().data());
         }
 
-        retval += SendQuestionWithAnswerDouble(request, answer, m_params["timeout"].getVal<int>());  //optical output check query
+        retval += SendQuestionWithAnswerDouble(request, value, m_params["timeout"].getVal<int>());  //optical output check query
 
-
-        if (!retval.containsError())
-        {
-            m_data.at<ito::float64>(0, 0) = answer;
-            m_isgrabbing = true;
-            m_data.setValueUnit(m_params["unit"].getVal<char*>());
-        }
     }
     else
     {
         std::vector<double> values;
         std::vector<double> timestamps;
         std::vector<OphirLMMeasurement::Status> statuses;
+        bool hasNewValue = false;
+        QElapsedTimer timer;
+        int timeout = m_params["timeout"].getVal<int>();
+        timer.start();
 
-        for (int i = 0; i < 10; i++)
+        while (!timer.hasExpired(timeout))
         {
             Sleep(0.2);
 
-            m_OphirLM.GetData(m_handle, m_channel, values, timestamps, statuses);
+            try
+            {
+                m_OphirLM.GetData(m_handle, m_channel, values, timestamps, statuses);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, "can not get data.");
+            }
 
             if (values.size() > 0)
             {
-                m_data.at<ito::float64>(0, 0) = values[0];
-                m_isgrabbing = true;
-                
-                    
+                value = values[0];
+                hasNewValue = true;
+                break;   
             }
-            
+        }
+
+        if (!hasNewValue)
+        {
+            retval += ito::RetVal(ito::retError, 0, "timeout during getData.");
         }
         
+    }    
+
+    if (!retval.containsError())
+    {
+        if (definitelyLessThan(std::abs(value), 1E-30))
+        {
+            m_data.at<ito::float64>(0, 0) = 0.0;
+        }
+        else if (definitelyGreaterThan(std::abs(value), 1E30))
+        {
+            m_data.at<ito::float64>(0, 0) = std::numeric_limits<ito::float64>::infinity();
+        }
+        else
+        {
+            m_data.at<ito::float64>(0, 0) = value;
+        }
+
+        m_data.setValueUnit(m_params["unit"].getVal<char*>());
     }
-    
 
     if (waitCond)
     {
@@ -1164,6 +1334,24 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
     }
 
     return retval;
+}
+
+ito::RetVal OphirPowermeter::acquireAutograbbing(QSharedPointer<double> value, QSharedPointer<QString> unit, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval(ito::retOk);
+    acquire(0, waitCond);
+
+    *value = m_data.at<ito::float64>(0, 0);
+    *unit = QString::fromStdString(m_data.getValueUnit());
+    
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1312,13 +1500,6 @@ void OphirPowermeter::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal OphirPowermeter::showConfDialog(void)
-{
-    return apiShowConfigurationDialog(this, new DialogOphirPowermeter(this));
-}
-
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
 ito::RetVal OphirPowermeter::SendQuestionWithAnswerInt(QByteArray questionCommand, int &answer, int timeoutMS)

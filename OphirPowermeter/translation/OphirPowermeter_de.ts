@@ -2,69 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DialogOphirPowermeter</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Wavelength</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bandwidth</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Attenuation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> nm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Measurement Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Power Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> mW</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line Frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Average Measurements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reference Power</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zero</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>OphirPowermeter</name>
     <message>
         <source>Name of plugin</source>
@@ -336,6 +273,18 @@ Tested devices: 1-channel VEGA (USB, RS232)</source>
     </message>
     <message>
         <source>Autograbbing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zeroing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>headSerialNumber</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[headSerialNumber]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

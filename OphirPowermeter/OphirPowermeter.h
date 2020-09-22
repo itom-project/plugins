@@ -31,7 +31,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
 
-#include "dialogOphirPowermeter.h"
 #include "dockWidgetOphirPowermeter.h"
 
 #include <qsharedpointer.h>
@@ -61,8 +60,7 @@ class OphirPowermeter : public ito::AddInDataIO
         
     public:
         friend class OphirPowermeterInterface;
-        const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+        int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
         
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
@@ -96,6 +94,8 @@ class OphirPowermeter : public ito::AddInDataIO
         ito::RetVal SendQuestionWithAnswerInt(QByteArray questionCommand, int &answer, int timeoutMS);
         ito::RetVal SendQuestionWithAnswerDouble(QByteArray questionCommand, double &answer, int timeoutMS);
         ito::RetVal SendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS);
+        bool definitelyLessThan(const double &a, const double &b);
+        bool definitelyGreaterThan(const double &a, const double &b);
         
         char *m_charBuffer;
         char* wCharToChar(const wchar_t *input);
@@ -123,6 +123,8 @@ class OphirPowermeter : public ito::AddInDataIO
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+
+        ito::RetVal acquireAutograbbing(QSharedPointer<double> value, QSharedPointer<QString> unit, ItomSharedSemaphore *waitCond);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
