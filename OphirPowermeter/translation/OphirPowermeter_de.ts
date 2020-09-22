@@ -206,6 +206,14 @@
         <source>No serialIO plugin instance given. A SerialIO instance is needed to use the RS232 type of powermeter.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Calibration due date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>return answer %1 not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirPowermeterInterface</name>
@@ -221,18 +229,18 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. 
-It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. 
-
-Tested devices: VEGA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Plugin for Ophir Powermeter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. 
+It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. 
+
+Tested devices: 1-channel VEGA (USB, RS232)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

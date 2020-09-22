@@ -88,6 +88,7 @@ class OphirPowermeter : public ito::AddInDataIO
         connectionType m_connection;
 
         QMap<QString, int> m_discreteWavelengths;
+        QMap<QString, int> m_measurementModes;
 
         DockWidgetOphirPowermeter *m_dockWidget;
         ito::RetVal SerialSendCommand(QByteArray command);

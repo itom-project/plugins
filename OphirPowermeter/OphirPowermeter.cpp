@@ -57,7 +57,7 @@ OphirPowermeterInterface::OphirPowermeterInterface()
     m_detaildescription = QObject::tr("The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. \n\
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. \n\
 \n\
-Tested devices: VEGA");
+Tested devices: 1-channel VEGA (USB, RS232)");
 
     m_author = "J. Krauter, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -179,7 +179,10 @@ m_channel(0)
     sm.addItem("CONTINUOUS");
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
-    
+
+    paramVal = ito::Param("calibrationDueDate", ito::ParamBase::String | ito::ParamBase::Readonly, "date not available", tr("Calibration due date").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -565,9 +568,9 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             {
                 m_OphirLM.OpenUSBDevice(m_serialNo, m_handle);
             }
-            catch (int &e)
+            catch (const _com_error& e)
             {
-                retval += checkError(e, "Open usb device");
+                retval += ito::RetVal(ito::retError, 0, "Cannot open USB device.");
             }
 
             m_opened = true;
@@ -601,26 +604,67 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         if (!retval.containsError())
         {
 
-            LONG index;
-            std::vector<std::wstring> options;
-            OphirLM.GetWavelengths(m_handle, m_channel, index, options);
+            bool modifiable;
+            long waveMin;
+            long waveMax;
+            m_OphirLM.GetWavelengthsExtra(m_handle, m_channel, modifiable, waveMin, waveMax);
 
-            ito::StringMeta sm(ito::StringMeta::String);
 
-            QString discreteWavelengths;
-            for (int idx = 0; idx < options.size(); idx++)
+            if (modifiable) // continuous
             {
-                m_discreteWavelengths.insert(wCharToChar(options[idx].c_str()), idx);
-                discreteWavelengths += " "; //space 
-                sm.addItem(wCharToChar(options[idx].c_str()));
-                discreteWavelengths += wCharToChar(options[idx].c_str());
+
+                ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::Int, 0, new ito::IntMeta(waveMin, waveMax), tr("Set Wavelengths [nm] continuous between: %1 - %2.").arg(waveMin).arg(waveMax).toLatin1().data());
+                m_params.insert(paramVal.getName(), paramVal);
+
+                m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, waveMin);
+
+                m_params["wavelength"].setVal<int>(waveMin);
+                m_params["wavelengthSet"].setVal<char*>("CONTINUOUS");
+            }
+            else //discrete
+            {
+                LONG index;
+                std::vector<std::wstring> options;
+                OphirLM.GetWavelengths(m_handle, m_channel, index, options);
+
+                ito::StringMeta sm(ito::StringMeta::String);
+
+                QString discreteWavelengths;
+                for (int idx = 0; idx < options.size(); idx++)
+                {
+                    m_discreteWavelengths.insert(wCharToChar(options[idx].c_str()), idx);
+                    discreteWavelengths += " "; //space 
+                    sm.addItem(wCharToChar(options[idx].c_str()));
+                    discreteWavelengths += wCharToChar(options[idx].c_str());
+                }
+
+                ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, wCharToChar(options.at(0).c_str()), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
+                paramVal.setMeta(&sm, false);
+                m_params.insert(paramVal.getName(), paramVal);
+
+                m_OphirLM.SetWavelength(m_handle, m_channel, 0); //set first wavelength
+                m_params["wavelengthSet"].setVal<char*>("DISCRETE");
             }
 
-            ito::Param paramVal = ito::Param("wavelength", ito::ParamBase::String, wCharToChar(options.at(0).c_str()), tr("Available discrete wavelengths:%1.").arg(discreteWavelengths).toLatin1().data());
-            paramVal.setMeta(&sm, false);
-            m_params.insert(paramVal.getName(), paramVal);
+            
+        }
 
-            OphirLM.SetWavelength(m_handle, 0, 0); //set first wavelength
+        // get calibration due date
+        if (!retval.containsError())
+        {
+            std::tm dueDate;
+
+            try
+            {
+                m_OphirLM.GetDeviceCalibrationDueDate(m_handle, dueDate);
+                m_params["calibrationDueDate"].setVal<char*>(QString("%1:%L2:%L3").arg(dueDate.tm_year).arg(dueDate.tm_mon).arg(dueDate.tm_mday).toLatin1().data());
+                
+            }
+            catch (const _com_error& e)
+            {
+                m_params["calibrationDueDate"].setVal<char*>("not available");
+            }
+
         }
 
         // get ranges
@@ -649,12 +693,59 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
             ito::Param paramVal = ito::Param("range", ito::ParamBase::Int, 0, idx, index, tr(wCharToChar(docu.c_str())).toLatin1().data());
             m_params.insert(paramVal.getName(), paramVal);
+
+
+            QByteArray unit;
+            QByteArray opt = wCharToChar(options[idx - 1].c_str());
+            if (opt.contains("W"))
+            {
+                unit = "W";
+            }
+            else if (opt.contains("V"))
+            {
+                unit = "V";
+            }
+            else if (opt.contains("A"))
+            {
+                unit = "A";
+            }
+            else if (opt.contains("d"))
+            {
+                unit = "dBm";
+            }
+            else if (opt.contains("l"))
+            {
+                unit = "Lux";
+            }
+            else if (opt.contains("c"))
+            {
+                unit = "fc";
+            }
+            else if (opt.contains("J"))
+            {
+                unit = "J";
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("return answer %1 not found.").arg(opt.data()).toLatin1().data());
+            }
+
+            m_params["unit"].setVal<char*>(unit.data());
         }
 
-        // get unit
+        // get measurement mode
         if (!retval.containsError())
         {
+            long index;
+            std::vector<std::wstring> options;
+            m_OphirLM.GetMeasurementMode(m_handle, m_channel, index, options);
+            
+            for (int idx = 0; idx < options.size(); idx++)
+            {
+                m_measurementModes.insert(wCharToChar(options[idx].c_str()), idx);
+            }
 
+            m_OphirLM.SetMeasurementMode(m_handle, m_channel, 0);
         }        
 
         if (!retval.containsError())
@@ -820,42 +911,52 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
     {
         if (key.compare("measurementType") == 0)
         {
-            QString type = QLatin1String(val->getVal<char*>());
-            if (type.compare("energy") == 0)
+            if (m_connection == connectionType::RS232)
             {
-                request = "$FE";
-                retValue += SerialSendCommand(request);
-
-                if (!retValue.containsError())
+                QString type = QLatin1String(val->getVal<char*>());
+                if (type.compare("energy") == 0)
                 {
-                    it->setVal<char*>("energy");
+                    request = "$FE";
+                    retValue += SerialSendCommand(request);
+
+                    if (!retValue.containsError())
+                    {
+                        it->setVal<char*>("energy");
                     
-                    m_data.setValueDescription("energy");
+                        m_data.setValueDescription("energy");
+                    }
                 }
-            }
-            else if (type.compare("power") == 0)
-            {
-                request = "$FP";
-                retValue += SerialSendCommand(request);
+                else if (type.compare("power") == 0)
+                {
+                    request = "$FP";
+                    retValue += SerialSendCommand(request);
+
+                    if (!retValue.containsError())
+                    {
+                        it->setVal<char*>("power");
+                        m_data.setValueDescription("power");
+                    }
+                }
+
+                else
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Parameter value: %1 is unknown.").arg(val->getVal<char*>()).toLatin1().data());
+                }
 
                 if (!retValue.containsError())
                 {
-                    it->setVal<char*>("power");
-                    m_data.setValueDescription("power");
+                    QSharedPointer<ito::Param> param(new ito::Param("unit"));
+                    retValue += this->getParam(param, NULL);
+                    m_data.setValueUnit(param->getVal<char*>());
                 }
             }
-
             else
             {
-                return ito::RetVal(ito::retError, 0, tr("Parameter value: %1 is unknown.").arg(val->getVal<char*>()).toLatin1().data());
+                m_OphirLM.StopAllStreams();
+                m_OphirLM.SetMeasurementMode(m_handle, m_channel, m_measurementModes.value(val->getVal<char*>()));
+                m_OphirLM.StartStream(m_handle, m_channel);
             }
-
-            if (!retValue.containsError())
-            {
-                QSharedPointer<ito::Param> param(new ito::Param("unit"));
-                retValue += this->getParam(param, NULL);
-                m_data.setValueUnit(param->getVal<char*>());
-            }
+            
             
         }
         else if (key.compare("wavelength") == 0)
@@ -896,10 +997,20 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             }
             else
             {
-
-                m_OphirLM.StopAllStreams();
-                m_OphirLM.SetWavelength(m_handle, m_channel, m_discreteWavelengths.value(val->getVal<char*>()));
-                m_OphirLM.StartStream(m_handle, m_channel);
+                QString setWave = QString::fromLatin1(m_params["wavelengthSet"].getVal<char*>());
+                if (setWave.compare("DISCRETE") == 0)
+                {
+                    m_OphirLM.StopAllStreams();
+                    m_OphirLM.SetWavelength(m_handle, m_channel, m_discreteWavelengths.value(val->getVal<char*>()));
+                    m_OphirLM.StartStream(m_handle, m_channel);
+                }
+                else
+                {
+                    m_OphirLM.StopAllStreams();
+                    m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, val->getVal<int>());
+                    m_OphirLM.StartStream(m_handle, m_channel);
+                }
+                
             }
             
 
