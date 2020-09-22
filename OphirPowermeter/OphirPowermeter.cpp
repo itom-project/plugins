@@ -58,7 +58,7 @@ OphirPowermeterInterface::OphirPowermeterInterface()
     m_detaildescription = QObject::tr("The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. \n\
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. \n\
 \n\
-Tested devices: 1-channel VEGA (USB, RS232)");
+Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.");
 
     m_author = "J. Krauter, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -67,13 +67,13 @@ Tested devices: 1-channel VEGA (USB, RS232)");
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION); 
 
-    ito::Param p("connection", ito::ParamBase::String, "RS232", "type of the connection ('RS232', 'USB')");
+    ito::Param p("connection", ito::ParamBase::String, "RS232", "Type of the connection ('RS232', 'USB'). For the RS232 connection a serialIO plugin instance is needed!");
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "RS232");
     sm->addItem("USB");
     p.setMeta(sm, true);
     m_initParamsMand.append(p);
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this plugin).").toLatin1().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communication parameters will be set by this plugin).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsOpt.append(paramVal);
 
@@ -111,16 +111,16 @@ m_opened(false),
 m_handle(0),
 m_channel(0)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "OphirPowermeter", tr("Name of plugin").toLatin1().data());
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "OphirPowermeter", tr("Name of plugin.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    m_params.insert("comPort", ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data()));
-    m_params.insert("battery", ito::Param("battery", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if battery is OK, 0 if battery is low").toLatin1().data()));
-    m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("Request timeout, default 1000 ms").toLatin1().data()));
+    m_params.insert("comPort", ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined.").toLatin1().data()));
+    m_params.insert("battery", ito::Param("battery", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if battery is OK, 0 if battery is low.").toLatin1().data()));
+    m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100000, 1000, tr("Request timeout, default 1000 ms.").toLatin1().data()));
 
-    m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device shown on display").toLatin1().data()));
+    m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device shown on display.").toLatin1().data()));
     m_params.insert("ROMVersion", ito::Param("ROMVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Version of ROM software.").toLatin1().data()));
 
-    paramVal = ito::Param("deviceType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)").toLatin1().data());
+    paramVal = ito::Param("deviceType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II).").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String);
     sm.addItem("NOVA");
     sm.addItem("VEGA");
@@ -131,10 +131,10 @@ m_channel(0)
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert("headSerialNumber", ito::Param("headSerialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head serial number connected to the device").toLatin1().data()));
-    m_params.insert("headName", ito::Param("headName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head name connected to the device").toLatin1().data()));
+    m_params.insert("headSerialNumber", ito::Param("headSerialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head serial number connected to the device.").toLatin1().data()));
+    m_params.insert("headName", ito::Param("headName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head name connected to the device.").toLatin1().data()));
 
-    paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected").toLatin1().data());
+    paramVal = ito::Param("headType", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected.").toLatin1().data());
     sm.setCategory("headType");
     sm.clearItems();
     sm.addItem("BC20");
@@ -181,11 +181,11 @@ m_channel(0)
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("calibrationDueDate", ito::ParamBase::String | ito::ParamBase::Readonly, "date not available", tr("Calibration due date").toLatin1().data());
+    paramVal = ito::Param("calibrationDueDate", ito::ParamBase::String | ito::ParamBase::Readonly, "Date not available", tr("Calibration due date.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     sm.clearItems();
-    paramVal = ito::Param("connection", ito::ParamBase::String | ito::ParamBase::Readonly, "RS232", "type of the connection ('RS232', 'USB')");
+    paramVal = ito::Param("connection", ito::ParamBase::String | ito::ParamBase::Readonly, "RS232", "type of the connection ('RS232', 'USB').");
     sm.addItem("RS232");
     sm.addItem("USB");
     paramVal.setMeta(&sm, false);
@@ -195,7 +195,7 @@ m_channel(0)
     QVector<ito::Param> pMand;
     QVector<ito::Param> pOpt;
     QVector<ito::Param> pOut;
-    registerExecFunc("zeroing", pMand, pOpt, pOut, tr("function to set the zero value of the device").toLatin1().data());
+    registerExecFunc("zeroing", pMand, pOpt, pOut, tr("Function to set the zero value of the device.").toLatin1().data());
 
     if (hasGuiSupport())
     {

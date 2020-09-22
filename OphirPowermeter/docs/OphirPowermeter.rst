@@ -114,3 +114,4 @@ plot is opened that displays a moving graph of recent intensity values:
 
 Changelog
 =========
+

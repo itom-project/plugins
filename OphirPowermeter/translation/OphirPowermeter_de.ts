@@ -4,35 +4,7 @@
 <context>
     <name>OphirPowermeter</name>
     <message>
-        <source>Name of plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The current com-port ID of this specific device. -1 means undefined</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1 if battery is OK, 0 if battery is low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Request timeout, default 1000 ms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Serial number of the device shown on display</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Version of ROM software.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -132,27 +104,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Head serial number connected to the device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Head name connected to the device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No serialIO plugin instance given. A SerialIO instance is needed to use the RS232 type of powermeter.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Calibration due date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>return answer %1 not found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>function to set the zero value of the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -167,15 +123,59 @@
         <source>The given serial number %1 is already connected.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name of plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The current com-port ID of this specific device. -1 means undefined.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 if battery is OK, 0 if battery is low.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request timeout, default 1000 ms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial number of the device shown on display.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Head serial number connected to the device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Head name connected to the device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head, pyroelectric, nanoJoule meter, no head connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calibration due date.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Function to set the zero value of the device.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirPowermeterInterface</name>
     <message>
-        <source>An opened serial port (the right communcation parameters will be set by this plugin).</source>
+        <source>Serial number of the device to be loaded, if empty, the first device that is detected will be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Serial number of the device to be loaded, if empty, the first device that is detected will be opened</source>
+        <source>An opened serial port (the right communication parameters will be set by this plugin).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -193,7 +193,7 @@
         <source>The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. 
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. 
 
-Tested devices: 1-channel VEGA (USB, RS232)</source>
+Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
