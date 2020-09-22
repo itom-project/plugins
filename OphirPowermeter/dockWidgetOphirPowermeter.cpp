@@ -214,7 +214,7 @@ void DockWidgetOphirPowermeter::on_comboBoxRange_currentIndexChanged(int val)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("range", ito::ParamBase::Int, val));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("range", ito::ParamBase::Int, ui.comboBoxRange->currentText().toInt()));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }

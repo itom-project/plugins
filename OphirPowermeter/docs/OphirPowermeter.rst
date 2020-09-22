@@ -73,6 +73,8 @@ Additional functions (exec functions)
     function to set the zero value of the device
 
 
+
+
 Exemplary usage from Python
 ============================
 
@@ -81,8 +83,13 @@ plot is opened that displays a moving graph of recent intensity values:
 
 .. code-block:: python
     
-    adda = dataIO("OphirPowermeter", connection="USB")
-
+    connectionType = "USB"
+    
+    if connectionType == "USB":
+        adda = dataIO("OphirPowermeter", connection="USB")  # connect a USB Powermeter
+    elif connectionType == "RS232":
+        
+    
     numPoints = 1000
     image = dataObject.zeros([1, numPoints], 'float64')
     [i, plotHandle] = plot1(image)

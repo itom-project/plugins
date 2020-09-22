@@ -315,8 +315,6 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
             if (!retval.containsError()) // get information
             {
-                bool found = false;
-
                 QByteArray headType = "";
                 QByteArray serialNum = "";
                 request = QByteArray("$HI");
@@ -331,24 +329,11 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     list << reg.cap(1);
                     pos += reg.matchedLength();
                 }
-                QByteArray foundSerialNo = list.at(1).toLatin1();
+                QByteArray headSerial = list.at(1).toLatin1();
 
-                if (serialNoInput == "")
+                if (!retval.containsError())
                 {
-                    found = true;
-                }
-                else if (serialNoInput.contains(foundSerialNo) && serialNoInput.length() == foundSerialNo.length())
-                {
-                    found = true;
-                }
-                else
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("Given serial number %1 does not match the received number %2").arg(serialNoInput.data()).arg(foundSerialNo.data()).toLatin1().data());
-                }
-
-                if (!retval.containsError() && found)
-                {
-                    m_params["serialNumber"].setVal<char*>(foundSerialNo.data());
+                    m_params["headSerialNumber"].setVal<char*>(headSerial.data());
 
                     if (answerStr.contains("BC"))
                     {
@@ -417,12 +402,39 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
             if (!retval.containsError()) // instrument information
             {
+                bool found = false;
                 QByteArray type;
                 request = QByteArray("$II");
                 retval += SendQuestionWithAnswerString(request, answerStr, m_params["timeout"].getVal<int>());  //optical output check query
 
-                if (!retval.containsError())
+                QRegExp reg("(\\S+)"); // matches numbers
+
+                QStringList list;
+                int pos = 0;
+
+                while ((pos = reg.indexIn(answerStr, pos)) != -1) {
+                    list << reg.cap(1);
+                    pos += reg.matchedLength();
+                }
+                QByteArray foundSerialNo = list.at(1).toLatin1();
+
+                if (serialNoInput == "")
                 {
+                    found = true;
+                }
+                else if (serialNoInput.contains(foundSerialNo) && serialNoInput.length() == foundSerialNo.length())
+                {
+                    found = true;
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Given serial number %1 does not match the received number %2").arg(serialNoInput.data()).arg(foundSerialNo.data()).toLatin1().data());
+                }
+
+                if (!retval.containsError() && found)
+                {
+                    m_params["serialNumber"].setVal<char*>(foundSerialNo.data());
+
                     if (answerStr.contains("NOVA"))
                     {
                         type = "NOVA";
