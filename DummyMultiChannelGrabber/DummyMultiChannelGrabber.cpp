@@ -560,10 +560,8 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                 {
                     //retValue += it->copyValueFrom(&(*val));
                     m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["roi"].setVal<int*>(val->getVal<int*>(),4);
-                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"].setVal<int>(it->getVal<int*>()[2]);
-                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"].setVal<int>(it->getVal<int*>()[3]);
-                    /*m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
-                    m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);*/
+                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"].setVal<int>(val->getVal<int*>()[2]);
+                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"].setVal<int>(val->getVal<int*>()[3]);
                 }
                 else
                 {
