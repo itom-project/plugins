@@ -31,33 +31,33 @@ Parameters
 **ROMVersion**: {str}, read-only
     Version of ROM software.
 **battery**: {int}, read-only
-    1 if battery is OK, 0 if battery is low
+    1 if battery is OK, 0 if battery is low.
 **calibrationDueDate**: {str}, read-only
-    Calibration due date
+    Calibration due date.
 **comPort**: {int}, read-only
-    The current com-port ID of this specific device. -1 means undefined
+    The current com-port ID of this specific device. -1 means undefined.
 **connection**: {str}, read-only
-    type of the connection ('RS232', 'USB')
+    type of the connection ('RS232', 'USB').
 **deviceType**: {str}, read-only
     Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-
-    II)
+    II).
 **headName**: {str}, read-only
-    Head name connected to the device
+    Head name connected to the device.
 **headSerialNumber**: {str}, read-only
-    Head serial number connected to the device
+    Head serial number connected to the device.
 **headType**: {str}, read-only
     Head type (thermopile, BC20, temperature probe, photodiode, CIE head, RP head,
-    pyroelectric, nanoJoule meter, no head connected
+    pyroelectric, nanoJoule meter, no head connected.
 **measurementType**: {str}
     Measurement type (energy or power).
 **name**: {str}, read-only
-    Name of plugin
+    Name of plugin.
 **range**: {int}
     Measurement range (0: AUTO, 1: 150W, 2: 50.0W, 3: 5.00W).
 **serialNumber**: {str}, read-only
-    Serial number of the device shown on display
+    Serial number of the device shown on display.
 **timeout**: {int}, read-only
-    Request timeout, default 1000 ms
+    Request timeout, default 1000 ms.
 **unit**: {str}
     Unit of device
 **wavelength**: {str}
@@ -68,9 +68,10 @@ Parameters
 Additional functions (exec functions)
 =====================================
 
-.. py:function::  instance.exec('zeroing', )
+.. py:function::  instance.exec('subtractOffset', )
 
-    function to set the zero value of the device
+    Function to subtract instantaneous offset (e.g. ambient light). A absolute zeoring is a periodic maintenance operation, as such only need to be done periodically. It can be performed on the powerm
+... eter control unit.
 
 
 
@@ -85,10 +86,13 @@ plot is opened that displays a moving graph of recent intensity values:
     
     connectionType = "USB"
     
-    if connectionType == "USB":
+    if connectionType == "USB":  # connects the USB powermeter type
         adda = dataIO("OphirPowermeter", connection="USB")  # connect a USB Powermeter
-    elif connectionType == "RS232":
-        
+    elif connectionType == "RS232":  # connects the RS232 powermeter type with the additional SerialIO instance
+        port = 4
+        baud = 9600
+        endline = '\n\r'
+        adda = dataIO("OphirPowermeter", connection=connectionType, serial=dataIO("SerialIO", port, baud, endline))
     
     numPoints = 1000
     image = dataObject.zeros([1, numPoints], 'float64')
