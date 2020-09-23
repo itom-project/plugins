@@ -80,6 +80,42 @@ template<typename _Tp> inline _Tp fastrand_mean(cv::RNG &rng, _Tp maxval, ito::u
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** @func   gaussFunc
+*   @brief  function for 2d Gaussian function
+*
+*   This function delivers a 2d dataObject with a Gaussian function
+*/
+template<typename _Tp> ito::RetVal gaussFunc(cv::RNG &rng, ito::DataObject dObj, float amplitude)
+{
+    int width = dObj.getSize(1);
+    int height = dObj.getSize(0);
+    _Tp* rowPtr;
+    float xval, yval;
+    int planeID = dObj.seekMat(0);
+
+    float yRandOffset = rng.uniform(0.f, 20.f);
+    float xRandOffset = rng.uniform(0.f, 20.f);
+    float aRandOfset = rng.uniform(0.f, 20.f);
+
+    float sigmaX = width * rng.uniform(0.09f, 0.11f);
+    float sigmaY = height * rng.uniform(0.09f, 0.11f);
+
+    for (int y = 0; y < height; y++)
+    {
+        rowPtr = dObj.rowPtr<_Tp>(planeID, y);
+        yval = ((y - height / 2 + yRandOffset) * ((float)y - height / 2 + yRandOffset)) / (2.0f * sigmaY * sigmaY);
+
+        for (int x = 0; x < width; x++)
+        {
+            xval = ((x - width / 2 + xRandOffset) * ((float)x - width / 2 + xRandOffset)) / (2.0f * sigmaX * sigmaX);
+            rowPtr[x] = (float)(amplitude - aRandOfset) * exp(-(xval + yval));
+        }
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class DummyGrabberInterface
     \brief Small interface class for class DummyGrabber. This class contains basic information about DummyGrabber as is able to
@@ -145,7 +181,9 @@ This plugin can also be used as template for other grabber.";*/
 "The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
-The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera \
+You can choose between different image types (noise, GaussianSpot). \
+The value range is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). \
+The gaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera \
 image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
 \n\
 You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
@@ -168,6 +206,13 @@ This plugin can also be used as template for other grabber.");
     m_initParamsOpt.append(param);
 
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
+    m_initParamsOpt.append(param);
+
+    param = ito::Param("imageType", ito::ParamBase::String | ito::ParamBase::In, "noise", tr("Available dummy image types: noise (default), gaussianSpot").toLatin1().data());
+    ito::StringMeta sm(ito::StringMeta::String, "noise");
+    sm.addItem("gaussianSpot");
+    sm.addItem("gaussianSpotArray");
+    param.setMeta(&sm, false);
     m_initParamsOpt.append(param);
 }
 
@@ -223,7 +268,8 @@ DummyGrabber::DummyGrabber() :
     AddInGrabber(),
     m_isgrabbing(false),
     m_totalBinning(1),
-    m_lineCamera(false)
+    m_lineCamera(false),
+    m_imageType(imgTypeNoise)
 {
     ito::DoubleMeta *dm;
 
@@ -338,6 +384,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
     int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
+
     if (sizeY > 1 && sizeY % 4 != 0)
     {
         retVal += ito::RetVal(ito::retError, 0, "maxYSize must be 1 or dividable by 4");
@@ -379,6 +426,22 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
         checkData(); //check if image must be reallocated
 
         emit parametersChanged(m_params);
+    }
+
+    // get type of dummy image
+    QString type = paramsOpt->at(3).getVal<const char*>();
+
+    if (type == "noise") 
+    {
+        m_imageType = imgTypeNoise;
+    }
+    else if (type == "gaussianSpot")
+    {
+        m_imageType = imgTypeGaussianSpot;
+    }
+    else if (type == "gaussianSpotArray")
+    {
+        m_imageType = imgTypeGaussianSpotArray;
     }
 
     setIdentifier(QString::number(getID()));
@@ -740,91 +803,254 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         //ito::uint32 seed = m_startOfLastAcquisition % std::numeric_limits<ito::uint32>::max();
         cv::RNG &rng = cv::theRNG();
 
-        if (m_totalBinning == 1)
-        {
-            if (bpp < 9)
-            {
-                ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
-                ito::uint8 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint8*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 17)
-            {
-                ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
-                ito::uint16 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint16*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 32)
-            {
-                ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
-                ito::int32 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::int32*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand<ito::int32>(rng, maxInt, offset, gain);
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (bpp < 9)
-            {
-                ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
-                ito::uint8 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint8*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand_mean<ito::uint8>(rng, maxInt, m_totalBinning, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 17)
-            {
-                ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
-                ito::uint16 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::uint16*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand_mean<ito::uint16>(rng, maxInt,m_totalBinning, offset, gain);
-                    }
-                }
-            }
-            else if (bpp < 32)
-            {
-                ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
-                ito::int32 *linePtr;
-                for (int m = 0; m < m_data.getSize(0); ++m)
-                {
-                    linePtr = (ito::int32*)m_data.rowPtr(0, m);
-                    for (int n = 0; n < m_data.getSize(1); ++n)
-                    {
-                        *linePtr++ = fastrand_mean<ito::int32>(rng, maxInt, m_totalBinning, offset, gain);
-                    }
-                }
-            }
-        }
 
+        if (m_imageType == imgTypeNoise)
+        {
+
+            if (m_totalBinning == 1)
+            {
+                if (bpp < 9)
+                {
+                    ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
+                    ito::uint8 *linePtr;
+
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = m_data.rowPtr<ito::uint8>(0, m);
+
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 17)
+                {
+                    ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
+                    ito::uint16 *linePtr;
+
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = m_data.rowPtr<ito::uint16>(0, m);
+
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 32)
+                {
+                    ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
+                    ito::int32 *linePtr;
+
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = m_data.rowPtr<ito::int32>(0, m);
+
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand<ito::int32>(rng, maxInt, offset, gain);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (bpp < 9)
+                {
+                    ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
+                    ito::uint8 *linePtr;
+
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = m_data.rowPtr<ito::uint8>(0, m);
+
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand_mean<ito::uint8>(rng, maxInt, m_totalBinning, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 17)
+                {
+                    ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
+                    ito::uint16 *linePtr;
+
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = m_data.rowPtr<ito::uint16>(0, m);
+
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand_mean<ito::uint16>(rng, maxInt,m_totalBinning, offset, gain);
+                        }
+                    }
+                }
+                else if (bpp < 32)
+                {
+                    ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
+                    ito::int32 *linePtr;
+
+                    for (int m = 0; m < m_data.getSize(0); ++m)
+                    {
+                        linePtr = m_data.rowPtr<ito::int32>(0, m);
+
+                        for (int n = 0; n < m_data.getSize(1); ++n)
+                        {
+                            *linePtr++ = fastrand_mean<ito::int32>(rng, maxInt, m_totalBinning, offset, gain);
+                        }
+                    }
+                }
+            }
+
+        }
+        else if(m_imageType == imgTypeGaussianSpot) //create dummy Gaussian image
+        {
+
+            cv::RNG& rng = cv::theRNG();
+
+            if (bpp < 9)
+            {
+                ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+                gaussFunc<ito::uint8>(rng, m_data, amplitude);
+            }
+            else if (bpp < 17)
+            {
+                ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+                gaussFunc<ito::uint16>(rng, m_data, amplitude);
+            }
+            else if (bpp < 32)
+            {
+                ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+                gaussFunc<ito::uint32>(rng, m_data, amplitude);
+            }
+        }
+        else if (m_imageType == imgTypeGaussianSpotArray) //create dummy Gaussian image
+        {
+            ito::DataObject droi;
+            cv::RNG& rng = cv::theRNG();
+
+            int width = m_data.getSize(1);
+            int height = m_data.getSize(0);
+
+            int roiwidth = (int)width / 2;
+            int roiheight = (int)height / 2;
+
+            int roi[4][4] = {   { -0, -roiheight, -roiwidth, 0 },
+                                { -0, -roiheight, 0, -roiwidth },
+                                { -roiheight, 0, -roiwidth, 0 },
+                                { -roiheight, 0, 0, -roiwidth } };
+            
+            for (int cnt = 0; cnt < 4; cnt++)
+            {
+                droi = m_data;
+                droi = droi.adjustROI(roi[cnt][0], roi[cnt][1], roi[cnt][2], roi[cnt][3]);
+
+                if (bpp < 9)
+                {
+                    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+                    gaussFunc<ito::uint8>(rng, droi, amplitude);
+                }
+                else if (bpp < 17)
+                {
+                    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+                    gaussFunc<ito::uint16>(rng, droi, amplitude);
+                }
+                else if (bpp < 32)
+                {
+                    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+                    gaussFunc<ito::uint32>(rng, droi, amplitude);
+                }
+            }
+            
+            
+
+
+            //// take 1 rechts oben
+            //droi = droi.adjustROI(- 0, - roiheight, -roiwidth, 0); // rechts unten
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+            //// take 2 
+            //droi = m_data;
+            //droi = droi.adjustROI(-0, -roiheight, 0, - roiwidth); // links unten
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+            //// take 3 
+            //droi = m_data;
+            //droi = droi.adjustROI(- roiheight, 0, - roiwidth, 0); // rechts oben
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+            //// take 4
+            //droi = m_data;
+            //droi = droi.adjustROI(-roiheight, 0, 0, -roiwidth); // links oben
+
+            //if (bpp < 9)
+            //{
+            //    ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint8>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 17)
+            //{
+            //    ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint16>(rng, droi, amplitude);
+            //}
+            //else if (bpp < 32)
+            //{
+            //    ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, bpp) - 1);
+            //    gaussFunc<ito::uint32>(rng, droi, amplitude);
+            //}
+
+
+
+            
+        }
+                    
         if (integration_time > 0.0)
         {
             double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();

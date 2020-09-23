@@ -85,9 +85,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_useOnTarget(true)
 {
 #ifdef GCS2
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PI GCS2", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PI GCS2", tr("name of the plugin").toLatin1().data());
 #else
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PIPiezoCtrl", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PIPiezoCtrl", tr("name of the plugin").toLatin1().data());
 #endif
     m_params.insert(paramVal.getName(), paramVal);
     
@@ -133,6 +133,15 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    ito::DoubleMeta *dm = new ito::DoubleMeta(0.1, 80.0, 80.0, "");
+    dm->setDisplayPrecision(1);
+    dm->setRepresentation(ito::ParamMeta::Linear);
+    dm->setUnit("mm/s");
+    dm->setStepSize(0.1);
+    paramVal = ito::Param("velocity", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Readonly, 0.5, \
+        dm, tr("velocity of the stage for the controller type C663 in mm per s").toLatin1().constData());
     m_params.insert(paramVal.getName(), paramVal);
 
     m_targetPos = QVector<double>(1,0.0);
@@ -398,6 +407,18 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             switch(m_ctrlType)
             {
+            case C663Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number(val->getVal<double>())));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
             case E662Family:
                 retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number(val->getVal<double>() * 1000)));
                 if (retValue.containsError())
@@ -419,6 +440,18 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             switch(m_ctrlType)
             {
+            case C663Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number(val->getVal<double>())));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
             case E662Family:
                 retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number(val->getVal<double>() * 1000)));
                 if (retValue.containsError())
@@ -429,6 +462,29 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 else
                 {
                     retValue += it->copyValueFrom(&(*val));
+                }
+                break;
+            default:
+                retValue += it->copyValueFrom(&(*val));
+                break;
+            }
+        }
+        else if (key == "velocity")
+        {
+            switch (m_ctrlType)
+            {
+            case C663Family:
+                retValue += PISendCommand(m_VelCmd + QByteArray::number(val->getVal<double>()));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    double currentVel;
+                    retValue += this->PISendQuestionWithAnswerDouble2(m_VelQust, 1, currentVel, 1000);
+                    m_params["velocity"].setVal<double>(currentVel);
                 }
                 break;
             default:
@@ -763,7 +819,7 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
     }
     else
     {
-        if (m_ctrlType == E753Family)
+        if (m_ctrlType == E753Family || m_ctrlType == C663Family)
         {
             retval += PISendQuestionWithAnswerDouble2(m_PosQust, 1, axpos, 200);
         }
@@ -772,8 +828,17 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
             retval += PISendQuestionWithAnswerDouble(m_PosQust, axpos, 200);
         }
 
-        *pos = (double)axpos / 1000;
-        m_currentPos[0] = *pos;
+        if (m_ctrlType == C663Family)
+        {
+            *pos = (double)axpos;
+            m_currentPos[0] = *pos;
+        }
+        else
+        {
+            *pos = (double)axpos / 1000;
+            m_currentPos[0] = *pos;
+        }
+        
     }
 
     if (waitCond)
@@ -976,8 +1041,19 @@ ito::RetVal PIPiezoCtrl::PICheckStatus(void)
     {
         return ito::RetVal(ito::retError, 0, tr("controller device unknown").toLatin1().data());
     }
+    else if (m_ctrlType == C663Family)
+    {
+        m_identifier = QString("C663 (%1)").arg(getID());
+        /*retVal += PISendQuestionWithAnswerDouble("*STB?", answerDbl, 200);
+        int* piControllerReady;
+        if (!PI_IsControllerReady(m_deviceID, piControllerReady))
+        {
+            ito::RetVal(ito::retError, 0, tr("controller not ready").toLatin1().data());
+        }*/
+    }
     else if (m_ctrlType == E662Family)
     {
+
         m_identifier = QString("E662 (%1)").arg(getID());
         retVal += PISendQuestionWithAnswerDouble("*STB?", answerDbl, 200);
         if (!retVal.containsError())
@@ -1229,7 +1305,7 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
 
         if (!retValue.containsError())
         {
-            if (m_ctrlType == E662Family)
+            if (m_ctrlType == E662Family || m_ctrlType == C663Family)
             {
                 //buffer has form ErrorCode, "ErrorMsg"
                 pos = buffer.indexOf(",");
@@ -1553,14 +1629,15 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     if (answer.contains("E-662"))
     {
         m_ctrlType = E662Family;
-
+        m_params["ctrlType"].setVal<char*>("E662", (int)strlen("E662"));
+        
         m_AbsPosCmd = "POS";
         m_RelPosCmd = "POS:REL";
         m_PosQust = "POS?";
 
         m_params["hasLocalRemote"].setVal<int>(1.0);
         m_params["hasOnTargetFlag"].setVal<int>(0.0);
-        m_params["ctrlType"].setVal<char*>("E662", (int)strlen("E662"));
+        
         m_hasHardwarePositionLimit = true;
 
         //set remote mode
@@ -1596,6 +1673,46 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         retval += PIGetLastErrors(lastErrors);
         retval += convertPIErrorsToRetVal(lastErrors);
+    }
+    else if (answer.contains("C-663"))
+    {
+        m_ctrlType = C663Family;
+        m_params["ctrlType"].setVal<char*>("C663", (int)strlen("C663"));
+
+        m_AbsPosCmd = "MOV 1";
+        m_RelPosCmd = "MVR 1";
+        m_PosQust = "POS? 1";
+
+        m_params["velocity"].setFlags(!ito::ParamBase::Readonly);
+
+
+
+        m_VelCmd = "Vel 1 ";
+        m_VelQust = "Vel? 1";
+
+        double currentVel;
+
+        retval += this->PISendQuestionWithAnswerDouble2(m_VelQust, 1, currentVel, 1000);
+        m_params["velocity"].setVal<double>(currentVel);
+
+        retval += PISendCommand("SVO 1 1"); //activates servo
+
+        m_params["posLimitLow"].setVal<double>(0.0);
+        m_params["posLimitHigh"].setVal<double>(10000.0); //mm
+
+        retval += PISendCommand("MOV 1 0"); 
+
+        m_params["ctrlName"].setVal<char*>(answer.data(), answer.length());
+        answer = "unknown";
+        m_params["piezoName"].setVal<char*>(answer.data(), answer.length());
+
+        m_hasHardwarePositionLimit = false;
+
+        //set remote mode
+        retval += PIGetLastErrors(lastErrors);
+        retval += convertPIErrorsToRetVal(lastErrors);
+
+        
     }
     else if (answer.contains("E816") || answer.contains("E625"))
     {
@@ -1695,6 +1812,18 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
             retValue += PISendCommand("SYST:DEV:CONT REM");
         }
         break;
+    case C663Family:
+        if (localNotRemote)
+        {
+            m_params["local"].setVal<int>(1);
+            retValue += PISendCommand("SYST:DEV:CONT LOC");
+        }
+        else
+        {
+            m_params["local"].setVal<int>(0);
+            retValue += PISendCommand("SYST:DEV:CONT REM");
+        }
+        break;
     case E625Family:
     case E753Family:
         //not supported for this types
@@ -1717,7 +1846,16 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 */
 ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
 {
-    double dpos_temp = posMM * 1e3;    // Round value by m_scale
+    double dpos_temp;
+    if (m_ctrlType == C663Family)
+    {
+        dpos_temp = posMM;
+    }
+    else
+    {
+        dpos_temp = posMM * 1e3;    // Round value by m_scale
+    }
+     
     ito::RetVal retval = ito::retOk;
     bool released = false;
     bool outOfRange = false;
@@ -1739,7 +1877,15 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
     {
         retval += PIDummyRead();
 
-        delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
+        if (m_ctrlType == C663Family)
+        {
+            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/;
+        }
+        else
+        {
+            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
+        }
+        
 
         if (relNotAbs)
         {
@@ -1857,7 +2003,7 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     {
         while(!atTarget && !retVal.containsError())
         {
-            if (m_ctrlType == E753Family)
+            if (m_ctrlType == E753Family || m_ctrlType == C663Family)
             {
                 ontRetVal = PISendQuestionWithAnswerDouble2("ONT? 1", 1, answerDbl, 50);
             }

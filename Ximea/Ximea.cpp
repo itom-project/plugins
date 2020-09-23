@@ -204,7 +204,7 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizez", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 25, 1, tr("number of channels. This Param is readonly and controlled via \"filter_pattern_size\" ").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Acquisition timeout in s.").toLatin1().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 300.0 , 2.0, tr("Acquisition timeout in s.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 8, 8, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth). For color cameras set bpp to 32 in order to obtain the color data.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -2333,9 +2333,9 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
                     break;
                 }
 
-                retValue += checkError(pxiGetImage(m_handle, iPicTimeOut, &img), "pxiGetImage");
+				m_acqRetVal += checkError(pxiGetImage(m_handle, iPicTimeOut, &img), "pxiGetImage");
 
-                if (!retValue.containsError())
+                if (!m_acqRetVal.containsError())
                 {
 //#ifndef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
 					//set alpha values to 255.
@@ -2411,7 +2411,6 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
                 }
                 else
                 {
-                    m_isgrabbing = false;
                     break;
                 }
             }
@@ -2474,7 +2473,7 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
     }
     else if (!m_isgrabbing)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
     else
     {

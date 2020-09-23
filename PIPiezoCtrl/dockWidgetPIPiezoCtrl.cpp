@@ -28,18 +28,39 @@
 #include <qmetaobject.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
- DockWidgetPIPiezoCtrl::DockWidgetPIPiezoCtrl(int uniqueID, ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator)
- {
+DockWidgetPIPiezoCtrl::DockWidgetPIPiezoCtrl(int uniqueID, ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator)
+{
     ui.setupUi(this); 
 
     ui.lblID->setText(QString::number(uniqueID));
 
     enableWidget(true);
- }
- //-------------------------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
- {
-    ui.lblDevice1->setText(params["ctrlType"].getVal<char*>());
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
+{
+    QString m_ctrlType = params["ctrlType"].getVal<char*>();
+
+    if (QString::compare(m_ctrlType, "C663") == 0)
+    {
+        m_scale = 1.0f;
+        m_unit = u8" mm";
+        ui.spinBoxTargetPos->setSuffix(m_unit);
+        ui.spinBoxActPos->setSuffix(m_unit);
+        ui.spinBoxStepSize->setSuffix(m_unit);
+        ui.label_Piezo->setVisible(false);
+        ui.lblPiezo->setVisible(false);
+    }
+    else
+    {
+        m_scale = 1000.0f;
+        m_unit = u8" µm";
+        ui.spinBoxTargetPos->setSuffix(m_unit);
+        ui.spinBoxActPos->setSuffix(m_unit);
+        ui.spinBoxStepSize->setSuffix(m_unit);
+    }
+
+    ui.lblDevice1->setText(m_ctrlType);
     ui.lblDevice2->setText(params["ctrlName"].getVal<char*>());
     ui.lblPiezo->setText(params["piezoName"].getVal<char*>());
 
@@ -54,16 +75,16 @@
     {
         ui.radioRemote->setChecked(true);
     }
- }
+}
 
- //-------------------------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetPIPiezoCtrl::actuatorStatusChanged(QVector<int> status, QVector<double> actPosition) //!< slot to receive information about status and position changes.
- {
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPIPiezoCtrl::actuatorStatusChanged(QVector<int> status, QVector<double> actPosition) //!< slot to receive information about status and position changes.
+{
     ui.spinBoxTargetPos->setEnabled(status[0] & ito::actuatorEnabled);
 
     if (actPosition.size() > 0)
     {
-        ui.spinBoxActPos->setValue(actPosition[0] * 1000);
+        ui.spinBoxActPos->setValue(actPosition[0] * m_scale);
     }
 
     bool running = false;
@@ -89,14 +110,14 @@
     ui.spinBoxActPos->setStyleSheet(style);
 
     enableWidget(!running);
- }
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::targetChanged(QVector<double> targetPositions)
 {
     if (targetPositions.size() > 0)
     {
-        ui.spinBoxTargetPos->setValue(targetPositions[0] * 1000);
+        ui.spinBoxTargetPos->setValue(targetPositions[0] * m_scale);
     }
 }
 
@@ -128,19 +149,19 @@ void DockWidgetPIPiezoCtrl::on_radioLocal_clicked()
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_btnUp_clicked()
 {
-    setActuatorPosition(0, ui.spinBoxStepSize->value() / 1000.0, true);
+    setActuatorPosition(0, ui.spinBoxStepSize->value() / m_scale, true);    
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_btnDown_clicked()
 {
-    setActuatorPosition(0, -ui.spinBoxStepSize->value() / 1000.0, true);
+    setActuatorPosition(0, -ui.spinBoxStepSize->value() / m_scale, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_btnStart_clicked()
 {
-    setActuatorPosition(0, ui.spinBoxTargetPos->value() / 1000.0, false);
+    setActuatorPosition(0, ui.spinBoxTargetPos->value() / m_scale, false);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
