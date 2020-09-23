@@ -296,10 +296,6 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zeroing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>headSerialNumber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -313,6 +309,10 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.</source>
     </message>
     <message>
         <source>[calibrationDueDate]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

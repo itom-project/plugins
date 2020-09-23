@@ -51,7 +51,7 @@ class DockWidgetOphirPowermeter : public ito::AbstractAddInDockWidget
 
     public:
         DockWidgetOphirPowermeter(int uniqueID, ito::AddInDataIO *adda);
-        ~DockWidgetOphirPowermeter() {};
+        ~DockWidgetOphirPowermeter();
 
     private:
         void enableWidget(bool enabled);
@@ -69,7 +69,6 @@ class DockWidgetOphirPowermeter : public ito::AbstractAddInDockWidget
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
         void manageTimer(const bool &val);
-        void zeroingFinished();
 
     private slots:
         void on_checkAutograbbing_stateChanged(int val);
@@ -77,7 +76,7 @@ class DockWidgetOphirPowermeter : public ito::AbstractAddInDockWidget
         void on_comboBoxWavelength_currentIndexChanged(int val);
         void on_comboBoxRange_currentIndexChanged(int val);
         void on_comboBoxMeasurementType_currentIndexChanged(int val);
-        void on_pushButtonZeroing_clicked();
+        void on_pushButtonOffset_clicked();
 };
 
 #endif

@@ -294,9 +294,9 @@
        </layout>
       </item>
       <item row="4" column="0" colspan="2">
-       <widget class="QPushButton" name="pushButtonZeroing">
+       <widget class="QPushButton" name="pushButtonOffset">
         <property name="text">
-         <string>Zeroing</string>
+         <string>Offset</string>
         </property>
        </widget>
       </item>

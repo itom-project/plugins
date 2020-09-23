@@ -49,6 +49,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define BUFFER_SIZE 100
 
 QList<QByteArray> OphirPowermeter::openedDevices = QList<QByteArray>();
+QList<QPair<long, long> > OphirPowermeter::openedUSBHandlesAndChannels = QList<QPair<long, long> >();
 
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirPowermeterInterface::OphirPowermeterInterface()
@@ -109,7 +110,6 @@ m_delayAfterSendCommandMS(0),
 m_dockWidget(NULL),
 m_isgrabbing(false),
 m_data(ito::DataObject()),
-m_opened(false),
 m_handle(0),
 m_channel(0)
 {
@@ -282,8 +282,6 @@ ito::RetVal OphirPowermeter::subtractOffset(ItomSharedSemaphore *waitCond/*=NULL
     }
 
     m_isgrabbing = false;
-
-    emit zeroingFinished();
 
     if (waitCond)
     {
@@ -651,8 +649,8 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             // Scan for connected Devices
             try
             {
+                m_OphirLM.StopAllStreams();
                 m_OphirLM.ScanUSB(serialsFound);
-
             }
             catch (const _com_error& e)
             {
@@ -667,7 +665,6 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 {
                     if (openedDevices.contains(wCharToChar(serialsFound[idx].c_str())))  // already connected
                     {
-                        m_OphirLM.StartStream(m_handle, m_channel);
                         retval += ito::RetVal(ito::retError, 0, tr("The given input serial %1 is already connected.").arg(wCharToChar(serialsFound[idx].c_str())).toLatin1().data());
                     }
                     else if (serialNoInput.size() > 0 && serialNoInput.contains(wCharToChar(serialsFound[idx].c_str())))  //connected to input serial number
@@ -684,6 +681,14 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
                 if (!found)
                 {
+
+                    QPair<long, long> pair;
+                    foreach(pair, openedUSBHandlesAndChannels) 
+                    {
+                        m_OphirLM.StartStream(pair.first, pair.second);
+                    }
+
+
                     retval += ito::RetVal(ito::retError, 0, tr("The given input serial %1 has not been found in serial number of connected devices").arg((serialNoInput).data()).toLatin1().data());
                 }
                 else
@@ -708,8 +713,8 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
                 }
 
-
-                m_opened = true;
+                QPair<long, long> pair = QPair<long, long>(m_handle, m_channel);
+                openedUSBHandlesAndChannels.append(pair);
 
                 bool exists;
                 try
@@ -968,7 +973,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
                     m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
                     m_OphirLM.StartStream(m_handle, m_channel);
-                    Sleep(2000);
+                    Sleep(200);
                     m_isgrabbing = false;
                 }
                 catch (const _com_error& e)
@@ -1043,8 +1048,9 @@ ito::RetVal OphirPowermeter::close(ItomSharedSemaphore *waitCond)
             retValue += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
         }
         
-        m_opened = false;
         openedDevices.removeOne(wCharToChar(m_serialNo.c_str()));
+        QPair<long, long> pair = QPair<long, long>(m_handle, m_channel);
+        openedUSBHandlesAndChannels.removeOne(pair);
 
     }
 
@@ -1631,7 +1637,6 @@ void OphirPowermeter::dockWidgetVisibilityChanged(bool visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             connect(this, SIGNAL(visibilityChanged(bool)), widget, SLOT(manageTimer(bool)));
-            connect(this, SIGNAL(subtractOffset()), widget, SLOT(subtractOffset));
 
             emit visibilityChanged(visible);
             emit parametersChanged(m_params);
@@ -1641,7 +1646,6 @@ void OphirPowermeter::dockWidgetVisibilityChanged(bool visible)
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             emit visibilityChanged(visible);
             disconnect(this, SIGNAL(visibilityChanged(bool)), widget, SLOT(manageTimer(bool)));
-            disconnect(this, SIGNAL(subtractOffset(), dw, SLOT(subtractOffset())));
         }
     }
 }

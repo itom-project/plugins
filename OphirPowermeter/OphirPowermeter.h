@@ -72,8 +72,8 @@ class OphirPowermeter : public ito::AddInDataIO
         ito::DataObject m_data;
 
         static QList<QByteArray> openedDevices;
+        static QList<QPair<long, long> > openedUSBHandlesAndChannels;
         std::wstring m_serialNo;
-        bool m_opened;
         OphirLMMeasurement m_OphirLM;
         long m_handle;
         long m_channel;
@@ -133,9 +133,9 @@ class OphirPowermeter : public ito::AddInDataIO
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+
     signals:
         void visibilityChanged(bool visible);
-        void zeroingFinished();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

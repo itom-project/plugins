@@ -42,6 +42,11 @@ DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInDat
      enableWidget(true);
 }
 
+DockWidgetOphirPowermeter::~DockWidgetOphirPowermeter()
+{
+    killTimer(m_timerId);
+}
+
  //-------------------------------------------------------------------------------------------------------------------------------------------------
  void DockWidgetOphirPowermeter::parametersChanged(QMap<QString, ito::Param> params)
 {
@@ -171,14 +176,26 @@ void DockWidgetOphirPowermeter::timerEvent(QTimerEvent *event)
     QSharedPointer<QString> unit = QSharedPointer<QString>(new QString);
 
     QMetaObject::invokeMethod(m_plugin, "acquireAutograbbing", Q_ARG(QSharedPointer<double>, value), Q_ARG(QSharedPointer<QString>, unit), Q_ARG(ItomSharedSemaphore*, waitCond));
-    observeInvocation(waitCond, msgLevelWarningAndError);
-
-    ui.lcdNumber->display(*value);
-    ui.lblUnit->setText(*unit);
+    
+    if (waitCond)
+    {
+        observeInvocation(waitCond, msgLevelWarningAndError);
+    }
     
 
-    waitCond->deleteSemaphore();
-    waitCond = NULL;
+    if (value && unit)
+    {
+        ui.lcdNumber->display(*value);
+        ui.lblUnit->setText(*unit);
+    }
+    
+    
+    if (waitCond)
+    {
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -231,7 +248,7 @@ void DockWidgetOphirPowermeter::on_comboBoxMeasurementType_currentIndexChanged(i
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetOphirPowermeter::on_pushButtonZeroing_clicked()
+void DockWidgetOphirPowermeter::on_pushButtonOffset_clicked()
 {
     if (!m_inEditing)
     {
@@ -239,23 +256,14 @@ void DockWidgetOphirPowermeter::on_pushButtonZeroing_clicked()
         ito::RetVal retval(ito::retOk);
         enableWidget(false);
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+        QMetaObject::invokeMethod(m_plugin, "subtractOffset", Q_ARG(ItomSharedSemaphore*, waitCond));
 
         if (waitCond)
         {
             waitCond->returnValue = retval;
             waitCond->release();
         }
-
-        QMetaObject::invokeMethod(m_plugin, "subtractOffset", Q_ARG(ItomSharedSemaphore*, waitCond));
-
-        // connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+        enableWidget(true);
+        m_inEditing = false;
     }
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetOphirPowermeter::zeroingFinished()
-{
-    enableWidget(true);
-    m_inEditing = false;
 }
