@@ -647,11 +647,10 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_params["connection"].setVal<char*>("USB");
             OphirLMMeasurement m_OphirLM;
             std::vector<std::wstring> serialsFound;
-
+            
             // Scan for connected Devices
             try
             {
-                m_OphirLM.StopAllStreams();
                 m_OphirLM.ScanUSB(serialsFound);
 
             }
@@ -668,6 +667,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 {
                     if (openedDevices.contains(wCharToChar(serialsFound[idx].c_str())))  // already connected
                     {
+                        m_OphirLM.StartStream(m_handle, m_channel);
                         retval += ito::RetVal(ito::retError, 0, tr("The given input serial %1 is already connected.").arg(wCharToChar(serialsFound[idx].c_str())).toLatin1().data());
                     }
                     else if (serialNoInput.size() > 0 && serialNoInput.contains(wCharToChar(serialsFound[idx].c_str())))  //connected to input serial number
@@ -707,6 +707,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 {
                     retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
                 }
+
 
                 m_opened = true;
 
@@ -964,12 +965,11 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 {
                     //start measuring on first device
                     m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
-                    m_OphirLM.StopAllStreams(); //stop streams first
-
                     m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
                     m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
-
-                    m_OphirLM.StartStream(m_handle, m_channel); // start stream 
+                    m_OphirLM.StartStream(m_handle, m_channel);
+                    Sleep(2000);
+                    m_isgrabbing = false;
                 }
                 catch (const _com_error& e)
                 {
@@ -978,10 +978,22 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             
 
             }
+            
+            if (!retval.containsError()) // set some default values
+            {
+                QSharedPointer<ito::Param> paramVal = QSharedPointer<ito::Param>(new ito::Param("range", ito::ParamBase::Int, -2, 2, 0, tr("Measurement range (-2: dBm autoranging, -1: autoranging, 0: highest range, 1: second range, 2: next highest range).").toLatin1().data()));
+                ItomSharedSemaphore *dummyWait = new ItomSharedSemaphore();
+                retval += setParam(paramVal, dummyWait);
 
-            Sleep(2000); //give the device some time
+                if (dummyWait)
+                {
+                    dummyWait->returnValue = retval;
+                    dummyWait->release();
+                    dummyWait = NULL;
+                }
+                
+            }
 
-        
             if (!retval.containsError()) // set RS232 params to readonly
             {
                 m_params["comPort"].setFlags(ito::ParamBase::Readonly);
@@ -1006,6 +1018,8 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         waitCond->release();
     }
 
+    
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;    
 }
@@ -1021,8 +1035,8 @@ ito::RetVal OphirPowermeter::close(ItomSharedSemaphore *waitCond)
         try
         {
             
-            m_OphirLM.StopAllStreams(); //stop measuring
-            m_OphirLM.CloseAll(); //close device
+            m_OphirLM.StopStream(m_handle, m_channel);
+            m_OphirLM.Close(m_handle);
         }
         catch (const _com_error& e)
         {
@@ -1186,7 +1200,7 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             {
                 try
                 {
-                    m_OphirLM.StopAllStreams();
+                    m_OphirLM.StopStream(m_handle, m_channel);
                     m_OphirLM.SetMeasurementMode(m_handle, m_channel, m_measurementModes.value(val->getVal<char*>()));
                     m_OphirLM.StartStream(m_handle, m_channel);
                 }
@@ -1241,8 +1255,8 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
                 QString setWave = QString::fromLatin1(m_params["wavelengthSet"].getVal<char*>());
                 try
                 {
-                    m_OphirLM.StopAllStreams();
-                    Sleep(0.5);
+                    m_OphirLM.StopStream(m_handle, m_channel);
+                    Sleep(200);
                     if (setWave.compare("DISCRETE") == 0)
                     {
                         
@@ -1253,7 +1267,7 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
                         m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, val->getVal<int>());
                         
                     }
-                    Sleep(0.5);
+                    Sleep(200);
                     m_OphirLM.StartStream(m_handle, m_channel);
                 }
                 catch (const _com_error& e)
@@ -1284,10 +1298,10 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             {
                 try
                 {
-                    m_OphirLM.StopAllStreams();
-                    Sleep(0.5);
+                    m_OphirLM.StopStream(m_handle, m_channel);
+                    Sleep(200);
                     m_OphirLM.SetRange(m_handle, m_channel, val->getVal<int>());
-                    Sleep(0.5);
+                    Sleep(200);
                     m_OphirLM.StartStream(m_handle, m_channel);
                 }
                 catch (const _com_error& e)
@@ -1471,6 +1485,8 @@ ito::RetVal OphirPowermeter::acquireAutograbbing(QSharedPointer<double> value, Q
     *value = m_data.at<ito::float64>(0, 0);
     *unit = QString::fromStdString(m_data.getValueUnit());
     
+    m_isgrabbing = false;
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -1494,7 +1510,7 @@ ito::RetVal OphirPowermeter::retrieveData(ito::DataObject *externalDataObject)
         return retValue;
     }
 
-    m_isgrabbing = false;
+    
 
     if (externalDataObject == NULL)
     {
@@ -1508,6 +1524,7 @@ ito::RetVal OphirPowermeter::retrieveData(ito::DataObject *externalDataObject)
         {
             retValue += m_data.deepCopyPartial(*externalDataObject);
         }
+        m_isgrabbing = false;
     }
 
     return retValue;

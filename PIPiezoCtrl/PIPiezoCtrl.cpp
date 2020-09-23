@@ -1971,8 +1971,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
         }
         else
         {
-            replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate(true);
+            sendTargetUpdate();
 
             if (waitCond && !released)
             {

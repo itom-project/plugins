@@ -172,6 +172,11 @@ void DockWidgetOphirPowermeter::timerEvent(QTimerEvent *event)
 
     QMetaObject::invokeMethod(m_plugin, "acquireAutograbbing", Q_ARG(QSharedPointer<double>, value), Q_ARG(QSharedPointer<QString>, unit), Q_ARG(ItomSharedSemaphore*, waitCond));
     observeInvocation(waitCond, msgLevelWarningAndError);
+
+    ui.lcdNumber->display(*value);
+    ui.lblUnit->setText(*unit);
+    
+
     waitCond->deleteSemaphore();
     waitCond = NULL;
 }
