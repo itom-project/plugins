@@ -164,11 +164,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Function to set the zero value of the device.</source>
+        <source>Timeout while zeroing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Timeout while zeroing.</source>
+        <source>Function to subtract instantaneous offset (e.g. ambient light). A absolute zeoring is a periodic maintenance operation, as such only need to be done periodically. It can be performed on the powermeter control unit.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

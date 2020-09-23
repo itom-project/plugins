@@ -99,6 +99,7 @@ class OphirPowermeter : public ito::AddInDataIO
         
         char *m_charBuffer;
         char* wCharToChar(const wchar_t *input);
+        char* TCharToChar(const TCHAR* message);
 
         ito::RetVal checkError(const int &e, const char *message);
 
@@ -126,7 +127,7 @@ class OphirPowermeter : public ito::AddInDataIO
 
         ito::RetVal acquireAutograbbing(QSharedPointer<double> value, QSharedPointer<QString> unit, ItomSharedSemaphore *waitCond);
 
-        ito::RetVal zeroing(ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal subtractOffset(ItomSharedSemaphore *waitCond = NULL);
         
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
 

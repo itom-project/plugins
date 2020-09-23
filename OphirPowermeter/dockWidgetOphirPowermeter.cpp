@@ -171,16 +171,9 @@ void DockWidgetOphirPowermeter::timerEvent(QTimerEvent *event)
     QSharedPointer<QString> unit = QSharedPointer<QString>(new QString);
 
     QMetaObject::invokeMethod(m_plugin, "acquireAutograbbing", Q_ARG(QSharedPointer<double>, value), Q_ARG(QSharedPointer<QString>, unit), Q_ARG(ItomSharedSemaphore*, waitCond));
-    if (waitCond->waitAndProcessEvents(10000))
-    {
-        retval += waitCond->returnValue;
-        if (!retval.containsError())
-        {
-            ui.lcdNumber->display(*value);
-            ui.lblUnit->setText(*unit);
-        }
-    }
+    observeInvocation(waitCond, msgLevelWarningAndError);
     waitCond->deleteSemaphore();
+    waitCond = NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -248,7 +241,7 @@ void DockWidgetOphirPowermeter::on_pushButtonZeroing_clicked()
             waitCond->release();
         }
 
-        QMetaObject::invokeMethod(m_plugin, "zeroing", Q_ARG(ItomSharedSemaphore*, waitCond));
+        QMetaObject::invokeMethod(m_plugin, "subtractOffset", Q_ARG(ItomSharedSemaphore*, waitCond));
 
         // connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
     }
