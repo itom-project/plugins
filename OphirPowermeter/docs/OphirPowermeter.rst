@@ -65,15 +65,6 @@ Parameters
 **wavelengthSet**: {str}, read-only
     Setting of the measurement wavelength (DISCRETE or CONTINUOUS).
 
-Additional functions (exec functions)
-=====================================
-
-.. py:function::  instance.exec('subtractOffset', )
-
-    Function to subtract instantaneous offset (e.g. ambient light). A absolute zeoring is a periodic maintenance operation, as such only need to be done periodically. It can be performed on the powerm
-... eter control unit.
-
-
 
 
 Exemplary usage from Python

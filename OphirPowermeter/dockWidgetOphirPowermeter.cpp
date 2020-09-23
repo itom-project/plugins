@@ -246,24 +246,3 @@ void DockWidgetOphirPowermeter::on_comboBoxMeasurementType_currentIndexChanged(i
         m_inEditing = false;
     }
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetOphirPowermeter::on_pushButtonOffset_clicked()
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        ito::RetVal retval(ito::retOk);
-        enableWidget(false);
-        ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(m_plugin, "subtractOffset", Q_ARG(ItomSharedSemaphore*, waitCond));
-
-        if (waitCond)
-        {
-            waitCond->returnValue = retval;
-            waitCond->release();
-        }
-        enableWidget(true);
-        m_inEditing = false;
-    }
-}

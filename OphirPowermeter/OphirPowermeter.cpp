@@ -193,12 +193,6 @@ m_channel(0)
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
-    //register exec functions
-    QVector<ito::Param> pMand;
-    QVector<ito::Param> pOpt;
-    QVector<ito::Param> pOut;
-    registerExecFunc("subtractOffset", pMand, pOpt, pOut, tr("Function to subtract instantaneous offset (e.g. ambient light). A absolute zeoring is a periodic maintenance operation, as such only need to be done periodically. It can be performed on the powermeter control unit.").toLatin1().data());
-
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -209,87 +203,6 @@ m_channel(0)
     }
 
     m_charBuffer = (char *)malloc(BUFFER_SIZE);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirPowermeter::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> >paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retval(ito::retOk);
-    if (funcName == "subtractOffset")
-    {
-        retval += subtractOffset();
-    }
-    if (waitCond)
-    {
-        waitCond->returnValue = retval;
-        waitCond->release();
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
-    }
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OphirPowermeter::subtractOffset(ItomSharedSemaphore *waitCond/*=NULL*/)
-{
-    ito::RetVal retval(ito::retOk);
-
-    if (m_connection == connectionType::RS232)
-    {
-        m_isgrabbing = true;
-        QElapsedTimer timer;
-        QByteArray request = QByteArray("$ZE");
-        retval = SerialSendCommand(request);
-        bool finished = false;
-
-        QByteArray answer;
-        timer.start();
-
-        while (!timer.hasExpired(60000) && !finished)
-        {
-            
-            Sleep(500);
-            retval += SendQuestionWithAnswerString("$ZQ", answer, m_params["timeout"].getVal<int>());  //optical output check query
-
-            if (answer.contains("ZEROING COMPLETED"))
-            {
-                Sleep(200);
-                QByteArray forceScreen;
-                QByteArray type = m_params["measurementType"].getVal<char*>();
-                if (type.contains("power"))
-                {
-                    forceScreen = "$FS 0";
-                }
-                else
-                {
-                    forceScreen = "$FS 1";
-                }
-                retval += SerialSendCommand(forceScreen);
-                Sleep(200);
-                finished = true;
-            }
-        }
-
-        if (!finished)
-        {
-            retval += ito::RetVal(ito::retError, 0, tr("Timeout while zeroing.").toLatin1().data());
-        }
-        
-    }
-    else
-    {
-        retval += ito::RetVal(ito::retError, 0, tr("Zeroing for USB can not be implemented due to missing fuction.").toLatin1().data());
-    }
-
-    m_isgrabbing = false;
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retval;
-        waitCond->release();
-    }
-
-    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1035,6 +948,7 @@ ito::RetVal OphirPowermeter::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
+    visibilityChanged(false);
     if (m_connection == connectionType::USB)
     {
         try

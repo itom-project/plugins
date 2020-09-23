@@ -76,7 +76,6 @@ class DockWidgetOphirPowermeter : public ito::AbstractAddInDockWidget
         void on_comboBoxWavelength_currentIndexChanged(int val);
         void on_comboBoxRange_currentIndexChanged(int val);
         void on_comboBoxMeasurementType_currentIndexChanged(int val);
-        void on_pushButtonOffset_clicked();
 };
 
 #endif

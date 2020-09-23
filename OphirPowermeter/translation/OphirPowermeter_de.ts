@@ -112,10 +112,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zeroing for USB can not be implemented due to missing fuction.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The given input serial %1 is already connected.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -161,14 +157,6 @@
     </message>
     <message>
         <source>Calibration due date.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timeout while zeroing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Function to subtract instantaneous offset (e.g. ambient light). A absolute zeoring is a periodic maintenance operation, as such only need to be done periodically. It can be performed on the powermeter control unit.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -309,10 +297,6 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.</source>
     </message>
     <message>
         <source>[calibrationDueDate]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

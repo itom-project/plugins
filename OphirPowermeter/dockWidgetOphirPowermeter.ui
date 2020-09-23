@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>262</width>
-    <height>425</height>
+    <width>257</width>
+    <height>379</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -292,13 +292,6 @@
          </spacer>
         </item>
        </layout>
-      </item>
-      <item row="4" column="0" colspan="2">
-       <widget class="QPushButton" name="pushButtonOffset">
-        <property name="text">
-         <string>Offset</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>
