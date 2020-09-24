@@ -76,15 +76,15 @@ plot is opened that displays a moving graph of recent intensity values:
 .. code-block:: python
     
     connectionType = "USB"
-    
+
     if connectionType == "USB":  # connects the USB powermeter type
-        adda = dataIO("OphirPowermeter", connection="USB")  # connect a USB Powermeter
+        adda = dataIO("OphirPowermeter", connection=connectionType)  # connect a USB Powermeter
     elif connectionType == "RS232":  # connects the RS232 powermeter type with the additional SerialIO instance
         port = 4
         baud = 9600
         endline = '\n\r'
         adda = dataIO("OphirPowermeter", connection=connectionType, serial=dataIO("SerialIO", port, baud, endline))
-    
+
     numPoints = 1000
     image = dataObject.zeros([1, numPoints], 'float64')
     [i, plotHandle] = plot1(image)
@@ -94,13 +94,13 @@ plot is opened that displays a moving graph of recent intensity values:
         global timerId
         d = dataObject()
         adda.acquire()  # acquire new intensity value
-        
+
         image[0, 0: numPoints - 1] = image[0, 1:]  # shift pixels to the left by one...
-        
+
         adda.getVal(d)  # get the recently acquired value
         image.copyMetaInfo(d)
         image[0, numPoints - 1] = d[0, 0]  # ...append new value to the end of image
-        
+
         if plotHandle.exists():
             try:
                 plotHandle["source"] = image  # update the displayed image
