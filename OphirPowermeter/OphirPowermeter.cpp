@@ -611,16 +611,15 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     }
                     else
                     {
-                        std::cout << "Detected serial numbers:\n" << std::endl;
+                        std::cout << "Detected serial numbers:\n------------------------------\n" << std::endl;
                         std::wstring deviceSerial;
                         foreach(deviceSerial, serialsFound)
                         {
                             std::cout << wCharToChar(deviceSerial.c_str()) << "\n" << std::endl;
                         }
 
-                        m_serialNo = serialsFound[0]; // connected to first found serial number
+                        retval += ito::RetVal(ito::retError, 0, tr("Initialization breaked since list of USB devices has been printed.").toLatin1().data());
                         found = true;
-                        retval = ito::retOk;
                         break;
                     }
                 }
