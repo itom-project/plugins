@@ -167,8 +167,14 @@ This plugin can also be used as template for other grabber.");
     param = ito::Param("maxYSize", ito::ParamBase::Int, 480, new ito::IntMeta(1, 4096, 1), tr("Height of virtual sensor chip, please set this value to 1 (line camera) or a value dividable by 4 for a 2D camera.").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
-    m_initParamsOpt.append(param);
+    param = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", tr("Bits per Pixel, usually mono8, mono10, mono12, mono16 or rgb32").toLatin1().data());
+	ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::String, "mono8");
+	m->addItem("mono10");
+	m->addItem("mono12");
+	m->addItem("mono16");
+	m->addItem("rgb32");
+	param.setMeta(m, true);
+	m_initParamsOpt.append(param);
 
     param = ito::Param("numberOfChannels", ito::ParamBase::Int, 2, new ito::IntMeta(2, 30, 1), tr("Number of channels").toLatin1().data());
     m_initParamsOpt.append(param);
@@ -281,7 +287,13 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2, "ImageFormatControl"), tr("bitdepth of images").toLatin1().data());
+	ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::String, "mono8");
+	m->addItem("mono10");
+	m->addItem("mono12");
+	m->addItem("mono16");
+	m->addItem("rgb32");
+    paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", tr("bitdepth of images: mono8, mono10, mono12, mono16, rgb32").toLatin1().data());
+	paramVal.setMeta(m, true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("demoRegexpString", ito::ParamBase::String, "", tr("matches strings without whitespaces").toLatin1().data());
@@ -352,7 +364,7 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
     else
     {
         int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
-        m_params["bpp"].setVal<int>(bpp);
+        m_params["pixelFormat"].setVal<int>(bpp);
 
         m_params["sizex"].setVal<int>(sizeX);
         m_params["sizex"].setMeta(new ito::IntMeta(4, sizeX, 4), true);
@@ -378,7 +390,7 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
         for (int i = 0; i < numChannel; ++i)
         {
             tempName = QString("Channel_%1").arg(i);
-            m_data[tempName] = ChannelContainer(m_params["sizex"], m_params["sizey"], m_params["bpp"]);
+            m_data[tempName] = ChannelContainer(m_params["sizex"], m_params["sizey"], m_params["pixelFormat"]);
             m_data[tempName].m_channelParam.insert("roi", m_params["roi"]);
             if (sizeY == 1)
             {
@@ -538,7 +550,7 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
             }
         }
         //first check parameters that influence the size or data type of m_data
-        if (key == "roi" || key == "binning" || key == "bpp")
+        if (key == "roi" || key == "binning" || key == "pixelFormat")
         {
             if (!retValue.containsError())
             {
@@ -550,7 +562,7 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                 }
             }
 
-            if (key == "bpp")
+            if (key == "pixelFormat")
             {
                 retValue += it->copyValueFrom(&(*val));
             }
@@ -741,7 +753,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
 
     double frame_time = m_params["frame_time"].getVal<double>();
     double integration_time = m_params["integration_time"].getVal<double>();
-    int bpp = m_params["bpp"].getVal<double>();
+    int bpp = m_params["pixelFormat"].getVal<double>();
     float gain = m_params["gain"].getVal<double>();
     float offset = m_params["offset"].getVal<double>();
 
@@ -1021,7 +1033,7 @@ void DummyMultiChannelGrabber::syncMultiChannelParams()
     //todo: check if meta is also copied or if it gets deleted
     m_params["sizex"] = m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"];
     m_params["sizey"] = m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"];
-    m_params["bpp"] = m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["bpp"];
+    m_params["pixelFormat"] = m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["pixelFormat"];
     m_params["roi"] = m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["roi"];
     
 }

@@ -34,7 +34,7 @@ DockWidgetDummyMultiChannelGrabber::DockWidgetDummyMultiChannelGrabber(ito::AddI
 //----------------------------------------------------------------------------------------------------------------------------------
  void DockWidgetDummyMultiChannelGrabber::parametersChanged(QMap<QString, ito::Param> params)
  {
-    ui.spinBpp->setValue(params["bpp"].getVal<int>());
+    ui.spinBpp->setValue(params["pixelFormat"].getVal<int>());
     ui.spinWidth->setValue(params["sizex"].getVal<int>());
     ui.spinHeight->setValue(params["sizey"].getVal<int>());
 

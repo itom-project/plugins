@@ -48,7 +48,7 @@ void DialogDummyMultiChannelGrabber::parametersChanged(QMap<QString, ito::Param>
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
+        ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["pixelFormat"].getMeta());
         ui.combo_bpp->clear();
         int count = 0;
         for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i += bppMeta->getStepSize())
@@ -96,11 +96,11 @@ void DialogDummyMultiChannelGrabber::parametersChanged(QMap<QString, ito::Param>
     ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));  
     ui.spinBox_offset->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
 
-    ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
+    ui.combo_bpp->setEnabled(!(params["pixelFormat"].getFlags() & ito::ParamBase::Readonly));
     
     for (int i = 0; i < ui.combo_bpp->count(); ++i)
     {
-        if (ui.combo_bpp->itemData(i, Qt::UserRole).toInt() == params["bpp"].getVal<int>())
+        if (ui.combo_bpp->itemData(i, Qt::UserRole).toInt() == params["pixelFormat"].getVal<int>())
         {
             ui.combo_bpp->setCurrentIndex(i);
             break;
@@ -223,9 +223,9 @@ ito::RetVal DialogDummyMultiChannelGrabber::applyParameters()
     {
         int bpp = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt();
         
-        if (m_currentParameters["bpp"].getVal<int>() !=  bpp)
+        if (m_currentParameters["pixelFormat"].getVal<int>() !=  bpp)
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixelFormat", ito::ParamBase::Int, bpp)));
         }
     }
 
