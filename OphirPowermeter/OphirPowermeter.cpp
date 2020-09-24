@@ -581,12 +581,9 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             
             
             std::vector<std::wstring> serialsFound;
-            bool allstopped; 
             // Scan for connected Devices
             try
             {
-                m_OphirLM.StopAllStreams();
-                allstopped = true;
                 m_OphirLM.ScanUSB(serialsFound);
             }
             catch (const _com_error& e)
@@ -625,25 +622,6 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             else
             {
                 retval += ito::RetVal(ito::retError, 0, "no connected Ophir device detected");
-            }
-
-            if (!retval.containsError() && allstopped)
-            {
-                QPair<long, long> pair;
-                foreach(pair, openedUSBHandlesAndChannels)
-                {
-                    try
-                    {
-                        m_OphirLM.SetRange(pair.first, pair.second, 0);
-                        m_OphirLM.StartStream(pair.first, pair.second);
-
-                    }
-                    catch (const _com_error& e)
-                    {
-                        retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                    }
-
-                }
             }
 
             if (!retval.containsError()) // open device
@@ -921,8 +899,6 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     m_OphirLM.RegisterPlugAndPlay(PlugAndPlayCallback);
                     m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 0, 0); //turbo off
                     m_OphirLM.ConfigureStreamMode(m_handle, m_channel, 2, 1); //immediate on
-                    m_OphirLM.StartStream(m_handle, m_channel);
-                    Sleep(200);
                     m_isgrabbing = false;
                 }
                 catch (const _com_error& e)
@@ -1156,9 +1132,7 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             {
                 try
                 {
-                    m_OphirLM.StopStream(m_handle, m_channel);
                     m_OphirLM.SetMeasurementMode(m_handle, m_channel, m_measurementModes.value(val->getVal<char*>()));
-                    m_OphirLM.StartStream(m_handle, m_channel);
                 }
                 catch (const _com_error& e)
                 {
@@ -1211,8 +1185,6 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
                 QString setWave = QString::fromLatin1(m_params["wavelengthSet"].getVal<char*>());
                 try
                 {
-                    m_OphirLM.StopStream(m_handle, m_channel);
-                    Sleep(200);
                     if (setWave.compare("DISCRETE") == 0)
                     {
                         
@@ -1223,8 +1195,6 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
                         m_OphirLM.ModifyWavelength(m_handle, m_channel, 0, val->getVal<int>());
                         
                     }
-                    Sleep(200);
-                    m_OphirLM.StartStream(m_handle, m_channel);
                 }
                 catch (const _com_error& e)
                 {
@@ -1254,11 +1224,7 @@ ito::RetVal OphirPowermeter::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             {
                 try
                 {
-                    m_OphirLM.StopStream(m_handle, m_channel);
-                    Sleep(200);
                     m_OphirLM.SetRange(m_handle, m_channel, val->getVal<int>());
-                    Sleep(200);
-                    m_OphirLM.StartStream(m_handle, m_channel);
                 }
                 catch (const _com_error& e)
                 {
@@ -1375,6 +1341,7 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
         }
         catch (const _com_error& e)
         {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
         }
 
         std::vector<double> values;
@@ -1404,6 +1371,15 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
                 hasNewValue = true;
                 break;   
             }
+        }
+
+        try
+        {
+            m_OphirLM.StopStream(m_handle, m_channel);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
         }
 
         if (!hasNewValue)
