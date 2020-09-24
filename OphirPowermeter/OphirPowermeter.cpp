@@ -51,6 +51,12 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 QList<QByteArray> OphirPowermeter::openedDevices = QList<QByteArray>();
 QList<QPair<long, long> > OphirPowermeter::openedUSBHandlesAndChannels = QList<QPair<long, long> >();
 
+struct CoInitializer
+{
+    CoInitializer() { CoInitialize(nullptr); }
+    ~CoInitializer() { CoUninitialize(); }
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirPowermeterInterface::OphirPowermeterInterface()
 {
@@ -556,7 +562,16 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             m_connection = connectionType::USB;
             m_params["connection"].setVal<char*>("USB");
-            OphirLMMeasurement m_OphirLM;
+            try
+            {
+                CoInitializer initializer; // must call for COM initialization and deinitialization
+                OphirLMMeasurement m_OphirLM;
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+            }
+            
             std::vector<std::wstring> serialsFound;
             
             // Scan for connected Devices
