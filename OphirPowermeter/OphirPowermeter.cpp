@@ -611,6 +611,13 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     }
                     else
                     {
+                        std::cout << "Detected serial numbers:\n" << std::endl;
+                        std::wstring deviceSerial;
+                        foreach(deviceSerial, serialsFound)
+                        {
+                            std::cout << wCharToChar(deviceSerial.c_str()) << "\n" << std::endl;
+                        }
+
                         m_serialNo = serialsFound[0]; // connected to first found serial number
                         found = true;
                         retval = ito::retOk;
