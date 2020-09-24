@@ -51,6 +51,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 QList<QByteArray> OphirPowermeter::openedDevices = QList<QByteArray>();
 QList<QPair<long, long> > OphirPowermeter::openedUSBHandlesAndChannels = QList<QPair<long, long> >();
 
+static bool comInitialized = false;
+
 struct CoInitializer
 {
     CoInitializer() { CoInitialize(nullptr); }
@@ -562,22 +564,29 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             m_connection = connectionType::USB;
             m_params["connection"].setVal<char*>("USB");
-            try
+
+            if (!comInitialized)
             {
-                CoInitializer initializer; // must call for COM initialization and deinitialization
-                OphirLMMeasurement m_OphirLM;
+                try
+                {
+                    CoInitializer initializer; // must call for COM initialization and deinitialization
+                    OphirLMMeasurement m_OphirLM;
+                    comInitialized = true;
+                }
+                catch (const _com_error& e)
+                {
+                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+                }
             }
-            catch (const _com_error& e)
-            {
-                retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-            }
+            
             
             std::vector<std::wstring> serialsFound;
-            
+            bool allstopped; 
             // Scan for connected Devices
             try
             {
                 m_OphirLM.StopAllStreams();
+                allstopped = true;
                 m_OphirLM.ScanUSB(serialsFound);
             }
             catch (const _com_error& e)
@@ -589,6 +598,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             if (serialsFound.size() > 0) // found some connected devices
             {
                 bool found = false;
+                QByteArray newSerial;
                 for (int idx = 0; idx < serialsFound.size(); idx++) // iterate through alle serialnumbers
                 {
                     if (openedDevices.contains(wCharToChar(serialsFound[idx].c_str())))  // already connected
@@ -599,29 +609,16 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     {
                         m_serialNo = serialsFound[idx];
                         found = true;
+                        retval = ito::retOk;
+                        break;
                     }
                     else
                     {
                         m_serialNo = serialsFound[0]; // connected to first found serial number
                         found = true;
+                        retval = ito::retOk;
+                        break;
                     }
-                }
-
-                if (!found)
-                {
-
-                    QPair<long, long> pair;
-                    foreach(pair, openedUSBHandlesAndChannels) 
-                    {
-                        m_OphirLM.StartStream(pair.first, pair.second);
-                    }
-
-
-                    retval += ito::RetVal(ito::retError, 0, tr("The given input serial %1 has not been found in serial number of connected devices").arg((serialNoInput).data()).toLatin1().data());
-                }
-                else
-                {
-                    openedDevices.append(wCharToChar(m_serialNo.c_str()));
                 }
 
             }
@@ -630,17 +627,41 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 retval += ito::RetVal(ito::retError, 0, "no connected Ophir device detected");
             }
 
+            if (!retval.containsError() && allstopped)
+            {
+                QPair<long, long> pair;
+                foreach(pair, openedUSBHandlesAndChannels)
+                {
+                    try
+                    {
+                        m_OphirLM.SetRange(pair.first, pair.second, 0);
+                        m_OphirLM.StartStream(pair.first, pair.second);
+
+                    }
+                    catch (const _com_error& e)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+                    }
+
+                }
+            }
+
             if (!retval.containsError()) // open device
             {
                 try
                 {
                     m_OphirLM.OpenUSBDevice(m_serialNo, m_handle);
+                    
                 }
                 catch (const _com_error& e)
                 {
                     retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
                 }
 
+            }
+            if(!retval.containsError())
+            {
+                openedDevices.append(wCharToChar(m_serialNo.c_str()));
                 QPair<long, long> pair = QPair<long, long>(m_handle, m_channel);
                 openedUSBHandlesAndChannels.append(pair);
 
@@ -1348,6 +1369,14 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore *wai
     }
     else
     {
+        try
+        {
+            m_OphirLM.StartStream(m_handle, m_channel);
+        }
+        catch (const _com_error& e)
+        {
+        }
+
         std::vector<double> values;
         std::vector<double> timestamps;
         std::vector<OphirLMMeasurement::Status> statuses;
