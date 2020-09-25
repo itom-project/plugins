@@ -88,7 +88,7 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.");
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsOpt.append(paramVal);
 
-    m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that is detected will be opened").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be connected. If empty, all found serial numbers will be printed and the first device that is detected will be opened.").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
