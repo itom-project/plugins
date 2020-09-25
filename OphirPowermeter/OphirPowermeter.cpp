@@ -611,7 +611,7 @@ ito::RetVal OphirPowermeter::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     }
                     else
                     {
-                        std::cout << "Detected serial numbers:\n------------------------------\n" << std::endl;
+                        std::cout << "Detected serial numbers of USB devices:\n------------------------------\n" << std::endl;
                         std::wstring deviceSerial;
                         foreach(deviceSerial, serialsFound)
                         {
