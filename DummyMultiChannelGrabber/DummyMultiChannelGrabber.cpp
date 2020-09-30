@@ -236,11 +236,7 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
 {
     ito::DoubleMeta *dm;
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMultiChannelGrabber", "GrabberName");
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("frame_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum time between the start of two consecutive acquisitions [s], default: 0.0.").toLatin1().data());
+    ito::Param paramVal = ito::Param("frame_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum time between the start of two consecutive acquisitions [s], default: 0.0.").toLatin1().data());
     dm = paramVal.getMetaT<ito::DoubleMeta>();
     dm->setCategory("AcquisitionControl");
     dm->setUnit("s");
@@ -265,35 +261,9 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
     dm->setCategory("AcquisitionControl");
     dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
     m_params.insert(paramVal.getName(), paramVal);
-    
-    paramVal = ito::Param("defaultChannel", ito::ParamBase::String, "", tr("indicates the current default channel").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel, binning = x-factor * 100 + y-factor").toLatin1().data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in x (cols) [px]").toLatin1().data());
-    paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 4096, tr("size in y (rows) [px]").toLatin1().data());
-    paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
-    m_params.insert(paramVal.getName(), paramVal);
-
-    int roi[] = {0, 0, 2048, 2048};
-    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1), "ImageFormatControl");
-    paramVal.setMeta(rm, true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-	ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::String, "mono8");
-	m->addItem("mono10");
-	m->addItem("mono12");
-	m->addItem("mono16");
-	m->addItem("rgb32");
-    paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", tr("bitdepth of images: mono8, mono10, mono12, mono16, rgb32").toLatin1().data());
-	paramVal.setMeta(m, true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("demoRegexpString", ito::ParamBase::String, "", tr("matches strings without whitespaces").toLatin1().data());
@@ -316,6 +286,8 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
     sm->setCategory("DemoParameters");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
+
+
 
 
     if (hasGuiSupport())
@@ -351,7 +323,6 @@ DummyMultiChannelGrabber::~DummyMultiChannelGrabber()
 ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-
     ito::RetVal retVal;
 
     int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
@@ -363,35 +334,31 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
     }
     else
     {
-        int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
-        m_params["pixelFormat"].setVal<int>(bpp);
+        char* format = paramsOpt->at(2).getVal<char*>();       // third optional parameter, corresponding to the grabber bit depth per pixel
+        m_params["pixelFormat"].setVal<char*>(format);
 
-        m_params["sizex"].setVal<int>(sizeX);
-        m_params["sizex"].setMeta(new ito::IntMeta(4, sizeX, 4), true);
+		int roi[] = { 0, 0, sizeX, sizeY };
+		m_params["roi"].setVal<int*>(roi, 4);
+		ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1), "ImageFormatControl");
+		m_params["roi"].setMeta(rm, true);
+		if (sizeY == 1)
+		{
+			m_lineCamera = true;
+		}
+		else
+		{
+			m_lineCamera = false;
+		}
 
-        m_params["sizey"].setVal<int>(sizeY);
-        if (sizeY == 1)
-        {
-            m_lineCamera = true;
-            m_params["sizey"].setMeta(new ito::IntMeta(1, 1, 1), true);
-        }
-        else
-        {
-            m_lineCamera = false;
-            m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
-        }
         QString tempName;
 
         m_params["defaultChannel"].setVal<char*>("Channel_0");
-        int roi[] = {0, 0, sizeX, sizeY};
-        m_params["roi"].setVal<int*>(roi, 4);
 
         //add channels to map
         for (int i = 0; i < numChannel; ++i)
         {
             tempName = QString("Channel_%1").arg(i);
-            m_data[tempName] = ChannelContainer(m_params["sizex"], m_params["sizey"], m_params["pixelFormat"]);
-            m_data[tempName].m_channelParam.insert("roi", m_params["roi"]);
+			addChannel(tempName);
             if (sizeY == 1)
             {
                 m_data[tempName].m_channelParam["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
@@ -400,6 +367,7 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
             {
                 m_data[tempName].m_channelParam["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY - 1, 4, 4, sizeY, 4)), true);
             }
+			updateRelatedBaseParams();
 
         }
 
@@ -407,7 +375,7 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
 
     if (!retVal.containsError())
     {
-        checkData(); //check if image must be reallocated
+        retVal += checkData(); //check if image must be reallocated
 
         emit parametersChanged(m_params);
     }
@@ -572,15 +540,11 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                 {
                     //retValue += it->copyValueFrom(&(*val));
                     m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["roi"].setVal<int*>(val->getVal<int*>(),4);
-                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"].setVal<int>(val->getVal<int*>()[2]);
-                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"].setVal<int>(val->getVal<int*>()[3]);
                 }
                 else
                 {
                     //it->getVal<int*>()[index] = val->getVal<int>();
                     m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["roi"].setVal<int*>(val->getVal<int*>(),4);
-                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizex"].setVal<int>(it->getVal<int*>()[2]);
-                    m_data[m_params["defaultChannel"].getVal<char*>()].m_channelParam["sizey"].setVal<int>(it->getVal<int*>()[3]);
                     /*m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
                     m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);*/
                 }
@@ -615,17 +579,13 @@ ito::RetVal DummyMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                         float factorY = (float)oldY / (float)newY;
                         int width, height, maxWidth, maxHeight, sizex, sizey, offsetx, offsety;
                         QMap<QString, ChannelContainer>::iterator i;
-                        for(i=m_data.begin(); i != m_data.end(); ++i)
-                        {
-                            width = i.value().m_channelParam["sizex"].getVal<int>() * factorX;
-                            height = i.value().m_channelParam["sizey"].getVal<int>() * factorY;
+						for (i = m_data.begin(); i != m_data.end(); ++i)
+						{
+							width = (i.value().m_channelParam["roi"].getVal<int*>()[1] - i.value().m_channelParam["roi"].getVal<int*>()[0])*factorX;
+                            height = (i.value().m_channelParam["roi"].getVal<int*>()[3] - i.value().m_channelParam["roi"].getVal<int*>()[2]) * factorY;
 
-                            maxWidth = i.value().m_channelParam["sizex"].getMax();
-                            maxHeight = i.value().m_channelParam["sizey"].getMax();
-                            i.value().m_channelParam["sizex"].setVal<int>(width);
-                            i.value().m_channelParam["sizex"].setMeta(new ito::IntMeta(4 / newX, maxWidth * factorX, 4 / newX), true);
-                            i.value().m_channelParam["sizey"].setVal<int>(height);
-                            i.value().m_channelParam["sizey"].setMeta(new ito::IntMeta(4 / newY, maxHeight * factorY, 4 / newY), true);
+							maxWidth = static_cast<ito::RectMeta*>(i.value().m_channelParam["roi"].getMeta())->getWidthRangeMeta().getSizeMax();
+							maxHeight = static_cast<ito::RectMeta*>(i.value().m_channelParam["roi"].getMeta())->getHeightRangeMeta().getSizeMax();
 
                             int sizeX = i.value().m_channelParam["roi"].getVal<int*>()[2] * factorX;
                             int sizeY = i.value().m_channelParam["roi"].getVal<int*>()[3] * factorY;
@@ -753,7 +713,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
 
     double frame_time = m_params["frame_time"].getVal<double>();
     double integration_time = m_params["integration_time"].getVal<double>();
-    int bpp = m_params["pixelFormat"].getVal<double>();
+    int bpp = pixelFormatStringToBpp(m_params["pixelFormat"].getVal<char*>());
     float gain = m_params["gain"].getVal<double>();
     float offset = m_params["offset"].getVal<double>();
 
