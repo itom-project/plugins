@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -32,7 +32,7 @@
 
 #define PLUGIN_VERSION_MAJOR 1
 #define PLUGIN_VERSION_MINOR 4
-#define PLUGIN_VERSION_PATCH 0
+#define PLUGIN_VERSION_PATCH 1
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
