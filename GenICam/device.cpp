@@ -202,7 +202,7 @@ int GenTLDevice::getPayloadSize() const
 {
     CValuePtr ptrValue = pNode;
     
-    if (m_verbose >= VERBOSE_ALL)
+    if (m_verbose >= VERBOSE_DEBUG)
     {
         try
         {

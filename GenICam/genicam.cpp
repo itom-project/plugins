@@ -111,25 +111,46 @@ a list of all auto-detected vendors and models is returned.");
     ito::Param paramVal = ito::Param("GenTLProducer", ito::ParamBase::String, NULL, "C:\\XIMEA\\GenTL Producer\\x64\\ximea.gentlX64.cti", description.toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("interface", ito::ParamBase::String, NULL, "auto", tr("interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty string to get a list of all possible interfaces for the chosen transport layer. Default: 'auto' opens the first supported interface of the chosen transport layer.").toLatin1().constData());
+    paramVal = ito::Param("interface", ito::ParamBase::String, NULL, "auto", 
+        tr("interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty "
+            "string to get a list of all possible interfaces for the chosen transport layer. "
+            "Default: 'auto' opens the first supported interface of the chosen transport layer.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("deviceID", ito::ParamBase::String, NULL, "", tr("name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.").toLatin1().constData());
+    paramVal = ito::Param("deviceID", ito::ParamBase::String, NULL, "", 
+        tr("name of the device to be opened. Leave empty to open first detected device of given "
+            "transport layer and interface.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("index of data stream to be opened (default: 0).").toLatin1().constData());
+    paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, 
+        tr("index of data stream to be opened (default: 0).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Invisible, GenApi::Expert, tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru, %4: Invisible).").arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).arg(GenApi::Invisible).toLatin1().constData());
+    paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Invisible, GenApi::Expert, 
+        tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru, %4: Invisible).").
+        arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).arg(GenApi::Invisible).toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("port index to be opened (default: 0).").toLatin1().constData());
+    paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, 
+        tr("port index to be opened (default: 0).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR, tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states)).").toLatin1().constData());
+    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR, 
+        tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, "
+            "3: print errors, warnings, informations, 4: debug, 5: all (gives even information "
+            "about parameter changes or buffer states), higher: special debug values).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("accessLevel", ito::ParamBase::Int, GenTL::DEVICE_ACCESS_READONLY, GenTL::DEVICE_ACCESS_EXCLUSIVE, GenTL::DEVICE_ACCESS_EXCLUSIVE, tr("Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).").arg(GenTL::DEVICE_ACCESS_READONLY).arg(GenTL::DEVICE_ACCESS_CONTROL).arg(GenTL::DEVICE_ACCESS_EXCLUSIVE).toLatin1().constData());
+    paramVal = ito::Param("accessLevel", ito::ParamBase::Int, GenTL::DEVICE_ACCESS_READONLY, GenTL::DEVICE_ACCESS_EXCLUSIVE, GenTL::DEVICE_ACCESS_EXCLUSIVE, 
+        tr("Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).").
+        arg(GenTL::DEVICE_ACCESS_READONLY).arg(GenTL::DEVICE_ACCESS_CONTROL).arg(GenTL::DEVICE_ACCESS_EXCLUSIVE).toLatin1().constData());
+    m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param("flushAllBuffersToInput", ito::ParamBase::Int, 0, 1, 0,
+        tr("If 1: all announced buffers will be additionally flushed with 'ACQ_QUEUE_ALL_TO_INPUT' "
+            "to the input queue in startDevice or in case of any buffer errors. If 0: this is not the "
+            "case (default). It seems that the Allied Vision Goldeye G-008 camera requires "
+            "this option to be set to 1.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 }
 
@@ -149,7 +170,8 @@ GenICamInterface::~GenICamInterface()
 GenICamClass::GenICamClass() : AddInGrabber(),
     m_hasTriggerSource(false),
     m_newImageAvailable(false),
-    m_acquisitionStartCommandByStartDevice(false)
+    m_acquisitionStartCommandByStartDevice(false),
+    m_verbose(0)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::In, "GenICam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -824,8 +846,9 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     int streamIndex = paramsOpt->at(3).getVal<int>();
     int visibilityLevel = paramsOpt->at(4).getVal<int>();
     int portIndex = paramsOpt->at(5).getVal<int>();
-    int verbose = paramsOpt->at(6).getVal<int>();
+    m_verbose = paramsOpt->at(6).getVal<int>();
     int accessLevel_ = paramsOpt->at(7).getVal<int>();
+    bool flushAllBuffersToInput = paramsOpt->at(8).getVal<int>() > 0;
 
     try
     {
@@ -848,7 +871,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     
         if (!retValue.containsError())
         {
-            m_system->setVerbose(verbose);
+            m_system->setVerbose(m_verbose);
             m_interface = m_system->getInterface(interfaceType, retValue);
         }
 
@@ -871,9 +894,14 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
 
         if (!retValue.containsError())
         {
+            m_stream->setFlushAllBuffersToInput(flushAllBuffersToInput);
+        }
+
+        if (!retValue.containsError())
+        {
             ito::RetVal streamRetVal;
             QByteArray streamTlType = m_stream->getTLType(&streamRetVal);
-            if (streamRetVal.containsError() && (verbose >= VERBOSE_DEBUG))
+            if (streamRetVal.containsError() && (m_verbose >= VERBOSE_DEBUG))
             {
                 std::cerr << streamRetVal.errorMessage() << "\n" << std::endl;
             }
@@ -882,7 +910,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
             {
                 streamTlType = m_system->getInterfaceInfo(GenTL::INTERFACE_INFO_TLTYPE, m_interface->getIfaceID(), retValue);
 
-                if (verbose >= VERBOSE_DEBUG)
+                if (m_verbose >= VERBOSE_DEBUG)
                 {
                     std::cout << "Interface: TLType: " << streamTlType.constData() << "\n" << std::endl;
                 }
@@ -1061,10 +1089,21 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                 if (!retValue.containsError())
                 {
                     retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+
                     if (!retValue.containsWarning())
                     {
                         m_acquisitionStartCommandByStartDevice = true;
-                        m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+
+                        // the following flush command is somehow critical. We encountered a Mikrotron camera
+                        // (CoaXPress) together with an ActiveSilicon framegrabber, that does not work if the
+                        // flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT) command is placed here. Many other
+                        // cameras can work with or without this command, but this command has been added
+                        // to support an AlliedVision GoldEye camera.
+                        // see issue: https://bitbucket.org/itom/plugins/issues/8/genicam-plugin-issue-with-mikrotron-eosens
+                        if (m_stream->flushAllBuffersToInput())
+                        {
+                            m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+                        }
                     }
                 }
                 else if (revertAllocateIfError)
@@ -1124,6 +1163,11 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
             setGrabberStarted(0);
 
             m_device->setParamsLocked(0);
+
+            if (m_framegrabber)
+            {
+                m_framegrabber->setParamsLocked(0);
+            }
 
             QThread::msleep(100);
         }

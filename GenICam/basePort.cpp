@@ -682,7 +682,7 @@ ito::RetVal BasePort::createParamsFromDevice(QMap<QString, ito::Param> &params, 
             catch (GenericException & ex)
             {
                 //
-                if (m_verbose >= VERBOSE_ALL)
+                if (m_verbose >= VERBOSE_DEBUG)
                 {
                     std::cerr << name.constData() << "::" << ex.what() << "\n" << std::endl;
                 }
@@ -1064,17 +1064,20 @@ ito::RetVal BasePort::invokeCommandNode(const gcstring &name, ito::tRetValue err
         {
             GenApi::CCommandPtr &command = m_commandNodes[name];
 
-#ifdef _DEBUG
-            if (m_verbose >= VERBOSE_ALL && command->GetNode())
+            if (m_verbose >= VERBOSE_DEBUG && command->GetNode())
             {
                 std::cout << m_deviceName.constData() << ": invoke command " << command->GetNode()->GetName() << ", access: " << command->GetNode()->GetAccessMode() << " (" << command->GetAccessMode() << ")\n" << std::endl;
             }
-#endif
 
             command->Execute();
         }
         catch (GenericException &ex)
         {
+            if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << m_deviceName.constData() << ": error invoking command " << name.c_str() << " Description: " << ex.GetDescription();
+            }
+
             if (errorLevel == ito::retError)
             {
                 return ito::RetVal::format(ito::retError, 0, "%s: Error invoking command '%s': %s", m_deviceName.constData(), name.c_str(), ex.GetDescription());
@@ -1084,10 +1087,16 @@ ito::RetVal BasePort::invokeCommandNode(const gcstring &name, ito::tRetValue err
                 return ito::RetVal::format(ito::retWarning, 0, "%s: Warning invoking command '%s': %s", m_deviceName.constData(), name.c_str(), ex.GetDescription());
             }
         }
+
         return ito::retOk;
     }
     else
     {
+        if (m_verbose >= VERBOSE_DEBUG)
+        {
+            std::cout << m_deviceName.constData() << ": command cannot be invoked since not available: " << name.c_str();
+        }
+
         if (errorLevel == ito::retError)
         {
             return ito::RetVal::format(ito::retError, 0, "%s: Command '%s' not available", m_deviceName.constData(), name.c_str());
