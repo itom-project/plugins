@@ -92,24 +92,7 @@ class DummyMotor : public ito::AddInActuator
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
 
     protected:
-        ~DummyMotor() //!< Destructor        
-        {
-            bool timeout = false;
-            int waitcount = 0;
-            bool moving = false;
-            for (int na = 0; na < m_numaxis; na++)
-                moving |= (m_currentStatus[na] & ito::actuatorMoving) != 0;
-            while (m_async && moving && !timeout)
-            {
-                Sleep(100);
-                waitcount++;
-                if (waitcount > PLUGINWAIT / 100)
-                    timeout = true;
-                moving = false;
-                for (int na = 0; na < m_numaxis; na++)
-                    moving |= (m_currentStatus[na] & ito::actuatorMoving) != 0;
-            }
-        }    
+        ~DummyMotor(); //!< Destructor           
         DummyMotor();    //!< Constructur
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);

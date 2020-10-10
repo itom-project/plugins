@@ -307,6 +307,14 @@ if(PLUGIN_OpenCVGrabber)
     add_subdirectory(OpenCVGrabber)
 endif(PLUGIN_OpenCVGrabber)
 
+# OphirPowermeter
+if(WIN32)
+    option(PLUGIN_OphirPowermeter "Build with this plugin." ON)
+    if(PLUGIN_OphirPowermeter)
+        add_subdirectory(OphirPowermeter)
+    endif(PLUGIN_OphirPowermeter)
+endif()
+
 # PclTools
 option(PLUGIN_PclTools "Build with this plugin." ON)
 if(PLUGIN_PclTools)
@@ -433,6 +441,14 @@ if(WIN32)
     if(PLUGIN_ThorlabsFF)
         add_subdirectory(ThorlabsFF)
     endif(PLUGIN_ThorlabsFF)
+endif()
+
+# ThorlabsKCubeIM KCube inertial motor
+if(WIN32)
+    option(PLUGIN_ThorlabsKCubeIM "Build with this plugin." OFF)
+    if(PLUGIN_ThorlabsKCubeIM)
+        add_subdirectory(ThorlabsKCubeIM)
+    endif(PLUGIN_ThorlabsKCubeIM)
 endif()
 
 # ThorlabsKCubePA KCube position aligner

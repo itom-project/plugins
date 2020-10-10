@@ -52,8 +52,13 @@ namespace pcl
   {
     public:
 
+#if PCL_VERSION_COMPARE(>=, 1, 10, 0)
+      typedef pcl::shared_ptr< CylinderClipper3D<PointT> > Ptr;
+      typedef pcl::shared_ptr< const CylinderClipper3D<PointT> > ConstPtr;
+#else
       typedef boost::shared_ptr< CylinderClipper3D<PointT> > Ptr;
       typedef boost::shared_ptr< const CylinderClipper3D<PointT> > ConstPtr;
+#endif
 
 
       /**

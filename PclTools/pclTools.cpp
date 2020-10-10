@@ -72,9 +72,12 @@
 #if PCL_VERSION_COMPARE(>, 1, 7, 0) && PCL_VERSION_COMPARE(<, 1, 10, 0)
 	#include <pcl/recognition/auxiliary.h>
     #include <pcl/recognition/ransac_based/trimmed_icp.h>
-#elif PCL_VERSION_COMPARE(>=, 1, 10, 0)
+#elif PCL_VERSION_COMPARE(>=, 1, 10, 0) && PCL_VERSION_COMPARE(<, 1, 11, 0)
     #include <pcl/recognition/auxiliary.h>
     #include <pcl/recognition/trimmed_icp.h>
+#elif PCL_VERSION_COMPARE(>=, 1, 11, 0)
+    #include <pcl/recognition/trimmed_icp.h>
+    #include <pcl/common/common.h>
 #endif
 
 
@@ -3700,20 +3703,27 @@ const QString PclTools::pclPolygonMeshFromIndicesDOC = QObject::tr("\n\
     mOut->cloud.point_step = mIn->cloud.point_step;
     uint32_t pointStep = mIn->cloud.point_step;
 
-    std::vector<pcl::uint8_t> &data = mOut->cloud.data;
-    pcl::uint8_t *ptrIn = &(mIn->cloud.data[0]);
+#if PCL_VERSION_COMPARE(>=,1,11,0)
+    typedef std::uint8_t pcluint8_t;
+#else
+    typedef pcl::uint8_t pcluint8_t;
+#endif
+
+
+    std::vector<pcluint8_t> &data = mOut->cloud.data;
+    pcluint8_t *ptrIn = &(mIn->cloud.data[0]);
 
     data.resize(counter * pointStep);
 
     if (idxSize > 0)
     {
-        pcl::uint8_t *ptrOut = &(data[0]);
+        pcluint8_t *ptrOut = &(data[0]);
 
         for (int i = 0; i < points; i++)
         {
             if (buckets[i] > 0)
             {
-                memcpy(ptrOut + pointStep * lut[i] * sizeof(pcl::uint8_t), ptrIn + pointStep * i * sizeof(pcl::uint8_t), pointStep * sizeof(pcl::uint8_t));
+                memcpy(ptrOut + pointStep * lut[i] * sizeof(pcluint8_t), ptrIn + pointStep * i * sizeof(pcluint8_t), pointStep * sizeof(pcluint8_t));
             }
         }
 

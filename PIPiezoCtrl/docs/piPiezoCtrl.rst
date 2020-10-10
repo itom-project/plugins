@@ -63,7 +63,7 @@ parameters can be changed using *setParam*.
 **local**: {int}
     defines whether system is in local (1) or remote (0) mode.
 **name**: {str}, read-only
-    
+    name of the plugin
 **numaxis**: {int}, read-only
     Number of axes (here always 1)
 **piezoName**: {str}, read-only
