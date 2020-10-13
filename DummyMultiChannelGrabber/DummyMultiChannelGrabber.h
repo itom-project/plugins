@@ -74,7 +74,7 @@ class DummyMultiChannelGrabber : public ito::AddInMultiChannelGrabber
 
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
+		ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate);
 
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
@@ -87,7 +87,6 @@ class DummyMultiChannelGrabber : public ito::AddInMultiChannelGrabber
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
-        void syncMultiChannelParams();
 
 
 };
