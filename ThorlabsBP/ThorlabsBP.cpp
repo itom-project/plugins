@@ -813,7 +813,7 @@ ito::RetVal ThorlabsBP::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     {
         foreach(int ax, axis)
         {
-            retval += PBC_SetZero(m_serialNo, m_channelIndices[ax]);
+            retval += checkError(PBC_SetZero(m_serialNo, m_channelIndices[ax]), "set zero");
         }
 
         replaceStatus(axis, ito::actuatorAtTarget, ito::actuatorMoving);
