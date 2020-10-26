@@ -1561,6 +1561,23 @@ ito::RetVal FittingFilters::fillInvalidAreasParams(QVector<ito::Param> *paramsMa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> cv::Mat FittingFilters::getNaNMask(const cv::Mat* mat)
+{
+    cv::Mat mask = cv::Mat::zeros(mat->rows, mat->cols, CV_8U);  // binary mask
+    for (int y = 0; y < mat->rows; y++)
+    {
+        const _Tp* rowPtr = mat->ptr<_Tp>(y);
+        int8* rowNaNPtr = mask.ptr<int8>(y);
+        for (int x = 0; x < mat->cols; x++)
+        {
+            rowNaNPtr[x] = cvIsNaN(rowPtr[x]) == true ? 255 : 0;
+        }
+    }
+
+    return mask;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1647,17 +1664,27 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
 
         for (int planeIdx = 0; planeIdx < numPlanes; ++planeIdx)
         {
+            
             input = inputObject->getCvPlaneMat(0);
             output = outputObject.getCvPlaneMat(0);
+            
+            // operation "nanMask = cv::Mat(*input != *input);" is buggy
+            // https://stackoverflow.com/questions/41759247/filter-opencv-mat-for-nan-values 
 
-            //get all NaN values
-            nanMask = cv::Mat(*input != *input);
+            switch (input->type())
+            {
+            case CV_32F:
+                nanMask = getNaNMask<float>(input);
+                break;
+            case CV_64F:
+                nanMask = getNaNMask<double>(input);
+                break;
+            }
 
             //label all NaN areas
             int numAreas = cv::connectedComponentsWithStats(nanMask, labels, stats, centroids, 4, CV_32S);
             numTotalAreas += (numAreas - 1); //the first area is the background
 
-            
 
             if (statsObj && numAreas > 1)
             {
