@@ -309,7 +309,7 @@ endif(PLUGIN_OpenCVGrabber)
 
 # OphirPowermeter
 if(WIN32)
-    option(PLUGIN_OphirPowermeter "Build with this plugin." ON)
+    option(PLUGIN_OphirPowermeter "Build with this plugin." OFF)
     if(PLUGIN_OphirPowermeter)
         add_subdirectory(OphirPowermeter)
     endif(PLUGIN_OphirPowermeter)
