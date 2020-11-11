@@ -345,6 +345,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QCheckBox" name="checkDualChannel">
+          <property name="text">
+           <string>dual channel mode</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>

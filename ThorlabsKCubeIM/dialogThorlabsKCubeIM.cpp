@@ -129,6 +129,7 @@ void DialogThorlabsKCubeIM::parametersChanged(QMap<QString, ito::Param> params)
     ui.spinTimeout->setValue(params["timeout"].getVal<int>());
 
     ui.checkAsync->setChecked(params["async"].getVal<int>());
+    ui.checkDualChannel->setChecked(params["dualChannel"].getVal<int>());
     ui.checkFrontPanel->setChecked(params["lockFrontPanel"].getVal<int>());
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
@@ -151,6 +152,12 @@ ito::RetVal DialogThorlabsKCubeIM::applyParameters()
     if (async != m_currentParameters["async"].getVal<int>())
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, async)));
+    }
+
+    int dualChannel = ui.checkDualChannel->isChecked() ? 1 : 0;
+    if (dualChannel != m_currentParameters["dualChannel"].getVal<int>())
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("dualChannel", ito::ParamBase::Int, dualChannel)));
     }
 
     double timeout = ui.spinTimeout->value();
