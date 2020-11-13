@@ -31,7 +31,7 @@
     #include "opencv2/calib3d/calib3d.hpp"
 
 #if (CV_MAJOR_VERSION >= 4)
-    #include "opencv2\highgui.hpp"
+    #include "opencv2/highgui.hpp"
 #else
     #include "opencv/highgui.h"
 #endif
