@@ -125,6 +125,10 @@ class OpenCVFilters : public ito::AddInAlgo
         static ito::RetVal cvBilateralFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); /*! Function performs a "Bilateral-Filter" on the input object*/
         static ito::RetVal cvBilateralFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut); /*! Function gives back the optional and mandatory parameters for "Bilateral-Filter"*/
 
+        static const QString cvThresholdDoc;
+        static ito::RetVal cvThreshold(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); /*! Function performs a "Bilateral-Filter" on the input object*/
+        static ito::RetVal cvThresholdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut); /*! Function gives back the optional and mandatory parameters for "Bilateral-Filter"*/
+
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
         static const QString cvFindCirclesDoc;
         static ito::RetVal cvFindCircles(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);

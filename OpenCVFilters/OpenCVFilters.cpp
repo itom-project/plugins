@@ -2666,6 +2666,98 @@ ito::RetVal OpenCVFilters::cvCvtColor(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString OpenCVFilters::cvThresholdDoc = QObject::tr("Applies a fixed-level threshold to each array element.. \n\
+\n\
+The function applies fixed-level thresholding to a multiple-channel array. \n\
+The function is typically used to get a bi-level (binary) image out of a grayscale image (compare could be also used for this purpose)\n\
+or for removing a noise, that is, filtering out pixels with too small or too large values. \n\
+There are several types of thresholding supported by the function. They are determined by type parameter.\n\
+\n\
+Also, the special values THRESH_OTSU or THRESH_TRIANGLE may be combined with one of the above values. \n\
+In these cases, the function determines the optimal threshold value using the Otsu's or Triangle algorithm and uses it instead of the specified thresh.\n\
+\n\
+Note: \n\
+Currently, the Otsu's and Triangle methods are implemented only for 8-bit single-channel images.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal OpenCVFilters::cvThresholdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (retval.containsError()) return retval;
+
+    paramsMand->append(ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("source image").toLatin1().data()));
+    paramsMand->append(ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image. It hast the same size as map1 and the same type as src.").toLatin1().data()));
+
+    paramsMand->append(ito::Param("threshold", ito::ParamBase::Double | ito::ParamBase::In, std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0.0, tr("threshold value.").toLatin1().data()));
+    paramsMand->append(ito::Param("maxValue", ito::ParamBase::Double | ito::ParamBase::In, std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0.0, tr("maximum value to use with the THRESH_BINARY and THRESH_BINARY_INV thresholding types.").toLatin1().data()));
+
+    QString description = tr("threshold type\n").toLatin1().data();
+    description += QString("THRESH_BINARY (%1)\n").arg(cv::THRESH_BINARY);
+    description += QString("THRESH_BINARY_INV (%1)\n").arg(cv::THRESH_BINARY_INV);
+    description += QString("THRESH_TRUNC (%1)\n").arg(cv::THRESH_TRUNC);
+    description += QString("THRESH_TOZERO (%1)\n").arg(cv::THRESH_TOZERO);
+    description += QString("THRESH_TOZERO_INV (%1)\n").arg(cv::THRESH_TOZERO_INV);
+    description += QString("THRESH_MASK (%1)\n").arg(cv::THRESH_MASK);
+    description += QString("THRESH_OTSU (%1)\n").arg(cv::THRESH_OTSU);
+    description += QString("THRESH_TRIANGLE (%1)").arg(cv::THRESH_TRIANGLE);
+    paramsMand->append(ito::Param("type", ito::ParamBase::Int | ito::ParamBase::In, cv::THRESH_BINARY, cv::THRESH_TRIANGLE, cv::THRESH_BINARY, description.toLatin1().data()));
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal OpenCVFilters::cvThreshold(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "source", ito::Range(1, INT_MAX), ito::Range(1, INT_MAX), retval, -1, 0);
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    double threshold = (*paramsMand)[2].getVal<double>();
+    double maxVal = (*paramsMand)[3].getVal<double>();
+    int type = (*paramsMand)[4].getVal<int>();
+
+
+    if (src.getDims() > 3)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: input dataObject must be two-dimensional.").toLatin1().data());
+    }
+
+
+    if (!retval.containsError())
+    {
+        
+        try
+        {
+            (*dObjDst) = ito::DataObject(src.getDims(), src.getSize(), src.getType());
+
+            cv::Mat *cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(0)]);
+
+            cv::threshold(*(src).getCvPlaneMat(0), *cvMatOut, threshold, maxVal, type);
+
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
+        }
+
+        if (!retval.containsError())
+        {
+            dObjDst->copyAxisTagsTo(src);
+            dObjDst->copyTagMapTo(src);
+
+            QString msg = tr("Image has been threshold filter by a value of %1").arg(threshold);
+            dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
+        }
+
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
@@ -2771,6 +2863,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
 
     filter = new FilterDef(OpenCVFilters::cvProjectPoints, OpenCVFilters::cvProjectPointsParams, cvProjectPointsDoc);
     m_filterList.insert("cvProjectPoints", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvThreshold, OpenCVFilters::cvThresholdParams, cvThresholdDoc);
+    m_filterList.insert("cvThreshold", filter);
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
