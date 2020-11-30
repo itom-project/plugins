@@ -81,7 +81,7 @@ Switch acceleration, velocity and calib_mode
 
 .. code-block:: python  
 
-# switch 2 controller to config mode
+    # switch 2 controller to config mode
     plugin.setParam("config_state", [1,1])
     # plugin.setParam("config_state", [1,0]) => switch ctrl0 to config and if ctrl1 is on config, leave config 
 
