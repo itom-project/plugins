@@ -1640,6 +1640,15 @@ ito::RetVal OphirPowermeter::SendQuestionWithAnswerDouble(QByteArray questionCom
     if (_answer.length() > 0)
     {
         answer = _answer.toDouble(&ok);
+        if (!ok) // search for whitespace character
+        {
+            if (_answer[0] == ' ')
+            {
+                _answer.remove(0, 1);
+            }
+
+            answer = _answer.toDouble(&ok);
+        }
     }
     else
     {
