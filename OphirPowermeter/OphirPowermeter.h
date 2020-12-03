@@ -74,7 +74,7 @@ class OphirPowermeter : public ito::AddInDataIO
         static QList<QByteArray> openedDevices;
         static QList<QPair<long, long> > openedUSBHandlesAndChannels;
         std::wstring m_serialNo;
-        OphirLMMeasurement m_OphirLM;
+        QSharedPointer<OphirLMMeasurement> m_OphirLM;
         long m_handle;
         long m_channel;
 
