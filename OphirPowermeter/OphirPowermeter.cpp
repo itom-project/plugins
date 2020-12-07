@@ -67,7 +67,9 @@ OphirPowermeterInterface::OphirPowermeterInterface()
     m_detaildescription = QObject::tr("The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. \n\
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. \n\
 \n\
-Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.");
+Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.\
+For the USB type it is necessary to install the COM object which comes with StarLab form Ophir.\
+Download page: https://www.ophiropt.com/laser--measurement/software/com-object");
 
     m_author = "J. Krauter, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
