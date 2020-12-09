@@ -274,7 +274,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
 
     if (url.toLower().startsWith("local:"))
     {
-        QRegExp regExp("^local:(///)?([a-zA-Z0-9._\\-]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?schemaVersion=.+)?$");
+        QRegExp regExp("^local:(///)?([a-zA-Z0-9\\._\\- ]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?SchemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         infoString += QString("* XML file location: %1 device\n").arg(QLatin1String(m_deviceName));
@@ -315,7 +315,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
     {
         infoString += QString("* XML file location: File system\n");
 
-        QRegExp regExp("^file:(///)?([a-zA-Z0-9._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
+        QRegExp regExp("^file:(///)?([a-zA-Z0-9\\._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         if (regExp.indexIn(url) >= 0)
