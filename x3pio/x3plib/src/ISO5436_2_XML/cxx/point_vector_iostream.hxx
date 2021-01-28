@@ -40,7 +40,13 @@
 #endif
 
 #if linux
-    #include <xlocale.h>
+    #define GCC_VERSION (__GNUC__ * 10000 \
+        + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+    #if GCC_VERSION >= 022600
+        #include <locale.h>
+    #else
+        #include <xlocale.h>
+    #endif
 #else
     #include <xlocale>
 #endif

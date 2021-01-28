@@ -271,10 +271,14 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
     //url = "File:///C:\\Program Files\\Active Silicon\\GenICam_XML_File\\CXP_MC258xS11.xml?SchemaVersion=1.1.0";
     //url = "local:tlguru_system_rev1.xml;F0F00000;3BF?SchemaVersion=1.0.0";
     //url = "Local:Mikrotron_GmbH_MC258xS11_Rev1_25_0.zip;8001000;273A?SchemaVersion=1.1.0";
+    //url = "local:///IDS Imaging Development Systems GmbH_U3-320xSE-M_7.1.1.1.100001f.1.zip;150048;AF5F?SchemaVersion=1.1.0";
+    //url = "File:///C:\\IDS\\IDS_DevicePort_rev0.xml?SchemaVersion=1.1.0";
+    //url = "file:///C:/IDS/ids_peak/ids_u3vgentl/64/IDS Imaging Development Systems GmbH_U3-320xSE-M_7.1.1.1.100001f.1.zip";
+
 
     if (url.toLower().startsWith("local:"))
     {
-        QRegExp regExp("^local:(///)?([a-zA-Z0-9._\\-]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?schemaVersion=.+)?$");
+        QRegExp regExp("^local:(///)?([a-zA-Z0-9\\._\\- ]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?SchemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         infoString += QString("* XML file location: %1 device\n").arg(QLatin1String(m_deviceName));
@@ -315,7 +319,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
     {
         infoString += QString("* XML file location: File system\n");
 
-        QRegExp regExp("^file:(///)?([a-zA-Z0-9._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
+        QRegExp regExp("^file:(///)?([a-zA-Z0-9\\._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
         regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
         if (regExp.indexIn(url) >= 0)

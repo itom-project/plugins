@@ -93,7 +93,10 @@ This plugin has been tested with the following cameras: \n\
 * Mikrotron (CoaXPress) with Active Silicon Framegrabber (FireBird) \n\
 * Vistek, exo174MU3 (USB3) \n\
 * Vistek, exo174MGE (GigE)\n\
-* Ximea (USB3)";
+* Ximea (USB3) \n\
+* IDS Imaging, U3-3200SE-M-GL (USB3) \n\
+* IDS Imaging, U3-3800SE-M-GL (USB3) \n\
+* IDS Imaging, UI-5880CP-M-GL (GigE)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";
