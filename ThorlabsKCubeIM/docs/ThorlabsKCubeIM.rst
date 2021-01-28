@@ -36,6 +36,8 @@ parameters can be changed using *setParam*.
     acceleration Steps/s
 **async**: {int}
     sychronous (0, default) or asychronous (1) mode
+**enableAxes**: {int}
+    disable (0, default) or enable axis (1)
 **deviceName**: {str}, read-only
     Description of the device
 **dualChannel**: {int}

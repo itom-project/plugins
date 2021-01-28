@@ -141,6 +141,8 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
 
     m_params.insert("dualChannel", ito::Param("dualChannel", ito::ParamBase::Int, 0, 1, 0, tr("single Channel mode (0, default) or dual Channel mode (1)").toLatin1().data()));
 
+    m_params.insert("enableAxes", ito::Param("enableAxes", ito::ParamBase::Int, 0, 1, 0, tr("disable (0, default) or enable axis (1)").toLatin1().data()));
+
     m_currentPos.fill(0.0, 4);
     m_currentStatus.fill(0, 4);
     m_targetPos.fill(0.0, 4);
@@ -374,6 +376,17 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_params["dualChannel"].setFlags(ito::ParamBase::Readonly);
         }
 
+        int enable = m_params["enableAxes"].getVal<int>();
+
+        if (enable == 1)
+        {
+            retval += checkError(KIM_Enable(m_serialNo), "enable axes");
+        }
+        else
+        {
+            retval += checkError(KIM_Disable(m_serialNo), "disable axes");
+        }
+
     }
 
     if (!retval.containsError())
@@ -583,6 +596,20 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
                 break;
             }
 
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "enableAxes")
+        {
+            int state = m_params["enableAxes"].getVal<int>();
+
+            if (state == 1)
+            {
+                retValue += checkError(KIM_Enable(m_serialNo), "enable axes");
+            }
+            else
+            {
+                retValue += checkError(KIM_Disable(m_serialNo), "disable axes");
+            }
             retValue += it->copyValueFrom(&(*val));
         }
 
