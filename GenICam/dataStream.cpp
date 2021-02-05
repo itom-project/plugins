@@ -1202,6 +1202,19 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void msb_to_lsb_16bit(const ito::uint16 *source, ito::uint16 *dest, size_t n)
+{
+    const ito::uint16 *end = source + n;
+    ito::uint16 temp;
+
+    while (source != end)
+    {
+        temp = *source++;
+        *dest++ = (temp << 8) | (temp >> 8);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
     if (littleEndian)
@@ -1210,7 +1223,10 @@ ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const s
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "big endian for mono10, mono12, mono14, mono16 currently not supported.");
+        ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);
+        const ito::uint16 *source = (const ito::uint16*)ptr;
+        msb_to_lsb_16bit(source, dest, width * height);
+        return ito::retOk;
     }
 }
 
