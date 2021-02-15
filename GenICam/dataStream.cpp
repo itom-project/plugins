@@ -1064,6 +1064,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 
         //get pixel endianess
         if (pixelformat != PFNC_Mono8 && 
+            pixelformat != PFNC_Mono16 &&
             pixelformat != PFNC_RGB8 &&
             pixelformat != PFNC_YCbCr422_8)
         {
