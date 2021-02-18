@@ -552,6 +552,11 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
 		}
 		ok = true;
 	}
+	if (key == "roi") 
+	{
+		m_isgrabbing = false; //we need to trigger again since the roi changed
+		ok = false; //we want to further process the parameter by setParam
+	}
 	else
 	{
 		ok = false; // set ok to false to let setParam process the parameter
