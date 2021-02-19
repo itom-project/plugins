@@ -433,38 +433,11 @@ ito::RetVal DummyMultiChannelGrabber::close(ItomSharedSemaphore *waitCond)
 	\return retOk in case that everything is ok, else retError
 	\sa ito::tParam, ItomSharedSemaphore
 */
-ito::RetVal DummyMultiChannelGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal DummyMultiChannelGrabber::getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
-	QString key;
-	bool hasIndex = false;
-	int index;
-	QString suffix;
-	ParamMapIterator it;
-
-	//parse the given parameter-name (if you support indexed or suffix-based parameters)
-	retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
-
-	if (retValue == ito::retOk)
-	{
-		//gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
-		retValue += apiGetParamFromMapByKey(m_params, key, it, false);
-	}
-
-	if (!retValue.containsError())
-	{
-		*val = it.value();
-	}
-
-	if (waitCond)
-	{
-		waitCond->returnValue = retValue;
-		waitCond->release();
-	}
-
-	return retValue;
+	return ito::retOk;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! sets parameter of m_params with key name.
@@ -493,7 +466,7 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
 				retValue += stopDevice(NULL);
 			}
 		}
-		else
+		if(!retValue.containsError())
 		{
 			int oldval = it->getVal<int>();
 
