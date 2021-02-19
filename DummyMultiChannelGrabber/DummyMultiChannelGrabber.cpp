@@ -287,7 +287,9 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
 	paramVal.setMeta(sm, true);
 	m_params.insert(paramVal.getName(), paramVal);
 
-
+	paramVal = ito::Param("channelSpecificParameter", ito::ParamBase::Int, 101, 404, 101, tr("channelSpecificParameter only available at Channel_0").toLatin1().data());
+	paramVal.getMetaT<ito::IntMeta>()->setCategory("DemoParameters");
+	m_params.insert(paramVal.getName(), paramVal);
 
 
 	if (hasGuiSupport())
@@ -359,6 +361,10 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
 		{
 			tempName = QString("Channel_%1").arg(i);
 			addChannel(tempName);
+			if (i == 0)
+			{
+				m_channels[tempName].m_channelParam.insert("channelSpecificParameter", m_params["channelSpecificParameter"]); //this is a parameter only for channel_0
+			}
 			if (sizeY == 1)
 			{
 				m_channels[tempName].m_channelParam["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
