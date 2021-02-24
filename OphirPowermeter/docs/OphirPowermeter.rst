@@ -117,3 +117,4 @@ plot is opened that displays a moving graph of recent intensity values:
 Changelog
 =========
 
+* itom setup 4.1.0: This plugin has been compiled using the StarLab 3.60.0

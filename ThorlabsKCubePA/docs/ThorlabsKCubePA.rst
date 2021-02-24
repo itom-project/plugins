@@ -128,3 +128,4 @@ Changelog
 
 * itom setup 3.2.1: This plugin has been compiled with Thorlabs Kinesis 1.14.15; it requires the Microsoft C++ Redistributable 2012
 * itom setup 4.0.0: This plugin has been compiled with Thorlabs Kinesis 1.14.23;
+* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.

@@ -259,6 +259,7 @@ option(PLUGIN_NerianSceneScanPro "Build with this plugin." OFF)
 if(PLUGIN_NerianSceneScanPro)
     add_subdirectory(NerianSceneScanPro)
 endif(PLUGIN_NerianSceneScanPro)
+
 # NanotecStepMotor
 option(PLUGIN_NanotecStepMotor "Build with this plugin." OFF)
 if(PLUGIN_NanotecStepMotor)
