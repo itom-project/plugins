@@ -27,57 +27,26 @@ include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name})
 
-###??????????????add_subdirectory(Livox-SDK)
+find_path( LIVOX_SDK_DIR livox_sdk.h DOC "LIVOX SDK directory (may contain livox_sdk.h)")
 
-#################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
-#################################################################
+#if(LIVOX_SDK_DIR)
+
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
-#################################################################
-# Automatic package detection
-#   add here FIND_PACKAGE commands for searching for 3rd party
-#   libraries for detecting Qt, use FIND_PACKAGE_QT instead of the
-#   native command, since FIND_PACKAGE_QT detects the Qt4 or 5
-#   version.
-#################################################################
-
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets pointcloud REQUIRED)
-#find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
-#       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
-#       directories and libraries to link agains are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
-
-# 'itom_find_package_qt' is a wrapper for find_package(Qt5...) and internally calls
-# this and sets some things more. The component names are wrapped to Qt5_{name}.
-#
-# usage of itom_find_package_qt(automoc component1, component2, ...)
-# automoc is ON or OFF and only relevant for Qt5, usually set it to ON
-# possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
-# The automoc flag is deprecated. It is usually smarter to use both automoc,
-# autorcc (for parsing qrc resource files ) and autouic (for parsing ui files) in terms
-# of settings the properties of this target (see below):
-# set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 itom_find_package_qt(ON Core Widgets LinguistTools)
 
-#################################################################
-# General settings and preprocessor settings
-#################################################################
 
 #add here some preprocessors, if necessary, e.g.
 #add_definitions(-DMYOPTION)
 
 
-#################################################################
-# List of include directories
-#
-# Hint: necessary Qt include directories are automatically added
-#  via the FIND_PACKAGE macro above
-#################################################################
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
     ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+	${LIVOX_SDK_DIR}/sdk_core/include
 )
 
 #################################################################
@@ -90,11 +59,12 @@ include_directories(
 #  needs to be set for them. Simply add these variables to
 #  the link target command below.
 #################################################################
+
+
 ###????????????????????????????set (Livox_Libs ${CMAKE_CURRENT_SOURCE_DIR}/lib/livox_sdk_static.lib)
 link_directories(
-	 ${CMAKE_CURRENT_SOURCE_DIR}/lib
+	${CMAKE_CURRENT_SOURCE_DIR}/lib
  )
-###??????????????????set(APR_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/lib/libapr-1.lib)
 
 #################################################################
 # List of header files, source files, ui files and rcc files
@@ -115,15 +85,16 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLivox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLivox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-    ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
-    #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+    ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
+	#${LIVOX_SDK_DIR}/sdk_core/include/livox_def.h
+	#${LIVOX_SDK_DIR}/sdk_core/include/livox_sdk.h
 )
 
 set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLivox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLivox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Livox.cpp
-    #add further source files here
+	#${LIVOX_SDK_DIR}/sdk_core/source/livox_sdk.cpp
 )
 
 #Append rc file to the source files for adding information about the plugin
@@ -165,7 +136,7 @@ add_library(${target_name} SHARED
     ${PLUGIN_HEADERS} 
     ${PLUGIN_UI} 
     ${PLUGIN_RCC}
-    )
+)
 
 # Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
@@ -180,7 +151,15 @@ set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON
 # if you want to link against one library whose directory is already added to link_directories above
 # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Livox_Libs} ${APR_LIBRARIES})
+find_library(LIVOX_LIB NAMES "livox_sdk_static" PATHS ${LIVOX_SDK_DIR})
+###${LIVOX_SDK_DIR}/build/sdk_core/Release/livox_sdk_static.lib
+if(LIVOX_LIB)
+        message(STATUS "Livox library found at ${LIVOX_LIB}")
+    else()
+        message(SEND_FATAL "Livox library not found")
+    endif()
+
+target_link_libraries(${target_name} ${LIVOX_LIB} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 #################################################################
 # Plugin Translation
@@ -258,3 +237,8 @@ itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/lib/*.dll")
 itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
 
+
+
+#???????????????????????????????????
+###COPY the livox_sdk.h and livox_def.h files to where? and how?
+#???????????????????????????????????

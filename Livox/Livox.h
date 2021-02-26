@@ -12,6 +12,10 @@
 #include <qsharedpointer.h>
 #include "dialogLivox.h"
 
+
+#include <memory>
+#include <vector>
+#include <string>
 #include "livox_sdk.h"
 #include "livox_def.h"
 
@@ -58,12 +62,6 @@ class Livox : public ito::AddInGrabber
         
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 		
-		//ito::RetVal OnDeviceBroadcast(const BroadcastDeviceInfo * info);
-		//void GetLidarData(uint8_t handle, LivoxEthPacket * data, uint32_t data_num, void * client_data);
-		///** Callback function of stopping sampling. */
-		//void OnStopSampleCallback(livox_status status, uint8_t handle, uint8_t response, void *data);
-
-
     public:
         friend class LivoxInterface;
         const ito::RetVal showConfDialog(void);
@@ -75,29 +73,6 @@ class Livox : public ito::AddInGrabber
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
 
-		/* from samples/main.c*/
-		typedef enum {
-			kDeviceStateDisconnect = 0,
-			kDeviceStateConnect = 1,
-			kDeviceStateSampling = 2,
-		} DeviceState;
-
-		typedef struct {
-			uint8_t handle;
-			DeviceState device_state;
-			DeviceInfo info;
-		} DeviceItem;
-
-		DeviceItem devices[kMaxLidarCount];
-
-		uint32_t data_recv_count[kMaxLidarCount];
-		int lidar_count;
-		char broadcast_code_list[kMaxLidarCount][kBroadcastCodeSize];
-		LivoxSdkVersion _sdkversion;
-
-		//int SetProgramOption(int argc, const char *argv[]);
-
-
         
     public slots:
         //!< Get Camera-Parameter
@@ -108,7 +83,6 @@ class Livox : public ito::AddInGrabber
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //!< Free buffer, delete board, unload dll
         ito::RetVal close(ItomSharedSemaphore *waitCond);
-
         //!< Start the camera to enable acquire-commands
         ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
         //!< Stop the camera to disable acquire-commands
@@ -117,7 +91,6 @@ class Livox : public ito::AddInGrabber
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         //!< Wait for acquired picture, copy the picture to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         
         //checkData usually need not to be overwritten (see comments in source code)
