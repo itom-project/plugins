@@ -238,6 +238,12 @@ if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
 endif(PLUGIN_LIBUSB)
 
+# Livox
+option(PLUGIN_LIVOX "Build with this plugin." OFF)
+if(PLUGIN_LIVOX)
+    add_subdirectory(Livox)
+endif(PLUGIN_LIVOX)
+
 # MeasurementComputing
 if(WIN32)
 option(PLUGIN_MeasurementComputing "Build with this plugin." OFF)
