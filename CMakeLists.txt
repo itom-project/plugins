@@ -290,6 +290,12 @@ if(PLUGIN_NITWidySWIR)
     add_subdirectory(NITWidySWIR)
 endif(PLUGIN_NITWidySWIR)
 
+# OceanOpticsSpec
+option(PLUGIN_OceanOpticsSpec "Build with this plugin." ON)
+if(PLUGIN_OceanOpticsSpec)
+    add_subdirectory(OceanOpticsSpec)
+endif(PLUGIN_OceanOpticsSpec)
+
 # OpenCVFilters
 option(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if(PLUGIN_OpenCVFilters)
