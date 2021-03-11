@@ -140,23 +140,27 @@ typedef struct {
 /**
  * LiDAR data source, data from dependent lidar.
  */
-class LdsLidar {
+class LdsLidar : Livox {
 public:
 
-    /*Singleton*/
-	static LdsLidar& GetInstance() 
+    //Vllt den QSP in die ItomLivox klasse und von dort auf die Lds class verweisen?!?!?!
+    static QSharedPointer ldsLidarInstance; //try singleton using QtSahredPointer --> MSMediaFoundation-Plugin
+    //*Singleton by Livox Sample --> not working correctly*/
+	/*static LdsLidar& GetInstance() 
     {
 		static LdsLidar lds_lidar;
 		return lds_lidar;
-	}
-	int DeInitLdsLidar(void);
-    int InitLdsLidar(std::vector<std::string>& broadcast_code_strs);
+	}*/
+	bool DeInitLdsLidar(void);
+    bool InitLdsLidar(std::vector<std::string>& broadcast_code_strs);
 
 private:
 	LdsLidar();
-	LdsLidar(const LdsLidar&) = delete;
+	//LdsLidar(const LdsLidar&) = delete;
 	~LdsLidar();
-	LdsLidar& operator=(const LdsLidar&) = delete;
+	//LdsLidar& operator=(const LdsLidar&) = delete;
+    QSharedPointer<LdsLidar> m_ldsLidar;
+
 
 	static void GetLidarDataCb(uint8_t handle, LivoxEthPacket *data, uint32_t data_num, void *client_data);
 	static void OnDeviceBroadcast(const BroadcastDeviceInfo *info);

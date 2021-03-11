@@ -30,7 +30,7 @@
 
 /**Cmdline input broadcast code */
 std::vector<std::string> cmdline_broadcast_code;
-LdsLidar& read_lidar = LdsLidar::GetInstance();
+//LdsLidar& read_lidar = LdsLidar::GetInstance();
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -132,9 +132,12 @@ Livox::~Livox()
 {
     if (!read_lidar.DeInitLdsLidar())
     {
-        std::cout << "Livox destructed"<<endl;
+        std::cout << "Debug: Livox destructed\n";
     }
 }
+
+
+QSharedPointer<LdsLidar> LdsLidar::LdsLidarInstance;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
@@ -143,14 +146,11 @@ ito::RetVal Livox::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
+    ldsLidarInstance = QSharedPointer<LdsLidar>(new LdsLidar());
 
     if (!read_lidar.InitLdsLidar(cmdline_broadcast_code))
     {
-        std::cout << "Livox init success. Start discovering devices..." << endl;
-    }
-    else
-    {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Livox Init failed.").toLatin1().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Livox init failed.").toLatin1().data());
     }
 
     //steps todo:
@@ -178,7 +178,7 @@ ito::RetVal Livox::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-
+    std::cout << "Debug: Livox init success. Start discovering devices...\n";
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
@@ -631,7 +631,7 @@ static const char* local_broadcast_code_list[] = {"000000000000001",};
 /** For callback use only */
 LdsLidar* g_lidars = nullptr;
 
-/** Lds lidar function */
+/** Lds lidar function - ?called at itom start, bc singleton func.**/
 LdsLidar::LdsLidar() {
 	auto_connect_mode_ = true;
 	whitelist_count_ = 0;
@@ -647,18 +647,20 @@ LdsLidar::LdsLidar() {
 }
 
 /** Lds lidar deconstructor */
-LdsLidar::~LdsLidar() {}
+LdsLidar::~LdsLidar() {
+    //if (is_initialized_) { is_initialized_ = false;  }
+}
 
 /** Lds lidar init */
-int LdsLidar::InitLdsLidar(std::vector<std::string>& broadcast_code_strs) {
+bool LdsLidar::InitLdsLidar(std::vector<std::string>& broadcast_code_strs) {
 	if (is_initialized_) {
-		std::cout << "LiDAR data source is already inited!"<<endl;
-		return -1;
+		std::cout << "Lds is already inited!\n";
+		return false;
 	}
 	if (!Init()) {
 		Uninit();
-		std::cout << "Livox-SDK init fail!"<<endl;
-		return -1;
+		std::cout << "Livox-SDK init fail!\n";
+		return false;
 	}
 	LivoxSdkVersion _sdkversion;
 	GetLivoxSdkVersion(&_sdkversion);
@@ -673,7 +675,7 @@ int LdsLidar::InitLdsLidar(std::vector<std::string>& broadcast_code_strs) {
         std::cout << "Disable auto connect mode!\n";
         std::cout << "List all broadcast code in whiltelist:\n";
 		for (uint32_t i = 0; i < whitelist_count_; i++) {
-			printf("%s\n", broadcast_code_whitelist_[i]);
+			printf("Broadcastcodes: %s\n", broadcast_code_whitelist_[i]);
 		}
 	}
 	else {
@@ -683,28 +685,28 @@ int LdsLidar::InitLdsLidar(std::vector<std::string>& broadcast_code_strs) {
 	/** Start livox sdk to receive lidar data */
 	if (!Start()) {
 		Uninit();
-        std::cout << "Livox-SDK init failed at starting Livox SDK start routine!\n";
-		return -1;
+        std::cout << "Livox-SDK start failed! ->LivoxSDK Uninit!\n";
+		return false;
 	}
 	/** Add here, only for callback use */
 	if (g_lidars == nullptr) {
 		g_lidars = this;
 	}
 	is_initialized_ = true;
-    std::cout << "Livox-SDK init success!\n";
+    std::cout << "Lds+SDK init success, start SDK connection!\n";
 
-	return 0;
+	return true;
 }
 
 /** Lds lidar deinit */
-int LdsLidar::DeInitLdsLidar(void) {
+bool LdsLidar::DeInitLdsLidar(void) {
 	if (!is_initialized_) {
-		printf("LiDAR data source is not exit");
-		return -1;
+		std::cout<<"Lds not ini; is not exit\n";
+		return false;
 	}
 	Uninit(); //uninit from SDK-side
-	printf("Livox SDK Deinit complete!\n");
-	return 0;
+	std::cout<<"Livox SDK Deinit complete!\n";
+	return true;
 }
 
 /** Static function in LdsLidar for callback or event process ------------------------------------*/
@@ -848,8 +850,10 @@ void LdsLidar::OnDeviceChange(const DeviceInfo *info, DeviceEvent type) {
 /** Query the firmware version of Livox LiDAR. */
 void LdsLidar::DeviceInformationCb(livox_status status, uint8_t handle, DeviceInformationResponse *ack, void *client_data)
 {
-	if (status != kStatusSuccess) {printf("Device Query Informations Failed : %d\n", status);}
-	if (ack) {printf("firm ver: %d.%d.%d.%d\n",ack->firmware_version[0],ack->firmware_version[1],ack->firmware_version[2],ack->firmware_version[3]);}
+	if (status != kStatusSuccess) {
+        printf("Device Query Informations Failed : %d\n", status);}
+	if (ack) {
+        printf("firm ver: %d.%d.%d.%d\n",ack->firmware_version[0],ack->firmware_version[1],ack->firmware_version[2],ack->firmware_version[3]);}
 }
 
 /** Callback function of Lidar error message. */
