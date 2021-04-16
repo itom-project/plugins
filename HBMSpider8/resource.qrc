@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/dialog">
+        <file>spiderimg.png</file>
+        <file>spiderimg_small.png</file>
+        <!--<file>task_general.png</file>
+        <file>task_analog_in.png</file>
+		<file>task_analog_out.png</file>
+		<file>task_digital_in.png</file>
+		<file>task_digital_out.png</file>
+		<file>task_counter_in.png</file>
+		<file>task_counter_out.png</file>
+		#channel
+		<file>analog_in_channel.png</file>
+		<file>analog_out_channel.png</file>
+		<file>digital_channel.png</file>
+		<file>counter_channel.png</file>-->
+    </qresource>
+
+  <!--<qresource prefix="/widget">
+	  <file>run.png</file>
+      <file>run_multi.png</file>
+    </qresource>-->
+</RCC>

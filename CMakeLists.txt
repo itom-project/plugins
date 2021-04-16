@@ -116,6 +116,12 @@ if(PLUGIN_DataObjectIO)
     add_subdirectory(DataObjectIO)
 endif(PLUGIN_DataObjectIO)
 
+# Digital Image Correlation - DIC
+option(PLUGIN_DIC "Build with this plugin." OFF)
+if(PLUGIN_DIC)
+    add_subdirectory(DIC)
+endif(PLUGIN_DIC)
+
 # dispWindow
 option(PLUGIN_dispWindow "Build with this plugin." OFF)
 if(PLUGIN_dispWindow)
@@ -207,6 +213,12 @@ option(PLUGIN_GWInstekPSP "Build with this plugin." OFF)
 if(PLUGIN_GWInstekPSP)
     add_subdirectory(GWInstekPSP)
 endif(PLUGIN_GWInstekPSP)
+
+# HBM Spider8
+option(PLUGIN_HBMSpider8 "Build with this plugin." OFF)
+if(PLUGIN_HBMSpider8)
+    add_subdirectory(HBMSpider8)
+endif(PLUGIN_HBMSpider8)
 
 # Holography
 option(PLUGIN_Holography "Build with this plugin." ON)
