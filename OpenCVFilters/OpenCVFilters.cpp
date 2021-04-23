@@ -3615,6 +3615,12 @@ Thr rotation can be applied by using e. g. the cvWarpAffine filter.");
     if (!retval.containsError())
     {
         *rotDObj = ito::DataObject(2, rotMat.size, itomtype, &rotMat, 1);
+        rotDObj->addToProtocol(
+            std::string(tr("Rotation Matrix for %1 deg angle with scale factor of %2")
+                            .arg(angle)
+                            .arg(scale)
+                            .toLatin1()
+                            .data()));
     }
     else
     {
