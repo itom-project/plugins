@@ -245,6 +245,16 @@ public:
         QVector<ito::Param>* paramsOpt,
         QVector<ito::Param>* paramsOut);
 
+    static const QString cvWarpAffineDoc;
+    static ito::RetVal cvWarpAffine(
+        QVector<ito::ParamBase>* paramsMand,
+        QVector<ito::ParamBase>* paramsOpt,
+        QVector<ito::ParamBase>* paramsOut); /*!Function calculate a rotations matrix*/
+    static ito::RetVal cvWarpAffineParams(
+        QVector<ito::Param>* paramsMand,
+        QVector<ito::Param>* paramsOpt,
+        QVector<ito::Param>* paramsOut);
+
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
     static const QString cvFindCirclesDoc;
     static ito::RetVal cvFindCircles(

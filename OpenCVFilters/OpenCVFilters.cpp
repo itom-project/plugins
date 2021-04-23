@@ -321,7 +321,7 @@ ito::RetVal OpenCVFilters::cvDilateErodeParams(
             "borderType",
             ito::ParamBase::String | ito::ParamBase::In,
             "CONSTANT",
-            tr("This string defines how the filter should hande pixels at the border of the "
+            tr("This string defines how the filter should handle pixels at the border of the "
                "matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In "
                "case of a constant border, only pixels inside of the element mask are considered "
                "(morphologyDefaultBorderValue)")
@@ -3676,6 +3676,282 @@ Thr rotation can be applied by using e. g. the cvWarpAffine filter.");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString OpenCVFilters::cvWarpAffineDoc =
+    QObject::tr("Applies an affine transformation onto a 2D dataObject.\n\
+The function warpAffine transforms the source dataObject using the specified matrix:\n\
+\n\
+dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):\n\
+\n\
+When the flag WARP_INVERSE_MAP is set.\n\
+Otherwise, the transformation is first inverted with invertAffineTransform\n\
+and then put in the formula above instead of M.\n\
+\n\
+For the rotation matrix the cvGetRotationMatrix2D filter can be used.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal OpenCVFilters::cvWarpAffine(
+    QVector<ito::ParamBase>* paramsMand,
+    QVector<ito::ParamBase>* paramsOpt,
+    QVector<ito::ParamBase>* paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject* dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject* dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
+    ito::DataObject* dObjMat = (*paramsMand)[2].getVal<ito::DataObject*>();
+    cv::Size dsize = cv::Size(paramsMand->at(3).getVal<double*>()[0], paramsMand->at(3).getVal<double*>()[1]);
+
+    if (!dObjSrc || !dObjDst)
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            tr("source and destination object must not be NULL").toLatin1().data());
+    }
+
+    if (dObjSrc->getDims() < 2)
+    {
+        return ito::RetVal(
+            ito::retError, 0, tr("Error: source is not a matrix or image stack").toLatin1().data());
+    }
+
+    if ((dObjMat->getSize(0) != 2) && (dObjMat->getSize(1) != 3))
+    {
+        return ito::RetVal(
+            ito::retError, 0, tr("The Rotation Matrix with the shape of %1x%2 does not correspond to the shape 2x3.").arg(dObjMat->getSize(0)).arg(dObjMat->getSize(1)).toLatin1().data());
+    }
+    
+
+    // Check if input type is allowed or not
+    retval += ito::dObjHelper::verifyDataObjectType(
+        dObjSrc,
+        "source data object",
+        5,
+        ito::tUInt8,
+        ito::tUInt16,
+        ito::tInt16,
+        ito::tFloat32,
+        ito::tFloat64);
+    if (retval.containsError())
+        return retval;
+
+    QString flagsStr =
+        paramsOpt->at(0).getVal<char*>() ? paramsOpt->at(0).getVal<char*>() : QString();
+    int flags;
+    if (QString::compare(flagsStr, "NEAREST", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_NEAREST;
+    }
+    else if (QString::compare(flagsStr, "LINEAR", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_LINEAR;
+    }
+    else if (QString::compare(flagsStr, "CUBIC", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_CUBIC;
+    }
+    else if (QString::compare(flagsStr, "AREA", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_AREA;
+    }
+    else if (QString::compare(flagsStr, "LANCZOS4", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_LANCZOS4;
+    }
+    else if (QString::compare(flagsStr, "LINEAR_EXACT", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_LINEAR_EXACT;
+    }
+    else if (QString::compare(flagsStr, "NEAREST_EXACT", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_NEAREST_EXACT;
+    }
+    else if (QString::compare(flagsStr, "INTER_MAX", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::INTER_MAX;
+    }
+    else if (QString::compare(flagsStr, "WARP_FILL_OUTLIERS", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::WARP_FILL_OUTLIERS;
+    }
+    else if (QString::compare(flagsStr, "WARP_INVERSE_MAP", Qt::CaseInsensitive) == 0)
+    {
+        flags = cv::WARP_INVERSE_MAP;
+    }
+    else
+    {
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            tr("border type %1 is unknown").arg(flagsStr.toLatin1().data()).toLatin1().data());
+        return retval;
+    }
+
+    // border type 
+    QString borderTypeStr = paramsOpt->at(1).getVal<char*>() ? paramsOpt->at(1).getVal<char*>() : QString();
+    int borderType;
+    if (QString::compare(borderTypeStr, "CONSTANT", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_CONSTANT;
+    }
+    else if (QString::compare(borderTypeStr, "REPLICATE", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REPLICATE;
+    }
+    else if (QString::compare(borderTypeStr, "REFLECT", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REFLECT;
+    }
+    else if (QString::compare(borderTypeStr, "WRAP", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_WRAP;
+    }
+    else if (QString::compare(borderTypeStr, "REFLECT_101", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REFLECT_101;
+    }
+    else if (QString::compare(borderTypeStr, "TRANSPARENT", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_TRANSPARENT;
+    }
+    else if (QString::compare(borderTypeStr, "ISOLATED", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_ISOLATED;
+    }
+    else
+    {
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            tr("border type %1 is unknown").arg(borderTypeStr.toLatin1().data()).toLatin1().data());
+        return retval;
+    }
+
+    double borderValue = paramsOpt->at(2).getVal<double>();
+
+    cv::Mat dest;
+    if (!retval.containsError())
+    {
+        cv::Mat *src = dObjSrc->get_mdata()[dObjSrc->seekMat(0)];
+        
+        cv::Mat *mat = dObjMat->get_mdata()[dObjMat->seekMat(0)];
+
+        cv::warpAffine(*src, dest, *mat, dsize, flags, borderType, borderValue);
+       
+    }
+
+    ito::tDataType itomtype = ito::guessDataTypeFromCVMat(&dest, retval);
+    if (!retval.containsError())
+    {
+        *dObjDst = ito::DataObject(2, dest.size, itomtype, &dest, 1);
+    }
+    else
+    {
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            tr("No compatible dataObject type found for given OpenCV matrix type.")
+                .toLatin1()
+                .data());
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal OpenCVFilters::cvWarpAffineParams(
+    QVector<ito::Param>* paramsMand, QVector<ito::Param>* paramsOpt, QVector<ito::Param>* paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param(
+            "sourceObj",
+            ito::ParamBase::DObjPtr | ito::ParamBase::In,
+            NULL,
+            tr("input data object of type uint8, uint16, int16, float32, float64.")
+                .toLatin1()
+                .data());
+        paramsMand->append(param);
+
+        param = ito::Param(
+            "destinationObj",
+            ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out,
+            NULL,
+            tr("output image with the same type and size than input (inplace allowed).")
+                .toLatin1()
+                .data());
+        paramsMand->append(param);
+
+        param = ito::Param(
+            "transformationObj",
+            ito::ParamBase::DObjPtr | ito::ParamBase::In,
+            NULL,
+            tr("transformation matrix dataObject of shape 2x3.").toLatin1().data());
+        paramsMand->append(param);
+
+        paramsMand->append(ito::Param(
+            "destinationSize",
+            ito::ParamBase::DoubleArray | ito::ParamBase::In,
+            NULL,
+            tr("List of (width, height) of the destination dataObject.").toLatin1().data()));
+
+        QString description = "Combination of interpolation methods (see OpenCV "
+                              "InterpolationFlags) and the optional flag WARP_INVERSE_MAP that "
+                              "means that M is the inverse transformation (dst -> src):\n\n";
+        description += QString("NEAREST (%1)\n").arg(cv::INTER_NEAREST);
+        description += QString("LINEAR (%1)\n").arg(cv::INTER_LINEAR);
+        description += QString("CUBIC (%1)\n").arg(cv::INTER_CUBIC);
+        description += QString("AREA (%1)\n").arg(cv::INTER_AREA);
+        description += QString("LANCZOS4 (%1)\n").arg(cv::INTER_LANCZOS4);
+        description += QString("LINEAR_EXACT (%1)\n").arg(cv::INTER_LINEAR_EXACT);
+        description += QString("NEAREST_EXACT (%1)\n").arg(cv::INTER_NEAREST_EXACT);
+        description += QString("INTER_MAX (%1)\n").arg(cv::INTER_MAX);
+        description += QString("FILL_OUTLIERS (%1)\n").arg(cv::WARP_FILL_OUTLIERS);
+        description += QString("WARP_INVERSE_MAP (%1)\n").arg(cv::WARP_INVERSE_MAP);
+
+        paramsOpt->append(ito::Param(
+            "flags",
+            ito::ParamBase::String | ito::ParamBase::In,
+            "LINEAR",
+            description.toLatin1().data()));
+
+        description =
+            "This string defines how the filter should handle pixels at the border of the "
+            "destinationObj. Allowed is CONSTANT  [default], REPLICATE, REFLECT, WRAP, "
+            "REFLECT_101, TRANSPARENT, REFLECT101, ISOLATED."
+            "In case of a constant border, only pixels inside of the element mask are "
+            "considered:\n\n";
+        description += QString("CONSTANT (%1)\n").arg(cv::BORDER_CONSTANT);
+        description += QString("REPLICATE (%1)\n").arg(cv::BORDER_REPLICATE);
+        description += QString("REFLECT (%1)\n").arg(cv::BORDER_REFLECT);
+        description += QString("WRAP (%1)\n").arg(cv::BORDER_WRAP);
+        description += QString("REFLECT_101 (%1)\n").arg(cv::BORDER_REFLECT_101);
+        description += QString("TRANSPARENT (%1)\n").arg(cv::BORDER_TRANSPARENT);
+        description += QString("ISOLATED (%1)\n").arg(cv::BORDER_ISOLATED);
+        paramsOpt->append(ito::Param(
+            "borderType",
+            ito::ParamBase::String | ito::ParamBase::In,
+            "CONSTANT",
+            description.toLatin1().data()));
+
+        paramsOpt->append(ito::Param(
+            "borderValue ",
+            ito::ParamBase::Double | ito::ParamBase::In,
+            std::numeric_limits<double>::min(),
+            std::numeric_limits<double>::max(),
+            0.0,
+            tr("value used in case of a constant border; by default, it is 0.0")
+                .toLatin1()
+                .data()));
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::init(
     QVector<ito::ParamBase>* /*paramsMand*/,
     QVector<ito::ParamBase>* /*paramsOpt*/,
@@ -3740,6 +4016,10 @@ ito::RetVal OpenCVFilters::init(
         OpenCVFilters::cvGetRotationMatrix2DParams,
         cvGetRotationMatrix2DDoc);
     m_filterList.insert("cvGetRotationMatrix2D", filter);
+
+    filter = new FilterDef(
+        OpenCVFilters::cvWarpAffine, OpenCVFilters::cvWarpAffineParams, cvWarpAffineDoc);
+    m_filterList.insert("cvWarpAffine", filter);
 
     /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams,
     cvCalcHistDoc); m_filterList.insert("cvCalcHistogram", filter);*/
