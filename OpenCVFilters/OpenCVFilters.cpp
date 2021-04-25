@@ -3698,7 +3698,12 @@ When the flag WARP_INVERSE_MAP is set.\n\
 Otherwise, the transformation is first inverted with invertAffineTransform\n\
 and then put in the formula above instead of M.\n\
 \n\
-For the rotation matrix the cvGetRotationMatrix2D filter can be used.");
+Note: \n\
+The rotation matrix of the cvGetRotationMatrix2D filter can be used.\n\
+The matrix must correspond to the pixel domain.\n\
+\n\
+No metaInformation is set to the destinationObj because the physical units \n\
+of the target object differ from each other depending on the algorithm parameter.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvWarpAffineParams(
@@ -3742,17 +3747,7 @@ For the rotation matrix the cvGetRotationMatrix2D filter can be used.");
 
         QString description = "Combination of interpolation methods (see OpenCV "
                               "InterpolationFlags) and the optional flag WARP_INVERSE_MAP that "
-                              "means that M is the inverse transformation (dst -> src):\n\n";
-        description += QString("NEAREST (%1)\n").arg(cv::INTER_NEAREST);
-        description += QString("LINEAR (%1)\n").arg(cv::INTER_LINEAR);
-        description += QString("CUBIC (%1)\n").arg(cv::INTER_CUBIC);
-        description += QString("AREA (%1)\n").arg(cv::INTER_AREA);
-        description += QString("LANCZOS4 (%1)\n").arg(cv::INTER_LANCZOS4);
-        description += QString("LINEAR_EXACT (%1)\n").arg(cv::INTER_LINEAR_EXACT);
-        description += QString("NEAREST_EXACT (%1)\n").arg(cv::INTER_NEAREST_EXACT);
-        description += QString("INTER_MAX (%1)\n").arg(cv::INTER_MAX);
-        description += QString("FILL_OUTLIERS (%1)\n").arg(cv::WARP_FILL_OUTLIERS);
-        description += QString("WARP_INVERSE_MAP (%1)\n").arg(cv::WARP_INVERSE_MAP);
+                              "means that M is the inverse transformation (dst -> src).";
         param = ito::Param(
             "flags",
             ito::ParamBase::String | ito::ParamBase::In,
@@ -3764,27 +3759,15 @@ For the rotation matrix the cvGetRotationMatrix2D filter can be used.");
         smFlags.addItem("CUBIC");
         smFlags.addItem("AREA");
         smFlags.addItem("LANCZOS4");
-        smFlags.addItem("LINEAR_EXACT");
-        smFlags.addItem("NEAREST_EXACT");
-        smFlags.addItem("INTER_MAX");
-        smFlags.addItem("FILL_OUTLIERS");
         smFlags.addItem("WARP_INVERSE_MAP");
         param.setMeta(&smFlags, false);
         paramsOpt->append(param);
 
         description =
             "This string defines how the filter should handle pixels at the border of the "
-            "destinationObj. Allowed is CONSTANT  [default], REPLICATE, REFLECT, WRAP, "
-            "REFLECT_101, TRANSPARENT, REFLECT101, ISOLATED."
+            "destinationObj. "
             "In case of a constant border, only pixels inside of the element mask are "
-            "considered:\n\n";
-        description += QString("CONSTANT (%1)\n").arg(cv::BORDER_CONSTANT);
-        description += QString("REPLICATE (%1)\n").arg(cv::BORDER_REPLICATE);
-        description += QString("REFLECT (%1)\n").arg(cv::BORDER_REFLECT);
-        description += QString("WRAP (%1)\n").arg(cv::BORDER_WRAP);
-        description += QString("REFLECT_101 (%1)\n").arg(cv::BORDER_REFLECT_101);
-        description += QString("TRANSPARENT (%1)\n").arg(cv::BORDER_TRANSPARENT);
-        description += QString("ISOLATED (%1)\n").arg(cv::BORDER_ISOLATED);
+            "considered.";
         param = ito::Param(
             "borderType",
             ito::ParamBase::String | ito::ParamBase::In,
@@ -3797,7 +3780,6 @@ For the rotation matrix the cvGetRotationMatrix2D filter can be used.");
         smBorder.addItem("WRAP");
         smBorder.addItem("REFLECT_101");
         smBorder.addItem("TRANSPARENT");
-        smBorder.addItem("ISOLATED");
         param.setMeta(&smBorder, false);
         paramsOpt->append(param);
 
@@ -3885,22 +3867,6 @@ For the rotation matrix the cvGetRotationMatrix2D filter can be used.");
     {
         flags = cv::INTER_LANCZOS4;
     }
-    else if (QString::compare(flagsStr, "LINEAR_EXACT", Qt::CaseInsensitive) == 0)
-    {
-        flags = cv::INTER_LINEAR_EXACT;
-    }
-    else if (QString::compare(flagsStr, "NEAREST_EXACT", Qt::CaseInsensitive) == 0)
-    {
-        flags = cv::INTER_NEAREST_EXACT;
-    }
-    else if (QString::compare(flagsStr, "INTER_MAX", Qt::CaseInsensitive) == 0)
-    {
-        flags = cv::INTER_MAX;
-    }
-    else if (QString::compare(flagsStr, "WARP_FILL_OUTLIERS", Qt::CaseInsensitive) == 0)
-    {
-        flags = cv::WARP_FILL_OUTLIERS;
-    }
     else if (QString::compare(flagsStr, "WARP_INVERSE_MAP", Qt::CaseInsensitive) == 0)
     {
         flags = cv::WARP_INVERSE_MAP;
@@ -3940,10 +3906,6 @@ For the rotation matrix the cvGetRotationMatrix2D filter can be used.");
     else if (QString::compare(borderTypeStr, "TRANSPARENT", Qt::CaseInsensitive) == 0)
     {
         borderType = cv::BORDER_TRANSPARENT;
-    }
-    else if (QString::compare(borderTypeStr, "ISOLATED", Qt::CaseInsensitive) == 0)
-    {
-        borderType = cv::BORDER_ISOLATED;
     }
     else
     {
