@@ -1,0 +1,19 @@
+- Calculate mean Z of calibration images
+- Calculate DoF from mean Z and focal length
+- Calculate mean magnification (points)
+- Calculate a` from mean magnification (points) and a (mean z-distance)
+- Check translation, focal length against mean magnification
+
+- Calculation of inverse camera matrix and inverse RT matrix
+
+-          -   -   -   -    -        -              -    -        -
+| 1 0 0 0  |   | x |   |   x    |    | x / (z + dz) |    | x / dz |
+| 0 1 0 0  |   | y |   |   y    | -> | y / (z + dz) | -> | y / dz |
+| 0 0 1 dz |   | z |   | z + dz |    |      1       |    |    1   |
+-          -   | 1 |   -        -    -              -    -        -
+
+-          -   -        -   -                -
+| fx 0  cx |   | x / dz |   | fx x / dz + cx |
+| 0  fy cy |   | y / dz |   | fy y / dz + cy | -> ß1 = fx x / dz, ß2 = fy y / dz
+| 0  0  1  |   |   1    |   |        1       |
+-          -   -        -   -                -

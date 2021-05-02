@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1214</width>
+    <height>762</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="3" column="1" rowspan="3">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbMeasStart">
+        <property name="text">
+         <string>Start / Continue Measurement</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbMeasStop">
+        <property name="text">
+         <string>Stop Measurement</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbReset">
+        <property name="text">
+         <string>Reset</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbSave">
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbLoad">
+        <property name="text">
+         <string>Load</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QTableWidget" name="tbMeas">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="columnCount">
+      <number>5</number>
+     </property>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Time</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Cha 4</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Cha 5</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Cha 6</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Cha 7</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="4">
+    <widget class="Itom1DQwtPlot" name="plot"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QCheckBox" name="cbZero">
+     <property name="text">
+      <string>Zero on first value</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QTabWidget" name="tabHbm">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="meas">
+      <attribute name="title">
+       <string>Measurement</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="7" column="2">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLineEdit" name="leLastValue4"/>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="leLastValue5"/>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="leLastValue6"/>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="leLastValue7"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_15">
+         <property name="text">
+          <string>Delay in s</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLineEdit" name="leDelay">
+         <property name="text">
+          <string>0.05</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLineEdit" name="leStatus">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="leSamples">
+         <property name="text">
+          <string>30</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Last Values</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QRadioButton" name="rbOverview">
+         <property name="text">
+          <string>Overview</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string># Samples</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="leMeasTime">
+         <property name="text">
+          <string>1</string>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Status</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Spider Meas. Frequency Hz</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QComboBox" name="cbFrequency">
+         <property name="currentText">
+          <string>1200</string>
+         </property>
+         <property name="currentIndex">
+          <number>15</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>1.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>5.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>10.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>25.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>50.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>60.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>75.0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>100</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>150</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>300</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>800</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>3200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4800</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>9600</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Meas. Time in s</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="2">
+        <widget class="QRadioButton" name="rbLive">
+         <property name="text">
+          <string>Live</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Est. Camera Delay in s</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QDoubleSpinBox" name="dsbCamDelay">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="maximum">
+          <double>86400.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>5.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Chan Settings</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="3">
+        <widget class="QComboBox" name="cbBridge4">
+         <item>
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Half</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Quarter</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="cbChan4">
+         <property name="text">
+          <string>4</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QComboBox" name="cbMeasType4">
+         <item>
+          <property name="text">
+           <string>Strain Gage</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>LVDT</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QComboBox" name="cbRange4">
+         <property name="currentText">
+          <string>3 mV/V</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>3 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>12 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>125 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500 mV/V</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="3">
+        <widget class="QComboBox" name="cbBridge7">
+         <item>
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Half</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Quarter</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="QComboBox" name="cbRange7">
+         <item>
+          <property name="text">
+           <string>3 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>12 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>125 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500 mV/V</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="cbChan5">
+         <property name="text">
+          <string>5</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1" colspan="2">
+        <widget class="QComboBox" name="cbMeasType7">
+         <item>
+          <property name="text">
+           <string>Strain Gage</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>LVDT</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QComboBox" name="cbRange5">
+         <item>
+          <property name="text">
+           <string>3 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>12 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>125 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500 mV/V</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="cbChan6">
+         <property name="text">
+          <string>6</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QComboBox" name="cbBridge5">
+         <item>
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Half</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Quarter</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QComboBox" name="cbMeasType5">
+         <item>
+          <property name="text">
+           <string>Strain Gage</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>LVDT</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QComboBox" name="cbRange6">
+         <item>
+          <property name="text">
+           <string>3 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>12 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>125 mV/V</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500 mV/V</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="cbChan7">
+         <property name="text">
+          <string>7</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Meas. Type</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Channel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_14">
+         <property name="text">
+          <string>Range</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="2">
+        <widget class="QComboBox" name="cbMeasType6">
+         <item>
+          <property name="text">
+           <string>Strain Gage</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>LVDT</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_13">
+         <property name="text">
+          <string>Bridge Config.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QComboBox" name="cbBridge6">
+         <item>
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Half</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Quarter</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QDoubleSpinBox" name="dsbScale4">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="minimum">
+          <double>-999999.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>9999999.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="5">
+        <widget class="QDoubleSpinBox" name="dsbScale5">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="minimum">
+          <double>-999999.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>9999999.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="5">
+        <widget class="QDoubleSpinBox" name="dsbScale6">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="minimum">
+          <double>-999999.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>9999999.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="5">
+        <widget class="QDoubleSpinBox" name="dsbScale7">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="minimum">
+          <double>-999999.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>9999999.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Scale</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="basic">
+      <attribute name="title">
+       <string>Basic Settings</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Ser. Port</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lePort">
+         <property name="text">
+          <string>3</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pbReInit">
+         <property name="text">
+          <string>Re-Initialize</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Itom1DQwtPlot</class>
+   <extends>QMainWindow</extends>
+   <header>itom1DQwtPlot.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -4380,9 +4380,8 @@ ito::RetVal PclTools::pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<
     }
 
     paramsMand->clear();
-    paramsMand->append(ito::Param("organized", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid point cloud").toLatin1().data()));
-    //paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid, organized point cloud").toLatin1().data()));
-    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygonal mesh").toLatin1().data()));
+    paramsMand->append(ito::Param("organized", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal vector information.").toLatin1().data()));
+    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output polygonal mesh").toLatin1().data()));
 
     paramsOpt->clear();
     paramsOpt->append(ito::Param("treeDepth", ito::ParamBase::Int | ito::ParamBase::In , 1, 100, 8, tr("Depth of the octTree to reconstruct.").toLatin1().data()));
@@ -4420,6 +4419,7 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
     switch(cloudIn->getType())
     {
         default:
+            return ito::RetVal(ito::retError, 0, tr("The type of the input point cloud must be XYZNormal, XYZINormal or XYZRGBNormal.").toLatin1().data());
         case ito::pclInvalid:
             return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not defined or point cloud invalid").toLatin1().data());
         case ito::pclXYZNormal:
