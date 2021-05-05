@@ -4436,7 +4436,7 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
         return ito::RetVal(ito::retError, 0, tr("the parameters meshIn and meshOut must not be NULL.").toLatin1().data());
     }
 
-    if (cloudIn->empty())
+    if (cloudIn->getType() == ito::pclInvalid || cloudIn->empty())
     {
         return ito::RetVal(ito::retError, 0, tr("the input point cloud must be valid.").toLatin1().data());
     }
@@ -4578,7 +4578,7 @@ ito::RetVal PclTools::pclMarchingCubes(QVector<ito::ParamBase> *paramsMand, QVec
         return ito::RetVal(ito::retError, 0, tr("the parameters cloud and meshOut must not be nullptr.").toLatin1().data());
     }
 
-    if (cloudIn->empty())
+    if (cloudIn->getType() == ito::pclInvalid || cloudIn->empty())
     {
         return ito::RetVal(ito::retError, 0, tr("the input point cloud must be valid.").toLatin1().data());
     }
