@@ -550,35 +550,51 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                         if (trigger_on > 0)
                         {
                             m_pC1394trigger->SetOnOff(true);
+
                             if ((ret = m_ptheCamera->StartImageAcquisitionEx(6, timeout_ms, ACQ_START_VIDEO_STREAM)))  
                             {
                                 if (ret == -14)
-                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data()); 
-                                else if (ret==-15)
+                                {
+                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data());
+                                }
+                                else if (ret == -15)
+                                {
                                     retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toLatin1().data());
-                                return -1;
+                                }
                             }
-                            m_ptheCamera->StopImageAcquisition();
+                            else
+                            {
+                                m_ptheCamera->StopImageAcquisition();
 
-                            ret = m_ptheCamera->GetNode();
+                                ret = m_ptheCamera->GetNode();
+                            }
                         }
                         else
                         {
                             m_pC1394trigger->SetOnOff(false);
+
                             if ((ret = m_ptheCamera->StartImageAcquisition()))  
                             {
                                 if (ret == -14)
-                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data()); 
-                                else if (ret==-15)
+                                {
+                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data());
+                                }
+                                else if (ret == -15)
+                                {
                                     retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toLatin1().data());
-                                return -1;
+                                }
                             }
-                            ret = m_ptheCamera->GetNode();
-                            m_ptheCamera->StopImageAcquisition();
+                            else
+                            {
+                                ret = m_ptheCamera->GetNode();
+                                m_ptheCamera->StopImageAcquisition();
+                            }
                         }
                     }
                     else
+                    {
                         retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toLatin1().data());
+                    }
                 }
             }
         }
@@ -590,12 +606,15 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
 end:
 
-    retValue += checkData();
-
-    if (runningANDstopped)
+    if (!retValue.containsError())
     {
-        retValue += this->startDevice(0);
-        setGrabberStarted(runningANDstopped);
+        retValue += checkData();
+
+        if (runningANDstopped)
+        {
+            retValue += this->startDevice(0);
+            setGrabberStarted(runningANDstopped);
+        }
     }
 
     if (!retValue.containsWarningOrError())

@@ -129,4 +129,5 @@ Install the visiontransfer software on your computer and add the visiontransfer.
 Changelog
 =========
 
-* itom setup >3.2.1: This plugin has been compiled using the NerianSceneScanPro API 7.0
+* itom setup 3.2.1: This plugin has been compiled using the NerianSceneScanPro API 7.0
+* itom setup 4.1.0: This plugin has been compiled using the NerianSceneScanPro API 7.0

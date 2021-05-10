@@ -116,6 +116,12 @@ if(PLUGIN_DataObjectIO)
     add_subdirectory(DataObjectIO)
 endif(PLUGIN_DataObjectIO)
 
+# Digital Image Correlation - DIC
+option(PLUGIN_DIC "Build with this plugin." OFF)
+if(PLUGIN_DIC)
+    add_subdirectory(DIC)
+endif(PLUGIN_DIC)
+
 # dispWindow
 option(PLUGIN_dispWindow "Build with this plugin." OFF)
 if(PLUGIN_dispWindow)
@@ -214,6 +220,12 @@ if(PLUGIN_GWInstekPSP)
     add_subdirectory(GWInstekPSP)
 endif(PLUGIN_GWInstekPSP)
 
+# HBM Spider8
+option(PLUGIN_HBMSpider8 "Build with this plugin." OFF)
+if(PLUGIN_HBMSpider8)
+    add_subdirectory(HBMSpider8)
+endif(PLUGIN_HBMSpider8)
+
 # Holography
 option(PLUGIN_Holography "Build with this plugin." ON)
 if(PLUGIN_Holography)
@@ -265,6 +277,7 @@ option(PLUGIN_NerianSceneScanPro "Build with this plugin." OFF)
 if(PLUGIN_NerianSceneScanPro)
     add_subdirectory(NerianSceneScanPro)
 endif(PLUGIN_NerianSceneScanPro)
+
 # NanotecStepMotor
 option(PLUGIN_NanotecStepMotor "Build with this plugin." OFF)
 if(PLUGIN_NanotecStepMotor)
@@ -295,6 +308,12 @@ if(PLUGIN_NITWidySWIR)
     add_subdirectory(NITWidySWIR)
 endif(PLUGIN_NITWidySWIR)
 
+# OceanOpticsSpec
+option(PLUGIN_OceanOpticsSpec "Build with this plugin." ON)
+if(PLUGIN_OceanOpticsSpec)
+    add_subdirectory(OceanOpticsSpec)
+endif(PLUGIN_OceanOpticsSpec)
+
 # OpenCVFilters
 option(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if(PLUGIN_OpenCVFilters)
@@ -313,11 +332,13 @@ if(PLUGIN_OpenCVGrabber)
     add_subdirectory(OpenCVGrabber)
 endif(PLUGIN_OpenCVGrabber)
 
-# OphirSerialPlugin
-option(PLUGIN_OphirSerialPlugin "Build with this plugin." ON)
-if(PLUGIN_OphirSerialPlugin)
-    add_subdirectory(OphirSerialPlugin)
-endif(PLUGIN_OphirSerialPlugin)
+# OphirPowermeter
+if(WIN32)
+    option(PLUGIN_OphirPowermeter "Build with this plugin." OFF)
+    if(PLUGIN_OphirPowermeter)
+        add_subdirectory(OphirPowermeter)
+    endif(PLUGIN_OphirPowermeter)
+endif()
 
 # PclTools
 option(PLUGIN_PclTools "Build with this plugin." ON)

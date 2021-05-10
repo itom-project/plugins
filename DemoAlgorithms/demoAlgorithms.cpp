@@ -753,6 +753,12 @@ ito::RetVal DemoAlgorithms::demoTestActuator(QVector<ito::ParamBase> *paramsMand
         QThread::msleep(100);
     }
 
+    if (!retVal.containsError())
+    {
+        observer->setProgressValue(observer->progressMaximum());
+        observer->setProgressText(QString("This algorithm run 10.0 from 10.0 seconds"));
+    }
+
     return retVal;
 }
 

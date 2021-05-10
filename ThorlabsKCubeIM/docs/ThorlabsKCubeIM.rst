@@ -33,11 +33,15 @@ parameters of the constructor. During the runtime of an instance, the value of t
 parameters can be changed using *setParam*.
 
 **acceleration**: {seq. of int}
-    acceleration Steps/s?
+    acceleration Steps/s
 **async**: {int}
-    asychronous (1) or sychronous (0) mode
+    sychronous (0, default) or asychronous (1) mode
+**enableAxes**: {int}
+    disable (0, default) or enable axis (1)
 **deviceName**: {str}, read-only
     Description of the device
+**dualChannel**: {int}
+    single Channel mode (0, default) or dual Channel mode (1)
 **firmwareVersion**: {str}, read-only
     Firmware version of the device
 **lockFrontPanel**: {int}, read-only
@@ -77,7 +81,18 @@ This example shows how to initalized the device in **itom** and change the posit
         mot.setPosRel(0, 100, 1, 100, 2, 100, 3, 100) # move all 4 axis relative by 100
         mot.getPos(0) # get the position of axis 0
         mot.getPos(0, 1, 2, 3) # get the positions of all 4 axis
+
+**Dual Channel Mode** (recommended)
+
+In the case that two axis are used together, the dual channel mode recommended (e. g. two axis are attached to a mirror and are used to move the mirror in both dimensions). 
+Channel 0 and 1 or channel 2 and 3 are move at once. This reduces the moving time a lot. 
+
+    .. code-block:: python
         
+        mot.setParam("dualChannel", 1)  # dual channel is activated by the parameter *dualChannel*
+        mot.setPosAbs(0, 50, 1, 200)  # The moving commands must contain the positions of both dual channel axis or the positions of all four axes. 
+        mot.setPosAbs(2, 50, 3, 200)
+        mot.setPosAbs(0, 25, 1, 50, 2, 100, 3, 150) 
         
 
 Compilation
@@ -92,3 +107,4 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 Changelog
 ==========
 
+* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.

@@ -77,6 +77,7 @@ class GenICamClass : public ito::AddInGrabber
         bool m_newImageAvailable;
         bool m_hasTriggerSource;
         bool m_acquisitionStartCommandByStartDevice;
+        int m_verbose;
 
         struct AcquisitionCache
         {

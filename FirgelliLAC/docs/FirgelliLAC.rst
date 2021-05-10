@@ -62,3 +62,4 @@ Changelog
 
 * 2016-04-07: This plugin will be delivered with itom 2.2.0 for the first time
 * 2016-04-07: The required library MPUSBAPI is delivered with the sources of this plugin in version 1.1.0.
+* itom 4.1.0: This plugin has been compiled

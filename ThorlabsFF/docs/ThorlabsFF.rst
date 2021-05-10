@@ -78,3 +78,5 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 
 Changelog
 =========
+
+* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.

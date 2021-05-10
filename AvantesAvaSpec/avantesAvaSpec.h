@@ -46,6 +46,7 @@ class AvantesAvaSpec : public ito::AddInGrabber
 
     public:
         friend class AvantesAvaSpecInterface;
+
         const ito::RetVal showConfDialog(void);    /*!< Open the config nonmodal dialog to set camera parameters */
 
     protected:
@@ -57,7 +58,10 @@ class AvantesAvaSpec : public ito::AddInGrabber
         ito::RetVal sendCommand(const char* cmd, int cmd_size, unsigned char* buf, int &buf_size);
         ito::RetVal readWithFixedLength(char* buf, int &buf_size);
         ito::RetVal checkAnswerForError(const unsigned char* buf, const unsigned char &desiredCmd, bool warningNotError = false, const char *prefix = "");
-		void dummyRead();
+        float swapsingleIfNeeded(float floatin);
+        uint32 swap32IfNeeded(uint32 uint32in);
+        uint16 swap16IfNeeded(uint16 uint16in);
+        void dummyRead();
 
         ito::AddInDataIO *m_pUsb;
         bool m_isGrabbing;
@@ -66,8 +70,13 @@ class AvantesAvaSpec : public ito::AddInGrabber
         DeviceConfigType m_deviceConfig;
         ito::RetVal m_acquisitionRetVal;
         int m_numberDeadPixels; //this depends on the detector! some detectors don't have deadpixels, which are located at the start of the pixel stream. The list of detectors and numbers of dead pixels was provided by Avantes.
-		int m_numberOfCorrectionValues;
-		int m_startCorrectionIndex;
+        int m_numberOfCorrectionValues;
+        int m_startCorrectionIndex;
+        bool m_swapNeeded;
+        int m_answerLength;
+        int m_imageBufferLengthModifier;
+        bool m_readAveragedImageInOneChunk;
+        bool m_isUsb3;
 
         static void idleCharDeleter(char* /*v*/) {};
         static void idleIntDeleter(int* /*v*/) {};

@@ -72,3 +72,5 @@ Changelog
 * itom 3.1.0: compiled with hidapi-0.7.0
 * itom 3.2.1: compiled with hidapi-0.7.0
 * itom 4.0.0: compiled with hidapi-0.7.0
+* itom 4.1.0: compiled with hidapi-0.7.0
+

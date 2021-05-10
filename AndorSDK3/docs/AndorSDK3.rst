@@ -86,4 +86,4 @@ Changelog
 * itom setup 3.1.0: This plugin has been compiled using the Andor SDK 3.8.30007.0
 * itom setup 3.2.1: This plugin has been compiled using the Andor SDK 3.8.30007.0
 * itom setup 4.0.0: This plugin has been compiled using the Andor SDK 3.8.30007.0
-    
+* itom setup 4.1.0: This plugin has been compiled using the Andor SDK 3.8.30007.0

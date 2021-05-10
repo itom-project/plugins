@@ -122,7 +122,13 @@ if(BUILD_SHARED_LIBS)
     # Use DYNAMIC version of Xerces library
     # Find release dynamic link libraries
     # BUG (Wiora): This works only on windows if dlls have .lib files asside. This is not the case and not necessary. No idea how to fix this.
-    find_library(XERCESC_LIBRARY NAMES xerces-c_3 xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c-3.1${XERCES_LIB_POSTFIX} libxerces-c-3.1.dylib libxerces-c.dylib
+    find_library(XERCESC_LIBRARY 
+        NAMES 
+        xerces-c_3 
+        xerces-c_3_1${XERCES_LIB_POSTFIX} 
+        xerces-c-3.2${XERCES_LIB_POSTFIX} 
+        libxerces-c-3.1.dylib 
+        libxerces-c.dylib
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
         "${XERCESC_LIBRARY_DIR}"
@@ -144,7 +150,13 @@ if(BUILD_SHARED_LIBS)
     )
 
     # Find debug dynamic link libraries
-    find_library(XERCESC_LIBRARY_DEBUG NAMES xerces-c_3D xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c-3.1${XERCES_LIB_POSTFIX} libxerces-c-3.1.dylib libxerces-c.dylib
+    find_library(XERCESC_LIBRARY_DEBUG 
+        NAMES xerces-c_3D 
+        xerces-c_3_1D${XERCES_LIB_POSTFIX} 
+        xerces-c-3.1${XERCES_LIB_POSTFIX}
+        xerces-c-3.2${XERCES_LIB_POSTFIX}
+        libxerces-c-3.1.dylib 
+        libxerces-c.dylib
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
         "${XERCESC_LIBRARY_DIR}"
@@ -166,7 +178,12 @@ if(BUILD_SHARED_LIBS)
         DOC "Xerces library dynamic linking debug"
     )
 
-    find_file(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
+    find_file(XERCESC_BINARY 
+        NAMES 
+        xerces-c_3_1 
+        xerces-c_3_1.dll 
+        xerces-c_3_1${XERCES_LIB_POSTFIX} 
+        xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
         "${XERCESC_LIBRARY_DIR}"
@@ -192,7 +209,7 @@ if(BUILD_SHARED_LIBS)
 
 
 else (BUILD_SHARED_LIBS)
-    find_library(XERCESC_LIBRARY NAMES xerces-c_static_3 xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c-3.1 xerces-c_3 xerces-c libxerces-c.a
+    find_library(XERCESC_LIBRARY NAMES xerces-c_static_3 xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c-3.1 xerces-c-3.2 xerces-c_3 xerces-c libxerces-c.a
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
         "${XERCESC_INCLUDE_DIR}/../${XERCES_LIBPATH_POSTFIX}"

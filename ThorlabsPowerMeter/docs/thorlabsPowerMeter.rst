@@ -142,3 +142,4 @@ Changelog
 * Due to the chaotic version handling of Thorlabs PowerMeter, the source code is changed such that only version 3.0.2 is no longer supported. 
 * itom 3.2.1: plugin uses the driver PM100x_Instrument_Driver in version 1.1.2317.102 
 * itom 4.0.0: plugin uses the driver PM100x_Instrument_Driver in version 2.2
+* itom 4.1.0: plugin uses the driver PM100x_Instrument_Driver in version 2.2

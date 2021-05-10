@@ -1,0 +1,23 @@
+#ifndef DICINTERPOLATIONHU_H
+#define DICINTERPOLATIONHU_H
+
+#ifdef USECUDA
+
+#ifdef NO_ITOM_BUILD
+#include "retVal.h"
+#else
+#include "common/retVal.h"
+#endif
+#include <vector>
+
+// in dicInterpolation.cu
+ito::RetVal InitCudaDevice(std::vector<int> &devices);
+template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int sizex, const int sizey, const int stepin, 
+    const float *positions, const int numPos, float *outPtr, const int stepout, const int flag);
+
+ito::RetVal h_interpolAMat(const float *inPtr, const int sizex, const int sizey, const int stepin,
+    const float *positions, const int numPos, float *outPtr, const int interpAlgo, const int flag);
+
+#endif // USECUDA
+
+#endif // DICINTERPOLATIONHU_H

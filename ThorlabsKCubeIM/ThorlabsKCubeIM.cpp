@@ -29,6 +29,8 @@
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
+#include <iostream>
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
@@ -132,10 +134,14 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     ito::int32 accel[4] = { 1000, 1000, 1000, 1000 };
     m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::IntArray, 4, accel, new ito::IntArrayMeta(1, 100000, 1, 4, 4), tr("acceleration Steps/s\0x5E2").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("sychronous (0, default) or asychronous (1) mode").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("lockFrontPanel", ito::Param("lockFrontPanel", ito::ParamBase::Int, 0, 1, 0, tr("1 to lock the front panel, else 0").toLatin1().data()));
+
+    m_params.insert("dualChannel", ito::Param("dualChannel", ito::ParamBase::Int, 0, 1, 0, tr("single Channel mode (0, default) or dual Channel mode (1)").toLatin1().data()));
+
+    m_params.insert("enableAxes", ito::Param("enableAxes", ito::ParamBase::Int, 0, 1, 0, tr("disable (0, default) or enable axis (1)").toLatin1().data()));
 
     m_currentPos.fill(0.0, 4);
     m_currentStatus.fill(0, 4);
@@ -197,7 +203,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
         if (numDevices == 0)
         {
-            retval += ito::RetVal(ito::retError, 0, "no Thorlabs devices detected.");
+            retval += ito::RetVal(ito::retError, 0, "no Thorlabs devices detected");
         }
         else
         {
@@ -230,7 +236,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             
             if (!found)
             {
-                retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found.");
+                retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found");
             }
         }
         else
@@ -251,7 +257,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             }
             else if (openedDevices.contains(serial))
             {
-                retval += ito::RetVal::format(ito::retError, 0, "Thorlabs device with the serial number '%s' already in use.", serial.data());
+                retval += ito::RetVal::format(ito::retError, 0, "Thorlabs device with the serial number '%s' already in use", serial.data());
             }
         }
     }
@@ -260,7 +266,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     {
         if (TLI_GetDeviceInfo(serial.data(), &deviceInfo) == 0)
         {
-            retval += ito::RetVal(ito::retError, 0, "error obtaining device information.");
+            retval += ito::RetVal(ito::retError, 0, "error obtaining device information");
         }
         else
         {
@@ -293,11 +299,11 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     {        
         if (!KIM_LoadSettings(m_serialNo))
         {
-            retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded.");
+            retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded");
         }
         if (!KIM_StartPolling(m_serialNo, 150))
         {
-            retval += ito::RetVal(ito::retError, 0, "error starting position and status polling.");
+            retval += ito::RetVal(ito::retError, 0, "error starting position and status polling");
         }
 
         // get firmware version
@@ -360,7 +366,27 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         m_params["stepRate"].setVal<int*>(stepRate, 4);
         m_params["acceleration"].setVal<int*>(accel, 4);
 
-        
+        // set single channel mode per default
+        if (KIM_SupportsDualChannelMode(m_serialNo))
+        {
+            retval += checkError(KIM_SetDualChannelMode(m_serialNo, false), "set dual channel mode");
+        }
+        else
+        {
+            m_params["dualChannel"].setFlags(ito::ParamBase::Readonly);
+        }
+
+        int enable = m_params["enableAxes"].getVal<int>();
+
+        if (enable == 1)
+        {
+            retval += checkError(KIM_Enable(m_serialNo), "enable axes");
+        }
+        else
+        {
+            retval += checkError(KIM_Disable(m_serialNo), "disable axes");
+        }
+
     }
 
     if (!retval.containsError())
@@ -554,6 +580,38 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
 
             retValue += it->copyValueFrom(&(*val));
         }
+        else if (key == "dualChannel")
+        {
+            int mode = val->getVal<int>();
+
+            switch (mode)
+            {
+            case 0: // disable dual channel mode
+                retValue += checkError(KIM_SetDualChannelMode(m_serialNo, false), "disable dual channel mode");
+                break;
+            case 1: // enable dual channel mode
+                retValue += checkError(KIM_SetDualChannelMode(m_serialNo, true), "enable dual channel mode");
+                break;
+            default:
+                break;
+            }
+
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "enableAxes")
+        {
+            int state = m_params["enableAxes"].getVal<int>();
+
+            if (state == 1)
+            {
+                retValue += checkError(KIM_Enable(m_serialNo), "enable axes");
+            }
+            else
+            {
+                retValue += checkError(KIM_Disable(m_serialNo), "disable axes");
+            }
+            retValue += it->copyValueFrom(&(*val));
+        }
 
         //---------------------------
         else
@@ -659,7 +717,7 @@ ito::RetVal ThorlabsKCubeIM::setOrigin(QVector<int> axis, ItomSharedSemaphore *w
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible").toLatin1().data());
     }
     else
     {
@@ -805,7 +863,12 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible").toLatin1().data());
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
     }
     else
     {
@@ -822,43 +885,61 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
             }
             cntPos++;
         }
+        sendTargetUpdate();
 
-        if (!retValue.containsError())
+        if (retValue.containsError())
         {
-            sendTargetUpdate();
-
-            //set status of all given axes to moving and keep all flags related to the status and switches
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            sendStatusUpdate();
-
-            //todo: start the movement
-            foreach (const int axisNum, axis)
-            {
-                retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
-
-                //call waitForDone in order to wait until all axes reached their target or a given timeout expired
-                //the m_currentPos and m_currentStatus vectors are updated within this function
-                retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
-                
-            }
-
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate();
-                                                  
-            if (!m_async && waitCond && !released)
+            if (waitCond)
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
-                released = true;
             }
         }
-    }
+        else
+        {
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
 
-    //if the wait condition has not been released yet, do it now
-    if (waitCond && !released)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
+            if (m_async && waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+
+            if (KIM_IsDualChannelMode(m_serialNo))  // move in dual channel mode
+            {
+                if ((axis.contains(0) && axis.contains(1)) || (axis.contains(2) && axis.contains(3)))
+                {
+                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[0]), m_targetPos[axis[0]]), "move absolute");
+                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[1]), m_targetPos[axis[1]]), "move absolute");
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute); //WaitForAnswer(60000, axis);
+
+                }
+                else if (axis.contains(0) || axis.contains(1))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("In dualChannel mode axis 0 and 1 or axis 2 and 3 must be given").toLatin1().data());
+                }
+
+            }
+            else // move in single channel mode
+            {
+                foreach(const int axisNum, axis)
+                {
+                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
+
+                    //call waitForDone in order to wait until all axes reached their target or a given timeout expired
+                    //the m_currentPos and m_currentStatus vectors are updated within this function
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                }
+            }
+
+            if (!m_async && waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+        }
+
     }
 
     return retValue;
@@ -899,7 +980,12 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible").toLatin1().data());
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
     }
     else
     {
@@ -917,44 +1003,60 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             cntPos++;
         }
 
-        if (!retValue.containsError())
+        sendTargetUpdate();
+
+
+        if (retValue.containsError())
         {
-            sendTargetUpdate();
-
-            //set status of all given axes to moving and keep all flags related to the status and switches
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            sendStatusUpdate();
-
-            //todo: start the movement
-            cntPos = 0;
-            foreach(const int axisNum, axis)
-            {
-                retValue += checkError(KIM_MoveRelative(m_serialNo, WhatChannel(axisNum), pos[cntPos]), "move relative");
-
-                //call waitForDone in order to wait until all axes reached their target or a given timeout expired
-                //the m_currentPos and m_currentStatus vectors are updated within this function
-                retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Relative); //WaitForAnswer(60000, axis);
-                cntPos++;
-            }
-
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate();
-
-            //release the wait condition now, if async is false (itom waits until now if async is false, hence in the synchronous mode)
-            if (!m_async && waitCond && !released)
+            if (waitCond)
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
-                released = true;
             }
         }
-    }
+        else
+        {
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
 
-    //if the wait condition has not been released yet, do it now
-    if (waitCond && !released)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
+            if (m_async && waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+
+            if (KIM_IsDualChannelMode(m_serialNo))
+            {
+                if ((axis.contains(0) && axis.contains(1)) || (axis.contains(2) && axis.contains(3)))
+                {
+                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[0]), m_targetPos[axis[0]]), "move absolute");
+                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[1]), m_targetPos[axis[1]]), "move absolute");
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute); //WaitForAnswer(60000, axis);
+
+                }
+                else if (axis.contains(0) || axis.contains(1))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("In dualChannel mode axis 0 and 1 or axis 2 and 3 must be given").toLatin1().data());
+                }
+            }
+            else
+            {
+                foreach(const int axisNum, axis)
+                {
+                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
+
+                    //call waitForDone in order to wait until all axes reached their target or a given timeout expired
+                    //the m_currentPos and m_currentStatus vectors are updated within this function
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                }
+            }
+
+            if (!m_async && waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+        }
     }
 
     return retValue;
@@ -1014,6 +1116,9 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
     QTime timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
+
+    //reset interrupt flag
+    isInterrupted();
     
     long delay = 100; //[ms]
 
@@ -1031,39 +1136,6 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
 
     while (!done && !timeout)
     {
-        //todo: obtain the current position, status... of all given axes
-        
-        foreach(const int &i, axis)
-        {
-            QSharedPointer<double> pos_(new double);
-            retVal += getPos(i, pos_, NULL);
-            m_currentPos[i] = *pos_;
-        }
-
-        done = true; //assume all axes at target
-        motor = 0;
-        foreach(const int &i, axis)
-        {
-            if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05) && (flags == MoveType::Absolute || flags == -1))
-            {
-                setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-                done = true; //not done yet
-            }
-            else if (std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05 && flags == MoveType::Relative)
-            {
-                setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-                done = true;
-            }
-            else
-            {
-                setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                done = false;
-            }
-        }
-
-        //emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
-        sendStatusUpdate(false);
-
         //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
         if (!done && isInterrupted())
         {
@@ -1082,15 +1154,59 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         waitMutex.lock();
         waitCondition.wait(&waitMutex, delay);
         waitMutex.unlock();
-
-        //raise the alive flag again, this is necessary such that itom does not drop into a timeout if the
-        //positioning needs more time than the allowed timeout time.
         setAlive();
+
+        
 
         if (timeoutMS > -1)
         {
-            if (timer.elapsed() > timeoutMS) timeout = true;
+            double currentTime = timer.elapsed();
+            if (currentTime > timeoutMS) // timeout
+            {
+                //todo: obtain the current position, status... of all given axes
+                foreach(const int &i, axis)
+                {
+                    QSharedPointer<double> pos_(new double);
+                    retVal += getPos(i, pos_, NULL);
+                    m_currentPos[i] = *pos_;
+                    m_targetPos[i] = m_currentPos[i];
+                    setStatus(axis, ito::actuatorAtTarget,  ito::actStatusMask);
+                }
+                timeout = true;
+            }
+            else
+            {
+                foreach(const int &i, axis)
+                {
+                    QSharedPointer<double> pos_(new double);
+                    retVal += getPos(i, pos_, NULL);
+                    m_currentPos[i] = *pos_;
+
+                    if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05) && (flags == MoveType::Absolute || flags == -1))
+                    {
+                        setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                        done = true; //not done yet
+                    }
+                    else if (std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05 && flags == MoveType::Relative)
+                    {
+                        setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                        done = true;
+                    }
+                    else
+                    {
+                        setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                        done = false;
+                    }
+                }
+            }
         }
+
+        if (!timeout)
+        {
+            sendStatusUpdate();
+            Sleep(20);
+        }        
+
     }
 
     if (timeout)
@@ -1100,6 +1216,9 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
         sendStatusUpdate(true);
     }
+
+    replaceStatus(_axis, ito::actuatorMoving, ito::actuatorAtTarget);
+    sendStatusUpdate();
 
     return retVal;
 }
@@ -1144,19 +1263,19 @@ ito::RetVal ThorlabsKCubeIM::checkError(short value, const char* message)
         switch (value)
         {
         case 1:
-            return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
+            return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized", message);
         case 2:
-            return ito::RetVal::format(ito::retError, 1, "%s: The device could not be found.", message);
+            return ito::RetVal::format(ito::retError, 1, "%s: The device could not be found", message);
         case 3:
-            return ito::RetVal::format(ito::retError, 1, "%s: The device must be opened before it can be accessed.", message);
+            return ito::RetVal::format(ito::retError, 1, "%s: The device must be opened before it can be accessed", message);
         case 37:
-            return ito::RetVal::format(ito::retError, 1, "%s: The device cannot perform the function until it has been homed (call calib() before).", message);
+            return ito::RetVal::format(ito::retError, 1, "%s: The device cannot perform the function until it has been homed (call calib() before)", message);
         case 38:
-            return ito::RetVal::format(ito::retError, 1, "%s: The function cannot be performed as it would result in an illegal position.", message);
+            return ito::RetVal::format(ito::retError, 1, "%s: The function cannot be performed as it would result in an illegal position", message);
         case 39:
-            return ito::RetVal::format(ito::retError, 1, "%s: An invalid velocity parameter was supplied. The velocity must be greater than zero. ", message);
+            return ito::RetVal::format(ito::retError, 1, "%s: An invalid velocity parameter was supplied. The velocity must be greater than zero", message);
         default:
-            return ito::RetVal::format(ito::retError, value, "%s: unknown error %i.", message, value);
+            return ito::RetVal::format(ito::retError, value, "%s: unknown error %i", message, value);
         }
     }
 }

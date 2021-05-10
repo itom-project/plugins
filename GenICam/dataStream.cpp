@@ -46,7 +46,8 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
     m_timeoutMS(0),
     m_usePreAllocatedBuffer(-1),
     m_endianessChanged(true),
-    m_verbose(verbose)
+    m_verbose(verbose),
+    m_flushAllBuffersToInput(false)
 {
     GCRegisterEvent = (GenTL::PGCRegisterEvent)m_lib->resolve("GCRegisterEvent");
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
@@ -367,6 +368,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
         else //in the first run, guess if pre-allocated or internal-allocated memory should be used.
         { 
             err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
+
             if (err == GenTL::GC_ERR_INVALID_PARAMETER && DSAnnounceBuffer)
             {
                 if (alignment != 1)
@@ -377,6 +379,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
                 //some cameras fail if camera-internal buffer should be allocated, therefore we try to announce pre-allocated buffer here
                 ito::uint8 *buffer = new ito::uint8[bytesPerBuffer];
                 err = DSAnnounceBuffer(m_handle, buffer, bytesPerBuffer, this, &handle);
+
                 if (err == GenTL::GC_ERR_SUCCESS)
                 {
                     m_usePreAllocatedBuffer = 1;
@@ -400,9 +403,19 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
             //directly queue allocated buffer
             retval += checkGCError(DSQueueBuffer(m_handle, handle));
             m_buffers.insert(handle);
+
+            if (m_verbose >= VERBOSE_INFO)
+            {
+                std::cout << "* Buffer " << i + 1 << ": allocated and queued to input queue. \n" << std::endl;
+            }
         }
         else
         {
+            if (m_verbose >= VERBOSE_INFO)
+            {
+                std::cout << "* Error allocating buffer " << i + 1 << ". \n" << std::endl;
+            }
+
             m_usePreAllocatedBuffer = -1;
             break;
         }
@@ -481,7 +494,19 @@ ito::RetVal GenTLDataStream::flushBuffers(GenTL::ACQ_QUEUE_TYPE queueType /*= Ge
         } while (busy);
     }
 
-    retval += checkGCError(DSFlushQueue(m_handle, queueType), "discard all buffers in input and ouput buffers");
+    retval += checkGCError(DSFlushQueue(m_handle, queueType), QString("flushes all buffers with type %1").arg(queueType));
+
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        if (retval == ito::retOk)
+        {
+            std::cout << "Flushed all buffers. Type " << queueType << "\n" << std::endl;
+        }
+        else
+        {
+            std::cout << "Error flushing all buffers. Type " << queueType << ". Error message: " << retval.errorMessage() << "\n" << std::endl;
+        }
+    }
                    
 
     return retval;
@@ -554,7 +579,11 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 {
     ito::RetVal retval;
     GenTL::S_EVENT_NEW_BUFFER latestBuffer;
+    latestBuffer.BufferHandle = GENTL_INVALID_HANDLE;
+
     GenTL::S_EVENT_NEW_BUFFER nextBuffer;
+    nextBuffer.BufferHandle = GENTL_INVALID_HANDLE;
+
     size_t pSize = sizeof(latestBuffer);
     bool newData = false;
     GenTL::INFO_DATATYPE type = GenTL::INFO_DATATYPE_BOOL8;
@@ -566,8 +595,10 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 
     GenTL::GC_ERROR err;
 
-    if (m_verbose >= VERBOSE_ALL)
+    if (m_verbose >= VERBOSE_DEBUG)
     {
+        std::cout << "WaitForNewestBuffer with timeout " << m_timeoutMS << " ms\n" << std::endl;
+
         std::cout << "Buffer info before new-buffer-event:\n" << std::endl;
         foreach(const GenTL::BUFFER_HANDLE &buf, m_buffers)
         {
@@ -611,7 +642,34 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
 
     if (err == GenTL::GC_ERR_TIMEOUT)
     {
-        flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+        if (m_verbose >= VERBOSE_DEBUG)
+        {
+            std::cout << "Buffer info after new buffer event timeout:\n" << std::endl;
+
+            foreach(const GenTL::BUFFER_HANDLE &buf, m_buffers)
+            {
+                printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf, 0, 16).toLatin1().constData(), buf);
+            }
+        }
+
+        if (flushAllBuffersToInput())
+        {
+            if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "Flush all buffers to input (ACQ_QUEUE_ALL_TO_INPUT) since 'flushAllBuffersToInput' init parameter has been set.\n" << std::endl;
+            }
+
+            flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
+        }
+        else if (latestBuffer.BufferHandle != GENTL_INVALID_HANDLE)
+        {
+            if (m_verbose >= VERBOSE_DEBUG)
+            {
+                std::cout << "A valid latestBuffer has been reported together with the timeout. Try to queue it again (since 'flushAllBuffersToInput' init parameter is 0.\n" << std::endl;
+            }
+
+            handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+        }
 
         if (checkForErrorEvent(retval, "Timeout occurred"))
         {
@@ -619,7 +677,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
         }
         else
         {
-            retval +=  ito::RetVal(ito::retError, 0, "Timeout occurred.");
+            retval += ito::RetVal(ito::retError, 0, "Timeout occurred.");
         }
     }
     else if (checkGCError(err) == ito::retOk)
@@ -628,7 +686,9 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
         {
             //check for further newBufferEvents (no timeout) to be sure to get latest buffer
             pSize = sizeof(nextBuffer);
+            nextBuffer.BufferHandle = GENTL_INVALID_HANDLE;
             err = EventGetData(m_newBufferEvent, &nextBuffer, &pSize, 0);
+
             if (GenTL::GC_ERR_SUCCESS == err)
             {
                 newData = true;
@@ -653,7 +713,10 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
                 }
                 else if (!newData)
                 {
-                    handlesToQueueAgain.insert(nextBuffer.BufferHandle);
+                    if (nextBuffer.BufferHandle != GENTL_INVALID_HANDLE)
+                    {
+                        handlesToQueueAgain.insert(nextBuffer.BufferHandle);
+                    }
                 }
                 else
                 {
@@ -671,7 +734,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
             }
         }
 
-        if (m_verbose >= VERBOSE_ALL)
+        if (m_verbose >= VERBOSE_DEBUG)
         {
             std::cout << "Buffer info after new-buffer-event\n" << std::endl;
             foreach(const GenTL::BUFFER_HANDLE &buf, m_buffers)
@@ -690,15 +753,23 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
         retval += copyBufferToDataObject(latestBuffer.BufferHandle, destination);
 
         //queue buffer again
-        handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+        if (latestBuffer.BufferHandle != GENTL_INVALID_HANDLE)
+        {
+            handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+        }
     }
     else
     {
-        handlesToQueueAgain.insert(latestBuffer.BufferHandle);
-        flushAllToQueuedAtTheEnd = true;
+        //queue buffer again
+        if (latestBuffer.BufferHandle != GENTL_INVALID_HANDLE)
+        {
+            handlesToQueueAgain.insert(latestBuffer.BufferHandle);
+        }
+        else
+        {
+            flushAllToQueuedAtTheEnd = true;
+        }
     }
-
-    
 
     ito::RetVal queueRetVal;
 
@@ -718,7 +789,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
         flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
     }
 
-    if (m_verbose >= VERBOSE_ALL)
+    if (m_verbose >= VERBOSE_DEBUG)
     {
         std::cout << "Buffer info after queuing buffers\n" << std::endl;
         foreach(const GenTL::BUFFER_HANDLE &buf, handlesToQueueAgain)
@@ -993,6 +1064,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 
         //get pixel endianess
         if (pixelformat != PFNC_Mono8 && 
+            pixelformat != PFNC_Mono16 &&
             pixelformat != PFNC_RGB8 &&
             pixelformat != PFNC_YCbCr422_8)
         {
@@ -1131,6 +1203,19 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void msb_to_lsb_16bit(const ito::uint16 *source, ito::uint16 *dest, size_t n)
+{
+    const ito::uint16 *end = source + n;
+    ito::uint16 temp;
+
+    while (source != end)
+    {
+        temp = *source++;
+        *dest++ = (temp << 8) | (temp >> 8);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
     if (littleEndian)
@@ -1139,7 +1224,10 @@ ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const s
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "big endian for mono10, mono12, mono14, mono16 currently not supported.");
+        ito::uint16 *dest = dobj.rowPtr<ito::uint16>(0, 0);
+        const ito::uint16 *source = (const ito::uint16*)ptr;
+        msb_to_lsb_16bit(source, dest, width * height);
+        return ito::retOk;
     }
 }
 

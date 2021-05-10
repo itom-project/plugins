@@ -140,3 +140,4 @@ Changelog
 * itom setup 3.1.0: This plugin has been compiled using the uEye SDK 4.90.3
 * itom setup 3.2.1: This plugin has been compiled using the uEye SDK 4.91.0
 * itom setup 4.0.0: This plugin has been compiled using the uEye SDK 4.93.0
+* itom setup 4.1.0: This plugin has been compiled using the uEye SDK 4.93.0

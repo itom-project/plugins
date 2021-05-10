@@ -121,10 +121,13 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        
+
 #if (CV_MAJOR_VERSION >= 3)
         static const QString fillInvalidAreasDoc;
         static ito::RetVal fillInvalidAreas(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal fillInvalidAreasParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        template<typename _Tp> static cv::Mat getNaNMask(const cv::Mat* mat);
 #endif
 
     private:

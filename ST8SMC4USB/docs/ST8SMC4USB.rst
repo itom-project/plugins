@@ -69,4 +69,8 @@ Before using the motor you need to install the communcation driver that is reque
 You get this driver either by installing the software XILab from Standa or by directly downloading the driver's inf file (Windows only). For more information see
 https://en.xisupport.com/projects/enxisupport/wiki/Software. The driver might require the Microsoft Visual C++ 2008 Redistributable package.
 
+Changelog
+=========
+
 * 2015-06-15: The XiLab SDK currently delivered with the source files of the itom plugin has the version 2.3.2.
+* itom setup 4.1.0: plugin uses the XiLab SDK in version 2.3.2.

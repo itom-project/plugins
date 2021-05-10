@@ -1635,8 +1635,8 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_RelPosCmd = "POS:REL";
         m_PosQust = "POS?";
 
-        m_params["hasLocalRemote"].setVal<int>(1.0);
-        m_params["hasOnTargetFlag"].setVal<int>(0.0);
+        m_params["hasLocalRemote"].setVal<int>(1);
+        m_params["hasOnTargetFlag"].setVal<int>(0);
         
         m_hasHardwarePositionLimit = true;
 
@@ -1684,7 +1684,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_PosQust = "POS? 1";
 
         m_params["velocity"].setFlags(!ito::ParamBase::Readonly);
-
+        m_params["hasOnTargetFlag"].setVal<int>(1);
 
 
         m_VelCmd = "Vel 1 ";
@@ -1971,8 +1971,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
         }
         else
         {
-            replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate(true);
+            sendTargetUpdate();
 
             if (waitCond && !released)
             {
@@ -1996,7 +1995,18 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     double answerDbl;
     int timeoutMS_ = timeoutMS;
     ito::RetVal ontRetVal;
-    int ontIterations = 10;
+
+    int ontIterations;
+
+    if (m_ctrlType == C663Family) // long stepper stage
+    {
+        ontIterations = 1000;
+    }
+    else
+    {
+        ontIterations = 10;
+    }
+
     QSharedPointer<double> actPos = QSharedPointer<double>(new double);
 
     if (m_params["hasOnTargetFlag"].getVal<int>() > 0.0 && m_useOnTarget)
@@ -2026,7 +2036,17 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
                 break;
             }
 
+            if (m_ctrlType == C663Family)
+            {
+                //short delay
+                waitMutex.lock();
+                waitCondition.wait(&waitMutex, 1000);
+                waitMutex.unlock();
+                setAlive();
+            }
+
             --ontIterations;
+            
         }
     }
 

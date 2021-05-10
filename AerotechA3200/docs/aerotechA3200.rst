@@ -55,3 +55,4 @@ Changelog
 =========
 
 * itom setup 3.1.0: This plugin has been compiled
+* itom setup 4.1.0: This plugin has been compiled
