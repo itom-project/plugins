@@ -2480,7 +2480,8 @@ The maximum iteration count is 20 in any case.")
             ito::ParamBase::Int | ito::ParamBase::In,
             0,
             1,
-            1 tr("If 1, NaN values in x and / or y are ignored.").toLatin1().data());
+            1,
+            tr("If 1, NaN values in x and / or y are ignored.").toLatin1().data());
         paramsOpt->append(param);
 
         param = Param(
