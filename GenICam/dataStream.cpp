@@ -960,13 +960,13 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
                 pixelformat = PFNC_Mono8;
             }
         }
-        if (pixelformat == PFNC_BGR8)
+        /*if (pixelformat == PFNC_BGR8)
         {
 
-        }
+        }*/
         if (pixelformat == PFNC_BGR10p || pixelformat == PFNC_BGR12p)
         {
-            retval += ito::RetVal(ito::retError, 0, "Pixel formats BGR10p, BGR12p are not implemented yet - although this device seems to support it.");
+            retval += ito::RetVal(ito::retWarning, 0, "Pixel formats BGR10p, BGR12p are not implemented as multi channel yet - although this device seems to support it.");
         }
 
         bytes_pp_transferred = (float)PFNC_PIXEL_SIZE(pixelformat) / 8.0;

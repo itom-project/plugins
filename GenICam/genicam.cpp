@@ -1641,9 +1641,6 @@ ito::RetVal GenICamClass::checkData(ito::DataObject *externalDataObject)
 
     int bpp = m_params["bpp"].getVal<int>();
     int color = m_params["color"].getVal<int>();
-    //int dbgg = m_params["PixelFormat"].getFlags();
-    //char *dbgg2 = m_params["PixelFormat"].getVal<char*>();
-    //int a = PFNC_BGR8;
 
     if (!color)
     {
