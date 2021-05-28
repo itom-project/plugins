@@ -960,6 +960,14 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
                 pixelformat = PFNC_Mono8;
             }
         }
+        if (pixelformat == PFNC_BGR8)
+        {
+
+        }
+        if (pixelformat == PFNC_BGR10p || pixelformat == PFNC_BGR12p)
+        {
+            retval += ito::RetVal(ito::retError, 0, "Pixel formats BGR10p, BGR12p are not implemented yet - although this device seems to support it.");
+        }
 
         bytes_pp_transferred = (float)PFNC_PIXEL_SIZE(pixelformat) / 8.0;
     }
@@ -1060,13 +1068,15 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             }
         }
         
-        
 
         //get pixel endianess
         if (pixelformat != PFNC_Mono8 && 
             pixelformat != PFNC_Mono16 &&
             pixelformat != PFNC_RGB8 &&
-            pixelformat != PFNC_YCbCr422_8)
+            pixelformat != PFNC_YCbCr422_8 &&
+            pixelformat != PFNC_BGR8 &&
+            pixelformat != PFNC_BGR10p && 
+            pixelformat != PFNC_BGR12p)
         {
             pSize = sizeof(temp);
             if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXEL_ENDIANNESS, &dtype, &temp, &pSize) != GenTL::GC_ERR_SUCCESS)
@@ -1104,6 +1114,9 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         case PFNC_RGB8:
             retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
+        case PFNC_BGR8:
+            retval += copyBGR8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
         case PFNC_YCbCr422_8:
             retval += copyYCbCr422ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
@@ -1119,10 +1132,16 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         case PFNC_Mono12p:
             retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
+        case PFNC_BGR12p:
+            retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
         case GVSP_Mono10Packed: //GigE specific
             retval += copyMono10PackedToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono10p:
+            retval += copyMono10pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
+        case PFNC_BGR10p:
             retval += copyMono10pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         default:
@@ -1229,6 +1248,51 @@ ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const s
         msb_to_lsb_16bit(source, dest, width * height);
         return ito::retOk;
     }
+}
+
+// BGR8 data to RGBa8 DataObject output
+ito::RetVal GenTLDataStream::copyBGR8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    size_t n = width * height;
+    cv::Mat *bgr = new cv::Mat((int)height, (int)width, CV_8UC3,(void*)ptr); //8UC3 -> BGR8
+    ito::uint8* srcPtr = bgr->ptr<ito::uint8>(0);
+    
+
+    std::vector<cv::Mat> rgbChannels(3);
+    cv::split(*bgr, rgbChannels);
+
+    cv::Mat* matR = &rgbChannels[2];
+    cv::Mat* matG = &rgbChannels[1];
+    cv::Mat* matB = &rgbChannels[0];
+
+    cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(dobj.getCvPlaneMat(0));
+    const ito::uint8* rowPtrR;
+    const ito::uint8* rowPtrG;
+    const ito::uint8* rowPtrB;
+    ito::RgbaBase32* rowPtrDst;
+
+#if USEOMP
+#pragma omp parallel for schedule(guided)
+#endif
+    for (int y = 0; y < height; y++)
+    {
+        rowPtrR = matR->ptr<ito::uint8>(y);
+        rowPtrG = matG->ptr<ito::uint8>(y);
+        rowPtrB = matB->ptr<ito::uint8>(y);
+        rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
+        for (int x = 0; x < width; x++)
+        {
+            rowPtrDst[x].b = (ito::int32)rowPtrB[x];
+            rowPtrDst[x].g = (ito::int32)rowPtrG[x];
+            rowPtrDst[x].r = (ito::int32)rowPtrR[x];
+            rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
+        }
+    }
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
