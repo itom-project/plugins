@@ -2424,7 +2424,7 @@ const QString DataObjectArithmetic::gaussianFit1DimDoc =
 \n\
 This method fits a Gaussian curve of the form: \n\
 \n\
-y = A * exp(-(x - mu)^2 / (2 * sigma^2) \n\
+y = A * exp(-(x - mu)^2 / (2 * sigma^2)) \n\
 \n\
 It implements the iterative method, described in the paper \n\
 \n\
