@@ -112,16 +112,16 @@ This plugin has been tested with the following cameras: \n\
     QString description = tr("Indicate either a string containing the vendor and model name separated with a semicolon (e.g. 'XIMEA GmbH.;xiApi') or \
 the path to a cti file (GenICam GenTL transport layer) with the file suffix .cti of the respective camera driver. If nothing is indicated, \
 a list of all auto-detected vendors and models is returned.");
-    ito::Param paramVal = ito::Param("GenTLProducer", ito::ParamBase::String, NULL, "C:\\XIMEA\\GenTL Producer\\x64\\ximea.gentlX64.cti", description.toLatin1().constData());
+    ito::Param paramVal = ito::Param("GenTLProducer", ito::ParamBase::String, "C:\\XIMEA\\GenTL Producer\\x64\\ximea.gentlX64.cti", description.toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("interface", ito::ParamBase::String, NULL, "auto", 
+    paramVal = ito::Param("interface", ito::ParamBase::String, "auto", 
         tr("interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty "
             "string to get a list of all possible interfaces for the chosen transport layer. "
             "Default: 'auto' opens the first supported interface of the chosen transport layer.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("deviceID", ito::ParamBase::String, NULL, "", 
+    paramVal = ito::Param("deviceID", ito::ParamBase::String, "", 
         tr("name of the device to be opened. Leave empty to open first detected device of given "
             "transport layer and interface.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);

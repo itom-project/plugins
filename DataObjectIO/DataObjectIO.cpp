@@ -5259,8 +5259,8 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
                 xCords.append(rowPtr[0]);
             }    
         }
-        qSort(yCords);
-        qSort(xCords);
+        std::sort(yCords.begin(), yCords.end());
+        std::sort(xCords.begin(), xCords.end());
 
         int newXSize = xCords.count();
         int newYSize = yCords.count();

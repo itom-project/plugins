@@ -1,0 +1,9 @@
+{
+ "cfg": {
+  "TVecs": null,
+  "RVecs": null,
+  "CamMat": null,
+  "DistCoeff": null,
+  "cam.calibFile": ""
+ }
+}

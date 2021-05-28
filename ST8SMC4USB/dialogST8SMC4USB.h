@@ -33,12 +33,7 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <qabstractbutton.h>
-#include <qvector.h>
 #include <qsharedpointer.h>
-#include <qcombobox.h>
-#include <qsignalmapper.h>
-#include <qcommandlinkbutton.h>
-#include <qspinbox.h>
 
 namespace ito
 {

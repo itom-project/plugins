@@ -87,6 +87,8 @@
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
     #include <pcl/surface/simplification_remove_unused_vertices.h>
     #include <pcl/surface/poisson.h>
+    #include <pcl/surface/marching_cubes_hoppe.h>
+    #include <pcl/surface/marching_cubes_rbf.h>
 #endif
 
 #include "vtkImageData.h"
@@ -4362,11 +4364,7 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclPoissonDOC = QObject::tr("\n\
-\n\
-\n\
-\n\
-\n");
+const QString PclTools::pclPoissonDOC = QObject::tr("Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -4380,12 +4378,26 @@ ito::RetVal PclTools::pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<
     }
 
     paramsMand->clear();
-    paramsMand->append(ito::Param("organized", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid point cloud").toLatin1().data()));
-    //paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid, organized point cloud").toLatin1().data()));
-    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygonal mesh").toLatin1().data()));
+    paramsMand->append(ito::Param("cloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, nullptr, tr("Input point cloud with normal vector information.").toLatin1().data()));
+    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, nullptr, tr("Output polygonal mesh").toLatin1().data()));
 
     paramsOpt->clear();
-    paramsOpt->append(ito::Param("treeDepth", ito::ParamBase::Int | ito::ParamBase::In , 1, 100, 8, tr("Depth of the octTree to reconstruct.").toLatin1().data()));
+    paramsOpt->append(ito::Param("treeDepth", ito::ParamBase::Int | ito::ParamBase::In , 1, 100, 8, tr("Maximum depth of the octTree to reconstruct. Be careful: High values might require a lot of memory and processing time.").toLatin1().data()));
+    paramsOpt->append(ito::Param("minTreeDepth", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 5, tr("The minimum depth.").toLatin1().data()));
+    paramsOpt->append(ito::Param("isoDivide", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 8, 
+        tr("Set the depth at which a block iso-surface extractor should be used to extract the iso-surface.\n\
+This parameter must be >= minTreeDepth. \n\
+\n\
+Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time. \n\
+(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)").toLatin1().data()));
+    
+    paramsOpt->append(ito::Param("solverDivide", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 8, 
+        tr("Get the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation.\n\
+This parameter must be >= minTreeDepth. \n\
+\n\
+Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time. \n\
+(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)").toLatin1().data()));
+    //paramsOpt->append(ito::Param("threads", ito::ParamBase::Int | ito::ParamBase::In, 0, 32, 1, tr("The number of threads to use for computation. 0: use the maximum available number of threads.").toLatin1().data()));
 
     return retval;
 }
@@ -4396,21 +4408,35 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
     ito::RetVal retval = ito::retOk;
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
-    retval += ito::RetVal(ito::retError, 0, tr("Only tested / implemented for version 1.7.0").toLatin1().data());
+    retval += ito::RetVal(ito::retError, 0, tr("Only tested / implemented for PCL >= 1.7.0").toLatin1().data());
     
 #else
-    ito::PCLPointCloud *cloudIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
-    ito::PCLPolygonMesh *meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();
+    const ito::PCLPointCloud *cloudIn = (*paramsMand)[0].getVal<const ito::PCLPointCloud*>();
+    ito::PCLPolygonMesh *meshOut = (*paramsMand)[1].getVal<ito::PCLPolygonMesh*>();
 
-    int depth = (int)(*paramsOpt)[0].getVal<int>();
+    int maxDepth = (*paramsOpt)[0].getVal<int>();
+    int minDepth = paramsOpt->at(1).getVal<int>();
+    int isoDivide = paramsOpt->at(2).getVal<int>();
+    int solverDivide = paramsOpt->at(3).getVal<int>();
+    //int threads = paramsOpt->at(4).getVal<int>();
     int degree = -1;
+
+    if (isoDivide < minDepth)
+    {
+        return ito::RetVal(ito::retError, 0, tr("isoDivide must be >= minDepth").toLatin1().data());
+    }
+
+    if (solverDivide < minDepth)
+    {
+        return ito::RetVal(ito::retError, 0, tr("solverDivide must be >= minDepth").toLatin1().data());
+    }
 
     if (cloudIn == NULL || meshOut == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("the parameters meshIn and meshOut must not be NULL.").toLatin1().data());
     }
 
-    if (cloudIn->empty())
+    if (cloudIn->getType() == ito::pclInvalid || cloudIn->empty())
     {
         return ito::RetVal(ito::retError, 0, tr("the input point cloud must be valid.").toLatin1().data());
     }
@@ -4420,35 +4446,211 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
     switch(cloudIn->getType())
     {
         default:
+            return ito::RetVal(ito::retError, 0, tr("The type of the input point cloud must be XYZNormal, XYZINormal or XYZRGBNormal.").toLatin1().data());
         case ito::pclInvalid:
             return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not defined or point cloud invalid").toLatin1().data());
         case ito::pclXYZNormal:
         {
-            pcl::Poisson<pcl::PointNormal> meshCleaner;
-            meshCleaner.setDepth(depth);
-            meshCleaner.setInputCloud(cloudIn->toPointXYZNormal());
-            if (degree > 0) meshCleaner.setDegree(degree);
-            meshCleaner.reconstruct(*(meshOut->polygonMesh()));
+            pcl::Poisson<pcl::PointNormal> poisson;
+            poisson.setDepth(maxDepth);
+            poisson.setMinDepth(minDepth);
+            //poisson.setThreads(threads);
+            poisson.setSolverDivide(solverDivide);
+            poisson.setIsoDivide(isoDivide);
+            poisson.setInputCloud(cloudIn->toPointXYZNormal());
+            if (degree > 0) poisson.setDegree(degree);
+            poisson.reconstruct(*(meshOut->polygonMesh()));
         }
         break;
         case ito::pclXYZINormal:
         {
-            pcl::Poisson<pcl::PointXYZINormal> meshCleaner;
-            meshCleaner.setDepth(depth);
-            meshCleaner.setInputCloud(cloudIn->toPointXYZINormal());
-            if (degree > 0) meshCleaner.setDegree(degree);
-            meshCleaner.reconstruct(*(meshOut->polygonMesh()));
+            pcl::Poisson<pcl::PointXYZINormal> poisson;
+            poisson.setDepth(maxDepth);
+            poisson.setMinDepth(minDepth);
+            //poisson.setThreads(threads);
+            poisson.setSolverDivide(solverDivide);
+            poisson.setIsoDivide(isoDivide);
+            poisson.setInputCloud(cloudIn->toPointXYZINormal());
+            if (degree > 0) poisson.setDegree(degree);
+            poisson.reconstruct(*(meshOut->polygonMesh()));
         }
         break;
         case ito::pclXYZRGBNormal:
         {
-            pcl::Poisson<pcl::PointXYZRGBNormal> meshCleaner;
-            meshCleaner.setDepth(depth);
-            meshCleaner.setInputCloud(cloudIn->toPointXYZRGBNormal());
-            if (degree > 0) meshCleaner.setDegree(degree);
-            meshCleaner.reconstruct(*(meshOut->polygonMesh()));
+            pcl::Poisson<pcl::PointXYZRGBNormal> poisson;
+            poisson.setDepth(maxDepth);
+            poisson.setMinDepth(minDepth);
+            //poisson.setThreads(threads);
+            poisson.setSolverDivide(solverDivide);
+            poisson.setIsoDivide(isoDivide);
+            poisson.setInputCloud(cloudIn->toPointXYZRGBNormal());
+            if (degree > 0) poisson.setDegree(degree);
+            poisson.reconstruct(*(meshOut->polygonMesh()));
         }
         break;
+    }
+#endif
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const QString PclTools::pclMarchingCubesDOC = QObject::tr(
+"The marching cubes surface reconstruction algorithm. \n\
+\n\
+There are two algorithms implemented: \n\
+\n\
+1. MarchingCubesHoppe: \n\
+    using a signed distance function based on the distance \n\
+    from tangent planes, proposed by Hoppe et. al.in: \n\
+    \n\
+    Hoppe H., DeRose T., Duchamp T., MC - Donald J., Stuetzle W., \n\
+    \"Surface reconstruction from unorganized points\", SIGGRAPH '92 \n\
+\n\
+2. MarchingCubesRBF: \n\
+    The marching cubes surface reconstruction algorithm, using a signed distance function based on radial \n\
+    basis functions.Partially based on: \n\
+    \n\
+    Carr J.C., Beatson R.K., Cherrie J.B., Mitchell T.J., Fright W.R., McCallum B.C. and Evans T.R., \n\
+    \"Reconstruction and representation of 3D objects with radial basis functions\" \n\
+    SIGGRAPH '01");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PclTools::pclMarchingCubesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("cloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, nullptr, tr("Input point cloud with normal vector information.").toLatin1().data()));
+    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output polygonal mesh").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("algorithmType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("0: MarchingCubesHoppe, 1: MarchingCubesRBF").toLatin1().data()));
+    paramsOpt->append(ito::Param("isoLevel", ito::ParamBase::Double | ito::ParamBase::In, -100000.0, 100000.0, 0.0, tr("the iso level of the surface to be extracted.").toLatin1().data()));
+    
+    int gridResolution[] = { 32,32,32 };
+    auto pGridRes = ito::Param("gridResolution", ito::ParamBase::IntArray | ito::ParamBase::In, 3, gridResolution, tr("The grid resolution in x, y, and z (default: 32 each)").toLatin1().data());
+    pGridRes.setMeta(new ito::IntArrayMeta(INT_MIN, INT_MAX, 1, 3, 3, 1), true);
+    paramsOpt->append(pGridRes);
+
+    paramsOpt->append(ito::Param("percentageExtendGrid", ito::ParamBase::Double | ito::ParamBase::In, -100000.0, 100000.0, 0.0, 
+        tr("parameter that defines how much free space should be left inside the grid between the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.").toLatin1().data()));
+    
+    paramsOpt->append(ito::Param("distIgnore", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 100000.0, -1.0, 
+        tr("Method that sets the distance for ignoring voxels which are far from point cloud. \n\
+If the distance is negative, then the distance functions would be calculated in all voxels; \n\
+otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube. \n\
+Default value is - 1.0. Set to negative if all voxels are to be involved. \n\
+Only used for algorithmType = MarchingCubesHoppe (0).").toLatin1().data()));
+    
+    paramsOpt->append(ito::Param("offSurfaceEpsilon", ito::ParamBase::Double | ito::ParamBase::In, -100000.0, 100000.0, 0.1,
+        tr("Set the off - surface points displacement value. Only used for algorithmType = MarchingCubesRBF (1)").toLatin1().data()));
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PclTools::pclMarchingCubes(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+    retval += ito::RetVal(ito::retError, 0, tr("Only tested / implemented for PCL >= 1.7.0").toLatin1().data());
+
+#else
+    auto cloudIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<const ito::PCLPointCloud*>();
+    auto meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<ito::PCLPolygonMesh*>();
+
+    bool useHoppeNotRBF = (paramsOpt->at(0).getVal<int>() == 0);
+    double isoLevel = paramsOpt->at(1).getVal<double>();
+    const int* gridRes = paramsOpt->at(2).getVal<const int*>();
+    double percentageExtendGrid = (*paramsOpt)[3].getVal<double>();
+    double distIgnore = (*paramsOpt)[4].getVal<double>();
+    double offSurfaceEpsilon = (*paramsOpt)[5].getVal<double>();
+
+    if (cloudIn == NULL || meshOut == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("the parameters cloud and meshOut must not be nullptr.").toLatin1().data());
+    }
+
+    if (cloudIn->getType() == ito::pclInvalid || cloudIn->empty())
+    {
+        return ito::RetVal(ito::retError, 0, tr("the input point cloud must be valid.").toLatin1().data());
+    }
+
+    *meshOut = ito::PCLPolygonMesh(pcl::PolygonMesh::Ptr(new pcl::PolygonMesh()));
+
+    switch (cloudIn->getType())
+    {
+    default:
+        return ito::RetVal(ito::retError, 0, tr("The type of the input point cloud must be XYZNormal, XYZINormal or XYZRGBNormal.").toLatin1().data());
+    case ito::pclInvalid:
+        return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not defined or point cloud invalid").toLatin1().data());
+    case ito::pclXYZNormal:
+    {
+        pcl::MarchingCubes<pcl::PointNormal> *mc;
+
+        if (useHoppeNotRBF)
+        {
+            mc = new pcl::MarchingCubesHoppe<pcl::PointNormal>(distIgnore, percentageExtendGrid, isoLevel);
+            
+        }
+        else
+        {
+            mc = new pcl::MarchingCubesRBF<pcl::PointNormal>(offSurfaceEpsilon, percentageExtendGrid, isoLevel);
+        }
+        
+        mc->setGridResolution(gridRes[0], gridRes[1], gridRes[2]);
+        mc->setInputCloud(cloudIn->toPointXYZNormal());
+        mc->reconstruct(*(meshOut->polygonMesh()));
+        delete mc;
+    }
+    break;
+    case ito::pclXYZINormal:
+    {
+        pcl::MarchingCubes<pcl::PointXYZINormal> *mc;
+
+        if (useHoppeNotRBF)
+        {
+            mc = new pcl::MarchingCubesHoppe<pcl::PointXYZINormal>(distIgnore, percentageExtendGrid, isoLevel);
+
+        }
+        else
+        {
+            mc = new pcl::MarchingCubesRBF<pcl::PointXYZINormal>(offSurfaceEpsilon, percentageExtendGrid, isoLevel);
+        }
+
+        mc->setGridResolution(gridRes[0], gridRes[1], gridRes[2]);
+        mc->setInputCloud(cloudIn->toPointXYZINormal());
+        mc->reconstruct(*(meshOut->polygonMesh()));
+        delete mc;
+    }
+    break;
+    case ito::pclXYZRGBNormal:
+    {
+        pcl::MarchingCubes<pcl::PointXYZRGBNormal> *mc;
+
+        if (useHoppeNotRBF)
+        {
+            mc = new pcl::MarchingCubesHoppe<pcl::PointXYZRGBNormal>(distIgnore, percentageExtendGrid, isoLevel);
+
+        }
+        else
+        {
+            mc = new pcl::MarchingCubesRBF<pcl::PointXYZRGBNormal>(offSurfaceEpsilon, percentageExtendGrid, isoLevel);
+        }
+
+        mc->setGridResolution(gridRes[0], gridRes[1], gridRes[2]);
+        mc->setInputCloud(cloudIn->toPointXYZRGBNormal());
+        mc->reconstruct(*(meshOut->polygonMesh()));
+        delete mc;
+    }
+    break;
     }
 #endif
     return retval;
@@ -4630,8 +4832,11 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::pclSimplifyMesh, PclTools::pclSimplifyMeshParams, tr("Used SimplificationRemoveUnusedVertices from the PCL to simplify a pcl mesh."));
     m_filterList.insert("pclSimplifyMesh", filter);
 
-    filter = new FilterDef(PclTools::pclPoisson, PclTools::pclPoissonParams, tr("Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object."));
+    filter = new FilterDef(PclTools::pclPoisson, PclTools::pclPoissonParams, pclPoissonDOC);
     m_filterList.insert("pclSurfaceByPoisson", filter);
+
+    filter = new FilterDef(PclTools::pclMarchingCubes, PclTools::pclMarchingCubesParams, pclMarchingCubesDOC);
+    m_filterList.insert("pclSurfaceByMarchingCubes", filter);
 
     filter = new FilterDef(PclTools::pclSampleToDataObject, PclTools::pclSampleToDataObjectParams, tr("Uses copy an organized and dense pointcloud to an dataObject."));
     m_filterList.insert("pclSampleToDataObject", filter);

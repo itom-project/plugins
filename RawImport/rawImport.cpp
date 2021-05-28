@@ -306,12 +306,14 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     ito::DataObject dObj;   // create an mepty object
 
     /**/
+    QTemporaryDir* tmpDir = new QTemporaryDir();
+    if (!tmpDir->isValid())
+        return ito::RetVal(ito::retError, 0, tr("could not create temporary directory").toLatin1().data());
+
     if ((*paramsOpt)[1].getVal<int>())
     {
         QString tmpPath = "";
-        QTemporaryDir *tmpDir = new QTemporaryDir();
         tmpPath = tmpDir->path();
-        delete tmpDir;
 
         QString tmpFilename(filename);
         if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1
@@ -344,7 +346,7 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     QProcess *readProc = new QProcess(NULL);
     QString command(QCoreApplication::applicationDirPath());
 #ifdef WIN32
-    command = "\"" + command + QString("/lib/dcraw.exe\" ") + arguments + " " + filename;
+    command = "\"" + command + QString("/lib/dcraw.exe\" ") + arguments + " " + "\"" + filename + "\"";
 #else
         command += QString("/lib/dcraw ") + arguments + " " + filename;
 #endif
@@ -415,6 +417,8 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
 
     if (filenameLoad.length() > 0 && QFile::exists(filenameLoad))
         QFile::remove(filenameLoad);
+
+    delete tmpDir;
 
     if (!retval.containsError())
     {
