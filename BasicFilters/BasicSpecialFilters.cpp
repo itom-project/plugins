@@ -1252,7 +1252,7 @@ ito::RetVal BasicFilters::calcObjSliceParams(QVector<ito::Param> *paramsMand, QV
         paramsMand->append(param);
         param = ito::Param("y1", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 1.0, tr("y1-coordinate for slice").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("interpolation mode", ito::ParamBase::Int, 0, 0, 0, tr("0: Bresenham or Nearest, 1: weighted").toLatin1().data());
+        param = ito::Param("interpolationMode", ito::ParamBase::Int, 0, 0, 0, tr("0: Bresenham or Nearest, 1: weighted").toLatin1().data());
         paramsOpt->append(param);
         //param = ito::Param("numer of pixel", ito::ParamBase::Int, 0, 65366, 0, tr("Number of pixels for output image").toLatin1().data());
         //paramsOpt->append(param);
