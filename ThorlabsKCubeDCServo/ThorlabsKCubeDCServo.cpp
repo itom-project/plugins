@@ -624,7 +624,37 @@ ito::RetVal ThorlabsKCubeDCServo::calib(const QVector<int> axis, ItomSharedSemap
     }
     else
     {
+        CC_ClearMessageQueue(m_serialNo);
+
         retValue += checkError(CC_Home(m_serialNo), "home axis");
+
+        QElapsedTimer timer;
+        timer.start();
+        double timeoutMs = m_params["timeout"].getVal<double>() * 1000.0;
+        bool done = false;
+        WORD messageType, messageId;
+        DWORD messageData;
+
+        while (!done)
+        {
+            while (CC_MessageQueueSize(m_serialNo) > 0)
+            {
+                if (CC_GetNextMessage(m_serialNo, &messageType, &messageId, &messageData))
+                {
+                    if (messageType == 2 && messageId == 0)
+                    {
+                        // homed
+                        done = true;
+                    }
+                }
+            }
+
+            if (timeoutMs < timer.elapsed())
+            {
+                retValue += ito::RetVal(ito::retError, 0, "timeout while homing / calibrating.");
+                done = true;
+            }
+        }
 
         QSharedPointer<double> pos(new double);
         retValue += getPos(0, pos, nullptr);
@@ -1071,26 +1101,29 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
             }
             else
             {
-                // wait for completion
-                CC_WaitForMessage(m_serialNo, &messageType, &messageId, &messageData);
-
-                if (messageType == 2 && messageId == 1)
+                while (CC_MessageQueueSize(m_serialNo) > 0)
                 {
-                    foreach(const int &i, axis)
+                    if (CC_GetNextMessage(m_serialNo, &messageType, &messageId, &messageData))
                     {
-                        QSharedPointer<double> pos_(new double);
-                        retVal += getPos(i, pos_, nullptr);
-                        m_currentPos[i] = *pos_;
+                        if (messageType == 2 && messageId == 1)
+                        {
+                            foreach(const int &i, axis)
+                            {
+                                QSharedPointer<double> pos_(new double);
+                                retVal += getPos(i, pos_, nullptr);
+                                m_currentPos[i] = *pos_;
 
-                        if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05))
-                        {
-                            setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-                            done = true; //not done yet
-                        }
-                        else
-                        {
-                            setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                            done = false;
+                                if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05))
+                                {
+                                    setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                                    done = true; //not done yet
+                                }
+                                else
+                                {
+                                    setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                                    done = false;
+                                }
+                            }
                         }
                     }
                 }
