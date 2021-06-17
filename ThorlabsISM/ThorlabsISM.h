@@ -88,6 +88,7 @@ class ThorlabsISM : public ito::AddInActuator
         char m_serialNo[16];
 
         static QList<QByteArray> openedDevices;
+        static int numberOfKinesisSimulatorConnections;
 
         double m_additionalFactor;
 
