@@ -26,6 +26,9 @@
 
 #include "ThorlabsKCubeDCServo.h"
 
+#include "dialogThorlabsKCubeDCServo.h"
+#include "dockWidgetThorlabsKCubeDCServo.h"
+
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
@@ -130,7 +133,7 @@ ThorlabsKCubeDCServo::ThorlabsKCubeDCServo() :
     m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::Double, 0.0, 10000.0, 1.0, tr("acceleration in real world units (e.g. mm/s^2)").toLatin1().data()));
     m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, 10000.0, 1.0, tr("speed in real world units (e.g. mm/s)").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("sychronous (0, default) or asychronous (1) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("synchronous (0, default) or asychronous (1) mode").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("lockFrontPanel", ito::Param("lockFrontPanel", ito::ParamBase::Int, 0, 1, 0, tr("1 to lock the front panel, else 0 (default)").toLatin1().data()));
@@ -140,14 +143,15 @@ ThorlabsKCubeDCServo::ThorlabsKCubeDCServo() :
     m_currentPos.fill(0.0, 1);
     m_currentStatus.fill(0, 1);
     m_targetPos.fill(0.0, 1);
+    m_originPositions.fill(0.0, 1);
     
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
-        /*DockWidgetThorlabsKCubeDCServo *dockWidget = new DockWidgetThorlabsKCubeDCServo(this);
+        DockWidgetThorlabsKCubeDCServo *dockWidget = new DockWidgetThorlabsKCubeDCServo(this);
         Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-        createDockWidget(QString(m_params["name"].getVal<const char*>()), features, areas, dockWidget);*/
+        createDockWidget(QString(m_params["name"].getVal<const char*>()), features, areas, dockWidget);
     }
     
     memset(m_serialNo, '\0', sizeof(m_serialNo));
@@ -392,7 +396,7 @@ ito::RetVal ThorlabsKCubeDCServo::init(QVector<ito::ParamBase> *paramsMand, QVec
 //---------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal ThorlabsKCubeDCServo::showConfDialog(void)
 {
-    return ito::RetVal(ito::retError); // apiShowConfigurationDialog(this, new DialogThorlabsKCubeDCServo(this));
+    return apiShowConfigurationDialog(this, new DialogThorlabsKCubeDCServo(this));
 }
 
 //-------------------------------------------------------------------------------------
@@ -625,6 +629,7 @@ ito::RetVal ThorlabsKCubeDCServo::calib(const QVector<int> axis, ItomSharedSemap
     else
     {
         CC_ClearMessageQueue(m_serialNo);
+        isInterrupted();
 
         retValue += checkError(CC_Home(m_serialNo), "home axis");
 
@@ -634,9 +639,35 @@ ito::RetVal ThorlabsKCubeDCServo::calib(const QVector<int> axis, ItomSharedSemap
         bool done = false;
         WORD messageType, messageId;
         DWORD messageData;
+        QSharedPointer<double> pos(new double);
 
         while (!done)
         {
+            //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
+            if (!done && isInterrupted())
+            {
+                //todo: force all axes to stop
+                retValue += checkError(CC_StopProfiled(m_serialNo), "stop profiled");
+
+                //set the status of all axes from moving to interrupted (only if moving was set before)
+                QVector<int> axis;
+                axis << 0;
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
+                sendStatusUpdate(true);
+
+                retValue += ito::RetVal(ito::retError, 0, "interrupt occurred");
+
+                if (waitCond)
+                {
+                    waitCond->returnValue = retValue;
+                    waitCond->release();
+                }
+
+                return retValue;
+            }
+
+            setAlive();
+
             while (CC_MessageQueueSize(m_serialNo) > 0)
             {
                 if (CC_GetNextMessage(m_serialNo, &messageType, &messageId, &messageData))
@@ -645,6 +676,7 @@ ito::RetVal ThorlabsKCubeDCServo::calib(const QVector<int> axis, ItomSharedSemap
                     {
                         // homed
                         done = true;
+                        retValue += getPos(0, pos, nullptr);
                     }
                 }
             }
@@ -654,10 +686,13 @@ ito::RetVal ThorlabsKCubeDCServo::calib(const QVector<int> axis, ItomSharedSemap
                 retValue += ito::RetVal(ito::retError, 0, "timeout while homing / calibrating.");
                 done = true;
             }
-        }
+            else
+            {
+                retValue += getPos(0, pos, nullptr);
+            }
 
-        QSharedPointer<double> pos(new double);
-        retValue += getPos(0, pos, nullptr);
+            Sleep(50);
+        }
     }
 
     if (waitCond)
@@ -679,7 +714,23 @@ ito::RetVal ThorlabsKCubeDCServo::setOrigin(const int axis, ItomSharedSemaphore 
 ito::RetVal ThorlabsKCubeDCServo::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retError, 0, "setOrigin not implemented for this controller.");
+    
+    QSharedPointer<double> originPos(new double);
+    double previous = m_originPositions[0];
+    m_originPositions[0] = 0.0;
+
+    ito::RetVal retValue = getPos(0, originPos, nullptr);
+
+    if (!retValue.containsError())
+    {
+        m_originPositions[0] = *originPos;
+    }
+    else
+    {
+        m_originPositions[0] = previous;
+    }
+
+    retValue += getPos(0, originPos, nullptr);
 
     if (waitCond)
     {
@@ -698,7 +749,6 @@ ito::RetVal ThorlabsKCubeDCServo::setOrigin(QVector<int> axis, ItomSharedSemapho
     \return retOk
     \todo define the status value
 */
-//-------------------------------------------------------------------------------------
 ito::RetVal ThorlabsKCubeDCServo::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -729,9 +779,11 @@ ito::RetVal ThorlabsKCubeDCServo::getPos(const int axis, QSharedPointer<double> 
         double real_unit;
         int counts = CC_GetPosition(m_serialNo);
         retValue += checkError(CC_GetRealValueFromDeviceUnit(m_serialNo, counts, &real_unit, 0 /*Distance*/), "getRealValueFromDeviceUnit");
-        m_currentPos[axis] = real_unit;
+        m_currentPos[axis] = real_unit - m_originPositions[0];
         *pos = m_currentPos[axis];
     }
+
+    sendStatusUpdate(false);
 
     if (waitCond)
     {
@@ -769,6 +821,7 @@ ito::RetVal ThorlabsKCubeDCServo::getPos(const QVector<int> axis, QSharedPointer
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
 
@@ -858,7 +911,7 @@ ito::RetVal ThorlabsKCubeDCServo::setPosAbs(QVector<int> axis, QVector<double> p
             foreach(const int axisNum, axis)
             {
                 int deviceUnit;
-                CC_GetDeviceUnitFromRealValue(m_serialNo, m_targetPos[axisNum], &deviceUnit, 0 /*Position*/);
+                CC_GetDeviceUnitFromRealValue(m_serialNo, m_targetPos[axisNum] + m_originPositions[axisNum], &deviceUnit, 0 /*Position*/);
                 retValue += checkError(CC_MoveToPosition(m_serialNo, deviceUnit), "move absolute");
 
                 //call waitForDone in order to wait until all axes reached their target or a given timeout expired
@@ -964,7 +1017,7 @@ ito::RetVal ThorlabsKCubeDCServo::setPosRel(QVector<int> axis, QVector<double> p
             foreach(const int axisNum, axis)
             {
                 int deviceUnit;
-                CC_GetDeviceUnitFromRealValue(m_serialNo, m_targetPos[axisNum], &deviceUnit, 0 /*Position*/);
+                CC_GetDeviceUnitFromRealValue(m_serialNo, m_targetPos[axisNum] + m_originPositions[axisNum], &deviceUnit, 0 /*Position*/);
                 retValue += checkError(CC_MoveToPosition(m_serialNo, deviceUnit), "move relative");
 
                 //call waitForDone in order to wait until all axes reached their target or a given timeout expired
@@ -1040,12 +1093,12 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
     WORD messageType;
     WORD messageId;
     DWORD messageData;
-
+    QSharedPointer<double> pos_(new double);
 
     //reset interrupt flag
     isInterrupted();
 
-    long delay = 100; //[ms]
+    long delay = 60; //[ms]
 
     timer.start();
 
@@ -1066,20 +1119,18 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
         if (!done && isInterrupted())
         {
             //todo: force all axes to stop
+            retVal += checkError(CC_StopProfiled(m_serialNo), "stop profiled");
 
             //set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
 
             retVal += ito::RetVal(ito::retError, 0, "interrupt occurred");
-            done = true;
             return retVal;
         }
 
         //short delay
-        waitMutex.lock();
-        waitCondition.wait(&waitMutex, delay);
-        waitMutex.unlock();
+        Sleep(delay);
         setAlive();
 
         if (timeoutMS > -1)
@@ -1091,7 +1142,6 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
                 //todo: obtain the current position, status... of all given axes
                 foreach(const int &i, axis)
                 {
-                    QSharedPointer<double> pos_(new double);
                     retVal += getPos(i, pos_, nullptr);
                     m_currentPos[i] = *pos_;
                     m_targetPos[i] = m_currentPos[i];
@@ -1109,7 +1159,6 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
                         {
                             foreach(const int &i, axis)
                             {
-                                QSharedPointer<double> pos_(new double);
                                 retVal += getPos(i, pos_, nullptr);
                                 m_currentPos[i] = *pos_;
 
@@ -1126,6 +1175,12 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
                             }
                         }
                     }
+                }
+
+                foreach(const int &i, axis)
+                {
+                    retVal += getPos(i, pos_, nullptr);
+                    m_currentPos[i] = *pos_;
                 }
             }
         }
@@ -1155,33 +1210,30 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
 //------------------------------------------------------------------------------------- 
 void ThorlabsKCubeDCServo::dockWidgetVisibilityChanged(bool visible)
 {
-    //if (getDockWidget())
-    //{
-    //    QWidget *w = getDockWidget()->widget();
+    if (getDockWidget())
+    {
+        DockWidgetThorlabsKCubeDCServo *w = qobject_cast<DockWidgetThorlabsKCubeDCServo*>(getDockWidget()->widget());
 
-    //    if (w)
-    //    {
-    //        if (visible)
-    //        {
-    //            connect(this, &AddInActuator::parametersChanged, w, &DockWidgetThorlabsKCubeDCServo::parametersChanged);
-    //            connect(this, &AddInActuator::actuatorStatusChanged, w, &DockWidgetThorlabsKCubeDCServo::actuatorStatusChanged);
-    //            connect(this, &AddInActuator::targetChanged, w, &DockWidgetThorlabsKCubeDCServo::targetChanged);
+        if (w)
+        {
+            if (visible)
+            {
+                connect(this, &AddInActuator::parametersChanged, w, &DockWidgetThorlabsKCubeDCServo::parametersChanged);
+                connect(this, &AddInActuator::actuatorStatusChanged, w, &DockWidgetThorlabsKCubeDCServo::actuatorStatusChanged);
+                connect(this, &AddInActuator::targetChanged, w, &DockWidgetThorlabsKCubeDCServo::targetChanged);
 
-    //            /*connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-    //            connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), w, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-    //            connect(this, SIGNAL(targetChanged(QVector<double>)), w, SLOT(targetChanged(QVector<double>)));*/
-    //            emit parametersChanged(m_params);
-    //            sendTargetUpdate();
-    //            sendStatusUpdate(false);
-    //        }
-    //        else
-    //        {
-    //            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-    //            disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), w, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-    //            disconnect(this, SIGNAL(targetChanged(QVector<double>)), w, SLOT(targetChanged(QVector<double>)));
-    //        }
-    //    }
-    //}
+                emit parametersChanged(m_params);
+                sendTargetUpdate();
+                sendStatusUpdate(false);
+            }
+            else
+            {
+                disconnect(this, &AddInActuator::parametersChanged, w, &DockWidgetThorlabsKCubeDCServo::parametersChanged);
+                disconnect(this, &AddInActuator::actuatorStatusChanged, w, &DockWidgetThorlabsKCubeDCServo::actuatorStatusChanged);
+                disconnect(this, &AddInActuator::targetChanged, w, &DockWidgetThorlabsKCubeDCServo::targetChanged);
+            }
+        }
+    }
 }
 
 //------------------------------------------------------------------------------------- 

@@ -26,9 +26,6 @@
 
 #include "common/addInInterface.h"
 
-//#include "dialogThorlabsKCubeDCServo.h"
-//#include "dockWidgetThorlabsKCubeDCServo.h"
-
 #include <qbytearray.h>
 #include <qlibrary.h>
 #include <qlist.h>
@@ -80,17 +77,23 @@ protected:
 public:
     friend class ThorlabsKCubeDCServoInterface;
 
-    const ito::RetVal showConfDialog(void); /*!<shows the configuration dialog*/
+    /*!<shows the configuration dialog*/
+    const ito::RetVal showConfDialog(void); 
+
+    //!< indicates that this plugin has got a configuration dialog
     int hasConfDialog(void)
     {
-        return 0;
-    } //!< indicates that this plugin has got a configuration dialog
+        return 1;
+    } 
 
 private:
     bool m_async;
     bool m_opened;
     int m_numaxis;
     char m_serialNo[16];
+
+    //!< the absolute positions, where the origin command was triggered.
+    QVector<double> m_originPositions;
 
     static QList<QByteArray> openedDevices;
     static int numberOfKinesisSimulatorConnections;

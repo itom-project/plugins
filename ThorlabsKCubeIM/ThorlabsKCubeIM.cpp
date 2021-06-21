@@ -134,7 +134,7 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     ito::int32 accel[4] = { 1000, 1000, 1000, 1000 };
     m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::IntArray, 4, accel, new ito::IntArrayMeta(1, 100000, 1, 4, 4), tr("acceleration Steps/s\0x5E2").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("sychronous (0, default) or asychronous (1) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("synchronous (0, default) or asychronous (1) mode").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("lockFrontPanel", ito::Param("lockFrontPanel", ito::ParamBase::Int, 0, 1, 0, tr("1 to lock the front panel, else 0").toLatin1().data()));
