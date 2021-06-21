@@ -462,6 +462,14 @@ if(WIN32)
     endif(PLUGIN_ThorlabsFF)
 endif()
 
+# ThorlabsKCubeDCServo KCube DC Servo
+if(WIN32)
+    option(PLUGIN_ThorlabsKCubeDCServo "Build with this plugin." OFF)
+    if(PLUGIN_ThorlabsKCubeDCServo)
+        add_subdirectory(ThorlabsKCubeDCServo)
+    endif(PLUGIN_ThorlabsKCubeDCServo)
+endif()
+
 # ThorlabsKCubeIM KCube inertial motor
 if(WIN32)
     option(PLUGIN_ThorlabsKCubeIM "Build with this plugin." OFF)
