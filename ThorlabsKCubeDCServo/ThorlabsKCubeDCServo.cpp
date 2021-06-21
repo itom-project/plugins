@@ -641,6 +641,9 @@ ito::RetVal ThorlabsKCubeDCServo::calib(const QVector<int> axis, ItomSharedSemap
         DWORD messageData;
         QSharedPointer<double> pos(new double);
 
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        sendStatusUpdate();
+
         while (!done)
         {
             //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
@@ -675,6 +678,8 @@ ito::RetVal ThorlabsKCubeDCServo::calib(const QVector<int> axis, ItomSharedSemap
                     if (messageType == 2 && messageId == 0)
                     {
                         // homed
+                        setStatus(m_currentStatus[0], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                        sendStatusUpdate();
                         done = true;
                         retValue += getPos(0, pos, nullptr);
                     }
