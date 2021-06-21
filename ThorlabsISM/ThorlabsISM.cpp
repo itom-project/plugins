@@ -131,7 +131,7 @@ m_additionalFactor(1.0)
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
     m_params.insert("enabled", ito::Param("enabled", ito::ParamBase::Int, 0, 1, 1, tr("If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data()));
     m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Target speed in °/s (travelMode == %1) or mm/s (travelMode == %2)").arg(MOT_Rotational).arg(MOT_Linear).toLatin1().data()));
     m_params.insert("accel", ito::Param("accel", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Target acceleration in °/s^2 (travelMode == %1) or mm/s^2 (travelMode == %2)").arg(MOT_Rotational).arg(MOT_Linear).toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 20.0, tr("timeout for move operations in sec").toLatin1().data()));

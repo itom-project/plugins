@@ -283,7 +283,7 @@
     </message>
     <message>
         <location line="+16"/>
-        <source>asychronous (1) or sychronous (0) mode</source>
+        <source>asychronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
