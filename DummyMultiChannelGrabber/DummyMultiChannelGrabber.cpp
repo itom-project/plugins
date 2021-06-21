@@ -229,7 +229,7 @@ const ito::RetVal DummyMultiChannelGrabber::showConfDialog(void)
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
 DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
-    AddInMultiChannelGrabber(),
+    AddInMultiChannelGrabber("testtest"),
     m_isgrabbing(false),
     m_totalBinning(1),
     m_lineCamera(false)
