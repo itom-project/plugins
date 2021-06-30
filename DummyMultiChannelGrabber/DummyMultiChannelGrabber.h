@@ -23,7 +23,7 @@
 #ifndef DUMMYMULTICHANNELGRABBER_H
 #define DUMMYMULTICHANNELGRABBER_H
 
-#include "common/addInGrabber.h"
+#include "common/addInMultiChannelGrabber.h"
 #include "common/typeDefs.h"
 #include "dialogDummyMultiChannelGrabber.h"
 

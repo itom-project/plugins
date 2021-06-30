@@ -234,64 +234,6 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
     m_totalBinning(1),
     m_lineCamera(false)
 {
-    ito::DoubleMeta *dm;
-
-    ito::Param paramVal = ito::Param("frame_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum time between the start of two consecutive acquisitions [s], default: 0.0.").toLatin1().data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setUnit("s");
-    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum integration time for an acquisition [s], default: 0.0 (as fast as possible).").toLatin1().data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setUnit("s");
-    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual offset").toLatin1().data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel, binning = x-factor * 100 + y-factor").toLatin1().data());
-    paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("demoRegexpString", ito::ParamBase::String, "", tr("matches strings without whitespaces").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "^\\S+$", "DemoParameters"), true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("demoWildcardString", ito::ParamBase::String, "test.bmp", tr("dummy filename of a bmp file, pattern: *.bmp").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*.bmp", "DemoParameters"), true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("demoEnumString", ito::ParamBase::String, "mode 1", tr("enumeration string (mode 1, mode 2, mode 3)").toLatin1().data());
-    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "mode 1", "DemoParameters");
-    sm->addItem("mode 2");
-    sm->addItem("mode 3");
-    paramVal.setMeta(sm, true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("demoArbitraryString", ito::ParamBase::String, "any string", tr("any string allowed").toLatin1().data());
-    sm = new ito::StringMeta(ito::StringMeta::String);
-    sm->setCategory("DemoParameters");
-    paramVal.setMeta(sm, true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("channelSpecificParameter", ito::ParamBase::Int, 101, 404, 101, tr("channelSpecificParameter only available at Channel_0").toLatin1().data());
-    paramVal.getMetaT<ito::IntMeta>()->setCategory("DemoParameters");
-    m_params.insert(paramVal.getName(), paramVal);
-
-
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -336,13 +278,107 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
     }
     else
     {
-        char* format = paramsOpt->at(2).getVal<char*>();       // third optional parameter, corresponding to the grabber bit depth per pixel
-        m_params["pixelFormat"].setVal<char*>(format);
 
-        int roi[] = { 0, 0, sizeX, sizeY };
-        m_params["roi"].setVal<int*>(roi, 4);
+
+        QMap<QString, ito::Param> standardParam;
+        ito::Param paramVal;
+        int roi[] = { 0, 0, 2048, 2048 };
+        paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
         ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1), "ImageFormatControl");
-        m_params["roi"].setMeta(rm, true);
+        paramVal.setMeta(rm, true);
+        standardParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in x (cols) [px]").toLatin1().data());
+        paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
+        standardParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 4096, tr("size in y (rows) [px]").toLatin1().data());
+        paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
+        standardParam.insert(paramVal.getName(), paramVal);
+
+        ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::String, "mono8");
+        m->addItem("mono10");
+        m->addItem("mono12");
+        m->addItem("mono16");
+        paramVal = ito::Param("pixelFormat", ito::ParamBase::String, paramsOpt->at(2).getVal<char*>(), tr("bitdepth of images: mono8, mono10, mono12, mono16, rgb32").toLatin1().data());
+        paramVal.setMeta(m, true);
+        standardParam.insert(paramVal.getName(), paramVal);
+
+
+        QMap<QString, ChannelContainer> channelMap;
+        for (int i = 0; i < numChannel; i++)
+        {
+            channelMap.insert(QString("channel_%1").arg(i), ChannelContainer(standardParam["roi"], standardParam["pixelFormat"], standardParam["sizex"], standardParam["sizey"]));
+        }
+        
+        channelMap["channel_1"].m_channelParam.insert("channelSpecificParam", ito::Param("channelSpecificParam", ito::ParamBase::Int, 0, 1, 1, tr("this is a channel specific parameter").toLatin1().data()));
+
+
+        // global params
+        QMap<QString, ito::Param> globalParam;
+        globalParam.insert("globalParam", ito::Param("globalParam", ito::ParamBase::Int, 0, 1, 1, tr("this is a global parameter").toLatin1().data()));
+        
+        
+        
+        ito::DoubleMeta *dm;
+        paramVal = ito::Param("frame_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum time between the start of two consecutive acquisitions [s], default: 0.0.").toLatin1().data());
+        dm = paramVal.getMetaT<ito::DoubleMeta>();
+        dm->setCategory("AcquisitionControl");
+        dm->setUnit("s");
+        dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum integration time for an acquisition [s], default: 0.0 (as fast as possible).").toLatin1().data());
+        dm = paramVal.getMetaT<ito::DoubleMeta>();
+        dm->setCategory("AcquisitionControl");
+        dm->setUnit("s");
+        dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
+        dm = paramVal.getMetaT<ito::DoubleMeta>();
+        dm->setCategory("AcquisitionControl");
+        dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual offset").toLatin1().data());
+        dm = paramVal.getMetaT<ito::DoubleMeta>();
+        dm->setCategory("AcquisitionControl");
+        dm->setRepresentation(ito::ParamMeta::Linear); //show a linear slider in generic paramEditorWidget...
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel, binning = x-factor * 100 + y-factor").toLatin1().data());
+        paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("demoRegexpString", ito::ParamBase::String, "", tr("matches strings without whitespaces").toLatin1().data());
+        paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "^\\S+$", "DemoParameters"), true);
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("demoWildcardString", ito::ParamBase::String, "test.bmp", tr("dummy filename of a bmp file, pattern: *.bmp").toLatin1().data());
+        paramVal.setMeta(new ito::StringMeta(ito::StringMeta::Wildcard, "*.bmp", "DemoParameters"), true);
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("demoEnumString", ito::ParamBase::String, "mode 1", tr("enumeration string (mode 1, mode 2, mode 3)").toLatin1().data());
+        ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "mode 1", "DemoParameters");
+        sm->addItem("mode 2");
+        sm->addItem("mode 3");
+        paramVal.setMeta(sm, true);
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("demoArbitraryString", ito::ParamBase::String, "any string", tr("any string allowed").toLatin1().data());
+        sm = new ito::StringMeta(ito::StringMeta::String);
+        sm->setCategory("DemoParameters");
+        paramVal.setMeta(sm, true);
+        globalParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param("channelSpecificParameter", ito::ParamBase::Int, 101, 404, 101, tr("channelSpecificParameter only available at Channel_0").toLatin1().data());
+        paramVal.getMetaT<ito::IntMeta>()->setCategory("DemoParameters");
+        globalParam.insert(paramVal.getName(), paramVal);
+
+
+        initializeDefaultConfiguration(channelMap, globalParam);
+
         if (sizeY == 1)
         {
             m_lineCamera = true;
@@ -351,31 +387,6 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
         {
             m_lineCamera = false;
         }
-
-        QString tempName;
-
-        m_params["defaultChannel"].setVal<char*>("Channel_0");
-
-        //add channels to map
-        for (int i = 0; i < numChannel; ++i)
-        {
-            tempName = QString("Channel_%1").arg(i);
-            addChannel(tempName);
-            if (i == 0)
-            {
-                m_channels[tempName].m_channelParam.insert("channelSpecificParameter", m_params["channelSpecificParameter"]); //this is a parameter only for channel_0
-            }
-            if (sizeY == 1)
-            {
-                m_channels[tempName].m_channelParam["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
-            }
-            else
-            {
-                m_channels[tempName].m_channelParam["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY - 1, 4, 4, sizeY, 4)), true);
-            }
-
-        }
-
     }
 
     if (!retVal.containsError())
