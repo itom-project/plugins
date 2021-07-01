@@ -311,8 +311,8 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
             channelMap.insert(QString("channel_%1").arg(i), ChannelContainer(standardParam["roi"], standardParam["pixelFormat"], standardParam["sizex"], standardParam["sizey"]));
         }
         
-        channelMap["channel_1"].m_channelParam.insert("channelSpecificParam", ito::Param("channelSpecificParam", ito::ParamBase::Int, 0, 1, 1, tr("this is a channel specific parameter").toLatin1().data()));
-
+        channelMap["channel_1"].m_channelParam.insert("channelSpecificParameter", ito::Param("channelSpecificParameter", ito::ParamBase::Int, 0, 1, 1, tr("this is a channel specific parameter").toLatin1().data()));
+        channelMap["channel_1"].m_channelParam["channelSpecificParameter"].getMetaT<ito::IntMeta>()->setCategory("DemoParameters");
 
         // global params
         QMap<QString, ito::Param> globalParam;
@@ -370,10 +370,6 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
         sm = new ito::StringMeta(ito::StringMeta::String);
         sm->setCategory("DemoParameters");
         paramVal.setMeta(sm, true);
-        globalParam.insert(paramVal.getName(), paramVal);
-
-        paramVal = ito::Param("channelSpecificParameter", ito::ParamBase::Int, 101, 404, 101, tr("channelSpecificParameter only available at Channel_0").toLatin1().data());
-        paramVal.getMetaT<ito::IntMeta>()->setCategory("DemoParameters");
         globalParam.insert(paramVal.getName(), paramVal);
 
 
