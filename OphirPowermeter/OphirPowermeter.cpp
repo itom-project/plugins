@@ -806,7 +806,7 @@ ito::RetVal OphirPowermeter::init(
             // creates instance of OphirLMMeasurement
             try
             {
-                m_OphirLM = QSharedPointer<OphirLMMeasurement>();
+                m_OphirLM = QSharedPointer<OphirLMMeasurement>(new OphirLMMeasurement);
 
                 if (m_OphirLM.isNull())
                 {
