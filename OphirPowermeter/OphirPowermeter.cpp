@@ -1,4 +1,5 @@
-﻿/* ********************************************************************
+﻿
+/* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
 Copyright (C) 2020, Institut fuer Technische Optik (ITO),,
@@ -806,6 +807,7 @@ ito::RetVal OphirPowermeter::init(
             // creates instance of OphirLMMeasurement
             try
             {
+                CoInitializer initializer; // must call for COM initialization and deinitialization
                 m_OphirLM = QSharedPointer<OphirLMMeasurement>(new OphirLMMeasurement);
 
                 if (m_OphirLM.isNull())
@@ -817,21 +819,19 @@ ito::RetVal OphirPowermeter::init(
                         0,
                         tr("No USB device was found.").arg(serialNoInput.data()).toLatin1().data());
                 }
-                else
-                {
-                    CoInitializer
-                        initializer; // must call for COM initialization and deinitialization
-                }
             }
             catch (const _com_error& e)
             {
                 retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
             }
 
+
             // scan for serial numbers
             if (!retval.containsError())
             {
+                bool found = false;
                 std::vector<std::wstring> serialsFound;
+
                 // Scan for connected Devices
                 try
                 {
@@ -842,14 +842,16 @@ ito::RetVal OphirPowermeter::init(
                     retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
                 }
 
-
                 if (serialsFound.size() > 0) // found some connected devices
                 {
-                    bool found = false;
                     QByteArray newSerial;
                     for (int idx = 0; idx < serialsFound.size();
-                         idx++) // iterate through alle serialnumbers
+                         idx++) // iterate through all serialnumbers
                     {
+                        char* foundTemp = wCharToChar(serialsFound[idx].c_str());
+                        std::string input = serialNoInput.toStdString();
+
+
                         if (openedDevices.contains(
                                 wCharToChar(serialsFound[idx].c_str()))) // already connected
                         {
@@ -864,32 +866,12 @@ ito::RetVal OphirPowermeter::init(
                         else if (
                             serialNoInput.size() > 0 &&
                             serialNoInput.contains(wCharToChar(
-                                serialsFound[idx].c_str()))) // connected to input serial number
+                                serialsFound[idx].c_str()))) // connected to optional parameter/
+                                                             // input serial number
                         {
                             m_serialNo = serialsFound[idx];
                             found = true;
                             retval = ito::retOk;
-                            break;
-                        }
-                        else
-                        {
-                            std::cout << "Detected serial numbers of USB "
-                                         "devices:\n------------------------------\n"
-                                      << std::endl;
-                            std::wstring deviceSerial;
-                            foreach (deviceSerial, serialsFound)
-                            {
-                                std::cout << wCharToChar(deviceSerial.c_str()) << "\n" << std::endl;
-                            }
-
-                            retval += ito::RetVal(
-                                ito::retError,
-                                0,
-                                tr("Initialization breaked since list of USB devices has been "
-                                   "printed.")
-                                    .toLatin1()
-                                    .data());
-                            found = true;
                             break;
                         }
                     }
@@ -898,7 +880,29 @@ ito::RetVal OphirPowermeter::init(
                 {
                     retval += ito::RetVal(ito::retError, 0, "no connected Ophir device detected");
                 }
+
+                if (!found && !retval.containsError()) // serials found but not
+                {
+                    std::cout << "Detected serial numbers of USB "
+                                 "devices:\n------------------------------\n"
+                              << std::endl;
+                    std::wstring deviceSerial;
+                    foreach (deviceSerial, serialsFound)
+                    {
+                        std::cout << wCharToChar(deviceSerial.c_str()) << "\n" << std::endl;
+                    }
+
+                    retval += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("More like one device was found. Initialization only possible with the "
+                           "corresponding serial number for the plugin input parameter *serialNo*.")
+                            .toLatin1()
+                            .data());
+                    found = true;
+                }
             }
+
 
             // open device
             if (!retval.containsError())
