@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -32,13 +32,15 @@
 
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 2
-#define PLUGIN_VERSION_PATCH 0
+#define PLUGIN_VERSION_PATCH 2
 #define PLUGIN_VERSION_REVISION 0
-#define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "Trumpf Lasersystems For Semiconductor Manufacturing Gmbh, Ditzingen"
-#define PLUGIN_COPYRIGHT      "(C) 2020, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh"
-#define PLUGIN_NAME           "OphirPowermeter"
+#define PLUGIN_VERSION                                                                             \
+    CREATE_VERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
+#define PLUGIN_VERSION_STRING                                                                      \
+    CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
+#define PLUGIN_COMPANY "Trumpf Lasersystems For Semiconductor Manufacturing Gmbh, Ditzingen"
+#define PLUGIN_COPYRIGHT "(C) 2020, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh"
+#define PLUGIN_NAME "OphirPowermeter"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
