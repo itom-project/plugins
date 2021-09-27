@@ -30,7 +30,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <qtimer.h>
+#include <qelapsedtimer.h>
 #include <qwaitcondition.h>
 #include <qdatetime.h>
 
@@ -1158,7 +1158,7 @@ ito::RetVal PIPiezoCtrl::PIDummyRead(void) /*!< reads buffer of serial port with
 ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutMS)
 {
     ito::RetVal retValue = ito::retOk;
-    QTime timer;
+    QElapsedTimer timer;
     
     bool done = false;
     int curFrom = 0;

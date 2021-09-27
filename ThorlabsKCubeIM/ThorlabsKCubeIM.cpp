@@ -34,7 +34,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <qtimer.h>
+#include <qelapsedtimer.h>
 #include <qwaitcondition.h>
 #include <qelapsedtimer.h>
 #include <qdatetime.h>
@@ -1113,7 +1113,7 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
     bool done = false;
     bool timeout = false;
     char motor;
-    QTime timer;
+    QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
 
