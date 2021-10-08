@@ -275,7 +275,7 @@ FileGrabber::FileGrabber() :
 
     m_fileList.clear();
 
-    m_searchFolder = "";
+    m_searchFolder.setPath("");
 
     m_preloadedObject = ito::DataObject();
 
@@ -504,11 +504,11 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if ( paramsMand->at(1).getVal<char*>() )
     {
-        m_searchFolder = QLatin1String(paramsMand->at(1).getVal<char*>());
+        m_searchFolder.setPath(QLatin1String(paramsMand->at(1).getVal<char*>()));
     }
     else
     {
-        m_searchFolder = "";
+        m_searchFolder.setPath("");
     }
 
     QString filter(fileEnding);
