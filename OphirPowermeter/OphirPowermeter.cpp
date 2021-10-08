@@ -460,10 +460,13 @@ ito::RetVal OphirPowermeter::init(
                     list << reg.cap(1);
                     pos += reg.matchedLength();
                 }
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+                QStringList list2 = QString::fromStdString(answerStr.toStdString())
+                                        .split(" ", Qt::SkipEmptyParts);
+#else
                 QStringList list2 = QString::fromStdString(answerStr.toStdString())
                                         .split(" ", QString::SkipEmptyParts);
-
+#endif
                 QByteArray headSerial = list.at(1).toLatin1();
                 QByteArray headName = list.at(2).toLatin1();
 
@@ -2034,7 +2037,7 @@ ito::RetVal OphirPowermeter::readString(QByteArray& result, int& len, int timeou
 {
     ito::RetVal retValue = ito::retOk;
     bool done = false;
-    QTime timer;
+    QElapsedTimer timer;
     QByteArray endline;
     int curFrom = 0;
     int pos = 0;
