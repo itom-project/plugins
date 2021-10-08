@@ -5110,8 +5110,11 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
         //Check if data is a list with 3 columns and n-Row
         if (flags & 0x01)
         {
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+            if (curLine.split(separator, Qt::SkipEmptyParts).size() != 3)
+#else
             if (curLine.split(separator, QString::SkipEmptyParts).size() != 3)
+#endif
             {
                 ret += ito::RetVal(ito::retError, 0, tr("The file is no list with 3 columns and N rows or contains invalid separators.").toLatin1().data());
             }
@@ -5127,8 +5130,11 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
         }
         else
         {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+            cols = curLine.split(separator, Qt::KeepEmptyParts).size();
+#else
             cols = curLine.split(separator, QString::KeepEmptyParts).size();
-
+#endif        
             while(!inFile.atEnd())
             {
                 inFile.readLine();
