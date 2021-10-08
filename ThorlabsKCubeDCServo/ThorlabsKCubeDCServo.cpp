@@ -37,7 +37,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <qtimer.h>
+#include <qelapsedtimer.h>
 #include <qwaitcondition.h>
 #include <qelapsedtimer.h>
 #include <qdatetime.h>
@@ -1092,7 +1092,7 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
     ito::RetVal retVal(ito::retOk);
     bool done = false;
     bool timeout = false;
-    QTime timer;
+    QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
     WORD messageType;
