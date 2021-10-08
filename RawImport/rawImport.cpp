@@ -193,7 +193,7 @@ ito::RetVal openExifTool(QString &filename, QProcess *&exifProc)
 #else
         exifCommand += QString("/lib/exiftool -stay_open true -@ - ");
 #endif
-        exifProc->start(exifCommand);
+        exifProc->start(exifCommand, QList<QString>(), QIODevice::ReadWrite);
         exifProc->waitForStarted();
         // drain any possible input
         exifProc->waitForReadyRead(100);
@@ -350,7 +350,7 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
 #else
         command += QString("/lib/dcraw ") + arguments + " " + filename;
 #endif
-	readProc->start(command);
+    readProc->start(command, QList<QString>(), QIODevice::ReadWrite);
 
 //    readProc->setReadChannel(QProcess::StandardOutput);
 
