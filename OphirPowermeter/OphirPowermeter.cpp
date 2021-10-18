@@ -49,8 +49,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #define BUFFER_SIZE 100
 
-QList<QByteArray> OphirPowermeter::openedDevices = QList<QByteArray>();
-QList<QPair<long, long>> OphirPowermeter::openedUSBHandlesAndChannels = QList<QPair<long, long>>();
+QList<QByteArray> OphirPowermeter::m_openedDevices = QList<QByteArray>();
+QList<QPair<long, long>> OphirPowermeter::m_openedUSBHandlesAndChannels = QList<QPair<long, long>>();
 
 struct CoInitializer
 {
@@ -341,7 +341,7 @@ ito::RetVal OphirPowermeter::init(
 
     QByteArray serialNoInput = paramsOpt->at(1).getVal<char*>();
 
-    if (openedDevices.contains(
+    if (m_openedDevices.contains(
             serialNoInput)) // exit here if device with serial number already connected
     {
         retval += ito::RetVal(
@@ -852,11 +852,9 @@ ito::RetVal OphirPowermeter::init(
                          idx++) // iterate through all serialnumbers
                     {
                         char* foundTemp = wCharToChar(serialsFound[idx].c_str());
-                        std::string input = serialNoInput.toStdString();
 
-
-                        if (openedDevices.contains(
-                                wCharToChar(serialsFound[idx].c_str()))) // already connected
+                        if (m_openedDevices.contains(wCharToChar(serialsFound[idx].c_str())) &&
+                            (serialNoInput == serialsFound[idx].c_str())) // already connected
                         {
                             retval += ito::RetVal(
                                 ito::retError,
@@ -923,9 +921,9 @@ ito::RetVal OphirPowermeter::init(
             // check if sensor exists
             if (!retval.containsError())
             {
-                openedDevices.append(wCharToChar(m_serialNo.c_str()));
+                m_openedDevices.append(wCharToChar(m_serialNo.c_str()));
                 QPair<long, long> pair = QPair<long, long>(m_handle, m_channel);
-                openedUSBHandlesAndChannels.append(pair);
+                m_openedUSBHandlesAndChannels.append(pair);
 
                 bool exists;
                 try
@@ -1282,9 +1280,9 @@ ito::RetVal OphirPowermeter::close(ItomSharedSemaphore* waitCond)
             retValue += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
         }
 
-        openedDevices.removeOne(wCharToChar(m_serialNo.c_str()));
+        m_openedDevices.removeOne(wCharToChar(m_serialNo.c_str()));
         QPair<long, long> pair = QPair<long, long>(m_handle, m_channel);
-        openedUSBHandlesAndChannels.removeOne(pair);
+        m_openedUSBHandlesAndChannels.removeOne(pair);
     }
 
     // Free multibyte character buffer
