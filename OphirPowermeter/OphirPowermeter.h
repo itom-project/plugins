@@ -52,7 +52,7 @@ class OphirPowermeter : public ito::AddInDataIO
 
     protected:
         //! Destructor
-        ~OphirPowermeter() {}
+        ~OphirPowermeter();
         //! Constructor
         OphirPowermeter();
         

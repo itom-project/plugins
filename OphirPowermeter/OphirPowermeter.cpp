@@ -322,6 +322,12 @@ OphirPowermeter::OphirPowermeter() :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+OphirPowermeter::~OphirPowermeter()
+{
+    CoUninitialize();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
 /*!
     \sa close
@@ -812,7 +818,7 @@ ito::RetVal OphirPowermeter::init(
             {
                 CoInitializer initializer; // must call for COM initialization and deinitialization
                 m_OphirLM = QSharedPointer<OphirLMMeasurement>(new OphirLMMeasurement);
-
+                
                 if (m_OphirLM.isNull())
                 {
                     m_OphirLM.clear();
@@ -1272,7 +1278,7 @@ ito::RetVal OphirPowermeter::close(ItomSharedSemaphore* waitCond)
     {
         try
         {
-            m_OphirLM->StopStream(m_handle, m_channel);
+            //m_OphirLM->StopStream(m_handle, m_channel);
             m_OphirLM->Close(m_handle);
         }
         catch (const _com_error& e)
