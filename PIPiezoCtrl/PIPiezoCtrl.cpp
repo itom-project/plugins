@@ -135,6 +135,9 @@ PIPiezoCtrl::PIPiezoCtrl() :
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("referenced", ito::ParamBase::Int | ito::ParamBase::Readonly, -1, 1, -1, tr("Axis is referenced (1), not referenced (0), idle (-1)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     ito::DoubleMeta *dm = new ito::DoubleMeta(0.1, 80.0, 80.0, "");
     dm->setDisplayPrecision(1);
     dm->setRepresentation(ito::ParamMeta::Linear);
@@ -730,7 +733,32 @@ ito::RetVal PIPiezoCtrl::calib(const int axis, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal PIPiezoCtrl::calib(const QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toLatin1().data());
+    ito::RetVal retval = ito::retOk;
+    if (m_ctrlType == C663Family)
+    {
+        QVector<QPair<int, QByteArray>> lastErrors;
+
+        sendTargetUpdate();
+        retval += PISendCommand("FNL 1"); // activate reference mode
+        setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        sendStatusUpdate(false);
+
+        retval += waitForDone(30000, QVector<int>(1, 1)); // WaitForAnswer(60000, axis);
+
+        int isReferenced;
+        retval += PISendQuestionWithAnswerInt2("FRF?", 1, isReferenced, 1000); // apply reference move
+   
+        retval += PIGetLastErrors(lastErrors);
+        retval += convertPIErrorsToRetVal(lastErrors);
+
+        m_params["referenced"].setVal<int>(isReferenced);
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("not implemented for this controller type").toLatin1().data());
+    }    
+
+    sendTargetUpdate();
 
     if (waitCond)
     {
@@ -1423,7 +1451,7 @@ ito::RetVal PIPiezoCtrl::PISendCommand(const QByteArray &command)
     \sa PIPiezoCtrl::PIGetDouble
     \return retOk
 */
-ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, int timeoutMS)
+ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, const int timeoutMS)
 {
     int readSigns;
     QByteArray _answer;
@@ -1453,23 +1481,15 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(const QByteArray &questi
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &questionCommand, int axisId, double &answer, int timeoutMS)
+ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &questionCommand, const int axisId, double &answer, const int timeoutMS)
 {
     int readSigns;
     QByteArray _answer;
-    QByteArray expectedStart = QByteArray::number(axisId) + "=";
+
     bool ok;
     ito::RetVal retValue = PISendCommand(questionCommand);
     retValue += PIReadString(_answer, readSigns, timeoutMS);
-
-    if (_answer.startsWith(expectedStart))
-    {
-        _answer = _answer.mid(expectedStart.size());
-    }
-    else
-    {
-        retValue += ito::RetVal(ito::retError, 0, "wrong answer from PI device");
-    }
+    retValue += PIFilterAnswerByteArray(_answer, axisId);
 
     /*int goodChars = 0;
     const char *d = _answer.data();
@@ -1483,7 +1503,6 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &quest
     }
 
     _answer = QByteArray(d, goodChars);*/
-
     answer = _answer.toDouble(&ok);
 
     if (retValue.containsError() && retValue.errorCode() != PI_READTIMEOUT)
@@ -1502,6 +1521,50 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &quest
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PIPiezoCtrl::PIFilterAnswerByteArray(QByteArray &answer, const int axisID)
+{
+    ito::RetVal retValue = ito::retOk;
+    QByteArray expectedStart = QByteArray::number(axisID) + "=";
+    if (answer.startsWith(expectedStart))
+    {
+        answer = answer.mid(expectedStart.size());
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, "wrong answer from PI device");
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerInt2(const QByteArray& questionCommand, const int axisId, int& answer, const int timeoutMS)
+{
+    int readSigns;
+    QByteArray _answer;
+    
+    bool ok;
+    ito::RetVal retValue = PISendCommand(questionCommand);
+    retValue += PIReadString(_answer, readSigns, timeoutMS);
+    retValue += PIFilterAnswerByteArray(_answer, axisId);
+    
+    answer = _answer.toInt(&ok);
+
+    if (retValue.containsError() && retValue.errorCode() != PI_READTIMEOUT)
+    {
+        QVector<QPair<int, QByteArray>> lastErrors;
+        retValue += PIGetLastErrors(lastErrors);
+        retValue += convertPIErrorsToRetVal(lastErrors);
+    }
+    else if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError, 0, tr("value could not be parsed to a int value").toLatin1().data());
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
             If string is invalid, val is not set and error-message is reported
@@ -1510,7 +1573,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &quest
     \param[out] readsigns    Number of read signs
     \return retOk
 */
-ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerString(const QByteArray &questionCommand, QByteArray &answer, int timeoutMS)
+ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerString(const QByteArray &questionCommand, QByteArray &answer, const int timeoutMS)
 {
     int readSigns;
     ito::RetVal retValue = PISendCommand(questionCommand);
@@ -1700,13 +1763,17 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         m_params["posLimitLow"].setVal<double>(0.0);
         m_params["posLimitHigh"].setVal<double>(10000.0); //mm
 
-        retval += PISendCommand("MOV 1 0"); 
-
         m_params["ctrlName"].setVal<char*>(answer.data(), answer.length());
         answer = "unknown";
         m_params["piezoName"].setVal<char*>(answer.data(), answer.length());
 
         m_hasHardwarePositionLimit = false;
+
+        retval += PISendCommand("RON 1 1"); // set reference mode
+
+        int isReferenced;
+        retval += PISendQuestionWithAnswerInt2("FRF? 1", 1, isReferenced, 1000);
+        m_params["referenced"].setVal<int>(isReferenced);
 
         //set remote mode
         retval += PIGetLastErrors(lastErrors);
@@ -1846,132 +1913,31 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 */
 ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
 {
+    ito::RetVal retval = ito::retOk;
     double dpos_temp;
+    
+    bool released = false;
+    bool outOfRange = false;
+    int delayTimeMS = 0;
+    QByteArray cmdTotal;
     if (m_ctrlType == C663Family)
     {
         dpos_temp = posMM;
+        if (!m_params["referenced"].getVal<int>())
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("PI device is not referenced. Use the .calib command to reference the device.").toLatin1().data());
+        }
     }
     else
     {
         dpos_temp = posMM * 1e3;    // Round value by m_scale
     }
-     
-    ito::RetVal retval = ito::retOk;
-    bool released = false;
-    bool outOfRange = false;
-    int delayTimeMS = 0;
-    QByteArray cmdTotal;
 
-    if (axis != 0)
+    if (!retval.containsError())
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
-
-        if (waitCond && !released)
+        if (axis != 0)
         {
-            waitCond->returnValue = retval;
-            waitCond->release();
-            released = true;
-        }
-    }
-    else
-    {
-        retval += PIDummyRead();
-
-        if (m_ctrlType == C663Family)
-        {
-            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/;
-        }
-        else
-        {
-            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
-        }
-        
-
-        if (relNotAbs)
-        {
-            cmdTotal = m_RelPosCmd;
-            cmdTotal = cmdTotal.append(" ").append(QByteArray::number(dpos_temp, 'g'));
-
-            if (m_hasHardwarePositionLimit == false && m_getPosInScan == true)
-            {
-                if (m_currentPos[0] + posMM > m_params["posLimitHigh"].getVal<double>() || m_currentPos[0] + posMM < m_params["posLimitLow"].getVal<double>())
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("the new position (rel) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toLatin1().data());
-                    outOfRange = true;
-                }
-            }
-            if (outOfRange == false) m_targetPos[0] += posMM;
-        }
-        else
-        {
-            cmdTotal = m_AbsPosCmd;
-            cmdTotal = cmdTotal.append(" ").append(QByteArray::number(dpos_temp, 'g'));
-
-            if (m_hasHardwarePositionLimit == false)
-            {
-                if (posMM > m_params["posLimitHigh"].getVal<double>() || posMM < m_params["posLimitLow"].getVal<double>())
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("the new position (abs) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toLatin1().data());
-                    outOfRange = true;
-                }
-            }
-
-            if (outOfRange == false)
-            {
-                m_targetPos[0] = posMM;
-            }
-        }
-
-        if (outOfRange == false)
-        {
-            setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            sendStatusUpdate(false);
-
-            sendTargetUpdate();
-            retval += PISendCommand(cmdTotal);
-            retval += PIDummyRead();
-        }
-
-        QVector< QPair<int, QByteArray> > lastErrors;
-        
-        if (!retval.containsError())
-        {
-            if (m_async && waitCond && !released)
-            {
-                waitCond->returnValue = retval;
-                waitCond->release();
-                released = true;
-            }
-
-            if (outOfRange == false)
-            {
-                retval += waitForDone(delayTimeMS, QVector<int>(1,axis)); //WaitForAnswer(60000, axis);
-            }
-
-            if (m_getStatusInScan)
-            {
-                retval += PIGetLastErrors(lastErrors);
-                retval += convertPIErrorsToRetVal(lastErrors);
-            
-                if (retval.containsError() && retval.errorCode() == PI_READTIMEOUT)
-                {
-                    retval = ito::RetVal(ito::retOk);
-                    retval += PIDummyRead();
-                    retval += PIGetLastErrors(lastErrors);
-                    retval += convertPIErrorsToRetVal(lastErrors);
-                }
-            }
-
-            if (!m_async && waitCond && !released)
-            {
-                waitCond->returnValue = retval;
-                waitCond->release();
-                released = true;
-            }
-        }
-        else
-        {
-            sendTargetUpdate();
+            retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
 
             if (waitCond && !released)
             {
@@ -1980,8 +1946,123 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
                 released = true;
             }
         }
-    }
+        else
+        {
+            retval += PIDummyRead();
 
+            if (m_ctrlType == C663Family)
+            {
+                delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/;
+            }
+            else
+            {
+                delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + qAbs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
+            }
+        
+
+            if (relNotAbs)
+            {
+                cmdTotal = m_RelPosCmd;
+                cmdTotal = cmdTotal.append(" ").append(QByteArray::number(dpos_temp, 'g'));
+
+                if (m_hasHardwarePositionLimit == false && m_getPosInScan == true)
+                {
+                    if (m_currentPos[0] + posMM > m_params["posLimitHigh"].getVal<double>() || m_currentPos[0] + posMM < m_params["posLimitLow"].getVal<double>())
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("the new position (rel) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toLatin1().data());
+                        outOfRange = true;
+                    }
+                }
+                if (outOfRange == false) m_targetPos[0] += posMM;
+            }
+            else
+            {
+                cmdTotal = m_AbsPosCmd;
+                cmdTotal = cmdTotal.append(" ").append(QByteArray::number(dpos_temp, 'g'));
+
+                if (m_hasHardwarePositionLimit == false)
+                {
+                    if (posMM > m_params["posLimitHigh"].getVal<double>() || posMM < m_params["posLimitLow"].getVal<double>())
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("the new position (abs) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toLatin1().data());
+                        outOfRange = true;
+                    }
+                }
+
+                if (outOfRange == false)
+                {
+                    m_targetPos[0] = posMM;
+                }
+            }
+
+            if (outOfRange == false)
+            {
+                setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                sendStatusUpdate(false);
+
+                sendTargetUpdate();
+                std::string temp = cmdTotal.toStdString();
+                retval += PISendCommand(cmdTotal);
+                retval += PIDummyRead();
+            }
+
+            QVector< QPair<int, QByteArray> > lastErrors;
+        
+            if (!retval.containsError())
+            {
+                if (m_async && waitCond && !released)
+                {
+                    waitCond->returnValue = retval;
+                    waitCond->release();
+                    released = true;
+                }
+
+                if (outOfRange == false)
+                {
+                    retval += waitForDone(delayTimeMS, QVector<int>(1,axis)); //WaitForAnswer(60000, axis);
+                }
+
+                if (m_getStatusInScan)
+                {
+                    retval += PIGetLastErrors(lastErrors);
+                    retval += convertPIErrorsToRetVal(lastErrors);
+            
+                    if (retval.containsError() && retval.errorCode() == PI_READTIMEOUT)
+                    {
+                        retval = ito::RetVal(ito::retOk);
+                        retval += PIDummyRead();
+                        retval += PIGetLastErrors(lastErrors);
+                        retval += convertPIErrorsToRetVal(lastErrors);
+                    }
+                }
+
+                if (!m_async && waitCond && !released)
+                {
+                    waitCond->returnValue = retval;
+                    waitCond->release();
+                    released = true;
+                }
+            }
+            else
+            {
+                sendTargetUpdate();
+
+                if (waitCond && !released)
+                {
+                    waitCond->returnValue = retval;
+                    waitCond->release();
+                    released = true;
+                }
+            }
+        }
+    }
+    else
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+        released = true;
+    }
+     
     return retval;
 }
 

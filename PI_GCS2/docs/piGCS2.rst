@@ -31,39 +31,48 @@ Parameters
 
 An instance of this plugin has the following internal parameters:
 
-**name**: {str}, read-only
-    PI GCS2
-**ctrlType**: {str}, read-only
-    Current type of controller, e.g. E-662, E-665, ...
+**PI_CMD**: {str}
+    use this parameter followed by :YourCommand in order to read/write value from/to device
+    (e.g. PI_CMD:ERR?)
+**async**: {int}
+    asychronous (1) or synchronous (0) mode
+**checkFlags**: {int}
+    Check flags (or-combination possible): 0x01: check position boundaries before
+    positioning and actualize current position after positioning (default: on), 0x02: check
+    for errors when positioning (default: off), 0x04: if device has a on-target flag, it is
+    used for checking if the device is on target (default: on), else a simple time gap is
+    used that lets the driver sleep after positioning
+**comPort**: {int}, read-only
+    The current com-port ID of this specific device. -1 means undefined
 **ctrlName**: {str}, read-only
     device information string
+**ctrlType**: {str}, read-only
+    Current type of controller, e.g. E-662, E-665, E-753...
+**delayOffset**: {float}
+    offset delay [s] per movement (independent on step size)
+**delayProp**: {float}
+    delay [s] per step size [mm] (e.g. value of 1 means that a delay of 100ms is set for a
+    step of 100mu)
+**hasLocalRemote**: {int}, read-only
+    defines whether the device has the ability to switch between local and remote control
+    (1), else (0)
+**hasOnTargetFlag**: {int}, read-only
+    defines whether the device has the ability to check the 'on-target'-status (1), else (0)
+**local**: {int}
+    defines whether system is in local (1) or remote (0) mode.
+**name**: {str}, read-only
+    name of the plugin
+**numaxis**: {int}, read-only
+    Number of axes (here always 1)
 **piezoName**: {str}, read-only
     piezo information string
-**comPort**: {int}, read-only
-    port number of used COM port.
-**numaxis**: {int}, read-only
-    return the number of axes, here always 1
-**posLimitLow**, **posLimitHigh**: {double}
-    lower and upper position limit [mm] of the piezo. Movements out of this range is blocked either by the plugin or by controllers that internally support
-    this feature. If the feature is available in the controller, the real ranges are set to these parameters at startup.
-**delayProp**, **delayOffset**: {double}
-    If the controller has no possibility to check whether the stage already is on target (param 'hasOnTargetFlag') or if these checks are disabled (param 'checkFlags'), a virtual
-    sleep is inserted after each movement in synchronous mode. The positioning command will then only return after this delay time. The virtual delay is
-    calculated by 'delayOffset' (in sec) + 'delayProp' (in sec/mm) * distance to drive (in mm).
-**hasOnTargetFlag**: {int} [0,1]
-    defines whether the device has the ability to check the 'on-target'-status (1), else (0)
-**local**: {int} [0,1]
-    defines if the system is in local mode (1) or in remote mode (0). It can only be controlled by this plugin in remote mode.
-**hasLocalRemote**: {int} [0,1]
-    returns if the piezo can switch between a local (0) and remote control (1).
-**async**: {int} [0,1]
-    defines if the piezo should be moved in a synchronous or asynchronous mode (default: synchronous (0)). In asynchronous mode, the positioning commands will immediately
-    return after starting the movement without waiting for the end of the movement.
-**checkFlags**: {int}, [0,7]
-    Bitmask that is used to set if more of less checks should be executed during the positioning. More checks result in more information but need a little bit more
-    time during the positioning. These possible values can be combined using an or-combination: 0x0001: check position boundaries before positioning and actualize current 
-    position after positioning (default: on), 0x0010: check for errors when positioning (default: off), 0x1000: if device has a on-target flag, it is used for checking if 
-    the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning
-**PI_CMD**: {str}
-    Special parameter that can be used to directly set or read parameters from the PI device. Use this parameter followed by :YourCommand in order to read/write value 
-    from/to device (e.g. PI_CMD:ERR?)
+**posLimitHigh**: {float}
+    higher position limit [mm] of piezo (this can be supported by the device or by this
+    plugin)
+**posLimitLow**: {float}
+    lower position limit [mm] of piezo (this can be supported by the device or by this
+    plugin)
+**referenced**: {int}, read-only
+    Axis is referenced (1), not referenced (0), idle (-1)
+**velocity**: {float}
+    velocity of the stage for the controller type C663 in mm per s
