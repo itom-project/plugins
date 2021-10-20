@@ -366,13 +366,14 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     }
                     
     device_enumeration_t devenum;
+    const char* enumerate_hints = "addr=";
 
     /* Inherit system locale */
     setlocale(LC_ALL, "");
 
     if (!retval.containsError())
     {
-        devenum = enumerate_devices(probe_devices);
+        devenum = enumerate_devices(probe_devices, enumerate_hints);
         if (!devenum)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Error enumerating devices").toLatin1().data());
