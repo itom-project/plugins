@@ -324,7 +324,6 @@ OphirPowermeter::OphirPowermeter() :
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirPowermeter::~OphirPowermeter()
 {
-    CoUninitialize();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2042,6 +2041,7 @@ ito::RetVal OphirPowermeter::readString(QByteArray& result, int& len, int timeou
     ito::RetVal retValue = ito::retOk;
     bool done = false;
     QElapsedTimer timer;
+    timer.start();
     QByteArray endline;
     int curFrom = 0;
     int pos = 0;
