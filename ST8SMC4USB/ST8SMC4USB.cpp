@@ -33,7 +33,6 @@
 #include <QtCore/QtPlugin>
 #include <qtimer.h>
 #include <qwaitcondition.h>
-#include <qelapsedtimer.h>
 #include <qdatetime.h>
 //#include <fcntl.h>
 
