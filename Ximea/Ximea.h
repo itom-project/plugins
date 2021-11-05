@@ -229,7 +229,7 @@ class Ximea : public ito::AddInGrabber
         //! Slot to eanble the lightsource and integrationtime depended shading correction
         void activateShadingCorrection(bool enable);
 
-    private slots:
+	private slots:
 
 };
 

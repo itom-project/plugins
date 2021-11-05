@@ -91,6 +91,9 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
 
     paramVal = ito::Param("bandwidthLimit", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 0, "bandwidth limit in Mb/sec. If 0 the maximum bandwidth of the USB3 controller is used [default]. The allowed value range depends on the device and will be checked at startup.");
     m_initParamsOpt.append(paramVal);
+
+	paramVal = ito::Param("lensAvialable", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, "Toggle if lens settings are avialable");
+	m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -292,6 +295,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
     int icam_number = (*paramsOpt)[0].getVal<int>();
     int iscolor = 0;
+	bool lensAvialable = paramsOpt->at(3).getVal<int>() == 1;
     XI_RETURN ret;
 
     QFile paramFile;
@@ -589,14 +593,18 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 				if (!retValue.containsError())
 				{
 					//check if lens settings are avialable
-					XI_SWITCH value = XI_ON;
+/*					XI_SWITCH value = XI_ON;
 					XI_RETURN error = pxiSetParam(m_handle, XI_PRM_LENS_MODE, &value, sizeof(int), intType);
 					if (error != 100)
 					{
 						m_params["aperture_value"].setFlags(0);
+					}*/
 
+					if (lensAvialable)
+					{
+						m_params["aperture_value"].setFlags(0);
 					}
-					
+
 				}
 
                 // reset timestamp for MQ and MD cameras
