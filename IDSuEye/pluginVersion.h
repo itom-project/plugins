@@ -31,14 +31,14 @@
 #include "itom_sdk.h"
 
 #define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 5
+#define PLUGIN_VERSION_MINOR 6
 #define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_COMPANY        "ITO Uni Stuttgart, Pulsar Photonics"
 #define PLUGIN_AUTHOR         "M. Gronle (ITO Uni Stuttgart); A. Kempe (ILT Aachen, Pulsar Photonics)"
-#define PLUGIN_COPYRIGHT      "(C) 2017, ITO Uni Stuttgart, Pulsar Photonics"
+#define PLUGIN_COPYRIGHT      "(C) 2021, ITO Uni Stuttgart, Pulsar Photonics"
 #define PLUGIN_NAME           "IDSuEye"
 
 
