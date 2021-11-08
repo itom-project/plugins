@@ -324,6 +324,7 @@ OphirPowermeter::OphirPowermeter() :
 //----------------------------------------------------------------------------------------------------------------------------------
 OphirPowermeter::~OphirPowermeter()
 {
+    CoUninitialize();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -443,6 +444,7 @@ ito::RetVal OphirPowermeter::init(
                 {
                     m_params["comPort"].setVal<int>(param->getVal<int>());
                 }
+                Sleep(500);
             }
 
             if (!retval.containsError()) // get information
@@ -457,13 +459,17 @@ ito::RetVal OphirPowermeter::init(
 
                 QRegExp reg("(\\S+)"); // matches numbers
 
-                QStringList list;
+                QStringList list = QStringList();
                 int pos = 0;
+                bool found = false;
+                QByteArray headSerial;
+                QByteArray headName;
 
                 while ((pos = reg.indexIn(answerStr, pos)) != -1)
                 {
                     list << reg.cap(1);
                     pos += reg.matchedLength();
+                    found = true;
                 }
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
                 QStringList list2 = QString::fromStdString(answerStr.toStdString())
@@ -472,9 +478,20 @@ ito::RetVal OphirPowermeter::init(
                 QStringList list2 = QString::fromStdString(answerStr.toStdString())
                                         .split(" ", QString::SkipEmptyParts);
 #endif
-                QByteArray headSerial = list.at(1).toLatin1();
-                QByteArray headName = list.at(2).toLatin1();
-
+                if (found)
+                {
+                    headSerial = list.at(1).toLatin1();
+                    headName = list.at(2).toLatin1();
+                }
+                else
+                {
+                    retval += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Could not read head serial number")
+                            .toLatin1()
+                            .data());
+                }
 
                 if (!retval.containsError())
                 {
@@ -567,35 +584,52 @@ ito::RetVal OphirPowermeter::init(
                 QRegExp reg("(\\S+)"); // matches numbers
 
                 QStringList list;
+                QByteArray foundSerialNo;
                 int pos = 0;
 
                 while ((pos = reg.indexIn(answerStr, pos)) != -1)
                 {
                     list << reg.cap(1);
                     pos += reg.matchedLength();
+                    found = true;
                 }
-                QByteArray foundSerialNo = list.at(1).toLatin1();
 
-                if (serialNoInput == "")
+                if (found)
                 {
-                    found = true;
-                }
-                else if (
-                    serialNoInput.contains(foundSerialNo) &&
-                    serialNoInput.length() == foundSerialNo.length())
-                {
-                    found = true;
+                    foundSerialNo = list.at(1).toLatin1();
                 }
                 else
                 {
                     retval += ito::RetVal(
                         ito::retError,
                         0,
-                        tr("Given serial number %1 does not match the received number %2")
-                            .arg(serialNoInput.data())
-                            .arg(foundSerialNo.data())
-                            .toLatin1()
-                            .data());
+                        tr("Cound not read instrument serial number.").toLatin1().data());
+                }
+
+                if (!retval.containsError())
+                {
+
+                    if (serialNoInput == "")
+                    {
+                        found = true;
+                    }
+                    else if (
+                        serialNoInput.contains(foundSerialNo) &&
+                        serialNoInput.length() == foundSerialNo.length())
+                    {
+                        found = true;
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("Given serial number %1 does not match the received number %2")
+                                .arg(serialNoInput.data())
+                                .arg(foundSerialNo.data())
+                                .toLatin1()
+                                .data());
+                    }
                 }
 
                 if (!retval.containsError() && found)
@@ -2041,7 +2075,6 @@ ito::RetVal OphirPowermeter::readString(QByteArray& result, int& len, int timeou
     ito::RetVal retValue = ito::retOk;
     bool done = false;
     QElapsedTimer timer;
-    timer.start();
     QByteArray endline;
     int curFrom = 0;
     int pos = 0;
@@ -2049,6 +2082,7 @@ ito::RetVal OphirPowermeter::readString(QByteArray& result, int& len, int timeou
     QSharedPointer<int> curBufLen(new int);
     QSharedPointer<char> curBuf(new char[buflen]);
     result = "";
+    timer.start();
 
     QSharedPointer<ito::Param> param(new ito::Param("endline"));
     retValue += m_pSer->getParam(param, NULL);
