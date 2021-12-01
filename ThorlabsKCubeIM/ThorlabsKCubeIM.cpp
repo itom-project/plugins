@@ -387,6 +387,12 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             retval += checkError(KIM_Disable(m_serialNo), "disable axes");
         }
 
+        for (int axis = 0; axis < m_numaxis; axis++)
+        {
+            m_currentPos[axis] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axis));
+        }
+        sendStatusUpdate(false);
+
     }
 
     if (!retval.containsError())
@@ -930,6 +936,18 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
                     //call waitForDone in order to wait until all axes reached their target or a given timeout expired
                     //the m_currentPos and m_currentStatus vectors are updated within this function
                     retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                    if (retValue.containsWarning())
+                    {
+                        for (int i = 0; i < m_numaxis; i++)
+                        {
+                            //replaceStatus(i, ito::actuatorInterrupted, ito::actuatorAtTarget);
+                            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+                        }
+                        
+                        sendStatusUpdate(false);
+                        retValue = ito::retOk;
+                        break;
+                    }
                 }
             }
 
@@ -1059,6 +1077,19 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
                         axisNum,
                         MoveType::Relative); // WaitForAnswer(60000, axis);
                     idx++;
+                    if (retValue.containsWarning())
+                    {
+                        for (int i = 0; i < m_numaxis; i++)
+                        {
+                            // replaceStatus(i, ito::actuatorInterrupted, ito::actuatorAtTarget);
+                            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled |
+                                ito::actuatorAvailable;
+                        }
+
+                        sendStatusUpdate(false);
+                        retValue = ito::retOk;
+                        break;
+                    }
                 }
 
                 
@@ -1163,8 +1194,8 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
             }
             // set the status of all axes from moving to interrupted (only if moving was set
             // before)
-            replaceStatus(_axis, ito::actuatorInterrupted, ito::actuatorAvailable);
-            sendStatusUpdate(true);
+
+            retVal += ito::RetVal(ito::retWarning, 0, "Movement interrupted");
             
             done = true;
             return retVal;
