@@ -301,7 +301,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded");
         }
-        if (!KIM_StartPolling(m_serialNo, 150))
+        if (!KIM_StartPolling(m_serialNo, m_pollingInterval))
         {
             retval += ito::RetVal(ito::retError, 0, "error starting position and status polling");
         }
@@ -812,9 +812,9 @@ ito::RetVal ThorlabsKCubeIM::getPos(const QVector<int> axis, QSharedPointer<QVec
         }
         else
         {
-            QSharedPointer<double> pos_(new double);
-            retValue += getPos(axis[naxis], pos_, NULL);
-            (*pos)[naxis] = *pos_;         
+            QSharedPointer<double> _pos(new double);
+            retValue += getPos(axis[naxis], _pos, NULL);
+            (*pos)[naxis] = *_pos;         
         }
     }    
 
@@ -1029,8 +1029,12 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             {
                 if ((axis.contains(0) && axis.contains(1)) || (axis.contains(2) && axis.contains(3)))
                 {
-                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[0]), m_targetPos[axis[0]]), "move absolute");
-                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[1]), m_targetPos[axis[1]]), "move absolute");
+                    retValue += checkError(
+                        KIM_MoveRelative(m_serialNo, WhatChannel(axis[0]), pos[0]),
+                        "move absolute");
+                    retValue += checkError(
+                        KIM_MoveRelative(m_serialNo, WhatChannel(axis[1]), pos[1]),
+                        "move absolute");
                     retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute); //WaitForAnswer(60000, axis);
 
                 }
@@ -1041,14 +1045,23 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             }
             else
             {
-                foreach(const int axisNum, axis)
+                int idx = 0;
+                for each (auto axisNum in axis)
                 {
-                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
-
-                    //call waitForDone in order to wait until all axes reached their target or a given timeout expired
-                    //the m_currentPos and m_currentStatus vectors are updated within this function
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                    retValue += checkError(
+                        KIM_MoveRelative(m_serialNo, WhatChannel(axisNum), pos[idx]),
+                        "move absolute");
+                    // call waitForDone in order to wait until all axes reached their target or a
+                    // given timeout expired
+                    // the m_currentPos and m_currentStatus vectors are updated within this function
+                    retValue += waitForDone(
+                        m_params["timeout"].getVal<double>() * 1000.0,
+                        axisNum,
+                        MoveType::Relative); // WaitForAnswer(60000, axis);
+                    idx++;
                 }
+
+                
             }
 
             if (!m_async && waitCond)
@@ -1123,14 +1136,14 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
     long delay = 100; //[ms]
 
     timer.start();
-
+    
     //if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
     if (_axis.size() == 0) //all axis
     {
         for (int i = 0; i < m_numaxis; i++)
         {
-            _axis.append(i);
+            _axis.append(WhatChannel(i));
         }
     }
 
@@ -1139,13 +1152,20 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
         if (!done && isInterrupted())
         {
-            //todo: force all axes to stop
-
-            //set the status of all axes from moving to interrupted (only if moving was set before)
+            // set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
-
-            retVal += ito::RetVal(ito::retError, 0, "interrupt occurred");
+            //todo: force all axes to stop
+            for each (auto axis in _axis)
+            {
+                retVal += checkError(KIM_MoveStop(m_serialNo, WhatChannel(axis)), "error while interrupt movement");
+                
+            }
+            // set the status of all axes from moving to interrupted (only if moving was set
+            // before)
+            replaceStatus(_axis, ito::actuatorInterrupted, ito::actuatorAvailable);
+            sendStatusUpdate(true);
+            
             done = true;
             return retVal;
         }
@@ -1166,9 +1186,9 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
                 //todo: obtain the current position, status... of all given axes
                 foreach(const int &i, axis)
                 {
-                    QSharedPointer<double> pos_(new double);
-                    retVal += getPos(i, pos_, NULL);
-                    m_currentPos[i] = *pos_;
+                    QSharedPointer<double> _pos(new double);
+                    retVal += getPos(i, _pos, NULL);
+                    m_currentPos[i] = *_pos;
                     m_targetPos[i] = m_currentPos[i];
                     setStatus(axis, ito::actuatorAtTarget,  ito::actStatusMask);
                 }
@@ -1176,12 +1196,12 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
             }
             else
             {
-                foreach(const int &i, axis)
+                foreach (const int& i, _axis)
                 {
-                    QSharedPointer<double> pos_(new double);
-                    retVal += getPos(i, pos_, NULL);
-                    m_currentPos[i] = *pos_;
-
+                    QSharedPointer<double> _pos(new double);
+                    retVal += getPos(i, _pos, NULL);
+                    m_currentPos[i] = *_pos;
+                    int dist = m_targetPos[i] - m_currentPos[i];
                     if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05) && (flags == MoveType::Absolute || flags == -1))
                     {
                         setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
