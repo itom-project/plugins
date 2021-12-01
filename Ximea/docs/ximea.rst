@@ -78,6 +78,8 @@ Parameters
     Second kneepoint (% of sensor saturation - not supported by all devices).
 **integration_time**: {float}
     Exposure time (in seconds).
+**lensAvialable**: {int}
+    Toggle if lens settings are avialable.
 **max_sensor_bitdepth**: {int}, read-only
     maximum bitdepth of the sensor.
 **name**: {str}, read-only
