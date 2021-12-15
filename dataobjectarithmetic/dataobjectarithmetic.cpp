@@ -696,11 +696,11 @@ const QString DataObjectArithmetic::devValueDoc = QObject::tr(
 Use the optional argument 'flag' to choose between two formulas for the determination of the standard deviation. \n\
 Either (flag = 0): \n\
 \n\
-\n    \\sqrt(\\sum{(x-xm)^2} / (n-1))\n\
+.. math::  \\sqrt\\frac{\\sum{\\left(x - xm\\right)^2}}{n - 1}\n\
 \n\
 or (flag = 1):\n\
 \n\
-\n    \\sqrt(\\sum{(x-xm)^2} / n)\n\
+.. math::  \\sqrt\\frac{\\sum{\\left(x - xm\\right)^2}}{n}\n\
 \n\
 This method is implemented for all datatypes besides RGBA32, Complex64 and Complex128\n\
 \n");
@@ -1126,8 +1126,8 @@ For the determination, only values in the range [lowThreshold, highThreshold] ar
 that do not belong to the required peak have values around zero. In order to achieve this, the 'lowThreshold' value is subtracted from each \n\
 valid intensity value before calculating the COG with the following equations: \n\
 \n\
-cXI = \\frac{\\sum{idx_x * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
-cYI = \\frac{\\sum{idx_y * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
+.. math:: cXI = \\frac{\\sum idx_x \\cdot \\left(I - lowThreshold\\right)}{\\sum \\left(I - lowThreshold\\right)} \n\
+.. math:: cYI = \\frac{\\sum idx_y \\cdot \\left(I - lowThreshold\\right)}{\\sum \\left(I - lowThreshold\\right)} \n\
 \n\
 The filter does not work with RGBA32, Complex64 and Complex128, but with all other datatypes.");
 
@@ -1390,8 +1390,8 @@ The area can either be a rectangle (width and height, odd values) or a circle (o
 \n\
 The COG is calculated by the following algorithm: \n\
 \n\
-cXI = \\frac{\\sum{idx_x * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
-cYI = \\frac{\\sum{idx_y * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
+.. math:: cXI = \\frac{ \\sum idx_x \\cdot \\left(I - lowThreshold\\right)}{\\sum \\left(I - lowThreshold\\right)} \n\
+.. math:: cYI = \\frac{ \\sum idx_y \\cdot \\left(I - lowThreshold\\right)}{\\sum \\left(I - lowThreshold\\right)} \n\
 \n\
 The lowThreshold can either be given or (if it is NaN), the minimum value of each area will be taken as local lower threshold. \n\
 Only values <= highThreshold are considered, set highThreshold to NaN or Inf in order to do not consider this constraint. \n\
@@ -1784,7 +1784,7 @@ This methods creates the two given data objects 'destCOG' and 'destIntensity' in
 If the center of gravity should be calculated along each row of each plane inside of the given 'sourceStack' data object, the parameter 'columnWise' must be 0, for a column-wise \n\
 calculation is must be set to 1. Along each search direction, the corresponding minimum and maximum value is determined and the center of gravity is determined using: \n\
 \n\
-cog = \\frac{\\sum{idx * (I - lowerBoundary)}}{\\sum{(I - lowerBoundary)} \n\
+.. math:: cog = \\frac {\\sum \\left[idx \\cdot \\left(I - lowerBoundary\\right)\\right]}{\\sum \\left(I - lowerBoundary\\right)} \n\
 \n\
 A value *I* is only valid and considered in the equation above if: \n\
 \n\

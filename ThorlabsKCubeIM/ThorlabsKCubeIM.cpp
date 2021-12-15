@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "ThorlabsISM" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -45,12 +45,6 @@
 QList<QByteArray> ThorlabsKCubeIM::openedDevices = QList<QByteArray>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!
-    \detail creates new instance of ThorlabsISMInterface and returns the instance-pointer
-    \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created ThorlabsISMInterface-instance is stored in *addInInst
-    \return retOk
-    \sa ThorlabsISM
-*/
 ito::RetVal ThorlabsKCubeIMInterface::getAddInInst(ito::AddInBase **addInInst)
 {
     ito::RetVal retValue;
@@ -59,12 +53,6 @@ ito::RetVal ThorlabsKCubeIMInterface::getAddInInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!
-    \detail Closes an instance of of ThorlabsISMInterface. This instance is given by parameter addInInst.
-    \param [in] double pointer to the instance which should be deleted.
-    \return retOk
-    \sa ThorlabsISM
-*/
 ito::RetVal ThorlabsKCubeIMInterface::closeThisInst(ito::AddInBase **addInInst)
 {
 
@@ -74,9 +62,6 @@ ito::RetVal ThorlabsKCubeIMInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
-*/
 ThorlabsKCubeIMInterface::ThorlabsKCubeIMInterface()
 {
     m_type = ito::typeActuator;
@@ -105,13 +90,6 @@ This plugin has been tested with the cage rotator KIM101.");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class ThorlabsISMInterface with the name ThorlabsISMInterface as plugin for the Qt-System (see Qt-DOC)
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ThorlabsISM::init. The widged window is created at this position.
-*/
 ThorlabsKCubeIM::ThorlabsKCubeIM() :
     AddInActuator(),
     m_async(0),
@@ -162,7 +140,7 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! function to map axis number to KIM_Channels enum
 */
-std::map<unsigned int, KIM_Channels> KIMChannelMap
+std::map<const unsigned int, KIM_Channels> KIMChannelMap
 {
     { 0, KIM_Channels::Channel1 },
     { 1, KIM_Channels::Channel2 },
@@ -278,7 +256,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     if (!retval.containsError())
     {
-        if (deviceInfo.isKnownType && (deviceInfo.typeID == 97 /*KCube Inertial Motor*/)) //TODO check typeID
+        if (deviceInfo.isKnownType && (deviceInfo.typeID == 97 /*KCube Inertial Motor*/)) 
         {
             memcpy(m_serialNo, serial.data(), std::min((size_t)serial.size(), sizeof(m_serialNo)));
             retval += checkError(KIM_Open(m_serialNo), "open device");
@@ -301,7 +279,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded");
         }
-        if (!KIM_StartPolling(m_serialNo, 150))
+        if (!KIM_StartPolling(m_serialNo, m_pollingInterval))
         {
             retval += ito::RetVal(ito::retError, 0, "error starting position and status polling");
         }
@@ -386,6 +364,12 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             retval += checkError(KIM_Disable(m_serialNo), "disable axes");
         }
+
+        for (int axis = 0; axis < m_numaxis; axis++)
+        {
+            m_currentPos[axis] = KIM_GetCurrentPosition(m_serialNo, WhatChannel(axis));
+        }
+        sendStatusUpdate(false);
 
     }
 
@@ -526,9 +510,6 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
     }
     if (!retValue.containsError())
     {
-        //here the new parameter is checked whether its type corresponds or can be cast into the
-        // value in m_params and whether the new type fits to the requirements of any possible
-        // meta structure.
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
@@ -635,10 +616,6 @@ ito::RetVal ThorlabsKCubeIM::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! calib
-/*!
-the given axis should be calibrated (e.g. by moving to a reference switch).
-*/
 ito::RetVal ThorlabsKCubeIM::calib(const int axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -656,10 +633,6 @@ ito::RetVal ThorlabsKCubeIM::calib(const int axis, ItomSharedSemaphore *waitCond
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! calib
-/*!
-the given axes should be calibrated (e.g. by moving to a reference switch).
-*/
 ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -672,11 +645,6 @@ ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore 
     }
     else
     {
-        //todo:
-        //start calibrating the given axes and don't forget to regularily call setAlive().
-        //this is important if the calibration needs more time than the timeout time of itom (e.g. 5sec).
-        //itom regularily checks the alive flag and only drops to a timeout if setAlive() is not regularily called (at least all 3-4 secs).
-
         setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
         sendStatusUpdate();
 
@@ -686,6 +654,19 @@ ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore 
             m_targetPos[i] = 0.0;
             
             retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis); //should drop into timeout
+            if (retValue.errorCode() == -1) // movement interrupted
+            {
+                for (int i = 0; i < m_numaxis; i++)
+                {
+                    m_currentStatus[i] =
+                        ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+                }
+
+                sendStatusUpdate(false);
+                retValue = ito::retOk;
+                break;
+            }
+
             setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
         }
 
@@ -749,14 +730,6 @@ ito::RetVal ThorlabsKCubeIM::setOrigin(QVector<int> axis, ItomSharedSemaphore *w
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function gets the status of the device. The SMCStatus function is called internally.
-
-    \param [out] status        Status of System. 0: okay, 1: error
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-    \todo define the status value
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsKCubeIM::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -812,9 +785,9 @@ ito::RetVal ThorlabsKCubeIM::getPos(const QVector<int> axis, QSharedPointer<QVec
         }
         else
         {
-            QSharedPointer<double> pos_(new double);
-            retValue += getPos(axis[naxis], pos_, NULL);
-            (*pos)[naxis] = *pos_;         
+            QSharedPointer<double> _pos(new double);
+            retValue += getPos(axis[naxis], _pos, NULL);
+            (*pos)[naxis] = *_pos;         
         }
     }    
 
@@ -829,32 +802,12 @@ ito::RetVal ThorlabsKCubeIM::getPos(const QVector<int> axis, QSharedPointer<QVec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosAbs
-/*!
-starts moving the given axis to the desired absolute target position
-
-depending on m_async this method directly returns after starting the movement (async = 1) or
-only returns if the axis reached the given target position (async = 0)
-
-In some cases only relative movements are possible, then get the current position, determine the
-relative movement and call the method relatively move the axis.
-*/
 ito::RetVal ThorlabsKCubeIM::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     return setPosAbs(QVector<int>(1, axis), QVector<double>(1, pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosAbs
-/*!
-starts moving all given axes to the desired absolute target positions
-
-depending on m_async this method directly returns after starting the movement (async = 1) or
-only returns if all axes reached their given target positions (async = 0)
-
-In some cases only relative movements are possible, then get the current position, determine the
-relative movement and call the method relatively move the axis.
-*/
 ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -881,7 +834,7 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
             }
             else
             {
-                m_targetPos[i] = pos[cntPos]; //todo: set the absolute target position to the desired value in mm or degree
+                m_targetPos[i] = pos[cntPos]; 
             }
             cntPos++;
         }
@@ -912,7 +865,20 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
                 {
                     retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[0]), m_targetPos[axis[0]]), "move absolute");
                     retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[1]), m_targetPos[axis[1]]), "move absolute");
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute); 
+
+                    if (retValue.errorCode() == -1)
+                    {
+                        for (int i = 0; i < m_numaxis; i++)
+                        {
+                            // replaceStatus(i, ito::actuatorInterrupted, ito::actuatorAtTarget);
+                            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled |
+                                ito::actuatorAvailable;
+                        }
+
+                        sendStatusUpdate(false);
+                        retValue = ito::retOk;
+                    }
 
                 }
                 else if (axis.contains(0) || axis.contains(1))
@@ -926,10 +892,18 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
                 foreach(const int axisNum, axis)
                 {
                     retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
-
-                    //call waitForDone in order to wait until all axes reached their target or a given timeout expired
-                    //the m_currentPos and m_currentStatus vectors are updated within this function
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); 
+                    if (retValue.errorCode() == -1)
+                    {
+                        for (int i = 0; i < m_numaxis; i++)
+                        {
+                            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+                        }
+                        
+                        sendStatusUpdate(false);
+                        retValue = ito::retOk;
+                        break;
+                    }
                 }
             }
 
@@ -946,32 +920,12 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosRel
-/*!
-starts moving the given axis by the given relative distance
-
-depending on m_async this method directly returns after starting the movement (async = 1) or
-only returns if the axis reached the given target position (async = 0)
-
-In some cases only absolute movements are possible, then get the current position, determine the
-new absolute target position and call setPosAbs with this absolute target position.
-*/
 ito::RetVal ThorlabsKCubeIM::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     return setPosRel(QVector<int>(1, axis), QVector<double>(1, pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosRel
-/*!
-starts moving the given axes by the given relative distances
-
-depending on m_async this method directly returns after starting the movement (async = 1) or
-only returns if all axes reached the given target positions (async = 0)
-
-In some cases only absolute movements are possible, then get the current positions, determine the
-new absolute target positions and call setPosAbs with these absolute target positions.
-*/
 ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -998,7 +952,7 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             }
             else
             {
-                m_targetPos[i] = m_currentPos[i] + pos[cntPos]; //todo: set the absolute target position to the desired value in mm or degree 
+                m_targetPos[i] = m_currentPos[i] + pos[cntPos]; 
             }
             cntPos++;
         }
@@ -1029,10 +983,25 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             {
                 if ((axis.contains(0) && axis.contains(1)) || (axis.contains(2) && axis.contains(3)))
                 {
-                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[0]), m_targetPos[axis[0]]), "move absolute");
-                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[1]), m_targetPos[axis[1]]), "move absolute");
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                    retValue += checkError(
+                        KIM_MoveRelative(m_serialNo, WhatChannel(axis[0]), pos[0]),
+                        "move relative");
+                    retValue += checkError(
+                        KIM_MoveRelative(m_serialNo, WhatChannel(axis[1]), pos[1]),
+                        "move relative");
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Relative); 
 
+                    if (retValue.errorCode() == -1) // movement interrupted
+                    {
+                        for (int i = 0; i < m_numaxis; i++)
+                        {
+                            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled |
+                                ito::actuatorAvailable;
+                        }
+
+                        sendStatusUpdate(false);
+                        retValue = ito::retOk;
+                    }
                 }
                 else if (axis.contains(0) || axis.contains(1))
                 {
@@ -1041,14 +1010,35 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             }
             else
             {
-                foreach(const int axisNum, axis)
+                int idx = 0;
+                for each (auto axisNum in axis)
                 {
-                    retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
+                    retValue += checkError(
+                        KIM_MoveRelative(m_serialNo, WhatChannel(axisNum), pos[idx]),
+                        "move absolute");
 
-                    //call waitForDone in order to wait until all axes reached their target or a given timeout expired
-                    //the m_currentPos and m_currentStatus vectors are updated within this function
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); //WaitForAnswer(60000, axis);
+                    retValue += waitForDone(
+                        m_params["timeout"].getVal<double>() * 1000.0,
+                        axisNum,
+                        MoveType::Relative); 
+                    
+
+                    if (retValue.errorCode() == -1) // movement interrupted
+                    {
+                        for (int i = 0; i < m_numaxis; i++)
+                        {
+                            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled |
+                                ito::actuatorAvailable;
+                        }
+
+                        sendStatusUpdate(false);
+                        retValue = ito::retOk;
+                        break;
+                    }
+                    idx++;
                 }
+
+                
             }
 
             if (!m_async && waitCond)
@@ -1062,12 +1052,6 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
-
-    \sa SMCSetPos
-    \return retOk
-*/
 ito::RetVal ThorlabsKCubeIM::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
@@ -1123,14 +1107,14 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
     long delay = 100; //[ms]
 
     timer.start();
-
+    
     //if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
     if (_axis.size() == 0) //all axis
     {
         for (int i = 0; i < m_numaxis; i++)
         {
-            _axis.append(i);
+            _axis.append(WhatChannel(i));
         }
     }
 
@@ -1139,13 +1123,20 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
         if (!done && isInterrupted())
         {
-            //todo: force all axes to stop
-
-            //set the status of all axes from moving to interrupted (only if moving was set before)
+            // set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
+            //todo: force all axes to stop
+            for each (auto axis in _axis)
+            {
+                retVal += checkError(KIM_MoveStop(m_serialNo, WhatChannel(axis)), "error while interrupt movement");
+                
+            }
+            // set the status of all axes from moving to interrupted (only if moving was set
+            // before)
 
-            retVal += ito::RetVal(ito::retError, 0, "interrupt occurred");
+            retVal += ito::RetVal(ito::retWarning, -1, "Movement interrupted");
+            
             done = true;
             return retVal;
         }
@@ -1166,9 +1157,9 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
                 //todo: obtain the current position, status... of all given axes
                 foreach(const int &i, axis)
                 {
-                    QSharedPointer<double> pos_(new double);
-                    retVal += getPos(i, pos_, NULL);
-                    m_currentPos[i] = *pos_;
+                    QSharedPointer<double> _pos(new double);
+                    retVal += getPos(i, _pos, NULL);
+                    m_currentPos[i] = *_pos;
                     m_targetPos[i] = m_currentPos[i];
                     setStatus(axis, ito::actuatorAtTarget,  ito::actStatusMask);
                 }
@@ -1176,12 +1167,12 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
             }
             else
             {
-                foreach(const int &i, axis)
+                foreach (const int& i, _axis)
                 {
-                    QSharedPointer<double> pos_(new double);
-                    retVal += getPos(i, pos_, NULL);
-                    m_currentPos[i] = *pos_;
-
+                    QSharedPointer<double> _pos(new double);
+                    retVal += getPos(i, _pos, NULL);
+                    m_currentPos[i] = *_pos;
+                    int dist = m_targetPos[i] - m_currentPos[i];
                     if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05) && (flags == MoveType::Absolute || flags == -1))
                     {
                         setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
