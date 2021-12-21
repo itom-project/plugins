@@ -736,7 +736,9 @@ ito::RetVal ST8SMC4USB::calib(const int axis, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Not implemented, use calibmode to set actual position as zero.").toLatin1().data());
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::RetVal(ito::retOk);
+    result_t result;
 
     if (waitCond)
     {
@@ -744,7 +746,23 @@ ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *wait
         waitCond->release();
     }
 
+    setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+
+    if ((result = command_homezero(m_device)) != result_ok)
+    {
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Home zeroing: %1").arg(getErrorString(result)).toLatin1().data());
+    } 
+    retval += SMCCheckError(retval);
+    SMCCheckStatus();
+
+    sendStatusUpdate(false);
+    sendTargetUpdate();
+
     return retval;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -759,6 +777,7 @@ ito::RetVal ST8SMC4USB::getStatus(QSharedPointer<QVector<int> > status, ItomShar
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = SMCCheckStatus();
+    *status = m_currentStatus;
 
     if (waitCond)
     {
@@ -1070,6 +1089,14 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
         retval += getPos(0, pos, NULL);
         m_targetPos[0] = m_currentPos[0];
         sendTargetUpdate();
+        
+        for (int i = 0; i < 1; i++)
+        {
+            // replaceStatus(i, ito::actuatorInterrupted, ito::actuatorAtTarget);
+            m_currentStatus[i] =
+                ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        }
+        sendStatusUpdate(false);
     }
 
     if (waitCond && !released)
