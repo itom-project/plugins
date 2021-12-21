@@ -33,6 +33,8 @@
 #include <qpair.h>
 #include <qbytearray.h>
 
+#include <qfuturewatcher.h>
+
 #if defined(_WIN64)
     typedef unsigned __int64 ulong_t;
     typedef __int64 long_t;
@@ -52,6 +54,8 @@ class ST8SMC4USB : public ito::AddInActuator
         ~ST8SMC4USB() {}
         ST8SMC4USB();
 
+        QFutureWatcher<void> m_homeWatcher;
+
     public:
         friend class ST8SMC4USBInterface;
 
@@ -65,6 +69,7 @@ class ST8SMC4USB : public ito::AddInActuator
         device_t m_device;
  	    engine_settings_t m_engine_settings;
         double m_unitPerSteps; //number of mm or degree per stepper motor full step
+        bool m_homed = false;
 
         QSharedPointer<ito::Param> endlineParam;
 
@@ -119,6 +124,7 @@ class ST8SMC4USB : public ito::AddInActuator
 
     private slots:
         void dockWidgetVisibilityChanged( bool visible );
+        void homeZeroFinished();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
