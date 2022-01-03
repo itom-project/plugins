@@ -284,8 +284,8 @@ ito::RetVal ST8SMC4USB::SMCCheckError(ito::RetVal retval)
 ST8SMC4USB::ST8SMC4USB() :
     AddInActuator(),
     m_device(-1),
-    m_engine_settings(),
-    m_pSer(NULL),
+    m_engine_settings(), 
+    m_pSer(nullptr), 
     m_async(0)
 {
     // Read only - Parameters
@@ -317,8 +317,6 @@ ST8SMC4USB::ST8SMC4USB() :
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
     }
-
-    connect(&m_homeWatcher, SIGNAL(finished()), this, SLOT(homeZeroFinished()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -738,13 +736,46 @@ ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *wait
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::RetVal(ito::retOk);
+    result_t result;
 
     setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
     sendStatusUpdate();
 
-    extern void homeZero(const device_t m_device);
-    QFuture<void> future = QtConcurrent::run(homeZero, m_device);
-    m_homeWatcher.setFuture(future);
+    // starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the
+    // alive thread such that itom do not run into a timeout if the homing needs lots of time
+    QThread* awakeThread = new QThread(this);
+    QTimer* timer = new QTimer(nullptr); // _not_ this!
+    timer->setInterval(500);
+    timer->moveToThread(awakeThread);
+    // Use a direct connection to make sure that doIt() is called from m_thread.
+    connect(timer, SIGNAL(timeout()), SLOT(doAliveTimer()), Qt::DirectConnection);
+    // Make sure the timer gets started from m_thread.
+    QObject::connect(awakeThread, SIGNAL(started()), timer, SLOT(start()));
+    awakeThread->start();
+
+    if ((result = command_homezero(m_device)) != result_ok)
+    {
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error home zeroing: %1").arg(getErrorString(result)).toLatin1().data());
+    }
+    retval += SMCCheckError(retval);
+
+    awakeThread->quit();
+    awakeThread->wait();
+    timer->deleteLater();
+    delete awakeThread;
+    awakeThread = nullptr;
+
+    sendTargetUpdate();
+
+    for (int i = 0; i < 1; i++)
+    {
+        m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+    }
+    sendStatusUpdate();
+
     
     if (waitCond)
     {
@@ -754,6 +785,12 @@ ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     
     return retval;
 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ST8SMC4USB::doAliveTimer()
+{
+    setAlive();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1180,24 +1217,4 @@ void ST8SMC4USB::dockWidgetVisibilityChanged(bool visible)
             QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ST8SMC4USB::homeZeroFinished()
-{
-    ito::RetVal retval(ito::retOk);
-    retval += SMCCheckError(retval);
-    SMCCheckStatus();
-
-    for (int i = 0; i < 1; i++)
-    {
-        m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
-    }
-    sendStatusUpdate();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void homeZero(const device_t device)
-{
-    command_homezero(device);
 }

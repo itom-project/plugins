@@ -50,13 +50,9 @@ class ST8SMC4USB : public ito::AddInActuator
 {
     Q_OBJECT
 
-    protected:
-        ~ST8SMC4USB() {}
-        ST8SMC4USB();
-
-        QFutureWatcher<void> m_homeWatcher;
-
     public:
+        ~ST8SMC4USB(){};
+        ST8SMC4USB();
         friend class ST8SMC4USBInterface;
 
         const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
@@ -124,7 +120,8 @@ class ST8SMC4USB : public ito::AddInActuator
 
     private slots:
         void dockWidgetVisibilityChanged( bool visible );
-        void homeZeroFinished();
+        void doAliveTimer();
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
