@@ -84,7 +84,7 @@ class ST8SMC4USB : public ito::AddInActuator
         int microStepsToMicrostepMode(const int microSteps);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
-        
+
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);

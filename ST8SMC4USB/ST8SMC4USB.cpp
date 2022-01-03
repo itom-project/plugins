@@ -768,15 +768,11 @@ ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     delete awakeThread;
     awakeThread = nullptr;
 
+    requestStatusAndPosition(true, true);
+    replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
     sendTargetUpdate();
+    sendStatusUpdate(false);
 
-    for (int i = 0; i < 1; i++)
-    {
-        m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
-    }
-    sendStatusUpdate();
-
-    
     if (waitCond)
     {
         waitCond->returnValue = retval;
