@@ -2192,7 +2192,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lmedsFitPlane(const cv::Mat *
     cv::Vec3d best_normal;
     double best_distance;
 
-    cv::RNG random((uint64)cv::getTickCount() ^ 0xa8e5f936);
+    cv::RNG random((unsigned long long)cv::getTickCount() ^ 0xa8e5f936);
 
     int rows[3];
     int cols[3];
