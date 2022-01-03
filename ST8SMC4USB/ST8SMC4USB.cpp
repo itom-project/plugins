@@ -34,8 +34,6 @@
 #include <qtimer.h>
 #include <qwaitcondition.h>
 #include <qdatetime.h>
-#include <qfuture.h>
-#include <QtConcurrent/QtConcurrent>
 //#include <fcntl.h>
 
 #include <qdebug.h>
@@ -338,7 +336,7 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     QString serialStr;
     const int probe_devices = 0;
     int names_count = 0;
-    pchar device_name = NULL;
+    pchar device_name = nullptr;
     bool deviceOpen = false;
 
     int deviceNum = paramsOpt->value(0).getVal<int>(); //0: parameter "deviceNum"
