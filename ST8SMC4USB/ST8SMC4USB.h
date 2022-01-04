@@ -48,9 +48,11 @@ class ST8SMC4USB : public ito::AddInActuator
 {
     Q_OBJECT
 
-    public:
+    protected:
         ~ST8SMC4USB(){};
         ST8SMC4USB();
+
+    public:        
         friend class ST8SMC4USBInterface;
 
         const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
