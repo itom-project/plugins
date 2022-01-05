@@ -206,13 +206,13 @@ ito::RetVal IntelRealSense::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 			s_mode = sensor.get_info(RS2_CAMERA_INFO_NAME);
 			*s_streamType = RS2_STREAM_DEPTH;
 		}
-		if (selectedMode == "left" || selectedMode == "right")
+		else if (selectedMode == "left" || selectedMode == "right")
 		{
 			sensor = sensorList[0];
 			s_mode = sensor.get_info(RS2_CAMERA_INFO_NAME);
 			*s_streamType = RS2_STREAM_INFRARED;
 		}
-		if (selectedMode == "color") 
+		else if (selectedMode == "color") 
 		{
 			sensor = sensorList[1];
 			s_mode = sensor.get_info(RS2_CAMERA_INFO_NAME);
@@ -678,10 +678,10 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
     
-    int bufferWidth = m_params["sizex"].getVal<int>();    //img buffer width in px
-    int bufferHeight = m_params["sizey"].getVal<int>();   //img buffer height in px
+    const int bufferWidth = m_params["sizex"].getVal<int>();    //img buffer width in px
+    const int bufferHeight = m_params["sizey"].getVal<int>();   //img buffer height in px
 	//int desiredBpp = m_params["bpp"].getVal<int>();
-
+	const void* bufferPtr= NULL;
 
 
     if (m_isgrabbing == false)
@@ -703,7 +703,6 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
         if (!retValue.containsError())
         {
             //Polling image data to img buffer of selected stream - except IR: see below
-            const void* bufferPtr = m_pFrame->get_data(); //pointer to the start of the frame data
             //frame.get_frame_number(); //möglicherweise wichtig zur sync von bildern
             //int f_px = m_pFrame->get_data_size(); //frame_size in px ????? the number of bytes in frame (laut docu)
 
@@ -716,25 +715,29 @@ ito::RetVal IntelRealSense::retrieveData(ito::DataObject *externalDataObject)
             {
                 bufferPtr = m_pFrameset->get_infrared_frame(2).get_data();
             }
-            if ((*m_pMode == "stereo" || *m_pMode == "default") && isFilter)
-            {
-                //Filter the DEPTH-Image
-                rs2::decimation_filter dec_filter;
-                rs2::spatial_filter spat_filter;
-                rs2::temporal_filter temp_filter;
-                rs2::disparity_transform disparityToDepth(false);
-                rs2::disparity_transform depth_to_disparity(true);
-                //rs2::frame_queue original_data;
-                //rs2::frame_queue filtered_data;
-                
-                rs2::frame filtered = m_pFrameset->get_depth_frame();
-                filtered = dec_filter.process(filtered);
-                filtered = spat_filter.process(filtered);
-                filtered = temp_filter.process(filtered);
-                filtered = disparityToDepth.process(filtered);
+			else
+			{
+				bufferPtr = m_pFrame->get_data(); //pointer to the start of the frame data
+			}
+            //if ((*m_pMode == "stereo" || *m_pMode == "default") && isFilter)
+            //{
+            //    //Filter the DEPTH-Image
+            //    rs2::decimation_filter dec_filter;
+            //    rs2::spatial_filter spat_filter;
+            //    rs2::temporal_filter temp_filter;
+            //    rs2::disparity_transform disparityToDepth(false);
+            //    rs2::disparity_transform depth_to_disparity(true);
+            //    //rs2::frame_queue original_data;
+            //    //rs2::frame_queue filtered_data;
+            //    
+            //    rs2::frame filtered = m_pFrameset->get_depth_frame();
+            //    filtered = dec_filter.process(filtered);
+            //    filtered = spat_filter.process(filtered);
+            //    filtered = temp_filter.process(filtered);
+            //    filtered = disparityToDepth.process(filtered);
 
-                bufferPtr = filtered.get_data();
-            }
+            //    bufferPtr = filtered.get_data();
+            //}
 
             if (m_data.getType() == ito::tUInt8)
             {
