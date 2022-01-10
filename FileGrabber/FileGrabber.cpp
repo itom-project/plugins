@@ -1372,7 +1372,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
             }*/
             else 
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("Nice try but wrong turn.").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("Unsupported image data type.").toLatin1().data());
             }
         }
         this->m_isgrabbing = false;
