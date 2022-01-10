@@ -45,7 +45,14 @@ if(BUILD_TARGET64)
 else(BUILD_TARGET64)
     set(LIBDIR "${CMAKE_CURRENT_SOURCE_DIR}/Lib/win32")
 endif(BUILD_TARGET64)
-set(LIBDIR_DLL ${LIBDIR}/libximc.dll)
+
+if(WIN32)
+    LIST(APPEND dlls "")
+    LIST(APPEND dlls ${LIBDIR}/libximc.dll)
+    LIST(APPEND dlls ${LIBDIR}/libjximc.dll)
+    LIST(APPEND dlls ${LIBDIR}/xiwrapper.dll)
+    LIST(APPEND dlls ${LIBDIR}/bindy.dll)
+endif(WIN32)
 
 #message(FATAL_ERROR ${LIBDIR})
 
@@ -104,4 +111,5 @@ itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATION
 itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-itom_post_build_copy_files_to_lib_folder(${target_name} LIBDIR_DLL)
+itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
+

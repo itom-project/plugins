@@ -33,7 +33,6 @@
 #include <QtCore/QtPlugin>
 #include <qtimer.h>
 #include <qwaitcondition.h>
-#include <qelapsedtimer.h>
 #include <qdatetime.h>
 //#include <fcntl.h>
 
@@ -283,8 +282,8 @@ ito::RetVal ST8SMC4USB::SMCCheckError(ito::RetVal retval)
 ST8SMC4USB::ST8SMC4USB() :
     AddInActuator(),
     m_device(-1),
-    m_engine_settings(),
-    m_pSer(NULL),
+    m_engine_settings(), 
+    m_pSer(nullptr), 
     m_async(0)
 {
     // Read only - Parameters
@@ -337,7 +336,7 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     QString serialStr;
     const int probe_devices = 0;
     int names_count = 0;
-    pchar device_name = NULL;
+    pchar device_name = nullptr;
     bool deviceOpen = false;
 
     int deviceNum = paramsOpt->value(0).getVal<int>(); //0: parameter "deviceNum"
@@ -366,13 +365,14 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     }
                     
     device_enumeration_t devenum;
+    const char* enumerate_hints = "addr=";
 
     /* Inherit system locale */
     setlocale(LC_ALL, "");
 
     if (!retval.containsError())
     {
-        devenum = enumerate_devices(probe_devices);
+        devenum = enumerate_devices(probe_devices, enumerate_hints);
         if (!devenum)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Error enumerating devices").toLatin1().data());
@@ -438,15 +438,6 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
     if (!retval.containsError())
     {
-        if ((result = command_zero(m_device)) != result_ok)
-        {
-            retval += ito::RetVal(ito::retError, 0, tr("Error zeroing: %1").arg(getErrorString(result)).toLatin1().data());
-        }
-        retval += SMCCheckError(retval);
-    }
-
-    if (!retval.containsError())
-    {
         if ((result = command_stop(m_device)) != result_ok)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Error sending stop").toLatin1().data());
@@ -508,6 +499,11 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
     if (!retval.containsError())
     {
+        for (int i = 0; i < 1; i++)
+        {
+            m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        }
+
         retval += synchronizeMotorSettings();
         retval += SMCCheckError(retval);
     }
@@ -736,15 +732,59 @@ ito::RetVal ST8SMC4USB::calib(const int axis, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Not implemented, use calibmode to set actual position as zero.").toLatin1().data());
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::RetVal(ito::retOk);
+    result_t result;
+
+    setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+    sendStatusUpdate();
+
+    // starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the
+    // alive thread such that itom do not run into a timeout if the homing needs lots of time
+    QThread* awakeThread = new QThread(this);
+    QTimer* timer = new QTimer(nullptr); // _not_ this!
+    timer->setInterval(500);
+    timer->moveToThread(awakeThread);
+    // Use a direct connection to make sure that doIt() is called from m_thread.
+    connect(timer, SIGNAL(timeout()), SLOT(doAliveTimer()), Qt::DirectConnection);
+    // Make sure the timer gets started from m_thread.
+    QObject::connect(awakeThread, SIGNAL(started()), timer, SLOT(start()));
+    awakeThread->start();
+
+    if ((result = command_homezero(m_device)) != result_ok)
+    {
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error home zeroing: %1").arg(getErrorString(result)).toLatin1().data());
+    }
+    retval += SMCCheckError(retval);
+
+    awakeThread->quit();
+    awakeThread->wait();
+    timer->deleteLater();
+    delete awakeThread;
+    awakeThread = nullptr;
+
+    requestStatusAndPosition(true, true);
+    replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+    sendTargetUpdate();
+    sendStatusUpdate(false);
 
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
-
+    
     return retval;
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ST8SMC4USB::doAliveTimer()
+{
+    setAlive();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -759,6 +799,7 @@ ito::RetVal ST8SMC4USB::getStatus(QSharedPointer<QVector<int> > status, ItomShar
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = SMCCheckStatus();
+    *status = m_currentStatus;
 
     if (waitCond)
     {
@@ -942,7 +983,10 @@ ito::RetVal ST8SMC4USB::SMCCheckStatus()
 {
     ito::RetVal retVal = SMCCheckError(ito::retOk);
 
-    setStatus(m_currentStatus[0], ito::actuatorAvailable, ito::actSwitchesMask | ito::actMovingMask);
+    for (int i = 0; i < 1; i++)
+    {
+        setStatus(m_currentStatus[i], ito::actuatorAvailable, ito::actSwitchesMask | ito::actMovingMask);
+    }    
 
     requestStatusAndPosition(true, true);
     sendStatusUpdate(false);
@@ -1012,8 +1056,8 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
         fullSteps = (int)(distanceSteps);
         partSteps = (int)((distanceSteps - fullSteps) * microSteps);
 
-        setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-        sendStatusUpdate(false);
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        sendStatusUpdate();
 
         if (relNotAbs)
         {   // Relative movement
@@ -1070,6 +1114,14 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
         retval += getPos(0, pos, NULL);
         m_targetPos[0] = m_currentPos[0];
         sendTargetUpdate();
+        
+        for (int i = 0; i < 1; i++)
+        {
+            // replaceStatus(i, ito::actuatorInterrupted, ito::actuatorAtTarget);
+            m_currentStatus[i] =
+                ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        }
+        sendStatusUpdate(false);
     }
 
     if (waitCond && !released)
@@ -1109,9 +1161,11 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
                 retval += ito::RetVal(ito::retError, 0, tr("Error while stopping: %1").arg(getErrorString(result)).toLatin1().data());
             }
             
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
-
-            retval += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
+            for (int i = 0; i < 1; i++)
+            {
+                m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+                m_targetPos[i] = 0.0;
+            }
             done = true;
 
             sendStatusUpdate(true);
@@ -1158,4 +1212,3 @@ void ST8SMC4USB::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
-
