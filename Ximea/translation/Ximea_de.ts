@@ -124,7 +124,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
 <context>
     <name>Ximea</name>
     <message>
-        <location line="+47"/>
+        <location line="+49"/>
         <source>Dark Image, if null, empty image will be generated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -245,7 +245,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Acquisition timeout in s.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -345,7 +345,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+68"/>
         <source>Camera already initialized. Try another camera number.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,7 +355,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+302"/>
+        <location line="+321"/>
         <source>Camera is not connected or does not work properly!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -442,12 +442,12 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+804"/>
+        <location line="+929"/>
         <source>stopDevice ignored since camera was not started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+726"/>
+        <location line="+853"/>
         <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -463,13 +463,13 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1768"/>
+        <location line="-2020"/>
         <location line="+46"/>
         <source>Cannot get function mmProcessFrame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-931"/>
+        <location line="-966"/>
         <source>Gain in % (the percentage is mapped to the dB-values).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -489,7 +489,12 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+32"/>
+        <source>number of channels. This Param is readonly and controlled via &quot;filter_pattern_size&quot; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Bit depth of the output data from camera in bpp (can differ from sensor bit depth). For color cameras set bpp to 32 in order to obtain the color data.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -509,7 +514,27 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+409"/>
+        <location line="+2"/>
+        <source>Size of the hyperspectral bayer pattern size (number of channels). Allowed are 1, 16 and 25 channels.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Offset of the hyperspectral bayer pattern in x direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Offset of the hyperspectral bayer pattern in y direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Current aperture Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+432"/>
         <source>Camera handle deleted before closing procedure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -880,7 +905,18 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+185"/>
+        <location line="+10"/>
+        <location line="+164"/>
+        <source>Parallel usage of burst mode and hyperspectral filter pattern is not implemented yet. Number of bursts is set to one again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-5"/>
+        <source>pattern size %i not implemented yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>xiApi-Parameter &apos;%s&apos; is out of allowed range [%i,%i]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -890,12 +926,17 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+460"/>
+        <location line="+218"/>
+        <source>Camera switched back to full frame size since the number of channels was changed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+309"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+171"/>
+        <location line="+219"/>
         <source>Tried to get picture without starting device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -905,7 +946,13 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+86"/>
+        <location line="+24"/>
+        <source>data type is not supported for hyperspectral images.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+67"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>

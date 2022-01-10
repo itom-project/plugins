@@ -110,12 +110,12 @@
         <location line="+65"/>
         <location line="+74"/>
         <location line="+1305"/>
-        <location line="+1114"/>
+        <location line="+1120"/>
         <source>Destination filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5139"/>
+        <location line="-5145"/>
         <source>Format of the Image according to QImage: [&apos;QImage::Format_Mono&apos;, &apos;QImage::Format_MonoLSB&apos;, &apos;QImage::Format_Indexed8&apos;, &apos;QImage::Format_RGB32&apos;, &apos;QImage::Format_ARGB32&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -217,7 +217,7 @@
     </message>
     <message>
         <location line="+74"/>
-        <location line="+4281"/>
+        <location line="+4287"/>
         <source>The file &apos;%s&apos; is no writeable file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -238,7 +238,7 @@
     </message>
     <message>
         <location line="+18"/>
-        <location filename="../DataObjectIO.cpp" line="-3774"/>
+        <location filename="../DataObjectIO.cpp" line="-3780"/>
         <source>Dataobject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -323,18 +323,18 @@
     </message>
     <message>
         <location line="+6"/>
-        <location line="+4037"/>
+        <location line="+4043"/>
         <source>Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4028"/>
-        <location line="+4037"/>
+        <location line="-4034"/>
+        <location line="+4043"/>
         <source>Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3873"/>
+        <location line="-3879"/>
         <source>The file &apos;%s&apos; does not contain an &apos;aNIST-1.0&apos;, &apos;aISO-1.0&apos; or &apos;aBCR-1.0&apos;-header.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -607,12 +607,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+17"/>
         <source>The file is no list with 3 columns and N rows or contains invalid separators.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+84"/>
         <source>Line %i contains more elements than the first analyzed line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -693,7 +693,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2453"/>
+        <location line="-2459"/>
         <location line="+379"/>
         <source>DataObject-Type could not be converted to unsigned int 8-bit.</source>
         <translation type="unfinished"></translation>
@@ -785,12 +785,12 @@
     <message>
         <location line="+153"/>
         <location line="+10"/>
-        <location line="+253"/>
+        <location line="+259"/>
         <source>Unexpected end of file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4126"/>
+        <location line="-4132"/>
         <source>Number of decimal signs (default: 3). For MountainsMaps reduce total number of digits to 5</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1165,7 +1165,7 @@ The full content of these ignored lines is then saved in the tag &apos;ignoredLi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+614"/>
+        <location line="+620"/>
         <source>saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).
 
 The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, _m, nm) is given in the axis unit tag, an automatic conversion is applied. Else a 

@@ -119,13 +119,13 @@
         <translation type="unfinished">Schalter um zu warten bis die Fahrt beendet wurde (0:sync) oder nicht (1:async)</translation>
     </message>
     <message>
-        <location line="+520"/>
+        <location line="+525"/>
         <location line="+97"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
     </message>
     <message>
-        <location line="+244"/>
+        <location line="+241"/>
         <source>Axis and velocity vector differ in size.</source>
         <translation type="unfinished">Achse und Geschwindigkeitsvektor unterscheiden sich in der Größe.</translation>
     </message>
@@ -135,13 +135,13 @@
         <translation type="unfinished">Eine Joystick-Bewegung schlug fehl.</translation>
     </message>
     <message>
-        <location line="-618"/>
+        <location line="-615"/>
         <location line="+197"/>
         <source>axis index is out of bound</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-496"/>
         <source>Axis number for jogging</source>
         <translation type="unfinished">Die Anzahl Achsen für das Rütteln</translation>
     </message>
@@ -181,7 +181,7 @@
         <translation type="unfinished">Negative Obergrenzen der Achsen</translation>
     </message>
     <message>
-        <location line="+283"/>
+        <location line="+288"/>
         <source>function name &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Der Funktionsname &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -203,12 +203,12 @@
         <translation type="unfinished">Ein Fehler ist aufgetreten</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+72"/>
         <source>timeout occurred</source>
         <translation type="unfinished">Eine Zeitüberschreitung ist aufgetreten</translation>
     </message>
     <message>
-        <location line="-510"/>
+        <location line="-507"/>
         <location line="+59"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>
@@ -236,7 +236,7 @@
         <translation type="obsolete">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-578"/>
+        <location line="-583"/>
         <source>Number of axis for this motor</source>
         <translation type="unfinished">Anzahl der Achsen des Motors</translation>
     </message>

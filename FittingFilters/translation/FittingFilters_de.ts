@@ -118,7 +118,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+336"/>
+        <location line="+363"/>
         <source>%1 of %2 found invalid areas filled with method = %3, maxAreaSize = %4, regionType = %5, regionExtend = %6, validPointProbability = %7, allowedErrorProbability = %8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -128,7 +128,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1281"/>
+        <location line="-1308"/>
         <source>Generated object via polyval2D with order X = %1, Y = %2</source>
         <translation type="unfinished"></translation>
     </message>
