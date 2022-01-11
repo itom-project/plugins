@@ -149,8 +149,8 @@
     </message>
     <message>
         <location line="+132"/>
-        <source>Nice try but wrong turn.</source>
-        <translation type="unfinished"></translation>
+        <source>Unsupported image data type.</source>
+        <translation type="unfinished">Nicht unterstützter Bilddatentyp.</translation>
     </message>
     <message>
         <location line="-917"/>
