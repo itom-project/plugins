@@ -357,7 +357,10 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     m_unitPerSteps = paramsMand->value(0).getVal<double>(); //0: parameter "units_per_step"
     if (m_unitPerSteps <= 0)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Error enumerating devices").toLatin1().data());
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            tr("%1 units per steps is not a valid value.").arg(m_unitPerSteps).toLatin1().data());
     }
     else
     {
@@ -1146,7 +1149,7 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
     
     while (!done && !retval.containsWarningOrError())
     {   
-
+        Sleep(250); // to be sure that the first requested status is correct
         if ((result = get_status(m_device, &state)) != result_ok)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Error getting status: %1").arg(getErrorString(result)).toLatin1().data());
