@@ -130,7 +130,7 @@ Compilation
 ===========
 
 In order to compile this plugin, download the latest GenICam(TM) GenApi reference implementation from http://www.emva.org/standards-technology/genicam/genicam-downloads/.
-Unpack the corresponding archive (under Windows: Development and Runtime.zip) in one folder and set the CMake variable GENICAM_ROOT to this base folder.
+Unpack the corresponding archive (under Windows: Development and Runtime.zip or Release-SDK.zip) in one folder and set the CMake variable GENICAM_ROOT to this base folder.
 After re-configuring CMake the other variables (e.g. GENICAM_GCBASE_LIBRARY...) should be found automatically.
 
 GenICam License
