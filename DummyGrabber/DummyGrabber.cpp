@@ -345,6 +345,23 @@ DummyGrabber::DummyGrabber() :
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    
+    paramVal = ito::Param(
+        "demoEnumStringList",
+        ito::ParamBase::StringList,
+        nullptr,
+        tr("one or two options allowed.").toLatin1().data());
+
+    ito::ByteArray strList[] = {ito::ByteArray("option1"), ito::ByteArray("option3")};
+    paramVal.setVal<ito::ByteArray*>(strList, 2);
+
+    sm = new ito::StringListMeta(ito::StringListMeta::String, 1, 2, 1, "DemoParameters");
+    sm->addItem("option1");
+    sm->addItem("option2");
+    sm->addItem("option3");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
 
     if (hasGuiSupport())
     {
