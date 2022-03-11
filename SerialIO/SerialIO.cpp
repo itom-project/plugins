@@ -43,6 +43,7 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 #include <qapplication.h>
+#include <qelapsedtimer.h>
 
 #include "pluginVersion.h"
 #include "gitVersion.h"
@@ -1607,7 +1608,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
         else
         {
             // prebuf data shorter than *length
-            QTime timer;
+            QElapsedTimer timer;
             int timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000);
             bool done = false;
             int pos = numCharactersForPrebuf; 

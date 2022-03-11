@@ -4,266 +4,359 @@
 <context>
     <name>OpenCVFilters</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="+158"/>
+        <location filename="../OpenCVFilters.cpp" line="+164"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>Output image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <location line="+570"/>
-        <location line="+302"/>
-        <location line="+265"/>
-        <location line="+168"/>
-        <location line="+153"/>
-        <location line="+726"/>
-        <location line="+168"/>
+        <location line="+15"/>
+        <location line="+807"/>
+        <location line="+371"/>
+        <location line="+304"/>
+        <location line="+209"/>
+        <location line="+194"/>
+        <location line="+973"/>
+        <location line="+221"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+95"/>
-        <location filename="../OpenCVFilters.cpp" line="-2347"/>
-        <location line="+570"/>
-        <location line="+302"/>
-        <location line="+265"/>
-        <location line="+168"/>
-        <location line="+153"/>
-        <location line="+726"/>
-        <location line="+168"/>
+        <location filename="../OpenCVFilters.cpp" line="-3074"/>
+        <location line="+807"/>
+        <location line="+371"/>
+        <location line="+304"/>
+        <location line="+209"/>
+        <location line="+194"/>
+        <location line="+973"/>
+        <location line="+221"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-2312"/>
+        <location filename="../OpenCVFilters.cpp" line="-3030"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+20"/>
         <source>Error: the check command is currently not implemented for more than 3 dims</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+47"/>
-        <location line="+256"/>
-        <location line="+217"/>
-        <location line="+302"/>
+        <location line="+102"/>
+        <location line="+362"/>
+        <location line="+280"/>
+        <location line="+371"/>
+        <location line="+2450"/>
         <source>Error: source is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-254"/>
+        <location line="-2760"/>
         <source>Error: anchor should be &apos;int8&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+443"/>
-        <location filename="../OpenCVFilters.cpp" line="-396"/>
-        <location line="+17"/>
-        <location line="+237"/>
-        <location line="+170"/>
-        <location line="+266"/>
-        <location line="+312"/>
-        <location line="+166"/>
-        <location line="+147"/>
-        <location line="+204"/>
-        <location line="+516"/>
-        <location line="+170"/>
+        <location filename="../OpenCVFilters.cpp" line="-555"/>
+        <location line="+18"/>
+        <location line="+342"/>
+        <location line="+228"/>
+        <location line="+330"/>
+        <location line="+365"/>
+        <location line="+205"/>
+        <location line="+188"/>
+        <location line="+257"/>
+        <location line="+709"/>
+        <location line="+224"/>
+        <location line="+283"/>
+        <location line="+275"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1916"/>
+        <location filename="../OpenCVFilters.cpp" line="-3017"/>
         <source>All types except complex64 and complex128 are accepted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-449"/>
-        <location line="+252"/>
+        <location line="-638"/>
+        <location line="+350"/>
         <source>input data object of type uint8, uint16, int16, float32, float64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-250"/>
-        <location line="+252"/>
+        <location line="-342"/>
+        <location line="+350"/>
         <source>output image with the same type and size than input (inplace allowed)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-249"/>
-        <location line="+254"/>
+        <location line="-341"/>
+        <location line="+361"/>
         <source>structuring element used for the morpholocial operation (default: None, a 3x3 rectangular structuring element is used). Else: An uint8 data object where values &gt; 0 are considered for the operation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-252"/>
-        <location line="+254"/>
+        <location line="-351"/>
+        <location line="+361"/>
         <source>position of the anchor within the element. If not given or if (-1,-1), the anchor is at the element center [default].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-252"/>
-        <location line="+254"/>
+        <location line="-350"/>
+        <location line="+361"/>
         <source>number of times the morpholocial operation is applied [default: 1]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-252"/>
-        <location line="+254"/>
+        <location line="+8"/>
         <source>This string defines how the filter should hande pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-237"/>
-        <location line="+256"/>
+        <location line="-332"/>
+        <location line="+362"/>
+        <location line="+3103"/>
         <source>source and destination object must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-200"/>
-        <location line="+256"/>
+        <location line="-3494"/>
+        <source>This string defines how the filter should handle pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+99"/>
+        <location line="+362"/>
+        <location line="+3094"/>
+        <location line="+36"/>
         <source>border type %1 is unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-239"/>
-        <location line="+256"/>
+        <location line="-3472"/>
+        <location line="+362"/>
         <source>anchor must be in range [0,%1];[0,%2]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-246"/>
-        <location line="+256"/>
+        <location line="-347"/>
+        <location line="+362"/>
         <source>anchor must have either 2 values or none</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-178"/>
+        <location line="-282"/>
         <source>erosion with (y,x) kernel(%1, %2), anchor(%3, %4), %5 iterations, borderType %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>dilation with (y,x) kernel(%1, %2), anchor(%3, %4), %5 iterations, borderType %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+97"/>
         <source>This parameters defines the operation type, 0: Erode, 1: Dilate, 2: Open, 3: Close, 4: Gradient, 5: Tophat, 6: Blackhat, 7: Hit or miss</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+232"/>
         <source>morphologyEx with (y,x) kernel(%1, %2), anchor(%3, %4), %5 iterations, borderType %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+44"/>
         <source>Empty object handle. Image will be of src-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>Kernelsize for x-axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>Kernelsize for y-axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>Position of the kernel anchor, see openCV-Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>border mode used to extrapolate pixels outside of the image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+127"/>
         <source>Error: anchor has wrong size or number of dims</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>OpenCV blur-filter with (y,x) kernel(%1, %2), anchor(%3, %4), borderType %5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <location line="+268"/>
+        <location line="+13"/>
+        <location line="+326"/>
+        <location line="+2229"/>
+        <location line="+270"/>
         <source>No compatible dataObject type found for given OpenCV matrix type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+208"/>
-        <location line="+168"/>
-        <location line="+153"/>
+        <location line="-2265"/>
+        <location line="+209"/>
+        <location line="+194"/>
         <source>Error: input object must not be empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-44"/>
+        <location line="-52"/>
         <source>Rotated object by 90� clockwise with cvRotateM90-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+1"/>
         <source>Rotated object by 90� counter clockwise with cvRotateP90-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+137"/>
+        <location line="+166"/>
         <source>Rotated object by 180� using cvRotate180-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+586"/>
-        <location line="+171"/>
+        <location line="+784"/>
+        <location line="+229"/>
         <source>Output Object handle. Will be come complex-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-168"/>
+        <location line="-220"/>
         <source>Low Threshold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>Ratio between High Threshold and Low Threshold, Canny&apos;s recommendation is three</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+10"/>
         <source>Kernel size for Sobel filter, default is 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+155"/>
         <source>Canny edge filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+56"/>
         <source>Transformation code, see (OpenCV) documentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>number of color channels of destination image, for 0 the number of channels is derived from the transformation (default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+206"/>
         <source>CvtColor conversion with code: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>threshold value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>maximum value to use with the THRESH_BINARY and THRESH_BINARY_INV thresholding types.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>threshold type
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Error: input dataObject must be two-dimensional.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Image has been threshold filter by a value of %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>center coordinates of the rotation of shape (x, y) in physical values of the source image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Rotation angle in degrees. Positive values mean counter-clockwise rotation (the coordinate origin is assumed to be the top-left corner).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Isotropic scale factor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>rotation matrix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Rotation Matrix for %1 deg angle with scale factor of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>input data object of type uint8, uint16, int16, float32, float64.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>output image with the same type and size than input (inplace allowed).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>transformation matrix dataObject of shape 2x3.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>List of (width, height) of the destination dataObject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>value used in case of a constant border; by default, it is 0.0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The rotation matrix with the shape of %1x%2 does not correspond to the shape 2x3.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -517,12 +610,12 @@
     <message>
         <location line="+12"/>
         <location line="+180"/>
-        <location line="+291"/>
+        <location line="+295"/>
         <source>destination is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-407"/>
+        <location line="-411"/>
         <source>undistorted image size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -548,11 +641,13 @@
     </message>
     <message>
         <location line="+59"/>
+        <location filename="../OpenCVFilters.cpp" line="-354"/>
         <source>source image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
+        <location filename="../OpenCVFilters.cpp" line="+5"/>
         <source>destination image. It hast the same size as map1 and the same type as src.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -580,17 +675,17 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+299"/>
+        <location line="+303"/>
         <source>Interpolation method. The following values are possible: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-288"/>
+        <location line="-292"/>
         <source>value used in case of a constant border. By default, it is 0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+69"/>
         <source>coordinates of the points in the original plane, a matrix of type [Nx2], float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -660,7 +755,7 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+63"/>
         <source>coordinates of the image points in the one image, a matrix of type [Nx2], float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -722,79 +817,79 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1754"/>
-        <location line="+1417"/>
-        <location line="+171"/>
+        <location filename="../OpenCVFilters.cpp" line="-2287"/>
+        <location line="+1788"/>
+        <location line="+229"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1471"/>
+        <location line="-1883"/>
         <source>Image of type Integer or float32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>Empty dataObject-hanlde. Destination is of source type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>Kernelsize in x/y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
-        <location line="+737"/>
+        <location line="+54"/>
+        <location line="+912"/>
         <source>Error: kernel must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-729"/>
+        <location line="-902"/>
         <source>Error: kernelsize &gt; 3 and object is not uint8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+38"/>
         <source>OpenCV medianblur-filter with kernel size = %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+236"/>
         <location line="+209"/>
-        <location line="+168"/>
-        <location line="+153"/>
-        <location line="+726"/>
-        <location line="+168"/>
+        <location line="+194"/>
+        <location line="+973"/>
+        <location line="+221"/>
         <source>Error: nDim-stacks not supported yet, only 2D and 3D.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-751"/>
+        <location line="-991"/>
         <source>sourceObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>destinationObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>sourceObject is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+205"/>
         <source>Spike removal filter with kernel(%1, %1) and range ]%2, %3[</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-562"/>
+        <location line="-694"/>
         <source>Flipped left/rigth with cvFlip-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+1"/>
         <source>Flipped upside/down with cvFlip-Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -945,7 +1040,7 @@ The following values are possible:
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1342"/>
+        <location filename="../OpenCVFilters.cpp" line="-1727"/>
         <source>Wrapped algorithms from OpenCV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -974,7 +1069,7 @@ the tags and meta information and save protocol data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+339"/>
+        <location line="+457"/>
         <source>Dilates every plane of a data object by using a specific structuring element. 
 
 This filter applies the dialation method cvDilate of OpenCV to every plane in the source data object. The result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, float32 and float64 only. 
@@ -989,7 +1084,7 @@ Dilation can be applied several times (parameter &apos;iterations&apos;).</sourc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+26"/>
         <source>Erodes every plane of a data object by using a specific structuring element. 
 
 This filter applies the erosion method cvErode of OpenCV to every plane in the source data object. The result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, float32 and float64 only. 
@@ -1004,14 +1099,14 @@ Erosion can be applied several times (parameter &apos;iterations&apos;).</source
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+303"/>
         <source>Erodes every plane of a data object by using a specific structuring element. 
 
 Performs advanced morphological transformations.The function cv::morphologyEx can perform advanced morphological transformations using an erosion and dilation as basic operations.MORPH_ERODE Any of the operations can be done in - place.In case of multi - channel images, each channel is processed independently.).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+63"/>
         <source>Planewise median blur filter.
 
 This filter applies the method cv::blur to every plane in the source data object. The function smoothes the images by a simple mean-filter. Theresult is contained in the destination object. It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. 
@@ -1025,7 +1120,7 @@ Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+187"/>
         <source>2D-dimentional fourier-transformation using cv::DFT.
 
 This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.The result is a complex-dataObject. The axis-scales and units are invertes and modified.
@@ -1035,7 +1130,7 @@ This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, false, f
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>2D-dimentional inverse fourier-transformation using cv::DFT.
 
 This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.The result is a real-dataObject. The axis-scales and units are invertes and modified.
@@ -1045,7 +1140,7 @@ This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, true, tr
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>1D-dimentional fourier-transformation using cv::DFT.
 
 This filter tries to perform an inplace FFT for a given line or 2D-dataObject. The FFT is calculated linewise.The result is a complex-dataObject. The axis-scales and units are invertes and modified.
@@ -1055,7 +1150,7 @@ This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, false, f
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>1D-dimentional inverse fourier-transformation using cv::DFT.
 
 This filter tries to perform an inplace FFT for a given line or 2D-dataObject. The FFT is calculated linewise.The result is a real-dataObject. The axis-scales and units are invertes and modified.
@@ -1065,7 +1160,7 @@ This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, true, tr
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+116"/>
+        <location line="+133"/>
         <source>Planewise median blur filter.
 
 The function smoothes an image using the median filter with the kernel-size x kernel-size aperture. Each channel of a multi-channel image is processed independently. It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. 
@@ -1076,7 +1171,7 @@ Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+257"/>
+        <location line="+303"/>
         <source>This filter flips the image left to right. 
 
 This filter applies the flip method cvFlip of OpenCV with the flipCode &gt; 0 to a 2D source data object. The result is contained in the destination object
@@ -1086,7 +1181,7 @@ It is allowed to let the filter work inplace if you give the same input than des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>This filter flips the image upside down. 
 
 This filter applies the flip method cvFlip of OpenCV with the flipCode = 0 to a 2D source data object. The result is contained in the destination object.
@@ -1096,7 +1191,7 @@ It is allowed to let the filter work inplace if you give the same input than des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+199"/>
         <source>This filter rotates the image by 90� count clock wise. 
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
@@ -1106,7 +1201,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>This filter rotates the image by 90� clock wise. 
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
@@ -1116,7 +1211,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+167"/>
+        <location line="+215"/>
         <source>This filter rotates the image by 180�. 
 
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The result is contained in the destination object
@@ -1126,7 +1221,7 @@ It is allowed to let the filter work inplace if you give the same input than des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+137"/>
+        <location line="+167"/>
         <source>Set single spikes at measurement edges to a new value. 
 
 This filter creates a binary mask for the input object. The value of mask(y,x) will be 1 if value of input(y,x) is within the specified range and is finite.The mask is eroded and than dilated by kernel size using openCV cv::erode and cv::dilate with a single iteration. In the last step the value of output(y,x) is set to newValue if mask(y,x) is 0.
@@ -1136,7 +1231,7 @@ It is allowed to let the filter work inplace if you give the same source and des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+250"/>
+        <location line="+304"/>
         <source>Converts a rgba32 data object (with four channels blue, green, red, alpha) into 
 an output data object of type &apos;uint8&apos; and a shape that has one dimension more than the input object and the first dimension is equal to 4. 
 The four color components are then distributed into the 4 planes of the first dimension. 
@@ -1145,15 +1240,15 @@ For instance a 4x5x3, rgba32 data objects leads to a 4x4x5x3 uint8 data object.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+88"/>
         <source>Reduces a [4x...xMxN] or [3x...xMxN] uint8 data object to a [...xMxN] rgba32 data object where the 
 first dimension is merged into the color type. If the first dimension is equal to 4, the planes are used for the blue, green, red and alpha 
 component, in case of three, the alpha component is set to the optional alpha value.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+89"/>
-        <location line="+79"/>
+        <location line="+110"/>
+        <location line="+118"/>
         <source>Resizes an image 
 
 The function resize resizes the image &apos;inputObject&apos; down to or up by the specific factors. 
@@ -1164,7 +1259,7 @@ The axisScale properties of the x- and y-axes of the outputObject are divided by
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+134"/>
         <source>Canny Edge detector using cv::DFT.
 
 It&apos;s just Canny&apos;s edge filter
@@ -1172,7 +1267,7 @@ It&apos;s just Canny&apos;s edge filter
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+154"/>
+        <location line="+212"/>
         <source>Converts an image from one color space to another.
 In case of linear transformations, the range does not matter. But in case of a non-linear transformation,
 an input RGB image should be normalized to the proper value range to get the correct results, for example,
@@ -1196,6 +1291,58 @@ For more details see OpenCV documentation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+270"/>
+        <source>Applies a fixed-level threshold to each array element.. 
+
+The function applies fixed-level thresholding to a multiple-channel array. 
+The function is typically used to get a bi-level (binary) image out of a grayscale image (compare could be also used for this purpose)
+or for removing a noise, that is, filtering out pixels with too small or too large values. 
+There are several types of thresholding supported by the function. They are determined by type parameter.
+
+Also, the special values THRESH_OTSU or THRESH_TRIANGLE may be combined with one of the above values. 
+In these cases, the function determines the optimal threshold value using the Otsu&apos;s or Triangle algorithm and uses it instead of the specified thresh.
+
+Note: 
+Currently, the Otsu&apos;s and Triangle methods are implemented only for 8-bit single-channel images.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+135"/>
+        <source>Calculates an affine matrix of 2D rotation.
+The function calculates the following matrix:
+
+| alpha beta  (1 - alpha) * center.x - beta * center.y        |
+|- beta alpha beta * center.x        + (1 - alpha) * center.y |
+
+where
+alpha = scale * cos(angle), beta = scale * sin(angle)
+The transformation maps the rotation center to itself. This is not the target, adjust the shift.
+Thr rotation can be applied by using e. g. the cvWarpAffine filter.
+
+Note: 
+When you want to use the cvWarpAffine method with this rotation matrix your center coordinates must be in the pixel domain.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+108"/>
+        <source>Applies an affine transformation onto a 2D dataObject.
+The function warpAffine transforms the source dataObject using the specified matrix:
+
+dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):
+
+When the flag WARP_INVERSE_MAP is set.
+Otherwise, the transformation is first inverted with invertAffineTransform
+and then put in the formula above instead of M.
+
+Note: 
+The rotation matrix of the cvGetRotationMatrix2D filter can be used.
+The matrix must correspond to the pixel domain.
+
+No metaInformation is set to the destinationObj because the physical units 
+of the target object differ from each other depending on the algorithm parameter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../features2d.cpp" line="-294"/>
         <source>This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. 
 This includes some nearest neighbour algorithms to calculate the distance between two points. 
@@ -1216,7 +1363,7 @@ This function draws matches of keypoints from two images in the output image. Ma
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calib3d.cpp" line="-1261"/>
+        <location filename="../calib3d.cpp" line="-1265"/>
         <source>Finds circles in a grayscale image using the Hough transform.
 
 This filter is a wrapper for the OpenCV-function cv::HoughCircles.The function finds circles in a grayscale image using a modification of the Hough transform.Based on this filter, circles are identified and located.The result is a dataObject where the number of rows corresponds to the number of found circles, each row is (x,y,r).
@@ -1310,7 +1457,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 
 The function remap transforms the source image using the specified map: 
 
-dst(x,y) = src(map_x(x,y),map_y(x,y)) 
+dst(x,y) = src(map_x(x, y), map_y(x, y)) 
 
 where values of pixels with non-integer coordinates are computed using one of available interpolation methods. map_x and map_y can be encoded as 
 separate floating-point maps in map_1 and map_2 respectively, or interleaved floating-point maps of (x,y) in map_1 , 
@@ -1325,22 +1472,24 @@ indices in a table of interpolation coefficients.</source>
 
 The functions find and return the perspective transformation H between the source and the destination planes: 
 
-s_i \vecthree{x&apos;_i}{y&apos;_i}{1} \sim H \vecthree{x_i}{y_i}{1} 
+.. math:: s_i \begin{bmatrix}{x&apos;_i}\\{y&apos;_i}\\{1}\end{bmatrix} \sim H \begin{bmatrix}{x_i}\\{y_i}\\{1}\end{bmatrix} 
 
 so that the back-projection error 
-\sum _i \left (x&apos;_i- \frac{h_{11} x_i + h_{12} y_i + h_{13}}{h_{31} x_i + h_{32} y_i + h_{33}} \right)^2+ \left (y&apos;_i- \frac{h_{21} x_i + h_{22} y_i + h_{23}}{h_{31} x_i + h_{32} y_i + h_{33}} \right)^2 
+
+.. math:: \sum _i \left(x&apos;_i- \frac{h_{11} x_i + h_{12} y_i + h_{13}}{h_{31} x_i + h_{32} y_i + h_{33}} \right)^2 + \left(y&apos;_i- \frac{h_{21} x_i + h_{22} y_i + h_{23}}{h_{31} x_i + h_{32} y_i + h_{33}} \right)^2 
+
 is minimized. 
 
 The function is used to find initial intrinsic and extrinsic matrices. Homography matrix is determined up to a scale. Thus, it is normalized so that h_{33}=1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+75"/>
         <source>Calculates a fundamental matrix from the corresponding points in two images. 
 
 The epipolar geometry is described by the following equation: 
 
-[p_2; 1]^T F [p_1; 1] = 0 
+.. math:: [p_2; 1]^T F [p_1; 1] = 0 
 
 where F is a fundamental matrix, p_1 and p_2 are corresponding points in the first and the second images, respectively. 
 
@@ -1356,17 +1505,19 @@ For every point in one of the two images of a stereo pair, the function finds th
 
 From the fundamental matrix definition (see findFundamentalMat()), line l^{(2)}_i in the second image for the point p^{(1)}_i in the first image (when whichImage=1) is computed as: 
 
-l^{(2)}_i = F p^{(1)}_i 
+.. math:: l^{(2)}_i = F p^{(1)}_i 
 
 And vice versa, when whichImage=2, l^{(1)}_i is computed from p^{(2)}_i as: 
 
-l^{(1)}_i = F^T p^{(2)}_i 
+.. math:: l^{(1)}_i = F^T p^{(2)}_i 
 
-Line coefficients are defined up to a scale. They are normalized so that a_i^2+b_i^2=1.</source>
+Line coefficients are defined up to a scale. They are normalized so that 
+
+.. math:: a_i^2+b_i^2=1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+63"/>
         <source>Applies a perspective transformation to an image 
 
 The function warpPerspective transforms the source image using the specified matrix H</source>

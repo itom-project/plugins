@@ -163,7 +163,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+184"/>
+        <location filename="../MSMediaFoundation.cpp" line="+205"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -295,7 +295,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+313"/>
         <source>invalid cameraNumber. Only %i cameras found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -320,12 +320,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+458"/>
+        <location line="+459"/>
         <source>Timeout while acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+237"/>
+        <location line="+221"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -335,12 +335,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-987"/>
+        <location line="-973"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-157"/>
+        <location line="-169"/>
         <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -385,7 +385,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+368"/>
+        <location line="+381"/>
         <source>No frame could be aquired from device %i</source>
         <translation type="unfinished"></translation>
     </message>
@@ -410,12 +410,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+67"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+20"/>
         <source>Error: channels sizes other than 1 or 3 not allowed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -453,7 +453,7 @@
 <context>
     <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-1278"/>
+        <location line="-1297"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>

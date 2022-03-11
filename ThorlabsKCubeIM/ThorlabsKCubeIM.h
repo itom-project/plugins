@@ -88,6 +88,7 @@ class ThorlabsKCubeIM : public ito::AddInActuator
         bool m_opened;
         int m_numaxis;
         char m_serialNo[16];
+        int m_pollingInterval = 150;
 
         static QList<QByteArray> openedDevices;
 

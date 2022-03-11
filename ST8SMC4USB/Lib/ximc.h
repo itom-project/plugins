@@ -16,7 +16,7 @@
 	* Macros allows to automatically import function from shared library.
 	* It automatically expands to dllimport on msvc when including header file
 	*/
-#if defined(_WIN32) || defined(LABVIEW64_IMPORT) || defined(LABVIEW32_IMPORT)
+#if defined(_WIN32) || defined(LABVIEW64_IMPORT) || defined(LABVIEW32_IMPORT) || defined(MATLAB_IMPORT)
 	#define XIMC_API __stdcall
 #else
 	#ifdef LIBXIMC_EXPORTS
@@ -30,15 +30,26 @@
 	* \def XIMC_CALLCONV
 	* \brief Library calling convention macros.
 	*/
-#if defined(_WIN32) || defined(LABVIEW64_IMPORT) || defined(LABVIEW32_IMPORT)
+#if defined(_WIN32) || defined(LABVIEW64_IMPORT) || defined(LABVIEW32_IMPORT) || defined(MATLAB_IMPORT)
 	#define XIMC_CALLCONV __stdcall
 #else
 	#define XIMC_CALLCONV
 #endif
 
+/**
+* \def XIMC_RETTYPE
+* \brief Thread return type.
+*/
+#if defined(_WIN32) || defined(LABVIEW64_IMPORT) || defined(LABVIEW32_IMPORT) || defined(MATLAB_IMPORT)
+#define XIMC_RETTYPE unsigned int
+#else
+#define XIMC_RETTYPE void*
+#endif
+
+
 #if !defined(XIMC_NO_STDINT)
 
-#if defined(_MSC_VER) || defined(LABVIEW64_IMPORT) || defined(LABVIEW32_IMPORT)
+#if ( (defined(_MSC_VER) && (_MSC_VER < 1600)) || defined(LABVIEW64_IMPORT) || defined(LABVIEW32_IMPORT)) && !defined(MATLAB_IMPORT)
 // msvc types burden
 typedef __int8 int8_t;
 typedef __int16 int16_t;
@@ -62,6 +73,8 @@ typedef long long long_t;
 #endif
 
 #endif
+
+#include <time.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -236,12 +249,32 @@ extern "C"
 		unsigned int MicrostepMode;	/**< Microstep mode */
 	} calibration_t;
 
-
+	/**
+		\english
+		* Device network information structure.
+		\endenglish
+		\russian
+		* Структура данных с информацией о сетевом устройстве.
+		\endrussian	 */
+	typedef struct device_network_information_t
+	{
+		uint32_t ipv4; 				/**< IPv4 address, passed in network byte order (big-endian byte order) */
+		char nodename[16];			/**< Name of the Bindy node which hosts the device */
+		uint32_t axis_state;		/**< Flags representing device state */
+		char locker_username[16];	/**< Name of the user who locked the device (if any) */
+		char locker_nodename[16];	/**< Bindy node name, which was used to lock the device (if any) */
+		time_t locked_time;			/**< Time the lock was acquired at (UTC, microseconds since the epoch) */
+	} device_network_information_t;
 
 
 
 /** @cond DO_NOT_WANT */
-#define LIBXIMC_VERSION 2.3.2
+#define LIBXIMC_VERSION 2.13.1
+/** @endcond */
+
+
+/** @cond DO_NOT_WANT */
+#define LIBXIMC_PROTOCOL_VERSION 20.5
 /** @endcond */
 
 
@@ -262,6 +295,7 @@ extern "C"
 //@{
 #define ENUMERATE_PROBE     0x01 	/**< \english Check if a device with OS name name is XIMC device. Be carefuly with this flag because it sends some data to the device.  \endenglish \russian Проверять, является ли устройство XIMC-совместимым. Будте осторожны с этим флагом, т.к. он отправляет данные в устройство.  \endrussian */
 #define ENUMERATE_ALL_COM   0x02 	/**< \english Check all COM devices \endenglish \russian Проверять все COM-устройства \endrussian */
+#define ENUMERATE_NETWORK   0x04 	/**< \english Check network devices \endenglish \russian Проверять сетевые устройства \endrussian */
 //@}
 
 
@@ -276,11 +310,10 @@ extern "C"
 	* Возвращаются командой get_status.
 	* \endrussian
 	* @see get_status
-	* @see status_t::move_state
 	* @see status_t::MoveSts, get_status_impl
 	*/
 //@{
-#define MOVE_STATE_MOVING         0x01 	/**< \english This flag indicates that controller is trying to move the motor. \endenglish \russian Если флаг установлен, то контроллер пытается вращать двигателем. \endrussian */
+#define MOVE_STATE_MOVING         0x01 	/**< \english This flag indicates that controller is trying to move the motor. Don't use this flag for waiting of completion of the movement command. Use MVCMD_RUNNING flag from the MvCmdSts field instead. \endenglish \russian Если флаг установлен, то контроллер пытается вращать двигателем. Не используйте этот флаг для ожидания завершения команды движения. Вместо него используйте MVCMD_RUNNING из поля MvCmdSts. \endrussian */
 #define MOVE_STATE_TARGET_SPEED   0x02 	/**< \english Target speed is reached, if flag set. \endenglish \russian Флаг устанавливается при достижении заданной скорости. \endrussian */
 #define MOVE_STATE_ANTIPLAY       0x04 	/**< \english Motor is playing compensation, if flag set. \endenglish \russian Выполняется компенсация люфта, если флаг установлен. \endrussian */
 //@}
@@ -313,7 +346,6 @@ extern "C"
 	* @name Флаги состояния питания шагового мотора
 	* Возвращаются командой get_status.
 	* \endrussian
-	* @see status_t::power_state
 	* @see get_status
 	* @see status_t::PWRSts, get_status_impl
 	*/
@@ -322,7 +354,7 @@ extern "C"
 #define PWR_STATE_OFF       0x01 	/**< \english Motor windings are disconnected from the driver. \endenglish \russian Обмотки мотора разомкнуты и не управляются драйвером. \endrussian */
 #define PWR_STATE_NORM      0x03 	/**< \english Motor windings are powered by nominal current. \endenglish \russian Обмотки запитаны номинальным током. \endrussian */
 #define PWR_STATE_REDUCT    0x04 	/**< \english Motor windings are powered by reduced current to lower power consumption. \endenglish \russian Обмотки намеренно запитаны уменьшенным током от рабочего для снижения потребляемой мощности. \endrussian */
-#define PWR_STATE_MAX       0x05 	/**< \english Motor windings are powered by maximum current driver can provide at this voltage. \endenglish \russian Обмотки запитаны максимально доступным током, который может выдать схема при данном напряжении питания. \endrussian */
+#define PWR_STATE_MAX       0x05 	/**< \english Motor windings are powered by maximum current driver can provide at this voltage. \endenglish \russian Обмотки двигателя питаются от максимального тока, который драйвер может обеспечить при этом напряжении. \endrussian */
 //@}
 
 
@@ -338,36 +370,40 @@ extern "C"
 	* @name Флаги состояния
 	* Содержат бинарные значения состояния контроллера. Могут быть объединены с помощью логического ИЛИ.
 	* \endrussian
-	* @see status_t::flags
 	* @see get_status
 	* @see status_t::Flags, get_status_impl
 	*/
 //@{
-#define STATE_CONTR                    0x0003F 	/**< \english Flags of controller states. \endenglish \russian Флаги состояния контроллера. \endrussian */
-#define STATE_ERRC                     0x00001 	/**< \english Command error encountered. \endenglish \russian Недопустимая команда. \endrussian */
-#define STATE_ERRD                     0x00002 	/**< \english Data integrity error encountered. \endenglish \russian Нарушение целостности данных. \endrussian */
-#define STATE_ERRV                     0x00004 	/**< \english Value error encountered. \endenglish \russian Недопустимое значение данных. \endrussian */
-#define STATE_EEPROM_CONNECTED         0x00010 	/**< \english EEPROM with settings is connected. \endenglish \russian Подключена память EEPROM с настройками. \endrussian */
-#define STATE_SECUR                    0x3FFC0 	/**< \english Flags of security. \endenglish \russian Флаги опасности. \endrussian */
-#define STATE_ALARM                    0x00040 	/**< \english Controller is in alarm state indicating that something dangerous had happened. Most commands are ignored in this state. To reset the flag a STOP command must be issued. \endenglish \russian Контроллер находится в состоянии ALARM, показывая, что случилась какая-то опасная ситуация. В состоянии ALARM все команды игнорируются пока не будет послана команда STOP и состояние ALARM деактивируется. \endrussian */
-#define STATE_CTP_ERROR                0x00080 	/**< \english Control position error(is only used with stepper motor). \endenglish \russian Контроль позиции нарушен(используется только с шаговым двигателем). \endrussian */
-#define STATE_POWER_OVERHEAT           0x00100 	/**< \english Power driver overheat. \endenglish \russian Перегрелась силовая часть платы. \endrussian */
-#define STATE_CONTROLLER_OVERHEAT      0x00200 	/**< \english Controller overheat. \endenglish \russian Перегрелась микросхема контроллера. \endrussian */
-#define STATE_OVERLOAD_POWER_VOLTAGE   0x00400 	/**< \english Power voltage exceeds safe limit. \endenglish \russian Превышено напряжение на силовой части. \endrussian */
-#define STATE_OVERLOAD_POWER_CURRENT   0x00800 	/**< \english Power current exceeds safe limit. \endenglish \russian Превышен максимальный ток потребления силовой части. \endrussian */
-#define STATE_OVERLOAD_USB_VOLTAGE     0x01000 	/**< \english USB voltage exceeds safe limit. \endenglish \russian Превышено напряжение на USB. \endrussian */
-#define STATE_LOW_USB_VOLTAGE          0x02000 	/**< \english USB voltage is insufficient for normal operation. \endenglish \russian Слишком низкое напряжение на USB. \endrussian */
-#define STATE_OVERLOAD_USB_CURRENT     0x04000 	/**< \english USB current exceeds safe limit. \endenglish \russian Превышен максимальный ток потребления USB. \endrussian */
-#define STATE_BORDERS_SWAP_MISSET      0x08000 	/**< \english Engine stuck at the wrong edge. \endenglish \russian Достижение неверной границы. \endrussian */
-#define STATE_LOW_POWER_VOLTAGE        0x10000 	/**< \english Power voltage is lower than Low Voltage Protection limit \endenglish \russian Напряжение на силовой части ниже чем напряжение Low Voltage Protection \endrussian */
-#define STATE_H_BRIDGE_FAULT           0x20000 	/**< \english Signal from the driver that fault happened \endenglish \russian Получен сигнал от драйвера о неисправности \endrussian */
+#define STATE_CONTR                    0x000003F 	/**< \english Flags of controller states. \endenglish \russian Флаги состояния контроллера. \endrussian */
+#define STATE_ERRC                     0x0000001 	/**< \english Command error encountered. \endenglish \russian Недопустимая команда. \endrussian */
+#define STATE_ERRD                     0x0000002 	/**< \english Data integrity error encountered. \endenglish \russian Нарушение целостности данных. \endrussian */
+#define STATE_ERRV                     0x0000004 	/**< \english Value error encountered. \endenglish \russian Недопустимое значение данных. \endrussian */
+#define STATE_EEPROM_CONNECTED         0x0000010 	/**< \english EEPROM with settings is connected. \endenglish \russian Подключена память EEPROM с настройками. \endrussian */
+#define STATE_IS_HOMED                 0x0000020 	/**< \english Calibration performed \endenglish \russian Калибровка выполнена \endrussian */
+#define STATE_SECUR                    0x1B3FFC0 	/**< \english Flags of security. \endenglish \russian Флаги опасности. \endrussian */
+#define STATE_ALARM                    0x0000040 	/**< \english Controller is in alarm state indicating that something dangerous had happened. Most commands are ignored in this state. To reset the flag a STOP command must be issued. \endenglish \russian Контроллер находится в состоянии ALARM, показывая, что случилась какая-то опасная ситуация. В состоянии ALARM все команды игнорируются пока не будет послана команда STOP и состояние ALARM деактивируется. \endrussian */
+#define STATE_CTP_ERROR                0x0000080 	/**< \english Control position error(is only used with stepper motor). \endenglish \russian Контроль позиции нарушен(используется только с шаговым двигателем). \endrussian */
+#define STATE_POWER_OVERHEAT           0x0000100 	/**< \english Power driver overheat. \endenglish \russian Перегрелась силовая часть платы. \endrussian */
+#define STATE_CONTROLLER_OVERHEAT      0x0000200 	/**< \english Controller overheat. \endenglish \russian Перегрелась микросхема контроллера. \endrussian */
+#define STATE_OVERLOAD_POWER_VOLTAGE   0x0000400 	/**< \english Power voltage exceeds safe limit. \endenglish \russian Превышено напряжение на силовой части. \endrussian */
+#define STATE_OVERLOAD_POWER_CURRENT   0x0000800 	/**< \english Power current exceeds safe limit. \endenglish \russian Превышен максимальный ток потребления силовой части. \endrussian */
+#define STATE_OVERLOAD_USB_VOLTAGE     0x0001000 	/**< \english USB voltage exceeds safe limit. \endenglish \russian Превышено напряжение на USB. \endrussian */
+#define STATE_LOW_USB_VOLTAGE          0x0002000 	/**< \english USB voltage is insufficient for normal operation. \endenglish \russian Слишком низкое напряжение на USB. \endrussian */
+#define STATE_OVERLOAD_USB_CURRENT     0x0004000 	/**< \english USB current exceeds safe limit. \endenglish \russian Превышен максимальный ток потребления USB. \endrussian */
+#define STATE_BORDERS_SWAP_MISSET      0x0008000 	/**< \english Engine stuck at the wrong edge. \endenglish \russian Достижение неверной границы. \endrussian */
+#define STATE_LOW_POWER_VOLTAGE        0x0010000 	/**< \english Power voltage is lower than Low Voltage Protection limit \endenglish \russian Напряжение на силовой части ниже чем напряжение Low Voltage Protection \endrussian */
+#define STATE_H_BRIDGE_FAULT           0x0020000 	/**< \english Signal from the driver that fault happened \endenglish \russian Получен сигнал от драйвера о неисправности \endrussian */
+#define STATE_WINDING_RES_MISMATCH     0x0100000 	/**< \english The difference between winding resistances is too large \endenglish \russian Сопротивления обмоток отличаются друг от друга слишком сильно \endrussian */
+#define STATE_ENCODER_FAULT            0x0200000 	/**< \english Signal from the encoder that fault happened \endenglish \russian Получен сигнал от энкодера о неисправности \endrussian */
+#define STATE_ENGINE_RESPONSE_ERROR    0x0800000 	/**< \english Error response of the engine control action. \endenglish \russian Ошибка реакции двигателя на управляющее воздействие. \endrussian */
+#define STATE_EXTIO_ALARM              0x1000000 	/**< \english The error is caused by the input signal.. \endenglish \russian Ошибка вызвана входным сигналом. \endrussian */
 //@}
 
 
 /**
 	* @anchor flagset_gpioflags
 	* \english
-	* @name Status flags
+	* @name Status flags of the GPIO outputs
 	* GPIO state flags returned by device query.
 	* Contains boolean part of controller state.
 	* May be combined with bitwise OR.
@@ -376,7 +412,6 @@ extern "C"
 	* @name Флаги состояния GPIO входов
 	* Содержат бинарные значения состояния контроллера. Могут быть объединены с помощью логического ИЛИ.
 	* \endrussian
-	* @see status_t::flags
 	* @see get_status
 	* @see status_t::GPIOFlags, get_status_impl
 	*/
@@ -388,10 +423,7 @@ extern "C"
 #define STATE_BUTTON_LEFT    0x0008 	/**< \english Button "left" state (1 if pressed). \endenglish \russian Состояние кнопки "влево" (1, если нажата). \endrussian */
 #define STATE_GPIO_PINOUT    0x0010 	/**< \english External GPIO works as Out, if flag set; otherwise works as In. \endenglish \russian Если флаг установлен, ввод/вывод общего назначения работает как выход; если флаг сброшен, ввод/вывод работает как вход. \endrussian */
 #define STATE_GPIO_LEVEL     0x0020 	/**< \english State of external GPIO pin. \endenglish \russian Состояние ввода/вывода общего назначения. \endrussian */
-#define STATE_HALL_A         0x0040 	/**< \english State of Hall_a pin. \endenglish \russian Состояние вывода датчика холла(a)(флаг "1", если датчик активен). \endrussian */
-#define STATE_HALL_B         0x0080 	/**< \english State of Hall_b pin. \endenglish \russian Состояние вывода датчика холла(b)(флаг "1", если датчик активен). \endrussian */
-#define STATE_HALL_C         0x0100 	/**< \english State of Hall_c pin. \endenglish \russian Состояние вывода датчика холла(c)(флаг "1", если датчик активен). \endrussian */
-#define STATE_BRAKE          0x0200 	/**< \english State of Brake pin. \endenglish \russian Состояние вывода управления тормозом(флаг "1" - если на тормоз подаётся питание, "0" - если тормоз не запитан). \endrussian */
+#define STATE_BRAKE          0x0200 	/**< \english State of Brake pin. Flag "1" - if the pin state brake is not powered(brake is clamped), "0" - if the pin state brake is powered(brake is unclamped). \endenglish \russian Состояние вывода управления тормозом. Флаг "1" - если тормоз не запитан(зажат), "0" - если на тормоз подаётся питание(разжат). \endrussian */
 #define STATE_REV_SENSOR     0x0400 	/**< \english State of Revolution sensor pin. \endenglish \russian Состояние вывода датчика оборотов(флаг "1", если датчик активен). \endrussian */
 #define STATE_SYNC_INPUT     0x0800 	/**< \english State of Sync input pin. \endenglish \russian Состояние входа синхронизации(1, если вход синхронизации активен). \endrussian */
 #define STATE_SYNC_OUTPUT    0x1000 	/**< \english State of Sync output pin. \endenglish \russian Состояние выхода синхронизации(1, если выход синхронизации активен). \endrussian */
@@ -410,7 +442,6 @@ extern "C"
 	* @name Состояние энкодера
 	* Состояние энкодера, подключенного к контроллеру.
 	* \endrussian
-	* @see status_t::encsts
 	* @see get_status
 	* @see status_t::EncSts, get_status_impl
 	*/
@@ -418,8 +449,8 @@ extern "C"
 #define ENC_STATE_ABSENT    0x00 	/**< \english Encoder is absent. \endenglish \russian Энкодер не подключен. \endrussian */
 #define ENC_STATE_UNKNOWN   0x01 	/**< \english Encoder state is unknown. \endenglish \russian Cостояние энкодера неизвестно. \endrussian */
 #define ENC_STATE_MALFUNC   0x02 	/**< \english Encoder is connected and malfunctioning. \endenglish \russian Энкодер подключен и неисправен. \endrussian */
-#define ENC_STATE_REVERS    0x03 	/**< \english Encoder is connected and operational but counts in otyher direction. \endenglish \russian Энкодер подключен и исправен, но считает в другую сторону. \endrussian */
-#define ENC_STATE_OK        0x04 	/**< \english Encoder is connected and working properly. \endenglish \russian Энкодер подключен и работает адекватно. \endrussian */
+#define ENC_STATE_REVERS    0x03 	/**< \english Encoder is connected and operational but counts in other direction. \endenglish \russian Энкодер подключен и исправен, но считает в другую сторону. \endrussian */
+#define ENC_STATE_OK        0x04 	/**< \english Encoder is connected and working properly. \endenglish \russian Энкодер подключен и работает должным образом. \endrussian */
 //@}
 
 
@@ -433,7 +464,6 @@ extern "C"
 	* @name Состояние обмоток
 	* Состояние обмоток двигателя, подключенного к контроллеру.
 	* \endrussian
-	* @see status_t::windsts
 	* @see get_status
 	* @see status_t::WindSts, get_status_impl
 	*/
@@ -461,7 +491,6 @@ extern "C"
 	* Состояние команды движения (касается command_move, command_movr, command_left, command_right, command_stop, command_home, command_loft, command_sstp)
 	* и статуса её выполнения (выполяется, завершено, ошибка)
 	* \endrussian
-	* @see status_t::mvcmdsts
 	* @see get_status
 	* @see status_t::MvCmdSts, get_status_impl
 	*/
@@ -482,6 +511,27 @@ extern "C"
 
 
 /**
+	* @anchor flagset_moveflags
+	* \english
+	* @name Flags of the motion parameters
+	* Specify motor shaft movement algorithm and list of limitations.
+	* Flags returned by query of get_move_settings.
+	* \endenglish
+	* \russian
+	* @name Флаги параметров движения
+	* Определяют настройки параметров движения.
+	* Возращаются командой get_move_settings.
+	* \endrussian
+	* @see set_move_settings
+	* @see get_move_settings
+	* @see move_settings_t::MoveFlags, get_move_settings, set_move_settings
+	*/
+//@{
+#define RPM_DIV_1000   0x01 	/**< \english This flag indicates that the operating speed specified in the command is set in milli rpm. Applicable only for ENCODER feedback mode and only for BLDC motors. \endenglish \russian Флаг указывает на то что рабочая скорость указанная в команде задана в милли rpm. Применим только для режима обратной связи ENCODER и только для BLDC моторов. \endrussian */
+//@}
+
+
+/**
 	* @anchor flagset_engineflags
 	* \english
 	* @name Flags of engine settings
@@ -493,19 +543,19 @@ extern "C"
 	* Определяют настройки движения и работу ограничителей.
 	* Возращаются командой get_engine_settings. Могут быть объединены с помощью логического ИЛИ.
 	* \endrussian
-	* @see engine_settings_t::flags
 	* @see set_engine_settings
 	* @see get_engine_settings
 	* @see engine_settings_t::EngineFlags, get_engine_settings, set_engine_settings
 	*/
 //@{
-#define ENGINE_REVERSE      0x01 	/**< \english Reverse flag. It determines motor shaft rotation direction that corresponds to feedback counts increasing. If not set (default), motor shaft rotation direction under positive voltage corresponds to feedback counts increasing and vice versa. Change it if you see that positive directions on motor and feedback are opposite. \endenglish \russian Флаг реверса. Связывает направление вращения мотора с направлением счета текущей позиции. При сброшенном флаге (по умолчанию) прикладываемое к мотору положительное напряжение увеличивает счетчик позиции. И наоборот, при установленном флаге счетчик позиции увеличивается, когда к мотору приложено отрицательное напряжение. Измените состояние флага, если положительное вращение мотора уменьшает счетчик позиции. \endrussian */
-#define ENGINE_MAX_SPEED    0x04 	/**< \english Max speed flag. If it is set, engine uses maxumum speed achievable with the present engine settings as nominal speed. \endenglish \russian Флаг максимальной скорости. Если флаг установлен, движение происходит на максимальной скорости. \endrussian */
-#define ENGINE_ANTIPLAY     0x08 	/**< \english Play compensation flag. If it set, engine makes backlash (play) compensation procedure and reach the predetermined position accurately on low speed. \endenglish \russian Компенсация люфта. Если флаг установлен, позиционер будет подходить к заданной точке всегда с одной стороны. Например, при подходе слева никаких дополнительных действий не совершается, а при подходе справа позиционер проходит целевую позицию на заданное расстояния и возвращается к ней опять же справа. \endrussian */
-#define ENGINE_ACCEL_ON     0x10 	/**< \english Acceleration enable flag. If it set, motion begins with acceleration and ends with deceleration. \endenglish \russian Ускорение. Если флаг установлен, движение происходит с ускорением. \endrussian */
-#define ENGINE_LIMIT_VOLT   0x20 	/**< \english Maxumum motor voltage limit enable flag(is only used with DC motor). \endenglish \russian Номинальное напряжение мотора. Если флаг установлен, напряжение на моторе ограничивается заданным номинальным значением(используется только с DC двигателем). \endrussian */
-#define ENGINE_LIMIT_CURR   0x40 	/**< \english Maxumum motor current limit enable flag(is only used with DC motor). \endenglish \russian Номинальный ток мотора. Если флаг установлен, ток через мотор ограничивается заданным номинальным значением(используется только с DC двигателем). \endrussian */
-#define ENGINE_LIMIT_RPM    0x80 	/**< \english Maxumum motor speed limit enable flag. \endenglish \russian Номинальная частота вращения мотора. Если флаг установлен, частота вращения ограничивается заданным номинальным значением. \endrussian */
+#define ENGINE_REVERSE          0x01 	/**< \english Reverse flag. It determines motor shaft rotation direction that corresponds to feedback counts increasing. If not set (default), motor shaft rotation direction under positive voltage corresponds to feedback counts increasing and vice versa. Change it if you see that positive directions on motor and feedback are opposite. \endenglish \russian Флаг реверса. Связывает направление вращения мотора с направлением счета текущей позиции. При сброшенном флаге (по умолчанию) прикладываемое к мотору положительное напряжение увеличивает счетчик позиции. И наоборот, при установленном флаге счетчик позиции увеличивается, когда к мотору приложено отрицательное напряжение. Измените состояние флага, если положительное вращение мотора уменьшает счетчик позиции. \endrussian */
+#define ENGINE_CURRENT_AS_RMS   0x02 	/**< \english Engine current meaning flag. If the flag is unset, then engine current value is interpreted as maximum amplitude value. If the flag is set, then engine current value is interpreted as root mean square current value (for stepper) or as the current value calculated from the maximum heat dissipation (bldc). \endenglish \russian Флаг интерпретации значения тока. Если флаг снят, то задаваемое значение тока интерпретируется как максимальная амплитуда тока. Если флаг установлен, то задаваемое значение тока интерпретируется как среднеквадратичное значение тока (для шагового) или как значение тока, посчитанное из максимального тепловыделения (bldc). \endrussian */
+#define ENGINE_MAX_SPEED        0x04 	/**< \english Max speed flag. If it is set, engine uses maximum speed achievable with the present engine settings as nominal speed. \endenglish \russian Флаг максимальной скорости. Если флаг установлен, движение происходит на максимальной скорости. \endrussian */
+#define ENGINE_ANTIPLAY         0x08 	/**< \english Play compensation flag. If it set, engine makes backlash (play) compensation procedure and reach the predetermined position accurately on low speed. \endenglish \russian Компенсация люфта. Если флаг установлен, позиционер будет подходить к заданной точке всегда с одной стороны. Например, при подходе слева никаких дополнительных действий не совершается, а при подходе справа позиционер проходит целевую позицию на заданное расстояния и возвращается к ней опять же справа. \endrussian */
+#define ENGINE_ACCEL_ON         0x10 	/**< \english Acceleration enable flag. If it set, motion begins with acceleration and ends with deceleration. \endenglish \russian Ускорение. Если флаг установлен, движение происходит с ускорением. \endrussian */
+#define ENGINE_LIMIT_VOLT       0x20 	/**< \english Maximum motor voltage limit enable flag(is only used with DC motor). \endenglish \russian Номинальное напряжение мотора. Если флаг установлен, напряжение на моторе ограничивается заданным номинальным значением(используется только с DC двигателем). \endrussian */
+#define ENGINE_LIMIT_CURR       0x40 	/**< \english Maximum motor current limit enable flag(is only used with DC motor). \endenglish \russian Номинальный ток мотора. Если флаг установлен, ток через мотор ограничивается заданным номинальным значением(используется только с DC двигателем). \endrussian */
+#define ENGINE_LIMIT_RPM        0x80 	/**< \english Maximum motor speed limit enable flag. \endenglish \russian Номинальная частота вращения мотора. Если флаг установлен, частота вращения ограничивается заданным номинальным значением. \endrussian */
 //@}
 
 
@@ -561,8 +611,8 @@ extern "C"
 #define ENGINE_TYPE_DC          0x01 	/**< \english DC motor. \endenglish \russian Мотор постоянного тока. \endrussian */
 #define ENGINE_TYPE_2DC         0x02 	/**< \english 2 DC motors. \endenglish \russian Два мотора постоянного тока, что приводит к эмуляции двух контроллеров. \endrussian */
 #define ENGINE_TYPE_STEP        0x03 	/**< \english Step motor. \endenglish \russian Шаговый мотор. \endrussian */
-#define ENGINE_TYPE_TEST        0x04 	/**< \english Duty cycle are fixed. Used only manufacturer. \endenglish \russian Скважность в обмотках фиксирована. Используется только производителем. \endrussian */
-#define ENGINE_TYPE_BRUSHLESS   0x05 	/**< \english Brushless motor. \endenglish \russian Безщеточный мотор. \endrussian */
+#define ENGINE_TYPE_TEST        0x04 	/**< \english Duty cycle are fixed. Used only manufacturer. \endenglish \russian Продолжительность включения фиксирована. Используется только производителем. \endrussian */
+#define ENGINE_TYPE_BRUSHLESS   0x05 	/**< \english Brushless motor. \endenglish \russian Бесщеточный мотор. \endrussian */
 //@}
 
 
@@ -600,7 +650,6 @@ extern "C"
 	* @name Флаги параметров питания шагового мотора
 	* Возвращаются командой get_power_settings.
 	* \endrussian
-	* @see power_settings_t::flags
 	* @see get_power_settings
 	* @see set_power_settings
 	* @see power_settings_t::PowerFlags, get_power_settings, set_power_settings
@@ -622,7 +671,6 @@ extern "C"
 	* @name Флаги критических параметров.
 	* Возвращаются командой get_secure_settings.
 	* \endrussian
-	* @see secure_settings_t::flags
 	* @see get_secure_settings
 	* @see set_secure_settings
 	* @see secure_settings_t::Flags, get_secure_settings, set_secure_settings
@@ -634,6 +682,8 @@ extern "C"
 #define ALARM_ON_BORDERS_SWAP_MISSET   0x08 	/**< \english If this flag is set enter Alarm state on borders swap misset \endenglish \russian Если флаг установлен, то войти в состояние Alarm при получении сигнала c противоположного концевика.\endrussian */
 #define ALARM_FLAGS_STICKING           0x10 	/**< \english If this flag is set only a STOP command can turn all alarms to 0 \endenglish \russian Если флаг установлен, то только по команде STOP возможен сброс всех флагов ALARM.\endrussian */
 #define USB_BREAK_RECONNECT            0x20 	/**< \english If this flag is set USB brake reconnect module will be enable \endenglish \russian Если флаг установлен, то будет включен блок перезагрузки USB при поломке связи.\endrussian */
+#define ALARM_WINDING_MISMATCH         0x40 	/**< \english If this flag is set enter Alarm state when windings mismatch \endenglish \russian Если флаг установлен, то войти в состояние Alarm при получении сигнала рассогласования обмоток \endrussian */
+#define ALARM_ENGINE_RESPONSE          0x80 	/**< \english If this flag is set enter Alarm state on response of the engine control action \endenglish \russian Если флаг установлен, то войти в состояние Alarm при получении сигнала ошибки реакции двигателя на управляющее воздействие  \endrussian */
 //@}
 
 
@@ -670,10 +720,10 @@ extern "C"
 	* @see feedback_settings_t::FeedbackType, get_feedback_settings, set_feedback_settings
 	*/
 //@{
-#define FEEDBACK_ENCODER       0x01 	/**< \english Feedback by encoder. \endenglish \russian Обратная связь с помощью энкодера. \endrussian */
-#define FEEDBACK_ENCODERHALL   0x03 	/**< \english Feedback by Hall detector. \endenglish \russian Обратная связь с помощью датчика Холла. \endrussian */
-#define FEEDBACK_EMF           0x04 	/**< \english Feedback by EMF. \endenglish \russian Обратная связь по ЭДС. \endrussian */
-#define FEEDBACK_NONE          0x05 	/**< \english Feedback is absent. \endenglish \russian Обратная связь отсутствует. \endrussian */
+#define FEEDBACK_ENCODER            0x01 	/**< \english Feedback by encoder. \endenglish \russian Обратная связь с помощью энкодера. \endrussian */
+#define FEEDBACK_EMF                0x04 	/**< \english Feedback by EMF. \endenglish \russian Обратная связь по ЭДС. \endrussian */
+#define FEEDBACK_NONE               0x05 	/**< \english Feedback is absent. \endenglish \russian Обратная связь отсутствует. \endrussian */
+#define FEEDBACK_ENCODER_MEDIATED   0x06 	/**< \english Feedback by encoder mediated by mechanical transmission (for example leadscrew). \endenglish \russian Обратная связь по энкодеру, опосредованному относительно двигателя механической передачей (например, винтовой передачей). \endrussian */
 //@}
 
 
@@ -690,8 +740,11 @@ extern "C"
 	* @see feedback_settings_t::FeedbackFlags, get_feedback_settings, set_feedback_settings
 	*/
 //@{
-#define FEEDBACK_ENC_REVERSE    0x01 	/**< \english Reverse count of encoder. \endenglish \russian Обратный счет у энкодера. \endrussian */
-#define FEEDBACK_HALL_REVERSE   0x02 	/**< \english Reverce count position on the Hall sensor. \endenglish \russian Обратный счёт позиции по датчикам Холла. \endrussian */
+#define FEEDBACK_ENC_REVERSE             0x01 	/**< \english Reverse count of encoder. \endenglish \russian Обратный счет у энкодера. \endrussian */
+#define FEEDBACK_ENC_TYPE_BITS           0xC0 	/**< \english Bits of the encoder type. \endenglish \russian Биты, отвечающие за тип энкодера. \endrussian */
+#define FEEDBACK_ENC_TYPE_AUTO           0x00 	/**< \english Auto detect encoder type. \endenglish \russian Определяет тип энкодера автоматически. \endrussian */
+#define FEEDBACK_ENC_TYPE_SINGLE_ENDED   0x40 	/**< \english Single ended encoder. \endenglish \russian Недифференциальный энкодер. \endrussian */
+#define FEEDBACK_ENC_TYPE_DIFFERENTIAL   0x80 	/**< \english Differential encoder. \endenglish \russian Дифференциальный энкодер. \endrussian */
 //@}
 
 
@@ -703,9 +756,6 @@ extern "C"
 	* \russian
 	* @name Флаги настроек синхронизации входа
 	* \endrussian
-	* @see sync_settings_t::syncin_flags
-	* @see get_sync_settings
-	* @see set_sync_settings
 	* @see sync_in_settings_t::SyncInFlags, get_sync_in_settings, set_sync_in_settings
 	*/
 //@{
@@ -723,9 +773,6 @@ extern "C"
 	* \russian
 	* @name Флаги настроек синхронизации выхода
 	* \endrussian
-	* @see sync_settings_t::syncout_flags
-	* @see get_sync_settings
-	* @see set_sync_settings
 	* @see sync_out_settings_t::SyncOutFlags, get_sync_out_settings, set_sync_out_settings
 	*/
 //@{
@@ -735,7 +782,7 @@ extern "C"
 #define SYNCOUT_IN_STEPS   0x08 	/**< \english Use motor steps/encoder pulses instead of milliseconds for output pulse generation if the flag is set. \endenglish \russian Если флаг установлен использовать шаги/импульсы энкодера для выходных импульсов синхронизации вместо миллисекунд. \endrussian */
 #define SYNCOUT_ONSTART    0x10 	/**< \english Generate synchronization pulse when movement starts. \endenglish \russian Генерация синхронизирующего импульса при начале движения. \endrussian */
 #define SYNCOUT_ONSTOP     0x20 	/**< \english Generate synchronization pulse when movement stops. \endenglish \russian Генерация синхронизирующего импульса при остановке. \endrussian */
-#define SYNCOUT_ONPERIOD   0x40 	/**< \english Generate synchronization pulse every SyncOutPeriod encoder pulses. \endenglish \russian Выдать импульс синхронизации после прохождения SyncOutPeriod отсчётов. \endrussian */
+#define SYNCOUT_ONPERIOD   0x40 	/**< \english Generate synchronization pulse every SyncOutPeriod encoder pulses. \endenglish \russian Выдает импульс синхронизации после прохождения SyncOutPeriod отсчётов. \endrussian */
 //@}
 
 
@@ -747,7 +794,6 @@ extern "C"
 	* \russian
 	* @name Флаги настройки работы внешнего ввода/вывода
 	* \endrussian
-	* @see extio_settings_t::setup_flags
 	* @see get_extio_settings
 	* @see set_extio_settings
 	* @see extio_settings_t::EXTIOSetupFlags, get_extio_settings, set_extio_settings
@@ -772,17 +818,19 @@ extern "C"
 	* @see extio_settings_t::EXTIOModeFlags, get_extio_settings, set_extio_settings
 	*/
 //@{
-#define EXTIO_SETUP_MODE_IN_NOP            0x00 	/**< \english Do nothing. \endenglish \russian Ничего не делать. \endrussian */
-#define EXTIO_SETUP_MODE_IN_STOP           0x01 	/**< \english Issue STOP command, ceasing the engine movement. \endenglish \russian По переднему фронту входного сигнала делается остановка двигателя (эквивалент команды STOP). \endrussian */
-#define EXTIO_SETUP_MODE_IN_PWOF           0x02 	/**< \english Issue PWOF command, powering off all engine windings. \endenglish \russian Выполняет команду PWOF, обесточивая обмотки двигателя. \endrussian */
-#define EXTIO_SETUP_MODE_IN_MOVR           0x03 	/**< \english Issue MOVR command with last used settings. \endenglish \russian Выполняется команда MOVR с последними настройками. \endrussian */
-#define EXTIO_SETUP_MODE_IN_HOME           0x04 	/**< \english Issue HOME command. \endenglish \russian Выполняется команда HOME. \endrussian */
-#define EXTIO_SETUP_MODE_OUT_OFF           0x00 	/**< \english EXTIO pin always set in inactive state. \endenglish \russian Ножка всегда в неактивном состоянии. \endrussian */
-#define EXTIO_SETUP_MODE_OUT_ON            0x10 	/**< \english EXTIO pin always set in active state. \endenglish \russian Ножка всегда в активном состоянии. \endrussian */
-#define EXTIO_SETUP_MODE_OUT_MOVING        0x20 	/**< \english EXTIO pin stays active during moving state. \endenglish \russian Ножка находится в активном состоянии при движении. \endrussian */
-#define EXTIO_SETUP_MODE_OUT_ALARM         0x30 	/**< \english EXTIO pin stays active during Alarm state. \endenglish \russian Ножка находится в активном состоянии при нахождении в состоянии ALARM. \endrussian */
-#define EXTIO_SETUP_MODE_OUT_MOTOR_ON      0x40 	/**< \english EXTIO pin stays active when windings are powered. \endenglish \russian Ножка находится в активном состоянии при подаче питания на обмотки. \endrussian */
-#define EXTIO_SETUP_MODE_OUT_MOTOR_FOUND   0x50 	/**< \english EXTIO pin stays active when motor is connected (first winding). \endenglish \russian Ножка находится в активном состоянии при обнаружении подключенного двигателя (первой обмотки). \endrussian */
+#define EXTIO_SETUP_MODE_IN_BITS        0x0F 	/**< \english Bits of the behaviour selector when the signal on input goes to the active state. \endenglish \russian Биты, отвечающие за поведение при переходе сигнала в активное состояние. \endrussian */
+#define EXTIO_SETUP_MODE_IN_NOP         0x00 	/**< \english Do nothing. \endenglish \russian Ничего не делать. \endrussian */
+#define EXTIO_SETUP_MODE_IN_STOP        0x01 	/**< \english Issue STOP command, ceasing the engine movement. \endenglish \russian По переднему фронту входного сигнала делается остановка двигателя (эквивалент команды STOP). \endrussian */
+#define EXTIO_SETUP_MODE_IN_PWOF        0x02 	/**< \english Issue PWOF command, powering off all engine windings. \endenglish \russian Выполняет команду PWOF, обесточивая обмотки двигателя. \endrussian */
+#define EXTIO_SETUP_MODE_IN_MOVR        0x03 	/**< \english Issue MOVR command with last used settings. \endenglish \russian Выполняется команда MOVR с последними настройками. \endrussian */
+#define EXTIO_SETUP_MODE_IN_HOME        0x04 	/**< \english Issue HOME command. \endenglish \russian Выполняется команда HOME. \endrussian */
+#define EXTIO_SETUP_MODE_IN_ALARM       0x05 	/**< \english Set Alarm when the signal goes to the active state. \endenglish \russian Войти в состояние ALARM при переходе сигнала в активное состояние. \endrussian */
+#define EXTIO_SETUP_MODE_OUT_BITS       0xF0 	/**< \english Bits of the output behaviour selection. \endenglish \russian Биты выбора поведения на выходе. \endrussian */
+#define EXTIO_SETUP_MODE_OUT_OFF        0x00 	/**< \english EXTIO pin always set in inactive state. \endenglish \russian Ножка всегда в неактивном состоянии. \endrussian */
+#define EXTIO_SETUP_MODE_OUT_ON         0x10 	/**< \english EXTIO pin always set in active state. \endenglish \russian Ножка всегда в активном состоянии. \endrussian */
+#define EXTIO_SETUP_MODE_OUT_MOVING     0x20 	/**< \english EXTIO pin stays active during moving state. \endenglish \russian Ножка находится в активном состоянии при движении. \endrussian */
+#define EXTIO_SETUP_MODE_OUT_ALARM      0x30 	/**< \english EXTIO pin stays active during Alarm state. \endenglish \russian Ножка находится в активном состоянии при нахождении в состоянии ALARM. \endrussian */
+#define EXTIO_SETUP_MODE_OUT_MOTOR_ON   0x40 	/**< \english EXTIO pin stays active when windings are powered. \endenglish \russian Ножка находится в активном состоянии при подаче питания на обмотки. \endrussian */
 //@}
 
 
@@ -875,9 +923,9 @@ extern "C"
 #define CONTROL_MODE_BITS               0x03 	/**< \english Bits to control engine by joystick or buttons. \endenglish \russian Биты управления мотором с помощью джойстика или кнопок влево/вправо. \endrussian */
 #define CONTROL_MODE_OFF                0x00 	/**< \english Control is disabled. \endenglish \russian Управление отключено. \endrussian */
 #define CONTROL_MODE_JOY                0x01 	/**< \english Control by joystick. \endenglish \russian Управление с помощью джойстика. \endrussian */
-#define CONTROL_MODE_LR                 0x02 	/**< \english Control by left/right buttons. \endenglish \russian Управление с помощью кнопок left/right. \endrussian */
-#define CONTROL_BTN_LEFT_PUSHED_OPEN    0x04 	/**< \english Pushed left button corresponds to open contact, if this flag is set. \endenglish \russian Левая кнопка нормально разомкнутая, если флаг установлен. \endrussian */
-#define CONTROL_BTN_RIGHT_PUSHED_OPEN   0x08 	/**< \english Pushed right button corresponds to open contact, if this flag is set. \endenglish \russian Правая кнопка нормально разомкнутая, если флаг установлен. \endrussian */
+#define CONTROL_MODE_LR                 0x02 	/**< \english Control by left/right buttons. \endenglish \russian Управление с помощью кнопок влево/вправо. \endrussian */
+#define CONTROL_BTN_LEFT_PUSHED_OPEN    0x04 	/**< \english Pushed left button corresponds to open contact, if this flag is set. \endenglish \russian Нажатая левая кнопка соответствует открытому контакту, если этот флаг установлен. \endrussian */
+#define CONTROL_BTN_RIGHT_PUSHED_OPEN   0x08 	/**< \english Pushed right button corresponds to open contact, if this flag is set. \endenglish \russian Нажатая правая кнопка соответствует открытому контакту, если этот флаг установлен. \endrussian */
 //@}
 
 
@@ -917,10 +965,11 @@ extern "C"
 	* @see ctp_settings_t::CTPFlags, get_ctp_settings, set_ctp_settings
 	*/
 //@{
-#define CTP_ENABLED          0x01 	/**< \english Position control is enabled, if flag set. \endenglish \russian Контроль позиции включен, если флаг установлен. \endrussian */
-#define CTP_BASE             0x02 	/**< \english Position control is based on revolution sensor, if this flag is set; otherwise it is based on encoder. \endenglish \russian Опорой является датчик оборотов, если флаг установлен; иначе - энкодер. \endrussian */
-#define CTP_ALARM_ON_ERROR   0x04 	/**< \english Set ALARM on mismatch, if flag set. \endenglish \russian Войти в состояние ALARM при расхождении позиции, если флаг установлен. \endrussian */
-#define REV_SENS_INV         0x08 	/**< \english Sensor is active when it 0 and invert makes active level 1. That is, if you do not invert, it is normal logic - 0 is the activation. \endenglish \russian Сенсор считается активным, когда на нём 0, а инвертирование делает активным уровнем 1. То есть если не инвертировать, то действует обычная логика - 0 это срабатывание/активация/активное состояние. \endrussian */
+#define CTP_ENABLED            0x01 	/**< \english Position control is enabled, if flag set. \endenglish \russian Контроль позиции включен, если флаг установлен. \endrussian */
+#define CTP_BASE               0x02 	/**< \english Position control is based on revolution sensor, if this flag is set; otherwise it is based on encoder. \endenglish \russian Управление положением основано на датчике вращения, если установлен этот флаг; в противном случае - на энкодере. \endrussian */
+#define CTP_ALARM_ON_ERROR     0x04 	/**< \english Set ALARM on mismatch, if flag set. \endenglish \russian Войти в состояние ALARM при расхождении позиции, если флаг установлен. \endrussian */
+#define REV_SENS_INV           0x08 	/**< \english Sensor is active when it 0 and invert makes active level 1. That is, if you do not invert, it is normal logic - 0 is the activation. \endenglish \russian Сенсор считается активным, когда на нём 0, инвертирование делает активным уровень 1. То есть если не инвертировать, то действует обычная логика - 0 это срабатывание/активация/активное состояние. \endrussian */
+#define CTP_ERROR_CORRECTION   0x10 	/**< \english Correct errors which appear when slippage if the flag is set. It works only with the encoder. Incompatible with flag CTP_ALARM_ON_ERROR. \endenglish \russian Корректировать ошибки, возникающие при проскальзывании, если флаг установлен. Работает только с энкодером. Несовместимо с флагом CTP_ALARM_ON_ERROR.\endrussian */
 //@}
 
 
@@ -936,24 +985,25 @@ extern "C"
 	* Определяют поведение для команды home.
 	* Могут быть объединены с помощью побитового ИЛИ.
 	* \endrussian
-	* @see get_home_setting	s
+	* @see get_home_settings
 	* @see set_home_settings
 	* @see command_home
 	* @see home_settings_t::HomeFlags, get_home_settings, set_home_settings
 	*/
 //@{
-#define HOME_DIR_FIRST          0x01 	/**< \english Flag defines direction of 1st motion after execution of home command. Direction is right, if set; otherwise left. \endenglish \russian Определяет направление первоначального движения мотора после поступления команды HOME. Если флаг установлен - вправо; иначе - влево. \endrussian */
-#define HOME_DIR_SECOND         0x02 	/**< \english Flag defines direction of 2nd motion. Direction is right, if set; otherwise left. \endenglish \russian Определяет направление второго движения мотора. Если флаг установлен - вправо; иначе - влево. \endrussian */
-#define HOME_MV_SEC_EN          0x04 	/**< \english Use the second phase of calibration to the home position, if set; otherwise the second phase is skipped. \endenglish \russian Если флаг установлен, реализуется второй этап доводки в домашнюю позицию; иначе - этап пропускается. \endrussian */
-#define HOME_HALF_MV            0x08 	/**< \english If the flag is set, the stop signals are ignored in start of second movement the first half-turn. \endenglish \russian Если флаг установлен, в начале второго движения первые пол оборота сигналы завершения движения игнорируются. \endrussian */
-#define HOME_STOP_FIRST_BITS    0x30 	/**< \english Bits of the first stop selector. \endenglish \russian Биты, отвечающие за выбор сигнала завершения первого движения. \endrussian */
-#define HOME_STOP_FIRST_REV     0x10 	/**< \english First motion stops by  revolution sensor. \endenglish \russian Первое движение завершается по сигналу с Revolution sensor. \endrussian */
-#define HOME_STOP_FIRST_SYN     0x20 	/**< \english First motion stops by synchronization input. \endenglish \russian Первое движение завершается по сигналу со входа синхронизации. \endrussian */
-#define HOME_STOP_FIRST_LIM     0x30 	/**< \english First motion stops by limit switch. \endenglish \russian Первое движение завершается по сигналу с концевика. \endrussian */
-#define HOME_STOP_SECOND_BITS   0xC0 	/**< \english Bits of the second stop selector. \endenglish \russian Биты, отвечающие за выбор сигнала завершения второго движения. \endrussian */
-#define HOME_STOP_SECOND_REV    0x40 	/**< \english Second motion stops by  revolution sensor. \endenglish \russian Второе движение завершается по сигналу с Revolution sensor. \endrussian */
-#define HOME_STOP_SECOND_SYN    0x80 	/**< \english Second motion stops by synchronization input. \endenglish \russian Второе движение завершается по сигналу со входа синхронизации. \endrussian */
-#define HOME_STOP_SECOND_LIM    0xC0 	/**< \english Second motion stops by limit switch. \endenglish \russian Второе движение завершается по сигналу с концевика. \endrussian */
+#define HOME_DIR_FIRST          0x001 	/**< \english Flag defines direction of 1st motion after execution of home command. Direction is right, if set; otherwise left. \endenglish \russian Определяет направление первоначального движения мотора после поступления команды HOME. Если флаг установлен - вправо; иначе - влево. \endrussian */
+#define HOME_DIR_SECOND         0x002 	/**< \english Flag defines direction of 2nd motion. Direction is right, if set; otherwise left. \endenglish \russian Определяет направление второго движения мотора. Если флаг установлен - вправо; иначе - влево. \endrussian */
+#define HOME_MV_SEC_EN          0x004 	/**< \english Use the second phase of calibration to the home position, if set; otherwise the second phase is skipped. \endenglish \russian Если флаг установлен, реализуется второй этап доводки в домашнюю позицию; иначе - этап пропускается. \endrussian */
+#define HOME_HALF_MV            0x008 	/**< \english If the flag is set, the stop signals are ignored in start of second movement the first half-turn. \endenglish \russian Если флаг установлен, в начале второго движения первые пол оборота сигналы завершения движения игнорируются. \endrussian */
+#define HOME_STOP_FIRST_BITS    0x030 	/**< \english Bits of the first stop selector. \endenglish \russian Биты, отвечающие за выбор сигнала завершения первого движения. \endrussian */
+#define HOME_STOP_FIRST_REV     0x010 	/**< \english First motion stops by  revolution sensor. \endenglish \russian Первое движение завершается по сигналу с Revolution sensor. \endrussian */
+#define HOME_STOP_FIRST_SYN     0x020 	/**< \english First motion stops by synchronization input. \endenglish \russian Первое движение завершается по сигналу со входа синхронизации. \endrussian */
+#define HOME_STOP_FIRST_LIM     0x030 	/**< \english First motion stops by limit switch. \endenglish \russian Первое движение завершается по сигналу с концевика. \endrussian */
+#define HOME_STOP_SECOND_BITS   0x0C0 	/**< \english Bits of the second stop selector. \endenglish \russian Биты, отвечающие за выбор сигнала завершения второго движения. \endrussian */
+#define HOME_STOP_SECOND_REV    0x040 	/**< \english Second motion stops by  revolution sensor. \endenglish \russian Второе движение завершается по сигналу с Revolution sensor. \endrussian */
+#define HOME_STOP_SECOND_SYN    0x080 	/**< \english Second motion stops by synchronization input. \endenglish \russian Второе движение завершается по сигналу со входа синхронизации. \endrussian */
+#define HOME_STOP_SECOND_LIM    0x0C0 	/**< \english Second motion stops by limit switch. \endenglish \russian Второе движение завершается по сигналу с концевика. \endrussian */
+#define HOME_USE_FAST           0x100 	/**< \english Use the fast algorithm of calibration to the home position, if set; otherwise the traditional algorithm. \endenglish \russian Если флаг установлен, используется быстрый поиск домашней позиции; иначе - традиционный. \endrussian */
 //@}
 
 
@@ -969,8 +1019,8 @@ extern "C"
 	*/
 //@{
 #define UART_PARITY_BITS        0x03 	/**< \english Bits of the parity. \endenglish \russian Биты, отвечающие за выбор четности. \endrussian */
-#define UART_PARITY_BIT_EVEN    0x00 	/**< \english Parity bit 1, if  even \endenglish \russian Бит 1, если чет \endrussian */
-#define UART_PARITY_BIT_ODD     0x01 	/**< \english Parity bit 1, if  odd \endenglish \russian Бит 1, если нечет \endrussian */
+#define UART_PARITY_BIT_EVEN    0x00 	/**< \english Parity bit 1, if  even \endenglish \russian Бит 1, если четный \endrussian */
+#define UART_PARITY_BIT_ODD     0x01 	/**< \english Parity bit 1, if  odd \endenglish \russian Бит 1, если нечетный \endrussian */
 #define UART_PARITY_BIT_SPACE   0x02 	/**< \english Parity bit always 0 \endenglish \russian Бит четности всегда 0 \endrussian */
 #define UART_PARITY_BIT_MARK    0x03 	/**< \english Parity bit always 1 \endenglish \russian Бит четности всегда 1 \endrussian */
 #define UART_PARITY_BIT_USE     0x04 	/**< \english None parity \endenglish \russian Бит чётности не используется, если "0"; бит четности используется, если "1" \endrussian */
@@ -1065,7 +1115,26 @@ extern "C"
 #define LS_ON_SW2_AVAILABLE   0x02 	/**< \english If flag is set the limit switch connnected to pin SW2 is available \endenglish \russian Если флаг установлен, то концевик, подключенный к ножке SW2, доступен \endrussian */
 #define LS_SW1_ACTIVE_LOW     0x04 	/**< \english If flag is set the limit switch connnected to pin SW1 is triggered by a low level on pin \endenglish \russian Если флаг установлен, то концевик, подключенный к ножке SW1, считается сработавшим по низкому уровню на контакте \endrussian */
 #define LS_SW2_ACTIVE_LOW     0x08 	/**< \english If flag is set the limit switch connnected to pin SW2 is triggered by a low level on pin \endenglish \russian Если флаг установлен, то концевик, подключенный к ножке SW2, считается сработавшим по низкому уровню на контакте \endrussian */
-#define LS_SHORTED            0x10 	/**< \english If flag is set the Limit switches is shorted \endenglish \russian Если флаг установлен, то концевики закорочены. \endrussian */
+#define LS_SHORTED            0x10 	/**< \english If flag is set the Limit switches is shorted \endenglish \russian Если флаг установлен, то концевики замкнуты. \endrussian */
+//@}
+
+
+/**
+	* @anchor flagset_backemfflags
+	* \english
+	* @name Flags of auto-detection of characteristics of windings of the engine.
+	* \endenglish
+	* \russian
+	* @name Флаги автоопределения характеристик обмоток двигателя.
+	* \endrussian
+	* @see set_emf_settings
+	* @see get_emf_settings
+	* @see emf_settings_t::BackEMFFlags, get_emf_settings, set_emf_settings
+	*/
+//@{
+#define BACK_EMF_INDUCTANCE_AUTO   0x01 	/**< \english Flag of auto-detection of inductance of windings of the engine. \endenglish \russian Флаг автоопределения индуктивности обмоток двигателя. \endrussian */
+#define BACK_EMF_RESISTANCE_AUTO   0x02 	/**< \english Flag of auto-detection of resistance of windings of the engine. \endenglish \russian Флаг автоопределения сопротивления обмоток двигателя. \endrussian */
+#define BACK_EMF_KM_AUTO           0x04 	/**< \english Flag of auto-detection of electromechanical coefficient of the engine. \endenglish \russian Флаг автоопределения электромеханического коэффициента двигателя. \endrussian */
 //@}
 
 
@@ -1082,11 +1151,10 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int IPS;	/**< \english The number of measured counts per revolution encoder \endenglish \russian Количество измеряемых отсчётов энкодера на оборот \endrussian */
+		unsigned int IPS;	/**< \english The number of encoder counts per shaft revolution. Range: 1..655535. The field is obsolete, it is recommended to write 0 to IPS and use the extended CountsPerTurn field. You may need to update the controller firmware to the latest version. \endenglish \russian Количество отсчётов энкодера на оборот вала. Диапазон: 1..65535. Поле устарело, рекомендуется записывать 0 в IPS и использовать расширенное поле CountsPerTurn. Может потребоваться обновление микропрограммы контроллера до последней версии. \endrussian */
 		unsigned int FeedbackType;	/**< \english \ref flagset_feedbacktype "Feedback type". \endenglish \russian \ref flagset_feedbacktype "Тип обратной связи". \endrussian */
 		unsigned int FeedbackFlags;	/**< \english \ref flagset_feedbackflags "Describes feedback flags". \endenglish \russian \ref flagset_feedbackflags "Флаги обратной связи". \endrussian */
-		unsigned int HallSPR;	/**< \english The number of hall steps per revolution. \endenglish \russian Количество отсчётов датчиков Холла на оборот. \endrussian */
-		int HallShift;	/**< \english Phase shift between output signal on BLDC engine and hall sensor input(0 - when only active the Hall sensor, the output state is a positive voltage on the winding A and a negative voltage on the winding B). \endenglish \russian Фазовый сдвиг между выходным сигналом на обмотках BLDC двигателя и входным сигналом на датчиках Холла(0 - при активном только датчике холла A подается положительный потенциал на обмотку A и отрицательный потенциал на обмотку B). \endrussian */ 
+		unsigned int CountsPerTurn;	/**< \english The number of encoder counts per shaft revolution. Range: 1..4294967295. To use the CountsPerTurn field, write 0 in the IPS field, otherwise the value from the IPS field will be used. \endenglish \russian Количество отсчётов энкодера на оборот вала. Диапазон: 1..4294967295. Для использования поля CountsPerTurn нужно записать 0 в поле IPS, иначе будет использоваться значение из поля IPS. \endrussian */
 	} feedback_settings_t;
 
 /** 
@@ -1106,15 +1174,30 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int FastHome;	/**< \english Speed used for first motion. Range: 0..1000000. \endenglish \russian Скорость первого движения. Диапазон: 0..1000000 \endrussian */
-		unsigned int uFastHome;	/**< \english Part of the speed for first motion, microsteps. Range: 0..255. \endenglish \russian Дробная часть скорости первого движения в микрошагах(используется только с шаговым двигателем). Диапазон: 0..255. \endrussian */
-		unsigned int SlowHome;	/**< \english Speed used for second motion. Range: 0..1000000. \endenglish \russian Скорость второго движения. Диапазон: 0..1000000. \endrussian */
-		unsigned int uSlowHome;	/**< \english Part of the speed for second motion, microsteps. Range: 0..255. \endenglish \russian Дробная часть скорости второго движения в микрошагах(используется только с шаговым двигателем). Диапазон: 0..255. \endrussian */
-		int HomeDelta;	/**< \english Distance from break point. Range: -2147483647..2147483647. \endenglish \russian Расстояние отхода от точки останова. Диапазон: -2147483647..2147483647. \endrussian */
-		int uHomeDelta;	/**< \english Part of the delta distance, microsteps. Range: -255..255. \endenglish \russian Дробная часть расстояния отхода от точки останова в микрошагах(используется только с шаговым двигателем). Диапазон: -255..255. \endrussian */
+		unsigned int FastHome;	/**< \english Speed used for first motion (full steps). Range: 0..100000. \endenglish \russian Скорость первого движения (в полных шагах). Диапазон: 0..100000 \endrussian */
+		unsigned int uFastHome;	/**< \english Part of the speed for first motion, microsteps. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Дробная часть скорости первого движения в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
+		unsigned int SlowHome;	/**< \english Speed used for second motion (full steps). Range: 0..100000. \endenglish \russian Скорость второго движения (в полных шагах). Диапазон: 0..100000. \endrussian */
+		unsigned int uSlowHome;	/**< \english Part of the speed for second motion, microsteps. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Дробная часть скорости второго движения в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
+		int HomeDelta;	/**< \english Distance from break point (full steps). \endenglish \russian Расстояние отхода от точки останова (в полных шагах). \endrussian */
+		int uHomeDelta;	/**< \english Part of the delta distance, microsteps. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Дробная часть расстояния отхода от точки останова в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 		unsigned int HomeFlags;	/**< \english \ref flagset_homeflags "Home settings flags". \endenglish \russian \ref flagset_homeflags "Флаги настроек команды home". \endrussian */
 	} home_settings_t;
 
+/** 
+	* \english
+	* Position calibration settings which use user units.
+	* This structure contains settings used in position calibrating.
+	* It specify behaviour of calibrating position.
+	* \endenglish
+	* \russian
+	* Настройки калибровки позиции с использованием пользовательских единиц.
+	* Эта структура содержит настройки, использующиеся при калибровке позиции.
+	* \endrussian
+	* @see get_home_settings_calb
+	* @see set_home_settings_calb
+	* @see command_home
+	* @see get_home_settings, set_home_settings
+	*/
 	typedef struct
 	{
 		float FastHome;	/**< \english Speed used for first motion. \endenglish \russian Скорость первого движения. \endrussian */
@@ -1136,33 +1219,46 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int Speed;	/**< \english Target speed(for stepper motor: steps / c, for DC: rpm). Range: 0..1000000. \endenglish \russian Заданная скорость (для ШД: шагов/c, для DC: rpm). Диапазон: 0..1000000. \endrussian */
-		unsigned int uSpeed;	/**< \english Target speed in 1/256 microsteps/s. Using with stepper motor only. Range: 0..255. \endenglish \russian Заданная скорость в 1/256 микрошагах в секунду. Используется только с шаговым мотором. Диапазон: 0..255. \endrussian */
-		unsigned int Accel;	/**< \english Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC). Range: 0..65535. \endenglish \russian Ускорение, заданное в шагах в секунду^2(ШД) или в оборотах в минуту за секунду(DC). Диапазон: 0..65535. \endrussian */
-		unsigned int Decel;	/**< \english Motor shaft deceleration, steps/s^2(stepper motor) or RPM/s(DC). Range: 0..65535. \endenglish \russian Торможение, заданное в шагах в секунду^2(ШД) или в оборотах в минуту за секунду(DC). Диапазон: 0..65535. \endrussian */
-		unsigned int AntiplaySpeed;	/**< \english Speed in antiplay mode, full steps/s(stepper motor) or RPM(DC). Range: 0..1000000. \endenglish \russian Скорость в режиме антилюфта, заданная в целых шагах/c(ШД) или в оборотах/с(DC). Диапазон: 0..1000000. \endrussian */
-		unsigned int uAntiplaySpeed;	/**< \english Speed in antiplay mode, 1/256 microsteps/s. Used with stepper motor only. Range: 0..255. \endenglish \russian Скорость в режиме антилюфта, выраженная в 1/256 микрошагах в секунду. Используется только с шаговым мотором. Диапазон: 0..255. \endrussian */
+		unsigned int Speed;	/**< \english Target speed (for stepper motor: steps/s, for DC: rpm). Range: 0..100000. \endenglish \russian Заданная скорость (для ШД: шагов/c, для DC: rpm). Диапазон: 0..100000. \endrussian */
+		unsigned int uSpeed;	/**< \english Target speed in microstep fractions/s. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). Using with stepper motor only. \endenglish \russian Заданная скорость в единицах деления микрошага в секунду. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). Используется только с шаговым мотором. \endrussian */
+		unsigned int Accel;	/**< \english Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC). Range: 1..65535. \endenglish \russian Ускорение, заданное в шагах в секунду^2(ШД) или в оборотах в минуту за секунду(DC). Диапазон: 1..65535. \endrussian */
+		unsigned int Decel;	/**< \english Motor shaft deceleration, steps/s^2(stepper motor) or RPM/s(DC). Range: 1..65535. \endenglish \russian Торможение, заданное в шагах в секунду^2(ШД) или в оборотах в минуту за секунду(DC). Диапазон: 1..65535. \endrussian */
+		unsigned int AntiplaySpeed;	/**< \english Speed in antiplay mode, full steps/s(stepper motor) or RPM(DC). Range: 0..100000. \endenglish \russian Скорость в режиме антилюфта, заданная в целых шагах/c(ШД) или в оборотах/с(DC). Диапазон: 0..100000. \endrussian */
+		unsigned int uAntiplaySpeed;	/**< \english Speed in antiplay mode, microsteps/s. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). Used with stepper motor only. \endenglish \russian Скорость в режиме антилюфта, выраженная в микрошагах в секунду. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). Используется только с шаговым мотором. \endrussian */
+		unsigned int MoveFlags;	/**< \english \ref flagset_moveflags "Flags of the motion parameters". \endenglish \russian \ref flagset_moveflags "Флаги параметров движения". \endrussian */
 	} move_settings_t;
 
+/** 
+	* \english
+	* Move settings which use user units.
+	* \endenglish
+	* \russian
+	* Настройки движения с использованием пользовательских единиц.
+	* \endrussian
+	* @see set_move_settings_calb
+	* @see get_move_settings_calb
+	* @see get_move_settings, set_move_settings
+	*/
 	typedef struct
 	{
 		float Speed;	/**< \english Target speed. \endenglish \russian Заданная скорость. \endrussian */
 		float Accel;	/**< \english Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC). \endenglish \russian Ускорение, заданное в шагах в секунду^2(ШД) или в оборотах в минуту за секунду(DC). \endrussian */
 		float Decel;	/**< \english Motor shaft deceleration, steps/s^2(stepper motor) or RPM/s(DC). \endenglish \russian Торможение, заданное в шагах в секунду^2(ШД) или в оборотах в минуту за секунду(DC). \endrussian */
 		float AntiplaySpeed;	/**< \english Speed in antiplay mode. \endenglish \russian Скорость в режиме антилюфта. \endrussian */
+		unsigned int MoveFlags;	/**< \english \ref flagset_moveflags "Flags of the motion parameters". \endenglish \russian \ref flagset_moveflags "Флаги параметров движения". \endrussian */
 	} move_settings_calb_t;
 
 /** 
 	* \english
-	* Engine settings.
+	* Movement limitations and settings, related to the motor.
 	* This structure contains useful motor settings.
 	* These settings specify motor shaft movement algorithm, list of limitations and rated characteristics.
-	* All boards are supplied with standart set of engine setting on controller's flash memory.
+	* All boards are supplied with standard set of engine setting on controller's flash memory.
 	* Please load new engine settings when you change motor, encoder, positioner etc.
 	* Please note that wrong engine settings lead to device malfunction, can lead to irreversible damage of board.
 	* \endenglish
 	* \russian
-	* Настройки мотора.
+	* Ограничения и настройки движения, связанные с двигателем.
 	* Эта структура содержит настройки мотора.
 	* Настройки определяют номинальные значения напряжения, тока, скорости мотора, характер движения и тип мотора.
 	* Пожалуйста, загружайте новые настройки когда вы меняете мотор, энкодер или позиционер.
@@ -1174,25 +1270,45 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int NomVoltage;	/**< \english Rated voltage. Controller will keep the voltage drop on motor below this value if ENGINE_LIMIT_VOLT flag is set(Used with DC only). Range: 1..65535 \endenglish \russian Номинальное напряжение мотора. Контроллер будет сохранять напряжение на моторе не выше номинального, если установлен флаг ENGINE_LIMIT_VOLT(используется только с DC двигателем). Диапазон: 1..65535 \endrussian */
-		unsigned int NomCurrent;	/**< \english Rated current. Controller will keep current consumed by motor below this value if ENGINE_LIMIT_CURR flag is set. Range: 1..65535 \endenglish \russian Номинальный ток через мотор. Ток стабилизируется для шаговых и может быть ограничен для DC(если установлен флаг ENGINE_LIMIT_CURR). Диапазон: 1..65535 \endrussian */
-		unsigned int NomSpeed;	/**< \english Nominal speed (in whole steps / s or rpm for DC and stepper motor as a master encoder). Controller will keep motor shaft RPM below this value if ENGINE_LIMIT_RPM flag is set. Range: 1..1000000. \endenglish \russian Номинальная скорость (в целых шагах/с или rpm для DC и шагового двигателя в режиме ведущего энкодера). Контроллер будет сохранять скорость мотора не выше номинальной, если установлен флаг ENGINE_LIMIT_RPM. Диапазон: 1..1000000. \endrussian */
-		unsigned int uNomSpeed;	/**< \english The fractional part of a nominal speed in microsteps (is only used with stepper motor). Range: 0..255 \endenglish \russian Микрошаговая часть номинальной скорости мотора (используется только с шаговым двигателем). Диапазон: 0..255. \endrussian */
+		unsigned int NomVoltage;	/**< \english Rated voltage in tens of mV. Controller will keep the voltage drop on motor below this value if ENGINE_LIMIT_VOLT flag is set (used with DC only). \endenglish \russian Номинальное напряжение мотора в десятках мВ. Контроллер будет сохранять напряжение на моторе не выше номинального, если установлен флаг ENGINE_LIMIT_VOLT (используется только с DC двигателем). \endrussian */
+		unsigned int NomCurrent;	/**< \english Rated current (in mA). Controller will keep current consumed by motor below this value if ENGINE_LIMIT_CURR flag is set. Range: 15..8000 \endenglish \russian Номинальный ток через мотор (в мА). Ток стабилизируется для шаговых и может быть ограничен для DC(если установлен флаг ENGINE_LIMIT_CURR). Диапазон: 15..8000 \endrussian */
+		unsigned int NomSpeed;	/**< \english Nominal (maximum) speed (in whole steps/s or rpm for DC and stepper motor as a master encoder). Controller will keep motor shaft RPM below this value if ENGINE_LIMIT_RPM flag is set. Range: 1..100000. \endenglish \russian Номинальная (максимальная) скорость (в целых шагах/с или rpm для DC и шагового двигателя в режиме ведущего энкодера). Контроллер будет сохранять скорость мотора не выше номинальной, если установлен флаг ENGINE_LIMIT_RPM. Диапазон: 1..100000. \endrussian */
+		unsigned int uNomSpeed;	/**< \english The fractional part of a nominal speed in microsteps (is only used with stepper motor). Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Микрошаговая часть номинальной скорости мотора (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 		unsigned int EngineFlags;	/**< \english \ref flagset_engineflags "Flags of engine settings". \endenglish \russian \ref flagset_engineflags "Флаги параметров мотора". \endrussian */
-		int Antiplay;	/**< \english Number of pulses or steps for backlash (play) compensation procedure. Used if ENGINE_ANTIPLAY flag is set. Range: -32768..32767 \endenglish \russian Количество шагов двигателя или импульсов энкодера, на которое позиционер будет отъезжать от заданной позиции для подхода к ней с одной и той же стороны. Используется, если установлен флаг ENGINE_ANTIPLAY. Диапазон: -32768..32767 \endrussian */
+		int Antiplay;	/**< \english Number of pulses or steps for backlash (play) compensation procedure. Used if ENGINE_ANTIPLAY flag is set. \endenglish \russian Количество шагов двигателя или импульсов энкодера, на которое позиционер будет отъезжать от заданной позиции для подхода к ней с одной и той же стороны. Используется, если установлен флаг ENGINE_ANTIPLAY. \endrussian */
 		unsigned int MicrostepMode;	/**< \english \ref flagset_microstepmode "Flags of microstep mode". \endenglish \russian \ref flagset_microstepmode "Флаги параметров микрошагового режима". \endrussian */
-		unsigned int StepsPerRev;	/**< \english Number of full steps per revolution(Used with steper motor only). Range: 1..65535. \endenglish \russian Количество полных шагов на оборот(используется только с шаговым двигателем). Диапазон: 1..65535. \endrussian */
+		unsigned int StepsPerRev;	/**< \english Number of full steps per revolution(Used with stepper motor only). Range: 1..65535. \endenglish \russian Количество полных шагов на оборот(используется только с шаговым двигателем). Диапазон: 1..65535. \endrussian */
 	} engine_settings_t;
 
+/** 
+	* \english
+	* Movement limitations and settings, related to the motor, which use user units.
+	* This structure contains useful motor settings.
+	* These settings specify motor shaft movement algorithm, list of limitations and rated characteristics.
+	* All boards are supplied with standard set of engine setting on controller's flash memory.
+	* Please load new engine settings when you change motor, encoder, positioner etc.
+	* Please note that wrong engine settings lead to device malfunction, can lead to irreversible damage of board.
+	* \endenglish
+	* \russian
+	* Ограничения и настройки движения, связанные с двигателем, с использованием пользовательских единиц.
+	* Эта структура содержит настройки мотора.
+	* Настройки определяют номинальные значения напряжения, тока, скорости мотора, характер движения и тип мотора.
+	* Пожалуйста, загружайте новые настройки когда вы меняете мотор, энкодер или позиционер.
+	* Помните, что неправильные настройки мотора могут повредить оборудование.
+	* \endrussian
+	* @see set_engine_settings_calb
+	* @see get_engine_settings_calb
+	* @see get_engine_settings, set_engine_settings
+	*/
 	typedef struct
 	{
-		unsigned int NomVoltage;	/**< \english Rated voltage. Controller will keep the voltage drop on motor below this value if ENGINE_LIMIT_VOLT flag is set(Used with DC only). Range: 1..65535 \endenglish \russian Номинальное напряжение мотора. Контроллер будет сохранять напряжение на моторе не выше номинального, если установлен флаг ENGINE_LIMIT_VOLT(используется только с DC двигателем). Диапазон: 1..65535 \endrussian */
-		unsigned int NomCurrent;	/**< \english Rated current. Controller will keep current consumed by motor below this value if ENGINE_LIMIT_CURR flag is set. Range: 1..65535 \endenglish \russian Номинальный ток через мотор. Ток стабилизируется для шаговых и может быть ограничен для DC(если установлен флаг ENGINE_LIMIT_CURR). Диапазон: 1..65535 \endrussian */
+		unsigned int NomVoltage;	/**< \english Rated voltage in tens of mV. Controller will keep the voltage drop on motor below this value if ENGINE_LIMIT_VOLT flag is set (used with DC only). \endenglish \russian Номинальное напряжение мотора в десятках мВ. Контроллер будет сохранять напряжение на моторе не выше номинального, если установлен флаг ENGINE_LIMIT_VOLT (используется только с DC двигателем). \endrussian */
+		unsigned int NomCurrent;	/**< \english Rated current (in mA). Controller will keep current consumed by motor below this value if ENGINE_LIMIT_CURR flag is set. Range: 15..8000 \endenglish \russian Номинальный ток через мотор (в мА). Ток стабилизируется для шаговых и может быть ограничен для DC(если установлен флаг ENGINE_LIMIT_CURR). Диапазон: 15..8000 \endrussian */
 		float NomSpeed;	/**< \english Nominal speed. Controller will keep motor speed below this value if ENGINE_LIMIT_RPM flag is set. \endenglish \russian Номинальная скорость. Контроллер будет сохранять скорость мотора не выше номинальной, если установлен флаг ENGINE_LIMIT_RPM. \endrussian */
 		unsigned int EngineFlags;	/**< \english \ref flagset_engineflags "Flags of engine settings". \endenglish \russian \ref flagset_engineflags "Флаги параметров мотора". \endrussian */
 		float Antiplay;	/**< \english Number of pulses or steps for backlash (play) compensation procedure. Used if ENGINE_ANTIPLAY flag is set. \endenglish \russian Количество шагов двигателя или импульсов энкодера, на которое позиционер будет отъезжать от заданной позиции для подхода к ней с одной и той же стороны. Используется, если установлен флаг ENGINE_ANTIPLAY. \endrussian */
 		unsigned int MicrostepMode;	/**< \english \ref flagset_microstepmode "Flags of microstep mode". \endenglish \russian \ref flagset_microstepmode "Флаги параметров микрошагового режима". \endrussian */
-		unsigned int StepsPerRev;	/**< \english Number of full steps per revolution(Used with steper motor only). Range: 1..65535. \endenglish \russian Количество полных шагов на оборот(используется только с шаговым двигателем). Диапазон: 1..65535. \endrussian */
+		unsigned int StepsPerRev;	/**< \english Number of full steps per revolution(Used with stepper motor only). Range: 1..65535. \endenglish \russian Количество полных шагов на оборот(используется только с шаговым двигателем). Диапазон: 1..65535. \endrussian */
 	} engine_settings_calb_t;
 
 /** 
@@ -1231,9 +1347,9 @@ extern "C"
 	typedef struct
 	{
 		unsigned int HoldCurrent;	/**< \english Current in holding regime, percent of nominal. Range: 0..100. \endenglish \russian Ток мотора в режиме удержания, в процентах от номинального. Диапазон: 0..100. \endrussian */
-		unsigned int CurrReductDelay;	/**< \english Time in ms from going to STOP state to reducting current. Range: 0..65535. \endenglish \russian Время в мс от перехода в состояние STOP до уменьшения тока. Диапазон: 0..65535. \endrussian */
-		unsigned int PowerOffDelay;	/**< \english Time in s from going to STOP state to turning power off. Range: 0..65535. \endenglish \russian Время в с от перехода в состояние STOP до отключения питания мотора. Диапазон: 0..65535. \endrussian */
-		unsigned int CurrentSetTime;	/**< \english Time in ms to reach nominal current. Range: 0..65535. \endenglish \russian Время в мс, требуемое для набора номинального тока от 0% до 100%. Диапазон: 0..65535. \endrussian */
+		unsigned int CurrReductDelay;	/**< \english Time in ms from going to STOP state to reducting current. \endenglish \russian Время в мс от перехода в состояние STOP до уменьшения тока. \endrussian */
+		unsigned int PowerOffDelay;	/**< \english Time in s from going to STOP state to turning power off. \endenglish \russian Время в с от перехода в состояние STOP до отключения питания мотора. \endrussian */
+		unsigned int CurrentSetTime;	/**< \english Time in ms to reach nominal current. \endenglish \russian Время в мс, требуемое для набора номинального тока от 0% до 100%. \endrussian */
 		unsigned int PowerFlags;	/**< \english \ref flagset_powerflags "Flags of power settings of stepper motor". \endenglish \russian \ref flagset_powerflags "Флаги параметров питания шагового мотора". \endrussian */
 	} power_settings_t;
 
@@ -1252,13 +1368,13 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int LowUpwrOff;	/**< \english Lower voltage limit to turn off the motor, in mV. Range: 0..65535. \endenglish \russian Нижний порог напряжения на силовой части для выключения, в мВ. Диапазон: 0..65535. \endrussian */
-		unsigned int CriticalIpwr;	/**< \english Maximum motor current which triggers ALARM state, in mA. Range: 0..65535. \endenglish \russian Максимальный ток силовой части, вызывающий состояние ALARM, в мА. Диапазон: 0..65535. \endrussian */
-		unsigned int CriticalUpwr;	/**< \english Maximum motor voltage which triggers ALARM state, in mV. Range: 0..65535. \endenglish \russian Максимальное напряжение на силовой части, вызывающее состояние ALARM, в мВ. Диапазон: 0..65535. \endrussian */
-		unsigned int CriticalT;	/**< \english Maximum temperature, which triggers ALARM state, in tenths of degrees Celcius. Range: 0..65535. \endenglish \russian Максимальная температура контроллера, вызывающая состояние ALARM, в десятых долях градуса Цельсия. Диапазон: 0..65535. \endrussian */
-		unsigned int CriticalIusb;	/**< \english Maximum USB current which triggers ALARM state, in mA. Range: 0..65535. \endenglish \russian Максимальный ток USB, вызывающий состояние ALARM, в мА. Диапазон: 0..65535. \endrussian */
-		unsigned int CriticalUusb;	/**< \english Maximum USB voltage which triggers ALARM state, in mV. Range: 0..65535. \endenglish \russian Максимальное напряжение на USB, вызывающее состояние ALARM, в мВ. Диапазон: 0..65535. \endrussian */
-		unsigned int MinimumUusb;	/**< \english Minimum USB voltage which triggers ALARM state, in mV. Range: 0..65535. \endenglish \russian Минимальное напряжение на USB, вызывающее состояние ALARM, в мВ. Диапазон: 0..65535. \endrussian */
+		unsigned int LowUpwrOff;	/**< \english Lower voltage limit to turn off the motor, tens of mV. \endenglish \russian Нижний порог напряжения на силовой части для выключения, десятки мВ. \endrussian */
+		unsigned int CriticalIpwr;	/**< \english Maximum motor current which triggers ALARM state, in mA. \endenglish \russian Максимальный ток силовой части, вызывающий состояние ALARM, в мА. \endrussian */
+		unsigned int CriticalUpwr;	/**< \english Maximum motor voltage which triggers ALARM state, tens of mV. \endenglish \russian Максимальное напряжение на силовой части, вызывающее состояние ALARM, десятки мВ. \endrussian */
+		unsigned int CriticalT;	/**< \english Maximum temperature, which triggers ALARM state, in tenths of degrees Celcius. \endenglish \russian Максимальная температура контроллера, вызывающая состояние ALARM, в десятых долях градуса Цельсия.\endrussian */
+		unsigned int CriticalIusb;	/**< \english Maximum USB current which triggers ALARM state, in mA. \endenglish \russian Максимальный ток USB, вызывающий состояние ALARM, в мА. \endrussian */
+		unsigned int CriticalUusb;	/**< \english Maximum USB voltage which triggers ALARM state, tens of mV. \endenglish \russian Максимальное напряжение на USB, вызывающее состояние ALARM, десятки мВ. \endrussian */
+		unsigned int MinimumUusb;	/**< \english Minimum USB voltage which triggers ALARM state, tens of mV. \endenglish \russian Минимальное напряжение на USB, вызывающее состояние ALARM, десятки мВ. \endrussian */
 		unsigned int Flags;	/**< \english \ref flagset_secureflags "Flags of secure settings". \endenglish \russian \ref flagset_secureflags "Флаги критических параметров". \endrussian */
 	} secure_settings_t;
 
@@ -1283,35 +1399,50 @@ extern "C"
 	{
 		unsigned int BorderFlags;	/**< \english \ref flagset_borderflags "Border flags". \endenglish \russian \ref flagset_borderflags "Флаги границ". \endrussian */
 		unsigned int EnderFlags;	/**< \english \ref flagset_enderflags "Limit switches flags". \endenglish \russian \ref flagset_enderflags "Флаги концевых выключателей". \endrussian */
-		int LeftBorder;	/**< \english Left border position, used if BORDER_IS_ENCODER flag is set. Range: -2147483647..2147483647. \endenglish \russian Позиция левой границы, используется если установлен флаг BORDER_IS_ENCODER. Диапазон: -2147483647..2147483647. \endrussian */
-		int uLeftBorder;	/**< \english Left border position in 1/256 microsteps(used with stepper motor only). Range: -255..255. \endenglish \russian Позиция левой границы в 1/256 микрошагах( используется только с шаговым двигателем). Диапазон: -255..255. \endrussian */
-		int RightBorder;	/**< \english Right border position, used if BORDER_IS_ENCODER flag is set. Range: -2147483647..2147483647. \endenglish \russian Позиция правой границы, используется если установлен флаг BORDER_IS_ENCODER. Диапазон: -2147483647..2147483647. \endrussian */
-		int uRightBorder;	/**< \english Right border position in 1/256 microsteps. Range: -255..255(used with stepper motor only). \endenglish \russian Позиция правой границы в 1/256 микрошагах( используется только с шаговым двигателем). Диапазон: -255..255. \endrussian */
+		int LeftBorder;	/**< \english Left border position, used if BORDER_IS_ENCODER flag is set. \endenglish \russian Позиция левой границы, используется если установлен флаг BORDER_IS_ENCODER. \endrussian */
+		int uLeftBorder;	/**< \english Left border position in microsteps(used with stepper motor only). Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Позиция левой границы в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
+		int RightBorder;	/**< \english Right border position, used if BORDER_IS_ENCODER flag is set. \endenglish \russian Позиция правой границы, используется если установлен флаг BORDER_IS_ENCODER. \endrussian */
+		int uRightBorder;	/**< \english Right border position in microsteps. Used with stepper motor only. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Позиция правой границы в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 	} edges_settings_t;
 
+/**  
+	* \english
+	* Edges settings which use user units.
+	* This structure contains border and limit switches settings.
+	* Please load new engine settings when you change positioner etc.
+	* Please note that wrong engine settings lead to device malfunction, can lead to irreversible damage of board.
+	* \endenglish
+	* \russian
+	* Настройки границ с использованием пользовательских единиц.
+	* Эта структура содержит настройки границ и концевых выключателей.
+	* Пожалуйста, загружайте новые настройки когда вы меняете позиционер.
+	* Помните, что неправильные настройки мотора могут повредить оборудование.
+	* \endrussian
+	* @see set_edges_settings_calb
+	* @see get_edges_settings_calb
+	* @see get_edges_settings, set_edges_settings
+	*/
 	typedef struct
 	{
 		unsigned int BorderFlags;	/**< \english \ref flagset_borderflags "Border flags". \endenglish \russian \ref flagset_borderflags "Флаги границ". \endrussian */
 		unsigned int EnderFlags;	/**< \english \ref flagset_enderflags "Limit switches flags". \endenglish \russian \ref flagset_enderflags "Флаги концевых выключателей". \endrussian */
-		float LeftBorder;	/**< \english Left border position, used if BORDER_IS_ENCODER flag is set. \endenglish \russian Позиция левой границы, используется если установлен флаг BORDER_IS_ENCODER. \endrussian */
-		float RightBorder;	/**< \english Right border position, used if BORDER_IS_ENCODER flag is set. \endenglish \russian Позиция правой границы, используется если установлен флаг BORDER_IS_ENCODER. \endrussian */
+		float LeftBorder;	/**< \english Left border position, used if BORDER_IS_ENCODER flag is set. Corrected by the table. \endenglish \russian Позиция левой границы, используется если установлен флаг BORDER_IS_ENCODER. Корректируется таблицей. \endrussian */
+		float RightBorder;	/**< \english Right border position, used if BORDER_IS_ENCODER flag is set. Corrected by the table. \endenglish \russian Позиция правой границы, используется если установлен флаг BORDER_IS_ENCODER. Корректируется таблицей. \endrussian */
 	} edges_settings_calb_t;
 
 /**  
 	* \english
 	* PID settings.
 	* This structure contains factors for PID routine.
-	* Range: 0..65535.
 	* It specify behaviour of PID routine for voltage.
 	* These factors are slightly different for different positioners.
-	* All boards are supplied with standart set of PID setting on controller's flash memory.
+	* All boards are supplied with standard set of PID setting on controller's flash memory.
 	* Please load new PID settings when you change positioner.
 	* Please note that wrong PID settings lead to device malfunction.
 	* \endenglish
 	* \russian
 	* Настройки ПИД.
 	* Эта структура содержит коэффициенты для ПИД регулятора.
-	* Диапазон: 0..65535.
 	* Они определяют работу ПИД контура напряжения.
 	* Эти коэффициенты хранятся во flash памяти памяти контроллера.
 	* Пожалуйста, загружайте новые настройки, когда вы меняете мотор или позиционер.
@@ -1326,7 +1457,10 @@ extern "C"
 	{
 		unsigned int KpU;	/**< \english Proportional gain for voltage PID routine \endenglish \russian Пропорциональный коэффициент ПИД контура по напряжению \endrussian */
 		unsigned int KiU;	/**< \english Integral gain for voltage PID routine \endenglish \russian Интегральный коэффициент ПИД контура по напряжению \endrussian */
-		unsigned int KdU;	/**< \english Differential gain for voltage PID routine \endenglish \russian Диференциальный коэффициент ПИД контура по напряжению \endrussian */
+		unsigned int KdU;	/**< \english Differential gain for voltage PID routine \endenglish \russian Дифференциальный коэффициент ПИД контура по напряжению \endrussian */
+		float Kpf;	/**< \english Proportional gain for BLDC position PID routine \endenglish \russian Пропорциональный коэффициент ПИД контура по позиции для BLDC \endrussian */
+		float Kif;	/**< \english Integral gain for BLDC position PID routine \endenglish \russian Интегральный коэффициент ПИД контура по позиции для BLDC \endrussian */
+		float Kdf;	/**< \english Differential gain for BLDC position PID routine \endenglish \russian Дифференциальный коэффициент ПИД контура по позиции для BLDC \endrussian */
 	} pid_settings_t;
 
 /** 
@@ -1334,7 +1468,7 @@ extern "C"
 	* Synchronization settings.
 	* This structure contains all synchronization settings, modes, periods and flags.
 	* It specifes behaviour of input synchronization.
-	* All boards are supplied with standart set of these settings.
+	* All boards are supplied with standard set of these settings.
 	* \endenglish
 	* \russian
 	* Настройки входной синхронизации.
@@ -1347,17 +1481,32 @@ extern "C"
 	typedef struct
 	{
 		unsigned int SyncInFlags;	/**< \english \ref flagset_syncinflags "Flags for synchronization input setup". \endenglish \russian \ref flagset_syncinflags "Флаги настроек синхронизации входа". \endrussian */
-		unsigned int ClutterTime;	/**< \english Input synchronization pulse dead time (mks). Range: 0..65535 \endenglish \russian Минимальная длительность входного импульса синхронизации для защиты от дребезга (мкс). Диапазон: 0..65535 \endrussian */
-		int Position;	/**< \english Desired position or shift (whole steps) \endenglish \russian Желаемая позиция или смещение (целая часть) \endrussian */
-		int uPosition;	/**< \english The fractional part of a position or shift in microsteps (-255 .. 255)(is only used with stepper motor) \endenglish \russian Дробная часть позиции или смещения в микрошагах (-255..255)(используется только с шаговым двигателем). \endrussian */
-		unsigned int Speed;	/**< \english Target speed(for stepper motor: steps / c, for DC: rpm). Range: 0..1000000. \endenglish \russian Заданная скорость (для ШД: шагов/c, для DC: rpm). Диапазон: 0..1000000. \endrussian */
-		unsigned int uSpeed;	/**< \english Target speed in microsteps/s. Using with stepper motor only. Range: 0..255. \endenglish \russian Заданная скорость в микрошагах в секунду. Используется только с шаговым мотором. Диапазон: 0..255. \endrussian */
+		unsigned int ClutterTime;	/**< \english Input synchronization pulse dead time (mks). \endenglish \russian Минимальная длительность входного импульса синхронизации для защиты от дребезга (мкс). \endrussian */
+		int Position;	/**< \english Desired position or shift (full steps) \endenglish \russian Желаемая позиция или смещение (в полных шагах) \endrussian */
+		int uPosition;	/**< \english The fractional part of a position or shift in microsteps. Is used with stepper motor. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Дробная часть позиции или смещения в микрошагах. Используется только с шаговым двигателем. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
+		unsigned int Speed;	/**< \english Target speed (for stepper motor: steps/s, for DC: rpm). Range: 0..100000. \endenglish \russian Заданная скорость (для ШД: шагов/c, для DC: rpm). Диапазон: 0..100000. \endrussian */
+		unsigned int uSpeed;	/**< \english Target speed in microsteps/s. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). Using with stepper motor only. \endenglish \russian Заданная скорость в микрошагах в секунду. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). Используется только с шаговым мотором. \endrussian */
 	} sync_in_settings_t;
 
+/** 
+	* \english
+	* Synchronization settings which use user units.
+	* This structure contains all synchronization settings, modes, periods and flags.
+	* It specifes behaviour of input synchronization.
+	* All boards are supplied with standard set of these settings.
+	* \endenglish
+	* \russian
+	* Настройки входной синхронизации с использованием пользовательских единиц.
+	* Эта структура содержит все настройки, определяющие поведение входа синхронизации.
+	* \endrussian
+	* @see get_sync_in_settings_calb
+	* @see set_sync_in_settings_calb
+	* @see get_sync_in_settings, set_sync_in_settings
+	*/
 	typedef struct
 	{
 		unsigned int SyncInFlags;	/**< \english \ref flagset_syncinflags "Flags for synchronization input setup". \endenglish \russian \ref flagset_syncinflags "Флаги настроек синхронизации входа". \endrussian */
-		unsigned int ClutterTime;	/**< \english Input synchronization pulse dead time (mks). Range: 0..65535 \endenglish \russian Минимальная длительность входного импульса синхронизации для защиты от дребезга (мкс). Диапазон: 0..65535 \endrussian */
+		unsigned int ClutterTime;	/**< \english Input synchronization pulse dead time (mks). \endenglish \russian Минимальная длительность входного импульса синхронизации для защиты от дребезга (мкс). \endrussian */
 		float Position;	/**< \english Desired position or shift. \endenglish \russian Желаемая позиция или смещение. \endrussian */
 		float Speed;	/**< \english Target speed. \endenglish \russian Заданная скорость. \endrussian */
 	} sync_in_settings_calb_t;
@@ -1367,7 +1516,7 @@ extern "C"
 	* Synchronization settings.
 	* This structure contains all synchronization settings, modes, periods and flags.
 	* It specifes behaviour of output synchronization.
-	* All boards are supplied with standart set of these settings.
+	* All boards are supplied with standard set of these settings.
 	* \endenglish
 	* \russian
 	* Настройки выходной синхронизации.
@@ -1380,18 +1529,33 @@ extern "C"
 	typedef struct
 	{
 		unsigned int SyncOutFlags;	/**< \english \ref flagset_syncoutflags "Flags of synchronization output". \endenglish \russian \ref flagset_syncoutflags "Флаги настроек синхронизации выхода". \endrussian */
-		unsigned int SyncOutPulseSteps;	/**< \english This value specifies duration of output pulse. It is measured microseconds when SYNCOUT_IN_STEPS flag is cleared or in encoder pulses or motor steps when SYNCOUT_IN_STEPS is set. Range: 0..65535 \endenglish \russian Определяет длительность выходных импульсов в шагах/импульсах энкодера, когда установлен флаг SYNCOUT_IN_STEPS, или в микросекундах если флаг сброшен. Диапазон: 0..65535 \endrussian */
-		unsigned int SyncOutPeriod;	/**< \english This value specifies number of encoder pulses or steps between two output synchronization pulses when SYNCOUT_ONPERIOD is set. Range: 0..65535 \endenglish \russian Период генерации импульсов, используется при установленном флаге SYNCOUT_ONPERIOD. Диапазон: 0..65535 \endrussian */
-		unsigned int Accuracy;	/**< \english This is the neighborhood around the target coordinates, which is getting hit in the target position and the momentum generated by the stop. Range: 0..4294967295. \endenglish \russian Это окрестность вокруг целевой координаты, попадание в которую считается попаданием в целевую позицию и генерируется импульс по остановке. Диапазон: 0..4294967295. \endrussian */
-		unsigned int uAccuracy;	/**< \english This is the neighborhood around the target coordinates in micro steps (only used with stepper motor). Range: 0 .. 255. \endenglish \russian Это окрестность вокруг целевой координаты в микрошагах (используется только с шаговым двигателем). Диапазон: 0..255. \endrussian */
+		unsigned int SyncOutPulseSteps;	/**< \english This value specifies duration of output pulse. It is measured milliseconds when SYNCOUT_IN_STEPS flag is cleared or in encoder pulses or motor steps when SYNCOUT_IN_STEPS is set. \endenglish \russian Определяет длительность выходных импульсов в шагах/импульсах энкодера, когда установлен флаг SYNCOUT_IN_STEPS, или в миллисекундах если флаг сброшен. \endrussian */
+		unsigned int SyncOutPeriod;	/**< \english This value specifies number of encoder pulses or steps between two output synchronization pulses when SYNCOUT_ONPERIOD is set. \endenglish \russian Период генерации импульсов (в шагах/отсчетах энкодера), используется при установленном флаге SYNCOUT_ONPERIOD. \endrussian */
+		unsigned int Accuracy;	/**< \english This is the neighborhood around the target coordinates, which is getting hit in the target position and the momentum generated by the stop. \endenglish \russian Это окрестность вокруг целевой координаты, попадание в которую считается попаданием в целевую позицию и генерируется импульс по остановке. \endrussian */
+		unsigned int uAccuracy;	/**< \english This is the neighborhood around the target coordinates in microsteps (only used with stepper motor). Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Это окрестность вокруг целевой координаты в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 	} sync_out_settings_t;
 
+/** 
+	* \english
+	* Synchronization settings which use user units.
+	* This structure contains all synchronization settings, modes, periods and flags.
+	* It specifes behaviour of output synchronization.
+	* All boards are supplied with standard set of these settings.
+	* \endenglish
+	* \russian
+	* Настройки выходной синхронизации с использованием пользовательских единиц.
+	* Эта структура содержит все настройки, определяющие поведение выхода синхронизации.
+	* \endrussian
+	* @see get_sync_out_settings_calb
+	* @see set_sync_out_settings_calb
+	* @see get_sync_out_settings, set_sync_out_settings
+	*/
 	typedef struct
 	{
 		unsigned int SyncOutFlags;	/**< \english \ref flagset_syncoutflags "Flags of synchronization output". \endenglish \russian \ref flagset_syncoutflags "Флаги настроек синхронизации выхода". \endrussian */
-		unsigned int SyncOutPulseSteps;	/**< \english This value specifies duration of output pulse. It is measured microseconds when SYNCOUT_IN_STEPS flag is cleared or in encoder pulses or motor steps when SYNCOUT_IN_STEPS is set. Range: 0..65535 \endenglish \russian Определяет длительность выходных импульсов в шагах/импульсах энкодера, когда установлен флаг SYNCOUT_IN_STEPS, или в микросекундах если флаг сброшен. Диапазон: 0..65535 \endrussian */
-		unsigned int SyncOutPeriod;	/**< \english This value specifies number of encoder pulses or steps between two output synchronization pulses when SYNCOUT_ONPERIOD is set. Range: 0..65535 \endenglish \russian Период генерации импульсов, используется при установленном флаге SYNCOUT_ONPERIOD. Диапазон: 0..65535 \endrussian */
-		float Accuracy;	/**< \english This is the neighborhood around the target coordinates, which is getting hit in the target position and the momentum generated by the stop. \endenglish \russian Это окрестность вокруг целевой координаты, попадание в которую считается попаданием в целевую позицию и генерируется импульс по остановке. \endrussian */
+		unsigned int SyncOutPulseSteps;	/**< \english This value specifies duration of output pulse. It is measured milliseconds when SYNCOUT_IN_STEPS flag is cleared or in encoder pulses or motor steps when SYNCOUT_IN_STEPS is set. \endenglish \russian Определяет длительность выходных импульсов в шагах/импульсах энкодера, когда установлен флаг SYNCOUT_IN_STEPS, или в миллисекундах если флаг сброшен. \endrussian */
+		unsigned int SyncOutPeriod;	/**< \english This value specifies number of encoder pulses or steps between two output synchronization pulses when SYNCOUT_ONPERIOD is set. \endenglish \russian Период генерации импульсов (в шагах/отсчетах энкодера), используется при установленном флаге SYNCOUT_ONPERIOD. \endrussian */
+		float Accuracy;	/**< \english This is the neighborhood around the target coordinates (in encoder pulses or motor steps), which is getting hit in the target position and the momentum generated by the stop. \endenglish \russian Это окрестность вокруг целевой координаты (в шагах/отсчетах энкодера), попадание в которую считается попаданием в целевую позицию и генерируется импульс по остановке. \endrussian */
 	} sync_out_settings_calb_t;
 
 /** 
@@ -1431,10 +1595,10 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int t1;	/**< \english Time in ms between turn on motor power and turn off brake. Range: 0..65535. \endenglish \russian Время в мс между включением питания мотора и отключением тормоза. Диапазон: 0..65535. \endrussian */
-		unsigned int t2;	/**< \english Time in ms between turn off brake and moving readiness. All moving commands will execute after this interval. Range: 0..65535. \endenglish \russian Время в мс между отключением тормоза и готовностью к движению. Все команды движения начинают выполняться только по истечении этого времени. Диапазон: 0..65535. \endrussian */
-		unsigned int t3;	/**< \english Time in ms between motor stop and turn on brake. Range: 0..65535. \endenglish \russian Время в мс между остановкой мотора и включением тормоза. Диапазон: 0..65535. \endrussian */
-		unsigned int t4;	/**< \english Time in ms between turn on brake and turn off motor power. Range: 0..65535. \endenglish \russian Время в мс между включением тормоза и отключением питания мотора. Диапазон: 0..65535. \endrussian */
+		unsigned int t1;	/**< \english Time in ms between turn on motor power and turn off brake. \endenglish \russian Время в мс между включением питания мотора и отключением тормоза. \endrussian */
+		unsigned int t2;	/**< \english Time in ms between turn off brake and moving readiness. All moving commands will execute after this interval. \endenglish \russian Время в мс между отключением тормоза и готовностью к движению. Все команды движения начинают выполняться только по истечении этого времени. \endrussian */
+		unsigned int t3;	/**< \english Time in ms between motor stop and turn on brake. \endenglish \russian Время в мс между остановкой мотора и включением тормоза. \endrussian */
+		unsigned int t4;	/**< \english Time in ms between turn on brake and turn off motor power. \endenglish \russian Время в мс между включением тормоза и отключением питания мотора. \endrussian */
 		unsigned int BrakeFlags;	/**< \english \ref flagset_brakeflags "Brake settings flags". \endenglish \russian \ref flagset_brakeflags "Флаги настроек тормоза". \endrussian */
 	} brake_settings_t;
 
@@ -1469,20 +1633,49 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int MaxSpeed[10];	/**< \english Array of speeds (full step) using with joystick and button control. Range: 0..1000000. \endenglish \russian Массив скоростей (в полных шагах), использующийся при управлении джойстиком или кнопками влево/вправо. Диапазон: 0..1000000. \endrussian */
-		unsigned int uMaxSpeed[10];	/**< \english Array of speeds (1/256 microstep) using with joystick and button control. Range: 0..255. \endenglish \russian Массив скоростей (в 1/256 микрошагах), использующийся при управлении джойстиком или кнопками влево/вправо. Диапазон: 0..255. \endrussian */
-		unsigned int Timeout[9];	/**< \english timeout[i] is time in ms, after that max_speed[i+1] is applying. It is using with buttons control only. Range: 0..65535. \endenglish \russian timeout[i] - время в мс, по истечении которого устанавливается скорость max_speed[i+1] (используется только при управлении кнопками). Диапазон: 0..65535. \endrussian */
-		unsigned int MaxClickTime;	/**< \english Maximum click time. Prior to the expiration of this time the first speed isn't enabled. \endenglish \russian Максимальное время клика. До истечения этого времени первая скорость не включается. \endrussian */
+		unsigned int MaxSpeed[10];	/**< \english Array of speeds (full step) using with joystick and button control. Range: 0..100000. \endenglish \russian Массив скоростей (в полных шагах), использующийся при управлении джойстиком или кнопками влево/вправо. Диапазон: 0..100000. \endrussian */
+		unsigned int uMaxSpeed[10];	/**< \english Array of speeds (in microsteps) using with joystick and button control. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Массив скоростей (в микрошагах), использующийся при управлении джойстиком или кнопками влево/вправо. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
+		unsigned int Timeout[9];	/**< \english timeout[i] is time in ms, after that max_speed[i+1] is applying. It is using with buttons control only. \endenglish \russian timeout[i] - время в мс, по истечении которого устанавливается скорость max_speed[i+1] (используется только при управлении кнопками). \endrussian */
+		unsigned int MaxClickTime;	/**< \english Maximum click time (in ms). Prior to the expiration of this time the first speed isn't enabled. \endenglish \russian Максимальное время клика (в мс). До истечения этого времени первая скорость не включается. \endrussian */
 		unsigned int Flags;	/**< \english \ref flagset_controlflags "Control flags". \endenglish \russian \ref flagset_controlflags "Флаги управления". \endrussian */
-		int DeltaPosition;	/**< \english Shift (delta) of position \endenglish \russian Смещение (дельта) позиции \endrussian */
-		int uDeltaPosition;	/**< \english Fractional part of the shift in micro steps (-255 .. 255) is only used with stepper motor \endenglish \russian Дробная часть смещения в микрошагах (-255..255) используется только с шаговым двигателем \endrussian */
+		int DeltaPosition;	/**< \english Shift (delta) of position (full step) \endenglish \russian Смещение (дельта) позиции (в полных шагах) \endrussian */
+		int uDeltaPosition;	/**< \english Fractional part of the shift in micro steps. Is only used with stepper motor. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Дробная часть смещения в микрошагах. Используется только с шаговым двигателем. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 	} control_settings_t;
 
+/** 
+	* \english
+	* Control settings which use user units.
+	* This structure contains control parameters.
+	* When choosing CTL_MODE=1 switches motor control with the joystick.
+	* In this mode, the joystick to the maximum engine tends
+	* Move at MaxSpeed [i], where i=0 if the previous use
+	* This mode is not selected another i. Buttons switch the room rate i.
+	* When CTL_MODE=2 is switched on motor control using the
+	* Left / right. When you click on the button motor starts to move in the appropriate direction at a speed MaxSpeed [0],
+	* at the end of time Timeout[i] motor move at a speed MaxSpeed [i+1]. at
+	* Transition from MaxSpeed [i] on MaxSpeed [i+1] to acceleration, as usual.
+	* The figure above shows the sensitivity of the joystick feature on its position.
+	* \endenglish
+	* \russian
+	* Настройки управления с использованием пользовательских единиц.
+	* При выборе CTL_MODE=1 включается управление мотором с помощью джойстика.
+	* В этом режиме при отклонении джойстика на максимум двигатель стремится
+	* двигаться со скоростью MaxSpeed [i], где i=0, если предыдущим использованием
+	* этого режима не было выбрано другое i. Кнопки переключают номер скорости i.
+	* При выборе CTL_MODE=2 включается управление мотором с помощью кнопок
+	* left/right. При нажатии на кнопки двигатель начинает двигаться в соответствующую сторону со скоростью MaxSpeed [0], по истечении времени Timeout[i] мотор
+	* двигается со скоростью MaxSpeed [i+1]. При
+	* переходе от MaxSpeed [i] на MaxSpeed [i+1] действует ускорение, как обычно.
+	* \endrussian
+	* @see set_control_settings_calb
+	* @see get_control_settings_calb
+	* @see get_control_settings, set_control_settings
+	*/
 	typedef struct
 	{
 		float MaxSpeed[10];	/**< \english Array of speeds using with joystick and button control. \endenglish \russian Массив скоростей, использующийся при управлении джойстиком или кнопками влево/вправо. \endrussian */
-		unsigned int Timeout[9];	/**< \english timeout[i] is time in ms, after that max_speed[i+1] is applying. It is using with buttons control only. Range: 0..65535. \endenglish \russian timeout[i] - время в мс, по истечении которого устанавливается скорость max_speed[i+1] (используется только при управлении кнопками). Диапазон: 0..65535. \endrussian */
-		unsigned int MaxClickTime;	/**< \english Maximum click time. Prior to the expiration of this time the first speed isn't enabled. \endenglish \russian Максимальное время клика. До истечения этого времени первая скорость не включается. \endrussian */
+		unsigned int Timeout[9];	/**< \english timeout[i] is time in ms, after that max_speed[i+1] is applying. It is using with buttons control only. \endenglish \russian timeout[i] - время в мс, по истечении которого устанавливается скорость max_speed[i+1] (используется только при управлении кнопками). \endrussian */
+		unsigned int MaxClickTime;	/**< \english Maximum click time (in ms). Prior to the expiration of this time the first speed isn't enabled. \endenglish \russian Максимальное время клика (в мс). До истечения этого времени первая скорость не включается. \endrussian */
 		unsigned int Flags;	/**< \english \ref flagset_controlflags "Control flags". \endenglish \russian \ref flagset_controlflags "Флаги управления". \endrussian */
 		float DeltaPosition;	/**< \english Shift (delta) of position \endenglish \russian Смещение (дельта) позиции \endrussian */
 	} control_settings_calb_t;
@@ -1506,7 +1699,7 @@ extern "C"
 	* определяемой отклонением джойстика от DeadZone до 100% отклонения, причем отклонению DeadZone соответствует
 	* нулевая скорость, а 100% отклонения соответствует MaxSpeed [i] (см. команду SCTL), где i=0, если предыдущим
 	* использованием этого режима не было выбрано другое i.
-	* Если следуюящая скорость в таблице скоростей нулевая (целая и микрошаговая части), то перехода на неё не происходит.
+	* Если следующая скорость в таблице скоростей нулевая (целая и микрошаговая части), то перехода на неё не происходит.
 	* DeadZone вычисляется в десятых долях процента отклонения
 	* от центра (JoyCenter) до правого или левого максимума. Зависимость между отклонением и скоростью экспоненциальная,
 	* что позволяет без переключения режимов скорости сочетать высокую подвижность и точность.
@@ -1517,9 +1710,9 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int JoyLowEnd;	/**< \english Joystick lower end position. \endenglish \russian Значение в шагах джойстика, соответствующее нижней границе диапазона отклонения устройства. Должно лежать в пределах [0,10000]. \endrussian */
-		unsigned int JoyCenter;	/**< \english Joystick center position. \endenglish \russian Значение в шагах джойстика, соответствующее неотклонённому устройству. Должно лежать в пределах [0,10000]. \endrussian */
-		unsigned int JoyHighEnd;	/**< \english Joystick higher end position. \endenglish \russian Значение в шагах джойстика, соответствующее верхней границе диапазона отклонения устройства. Должно лежать в пределах [0,10000]. \endrussian */
+		unsigned int JoyLowEnd;	/**< \english Joystick lower end position. Range: 0..10000. \endenglish \russian Значение в шагах джойстика, соответствующее нижней границе диапазона отклонения устройства. Должно лежать в пределах. Диапазон: 0..10000. \endrussian */
+		unsigned int JoyCenter;	/**< \english Joystick center position. Range: 0..10000. \endenglish \russian Значение в шагах джойстика, соответствующее неотклонённому устройству. Должно лежать в пределах. Диапазон: 0..10000. \endrussian */
+		unsigned int JoyHighEnd;	/**< \english Joystick higher end position. Range: 0..10000. \endenglish \russian Значение в шагах джойстика, соответствующее верхней границе диапазона отклонения устройства. Должно лежать в пределах. Диапазон: 0..10000. \endrussian */
 		unsigned int ExpFactor;	/**< \english Exponential nonlinearity factor. \endenglish \russian Фактор экспоненциальной нелинейности отклика джойстика. \endrussian */
 		unsigned int DeadZone;	/**< \english Joystick dead zone. \endenglish \russian Отклонение от среднего положения, которое не вызывает начала движения (в десятых долях процента). Максимальное мёртвое отклонение +-25.5%, что составляет половину рабочего диапазона джойстика. \endrussian */
 		unsigned int JoyFlags;	/**< \english \ref flagset_joyflags "Joystick flags". \endenglish \russian \ref flagset_joyflags "Флаги джойстика". \endrussian */
@@ -1560,7 +1753,7 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int CTPMinError;	/**< \english Minimum contrast steps from step motor encoder position, wich set STATE_CTP_ERROR flag. Measured in steps step motor. Range: 0..255. \endenglish \russian Минимальное отличие шагов ШД от положения энкодера, устанавливающее флаг STATE_RT_ERROR. Измеряется в шагах ШД. Диапазон: 0..255. \endrussian */
+		unsigned int CTPMinError;	/**< \english Minimum contrast steps from step motor encoder position, wich set STATE_CTP_ERROR flag. Measured in steps step motor. \endenglish \russian Минимальное отличие шагов ШД от положения энкодера, устанавливающее флаг STATE_RT_ERROR. Измеряется в шагах ШД. \endrussian */
 		unsigned int CTPFlags;	/**< \english \ref flagset_ctpflags "Position control flags". \endenglish \russian \ref flagset_ctpflags "Флаги контроля позиции". \endrussian */
 	} ctp_settings_t;
 
@@ -1579,9 +1772,32 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int Speed;	/**< \english UART speed \endenglish \russian Cкорость UART \endrussian */
+		unsigned int Speed;	/**< \english UART speed (in bauds) \endenglish \russian Cкорость UART (в бодах) \endrussian */
 		unsigned int UARTSetupFlags;	/**< \english \ref flagset_uartsetupflags "UART parity flags". \endenglish \russian \ref flagset_uartsetupflags "Флаги настроек четности команды uart". \endrussian */
 	} uart_settings_t;
+
+/** 
+	* \english
+	* Calibration settings.
+	* This structure contains calibration settings.
+	* \endenglish
+	* \russian
+	* Калибровочные коэффициенты.
+	* Эта структура содержит калибровочные коэффициенты.
+	* \endrussian
+	* @see get_calibration_settings
+	* @see set_calibration_settings
+	* @see get_calibration_settings, set_calibration_settings
+	*/
+	typedef struct
+	{
+		float CSS1_A;	/**< \english Scaling factor for the analogue measurements of the winding A current. \endenglish \russian Коэффициент масштабирования для аналоговых измерений тока в обмотке A. \endrussian */
+		float CSS1_B;	/**< \english Shift factor for the analogue measurements of the winding A current. \endenglish \russian Коэффициент сдвига для аналоговых измерений тока в обмотке A. \endrussian */
+		float CSS2_A;	/**< \english Scaling factor for the analogue measurements of the winding B current. \endenglish \russian Коэффициент масштабирования для аналоговых измерений тока в обмотке B. \endrussian */
+		float CSS2_B;	/**< \english Shift factor for the analogue measurements of the winding B current. \endenglish \russian Коэффициент сдвига для аналоговых измерений тока в обмотке B. \endrussian */
+		float FullCurrent_A;	/**< \english Scaling factor for the analogue measurements of the full current. \endenglish \russian Коэффициент масштабирования для аналоговых измерений полного тока. \endrussian */
+		float FullCurrent_B;	/**< \english Shift factor for the analogue measurements of the full current. \endenglish \russian Коэффициент сдвига для аналоговых измерений полного тока. \endrussian */
+	} calibration_settings_t;
 
 /** 
 	* \english
@@ -1600,26 +1816,86 @@ extern "C"
 
 /** 
 	* \english
-	* This command adds one element of the FIFO commands.
+	* Userdata for save into FRAM.
 	* \endenglish
 	* \russian
-	* Это команда добавляет один элемент в буфер FIFO команд.
+	* Пользовательские данные для сохранения во FRAM.
 	* \endrussian
-	* @see set_add_sync_in_action
+	* @see get_nonvolatile_memory, set_nonvolatile_memory
 	*/
 	typedef struct
 	{
-		int Position;	/**< \english Desired position or shift (whole steps) \endenglish \russian Желаемая позиция или смещение (целая часть) \endrussian */
-		int uPosition;	/**< \english The fractional part of a position or shift in microsteps (-255 .. 255)(is only used with stepper motor) \endenglish \russian Дробная часть позиции или смещения в микрошагах (-255..255)(используется только с шаговым двигателем). \endrussian */
-		unsigned int Speed;	/**< \english Target speed(for stepper motor: steps / c, for DC: rpm). Range: 0..1000000. \endenglish \russian Заданная скорость (для ШД: шагов/c, для DC: rpm). Диапазон: 0..1000000. \endrussian */
-		unsigned int uSpeed;	/**< \english Target speed in microsteps/s. Using with stepper motor only. Range: 0..255. \endenglish \russian Заданная скорость в микрошагах в секунду. Используется только с шаговым мотором. Диапазон: 0..255. \endrussian */
-	} add_sync_in_action_t;
+		unsigned int UserData[7];	/**< \english User data. Can be set by user for his/her convinience. Each element of the array stores only 32 bits of user data. This is important on systems where an int type contains more than 4 bytes. For example that all amd64 systems. \endenglish \russian Пользовательские данные. Могут быть установлены пользователем для его удобства. Каждый элемент массива хранит только 32 бита пользовательских данных. Это важно на системах где тип int содержит больше чем 4 байта. Например это все системы amd64.\endrussian */
+	} nonvolatile_memory_t;
 
+/**  
+	* \english
+	* EMF settings.
+	* This structure contains the data for Electromechanical characteristics(EMF) of the motor.
+	* They determine the inductance, resistance and Electromechanical coefficient of the motor.
+	* This data is stored in the flash memory of the controller.
+	* Please download the new settings when you change the motor.
+	* Remember that improper settings of the EMF may damage the equipment.
+	* \endenglish
+	* \russian
+	* Настройки EMF.
+	* Эта структура содержит данные электромеханических характеристик(EMF) двигателя.
+	* Они определяют индуктивность, сопротивление и электромеханический коэффициент двигателя.
+	* Эти данные хранятся во flash памяти памяти контроллера.
+	* Пожалуйста, загружайте новые настройки, когда вы меняете мотор.
+	* Помните, что неправильные настройки EMF могут повредить оборудование.
+	* \endrussian
+	* @see set_emf_settings
+	* @see get_emf_settings
+	* @see get_emf_settings, set_emf_settings
+	*/
 	typedef struct
 	{
-		float Position;	/**< \english Desired position or shift. \endenglish \russian Желаемая позиция или смещение. \endrussian */
-		float Speed;	/**< \english Target speed. \endenglish \russian Заданная скорость. \endrussian */
-	} add_sync_in_action_calb_t;
+		float L;	/**< \english The inductance of the windings of the motor. \endenglish \russian Индуктивность обмоток двигателя. \endrussian */
+		float R;	/**< \english The resistance of the windings of the motor. \endenglish \russian Сопротивление обмоток двигателя. \endrussian */
+		float Km;	/**< \english Electromechanical ratio of the motor. \endenglish \russian Электромеханический коэффициент двигателя. \endrussian */
+		unsigned int BackEMFFlags;	/**< \english \ref flagset_backemfflags "Flags of auto-detection of characteristics of windings of the engine". \endenglish \russian \ref flagset_backemfflags "Флаги автоопределения характеристик обмоток двигателя". \endrussian */
+	} emf_settings_t;
+
+/**  
+	* \english
+	* EAS settings.
+	* This structure is intended for setting parameters of algorithms that cannot be attributed to standard Kp, Ki, Kd, and L, R, Km.
+	* \endenglish
+	* \russian
+	* Настройки EAS.
+	* Эта структура предназначена для настройки параметров алгоритмов, которые невозможно отнести к стандартным Kp, Ki, Kd и L, R, Km.
+	* Эти данные хранятся во flash памяти памяти контроллера.
+	* \endrussian
+	* @see set_engine_advansed_setup
+	* @see get_engine_advansed_setup
+	* @see get_engine_advansed_setup, set_engine_advansed_setup
+	*/
+	typedef struct
+	{
+		unsigned int stepcloseloop_Kw;	/**< \english Mixing ratio of the actual and set speed, range [0, 100], default value 50. \endenglish \russian Коэффициент смешения реальной и заданной скорости, диапазон [0, 100], значение по умолчанию 50. \endrussian */
+		unsigned int stepcloseloop_Kp_low;	/**< \english Position feedback in the low-speed zone, range [0, 65535], default value 1000. \endenglish \russian Обратная связь по позиции в зоне малых скоростей, диапазон [0, 65535], значение по умолчанию 1000. \endrussian */
+		unsigned int stepcloseloop_Kp_high;	/**< \english Position feedback in the high-speed zone, range [0, 65535], default value 33. \endenglish \russian Обратная связь по позиции в зоне больших скоростей, диапазон [0, 65535], значение по умолчанию 33. \endrussian */
+	} engine_advansed_setup_t;
+
+/**  
+	* \english
+	* EST settings.
+	* This structure EST.
+	* \endenglish
+	* \russian
+	* Настройки EAS.
+	* Эта структура EST.
+	* Эти данные хранятся во flash памяти контроллера.
+	* \endrussian
+	* @see set_extended_settings
+	* @see get_extended_settings
+	* @see get_extended_settings, set_extended_settings
+	*/
+	typedef struct
+	{
+		unsigned int Param1;	/**< \english    \endenglish \russian   \endrussian */
+	} extended_settings_t;
 
 /** 
 	* \english
@@ -1638,13 +1914,26 @@ extern "C"
 	typedef struct
 	{
 		int Position;	/**< \english The position of the whole steps in the engine \endenglish \russian Позиция в основных шагах двигателя \endrussian */
-		int uPosition;	/**< \english Microstep position is only used with stepper motors \endenglish \russian Позиция в микрошагах(используется только с шаговыми двигателями). \endrussian */
+		int uPosition;	/**< \english Microstep position is only used with stepper motors. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Позиция в микрошагах (используется только с шаговыми двигателями). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 		long_t EncPosition;	/**< \english Encoder position.  \endenglish \russian Позиция энкодера. \endrussian */
 	} get_position_t;
 
+/** 
+	* \english
+	* Position information.
+	* Useful structure that contains position value in user units for stepper motor
+	* and encoder steps of all engines.
+	* \endenglish
+	* \russian
+	* Данные о позиции.
+	* Структура содержит значение положения в пользовательских единицах для шагового двигателя и в шагах энкодера всех
+	* двигателей.
+	* \endrussian
+	* @see get_position
+	*/
 	typedef struct
 	{
-		float Position;	/**< \english The position in the engine. \endenglish \russian Позиция двигателя. \endrussian */
+		float Position;	/**< \english The position in the engine. Corrected by the table. \endenglish \russian Позиция двигателя. Корректируется таблицей. \endrussian */
 		long_t EncPosition;	/**< \english Encoder position.  \endenglish \russian Позиция энкодера. \endrussian */
 	} get_position_calb_t;
 
@@ -1665,11 +1954,25 @@ extern "C"
 	typedef struct
 	{
 		int Position;	/**< \english The position of the whole steps in the engine \endenglish \russian Позиция в основных шагах двигателя \endrussian */
-		int uPosition;	/**< \english Microstep position is only used with stepper motors \endenglish \russian Позиция в микрошагах(используется только с шаговыми двигателями). \endrussian */
+		int uPosition;	/**< \english Microstep position is only used with stepper motors. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Позиция в микрошагах (используется только с шаговыми двигателями). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 		long_t EncPosition;	/**< \english Encoder position.  \endenglish \russian Позиция энкодера. \endrussian */
 		unsigned int PosFlags;	/**< \english \ref flagset_positionflags "Position setting flags". \endenglish \russian \ref flagset_positionflags "Флаги установки положения". \endrussian */
 	} set_position_t;
 
+/** 
+	* \english
+	* Position information which use user units.
+	* Useful structure that contains position value in steps and micro for stepper motor
+	* and encoder steps of all engines.
+	* \endenglish
+	* \russian
+	* Данные о позиции с использованием пользовательских единиц.
+	* Структура содержит значение положения в шагах и
+	* микрошагах для шагового двигателя и в шагах энкодера всех
+	* двигателей.
+	* \endrussian
+	* @see set_position
+	*/
 	typedef struct
 	{
 		float Position;	/**< \english The position in the engine. \endenglish \russian Позиция двигателя. \endrussian */
@@ -1696,20 +1999,31 @@ extern "C"
 		unsigned int EncSts;	/**< \english \ref flagset_encodestatus "Encoder state". \endenglish \russian \ref flagset_encodestatus "Состояние энкодера". \endrussian */
 		unsigned int WindSts;	/**< \english \ref flagset_windstatus "Winding state". \endenglish \russian \ref flagset_windstatus "Состояние обмоток". \endrussian */
 		int CurPosition;	/**< \english Current position. \endenglish \russian Первичное поле, в котором хранится текущая позиция, как бы ни была устроена обратная связь. В случае работы с DC-мотором в этом поле находится текущая позиция по данным с энкодера, в случае работы с ШД-мотором в режиме, когда первичными являются импульсы, подаваемые на мотор, в этом поле содержится целое значение шагов текущей позиции. \endrussian */
-		int uCurPosition;	/**< \english Step motor shaft position in 1/256 microsteps. Used only with stepper motor. \endenglish \russian Дробная часть текущей позиции в микрошагах (-255..255). Используется только с шаговым двигателем. \endrussian */
+		int uCurPosition;	/**< \english Step motor shaft position in microsteps. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). Used only with stepper motor. \endenglish \russian Дробная часть текущей позиции в микрошагах. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). Используется только с шаговым двигателем. \endrussian */
 		long_t EncPosition;	/**< \english Current encoder position. \endenglish \russian Текущая позиция по данным с энкодера в импульсах энкодера, используется только если энкодер установлен, активизирован и не является основным датчиком положения, например при использовании энкодера совместно с шаговым двигателем для контроля проскальзования. \endrussian */
-		int CurSpeed;	/**< \english Motor shaft speed. \endenglish \russian Текущая скорость. \endrussian */
-		int uCurSpeed;	/**< \english Part of motor shaft speed in 1/256 microsteps. Used only with stepper motor. \endenglish \russian Дробная часть текущей скорости в микрошагах (-255..255). Используется только с шаговым двигателем. \endrussian */
-		int Ipwr;	/**< \english Engine current. \endenglish \russian Ток потребления силовой части. \endrussian */
-		int Upwr;	/**< \english Power supply voltage. \endenglish \russian Напряжение на силовой части. \endrussian */
-		int Iusb;	/**< \english USB current consumption. \endenglish \russian Ток потребления по USB. \endrussian */
-		int Uusb;	/**< \english USB voltage. \endenglish \russian Напряжение на USB. \endrussian */
+		int CurSpeed;	/**< \english Motor shaft speed in steps/s or rpm. \endenglish \russian Текущая скорость. \endrussian */
+		int uCurSpeed;	/**< \english Part of motor shaft speed in microsteps. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). Used only with stepper motor. \endenglish \russian Дробная часть текущей скорости в микрошагах. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). Используется только с шаговым двигателем. \endrussian */
+		int Ipwr;	/**< \english Engine current, mA. \endenglish \russian Ток потребления силовой части, мА. \endrussian */
+		int Upwr;	/**< \english Power supply voltage, tens of mV. \endenglish \russian Напряжение на силовой части, десятки мВ. \endrussian */
+		int Iusb;	/**< \english USB current, mA. \endenglish \russian Ток потребления по USB, мА. \endrussian */
+		int Uusb;	/**< \english USB voltage, tens of mV. \endenglish \russian Напряжение на USB, десятки мВ. \endrussian */
 		int CurT;	/**< \english Temperature in tenths of degrees C. \endenglish \russian Температура процессора в десятых долях градусов цельсия. \endrussian */
 		unsigned int Flags;	/**< \english \ref flagset_stateflags "Status flags". \endenglish \russian \ref flagset_stateflags "Флаги состояния". \endrussian */
-		unsigned int GPIOFlags;	/**< \english \ref flagset_gpioflags "Status flags". \endenglish \russian \ref flagset_gpioflags "Флаги состояния GPIO входов". \endrussian */
-		unsigned int CmdBufFreeSpace;	/**< \english This field shows the amount of free cells buffer synchronization chain. \endenglish \russian Это поле показывает количество свободных ячеек буфера цепочки синхронизации. \endrussian */
+		unsigned int GPIOFlags;	/**< \english \ref flagset_gpioflags "Status flags of the GPIO outputs". \endenglish \russian \ref flagset_gpioflags "Флаги состояния GPIO входов". \endrussian */
+		unsigned int CmdBufFreeSpace;	/**< \english This field is a service field. It shows the amount of free cells buffer synchronization chain. \endenglish \russian Данное поле служебное. Оно показывает количество свободных ячеек буфера цепочки синхронизации. \endrussian */
 	} status_t;
 
+/** 
+	* \english
+	* Device state which use user units.
+	* Useful structure that contains current controller state, including speed, position and boolean flags.
+	* \endenglish
+	* \russian
+	* Состояние устройства с использованием пользовательских единиц.
+	* Эта структура содержит основные параметры текущего состоянии контроллера такие как скорость, позиция и флаги состояния.
+	* \endrussian
+	* @see get_status_impl
+	*/
 	typedef struct
 	{
 		unsigned int MoveSts;	/**< \english \ref flagset_movestate "Flags of move state". \endenglish \russian \ref flagset_movestate "Флаги состояния движения". \endrussian */
@@ -1717,18 +2031,35 @@ extern "C"
 		unsigned int PWRSts;	/**< \english \ref flagset_powerstate "Flags of power state of stepper motor". \endenglish \russian \ref flagset_powerstate "Флаги состояния питания шагового мотора". \endrussian */
 		unsigned int EncSts;	/**< \english \ref flagset_encodestatus "Encoder state". \endenglish \russian \ref flagset_encodestatus "Состояние энкодера". \endrussian */
 		unsigned int WindSts;	/**< \english \ref flagset_windstatus "Winding state". \endenglish \russian \ref flagset_windstatus "Состояние обмоток". \endrussian */
-		float CurPosition;	/**< \english Current position. \endenglish \russian Первичное поле, в котором хранится текущая позиция, как бы ни была устроена обратная связь. В случае работы с DC-мотором в этом поле находится текущая позиция по данным с энкодера, в случае работы с ШД-мотором в режиме, когда первичными являются импульсы, подаваемые на мотор. \endrussian */
+		float CurPosition;	/**< \english Current position. Corrected by the table. \endenglish \russian Первичное поле, в котором хранится текущая позиция, как бы ни была устроена обратная связь. В случае работы с DC-мотором в этом поле находится текущая позиция по данным с энкодера, в случае работы с ШД-мотором в режиме, когда первичными являются импульсы, подаваемые на мотор. Корректируется таблицей. \endrussian */
 		long_t EncPosition;	/**< \english Current encoder position. \endenglish \russian Текущая позиция по данным с энкодера в импульсах энкодера, используется только если энкодер установлен, активизирован и не является основным датчиком положения, например при использовании энкодера совместно с шаговым двигателем для контроля проскальзования. \endrussian */
 		float CurSpeed;	/**< \english Motor shaft speed. \endenglish \russian Текущая скорость. \endrussian */
-		int Ipwr;	/**< \english Engine current. \endenglish \russian Ток потребления силовой части. \endrussian */
-		int Upwr;	/**< \english Power supply voltage. \endenglish \russian Напряжение на силовой части. \endrussian */
-		int Iusb;	/**< \english USB current consumption. \endenglish \russian Ток потребления по USB. \endrussian */
-		int Uusb;	/**< \english USB voltage. \endenglish \russian Напряжение на USB. \endrussian */
+		int Ipwr;	/**< \english Engine current, mA. \endenglish \russian Ток потребления силовой части, мА. \endrussian */
+		int Upwr;	/**< \english Power supply voltage, tens of mV. \endenglish \russian Напряжение на силовой части, десятки мВ. \endrussian */
+		int Iusb;	/**< \english USB current, mA. \endenglish \russian Ток потребления по USB, мА. \endrussian */
+		int Uusb;	/**< \english USB voltage, tens of mV. \endenglish \russian Напряжение на USB, десятки мВ. \endrussian */
 		int CurT;	/**< \english Temperature in tenths of degrees C. \endenglish \russian Температура процессора в десятых долях градусов цельсия. \endrussian */
 		unsigned int Flags;	/**< \english \ref flagset_stateflags "Status flags". \endenglish \russian \ref flagset_stateflags "Флаги состояния". \endrussian */
-		unsigned int GPIOFlags;	/**< \english \ref flagset_gpioflags "Status flags". \endenglish \russian \ref flagset_gpioflags "Флаги состояния GPIO входов". \endrussian */
-		unsigned int CmdBufFreeSpace;	/**< \english This field shows the amount of free cells buffer synchronization chain. \endenglish \russian Это поле показывает количество свободных ячеек буфера цепочки синхронизации. \endrussian */
+		unsigned int GPIOFlags;	/**< \english \ref flagset_gpioflags "Status flags of the GPIO outputs". \endenglish \russian \ref flagset_gpioflags "Флаги состояния GPIO входов". \endrussian */
+		unsigned int CmdBufFreeSpace;	/**< \english This field is a service field. It shows the amount of free cells buffer synchronization chain. \endenglish \russian Данное поле служебное. Оно показывает количество свободных ячеек буфера цепочки синхронизации. \endrussian */
 	} status_calb_t;
+
+/** 
+  * \english
+  * The buffer holds no more than 25 points. The exact length of the received buffer is reflected in the Length field.
+  * \endenglish
+  * \russian
+  * Буфер вмещает не более 25и точек. Точная длина полученного буффера отражена в поле Length.
+  * \endrussian
+  * @see measurements
+	* @see get_measurements
+  */
+	typedef struct
+	{
+		int Speed[25];	/**< \english Current speed in microsteps per second (whole steps are recalculated taking into account the current step division mode) or encoder counts per second. \endenglish \russian Текущая скорость в микрошагах в секунду (целые шаги пересчитываются с учетом текущего режима деления шага) или отсчетах энкодера в секунду. \endrussian */
+		int Error[25];	/**< \english Current error in microsteps per second (whole steps are recalculated taking into account the current step division mode) or encoder counts per second. \endenglish \russian Текущая скорость в микрошагах в секунду (целые шаги пересчитываются с учетом текущего режима деления шага) или отсчетах энкодера в секунду. \endrussian */
+		unsigned int Length;	/**< \english Length of actual data in buffer. \endenglish \russian Длина фактических данных в буфере. \endrussian */
+	} measurements_t;
 
 /** 
 	* \english
@@ -1744,29 +2075,29 @@ extern "C"
 	*/
 	typedef struct
 	{
-		int WindingVoltageA;	/**< \english In the case step motor, the voltage across the winding A; in the case of a brushless, the voltage on the first coil, in the case of the only DC. \endenglish \russian В случае ШД, напряжение на обмотке A; в случае бесщеточного, напряжение на первой обмотке; в случае DC на единственной. \endrussian */
-		int WindingVoltageB;	/**< \english In the case step motor, the voltage across the winding B; in case of a brushless, the voltage on the second winding, and in the case of DC is not used. \endenglish \russian В случае ШД, напряжение на обмотке B; в случае бесщеточного, напряжение на второй обмотке; в случае DC не используется. \endrussian */
-		int WindingVoltageC;	/**< \english In the case of a brushless, the voltage on the third winding, in the case step motor and DC is not used. \endenglish \russian В случае бесщеточного, напряжение на третьей обмотке; в случае ШД и DC не используется. \endrussian */
-		int WindingCurrentA;	/**< \english In the case step motor, the current in the coil A; brushless if the current in the first coil, and in the case of a single DC. \endenglish \russian В случае ШД, ток в обмотке A; в случае бесщеточного, ток в первой обмотке; в случае DC в единственной. \endrussian */
-		int WindingCurrentB;	/**< \english In the case step motor, the current in the coil B; brushless if the current in the second coil, and in the case of DC is not used. \endenglish \russian В случае ШД, ток в обмотке B; в случае бесщеточного, ток в второй обмотке; в случае DC не используется. \endrussian */
-		int WindingCurrentC;	/**< \english In the case of a brushless, the current in the third winding, in the case step motor and DC is not used. \endenglish \russian В случае бесщеточного, ток в третьей обмотке; в случае ШД и DC не используется. \endrussian */
-		unsigned int Pot;	/**< \english Potentiometer in ten-thousandths of [0, 10000] \endenglish \russian Положение потенциометра в десятитысячных долях [0, 10000] \endrussian */
-		unsigned int Joy;	/**< \english The joystick to the ten-thousandths [0, 10000] \endenglish \russian Положение джойстика в десятитысячных долях [0, 10000] \endrussian */
+		int WindingVoltageA;	/**< \english In the case step motor, the voltage across the winding A (in tens of mV); in the case of a brushless, the voltage on the first coil, in the case of the only DC. \endenglish \russian В случае ШД, напряжение на обмотке A (в десятках мВ); в случае бесщеточного, напряжение на первой обмотке; в случае DC на единственной. \endrussian */
+		int WindingVoltageB;	/**< \english In the case step motor, the voltage across the winding B (in tens of mV); in case of a brushless, the voltage on the second winding, and in the case of DC is not used. \endenglish \russian В случае ШД, напряжение на обмотке B (в десятках мВ); в случае бесщеточного, напряжение на второй обмотке; в случае DC не используется. \endrussian */
+		int WindingVoltageC;	/**< \english In the case of a brushless, the voltage on the third winding (in tens of mV), in the case step motor and DC is not used. \endenglish \russian В случае бесщеточного, напряжение на третьей обмотке (в десятках мВ); в случае ШД и DC не используется. \endrussian */
+		int WindingCurrentA;	/**< \english In the case step motor, the current in the coil A (in mA); brushless if the current in the first coil, and in the case of a single DC. \endenglish \russian В случае ШД, ток в обмотке A (в мA); в случае бесщеточного, ток в первой обмотке; в случае DC в единственной. \endrussian */
+		int WindingCurrentB;	/**< \english In the case step motor, the current in the coil B (in mA); brushless if the current in the second coil, and in the case of DC is not used. \endenglish \russian В случае ШД, ток в обмотке B (в мА); в случае бесщеточного, ток в второй обмотке; в случае DC не используется. \endrussian */
+		int WindingCurrentC;	/**< \english In the case of a brushless, the current in the third winding (in mA), in the case step motor and DC is not used. \endenglish \russian В случае бесщеточного, ток в третьей обмотке (в мА); в случае ШД и DC не используется. \endrussian */
+		unsigned int Pot;	/**< \english Analog input value in ten-thousandths. Range: 0..10000 \endenglish \russian Значение на аналоговом входе. Диапазон: 0..10000 \endrussian */
+		unsigned int Joy;	/**< \english The joystick position in the ten-thousandths. Range: 0..10000 \endenglish \russian Положение джойстика в десятитысячных долях. Диапазон: 0..10000 \endrussian */
 		int DutyCycle;	/**< \english Duty cycle of PWM. \endenglish \russian Коэффициент заполнения ШИМ. \endrussian */
 	} chart_data_t;
 
 /** 
 	* \english
-	* Read command controller information. The controller responds to this command
-	* in any state. Manufacturer field for all XI ** devices should contain the string
-	* "XIMC" (validation is performed on it) The remaining fields contain information
-	* about the device.
+	* Read command controller information.
+	* The controller responds to this command in any state. Manufacturer field for all XI**
+	* devices should contain the string "XIMC" (validation is performed on it)
+	* The remaining fields contain information about the device.
 	* \endenglish
 	* \russian
-	* Команда чтения информации о контроллере. Контроллер отвечает на эту команду
-	* в любом состоянии. Поле Manufacturer для всех XI** девайсов должно содержать
-	* строку "XIMC" (по нему производится валидация). Остальные поля содержат
-	* информацию об устройстве.
+	* Команда чтения информации о контроллере.
+	* Контроллер отвечает на эту команду в любом состоянии. Поле Manufacturer для всех XI**
+	* девайсов должно содержать строку "XIMC" (по нему производится валидация).
+	* Остальные поля содержат информацию об устройстве.
 	* \endrussian
 	* @see get_device_information
 	* @see get_device_information_impl
@@ -1776,19 +2107,22 @@ extern "C"
 		char Manufacturer[5];	/**< \english Manufacturer \endenglish \russian Производитель \endrussian */
 		char ManufacturerId[3];	/**< \english Manufacturer id \endenglish \russian Идентификатор производителя \endrussian */
 		char ProductDescription[9];	/**< \english Product description \endenglish \russian Описание продукта \endrussian */
+		unsigned int Major;	/**< \english The major number of the hardware version. \endenglish \russian Основной номер версии железа. \endrussian */
+		unsigned int Minor;	/**< \english Minor number of the hardware version. \endenglish \russian Второстепенный номер версии железа. \endrussian */
+		unsigned int Release;	/**< \english Number of edits this release of hardware. \endenglish \russian Номер правок этой версии железа. \endrussian */
 	} device_information_t;
 
 /**  
 	* \english
-	* Serial number structure.
-	* The structure keep new serial number and valid key.
-	* The SN is changed and saved when transmitted key matches stored key.
+	* Serial number structure and hardware version.
+	* The structure keep new serial number, hardware version and valid key.
+	* The SN and hardware version are changed and saved when transmitted key matches stored key.
 	* Can be used by manufacturer only.
 	* \endenglish
 	* \russian
-	* Структура с серийным номером.
-	* Вместе с новым серийным номером передаётся "Ключ", только
-	* при совпадении которого происходит изменение и сохранение серийного номера.
+	* Структура с серийным номером и версией железа.
+	* Вместе с новым серийным номером и версией железа передаётся "Ключ",
+	* только при совпадении которого происходит изменение и сохранение.
 	* Функция используется только производителем.
 	* \endrussian
 	* @see set_serial_number
@@ -1796,7 +2130,10 @@ extern "C"
 	typedef struct
 	{
 		unsigned int SN;	/**< \english New board serial number. \endenglish \russian Новый серийный номер платы. \endrussian */
-		unsigned int Key[32];	/**< \english Protection key (256 bit). \endenglish \russian Ключ защиты для установки серийного номера (256 бит). \endrussian */
+		uint8_t Key[32];	/**< \english Protection key (256 bit). \endenglish \russian Ключ защиты для установки серийного номера (256 бит). \endrussian */
+		unsigned int Major;	/**< \english The major number of the hardware version. \endenglish \russian Основной номер версии железа. \endrussian */
+		unsigned int Minor;	/**< \english Minor number of the hardware version. \endenglish \russian Второстепенный номер версии железа. \endrussian */
+		unsigned int Release;	/**< \english Number of edits this release of hardware. \endenglish \russian Номер правок этой версии железа. \endrussian */
 	} serial_number_t;
 
 /** 
@@ -1825,25 +2162,25 @@ extern "C"
 		unsigned int FullCurrent_ADC;	/**< \english "Full current" raw data from ADC. \endenglish \russian "Полный ток" необработанные данные с АЦП. \endrussian */
 		unsigned int Temp_ADC;	/**< \english Voltage from temperature sensor, raw data from ADC. \endenglish \russian Напряжение с датчика температуры, необработанные данные с АЦП. \endrussian */
 		unsigned int Joy_ADC;	/**< \english Joystick raw data from ADC. \endenglish \russian Джойстик, необработанные данные с АЦП. \endrussian */
-		unsigned int Pot_ADC;	/**< \english Voltage on "Potentiometer", raw data from ADC \endenglish \russian "Потенциометр" необработанные данные с АЦП \endrussian */
+		unsigned int Pot_ADC;	/**< \english Voltage on analog input, raw data from ADC \endenglish \russian Напряжение на аналоговом входе, необработанные данные с АЦП \endrussian */
 		unsigned int L5_ADC;	/**< \english USB supply voltage after the current sense resistor, from ADC. \endenglish \russian Напряжение питания USB после current sense резистора, необработанные данные с АЦП. \endrussian */
 		unsigned int H5_ADC;	/**< \english Power supply USB from ADC \endenglish \russian Напряжение питания USB, необработанные данные с АЦП \endrussian */
-		int A1Voltage;	/**< \english "Voltage on pin 1 winding A" calibrated data. \endenglish \russian "Выходное напряжение на 1 выводе обмотки А" откалиброванные данные. \endrussian */
-		int A2Voltage;	/**< \english "Voltage on pin 2 winding A" calibrated data. \endenglish \russian "Выходное напряжение на 2 выводе обмотки А" откалиброванные данные. \endrussian */
-		int B1Voltage;	/**< \english "Voltage on pin 1 winding B" calibrated data. \endenglish \russian "Выходное напряжение на 1 выводе обмотки B" откалиброванные данные. \endrussian */
-		int B2Voltage;	/**< \english "Voltage on pin 2 winding B" calibrated data. \endenglish \russian "Выходное напряжение на 2 выводе обмотки B" откалиброванные данные. \endrussian */
-		int SupVoltage;	/**< \english "Voltage on the top of MOSFET full bridge" calibrated data. \endenglish \russian "Напряжение питания ключей Н-моста" откалиброванные данные. \endrussian */
-		int ACurrent;	/**< \english "Winding A current" calibrated data. \endenglish \russian "Ток через обмотку А" откалиброванные данные. \endrussian */
-		int BCurrent;	/**< \english "Winding B current" calibrated data. \endenglish \russian "Ток через обмотку B" откалиброванные данные. \endrussian */
-		int FullCurrent;	/**< \english "Full current" calibrated data. \endenglish \russian "Полный ток" откалиброванные данные. \endrussian */
-		int Temp;	/**< \english Temperature, calibrated data. \endenglish \russian Температура, откалиброванные данные. \endrussian */
-		int Joy;	/**< \english Joystick, calibrated data. \endenglish \russian Джойстик во внутренних единицах [0, 10000]. \endrussian */
-		int Pot;	/**< \english Potentiometer, calibrated data. \endenglish \russian Потенциометр во внутренних единицах [0, 10000]. \endrussian */
-		int L5;	/**< \english USB supply voltage after the current sense resistor. \endenglish \russian Напряжение питания USB после current sense резистора \endrussian */
-		int H5;	/**< \english Power supply USB \endenglish \russian Напряжение питания USB \endrussian */
+		int A1Voltage;	/**< \english "Voltage on pin 1 winding A" calibrated data (in tens of mV). \endenglish \russian "Выходное напряжение на 1 выводе обмотки А" откалиброванные данные (в десятках мВ). \endrussian */
+		int A2Voltage;	/**< \english "Voltage on pin 2 winding A" calibrated data (in tens of mV). \endenglish \russian "Выходное напряжение на 2 выводе обмотки А" откалиброванные данные (в десятках мВ). \endrussian */
+		int B1Voltage;	/**< \english "Voltage on pin 1 winding B" calibrated data (in tens of mV). \endenglish \russian "Выходное напряжение на 1 выводе обмотки B" откалиброванные данные (в десятках мВ). \endrussian */
+		int B2Voltage;	/**< \english "Voltage on pin 2 winding B" calibrated data (in tens of mV). \endenglish \russian "Выходное напряжение на 2 выводе обмотки B" откалиброванные данные (в десятках мВ). \endrussian */
+		int SupVoltage;	/**< \english "Voltage on the top of MOSFET full bridge" calibrated data (in tens of mV). \endenglish \russian "Напряжение питания ключей Н-моста" откалиброванные данные (в десятках мВ). \endrussian */
+		int ACurrent;	/**< \english "Winding A current" calibrated data (in mA). \endenglish \russian "Ток через обмотку А" откалиброванные данные (в мА). \endrussian */
+		int BCurrent;	/**< \english "Winding B current" calibrated data (in mA). \endenglish \russian "Ток через обмотку B" откалиброванные данные (в мА). \endrussian */
+		int FullCurrent;	/**< \english "Full current" calibrated data (in mA). \endenglish \russian "Полный ток" откалиброванные данные (в мА). \endrussian */
+		int Temp;	/**< \english Temperature, calibrated data (in tenths of degrees Celcius). \endenglish \russian Температура, откалиброванные данные (в десятых долях градуса Цельсия). \endrussian */
+		int Joy;	/**< \english Joystick, calibrated data. Range: 0..10000 \endenglish \russian Джойстик во внутренних единицах. Диапазон: 0..10000 \endrussian */
+		int Pot;	/**< \english Analog input, calibrated data. Range: 0..10000 \endenglish \russian Аналоговый вход во внутренних единицах. Диапазон: 0..10000 \endrussian */
+		int L5;	/**< \english USB supply voltage after the current sense resistor (in tens of mV). \endenglish \russian Напряжение питания USB после current sense резистора (в десятках мВ). \endrussian */
+		int H5;	/**< \english Power supply USB (in tens of mV). \endenglish \russian Напряжение питания USB (в десятках мВ). \endrussian */
 		unsigned int deprecated;
-		int R;	/**< \english Motor winding resistance in mOhms(is only used with stepper motor). \endenglish \russian Сопротивление обмоткок двигателя(для шагового двигателя),  в мОм \endrussian */
-		int L;	/**< \english Motor winding pseudo inductance in uHn(is only used with stepper motor). \endenglish \russian Псевдоиндуктивность обмоткок двигателя(для шагового двигателя),  в мкГн \endrussian */
+		int R;	/**< \english Motor winding resistance in mOhms(is only used with stepper motor). \endenglish \russian Сопротивление обмоток двигателя(для шагового двигателя),  в мОм \endrussian */
+		int L;	/**< \english Motor winding pseudo inductance in uHn(is only used with stepper motor). \endenglish \russian Псевдоиндуктивность обмоток двигателя(для шагового двигателя),  в мкГн \endrussian */
 	} analog_data_t;
 
 /** 
@@ -1859,8 +2196,24 @@ extern "C"
 	*/
 	typedef struct
 	{
-		unsigned int DebugData[128];	/**< \english Arbitrary debug data. \endenglish \russian Отладочные данные. \endrussian */
+		uint8_t DebugData[128];	/**< \english Arbitrary debug data. \endenglish \russian Отладочные данные. \endrussian */
 	} debug_read_t;
+
+/** 
+	* \english
+	* Debug data.
+	* These data are used for device debugging by manufacturer only.
+	* \endenglish
+	* \russian
+	* Отладочные данные.
+	* Эти данные используются в сервисных целях для тестирования и отладки устройства.
+	* \endrussian
+	* @see set_debug_write
+	*/
+	typedef struct
+	{
+		uint8_t DebugData[128];	/**< \english Arbitrary debug data. \endenglish \russian Отладочные данные. \endrussian */
+	} debug_write_t;
 
 /** 
 	* \english
@@ -1936,10 +2289,10 @@ extern "C"
 
 /** 
 	* \english
-	* motor settings.
+	* Physical characteristics and limitations of the motor.
 	* \endenglish
 	* \russian
-	* Настройки двигателя.
+	* Физический характеристики и ограничения мотора.
 	* \endrussian
 	* @see set_motor_settings
 	* @see get_motor_settings
@@ -1953,7 +2306,7 @@ extern "C"
 		unsigned int Phases;	/**< \english Number of phases for BLDC motors. \endenglish \russian Кол-во фаз у BLDC двигателя. \endrussian */
 		float NominalVoltage;	/**< \english Nominal voltage on winding (B). Data type: float \endenglish \russian Номинальное напряжение на обмотке (В). Тип данных: float. \endrussian */
 		float NominalCurrent;	/**< \english Maximum direct current in winding for DC and BLDC engines, nominal current in windings for stepper motor (A). Data type: float.  \endenglish \russian Максимальный постоянный ток в обмотке для DC и BLDC двигателей, номинальный ток в обмотке для шаговых двигателей (А). Тип данных: float. \endrussian */
-		float NominalSpeed;	/**< \english Nominal speed(rpm). Used for DC and BLDC engine. Data type: float. \endenglish \russian Номинальная скорость (об/мин). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */
+		float NominalSpeed;	/**< \english Not used. Nominal speed(rpm). Used for DC and BLDC engine. Data type: float. \endenglish \russian Не используется. Номинальная скорость (об/мин). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */
 		float NominalTorque;	/**< \english Nominal torque(mN m). Used for DC and BLDC engine. Data type: float. \endenglish \russian Номинальный крутящий момент (мН м). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */
 		float NominalPower;	/**< \english Nominal power(W). Used for DC and BLDC engine. Data type: float. \endenglish \russian Номинальная мощность(Вт). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */	
 		float WindingResistance;	/**< \english Resistance of windings for DC engine, each of two windings for stepper motor or each of there windings for BLDC engine(Ohm). Data type: float.\endenglish \russian Сопротивление обмотки DC двигателя, каждой из двух обмоток шагового двигателя или каждой из трёх обмоток BLDC двигателя (Ом). Тип данных: float. \endrussian */
@@ -2015,7 +2368,7 @@ extern "C"
 	* Hall sensor information.
 	* \endenglish
 	* \russian
-	* Информация об датчиках Холла.
+	* Информация о датчиках Холла.
 	* \endrussian
 	* @see set_hallsensor_information
 	* @see get_hallsensor_information
@@ -2112,6 +2465,39 @@ extern "C"
 		unsigned int LimitSwitchesSettings;	/**< \english \ref flagset_lsflags "Temperature sensor settings flags". \endenglish \russian \ref flagset_lsflags "Флаги настроек температурного датчика". \endrussian */
 	} accessories_settings_t;
 
+/** 
+	* \english
+	* Random key.
+	* Structure that contains random key used in encryption of WKEY and SSER command contents.
+	* \endenglish
+	* \russian
+	* Случайный ключ.
+	* Структура которая содержит случайный ключ, использующийся для шифрования содержимого команд WKEY и SSER.
+	* \endrussian
+	* @see get_init_random
+	*/
+	typedef struct
+	{
+		uint8_t key[16];	/**< \english Random key. \endenglish \russian Случайный ключ. \endrussian */
+	} init_random_t;
+
+/** 
+  * \english
+  * Globally unique identifier.
+  * \endenglish
+  * \russian
+  * Глобальный уникальный идентификатор.
+  * \endrussian
+	* @see get_globally_unique_identifier
+  */
+	typedef struct
+	{
+		unsigned int UniqueID0;	/**< \english Unique ID 0. \endenglish \russian Уникальный ID 0. \endrussian */
+		unsigned int UniqueID1;	/**< \english Unique ID 1. \endenglish \russian Уникальный ID 1. \endrussian */
+		unsigned int UniqueID2;	/**< \english Unique ID 2. \endenglish \russian Уникальный ID 2. \endrussian */
+		unsigned int UniqueID3;	/**< \english Unique ID 3. \endenglish \russian Уникальный ID 3. \endrussian */
+	} globally_unique_identifier_t;
+
 /*
  --------------------------------------------
    BEGIN OF GENERATED function declarations
@@ -2133,36 +2519,40 @@ extern "C"
 
 /** 
 	* \english
-	* Set feedback settings.
+	* Feedback settings.
 	* @param id an identifier of device
-	* @param[in] IPS number of encoder pulses per shaft revolution. Range: 1..65535
+	* @param[in] IPS number of encoder counts per shaft revolution. Range: 1..65535. The field is obsolete, it is recommended to write 0 to IPS and use the extended CountsPerTurn field. You may need to update the controller firmware to the latest version.
 	* @param[in] FeedbackType type of feedback
 	* @param[in] FeedbackFlags flags of feedback
+	* @param[in] CountsPerTurn number of encoder counts per shaft revolution. Range: 1..4294967295. To use the CountsPerTurn field, write 0 in the IPS field, otherwise the value from the IPS field will be used.
 	* \endenglish
 	* \russian
 	* Запись настроек обратной связи.
 	* @param id идентификатор устройства
-	* @param[in] IPS Количество измеряемых отсчётов энкодера на оборот. Диапазон: 1..65535
+	* @param[in] IPS количество отсчётов энкодера на оборот вала. Диапазон: 1..65535. Поле устарело, рекомендуется записывать 0 в IPS и использовать расширенное поле CountsPerTurn. Может потребоваться обновление микропрограммы контроллера до последней версии.
 	* @param[in] FeedbackType тип обратной связи
 	* @param[in] FeedbackFlags флаги обратной связи
+	* @param[in] CountsPerTurn количество отсчётов энкодера на оборот вала. Диапазон: 1..4294967295. Для использования поля CountsPerTurn нужно записать 0 в поле IPS, иначе будет использоваться значение из поля IPS.
 	* \endrussian
 	*/
 	result_t XIMC_API set_feedback_settings (device_t id, const feedback_settings_t* feedback_settings);
 
 /** 
 	* \english
-	* Read feedback settings.
+	* Feedback settings.
 	* @param id an identifier of device
-	* @param[out] IPS number of encoder pulses per shaft revolution. Range: 1..65535
+	* @param[out] IPS number of encoder counts per shaft revolution. Range: 1..65535. The field is obsolete, it is recommended to write 0 to IPS and use the extended CountsPerTurn field. You may need to update the controller firmware to the latest version.
 	* @param[out] FeedbackType type of feedback
 	* @param[out] FeedbackFlags flags of feedback
+	* @param[out] CountsPerTurn number of encoder counts per shaft revolution. Range: 1..4294967295. To use the CountsPerTurn field, write 0 in the IPS field, otherwise the value from the IPS field will be used.
 	* \endenglish
 	* \russian
 	* Чтение настроек обратной связи
 	* @param id идентификатор устройства
-	* @param[out] IPS Количество измеряемых отсчётов энкодера на оборот. Диапазон: 1..65535
+	* @param[out] IPS количество отсчётов энкодера на оборот вала. Диапазон: 1..65535. Поле устарело, рекомендуется записывать 0 в IPS и использовать расширенное поле CountsPerTurn. Может потребоваться обновление микропрограммы контроллера до последней версии.
 	* @param[out] FeedbackType тип обратной связи
 	* @param[out] FeedbackFlags флаги обратной связи
+	* @param[out] CountsPerTurn количество отсчётов энкодера на оборот вала. Диапазон: 1..4294967295. Для использования поля CountsPerTurn нужно записать 0 в поле IPS, иначе будет использоваться значение из поля IPS.
 	* \endrussian
 	*/
 	result_t XIMC_API get_feedback_settings (device_t id, feedback_settings_t* feedback_settings);
@@ -2185,6 +2575,24 @@ extern "C"
 	*/
 	result_t XIMC_API set_home_settings (device_t id, const home_settings_t* home_settings);
 
+/** 
+	* \english
+	* Set home settings which use user units.
+	* This function send structure with calibrating position settings to controller's memory.
+	* @see home_settings_calb_t
+	* @param id an identifier of device
+	* @param[in] home_settings_calb calibrating position settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Команда записи настроек для подхода в home position с использованием пользовательских единиц.
+	* Эта функция записывает структуру настроек, использующихся для калибровки позиции, в память контроллера.
+	* @see home_settings_calb_t
+	* @param id идентификатор устройства
+	* @param[in] home_settings_calb настройки калибровки позиции
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API set_home_settings_calb (device_t id, const home_settings_calb_t* home_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2205,6 +2613,24 @@ extern "C"
 	*/
 	result_t XIMC_API get_home_settings (device_t id, home_settings_t* home_settings);
 
+/** 
+	* \english
+	* Read home settings which use user units.
+	* This function fill structure with settings of calibrating position.
+	* @see home_settings_calb_t
+	* @param id an identifier of device
+	* @param[out] home_settings_calb calibrating position settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Команда чтения настроек для подхода в home position с использованием пользовательских единиц.
+	* Эта функция заполняет структуру настроек, использующихся для калибровки позиции, в память контроллера.
+	* @see home_settings_calb_t
+	* @param id идентификатор устройства
+	* @param[out] home_settings_calb настройки калибровки позиции
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API get_home_settings_calb (device_t id, home_settings_calb_t* home_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2221,6 +2647,20 @@ extern "C"
 	*/
 	result_t XIMC_API set_move_settings (device_t id, const move_settings_t* move_settings);
 
+/** 
+	* \english
+	* Set command setup movement which use user units (speed, acceleration, threshold and etc).
+	* @param id an identifier of device
+	* @param[in] move_settings_calb structure contains move settings: speed, acceleration, deceleration etc.
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Команда записи настроек перемещения, с использованием пользовательских единиц (скорость, ускорение, threshold и скорость в режиме антилюфта).
+	* @param id идентификатор устройства
+	* @param[in] move_settings_calb структура, содержащая настройки движения: скорость, ускорение, и т.д.
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API set_move_settings_calb (device_t id, const move_settings_calb_t* move_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2237,6 +2677,20 @@ extern "C"
 	*/
 	result_t XIMC_API get_move_settings (device_t id, move_settings_t* move_settings);
 
+/** 
+	* \english
+	* Read command setup movement which use user units (speed, acceleration, threshold and etc).
+	* @param id an identifier of device
+	* @param[out] move_settings_calb structure contains move settings: speed, acceleration, deceleration etc.
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Команда чтения настроек перемещения  с использованием пользовательских единиц(скорость, ускорение, threshold и скорость в режиме антилюфта).
+	* @param id идентификатор устройства
+	* @param[out] move_settings_calb структура, содержащая настройки движения: скорость, ускорение, и т.д.
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API get_move_settings_calb (device_t id, move_settings_calb_t* move_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2262,6 +2716,29 @@ extern "C"
 	*/
 	result_t XIMC_API set_engine_settings (device_t id, const engine_settings_t* engine_settings);
 
+/** 
+	* \english
+	* Set engine settings which use user units.
+	* This function send structure with set of engine settings to controller's memory.
+	* These settings specify motor shaft movement algorithm, list of limitations and rated characteristics.
+	* Use it when you change motor, encoder, positioner etc.
+	* Please note that wrong engine settings lead to device malfunction, can lead to irreversible damage of board.
+	* @see get_engine_settings
+	* @param id an identifier of device
+	* @param[in] engine_settings_calb engine settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Запись настроек мотора с использованием пользовательских единиц.
+	* Настройки определяют номинальные значения напряжения, тока, скорости мотора, характер движения и тип мотора.
+	* Пожалуйста, загружайте новые настройки когда вы меняете мотор, энкодер или позиционер.
+	* Помните, что неправильные настройки мотора могут повредить оборудование.
+	* @see get_engine_settings
+	* @param id идентификатор устройства
+	* @param[in] engine_settings_calb структура с настройками мотора
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API set_engine_settings_calb (device_t id, const engine_settings_calb_t* engine_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2285,20 +2762,39 @@ extern "C"
 	*/
 	result_t XIMC_API get_engine_settings (device_t id, engine_settings_t* engine_settings);
 
+/** 
+	* \english
+	* Read engine settings which use user units.
+	* This function fill structure with set of useful motor settings stored in controller's memory.
+	* These settings specify motor shaft movement algorithm, list of limitations and rated characteristics.
+	* @see set_engine_settings
+	* @param id an identifier of device
+	* @param[out] engine_settings_calb engine settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Чтение настроек мотора с использованием пользовательских единиц.
+	* Настройки определяют номинальные значения напряжения, тока, скорости мотора, характер движения и тип мотора.
+	* Пожалуйста, загружайте новые настройки когда вы меняете мотор, энкодер или позиционер.
+	* Помните, что неправильные настройки мотора могут повредить оборудование.
+	* @see set_engine_settings
+	* @param id идентификатор устройства
+	* @param[out] engine_settings_calb структура с настройками мотора
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API get_engine_settings_calb (device_t id, engine_settings_calb_t* engine_settings_calb, const calibration_t* calibration);
 
 /** 
 	* \english
 	* Set engine type and driver type.
 	* @param id an identifier of device
-	* @param[in] EngineType engine type
-	* @param[in] DriverType driver type
+	* @param[in] entype_settings structure contains settings motor type and power driver type
 	* \endenglish
 	* \russian
 	* Запись информации о типе мотора и типе силового драйвера.
 	* @param id идентификатор устройства
-	* @param[in] EngineType тип мотора
-	* @param[in] DriverType тип силового драйвера
+	* @param[in] entype_settings структура, содержащая настройки типа мотора и типа силового драйвера
 	* \endrussian
 	*/
 	result_t XIMC_API set_entype_settings (device_t id, const entype_settings_t* entype_settings);
@@ -2307,14 +2803,12 @@ extern "C"
 	* \english
 	* Return engine type and driver type.
 	* @param id an identifier of device
-	* @param[out] EngineType engine type
-	* @param[out] DriverType driver type
+	* @param[out] entype_settings structure contains settings motor type and power driver type
 	* \endenglish
 	* \russian
 	* Возвращает информацию о типе мотора и силового драйвера.
 	* @param id идентификатор устройства
-	* @param[out] EngineType тип мотора
-	* @param[out] DriverType тип силового драйвера
+	* @param[out] entype_settings структура, содержащая настройки типа мотора и типа силового драйвера
 	* \endrussian
 	*/
 	result_t XIMC_API get_entype_settings (device_t id, entype_settings_t* entype_settings);
@@ -2383,7 +2877,7 @@ extern "C"
 /** 
 	* \english
 	* Set border and limit switches settings.
-	* @see set_edges_settings
+	* @see get_edges_settings
 	* @param id an identifier of device
 	* @param[in] edges_settings edges settings, specify types of borders, motor behaviour and electrical behaviour of limit switches
 	* \endenglish
@@ -2396,6 +2890,30 @@ extern "C"
 	*/
 	result_t XIMC_API set_edges_settings (device_t id, const edges_settings_t* edges_settings);
 
+/** 
+	* \english
+	* Set border and limit switches settings which use user units.
+	* @see get_edges_settings_calb
+	* @param id an identifier of device
+	* @param[in] edges_settings_calb edges settings, specify types of borders, motor behaviour and electrical behaviour of limit switches
+	* @param calibration user unit settings
+	* 
+	* \note
+	* Attention! Some parameters of the edges_settings_calb structure are corrected by the coordinate correction table.
+	*
+	* \endenglish
+	* \russian
+	* Запись настроек границ и концевых выключателей с использованием пользовательских единиц.
+	* @see get_edges_settings_calb
+	* @param id идентификатор устройства
+	* @param[in] edges_settings_calb настройки, определяющие тип границ, поведение мотора при их достижении и параметры концевых выключателей
+	* @param calibration настройки пользовательских единиц
+	*
+	* \note
+	* Внимание! Некоторые параметры структуры edges_settings_calb корректируются таблицей коррекции координат.  
+	*
+	* \endrussian
+	*/
 	result_t XIMC_API set_edges_settings_calb (device_t id, const edges_settings_calb_t* edges_settings_calb, const calibration_t* calibration);
 
 /**  
@@ -2414,15 +2932,39 @@ extern "C"
 	*/
 	result_t XIMC_API get_edges_settings (device_t id, edges_settings_t* edges_settings);
 
+/**  
+	* \english
+	* Read border and limit switches settings which use user units.
+	* @see set_edges_settings_calb
+	* @param id an identifier of device
+	* @param[out] edges_settings_calb edges settings, specify types of borders, motor behaviour and electrical behaviour of limit switches
+	* @param calibration user unit settings
+	* 
+	* \note
+	* Attention! Some parameters of the edges_settings_calb structure are corrected by the coordinate correction table.
+	*
+	* \endenglish
+	* \russian
+	* Чтение настроек границ и концевых выключателей с использованием пользовательских единиц.
+	* @see set_edges_settings_calb
+	* @param id идентификатор устройства
+	* @param[out] edges_settings_calb настройки, определяющие тип границ, поведение мотора при их достижении и параметры концевых выключателей
+	* @param calibration настройки пользовательских единиц
+	*
+	* \note
+	* Внимание! Некоторые параметры структуры edges_settings_calb корректируются таблицей коррекции координат.  
+	*
+	* \endrussian
+	*/
 	result_t XIMC_API get_edges_settings_calb (device_t id, edges_settings_calb_t* edges_settings_calb, const calibration_t* calibration);
 
 /**  
 	* \english
 	* Set PID settings.
 	* This function send structure with set of PID factors to controller's memory.
-	* These settings specify behaviour of PID routine for voltage.
+	* These settings specify behaviour of PID routine for positioner.
 	* These factors are slightly different for different positioners.
-	* All boards are supplied with standart set of PID setting on controller's flash memory.
+	* All boards are supplied with standard set of PID setting on controller's flash memory.
 	* Please use it for loading new PID settings when you change positioner.
 	* Please note that wrong PID settings lead to device malfunction.
 	* @see get_pid_settings
@@ -2431,7 +2973,7 @@ extern "C"
 	* \endenglish
 	* \russian
 	* Запись ПИД коэффициентов.
-	* Эти коэффициенты определяют поведение напряжения.
+	* Эти коэффициенты определяют поведение позиционера.
 	* Коэффициенты различны для разных позиционеров.
 	* Пожалуйста, загружайте новые настройки, когда вы меняете мотор или позиционер.
 	* @see get_pid_settings
@@ -2445,16 +2987,16 @@ extern "C"
 	* \english
 	* Read PID settings.
 	* This function fill structure with set of motor PID settings stored in controller's memory.
-	* These settings specify behaviour of PID routine for voltage.
+	* These settings specify behaviour of PID routine for positioner.
 	* These factors are slightly different for different positioners.
-	* All boards are supplied with standart set of PID setting on controller's flash memory.
+	* All boards are supplied with standard set of PID setting on controller's flash memory.
 	* @see set_pid_settings
 	* @param id an identifier of device
 	* @param[out] pid_settings pid settings
 	* \endenglish
 	* \russian
 	* Чтение ПИД коэффициентов.
-	* Эти коэффициенты определяют поведение напряжения.
+	* Эти коэффициенты определяют поведение позиционера.
 	* Коэффициенты различны для разных позиционеров.
 	* @see set_pid_settings
 	* @param id идентификатор устройства
@@ -2467,7 +3009,7 @@ extern "C"
 	* \english
 	* Set input synchronization settings.
 	* This function send structure with set of input synchronization settings, that specify behaviour of input synchronization, to controller's memory.
-	* All boards are supplied with standart set of these settings.
+	* All boards are supplied with standard set of these settings.
 	* @see get_sync_in_settings
 	* @param id an identifier of device
 	* @param[in] sync_in_settings synchronization settings
@@ -2482,13 +3024,32 @@ extern "C"
 	*/
 	result_t XIMC_API set_sync_in_settings (device_t id, const sync_in_settings_t* sync_in_settings);
 
+/**  
+	* \english
+	* Set input synchronization settings which use user units.
+	* This function send structure with set of input synchronization settings, that specify behaviour of input synchronization, to controller's memory.
+	* All boards are supplied with standard set of these settings.
+	* @see get_sync_in_settings_calb
+	* @param id an identifier of device
+	* @param[in] sync_in_settings_calb synchronization settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Запись настроек для входного импульса синхронизации с использованием пользовательских единиц.
+	* Эта функция записывает структуру с настройками входного импульса синхронизации, определяющими поведение входа синхронизации, в память контроллера.
+	* @see get_sync_in_settings_calb
+	* @param id идентификатор устройства
+	* @param[in] sync_in_settings_calb настройки синхронизации
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API set_sync_in_settings_calb (device_t id, const sync_in_settings_calb_t* sync_in_settings_calb, const calibration_t* calibration);
 
 /**  
 	* \english
 	* Read input synchronization settings.
 	* This function fill structure with set of input synchronization settings, modes, periods and flags, that specify behaviour of input synchronization.
-	* All boards are supplied with standart set of these settings.
+	* All boards are supplied with standard set of these settings.
 	* @see set_sync_in_settings
 	* @param id an identifier of device
 	* @param[out] sync_in_settings synchronization settings
@@ -2503,13 +3064,32 @@ extern "C"
 	*/
 	result_t XIMC_API get_sync_in_settings (device_t id, sync_in_settings_t* sync_in_settings);
 
+/**  
+	* \english
+	* Read input synchronization settings which use user units.
+	* This function fill structure with set of input synchronization settings, modes, periods and flags, that specify behaviour of input synchronization.
+	* All boards are supplied with standard set of these settings.
+	* @see set_sync_in_settings_calb
+	* @param id an identifier of device
+	* @param[out] sync_in_settings_calb synchronization settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Чтение настроек для входного импульса синхронизации с использованием пользовательских единиц.
+	* Эта функция считывает структуру с настройками синхронизации, определяющими поведение входа синхронизации, в память контроллера.
+	* @see set_sync_in_settings_calb
+	* @param id идентификатор устройства
+	* @param[out] sync_in_settings_calb настройки синхронизации
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API get_sync_in_settings_calb (device_t id, sync_in_settings_calb_t* sync_in_settings_calb, const calibration_t* calibration);
 
 /** 
 	* \english
 	* Set output synchronization settings.
 	* This function send structure with set of output synchronization settings, that specify behaviour of output synchronization, to controller's memory.
-	* All boards are supplied with standart set of these settings.
+	* All boards are supplied with standard set of these settings.
 	* @see get_sync_out_settings
 	* @param id an identifier of device
 	* @param[in] sync_out_settings synchronization settings
@@ -2519,18 +3099,37 @@ extern "C"
 	* Эта функция записывает структуру с настройками выходного импульса синхронизации, определяющими поведение вывода синхронизации, в память контроллера.
 	* @see get_sync_in_settings
 	* @param id идентификатор устройства
-	* @param[in] sync_in_settings настройки синхронизации
+	* @param[in] sync_out_settings настройки синхронизации
 	* \endrussian
 	*/
 	result_t XIMC_API set_sync_out_settings (device_t id, const sync_out_settings_t* sync_out_settings);
 
+/** 
+	* \english
+	* Set output synchronization settings which use user units.
+	* This function send structure with set of output synchronization settings, that specify behaviour of output synchronization, to controller's memory.
+	* All boards are supplied with standard set of these settings.
+	* @see get_sync_in_settings_calb
+	* @param id an identifier of device
+	* @param[in] sync_out_settings_calb synchronization settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Запись настроек для выходного импульса синхронизации с использованием пользовательских единиц.
+	* Эта функция записывает структуру с настройками выходного импульса синхронизации, определяющими поведение вывода синхронизации, в память контроллера.
+	* @see get_sync_in_settings_calb
+	* @param id идентификатор устройства
+	* @param[in] sync_out_settings_calb настройки синхронизации
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API set_sync_out_settings_calb (device_t id, const sync_out_settings_calb_t* sync_out_settings_calb, const calibration_t* calibration);
 
 /** 
 	* \english
 	* Read output synchronization settings.
 	* This function fill structure with set of output synchronization settings, modes, periods and flags, that specify behaviour of output synchronization.
-	* All boards are supplied with standart set of these settings.
+	* All boards are supplied with standard set of these settings.
 	* @see set_sync_out_settings
 	* @param id an identifier of device
 	* @param[out] sync_out_settings synchronization settings
@@ -2542,6 +3141,25 @@ extern "C"
 	*/
 	result_t XIMC_API get_sync_out_settings (device_t id, sync_out_settings_t* sync_out_settings);
 
+/** 
+	* \english
+	* Read output synchronization settings which use user units.
+	* This function fill structure with set of output synchronization settings, modes, periods and flags, that specify behaviour of output synchronization.
+	* All boards are supplied with standard set of these settings.
+	* @see set_sync_in_settings_calb
+	* @param id an identifier of device
+	* @param[out] sync_out_settings_calb synchronization settings
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Чтение настроек для выходного импульса синхронизации с использованием пользовательских единиц.
+	* Эта функция считывает структуру с настройками синхронизации, определяющими поведение выхода синхронизации, в память контроллера.
+	* @see set_sync_in_settings_calb
+	* @param id идентификатор устройства
+	* @param[in] sync_out_settings_calb настройки синхронизации
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API get_sync_out_settings_calb (device_t id, sync_out_settings_calb_t* sync_out_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2639,6 +3257,36 @@ extern "C"
 	*/
 	result_t XIMC_API set_control_settings (device_t id, const control_settings_t* control_settings);
 
+/** 
+	* \english
+	* Set settings of motor control which use user units.
+	* When choosing CTL_MODE = 1 switches motor control with the joystick.
+	* In this mode, the joystick to the maximum engine tends
+	* Move at MaxSpeed [i], where i = 0 if the previous use
+	* This mode is not selected another i. Buttons switch the room rate i.
+	* When CTL_MODE = 2 is switched on motor control using the
+	* Left / right. When you click on the button motor starts to move in the appropriate direction at a speed MaxSpeed [0],
+	* at the end of time Timeout [i] motor move at a speed MaxSpeed [i+1]. at
+	* Transition from MaxSpeed [i] on MaxSpeed [i +1] to acceleration, as usual.
+	* @param id an identifier of device
+	* @param[in] control_settings_calb structure contains settings motor control by joystick or buttons left/right.
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Запись настроек управления мотором с использованием пользовательских единиц.
+	* При выборе CTL_MODE=1 включается управление мотором с помощью джойстика.
+	* В этом режиме при отклонении джойстика на максимум двигатель стремится
+	* двигаться со скоростью MaxSpeed [i], где i=0, если предыдущим использованием
+	* этого режима не было выбрано другое i. Кнопки переключают номер скорости i.
+	* При выборе CTL_MODE=2 включается управление мотором с помощью кнопок
+	* left/right. При нажатии на кнопки двигатель начинает двигаться в соответствующую сторону со скоростью MaxSpeed [0], по истечении времени Timeout[i] мотор
+	* двигается со скоростью MaxSpeed [i+1]. При
+	* переходе от MaxSpeed [i] на MaxSpeed [i+1] действует ускорение, как обычно.
+	* @param id идентификатор устройства
+	* @param[in] control_settings_calb структура, содержащая настройки управления мотором с помощью джойстика или кнопок влево/вправо.
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API set_control_settings_calb (device_t id, const control_settings_calb_t* control_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2671,6 +3319,36 @@ extern "C"
 	*/
 	result_t XIMC_API get_control_settings (device_t id, control_settings_t* control_settings);
 
+/** 
+	* \english
+	* Read settings of motor control which use user units.
+	* When choosing CTL_MODE = 1 switches motor control with the joystick.
+	* In this mode, the joystick to the maximum engine tends
+	* Move at MaxSpeed [i], where i = 0 if the previous use
+	* This mode is not selected another i. Buttons switch the room rate i.
+	* When CTL_MODE = 2 is switched on motor control using the
+	* Left / right. When you click on the button motor starts to move in the appropriate direction at a speed MaxSpeed [0],
+	* at the end of time Timeout [i] motor move at a speed MaxSpeed [i+1]. at
+	* Transition from MaxSpeed [i] on MaxSpeed [i +1] to acceleration, as usual.
+	* @param id an identifier of device
+	* @param[out] control_settings_calb structure contains settings motor control by joystick or buttons left/right.
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Чтение настроек управления мотором с использованием пользовательских единиц.
+	* При выборе CTL_MODE=1 включается управление мотором с помощью джойстика.
+	* В этом режиме при отклонении джойстика на максимум двигатель стремится
+	* двигаться со скоростью MaxSpeed [i], где i=0, если предыдущим использованием
+	* этого режима не было выбрано другое i. Кнопки переключают номер скорости i.
+	* При выборе CTL_MODE=2 включается управление мотором с помощью кнопок
+	* left/right. При нажатии на кнопки двигатель начинает двигаться в соответствующую сторону со скоростью MaxSpeed [0], по истечении времени Timeout[i] мотор
+	* двигается со скоростью MaxSpeed [i+1]. При
+	* переходе от MaxSpeed [i] на MaxSpeed [i+1] действует ускорение, как обычно.
+	* @param id идентификатор устройства
+	* @param[out] control_settings_calb структура, содержащая настройки управления мотором с помощью джойстика или кнопок влево/вправо.
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API get_control_settings_calb (device_t id, control_settings_calb_t* control_settings_calb, const calibration_t* calibration);
 
 /** 
@@ -2696,7 +3374,7 @@ extern "C"
 	* определяемой отклонением джойстика от DeadZone до 100% отклонения, причем отклонению DeadZone соответствует
 	* нулевая скорость, а 100% отклонения соответствует MaxSpeed [i] (см. команду SCTL), где i=0, если предыдущим
 	* использованием этого режима не было выбрано другое i.
-	* Если следуюящая скорость в таблице скоростей нулевая (целая и микрошаговая части), то перехода на неё не происходит.
+	* Если следующая скорость в таблице скоростей нулевая (целая и микрошаговая части), то перехода на неё не происходит.
 	* DeadZone вычисляется в десятых долях процента отклонения
 	* от центра (JoyCenter) до правого или левого максимума. Расчёт DeadZone проиллюстрирован на графике: !/attachments/download/5563/range25p.png!
 	* Зависимость между отклонением и скоростью экспоненциальная,
@@ -2733,7 +3411,7 @@ extern "C"
 	* определяемой отклонением джойстика от DeadZone до 100% отклонения, причем отклонению DeadZone соответствует
 	* нулевая скорость, а 100% отклонения соответствует MaxSpeed [i] (см. команду SCTL), где i=0, если предыдущим
 	* использованием этого режима не было выбрано другое i.
-	* Если следуюящая скорость в таблице скоростей нулевая (целая и микрошаговая части), то перехода на неё не происходит.
+	* Если следующая скорость в таблице скоростей нулевая (целая и микрошаговая части), то перехода на неё не происходит.
 	* DeadZone вычисляется в десятых долях процента отклонения
 	* от центра (JoyCenter) до правого или левого максимума. Расчёт DeadZone проиллюстрирован на графике: !/attachments/download/5563/range25p.png!
 	* Зависимость между отклонением и скоростью экспоненциальная,
@@ -2765,7 +3443,7 @@ extern "C"
 	* @param[in] ctp_settings structure contains settings of control position
 	* \endenglish
 	* \russian
-	* Запись настроек контроля позиции(для шагового двигателя)..
+	* Запись настроек контроля позиции(для шагового двигателя).
 	* При управлении ШД с энкодером
 	* (CTP_BASE 0) появляется возможность обнаруживать потерю шагов. Контроллер
 	* знает кол-во шагов на оборот (GENG::StepsPerRev) и разрешение энкодера
@@ -2801,7 +3479,7 @@ extern "C"
 	* @param[out] ctp_settings structure contains settings of control position
 	* \endenglish
 	* \russian
-	* Чтение настроек контроля позиции(для шагового двигателя)..
+	* Чтение настроек контроля позиции(для шагового двигателя).
 	* При управлении ШД с энкодером
 	* (CTP_BASE 0) появляется возможность обнаруживать потерю шагов. Контроллер
 	* знает кол-во шагов на оборот (GENG::StepsPerRev) и разрешение энкодера
@@ -2857,6 +3535,42 @@ extern "C"
 
 /** 
 	* \english
+	* Set calibration settings.
+	* This function send structure with calibration settings to controller's memory.
+	* @see calibration_settings_t
+	* @param id an identifier of device
+	* @param[in] calibration_settings calibration settings
+	* \endenglish
+	* \russian
+	* Команда записи калибровочных коэффициентов.
+	* Эта функция записывает структуру калибровочных коэффициентов в память контроллера.
+	* @see calibration_settings_t
+	* @param id идентификатор устройства
+	* @param[in] calibration_settings калибровочные коэффициенты
+	* \endrussian
+	*/
+	result_t XIMC_API set_calibration_settings (device_t id, const calibration_settings_t* calibration_settings);
+
+/** 
+	* \english
+	* Read calibration settings.
+	* This function fill structure with calibration settings.
+	* @see calibration_settings_t
+	* @param id an identifier of device
+	* @param[out] calibration_settings calibration settings
+	* \endenglish
+	* \russian
+	* Команда чтения калибровочных коэффициентов.
+	* Эта функция заполняет структуру калибровочных коэффициентов.
+	* @see calibration_settings_t
+	* @param id идентификатор устройства
+	* @param[out] calibration_settings калибровочные коэффициенты
+	* \endrussian
+	*/
+	result_t XIMC_API get_calibration_settings (device_t id, calibration_settings_t* calibration_settings);
+
+/** 
+	* \english
 	* Write user controller name and flags of setting from FRAM.
 	* @param id an identifier of device
 	* @param[in] controller_name structure contains previously set user controller name
@@ -2882,6 +3596,136 @@ extern "C"
 	* \endrussian
 	*/
 	result_t XIMC_API get_controller_name (device_t id, controller_name_t* controller_name);
+
+/** 
+	* \english
+	* Write userdata into FRAM.
+	* @param id an identifier of device
+	* @param[in] nonvolatile_memory structure contains previously set userdata
+	* \endenglish
+	* \russian
+	* Запись пользовательских данных во FRAM.
+	* @param id идентификатор устройства
+	* @param[in] nonvolatile_memory структура, содержащая установленные пользовательские данные
+	* \endrussian
+	*/
+	result_t XIMC_API set_nonvolatile_memory (device_t id, const nonvolatile_memory_t* nonvolatile_memory);
+
+/** 
+	* \english
+	* Read userdata from FRAM.
+	* @param id an identifier of device
+	* @param[out] nonvolatile_memory structure contains previously set userdata
+	* \endenglish
+	* \russian
+	* Чтение пользовательских данных из FRAM.
+	* @param id идентификатор устройства
+	* @param[out] nonvolatile_memory структура, содержащая установленные пользовательские данные
+	* \endrussian
+	*/
+	result_t XIMC_API get_nonvolatile_memory (device_t id, nonvolatile_memory_t* nonvolatile_memory);
+
+/**  
+	* \english
+	* Set electromechanical coefficients.
+	* The settings are different for different stepper motors.
+	* Please download the new settings when you change the motor.
+	* @see get_emf_settings
+	* @param id an identifier of device
+	* @param[in] emf_settings EMF settings
+	* \endenglish
+	* \russian
+	* Запись электромеханических настроек шагового двигателя. 
+	* Настройки различны для разных двигателей.
+	* Пожалуйста, загружайте новые настройки, когда вы меняете мотор.
+	* @see get_emf_settings
+	* @param id идентификатор устройства
+	* @param[in] emf_settings настройки EMF
+	* \endrussian
+	*/
+	result_t XIMC_API set_emf_settings (device_t id, const emf_settings_t* emf_settings);
+
+/**  
+	* \english
+	* Read electromechanical settings.
+	* The settings are different for different stepper motors.
+	* @see set_emf_settings
+	* @param id an identifier of device
+	* @param[out] emf_settings EMF settings
+	* \endenglish
+	* \russian
+	* Чтение электромеханических настроек шагового двигателя. 
+	* Настройки различны для разных двигателей.
+	* @see set_emf_settings
+	* @param id идентификатор устройства
+	* @param[out] emf_settings настройки EMF
+	* \endrussian
+	*/
+	result_t XIMC_API get_emf_settings (device_t id, emf_settings_t* emf_settings);
+
+/**  
+	* \english
+	* Set engine advansed settings.
+	* @see get_engine_advansed_setup
+	* @param id an identifier of device
+	* @param[in] engine_advansed_setup EAS settings
+	* \endenglish
+	* \russian
+	* Запись расширенных настроек. 
+	* @see get_engine_advansed_setup
+	* @param id идентификатор устройства
+	* @param[in] engine_advansed_setup настройки EAS
+	* \endrussian
+	*/
+	result_t XIMC_API set_engine_advansed_setup (device_t id, const engine_advansed_setup_t* engine_advansed_setup);
+
+/**  
+	* \english
+	* Read engine advansed settings.
+	* @see set_engine_advansed_setup
+	* @param id an identifier of device
+	* @param[out] engine_advansed_setup EAS settings
+	* \endenglish
+	* \russian
+	* Чтение расширенных настроек. 
+	* @see set_engine_advansed_setup
+	* @param id идентификатор устройства
+	* @param[out] engine_advansed_setup настройки EAS
+	* \endrussian
+	*/
+	result_t XIMC_API get_engine_advansed_setup (device_t id, engine_advansed_setup_t* engine_advansed_setup);
+
+/**  
+	* \english
+	* Set extended settings.
+	* @see get_extended_settings
+	* @param id an identifier of device
+	* @param[in] extended_settings EST settings
+	* \endenglish
+	* \russian
+	* Запись расширенных настроек. 
+	* @see get_extended_settings
+	* @param id идентификатор устройства
+	* @param[in] extended_settings настройки EST
+	* \endrussian
+	*/
+	result_t XIMC_API set_extended_settings (device_t id, const extended_settings_t* extended_settings);
+
+/**  
+	* \english
+	* Read extended settings.
+	* @see set_extended_settings 
+	* @param id an identifier of device
+	* @param[out] extended_settings EST settings
+	* \endenglish
+	* \russian
+	* Чтение расширенных настроек. 
+	* @see set_extended_settings
+	* @param id идентификатор устройства
+	* @param[out] extended_settings настройки EST
+	* \endrussian
+	*/
+	result_t XIMC_API get_extended_settings (device_t id, extended_settings_t* extended_settings);
 
 
 //@}
@@ -2920,29 +3764,6 @@ extern "C"
 
 /** 
 	* \english
-	* This command adds one element of the FIFO commands that are executed when input clock pulse.
-	* Each pulse synchronization or perform that action, which is described in SSNI, if the buffer is empty,
-	* or the oldest loaded into the buffer action to temporarily replace the speed and coordinate in SSNI.
-	* In the latter case this action is erased from the buffer.
-	* The number of remaining empty buffer elements can be found in the structure of GETS.
-	* @param id an identifier of device
-	* \endenglish
-	* \russian
-	* Это команда добавляет один элемент в буфер FIFO команд,
-	* выполняемых при получении входного импульса синхронизации.
-	* Каждый импульс синхронизации либо выполнится то действие, которое описано в SSNI,
-	* если буфер пуст, либо самое старое из загруженных в буфер действий временно подменяет скорость и координату в SSNI.
-	* В последнем случае это действие стирается из буфера.
-	* Количество оставшихся пустыми элементов буфера можно узнать в структуре GETS.
-	* @param id идентификатор устройства
-	* \endrussian
-	*/
-	result_t XIMC_API set_add_sync_in_action (device_t id, const add_sync_in_action_t* add_sync_in_action);
-
-	result_t XIMC_API set_add_sync_in_action_calb (device_t id, const add_sync_in_action_calb_t* add_sync_in_action_calb, const calibration_t* calibration);
-
-/** 
-	* \english
 	* Immediately power off motor regardless its state. Shouldn't be used
 	* during motion as the motor could be power on again automatically to continue movement.
 	* The command is designed for manual motor power off.
@@ -2965,48 +3786,108 @@ extern "C"
 	* \english
 	* Upon receiving the command "move" the engine starts to move with pre-set parameters (speed, acceleration, retention),
 	* to the point specified to the Position, uPosition. For stepper motor uPosition
-	* sets the microstep for DC motor, this field is not used.
-	* @param Position position to move. Range: -2147483647..2147483647.
-	* @param uPosition part of the position to move, microsteps. Range: -255..255.
+	* sets the microstep, for DC motor this field is not used.
 	* @param id an identifier of device
+	* @param Position position to move.
+	* @param uPosition part of the position to move, microsteps. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings).
 	* \endenglish
 	* \russian
 	* При получении команды "move" двигатель начинает перемещаться (если не используется
 	* режим "ТТЛСинхроВхода"), с заранее установленными параметрами (скорость, ускорение,
 	* удержание), к точке указанной в полях Position, uPosition. Для шагового мотора
 	* uPosition задает значение микрошага, для DC мотора это поле не используется.
-	* @param Position заданная позиция. Диапазон: -2147483647..2147483647.
-	* @param uPosition часть позиции в микрошагах. Диапазон: -255..255.
 	* @param id идентификатор устройства
+	* @param Position заданная позиция.
+	* @param uPosition часть позиции в микрошагах. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings).	
 	* \endrussian
 	*/
 	result_t XIMC_API command_move (device_t id, int Position, int uPosition);
 
+/** 
+	* \english
+	* Move to position which use user units.
+	* Upon receiving the command "move" the engine starts to move with pre-set parameters (speed, acceleration, retention),
+	* to the point specified to the Position.
+	* @param id an identifier of device
+	* @param Position position to move.
+	* @param calibration user unit settings
+	* 
+	* \note
+	* The parameter Position is adjusted by the correction table.
+	*
+	* \endenglish
+	* \russian
+	* Перемещение в позицию  с использованием пользовательских единиц.
+	* При получении команды "move" двигатель начинает перемещаться (если не используется
+	* режим "ТТЛСинхроВхода"), с заранее установленными параметрами (скорость, ускорение,
+	* удержание), к точке указанной в поле Position. 
+	* @param id идентификатор устройства
+	* @param Position позиция для перемещения
+	* @param calibration настройки пользовательских единиц
+	*
+	* \note
+	* Параметр Position корректируется таблицей коррекции.
+	*
+	* \endrussian
+	*/
 	result_t XIMC_API command_move_calb (device_t id, float Position, const calibration_t* calibration);
 
 /** 
 	* \english
+	* Move to offset.
 	* Upon receiving the command "movr" engine starts to move with pre-set parameters (speed, acceleration,
 	* hold), left or right (depending on the sign of DeltaPosition) by the number of
 	* pulses specified in the fields DeltaPosition, uDeltaPosition. For stepper motor
-	* uDeltaPosition sets the microstep for DC motor, this field is not used.
-	* @param DeltaPosition shift from initial position. Range: -2147483647..2147483647.
-	* @param uDeltaPosition part of the offset shift, microsteps. Range: -255..255.
+	* uDeltaPosition sets the microstep, for DC motor this field is not used.
+	* @param DeltaPosition shift from initial position.
+	* @param uDeltaPosition part of the offset shift, microsteps. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings).
 	* @param id an identifier of device
 	* \endenglish
 	* \russian
+	* Перемещение на заданное смещение.
 	* При получении команды "movr" двигатель начинает смещаться (если не используется
 	* режим "ТТЛСинхроВхода"), с заранее установленными параметрами (скорость, ускорение,
 	* удержание), влево или вправо (зависит от знака DeltaPosition) на количество
 	* импульсов указанное в полях DeltaPosition, uDeltaPosition. Для шагового мотора
 	* uDeltaPosition задает значение микрошага, для DC мотора это поле не используется.
-	* @param DeltaPosition смещение. Диапазон: -2147483647..2147483647.
-	* @param uDeltaPosition часть смещения в микрошагах. Диапазон: -255..255.
+	* @param DeltaPosition смещение.
+	* @param uDeltaPosition часть смещения в микрошагах. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings).
 	* @param id идентификатор устройства
 	* \endrussian
 	*/
 	result_t XIMC_API command_movr (device_t id, int DeltaPosition, int uDeltaPosition);
 
+/** 
+	* \english
+	* Move to offset using user units.
+	* Upon receiving the command "movr" engine starts to move with pre-set parameters (speed, acceleration,
+	* hold), left or right (depending on the sign of DeltaPosition) the distance specified in the field
+	* DeltaPosition.
+	* @param DeltaPosition shift from initial position.
+	* @param id an identifier of device
+	* @param calibration user unit settings 
+	*
+	* \note
+	* The end coordinate is calculated using DeltaPosition, is adjusted by the correction table.
+	* To calculate coordinates correctly, when using a correction table, you do not need to execute movr commands in batches.
+	*
+	* \endenglish
+	* \russian
+	* Перемещение на заданное смещение с использованием пользовательских единиц.
+	* При получении команды "movr" двигатель начинает смещаться (если не используется
+	* режим "ТТЛСинхроВхода"), с заранее установленными параметрами (скорость, ускорение,
+	* удержание), влево или вправо (зависит от знака DeltaPosition) на расстояние
+	* указанное в поле DeltaPosition. 
+	* @param DeltaPosition смещение.
+	* @param id идентификатор устройства
+	* @param calibration настройки пользовательских единиц
+	*
+	* \note
+	* Конечная координата вычисляемая с помощью DeltaPosition, корректируется таблицей коррекции.
+	* Для корректного рассчета координат, при использовании корректирующей таблицы, не нужно выполнять команды movr пакетами.
+	*
+	* \endrussian
+	*/
 	result_t XIMC_API command_movr_calb (device_t id, float DeltaPosition, const calibration_t* calibration);
 
 /** 
@@ -3090,7 +3971,7 @@ extern "C"
 
 /** 
 	* \english
-	* soft stop engine. The motor stops with deceleration speed.
+	* Soft stop engine. The motor stops with deceleration speed.
 	* @param id an identifier of device
 	* \endenglish
 	* \russian
@@ -3105,7 +3986,7 @@ extern "C"
 	* Reads the value position in steps and micro for stepper motor and encoder steps
 	* all engines.
 	* @param id an identifier of device
-	* @param[out] position structure contains move settings: speed, acceleration, deceleration etc.
+	* @param[out] the_get_position structure contains move settings: speed, acceleration, deceleration etc.
 	* \endenglish
 	* \russian
 	* Считывает значение положения в шагах и микрошагах для шагового двигателя и в шагах энкодера
@@ -3116,6 +3997,30 @@ extern "C"
 	*/
 	result_t XIMC_API get_position (device_t id, get_position_t* the_get_position);
 
+/** 
+	* \english
+	* Reads position value in user units for stepper motor and encoder steps
+	* all engines.
+	* @param id an identifier of device
+	* @param[out] the_get_position_calb structure contains move settings: speed, acceleration, deceleration etc.
+	* @param calibration user unit settings
+	* 
+	* \note
+	* Attention! Some parameters of the the_get_position_calb structure are corrected by the coordinate correction table.
+	*
+	* \endenglish
+	* \russian
+	* Считывает значение положения в пользовательских единицах для шагового двигателя и в шагах энкодера
+	* всех двигателей.
+	* @param id идентификатор устройства
+	* @param[out] the_get_position_calb структура, содержащая настройки движения: скорость, ускорение, и т.д.
+	* @param calibration настройки пользовательских единиц
+	*
+	* \note
+	* Внимание! Некоторые параметры структуры the_get_position_calb корректируются таблицей коррекции координат.  
+	*
+	* \endrussian
+	*/
 	result_t XIMC_API get_position_calb (device_t id, get_position_calb_t* the_get_position_calb, const calibration_t* calibration);
 
 /** 
@@ -3124,7 +4029,7 @@ extern "C"
 	* and encoder steps of all engines. It means, that changing main
 	* indicator of position.
 	* @param id an identifier of device
-	* @param[out] position structure contains move settings: speed, acceleration, deceleration etc.
+	* @param[out] the_set_position structure contains move settings: speed, acceleration, deceleration etc.
 	* \endenglish
 	* \russian
 	* Устанавливает произвольное значение положения в шагах и
@@ -3136,6 +4041,23 @@ extern "C"
 	*/
 	result_t XIMC_API set_position (device_t id, const set_position_t* the_set_position);
 
+/** 
+	* \english
+	* Sets any position value
+	* and encoder value of all engines which use user units. It means, that changing main
+	* indicator of position.
+	* @param id an identifier of device
+	* @param[out] the_set_position_calb structure contains move settings: speed, acceleration, deceleration etc.
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Устанавливает произвольное значение положения и значение энкодера всех
+	* двигателей с использованием пользовательских единиц. То есть меняется основной показатель положения.
+	* @param id идентификатор устройства
+	* @param[out] the_set_position_calb структура, содержащая настройки движения: скорость, ускорение, и т.д.
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 	result_t XIMC_API set_position_calb (device_t id, const set_position_calb_t* the_set_position_calb, const calibration_t* calibration);
 
 /** 
@@ -3204,7 +4126,31 @@ extern "C"
 
 /** 
 	* \english
-	* Save settings from controller's RAM to stage's EEPROM memory, whitch spontaneity connected to stage and it isn`t change without it mechanical reconstruction.
+	* Save important settings (calibration coefficients and etc.) from controller's RAM to controller's flash memory, replacing previous data in controller's flash memory.
+	* @param id an identifier of device
+	* \endenglish
+	* \russian
+	* При получении команды контроллер выполняет операцию сохранения важных настроек (калибровочные коэффициенты и т.п.) во встроенную энергонезависимую память контроллера.
+	* @param id идентификатор устройства
+	* \endrussian
+	*/
+	result_t XIMC_API command_save_robust_settings (device_t id);
+
+/** 
+	* \english
+	* Read important settings (calibration coefficients and etc.) from controller's flash memory to controller's RAM, replacing previous data in controller's RAM.
+	* @param id an identifier of device
+	* \endenglish
+	* \russian
+	* Чтение важных настроек (калибровочные коэффициенты и т.п.) контроллера из flash памяти в оперативную, заменяя текущие настройки.
+	* @param id идентификатор устройства
+	* \endrussian
+	*/
+	result_t XIMC_API command_read_robust_settings (device_t id);
+
+/** 
+	* \english
+	* Save settings from controller's RAM to stage's EEPROM memory, which spontaneity connected to stage and it isn`t change without it mechanical reconstruction.
 	* Can be used by manufacturer only.
 	* @param id an identifier of device
 	* \endenglish
@@ -3218,7 +4164,7 @@ extern "C"
 
 /** 
 	* \english
-	* Read settings from controller's RAM to stage's EEPROM memory, whitch spontaneity connected to stage and it isn`t change without it mechanical reconstruction.
+	* Read settings from controller's RAM to stage's EEPROM memory, which spontaneity connected to stage and it isn`t change without it mechanical reconstruction.
 	* @param id an identifier of device
 	* \endenglish
 	* \russian
@@ -3228,6 +4174,38 @@ extern "C"
 	* \endrussian
 	*/
 	result_t XIMC_API command_eeread_settings (device_t id);
+
+/** 
+  * \english
+  * Start measurements and buffering of speed, following error.
+  * @param id an identifier of device
+  * \endenglish
+  * \russian
+  * Начать измерения и буферизацию скорости, ошибки следования.
+  * @param id идентификатор устройства
+  * \endrussian
+  */
+	result_t XIMC_API command_start_measurements (device_t id);
+
+/** 
+  * \english
+  * A command to read the data buffer to build a speed graph and a sequence error. Filling the buffer starts with the command "start_measurements".
+  * The buffer holds 25 points, the points are taken with a period of 1 ms. To create a robust system, read data every 20 ms,
+  * if the buffer is completely full, then it is recommended to repeat the readings every 5 ms until the buffer again becomes filled with 20 points.
+  * @see measurements_t
+  * @param id an identifier of device
+  * @param[out] measurements structure with buffer and its length.
+  * \endenglish
+  * \russian
+  * Команда чтения буфера данных для построения графиков скорости и ошибки следования. Заполнение буфера начинается по команде "start_measurements".
+  * Буффер вмещает 25 точек, точки снимаются с периодом 1 мс. Для создания устойчивой системы следует считывать данные каждые 20 мс, если буффер
+  * полностью заполнен, то рекомендуется повторять считывания каждые 5 мс до момента пока буффер вновь не станет заполнен 20-ю точками.
+  * @see measurements_t
+  * @param id идентификатор устройства
+  * @param[out] measurements структура с буфером и его длинной.
+  * \endrussian
+  */
+	result_t XIMC_API get_measurements (device_t id, measurements_t* measurements);
 
 /** 
 	* \english
@@ -3251,7 +4229,7 @@ extern "C"
 	* \english
 	* Read device serial number.
 	* @param id an identifier of device
-	* @param[out] serial serial number
+	* @param[out] SerialNumber serial number
 	* \endenglish
 	* \russian
 	* Чтение серийного номера контроллера.
@@ -3309,20 +4287,20 @@ extern "C"
 
 /** 
 	* \english
-	* Write device serial number to controller's flash memory.
-	* Along with the new serial number a "Key" is transmitted.
-	* The SN is changed and saved when keys match.
+	* Write device serial number and hardware version to controller's flash memory.
+	* Along with the new serial number and hardware version a "Key" is transmitted.
+	* The SN and hardware version are changed and saved when keys match.
 	* Can be used by manufacturer only.
 	* @param id an identifier of device
-	* @param[in] serial number structure contains new serial number and secret key.
+	* @param[in] serial_number structure contains new serial number and secret key.
 	* \endenglish
 	* \russian
-	* Запись серийного номера во flash память контроллера.
-	* Вместе с новым серийным номером передаётся "Ключ", только
-	* при совпадении которого происходит изменение и сохранение серийного номера.
+	* Запись серийного номера и версии железа во flash память контроллера.
+	* Вместе с новым серийным номером и версией железа передаётся "Ключ",
+	* только при совпадении которого происходит изменение и сохранение.
 	* Функция используется только производителем.
 	* @param id идентификатор устройства
-	* @param[in] serial number структура, содержащая серийный номер и ключ.
+	* @param[in] serial_number структура, содержащая серийный номер, версию железа и ключ.
 	* \endrussian
 	*/
 	result_t XIMC_API set_serial_number (device_t id, const serial_number_t* serial_number);
@@ -3348,16 +4326,30 @@ extern "C"
 	* Read data from firmware for debug purpose.
 	* Its use depends on context, firmware version and previous history.
 	* @param id an identifier of device
-	* @param[out] DebugData[128] Debug data.
+	* @param[out] debug_read Debug data.
 	* \endenglish
 	* \russian
-	* Чтение данных из прошивки для отладки и поиска неисправновстей.
+	* Чтение данных из прошивки для отладки и поиска неисправностей.
 	* Получаемые данные зависят от версии прошивки, истории и контекста использования.
 	* @param id идентификатор устройства
-	* @param[out] DebugData[128] Данные для отладки.
+	* @param[out] debug_read Данные для отладки.
 	* \endrussian
 	*/
 	result_t XIMC_API get_debug_read (device_t id, debug_read_t* debug_read);
+
+/** 
+	* \english
+	* Write data to firmware for debug purpose.
+	* @param id an identifier of device
+	* @param[in] debug_write Debug data.
+	* \endenglish
+	* \russian
+	* Запись данных в прошивку для отладки и поиска неисправностей.
+	* @param id идентификатор устройства
+	* @param[in] debug_write Данные для отладки.
+	* \endrussian
+	*/
+	result_t XIMC_API set_debug_write (device_t id, const debug_write_t* debug_write);
 
 
 //@}
@@ -3591,10 +4583,10 @@ extern "C"
 	* @param[in] hallsensor_information structure contains information about hall sensor
 	* \endenglish
 	* \russian
-	* Запись информации об датчиках Холла в EEPROM.
+	* Запись информации о датчиках Холла в EEPROM.
 	* Функция должна использоваться только производителем.
 	* @param id идентификатор устройства
-	* @param[in] hallsensor_information структура, содержащая информацию об датчиках Холла
+	* @param[in] hallsensor_information структура, содержащая информацию о датчиках Холла
 	* \endrussian
 	*/
 	result_t XIMC_API set_hallsensor_information (device_t id, const hallsensor_information_t* hallsensor_information);
@@ -3606,9 +4598,9 @@ extern "C"
 	* @param[out] hallsensor_information structure contains information about hall sensor
 	* \endenglish
 	* \russian
-	* Чтение информации об датчиках Холла из EEPROM.
+	* Чтение информации о датчиках Холла из EEPROM.
 	* @param id идентификатор устройства
-	* @param[out] hallsensor_information структура, содержащая информацию об датчиках Холла
+	* @param[out] hallsensor_information структура, содержащая информацию о датчиках Холла
 	* \endrussian
 	*/
 	result_t XIMC_API get_hallsensor_information (device_t id, hallsensor_information_t* hallsensor_information);
@@ -3751,6 +4743,38 @@ extern "C"
 	*/
 	result_t XIMC_API get_bootloader_version (device_t id, unsigned int* Major, unsigned int* Minor, unsigned int* Release);
 
+/** 
+	* \english
+	* Read random number from controller.
+	* @param id an identifier of device
+	* @param[out] init_random random sequence generated by the controller
+	* \endenglish
+	* \russian
+	* Чтение случайного числа из контроллера.
+	* @param id идентификатор устройства
+	* @param[out] init_random случайная последовательность, сгенерированная контроллером
+	* \endrussian
+	*/
+	result_t XIMC_API get_init_random (device_t id, init_random_t* init_random);
+
+/** 
+  * \english
+  * This value is unique to each individual die but is not a random value.
+  * This unique device identifier can be used to initiate secure boot processes
+  * or as a serial number for USB or other end applications.
+  * @param id an identifier of device
+  * @param[out] globally_unique_identifier the result of fields 0-3 concatenated defines the unique 128-bit device identifier.
+  * \endenglish
+  * \russian
+  * Считывает уникальный идентификатор каждого чипа, это значение не является случайным.
+  * Уникальный идентификатор может быть использован в качестве инициализационного вектора
+  * для операций шифрования бутлоадера или в качестве серийного номера для USB и других применений.
+  * @param id идентификатор устройства
+  * @param[out] globally_unique_identifier результат полей 0-3 определяет уникальный 128-битный идентификатор.
+  * \endrussian
+  */
+	result_t XIMC_API get_globally_unique_identifier (device_t id, globally_unique_identifier_t* globally_unique_identifier);
+
 
 /*
  -------------------------
@@ -3777,49 +4801,49 @@ extern "C"
 	/**
 		* \english
 		* Check for firmware on device
-		* @param name a name of device
+		* @param uri a uri of device
 		* @param[out] ret non-zero if firmware existed
 		* \endenglish
 		* \russian
 		* Проверка наличия прошивки в контроллере
-		* @param name имя устройства
+		* @param uri уникальный идентификатор ресурса устройства
 		* @param[out] ret ноль, если прошивка присутствует
 		* \endrussian
 		*/
-	result_t XIMC_API has_firmware(const char* name, uint8_t* ret);
+	result_t XIMC_API has_firmware(const char* uri, uint8_t* ret);
 
 	/**
 		* \english
 		* Update firmware.
 		* Service command
-		* @param name a name of device
+		* @param uri a uri of device
 		* @param data firmware byte stream
 		* @param data_size size of byte stream
 		* \endenglish
 		* \russian
 		* Обновление прошивки
-		* @param name идентификатор устройства
+		* @param uri идентификатор устройства
 		* @param data указатель на массив байтов прошивки
 		* @param data_size размер массива в байтах
 		* \endrussian
 		*/
-	result_t XIMC_API command_update_firmware(const char* name, const uint8_t* data, uint32_t data_size);
+	result_t XIMC_API command_update_firmware(const char* uri, const uint8_t* data, uint32_t data_size);
 
 /**
 	* \english
 	* Write controller key.
 	* Can be used by manufacturer only
-	* @param name a name of device
+	* @param uri a uri of device
 	* @param[in] key protection key. Range: 0..4294967295
 	* \endenglish
 	* \russian
 	* Запись ключа защиты
 	* Функция используется только производителем.
-	* @param name имя устройства
+	* @param uri идентификатор устройства
 	* @param[in] key ключ защиты. Диапазон: 0..4294967295
 	* \endrussian
 	*/
-	result_t XIMC_API write_key (const char* name, uint8_t* key);
+	result_t XIMC_API write_key (const char* uri, uint8_t* key);
 
 /**
 	* \english
@@ -3867,53 +4891,211 @@ extern "C"
 
 	/**
 		* \english
-		* Open a device with OS name \a name and return identifier of the device which can be used in calls.
-		* @param[in] name - a device name - e.g. COM3 or /dev/tty.s123
+		* Open a device with OS uri \a uri and return identifier of the device which can be used in calls.
+		* @param[in] uri - a device uri.
+		* Device uri has form "xi-com:port" or "xi-net://host/serial" or "xi-emu:///file".
+		* In case of USB-COM port the "port" is the OS device uri.
+		* For example "xi-com:\\\.\COM3" in Windows or "xi-com:/dev/tty.s123" in Linux/Mac.
+		* In case of network device the "host" is an IPv4 address or fully qualified domain uri (FQDN), "serial" is the device serial number in hexadecimal system.
+		* For example "xi-net://192.168.0.1/00001234" or "xi-net://hostname.com/89ABCDEF".
+		* Note: to open network device you must call {@link set_bindy_key} first.
+		* In case of virtual device the "file" is the full filename with device memory state, if it doesn't exist then it is initialized with default values.
+		* For example "xi-emu:///C:/dir/file.bin" in Windows or "xi-emu:///home/user/file.bin" in Linux/Mac.
 		* \endenglish
 		* \russian
-		* Открывает устройство по имени \a name и возвращает идентификатор, который будет использоваться для обращения к устройству.
-		* @param[in] name - имя устройства, например COM3 или /dev/tty.s123
+		* Открывает устройство по имени \a uri и возвращает идентификатор, который будет использоваться для обращения к устройству.
+		* @param[in] uri - уникальный идентификатор устройства.
+		* Uri устройства имеет вид "xi-com:port" или "xi-net://host/serial" или "xi-emu:///file".
+		* Для USB-COM устройства "port" это uri устройства в ОС.
+		* Например "xi-com:\\\.\COM3" в Windows или "xi-com:/dev/tty.s123" в Linux/Mac.
+		* Для сетевого устройства "host" это IPv4 адрес или полностью определённое имя домена, "serial" это серийный номер устройства в шестнадцатеричной системе.
+		* Например "xi-net://192.168.0.1/00001234" или "xi-net://hostname.com/89ABCDEF".
+		* Замечание: для открытия сетевого устройства обязательно нужно сначала вызвать функцию установки сетевого ключа {@link set_bindy_key}.
+		* Для виртуального устройства "file" это путь к файлу с сохраненным состоянием устройства. Если файл не существует, он будет создан и инициализирован значениями по умолчанию.
+		* Например "xi-emu:///C:/dir/file.bin" в Windows или "xi-emu:///home/user/file.bin" в Linux/Mac.
 		* \endrussian
 		*/
-	device_t XIMC_API open_device (const char* name);
+	device_t XIMC_API open_device (const char* uri);
 
 	/**
 		* \english
 		* Close specified device
 		* @param id an identifier of device
+		* \note
+		* The id parameter in this function is a C pointer, unlike most library functions that use this parameter
 		* \endenglish
 		* \russian
 		* Закрывает устройство
 		* @param id - идентификатор устройства
+		* \note
+		* Параметр id в данной функции является Си указателем, в отличие от большинства функций библиотеки использующих данный параметр
 		* \endrussian
 		*/
 	result_t XIMC_API close_device (device_t* id);
 
 	/**
 		* \english
-		* Check if a device with OS name \a name is XIMC device.
-		* Be carefuly with this call because it sends some data to the device.
-		* @param[in] name - a device name
+		* Command of loading a correction table from a text file.
+		* This function is deprecated. Use the function set_correction_table(device_t id, const char* namefile).
+		* The correction table is used for position correction in case of mechanical inaccuracies.
+		* It works for some parameters in _calb commands.
+		* @param id an identifier the device
+		* @param[in] namefile - the file name must be fully qualified.
+		* If the short name is used, the file must be located in the application directory.
+		* If the file name is set to NULL, the correction table will be cleared.
+		* File format: two tab-separated columns.
+		* Column headers are string.
+		* Data is real, the point is a determiter.
+		* The first column is a coordinate. The second one is the deviation caused by a mechanical error.
+		* The maximum length of a table is 100 rows.
+		* \note
+		* The id parameter in this function is a C pointer, unlike most library functions that use this parameter
+		* @see command_move
+		* @see get_position_calb
+		* @see get_position_calb_t
+		* @see get_status_calb
+		* @see status_calb_t
+		* @see get_edges_settings_calb
+		* @see set_edges_settings_calb
+		* @see edges_settings_calb_t
+		*
 		* \endenglish
 		* \russian
-		* Проверяет, является ли устройство с именем \a name XIMC-совместимым.
-		* Будьте осторожны с вызовом этой функции для неизвестных устройств, т.к. она отправляет данные.
-		* @param[in] name - имя устройства
+		* Команда загрузки корректирующей таблицы из текстового файла.
+		* Данная функция устарела. Используйте функцию set_correction_table(device_t id, const char* namefile).
+		* Таблица используется для коррекции положения в случае механических неточностей.
+		* Работает для некоторых параметров в _calb командах.
+		* @param id - идентификатор устройства
+		* @param[in] namefile - имя файла должно быть полным.
+		* Если используется короткое имя, файл должен находится в директории приложения.
+		* Если имя файла равно NULL таблица коррекции будет очищена.
+		* Формат файла: два столбца разделенных табуляцией.
+		* Заголовки столбцов строковые.
+		* Данные действительные разделитель точка.
+		* Первый столбец координата. Второй - отклонение вызванное ошибкой механики.
+		* Между координатами отклонение расчитывается линейно. За диапазоном константа равная отклонению на границе.
+		* Максимальная длина таблицы 100 строк.		
+		* \note
+		* Параметр id в данной функции является Си указателем, в отличие от большинства функций библиотеки использующих данный параметр
+		* @see command_move
+		* @see command_movr
+		* @see get_position_calb
+		* @see get_position_calb_t
+		* @see get_status_calb
+		* @see status_calb_t
+		* @see get_edges_settings_calb
+		* @see set_edges_settings_calb
+		* @see edges_settings_calb_t
 		* \endrussian
 		*/
-	result_t XIMC_API probe_device (const char* name);
+	result_t XIMC_API load_correction_table(device_t* id, const char* namefile);
+
+	/**
+	* \english
+	* Command of loading a correction table from a text file.
+	* The correction table is used for position correction in case of mechanical inaccuracies.
+	* It works for some parameters in _calb commands.
+	* @param id an identifier the device
+	* @param[in] namefile - the file name must be fully qualified.
+	* If the short name is used, the file must be located in the application directory.
+	* If the file name is set to NULL, the correction table will be cleared.
+	* File format: two tab-separated columns.
+	* Column headers are string.
+	* Data is real, the point is a determiter.
+	* The first column is a coordinate. The second one is the deviation caused by a mechanical error.
+	* The maximum length of a table is 100 rows.
+	* @see command_move
+	* @see get_position_calb
+	* @see get_position_calb_t
+	* @see get_status_calb
+	* @see status_calb_t
+	* @see get_edges_settings_calb
+	* @see set_edges_settings_calb
+	* @see edges_settings_calb_t
+	*
+	* \endenglish
+	* \russian
+	* Команда загрузки корректирующей таблицы из текстового файла.
+	* Таблица используется для коррекции положения в случае механических неточностей.
+	* Работает для некоторых параметров в _calb командах.
+	* @param id - идентификатор устройства
+	* @param[in] namefile - имя файла должно быть полным.
+	* Если используется короткое имя, файл должен находится в директории приложения.
+	* Если имя файла равно NULL таблица коррекции будет очищена.
+	* Формат файла: два столбца разделенных табуляцией.
+	* Заголовки столбцов строковые.
+	* Данные действительные разделитель точка.
+	* Первый столбец координата. Второй - отклонение вызванное ошибкой механики.
+	* Между координатами отклонение расчитывается линейно. За диапазоном константа равная отклонению на границе.
+	* Максимальная длина таблицы 100 строк.
+	* @see command_move
+	* @see command_movr
+	* @see get_position_calb
+	* @see get_position_calb_t
+	* @see get_status_calb
+	* @see status_calb_t
+	* @see get_edges_settings_calb
+	* @see set_edges_settings_calb
+	* @see edges_settings_calb_t
+	* \endrussian
+	*/
+	result_t XIMC_API set_correction_table(device_t id, const char* namefile);
+
+	/**
+		* \english
+		* Check if a device with OS uri \a uri is XIMC device.
+		* Be carefuly with this call because it sends some data to the device.
+		* @param[in] uri - a device uri
+		* \endenglish
+		* \russian
+		* Проверяет, является ли устройство с уникальным идентификатором \a uri XIMC-совместимым.
+		* Будьте осторожны с вызовом этой функции для неизвестных устройств, т.к. она отправляет данные.
+		* @param[in] uri - уникальный идентификатор устройства
+		* \endrussian
+		*/
+	result_t XIMC_API probe_device (const char* uri);
+
+	/**
+		* \english
+		* Set network encryption layer (bindy) key.
+		* @param[in] keyfilepath full path to the bindy keyfile
+		* When using network-attached devices this function must be called before {@link enumerate_devices} and {@link open_device} functions.
+		* \endenglish
+		* \russian
+		* Устанавливливает ключ шифрования сетевой подсистемы (bindy).
+		* @param[in] keyfilepath полный путь к файлу ключа
+		* В случае использования сетевых устройств эта функция должна быть вызвана до функций {@link enumerate_devices} и {@link open_device}.
+		* \endrussian
+	 */
+	result_t XIMC_API set_bindy_key(const char* keyfilepath);
 
 	/**
 		* \english
 		* Enumerate all devices that looks like valid.
-		* @param[in] probe_flags enumerate devices flags
+		* @param[in] enumerate_flags enumerate devices flags
+		* @param[in] hints extended information
+		* hints is a string of form "key=value \n key2=value2". Unrecognized key-value pairs are ignored.
+		* Key list: addr - used together with ENUMERATE_NETWORK flag.
+		* Non-null value is a remote host name or a comma-separated list of host names which contain the devices to be found, absent value means broadcast discovery.
+		* adapter_addr - used together with ENUMERATE_NETWORK flag.
+		* Non-null value is a IP address of network adapter. Remote ximc device must be on the same local network as the adapter.
+		* When using the adapter_addr key, you must install the addr key. Example: "addr= \n adapter_addr=192.168.0.100".
+		* To enumerate network devices you must call {@link set_bindy_key} first.
 		* \endenglish
 		* \russian
 		* Перечисляет все XIMC-совместимые устройства.
-		* @param[in] probe_flags флаги поиска устройств
+		* @param[in] enumerate_flags флаги поиска устройств
+		* @param[in] hints дополнительная информация для поиска
+		* hints это строка вида "ключ1=значение1 \n ключ2=значение2". Неизвестные пары ключ-значение игнорируются.
+		* Список ключей: addr - используется вместе с флагом ENUMERATE_NETWORK.
+		* Ненулевое значение это адрес или список адресов с перечислением через запятую удаленных хостов на которых происходит поиск устройств, отсутствующее значение это подключение посредством широковещательного запроса.
+		* adapter_addr - используется вместе с флагом ENUMERATE_NETWORK.
+		* Ненулевое значение это IP адрес сетевого адаптера. Сетевое устройство ximc должно быть в локальной сети, к которой подключён этот адаптер.
+		* При использование ключа adapter_addr обязательно установить ключ addr. Пример: "addr= \n adapter_addr=192.168.0.100".
+		* Для перечисления сетевых устройств обязательно нужно сначала вызвать функцию установки сетевого ключа {@link set_bindy_key}.
 		* \endrussian
 	 */
-	device_enumeration_t XIMC_API enumerate_devices(int probe_flags);
+	device_enumeration_t XIMC_API enumerate_devices(int enumerate_flags, const char *hints);
 
 	/**
 		* \english
@@ -3987,14 +5169,14 @@ extern "C"
 	/**
 		* \english
 		* Get device information from the device enumeration.
-		* Returns \a device_index device serial number.
+		* Returns \a device_index device information.
 		* @param[in] device_enumeration opaque pointer to an enumeration device data
 		* @param[in] device_index device index
 		* @param[out] device_information device information data
 		* \endenglish
 		* \russian
-		* Возвращает серийный номер подключенного устройства из перечисления устройств.
-		* Возвращает серийный номер устройства с номером \a device_index.
+		* Возвращает информацию о подключенном устройстве из перечисления устройств.
+		* Возвращает информацию о устройстве с номером \a device_index.
 		* @param[in] device_enumeration закрытый указатель на данные о перечисленных устойствах
 		* @param[in] device_index номер устройства
 		* @param[out] device_information информация об устройстве
@@ -4002,25 +5184,89 @@ extern "C"
 	 */
 	result_t XIMC_API get_enumerate_device_information(device_enumeration_t device_enumeration, int device_index, device_information_t* device_information);
 
+	/**
+		* \english
+		* Get controller name from the device enumeration.
+		* Returns \a device_index device controller name.
+		* @param[in] device_enumeration opaque pointer to an enumeration device data
+		* @param[in] device_index device index
+		* @param[out] controller_name controller name
+		* \endenglish
+		* \russian
+		* Возвращает имя подключенного устройства из перечисления устройств.
+		* Возвращает имя устройства с номером \a device_index.
+		* @param[in] device_enumeration закрытый указатель на данные о перечисленных устойствах
+		* @param[in] device_index номер устройства
+		* @param[out] controller name имя устройства
+		* \endrussian
+	 */
+	result_t XIMC_API get_enumerate_device_controller_name(device_enumeration_t device_enumeration, int device_index, controller_name_t* controller_name);
+
+	/**
+		* \english
+		* Get stage name from the device enumeration.
+		* Returns \a device_index device stage name.
+		* @param[in] device_enumeration opaque pointer to an enumeration device data
+		* @param[in] device_index device index
+		* @param[out] stage_name stage name
+		* \endenglish
+		* \russian
+		* Возвращает имя подвижки для подключенного устройства из перечисления устройств.
+		* Возвращает имя подвижки устройства с номером \a device_index.
+		* @param[in] device_enumeration закрытый указатель на данные о перечисленных устойствах
+		* @param[in] device_index номер устройства
+		* @param[out] stage name имя подвижки
+		* \endrussian
+	 */
+	result_t XIMC_API get_enumerate_device_stage_name(device_enumeration_t device_enumeration, int device_index, stage_name_t* stage_name);
+
+	/**
+		* \english
+		* Get device network information from the device enumeration.
+		* Returns \a device_index device network information.
+		* @param[in] device_enumeration opaque pointer to an enumeration device data
+		* @param[in] device_index device index
+		* @param[out] device_network_information device network information data
+		* \endenglish
+		* \russian
+		* Возвращает сетевую информацию о подключенном устройстве из перечисления устройств.
+		* Возвращает сетевую информацию о устройстве с номером \a device_index.
+		* @param[in] device_enumeration закрытый указатель на данные о перечисленных устойствах
+		* @param[in] device_index номер устройства
+		* @param[out] device_network_information сетевая информация об устройстве
+		* \endrussian
+	 */
+	result_t XIMC_API get_enumerate_device_network_information(device_enumeration_t device_enumeration, int device_index, device_network_information_t* device_network_information);
+
 	/** \english
 		* Reset library locks in a case of deadlock.
 		* \endenglish
 		* \russian
 		* Снимает блокировку библиотеки в экстренном случае.
 		* \endrussian
-		*/
+	*/
 	result_t XIMC_API reset_locks ();
 
 	/** \english
 		* Fix for errors in Windows USB driver stack.
-		* Resets a driver if a device exists and in a hanged state.
+		* USB subsystem on Windows does not always work correctly. The following bugs are possible:
+		* the device cannot be opened at all, or
+		* the device can be opened and written to, but it will not respond with data.
+		* These errors can be fixed by device reconnection or removal-rescan in device manager.
+		* ximc_fix_usbser_sys() is a shortcut function to do the remove-rescan process.
+		* You should call this function if libximc library cannot open the device which was not physically removed from the system or if the device does not respond.
 		* \endenglish
 		* \russian
 		* Исправление ошибки драйвера USB в Windows.
-		* Перезагружает драйвер, если устройство существует, но в зависшем состояниe.
+		* Подсистема USB-COM на Windows не всегда работает корректно. При работе возможны следующие неисправности:
+		* все попытки открыть устройство заканчиваются неудачно, или
+		* устройство можно открыть и писать в него данные, но в ответ данные не приходят.
+		* Эти проблемы лечатся переподключением устройства или удалением и повторным поиском устройства в диспетчере устройств.
+		* Функция ximc_fix_usbser_sys() автоматизирует процесс удаления-обнаружения.		
+		* Имеет смысл вызывать эту функцию, если библиотека не может открыть устройство, при том что оно физически не было удалено из системы, или если устройство не отвечает.
 		* \endrussian
 		*/
-	result_t XIMC_API ximc_fix_usbser_sys(const char* device_name);
+	result_t XIMC_API ximc_fix_usbser_sys(const char* device_uri);
 
 
 	/** \english
@@ -4045,6 +5291,8 @@ extern "C"
 		*/
 	void XIMC_API ximc_version (char* version);
 
+#if !defined(MATLAB_IMPORT) && !defined(LABVIEW64_IMPORT) && !defined(LABVIEW32_IMPORT)
+
 	/** \english
 		* Logging callback prototype
 		* @param loglevel a loglevel
@@ -4056,7 +5304,7 @@ extern "C"
 		* @param message сообщение
 		* \endrussian
 		*/
-	typedef void (XIMC_CALLCONV *logging_callback_t)(int loglevel, const wchar_t* message);
+	typedef void (XIMC_CALLCONV *logging_callback_t)(int loglevel, const wchar_t* message, void* user_data);
 
 	/** \english
 		* Simple callback for logging to stderr in wide chars
@@ -4069,7 +5317,7 @@ extern "C"
 		* @param message сообщение
 		* \endrussian
 		*/
-	void XIMC_API logging_callback_stderr_wide(int loglevel, const wchar_t* message);
+	void XIMC_API logging_callback_stderr_wide(int loglevel, const wchar_t* message, void* user_data);
 
 	/** \english
 		* Simple callback for logging to stderr in narrow (single byte) chars
@@ -4082,7 +5330,7 @@ extern "C"
 		* @param message сообщение
 		* \endrussian
 		*/
-	void XIMC_API logging_callback_stderr_narrow(int loglevel, const wchar_t* message);
+	void XIMC_API logging_callback_stderr_narrow(int loglevel, const wchar_t* message, void* user_data);
 
 	/**
 		* \english
@@ -4096,7 +5344,9 @@ extern "C"
 		* @param logging_callback указатель на функцию обратного вызова
 		* \endrussian
 		*/
-	void XIMC_API set_logging_callback(logging_callback_t logging_callback);
+	void XIMC_API set_logging_callback(logging_callback_t logging_callback, void* user_data);
+
+#endif
 
 /**
 	* \english
@@ -4123,6 +5373,20 @@ extern "C"
 	*/
 	result_t XIMC_API get_status (device_t id, status_t* status);
 
+/**
+	* \english
+	* Return device state.
+	* @param id an identifier of device
+	* @param[out] status structure with snapshot of controller status
+	* @param calibration user unit settings
+	* \endenglish
+	* \russian
+	* Возвращает информацию о текущем состоянии устройства.
+	* @param id идентификатор устройства
+	* @param[out] status структура с информацией о текущем состоянии устройства
+	* @param calibration настройки пользовательских единиц
+	* \endrussian
+	*/
 /**
 	* \english
 	* Calibrated device state.
@@ -4163,6 +5427,39 @@ extern "C"
 	*/
 	result_t XIMC_API get_device_information (device_t id, device_information_t* device_information);
 
+/**
+	* \english
+	* Wait for stop
+	* @param id an identifier of device
+	* @param refresh_interval_ms Status refresh interval. The function waits this number of milliseconds between get_status requests to the controller.
+	* Recommended value of this parameter is 10 ms. Use values of less than 3 ms only when necessary - small refresh interval values do not significantly
+	* increase response time of the function, but they create substantially more traffic in controller-computer data channel.
+	* @param[out] ret RESULT_OK if controller has stopped and result of the first get_status command which returned anything other than RESULT_OK otherwise.
+	* \endenglish
+	* \russian
+	* Ожидание остановки контроллера
+	* @param id идентификатор устройства
+	* @param refresh_interval_ms Интервал обновления. Функция ждет столько миллисекунд между отправками контроллеру запроса get_status для проверки статуса остановки.
+	* Рекомендуемое значение интервала обновления - 10 мс. Используйте значения меньше 3 мс только если это необходимо - малые значения интервала обновления
+	* незначительно ускоряют обнаружение остановки, но создают существенно больший поток данных в канале связи контроллер-компьютер.
+	* @param[out] ret RESULT_OK, если контроллер остановился, в противном случае первый результат выполнения команды get_status со статусом отличным от RESULT_OK.
+	* \endrussian
+	*/
+	result_t XIMC_API command_wait_for_stop(device_t id, uint32_t refresh_interval_ms);
+	
+	/**
+	* \english
+	* Make home command, wait until it is finished and make zero command. This is a convinient way to calibrate zero position.
+	* @param id an identifier of device
+	* @param[out] ret RESULT_OK if controller has finished home & zero correctly or result of first controller query that returned anything other than RESULT_OK.
+	* \endenglish
+	* \russian
+	* Запустить процедуру поиска домашней позиции, подождать её завершения и обнулить позицию в конце. Это удобный путь для калибровки нулевой позиции.
+	* @param id идентификатор устройства
+	* @param[out] ret RESULT_OK, если контроллер завершил выполнение home и zero корректно или результат первого запроса к контроллеру со статусом отличным от RESULT_OK.
+	* \endrussian
+	*/
+	result_t XIMC_API command_homezero(device_t id);
 	//@}
 
 #if defined(__cplusplus)

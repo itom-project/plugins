@@ -49,10 +49,10 @@ class ST8SMC4USB : public ito::AddInActuator
     Q_OBJECT
 
     protected:
-        ~ST8SMC4USB() {}
+        ~ST8SMC4USB(){};
         ST8SMC4USB();
 
-    public:
+    public:        
         friend class ST8SMC4USBInterface;
 
         const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
@@ -65,13 +65,14 @@ class ST8SMC4USB : public ito::AddInActuator
         device_t m_device;
  	    engine_settings_t m_engine_settings;
         double m_unitPerSteps; //number of mm or degree per stepper motor full step
+        bool m_homed = false;
 
         QSharedPointer<ito::Param> endlineParam;
 
         QString getErrorString(const result_t result);
         QString getLogLevelString(int loglevel);
 
-        ito::RetVal SMCSetPos(const QVector<int> axis, const QVector<double> posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
+        ito::RetVal SMCSetPos(const QVector<int> axis, const QVector<double> posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = nullptr);    /*!< Set a position (absolute or relative) */
         ito::RetVal SMCCheckStatus();
         ito::RetVal SMCCheckError(ito::RetVal retval);
         ito::RetVal synchronizeMotorSettings(double newAccel = -1.0, double newSpeed = -1.0, double newDecel = -1.0);
@@ -83,22 +84,22 @@ class ST8SMC4USB : public ito::AddInActuator
         int microStepsToMicrostepMode(const int microSteps);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
-        
-    public slots:
-        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
-        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+    public slots:
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond = nullptr);
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond = nullptr);
+
+        ito::RetVal init(QVector<ito::ParamBase>* paramsMand, QVector<ito::ParamBase>* paramsOpt, ItomSharedSemaphore* waitCond = nullptr);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 
         //! Starts calibration for a single axis
-        ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal calib(const int axis, ItomSharedSemaphore* waitCond = nullptr);
         //! Starts calibration for all axis -> calls single axis version
-        ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore* waitCond = nullptr);
         //! Not implelemted yet
-        ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setOrigin(const int axis, ItomSharedSemaphore* waitCond = nullptr);
         //! Not implelemted yet
-        ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore* waitCond = nullptr);
         //! Reads out status request answer and gives back ito::retOk or ito::retError
         ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
         //! Get the position of a single axis
@@ -106,19 +107,21 @@ class ST8SMC4USB : public ito::AddInActuator
         //! Get the position of a all axis -> calls single axis version
         ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
         //! Set an absolut position and go thier. Waits if m_async=0. Calls SMCSetPos of axis=0 else ito::retError
-        ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore* waitCond = nullptr);
         //! Set an absolut position and go thier. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 && axis.size()=1 else ito::retError
-        ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls SMCSetPos of axis=0 else ito::retError
-        ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond = nullptr);
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 && axis.size()=1 else ito::retError
-        ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
         
         //! Emits status and position if triggered. Used form the dockingwidget
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 
     private slots:
         void dockWidgetVisibilityChanged( bool visible );
+        void doAliveTimer();
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

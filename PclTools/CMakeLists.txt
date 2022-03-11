@@ -31,8 +31,15 @@ itom_find_package_qt(ON Widgets LinguistTools OpenGL)
 if(ITOM_SDK_PCL_SUPPORT)
     find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
     find_package(OpenCV COMPONENTS core REQUIRED)
-    find_package(VTK QUIET)
-    
+
+    if (NOT VTK_FOUND)
+      find_package(VTK  COMPONENTS vtkCommonCore QUIET)
+      if (NOT VTK_FOUND)
+        message("Skipping ${PROJECT_NAME}: ${VTK_NOT_FOUND_MESSAGE}")
+        return ()
+      endif()
+    endif()
+
     if(VTK_FOUND)
         
         find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface recognition)
@@ -45,6 +52,36 @@ if(ITOM_SDK_PCL_SUPPORT)
         endif()
 
         message(STATUS "VTK_INC: " ${VTK_INCLUDE_DIR})
+        message(STATUS "Found VTK version: ${VTK_VERSION}")
+        if (VTK_VERSION VERSION_LESS "8.90.0")
+          # old system
+            find_package(VTK QUIET)
+            set(VTK_LIBS "")
+            if("${VTK_MAJOR_VERSION}" EQUAL 5)
+            foreach(__comps ${VTK_LIBRARIES})
+                set(VTK_LIBS ${VTK_LIBS} debug ${__comps}-gd optimized ${__comps})
+            endforeach(__comps)
+            endif()
+        else()
+          # new system
+          find_package(VTK COMPONENTS
+              CommonColor
+              CommonCore
+              CommonDataModel
+              FiltersSources
+              IOImage
+              RenderingCore
+              RenderingOpenGL2
+              IOXML
+              IOXMLParser
+              GUISupportQt
+              GUISupportQtSQL          
+              RenderingQt
+              ViewsQt
+          )
+        endif()
+        message(STATUS "VTK Libraries: ${VTK_LIBRARIES}")
+
         include_directories(
             ${CMAKE_CURRENT_BINARY_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}
@@ -99,19 +136,13 @@ if(ITOM_SDK_PCL_SUPPORT)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
         endif()
         
-        set(VTK_LIBS "")
-        if("${VTK_MAJOR_VERSION}" EQUAL 5)
-        foreach(__comps ${VTK_LIBRARIES})
-            set(VTK_LIBS ${VTK_LIBS} debug ${__comps}-gd optimized ${__comps})
-        endforeach(__comps)
-        endif()
 
         add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
         
         # Qt: enable all automoc, autouic and autorcc.
         set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-        target_link_libraries(${target_name} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES} ${VTK_LIBS})
+        target_link_libraries(${target_name} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES} ${VTK_LIBRARIES})
 
         #translation
         set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})

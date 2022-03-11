@@ -891,7 +891,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 \n\
 The function remap transforms the source image using the specified map: \n\
 \n\
-dst(x,y) = src(map_x(x,y),map_y(x,y)) \n\
+dst(x,y) = src(map_x(x, y), map_y(x, y)) \n\
 \n\
 where values of pixels with non-integer coordinates are computed using one of available interpolation methods. map_x and map_y can be encoded as \n\
 separate floating-point maps in map_1 and map_2 respectively, or interleaved floating-point maps of (x,y) in map_1 , \n\
@@ -981,10 +981,12 @@ indices in a table of interpolation coefficients.");
 \n\
 The functions find and return the perspective transformation H between the source and the destination planes: \n\
 \n\
-s_i \\vecthree{x'_i}{y'_i}{1} \\sim H \\vecthree{x_i}{y_i}{1} \n\
+.. math:: s_i \\begin{bmatrix}{x'_i}\\\\{y'_i}\\\\{1}\\end{bmatrix} \\sim H \\begin{bmatrix}{x_i}\\\\{y_i}\\\\{1}\\end{bmatrix} \n\
 \n\
 so that the back-projection error \n\
-\\sum _i \\left (x'_i- \\frac{h_{11} x_i + h_{12} y_i + h_{13}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right)^2+ \\left (y'_i- \\frac{h_{21} x_i + h_{22} y_i + h_{23}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right)^2 \n\
+\n\
+.. math:: \\sum _i \\left(x'_i- \\frac{h_{11} x_i + h_{12} y_i + h_{13}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right)^2 + \\left(y'_i- \\frac{h_{21} x_i + h_{22} y_i + h_{23}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right)^2 \n\
+\n\
 is minimized. \n\
 \n\
 The function is used to find initial intrinsic and extrinsic matrices. Homography matrix is determined up to a scale. Thus, it is normalized so that h_{33}=1.");
@@ -1054,7 +1056,7 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
 \n\
 The epipolar geometry is described by the following equation: \n\
 \n\
-[p_2; 1]^T F [p_1; 1] = 0 \n\
+.. math:: [p_2; 1]^T F [p_1; 1] = 0 \n\
 \n\
 where F is a fundamental matrix, p_1 and p_2 are corresponding points in the first and the second images, respectively. \n\
 \n\
@@ -1144,13 +1146,15 @@ For every point in one of the two images of a stereo pair, the function finds th
 \n\
 From the fundamental matrix definition (see findFundamentalMat()), line l^{(2)}_i in the second image for the point p^{(1)}_i in the first image (when whichImage=1) is computed as: \n\
 \n\
-l^{(2)}_i = F p^{(1)}_i \n\
+.. math:: l^{(2)}_i = F p^{(1)}_i \n\
 \n\
 And vice versa, when whichImage=2, l^{(1)}_i is computed from p^{(2)}_i as: \n\
 \n\
-l^{(1)}_i = F^T p^{(2)}_i \n\
+.. math:: l^{(1)}_i = F^T p^{(2)}_i \n\
 \n\
-Line coefficients are defined up to a scale. They are normalized so that a_i^2+b_i^2=1.");
+Line coefficients are defined up to a scale. They are normalized so that \n\
+\n\
+.. math:: a_i^2+b_i^2=1.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvComputeCorrespondEpilinesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)

@@ -4,7 +4,7 @@
 <context>
     <name>PclTools</name>
     <message>
-        <location filename="../pclTools.cpp" line="+4515"/>
+        <location filename="../pclTools.cpp" line="+4727"/>
         <source>Point Cloud (*.pcd *.ply *.vtk *.xyz)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -100,7 +100,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4407"/>
+        <location line="-4614"/>
         <source>point cloud to save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -782,7 +782,8 @@
     <message>
         <location line="+39"/>
         <location filename="../pclModelFit.cpp" line="+36"/>
-        <location filename="../pclTools.cpp" line="+3016"/>
+        <location filename="../pclTools.cpp" line="+3048"/>
+        <location line="+142"/>
         <source>invalid point cloud type not defined or point cloud invalid</source>
         <translation type="unfinished"></translation>
     </message>
@@ -798,7 +799,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclTools.cpp" line="-2990"/>
+        <location filename="../pclTools.cpp" line="-3164"/>
         <source>Valid point cloud whose normals should be estimated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1112,34 +1113,34 @@
     </message>
     <message>
         <location line="+82"/>
-        <location line="+134"/>
+        <location line="+141"/>
         <source>Valid polygon mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-133"/>
-        <location line="+134"/>
+        <location line="-140"/>
+        <location line="+141"/>
         <source>output polygon mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-133"/>
+        <location line="-140"/>
         <source>vector with indices of polygons that will be copied into output mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+17"/>
-        <location line="+131"/>
+        <location line="+138"/>
         <source>polygon mesh must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-98"/>
+        <location line="-105"/>
         <source>vertice index [%i] is out of range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+140"/>
+        <location line="+147"/>
         <source>point cloud must be organized and dense</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1211,28 +1212,129 @@
     </message>
     <message>
         <location line="+132"/>
-        <location line="+65"/>
         <source>Only tested / implemented for version 1.7.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-58"/>
-        <location line="+69"/>
+        <location line="+7"/>
+        <location line="+93"/>
         <source>the parameters meshIn and meshOut must not be NULL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-64"/>
+        <location line="-88"/>
         <source>the input mesh must be valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+33"/>
+        <location line="+148"/>
+        <source>Input point cloud with normal vector information.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-147"/>
+        <location line="+148"/>
+        <source>Output polygonal mesh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-145"/>
+        <source>Maximum depth of the octTree to reconstruct. Be careful: High values might require a lot of memory and processing time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The minimum depth.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Set the depth at which a block iso-surface extractor should be used to extract the iso-surface.
+This parameter must be &gt;= minTreeDepth. 
+
+Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time. 
+(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Get the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation.
+This parameter must be &gt;= minTreeDepth. 
+
+Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time. 
+(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <location line="+152"/>
+        <source>Only tested / implemented for PCL &gt;= 1.7.0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-137"/>
+        <source>isoDivide must be &gt;= minDepth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>solverDivide must be &gt;= minDepth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+142"/>
         <source>the input point cloud must be valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="-134"/>
+        <location line="+142"/>
+        <source>The type of the input point cloud must be XYZNormal, XYZINormal or XYZRGBNormal.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-58"/>
+        <source>0: MarchingCubesHoppe, 1: MarchingCubesRBF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>the iso level of the surface to be extracted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The grid resolution in x, y, and z (default: 32 each)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>parameter that defines how much free space should be left inside the grid between the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Method that sets the distance for ignoring voxels which are far from point cloud. 
+If the distance is negative, then the distance functions would be calculated in all voxels; 
+otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube. 
+Default value is - 1.0. Set to negative if all voxels are to be involved. 
+Only used for algorithmType = MarchingCubesHoppe (0).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Set the off - surface points displacement value. Only used for algorithmType = MarchingCubesRBF (1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>the parameters cloud and meshOut must not be nullptr.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+97"/>
         <source>Valid polygonal mesh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1262,19 +1364,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+108"/>
+        <location line="+111"/>
         <source>Uses copy an organized and dense pointcloud to an dataObject.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-540"/>
+        <location line="-743"/>
         <location line="+29"/>
         <location line="+194"/>
         <source>Valid, organized point cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3769"/>
+        <location line="-3776"/>
         <source>file &apos;%s&apos; does not contain valid point cloud data.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1325,7 +1427,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1517"/>
+        <location line="+1524"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Output dataObject with z-Values</source>
@@ -1344,12 +1446,11 @@
     <message>
         <location line="+25"/>
         <location line="+194"/>
-        <location line="+65"/>
         <source>output polygonal mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-256"/>
+        <location line="-191"/>
         <source>&apos;TRIANGLE_RIGHT_CUT&apos;: _always_ cuts a quad from top left to bottom right (default), &apos;TRIANGLE_LEFT_CUT&apos;: _always_ cuts a quad from top right to bottom left, &apos;TRIANGLE_ADAPTIVE_CUT&apos;: cuts where possible and prefers larger differences in z direction, &apos;QUAD_MESH&apos;: create a simple quad mesh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1374,17 +1475,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+60"/>
-        <source>Valid point cloud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Depth of the octTree to reconstruct.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+191"/>
+        <location line="+456"/>
         <source>Projects points onto a given model.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1393,16 +1484,11 @@
         <source>Used SimplificationRemoveUnusedVertices from the PCL to simplify a pcl mesh.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+3"/>
-        <source>Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>PclToolsInterface</name>
     <message>
-        <location line="-4473"/>
+        <location line="-4677"/>
         <source>Filters and methods for pointClouds and polygonMeshes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1444,11 +1530,10 @@ by this plugin.</source>
         <location line="+245"/>
         <location line="+129"/>
         <location line="+212"/>
-        <location line="+134"/>
+        <location line="+141"/>
         <location line="+51"/>
         <location line="+311"/>
         <location line="+194"/>
-        <location line="+64"/>
         <source>
 
 
@@ -1458,7 +1543,7 @@ by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3650"/>
+        <location line="-3593"/>
         <source>saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image
 
 This file format allows displaying volume data from the given 3D data object for instance using ParaView.</source>
@@ -1540,7 +1625,34 @@ adjust its position and orientation. The rotation vector are the euler angles rx
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2461"/>
+        <location line="+2375"/>
+        <source>Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+130"/>
+        <source>The marching cubes surface reconstruction algorithm. 
+
+There are two algorithms implemented: 
+
+1. MarchingCubesHoppe: 
+    using a signed distance function based on the distance 
+    from tangent planes, proposed by Hoppe et. al.in: 
+    
+    Hoppe H., DeRose T., Duchamp T., MC - Donald J., Stuetzle W., 
+    &quot;Surface reconstruction from unorganized points&quot;, SIGGRAPH &apos;92 
+
+2. MarchingCubesRBF: 
+    The marching cubes surface reconstruction algorithm, using a signed distance function based on radial 
+    basis functions.Partially based on: 
+    
+    Carr J.C., Beatson R.K., Cherrie J.B., Mitchell T.J., Fright W.R., McCallum B.C. and Evans T.R., 
+    &quot;Reconstruction and representation of 3D objects with radial basis functions&quot; 
+    SIGGRAPH &apos;01</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+163"/>
         <source>calculates a point cloud with normal information which contains the normal at each triangle of the given 
 polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.</source>
         <translation type="unfinished"></translation>

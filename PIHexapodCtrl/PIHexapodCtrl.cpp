@@ -20,7 +20,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <QTime>
+#include <QElapsedtimer>
 #include <qtimer.h>
 #include <qwaitcondition.h>
 
@@ -464,9 +464,7 @@ ito::RetVal PIHexapodCtrl::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     else if (ipchar != NULL)
     {
         m_pSer = NULL;
-
-        m_tcpAddr.reserve(17);
-        m_tcpAddr.sprintf(ipchar);
+        m_tcpAddr = QString::fromLatin1(ipchar);
         m_useTCPIP = true;
         retval += tcpOpenConnection(m_tcpAddr, m_tcpPort, 0);
         
@@ -1165,7 +1163,7 @@ ito::RetVal PIHexapodCtrl::PIReadString(QByteArray &result, int &len, int timeou
     ito::RetVal retValue = ito::retOk;
     result.resize(0);
     bool done = false;
-    QTime timer;
+    QElapsedTimer timer;
 
     QByteArray endline("\n");
 
@@ -1187,8 +1185,7 @@ ito::RetVal PIHexapodCtrl::PIReadString(QByteArray &result, int &len, int timeou
             bdarray[0] = 0;
             buffersize = 0;
             tcpReconnect();
-            QString errString;
-            errString.sprintf(tr("Error reading from device!\n%s\n").toLatin1().data(), m_connection->errorString().toLatin1().data());
+            QString errString = tr("Error reading from device!\n%1\n").arg(m_connection->errorString());
             retValue += ito::RetVal(ito::retError, 0, errString.toLatin1().data());
         }
 
@@ -1505,8 +1502,7 @@ ito::RetVal PIHexapodCtrl::PISendCommand(const QByteArray &command)
                     if (!m_connection->waitForBytesWritten())
                     {
                         retVal += tcpReconnect();
-                        QString errString;
-                        errString.sprintf("Error writing to device!\n%s\n", m_connection->errorString().toLatin1().data());
+                        QString errString = QString("Error writing to device!\n%1\n").arg(m_connection->errorString());
                         return ito::RetVal(ito::retError, 0, errString.toLatin1().data());
                     }
                 }
@@ -1529,8 +1525,7 @@ ito::RetVal PIHexapodCtrl::PISendCommand(const QByteArray &command)
                 if (!timer.isActive())
                 {
                     retVal += tcpReconnect();
-                    QString errString;
-                    errString.sprintf("Error writing to device!\n%s\n", m_connection->errorString().toLatin1().data());
+                    QString errString = QString("Error writing to device!\n%1\n").arg(m_connection->errorString());
                     retVal += ito::RetVal(ito::retError, 0, errString.toLatin1().data());
                 }
             }
@@ -1821,7 +1816,7 @@ ito::RetVal PIHexapodCtrl::waitForDone(const int timeoutMS, const QVector<int> a
     bool atTarget = false;
 	int timeouts = 0;
 
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
 
     while (!atTarget && !retVal.containsError() && timer.elapsed() < timeoutMS)
@@ -1962,8 +1957,7 @@ ito::RetVal PIHexapodCtrl::tcpOpenConnection(const QString &ipAddress, const lon
     m_connection->connectToHost(address, port);
     if (!m_connection->waitForConnected(3000))
     {
-        QString errString;
-        errString.sprintf("Connecting device on IP: %s:%d failed!\n%s\n", ipAddress.toLatin1().data(), port, m_connection->errorString().toLatin1().data());
+        QString errString = QString("Connecting device on IP: %1:%2 failed!\n%3\n").arg(ipAddress).arg(port).arg(m_connection->errorString());
         return ito::RetVal(ito::retError, 0, errString.toLatin1().data());
     }
     m_connection->setSocketOption(QAbstractSocket::LowDelayOption, 1);

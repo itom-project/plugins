@@ -48,71 +48,88 @@ EXPORTS
 	get_ctp_settings @46
 	set_uart_settings @47
 	get_uart_settings @48
-	set_controller_name @49
-	get_controller_name @50
-	command_stop @51
-	set_add_sync_in_action @52
-	set_add_sync_in_action_calb @53
-	command_power_off @54
-	command_move @55
-	command_move_calb @56
-	command_movr @57
-	command_movr_calb @58
-	command_home @59
-	command_left @60
-	command_right @61
-	command_loft @62
-	command_sstp @63
-	get_position @64
-	get_position_calb @65
-	set_position @66
-	set_position_calb @67
-	command_zero @68
-	command_save_settings @69
-	command_read_settings @70
-	command_eesave_settings @71
-	command_eeread_settings @72
-	get_chart_data @73
-	get_serial_number @74
-	get_firmware_version @75
-	service_command_updf @76
-	set_serial_number @77
-	get_analog_data @78
-	get_debug_read @79
-	set_stage_name @80
-	get_stage_name @81
-	set_stage_information @82
-	get_stage_information @83
-	set_stage_settings @84
-	get_stage_settings @85
-	set_motor_information @86
-	get_motor_information @87
-	set_motor_settings @88
-	get_motor_settings @89
-	set_encoder_information @90
-	get_encoder_information @91
-	set_encoder_settings @92
-	get_encoder_settings @93
-	set_hallsensor_information @94
-	get_hallsensor_information @95
-	set_hallsensor_settings @96
-	get_hallsensor_settings @97
-	set_gear_information @98
-	get_gear_information @99
-	set_gear_settings @100
-	get_gear_settings @101
-	set_accessories_settings @102
-	get_accessories_settings @103
-	get_bootloader_version @104
+	set_calibration_settings @49
+	get_calibration_settings @50
+	set_controller_name @51
+	get_controller_name @52
+	set_nonvolatile_memory @53
+	get_nonvolatile_memory @54
+	set_emf_settings @55
+	get_emf_settings @56
+	set_engine_advansed_setup @57
+	get_engine_advansed_setup @58
+	set_extended_settings @59
+	get_extended_settings @60
+	command_stop @61
+	command_power_off @62
+	command_move @63
+	command_move_calb @64
+	command_movr @65
+	command_movr_calb @66
+	command_home @67
+	command_left @68
+	command_right @69
+	command_loft @70
+	command_sstp @71
+	get_position @72
+	get_position_calb @73
+	set_position @74
+	set_position_calb @75
+	command_zero @76
+	command_save_settings @77
+	command_read_settings @78
+	command_save_robust_settings @79
+	command_read_robust_settings @80
+	command_eesave_settings @81
+	command_eeread_settings @82
+	command_start_measurements @83
+	get_measurements @84
+	get_chart_data @85
+	get_serial_number @86
+	get_firmware_version @87
+	service_command_updf @88
+	set_serial_number @89
+	get_analog_data @90
+	get_debug_read @91
+	set_debug_write @92
+	set_stage_name @93
+	get_stage_name @94
+	set_stage_information @95
+	get_stage_information @96
+	set_stage_settings @97
+	get_stage_settings @98
+	set_motor_information @99
+	get_motor_information @100
+	set_motor_settings @101
+	get_motor_settings @102
+	set_encoder_information @103
+	get_encoder_information @104
+	set_encoder_settings @105
+	get_encoder_settings @106
+	set_hallsensor_information @107
+	get_hallsensor_information @108
+	set_hallsensor_settings @109
+	get_hallsensor_settings @110
+	set_gear_information @111
+	get_gear_information @112
+	set_gear_settings @113
+	get_gear_settings @114
+	set_accessories_settings @115
+	get_accessories_settings @116
+	get_bootloader_version @117
+	get_init_random @118
+	get_globally_unique_identifier @119
 	goto_firmware @500
 	has_firmware @501
 	command_update_firmware @502
 	write_key @503
 	open_device @504
+	load_correction_table @505
 	close_device @506
 	probe_device @507
 	enumerate_devices @508
 	free_enumerate_devices @509
+	set_correction_table @510
 	reset_locks @511
 	msec_sleep @512
 	get_status @513
@@ -129,3 +146,9 @@ EXPORTS
 	get_enumerate_device_information @531
 	get_status_calb @533
 	command_clear_fram @534
+	get_enumerate_device_controller_name @535
+	get_enumerate_device_stage_name @536
+	get_enumerate_device_network_information @537
+	command_wait_for_stop @538
+	command_homezero @539
+	set_bindy_key @540

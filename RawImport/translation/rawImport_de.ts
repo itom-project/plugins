@@ -54,5 +54,9 @@
         <source>imported by dcraw import filter</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>could not create temporary directory</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

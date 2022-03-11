@@ -1,8 +1,8 @@
 /*****************************************************************************/
 /*! \file    ueye.h
-*   \author  (c) 2004-2019 by Imaging Development Systems GmbH
-*   \date    Date: 2019/11/29
-*   \version PRODUCTVERSION: 4.93
+*   \author  (c) 2004 - 2021 by IDS Imaging Development Systems GmbH
+*   \date    Date: 2021/8/26
+*   \version PRODUCTVERSION: 4.95
 *
 *   \brief   Library interface for IDS uEye - camera family.
 *            definition of exported API functions and constants
@@ -24,6 +24,16 @@ extern "C" {
 #   endif /* !defined __LINUX__ */
 #endif /* defined __linux__ */
 
+// ----------------------------------------------------------------------------
+// Includes
+// ----------------------------------------------------------------------------
+#ifdef __LINUX__
+#include <unistd.h>
+#include <wchar.h>
+#include <stdint.h>
+#else
+#include <windows.h>
+#endif
 
 // ----------------------------------------------------------------------------
 // Version definition
@@ -33,7 +43,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 93, 0)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 95, 0)
 #endif
 
 
@@ -310,11 +320,13 @@ extern "C" {
 #define IS_SENSOR_UI2130_M          0x019E      // Sony CCD sensor - WXGA monochrome
 #define IS_SENSOR_UI2130_C          0x019F      // Sony CCD sensor - WXGA color
 
+#define IS_SENSOR_IDS_PEAK          0x0E00
 #define IS_SENSOR_PASSIVE_MULTICAST 0x0F00
+
 // ----------------------------------------------------------------------------
 // Error codes
 // ----------------------------------------------------------------------------
-#define IS_NO_SUCCESS                        -1   // function call failed
+#define IS_NO_SUCCESS                        (-1)   // function call failed
 #define IS_SUCCESS                            0   // function call succeeded
 #define IS_INVALID_CAMERA_HANDLE              1   // camera handle is not valid or zero
 #define IS_INVALID_HANDLE                     1   // a handle other than the camera handle is invalid
@@ -525,6 +537,8 @@ extern "C" {
 #define IS_FILE_PATH_DOES_NOT_EXIST                 209   // The file path does not exist
 #define IS_INVALID_WINDOW_HANDLE                    210   // invalid window handle
 #define IS_INVALID_IMAGE_PARAMETER                  211   // invalid image parameter (pos or size)
+#define IS_NO_SUCH_DEVICE                           212
+#define IS_DEVICE_IN_USE                            213
 
 
 // ----------------------------------------------------------------------------
@@ -532,7 +546,7 @@ extern "C" {
 // ----------------------------------------------------------------------------
 #define IS_OFF                              0
 #define IS_ON                               1
-#define IS_IGNORE_PARAMETER                 -1
+#define IS_IGNORE_PARAMETER                 (-1)
 
 
 // ----------------------------------------------------------------------------
@@ -962,7 +976,7 @@ extern "C" {
 #define IS_DEFAULT_AUTO_SPEED                50
 
 #define IS_DEFAULT_AUTO_WB_OFFSET             0
-#define IS_MIN_AUTO_WB_OFFSET               -50
+#define IS_MIN_AUTO_WB_OFFSET               (-50)
 #define IS_MAX_AUTO_WB_OFFSET                50
 #define IS_DEFAULT_AUTO_WB_SPEED             50
 #define IS_MIN_AUTO_WB_SPEED                  0
@@ -1326,13 +1340,23 @@ extern "C" {
 #define IS_SET_EVENT_DEVICE_PLUGGED_IN          22
 #define IS_SET_EVENT_DEVICE_UNPLUGGED           23
 #define IS_SET_EVENT_TEMPERATURE_STATUS         24
-
+#define IS_SET_EVENT_END_OF_EXPOSURE            25
+#define IS_SET_EVENT_FRAME_SKIPPED              26
 
 #define IS_SET_EVENT_REMOVE                 128
 #define IS_SET_EVENT_REMOVAL                129
 #define IS_SET_EVENT_NEW_DEVICE             130
 #define IS_SET_EVENT_STATUS_CHANGED         131
+#define IS_SET_EVENT_REMOVAL_USB            133
+#define IS_SET_EVENT_NEW_DEVICE_USB         134
+#define IS_SET_EVENT_STATUS_CHANGED_USB     135
+#define IS_SET_EVENT_REMOVAL_ETH            137
+#define IS_SET_EVENT_NEW_DEVICE_ETH         138
+#define IS_SET_EVENT_STATUS_CHANGED_ETH     139
 
+#define NUMBER_OF_USER_DEFINED_EVENTS         200
+#define IS_SET_EVENT_USER_DEFINED_BEGIN     10000
+#define IS_SET_EVENT_USER_DEFINED_END       IS_SET_EVENT_USER_DEFINED_BEGIN + NUMBER_OF_USER_DEFINED_EVENTS
 
 // ----------------------------------------------------------------------------
 // Window message defines
@@ -1359,6 +1383,8 @@ extern "C" {
   #define IS_DEVICE_PLUGGED_IN              0x0011
   #define IS_DEVICE_UNPLUGGED               0x0012
   #define IS_TEMPERATURE_STATUS             0x0013
+  #define IS_END_OF_EXPOSURE                0x0014
+  #define IS_FRAME_SKIPPED                  0x0015
 
   #define IS_DEVICE_REMOVED                 0x1000
   #define IS_DEVICE_REMOVAL                 0x1001
@@ -1413,7 +1439,8 @@ extern "C" {
 #define IS_INTERFACE_TYPE_USB               0x40
 #define IS_INTERFACE_TYPE_USB3              0x60
 #define IS_INTERFACE_TYPE_ETH               0x80
-#define IS_INTERFACE_TYPE_PMC               0xf0
+#define IS_INTERFACE_TYPE_IDS_PEAK         (IS_INTERFACE_TYPE_USB3 + IS_INTERFACE_TYPE_ETH) // 0xE0
+#define IS_INTERFACE_TYPE_PMC               0xF0
 
 
 // ----------------------------------------------------------------------------
@@ -1447,6 +1474,9 @@ extern "C" {
 #define IS_BOARD_TYPE_UEYE_ETH_SE_R4        (IS_INTERFACE_TYPE_ETH + 0x0B)  // 0x8B
 #define IS_BOARD_TYPE_UEYE_ETH_CP_R2        (IS_INTERFACE_TYPE_ETH + 0x0C)  // 0x8C
 
+#define IS_BOARD_TYPE_UEYE_U3V              (IS_INTERFACE_TYPE_IDS_PEAK + 0x01)  // 0xE1
+#define IS_BOARD_TYPE_UEYE_GEV              (IS_INTERFACE_TYPE_IDS_PEAK + 0x02)  // 0xE2
+
 // ----------------------------------------------------------------------------
 // Camera type defines
 // ----------------------------------------------------------------------------
@@ -1477,6 +1507,9 @@ extern "C" {
 #define IS_CAMERA_TYPE_UEYE_ETH_FA      IS_BOARD_TYPE_UEYE_ETH_FA
 #define IS_CAMERA_TYPE_UEYE_ETH_SE_R4   IS_BOARD_TYPE_UEYE_ETH_SE_R4
 #define IS_CAMERA_TYPE_UEYE_PMC         (IS_INTERFACE_TYPE_PMC + 0x01)
+
+#define IS_CAMERA_TYPE_UEYE_U3V         IS_BOARD_TYPE_UEYE_U3V
+#define IS_CAMERA_TYPE_UEYE_GEV         IS_BOARD_TYPE_UEYE_GEV
 
 
 // ----------------------------------------------------------------------------
@@ -1660,10 +1693,6 @@ extern "C" {
         #define FORCEINLINE         inline
         #define USHORT              IS_U16
 
-        #include <unistd.h>
-        #include <wchar.h>
-        #include <stdint.h>
-
         // aliases for common Win32 types
         typedef int32_t           BOOLEAN;
         typedef int32_t           BOOL;
@@ -1751,7 +1780,7 @@ extern "C" {
         #define __cdecl
 
 #if defined (NO_WARN_DEPRECATED)
-    #define attribute_deprecated 
+    #define attribute_deprecated
 #else
     #define attribute_deprecated __attribute__((deprecated))
 #endif
@@ -1771,15 +1800,14 @@ extern "C" {
     typedef long (*WNDPROC) (HWND, UINT, WPARAM, LPARAM);
 
     #define ZeroMemory(a,b)      memset((a), 0, (b))
-    #define OutputDebugString(s) fprintf(stderr, s)
+    #define OutputDebugString(s) fprintf(stderr, "%s", s)
+    #define OutputDebugStringA(s) fprintf(stderr, "%s", s)
 
-    #define INFINITE    -1
+    #define INFINITE    (-1)
 #else
 
-#include <windows.h>
-
 #if defined (NO_WARN_DEPRECATED)
-    #define attribute_deprecated 
+    #define attribute_deprecated
 #else
     #define attribute_deprecated __declspec(deprecated)
 #endif
@@ -1787,16 +1815,16 @@ extern "C" {
 #define DEPRECATED(X) attribute_deprecated X
 
 #if defined (_MSC_VER) || defined (__BORLANDC__) || defined (_WIN32_WCE)
-  #if defined (_PURE_C) && !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)
+  #if defined (_PURE_C) && !defined (_IDS_EXPORT)
     #define IDSEXP    extern  __declspec(dllimport) INT __cdecl
     #define IDSEXPDEP extern  __declspec(dllimport) attribute_deprecated INT __cdecl
     #define IDSEXPUL  extern  __declspec(dllimport) ULONG __cdecl
-  #elif defined (__STDC__) && !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)
+  #elif defined (__STDC__) && !defined (_IDS_EXPORT)
     #define IDSEXP    extern  __declspec(dllimport) INT __cdecl
     #define IDSEXPDEP extern  __declspec(dllimport) attribute_deprecated INT __cdecl
     #define IDSEXPUL  extern  __declspec(dllimport) ULONG __cdecl
-  #elif !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)   // using the DLL, not creating one
-    #define IDSEXP    extern "C" __declspec(dllimport) INT __cdecl 
+  #elif !defined (_IDS_EXPORT)
+    #define IDSEXP    extern "C" __declspec(dllimport) INT __cdecl
     #define IDSEXPDEP extern "C" __declspec(dllimport) attribute_deprecated INT __cdecl
     #define IDSEXPUL  extern "C" __declspec(dllimport) ULONG __cdecl
   #elif defined (_IDS_VBSTD) || defined (_FALC_VBSTD)     // for creating stdcall dll
@@ -1804,11 +1832,11 @@ extern "C" {
     #define IDSEXPDEP extern __declspec(dllexport) INT __stdcall
     #define IDSEXPUL  extern __declspec(dllexport) ULONG __stdcall
   #else            // for creating cdecl dll
-    #define IDSEXP    extern  __declspec(dllexport) INT __cdecl
-    #define IDSEXPDEP extern  __declspec(dllexport) INT __cdecl
-    #define IDSEXPUL  extern  __declspec(dllexport) ULONG __cdecl
+    #define IDSEXP    extern INT __cdecl
+    #define IDSEXPDEP extern INT __cdecl
+    #define IDSEXPUL  extern ULONG __cdecl
   #endif
-#elif !defined (_IDS_EXPORT) && !defined (_FALC_EXPORT)  // using the DLL, not creating one
+#elif !defined (_IDS_EXPORT)
     #define IDSEXP    extern  __declspec(dllimport) INT __cdecl
     #define IDSEXPDEP extern  __declspec(dllimport) attribute_deprecated INT __cdecl
     #define IDSEXPUL  extern  __declspec(dllimport) ULONG __cdecl
@@ -1952,6 +1980,7 @@ typedef enum _UEYE_CAPTURE_STATUS
     IS_CAP_STATUS_DRV_DEVICE_NOT_READY      =   0xb4,
 
     IS_CAP_STATUS_USB_TRANSFER_FAILED       =   0xc7,
+    IS_CAP_STATUS_TRANSFER_FAILED           =   0xc7,
 
     IS_CAP_STATUS_DEV_MISSED_IMAGES         =   0xe5,
     IS_CAP_STATUS_DEV_TIMEOUT               =   0xd6,
@@ -2163,7 +2192,7 @@ typedef struct _DC_INFO
 // function exports
 // ----------------------------------------------------------------------------
 #ifdef __LINUX__
-    IDSEXP is_WaitEvent             (HIDS hCam, INT which, INT nTimeout);
+    IDSEXPDEP is_WaitEvent             (HIDS hCam, INT which, INT nTimeout);
 #endif
 
 
@@ -2181,23 +2210,23 @@ typedef struct _DC_INFO
   IDSEXP   is_IsVideoFinish          (HIDS hCam, INT* pValue);
   IDSEXP   is_HasVideoStarted        (HIDS hCam, BOOL* pbo);
 
-  IDSEXP   is_AllocImageMem          (HIDS hCam, INT width, INT height, INT bitspixel, char** ppcImgMem, int* pid);
-  IDSEXP   is_SetImageMem            (HIDS hCam, char* pcMem, int id);
-  IDSEXP   is_FreeImageMem           (HIDS hCam, char* pcMem, int id);
+  IDSEXP   is_AllocImageMem          (HIDS hCam, INT width, INT height, INT bitspixel, char** ppcMem, int* pnMemId);
+  IDSEXP   is_SetImageMem            (HIDS hCam, char* pcMem, int nMemId);
+  IDSEXP   is_FreeImageMem           (HIDS hCam, char* pcMem, int nMemId);
   IDSEXP   is_GetImageMem            (HIDS hCam, VOID** pMem);
-  IDSEXP   is_GetActiveImageMem      (HIDS hCam, char** ppcMem, int* pnID);
-  IDSEXP   is_InquireImageMem        (HIDS hCam, char* pcMem, int nID, int* pnX, int* pnY, int* pnBits, int* pnPitch);
+  IDSEXP   is_GetActiveImageMem      (HIDS hCam, char** ppcMem, int* pnMemId);
+  IDSEXP   is_InquireImageMem        (HIDS hCam, char* pcMem, int nMemId, int* pnX, int* pnY, int* pnBits, int* pnPitch);
   IDSEXP   is_GetImageMemPitch       (HIDS hCam, INT* pPitch);
 
-  IDSEXP   is_SetAllocatedImageMem   (HIDS hCam, INT width, INT height, INT bitspixel, char* pcImgMem, int* pid);
-  IDSEXP   is_CopyImageMem           (HIDS hCam, char* pcSource, int nID, char* pcDest);
-  IDSEXP   is_CopyImageMemLines      (HIDS hCam, char* pcSource, int nID, int nLines, char* pcDest);
+  IDSEXP   is_SetAllocatedImageMem   (HIDS hCam, INT width, INT height, INT bitspixel, char* pcMem, int* pnMemId);
+  IDSEXP   is_CopyImageMem           (HIDS hCam, char* pcMemSrc, int nMemId, char* pcMemDst);
+  IDSEXP   is_CopyImageMemLines      (HIDS hCam, char* pcMemSrc, int nMemId, int nLines, char* pcMemDst);
 
-  IDSEXP   is_AddToSequence          (HIDS hCam, char* pcMem, INT nID);
+  IDSEXP   is_AddToSequence          (HIDS hCam, char* pcMem, INT nMemId);
   IDSEXP   is_ClearSequence          (HIDS hCam);
   IDSEXP   is_GetActSeqBuf           (HIDS hCam, INT* pnNum, char** ppcMem, char** ppcMemLast);
-  IDSEXP   is_LockSeqBuf             (HIDS hCam, INT nNum, char* pcMem);
-  IDSEXP   is_UnlockSeqBuf           (HIDS hCam, INT nNum, char* pcMem);
+  IDSEXP   is_LockSeqBuf             (HIDS hCam, INT nMemId, char* pcMem);
+  IDSEXP   is_UnlockSeqBuf           (HIDS hCam, INT nMemId, char* pcMem);
 
   IDSEXP   is_GetError               (HIDS hCam, INT* pErr, IS_CHAR** ppcErr);
   IDSEXP   is_SetErrorReport         (HIDS hCam, INT Mode);
@@ -2206,7 +2235,7 @@ typedef struct _DC_INFO
   IDSEXP   is_GetColorDepth          (HIDS hCam, INT* pnCol, INT* pnColMode);
 
   // Bitmap display function
-  IDSEXP   is_RenderBitmap           (HIDS hCam, INT nMemID, HWND hwnd, INT nMode);
+  IDSEXP   is_RenderBitmap           (HIDS hCam, INT nMemId, HWND hwnd, INT nMode);
 
   IDSEXP   is_SetDisplayMode         (HIDS hCam, INT Mode);
   IDSEXP   is_SetDisplayPos          (HIDS hCam, INT x, INT y);
@@ -2218,10 +2247,10 @@ typedef struct _DC_INFO
   // Version information
   IDSEXP   is_GetDLLVersion          (void);
 
-  IDSEXP   is_InitEvent              (HIDS hCam, HANDLE hEv, INT which);
-  IDSEXP   is_ExitEvent              (HIDS hCam, INT which);
-  IDSEXP   is_EnableEvent            (HIDS hCam, INT which);
-  IDSEXP   is_DisableEvent           (HIDS hCam, INT which);
+  IDSEXPDEP is_InitEvent              (HIDS hCam, HANDLE hEv, INT which);
+  IDSEXPDEP is_ExitEvent              (HIDS hCam, INT which);
+  IDSEXPDEP is_EnableEvent            (HIDS hCam, INT which);
+  IDSEXPDEP is_DisableEvent           (HIDS hCam, INT which);
 
   IDSEXP   is_SetExternalTrigger     (HIDS hCam, INT nTriggerMode);
   IDSEXPDEP is_SetTriggerCounter     (HIDS hCam, INT nValue);
@@ -2294,7 +2323,7 @@ typedef struct _DC_INFO
   IDSEXP is_SetAutoParameter            (HIDS hCam, INT param, double *pval1, double *pval2);
   IDSEXP is_GetAutoInfo                 (HIDS hCam, UEYE_AUTO_INFO *pInfo);
 
-  IDSEXP is_GetImageHistogram           (HIDS hCam, int nID, INT ColorMode, DWORD* pHistoMem);
+  IDSEXP is_GetImageHistogram           (HIDS hCam, int nMemId, INT ColorMode, DWORD* pHistoMem);
   IDSEXP is_SetTriggerDelay             (HIDS hCam, INT nTriggerDelay);
 
   // new with driver version 2.21.0000
@@ -2342,6 +2371,23 @@ typedef struct _DC_INFO
       INT Reserved[10];
   } KNEEPOINTINFO, *PKNEEPOINTINFO;
 
+  typedef struct _IMAGEQUEUEWAITBUFFER
+  {
+      UINT timeout;
+      char **ppcMem;
+      INT *pnMemId;
+  } IMAGEQUEUEWAITBUFFER, *PIMAGEQUEUEWAITBUFFER;
+
+  typedef enum E_IMAGE_QUEUE_CMD
+  {
+      IS_IMAGE_QUEUE_CMD_INIT,
+      IS_IMAGE_QUEUE_CMD_EXIT,
+      IS_IMAGE_QUEUE_CMD_WAIT,
+      IS_IMAGE_QUEUE_CMD_CANCEL_WAIT,
+      IS_IMAGE_QUEUE_CMD_GET_PENDING,
+      IS_IMAGE_QUEUE_CMD_FLUSH,
+      IS_IMAGE_QUEUE_CMD_DISCARD_N_ITEMS,
+  } IMAGE_QUEUE_CMD;
 
   // HDR functions
   IDSEXP is_GetHdrMode                  (HIDS hCam, INT *Mode);
@@ -2359,9 +2405,10 @@ typedef struct _DC_INFO
   IDSEXP is_GetColorConverter           (HIDS hCam, INT ColorMode, INT *pCurrentConvertMode, INT *pDefaultConvertMode, INT *pSupportedConvertModes);
   IDSEXP is_SetColorConverter           (HIDS hCam, INT ColorMode, INT ConvertMode);
 
-  IDSEXP is_WaitForNextImage            (HIDS hCam, UINT timeout, char **ppcMem, INT *imageID);
-  IDSEXP is_InitImageQueue              (HIDS hCam, INT nMode);
-  IDSEXP is_ExitImageQueue              (HIDS hCam);
+  IDSEXP is_ImageQueue                  (HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParams);
+  IDSEXPDEP is_WaitForNextImage         (HIDS hCam, UINT timeout, char** ppcMem, INT* pnMemId);
+  IDSEXPDEP is_InitImageQueue           (HIDS hCam, INT nMode);
+  IDSEXPDEP is_ExitImageQueue           (HIDS hCam);
 
   IDSEXP is_SetTimeout                  (HIDS hCam, UINT nMode, UINT Timeout);
   IDSEXP is_GetTimeout                  (HIDS hCam, UINT nMode, UINT *pTimeout);
@@ -2430,7 +2477,7 @@ typedef struct _DC_INFO
   } UEYEIMAGEINFO;
 
 
-    IDSEXP is_GetImageInfo (HIDS hCam, INT nImageBufferID, UEYEIMAGEINFO *pImageInfo, INT nImageInfoSize);
+    IDSEXP is_GetImageInfo (HIDS hCam, INT nMemId, UEYEIMAGEINFO *pImageInfo, INT nImageInfoSize);
 
 
     // New functions and defines for 3.52 (uEye XS)
@@ -3424,7 +3471,8 @@ typedef enum E_DEVICE_FEATURE_MODE_CAPS
     IS_DEVICE_FEATURE_CAP_REPEATED_START_CONDITION_I2C              = 0x00400000,
     IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS                        = 0x00800000,
     IS_DEVICE_FEATURE_CAP_MEMORY_MODE                               = 0x01000000,
-    IS_DEVICE_FEATURE_CAP_SEND_EXTERNAL_INTERFACE_DATA              = 0x02000000
+    IS_DEVICE_FEATURE_CAP_SEND_EXTERNAL_INTERFACE_DATA              = 0x02000000,
+    IS_DEVICE_FEATURE_CAP_END_OF_EXPOSURE                           = 0x04000000
 
 } DEVICE_FEATURE_MODE_CAPS;
 
@@ -4288,7 +4336,6 @@ IDSEXP is_OptimalCameraTiming(HIDS hCam, UINT u32Command, void* pParam, UINT u32
 
 #pragma pack(pop)
 
-  IDSEXP is_SetStarterFirmware  (HIDS hCam, const CHAR* pcFilepath, UINT uFilepathLen);
   IDSEXP is_SetPacketFilter     (INT iAdapterID, UINT uFilterSetting);
   IDSEXP is_GetComportNumber    (HIDS hCam, UINT *pComportNumber);
 
@@ -4303,6 +4350,9 @@ typedef enum E_IPCONFIG_CAPABILITY_FLAGS
 {
     /*! \brief Capability flag indicates support of Persistent IP for the device in question. */
     IPCONFIG_CAP_PERSISTENT_IP_SUPPORTED    = 0x01,
+
+    /* \brief Capability flag indicates support of DHCP for the device in question*/
+    IPCONFIG_CAP_DHCP_SUPPORTED = 0x02,
 
     /*! \brief Capability flag indicates support of IP auto configuration for the device in question. */
     IPCONFIG_CAP_AUTOCONFIG_IP_SUPPORTED    = 0x04
@@ -4331,6 +4381,16 @@ typedef enum E_IPCONFIG_CMD
      * \note Changing persistent IP configuration enabled status is allowed only if device is not paired.
      */
     IPCONFIG_CMD_SET_PERSISTENT_IP              = 0x01010000,
+
+    /*!
+    * \brief   Set DHCP Enabled configuration.
+    *          Type of value: IS_U32 (bit0: enabled).
+    *
+    * \note Use camera's device id or camera's MAC address as identifier for \ref is_IpConfig.
+    * \note Changing DHCP configuration enabled status is allowed only if device is not paired.
+    */
+    IPCONFIG_CMD_SET_DHCP_ENABLED               = 0x01020000,
+
     /*!
      * \brief   Set IP auto configuration setup.
      *          Type of value: \ref UEYE_ETH_AUTOCFG_IP_SETUP.
@@ -4340,6 +4400,7 @@ typedef enum E_IPCONFIG_CMD
      *          at the next pairing of the device.
      */
     IPCONFIG_CMD_SET_AUTOCONFIG_IP              = 0x01040000,
+
     /*!
      * \brief   Set IP auto configuration setup by device identification.
      *          Type of value: \ref UEYE_ETH_AUTOCFG_IP_SETUP.
@@ -4361,6 +4422,15 @@ typedef enum E_IPCONFIG_CMD
      * \note Use camera's device id or camera's MAC address as identifier for \ref is_IpConfig.
      */
     IPCONFIG_CMD_GET_PERSISTENT_IP              = 0x02010000,
+
+    /*!
+    * \brief   Get DHCP Enabled configuration.
+    *          Type of value: IS_U32 (bit0: enabled).
+    *
+    * \note Use camera's device id or camera's MAC address as identifier for \ref is_IpConfig.
+    */
+    IPCONFIG_CMD_GET_DHCP_ENABLED = 0x02020000,
+
     /*!
      * \brief   Get IP auto configuration setup.
      *          Type of value: \ref UEYE_ETH_AUTOCFG_IP_SETUP.
@@ -4368,6 +4438,7 @@ typedef enum E_IPCONFIG_CMD
      * \note Use NIC's adapter id or NIC's MAC address as identifier for \ref is_IpConfig.
      */
     IPCONFIG_CMD_GET_AUTOCONFIG_IP              = 0x02040000,
+
     /*!
      * \brief   Get IP auto configuration setup by device identification.
      *          Type of value: \ref UEYE_ETH_AUTOCFG_IP_SETUP.
@@ -4421,7 +4492,6 @@ typedef enum E_CONFIGURATION_SEL
 
     IS_CONFIG_IMAGE_MEMORY_COMPATIBILITY_MODE_OFF  = 0,
     IS_CONFIG_IMAGE_MEMORY_COMPATIBILITY_MODE_ON   = 1
-
 } CONFIGURATION_SEL;
 
 /*!
@@ -4455,8 +4525,9 @@ typedef enum E_CONFIGURATION_CMD
 
     IS_CONFIG_CMD_SET_IMAGE_MEMORY_COMPATIBILIY_MODE         = 19,
     IS_CONFIG_CMD_GET_IMAGE_MEMORY_COMPATIBILIY_MODE         = 20,
-    IS_CONFIG_CMD_GET_IMAGE_MEMORY_COMPATIBILIY_MODE_DEFAULT = 21
+    IS_CONFIG_CMD_GET_IMAGE_MEMORY_COMPATIBILIY_MODE_DEFAULT = 21,
 
+    IS_CONFIG_CMD_UPDATE_TCPIP_SETUP = 22
 } CONFIGURATION_CMD;
 
 /*!
@@ -4469,7 +4540,6 @@ typedef enum E_CONFIGURATION_CAPS
     IS_CONFIG_INITIAL_PARAMETERSET_CAP_SUPPORTED           = 0x00000004, /*!< Initial parameter set commands are supported by the SDK */
     IS_CONFIG_IPO_CAP_SUPPORTED                            = 0x00000008, /*!< "Intel Performance Thread" is supported by the SDK */
     IS_CONFIG_TRUSTED_PAIRING_CAP_SUPPORTED                = 0x00000010  /*!< Camera supports trusted pairing when network connection was lost */
-
 } CONFIGURATION_CAPS;
 
 /*!
@@ -4520,7 +4590,7 @@ typedef struct S_IO_GPIO_CONFIGURATION
  * \brief Defines used by is_IO(), \ref is_IO.
  */
 #define IO_LED_STATE_1                      0 // Bit 0
-#define IO_LED_STATE_2                      1 // 
+#define IO_LED_STATE_2                      1 //
 #define IO_LED_ENABLE                       2 // after cam start up default: blink off, blink x times off
 #define IO_LED_DISABLE                      3 // blink off, blink x times off
 #define IO_LED_BLINK_ENABLE                 4 // no retrun value
@@ -5295,7 +5365,7 @@ typedef struct
  * \param cbParam       Size of *pParam.
  * \return Status of the execution.
  */
-IDSEXP is_Memory(HIDS hf, UINT nCommand, void* pParam, UINT cbSizeOfParam);
+IDSEXPDEP is_Memory(HIDS hf, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
 
 typedef struct
@@ -5690,11 +5760,80 @@ typedef enum E_POWER_DELIVERY_PROFILES
     IS_POWER_DELIVERY_PROFILE_15V           = 0x00000020
 } POWER_DELIVERY_PROFILES;
 
+/*!
+ * \brief Enumeration of commands of function is_Event , \ref is_Event.
+ */
+typedef enum E_EVENT_CMD
+{
+    IS_EVENT_CMD_INIT    = 1,
+    IS_EVENT_CMD_EXIT    = 2,
+    IS_EVENT_CMD_ENABLE  = 3,
+    IS_EVENT_CMD_DISABLE = 4,
+    IS_EVENT_CMD_SET     = 5,
+    IS_EVENT_CMD_RESET   = 6,
+    IS_EVENT_CMD_WAIT    = 7
+} EVENT_CMD;
+
+
+typedef struct S_IS_INIT_EVENT
+{
+    UINT nEvent;
+    BOOL bManualReset;
+    BOOL bInitialState;
+} IS_INIT_EVENT;
+
+
+typedef struct S_IS_WAIT_EVENT
+{
+    UINT nEvent;
+    UINT nTimeoutMilliseconds;
+    UINT nSignaled;
+    UINT nSetCount;
+} IS_WAIT_EVENT;
+
+
+typedef struct S_IS_WAIT_EVENTS
+{
+    UINT* pEvents;
+    UINT  nCount;
+    BOOL  bWaitAll;
+    UINT  nTimeoutMilliseconds;
+    UINT  nSignaled;
+    UINT  nSetCount;
+} IS_WAIT_EVENTS;
+
+/*!
+* \brief Interface to set the event
+* \param   hCam            valid device handle.
+* \param   nCommand        Specifies the command
+* \param   pParam          input or output storage for the accessed param.
+* \param   cbSizeOfParam   size of *pParam.
+* \return  error code
+*/
+IDSEXP is_Event(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
+
+
+typedef enum E_CAPTURE_CONFIGURATION_CMD
+{
+    IS_CAPTURE_CONFIGURATION_CMD_SET_QUEUE_BUFFER_COUNT = 1,
+    IS_CAPTURE_CONFIGURATION_CMD_GET_QUEUE_BUFFER_COUNT = 2,
+
+    IS_CAPTURE_CONFIGURATION_CMD_SET_INTERNAL_BUFFER_SIZE = 3,
+    IS_CAPTURE_CONFIGURATION_CMD_GET_INTERNAL_BUFFER_SIZE = 4,
+    IS_CAPTURE_CONFIGURATION_CMD_GET_INTERNAL_BUFFER_SIZE_DEFAULT = 5,
+
+    IS_CAPTURE_CONFIGURATION_CMD_SET_INTERNAL_BUFFER_COUNT = 6,
+    IS_CAPTURE_CONFIGURATION_CMD_GET_INTERNAL_BUFFER_COUNT = 7,
+    IS_CAPTURE_CONFIGURATION_CMD_GET_INTERNAL_BUFFER_COUNT_DEFAULT = 8
+} CAPTURE_CONFIGURATION_CMD;
+
+IDSEXP is_CaptureConfiguration(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
 #ifdef __cplusplus
-};
+}
 #endif  /* __cplusplus */
 
 #pragma pack(pop)
 
 #endif  // #ifndef __IDS_HEADER__
+
