@@ -31,7 +31,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "itom_sdk.h"
 
 #define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 3
+#define PLUGIN_VERSION_MINOR 4
 #define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
