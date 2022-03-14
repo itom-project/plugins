@@ -49,15 +49,16 @@ AvtVimbaInterface::AvtVimbaInterface()
     m_type = ito::typeDataIO | ito::typeGrabber; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
     setObjectName("AVTVimba");
 
-    m_description = QObject::tr("AVT GigE and firewire cameras using Vimba interface");
+    m_description = QObject::tr("AVT GigE, firewire and USB cameras using Vimba interface");
 
     m_detaildescription = QObject::tr(
 "This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: \n\
 \n\
 - Marlin, F033 (monochrome, Firewire) \n\
 - Manta G-917B and G-146B (monochrome, GigE) \n\
+- Alvium 1800 U-811c (monochrome, USB) \n\
 \n\
-The plugin was tested with AVT Vimba 1.3.0 and 1.4.0. \n\
+The plugin was tested with AVT Vimba 1.3.0, 1.4.0, 2.5.0. \n\
 \n\
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
 Color formats are not supported.");
@@ -298,6 +299,9 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
                     case VmbInterfaceFirewire:
                         m_params["interface"].setVal<char*>("Firewire");
                         break;
+                    case VmbInterfaceUsb:
+                        m_params["interface"].setVal<char*>("USB");
+                        break;
                     default:
                         retValue += ito::RetVal(ito::retError, 0, "unknown or unsupported transport type (GigE, Firewire...)");
                         break;
@@ -351,6 +355,25 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
                         m_params.remove("device_temperature");
 
                         retValue += getEnumFeatureByName("TriggerSelector", enum_name, enum_idx);
+                    }
+                    else if (m_interfaceType == VmbInterfaceUsb)
+                    {
+                        // some defaults (they are not changed in this plugin)
+                        setEnumFeature("TriggerMode", "Off"); // trigger off makes no sense
+                        setEnumFeature("ExposureAuto", "Off");
+                        setEnumFeature("ExposureMode", "Timed");
+                        setEnumFeature(
+                            "TriggerSelector",
+                            "ExposureStart"); // if the trigger source is changed, it changes the
+                                              // trigger for starting an exposure
+                        setEnumFeature("BlackLevelSelector", "All");
+
+                        // remove unused parameters
+                        m_params.remove("stream_bps");
+                        m_params.remove("packet_size");
+
+                        retValue += getEnumFeatureByName("TriggerSelector", enum_name, enum_idx);
+
                     }
                 }
 
