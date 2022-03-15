@@ -70,6 +70,8 @@ class QuantumComposer : public ito::AddInDataIO
         ito::RetVal SendCommand(const QByteArray& command);
         ito::RetVal ReadString(QByteArray& result, int& len, const int timeoutMS);
         ito::RetVal SendQuestionWithAnswerString(const QByteArray& questionCommand, QByteArray& answer, const int timeoutMS);
+        ito::RetVal SendQuestionWithAnswerDouble(
+            const QByteArray& questionCommand, double &answer, const int timeoutMS);
         
     public slots:
         //!< Get Camera-Parameter

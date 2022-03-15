@@ -188,7 +188,6 @@ QuantumComposer::QuantumComposer() :
     sm->addItem("SING");
     sm->addItem("BURST");
     sm->addItem("DCYC");
-    sm->setCategory("Device parameter");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -206,8 +205,45 @@ QuantumComposer::QuantumComposer() :
     sm->addItem("PULS");
     sm->addItem("OUTP");
     sm->addItem("CHAN");
-    sm->setCategory("Device parameter");
     paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "gateLogic",
+        ito::ParamBase::String,
+        "",
+        tr("Gate logic level (LOW, HIGH).").toLatin1().data());
+    sm = new ito::StringMeta(ito::StringMeta::String, "LOW", "Device parameter");
+    sm->addItem("HIGH");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "gateLevel",
+        ito::ParamBase::Double,
+        0.20,
+        new ito::DoubleMeta(0.20, 15.0, 0.01, "Device parameter"),
+        tr("Gate threshold in units of V with a range of 0.20V to 15.0V.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "triggerEdge",
+        ito::ParamBase::String,
+        "",
+        tr("Trigger edge to use as the trigger signal (RIS: rising, FALL: falling).")
+            .toLatin1()
+            .data());
+    sm = new ito::StringMeta(ito::StringMeta::String, "RIS", "Device parameter");
+    sm->addItem("FALL");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "triggerLevel",
+        ito::ParamBase::Double,
+        0.20,
+        new ito::DoubleMeta(0.20, 15.0, 0.01, "Device parameter"),
+        tr("Trigger threshold in units of V with a range of 0.20V to 15.0V.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 }
 
@@ -230,6 +266,7 @@ ito::RetVal QuantumComposer::init(
     ito::RetVal retValue(ito::retOk);
 
     QByteArray answer;
+    double answerDouble;
 
     if (reinterpret_cast<ito::AddInBase*>((*paramsMand)[0].getVal<void*>())
             ->getBasePlugin()
@@ -309,11 +346,28 @@ ito::RetVal QuantumComposer::init(
 
         if (!retValue.containsError())
         {
-            retValue += SendQuestionWithAnswerString(":PULSE0:MODE?", answer, 1000);
+            retValue += SendQuestionWithAnswerString(":PULSE0:MODE?", answer, m_requestTimeOutMS);
             m_params["mode"].setVal<char*>(answer.data());
 
-            retValue += SendQuestionWithAnswerString(":PULSE0:GAT:MOD?", answer, 1000);
+            retValue +=
+                SendQuestionWithAnswerString(":PULSE0:GAT:MOD?", answer, m_requestTimeOutMS);
             m_params["gateMode"].setVal<char*>(answer.data());
+
+            retValue +=
+                SendQuestionWithAnswerDouble(":PULSE0:GAT:LEV?", answerDouble, m_requestTimeOutMS);
+            m_params["gateLevel"].setVal<double>(answerDouble);
+
+            retValue +=
+                SendQuestionWithAnswerString(":PULSE0:GAT:LOG?", answer, m_requestTimeOutMS);
+            m_params["gateLogic"].setVal<char*>(answer.data());
+
+            retValue +=
+                SendQuestionWithAnswerString(":PULSE0:TRIG:EDG?", answer, m_requestTimeOutMS);
+            m_params["triggerEdge"].setVal<char*>(answer.data());
+
+            retValue +=
+                SendQuestionWithAnswerDouble(":PULSE0:TRIG:LEV?", answerDouble, m_requestTimeOutMS);
+            m_params["triggerLevel"].setVal<double>(answerDouble);
         }
 
 
@@ -435,10 +489,36 @@ ito::RetVal QuantumComposer::setParam(
                 QString(":PULSE0:GAT:MOD %1").arg(val->getVal<char*>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
+        else if (key == "gateLogic")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:GAT:LOG %1").arg(val->getVal<char*>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "gateLevel")
+        {
+            retValue += SendCommand(QString(":PULSE0:GAT:LEV %1")
+                                        .arg(QString::number(val->getVal<double>()))
+                                        .toLatin1());
+            retValue += it->copyValueFrom(&(*val));
+        }
         else if (key == "requestTimeOut")
         {
             m_requestTimeOutMS = val->getVal<int>();
             m_params["requestTimeOut"].setVal<int>(m_requestTimeOutMS);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "triggerEdge")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:TRIG:EDG %1").arg(val->getVal<char*>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "triggerLevel")
+        {
+            retValue += SendCommand(QString(":PULSE0:TRIG:LEV %1")
+                                        .arg(QString::number(val->getVal<double>()))
+                                        .toLatin1());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -603,7 +683,7 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
         timer.start();
         _sleep(m_delayAfterSendCommandMS); // The amount of time required to receive, process, and
                                            // repond to a command is
-                     // approximately 10ms.
+        // approximately 10ms.
 
         while (!done && !retValue.containsError())
         {
@@ -645,11 +725,32 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerString(
     int readSigns;
     ito::RetVal retValue = SendCommand(questionCommand);
     retValue += ReadString(answer, readSigns, timeoutMS);
+    return retValue;
+}
 
-    if (retValue.containsError())
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::SendQuestionWithAnswerDouble(
+    const QByteArray& questionCommand, double& answer, const int timeoutMS)
+{
+    int readSigns;
+    QByteArray _answer;
+    bool ok;
+    ito::RetVal retValue = SendCommand(questionCommand);
+    retValue += ReadString(_answer, readSigns, timeoutMS);
+    qDebug() << _answer;
+    _answer = _answer.replace(",", ".");
+    answer = _answer.toDouble(&ok);
+
+    if (!ok)
     {
-        std::cout << "Error during SendQuestionWithAnswerString" << std::endl;
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
+                .arg(_answer.constData())
+                .toLatin1()
+                .data());
     }
-
     return retValue;
 }
