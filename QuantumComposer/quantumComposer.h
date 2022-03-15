@@ -65,6 +65,7 @@ class QuantumComposer : public ito::AddInDataIO
     private:
         ito::AddInDataIO* m_pSer;
         int m_delayAfterSendCommandMS;
+        int m_requestTimeOutMS;
 
         ito::RetVal SendCommand(const QByteArray& command);
         ito::RetVal ReadString(QByteArray& result, int& len, const int timeoutMS);

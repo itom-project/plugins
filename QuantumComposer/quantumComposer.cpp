@@ -125,11 +125,11 @@ Q_EXPORT_PLUGIN2(
    remove entries from m_params in this constructor or later in the init method
 */
 QuantumComposer::QuantumComposer() :
-    AddInDataIO(), m_pSer(nullptr), m_delayAfterSendCommandMS(2)
+    AddInDataIO(), m_pSer(nullptr), m_delayAfterSendCommandMS(100), m_requestTimeOutMS(500)
 {
     ito::Param paramVal = ito::Param(
         "name",
-        ito::ParamBase::String | ito::ParamBase::Readonly, 
+        ito::ParamBase::String | ito::ParamBase::Readonly,
         "QuantumComposer",
         tr("Plugin name.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
@@ -167,10 +167,12 @@ QuantumComposer::QuantumComposer() :
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal =
-        ito::Param("requestTimeout", ito::ParamBase::Int, 0, tr("Request timeout for the SerialIO interface.").toLatin1().data());
-    paramVal.setMeta(
-        new ito::IntMeta(0, std::numeric_limits<int>::max(), 500, "SerialIO parameter"), true);
+    paramVal = ito::Param(
+        "requestTimeout",
+        ito::ParamBase::Int,
+        m_requestTimeOutMS,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "SerialIO parameter"),
+        tr("Request timeout for the SerialIO interface.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -199,13 +201,13 @@ QuantumComposer::QuantumComposer() :
            "cycle).")
             .toLatin1()
             .data());
-    ito::StringMeta* sm2 = new ito::StringMeta(ito::StringMeta::String, "DIS", "Device parameter");
-    sm2->addItem("DIS");
-    sm2->addItem("PULS");
-    sm2->addItem("OUTP");
-    sm2->addItem("CHAN");
-    sm2->setCategory("Device parameter");
-    paramVal.setMeta(sm2, true);
+    sm = new ito::StringMeta(ito::StringMeta::String, "DIS", "Device parameter");
+    sm->addItem("DIS");
+    sm->addItem("PULS");
+    sm->addItem("OUTP");
+    sm->addItem("CHAN");
+    sm->setCategory("Device parameter");
+    paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 }
 
@@ -284,11 +286,11 @@ ito::RetVal QuantumComposer::init(
         m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
 
         retValue += SendQuestionWithAnswerString("*IDN?", answer, 1000);
-        qDebug() << answer;
+
         if (!retValue.containsError())
         {
             QByteArrayList idn =
-                answer.trimmed().split(','); // split identification answer in lines and by comma
+                answer.split(','); // split identification answer in lines and by comma
             if (idn.length() == 4)
             {
                 m_params["manufacturer"].setVal<char*>(idn[0].data());
@@ -305,7 +307,15 @@ ito::RetVal QuantumComposer::init(
             }
         }
 
-        retValue += SendQuestionWithAnswerString(":PULSE0:MODE?", answer, 1000);
+        if (!retValue.containsError())
+        {
+            retValue += SendQuestionWithAnswerString(":PULSE0:MODE?", answer, 1000);
+            m_params["mode"].setVal<char*>(answer.data());
+
+            retValue += SendQuestionWithAnswerString(":PULSE0:GAT:MOD?", answer, 1000);
+            m_params["gateMode"].setVal<char*>(answer.data());
+        }
+
 
         emit parametersChanged(m_params);
     }
@@ -413,16 +423,22 @@ ito::RetVal QuantumComposer::setParam(
 
     if (!retValue.containsError())
     {
-        if (key == "Mode")
+        if (key == "mode")
         {
             retValue += SendCommand(
                 QString(":PULSE0:MODE %1").arg(val->getVal<char*>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
-        else if (key == "GateMode")
+        else if (key == "gateMode")
         {
             retValue += SendCommand(
                 QString(":PULSE0:GAT:MOD %1").arg(val->getVal<char*>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "requestTimeOut")
+        {
+            m_requestTimeOutMS = val->getVal<int>();
+            m_params["requestTimeOut"].setVal<int>(m_requestTimeOutMS);
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -585,7 +601,8 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
     {
         len = 0;
         timer.start();
-        _sleep(100); // The amount of time required to receive, process, and repond to a command is
+        _sleep(m_delayAfterSendCommandMS); // The amount of time required to receive, process, and
+                                           // repond to a command is
                      // approximately 10ms.
 
         while (!done && !retValue.containsError())
@@ -614,7 +631,7 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
                 }
             }
         }
-
+        result = result.trimmed();
         len = result.length();
     }
 
