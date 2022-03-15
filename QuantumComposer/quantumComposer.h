@@ -85,15 +85,6 @@ class QuantumComposer : public ito::AddInDataIO
         //!< Free buffer, delete board, unload dll
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-        //!< Start the camera to enable acquire-commands
-        ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
-        //!< Stop the camera to disable acquire-commands
-        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
-        //!< Softwaretrigger for the camera
-        ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-
-        ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 

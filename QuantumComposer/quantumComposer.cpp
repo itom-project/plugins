@@ -221,6 +221,16 @@ QuantumComposer::QuantumComposer() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
+        "offCounter",
+        ito::ParamBase::Int,
+        1,
+        new ito::IntMeta(1, 9999999, 1, "Device parameter"),
+        tr("Number of pulses to inhibit output during the off cycle of the Duty Cycle mode.")
+            .toLatin1()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
         "gateMode",
         ito::ParamBase::String,
         "",
@@ -283,6 +293,75 @@ QuantumComposer::QuantumComposer() :
         0.20,
         new ito::DoubleMeta(0.20, 15.0, 0.01, "Device parameter"),
         tr("Trigger threshold in units of V with a range of 0.20V to 15.0V.").toLatin1().data());
+
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "icLock",
+        ito::ParamBase::String,
+        "",
+        tr("Source for the internal rate generator. System clock or external source ranging from "
+           "10MHz to 100MHz (SYS, EXT10, EXT20, EXT25, EXT40, EXT50, EXT80, EXT100).")
+            .toLatin1()
+            .data());
+    sm = new ito::StringMeta(ito::StringMeta::String, "SYS", "Device parameter");
+    sm->addItem("EXT10");
+    sm->addItem("EXT20");
+    sm->addItem("EXT25");
+    sm->addItem("EXT40");
+    sm->addItem("EXT50");
+    sm->addItem("EXT80");
+    sm->addItem("EXT100");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "ocLock",
+        ito::ParamBase::String,
+        "",
+        tr("External clock output. T0 pulse or 50% duty cycle TTL output from 10MHz to 100MHz (T0, 10, 11, 12, 14, 16, 20, 25, 33, 50, 100).")
+            .toLatin1()
+            .data());
+    sm = new ito::StringMeta(ito::StringMeta::String, "T0", "Device parameter");
+    sm->addItem("10");
+    sm->addItem("11");
+    sm->addItem("12");
+    sm->addItem("14");
+    sm->addItem("16");
+    sm->addItem("20");
+    sm->addItem("25");
+    sm->addItem("33");
+    sm->addItem("50");
+    sm->addItem("100");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "period",
+        ito::ParamBase::Double,
+        100e-9,
+        new ito::DoubleMeta(6e-8, 5000.0, 1e-8, "Device parameter"),
+        tr("T0 period in units of seconds (100ns - 5000s).")
+            .toLatin1()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "counterState",
+        ito::ParamBase::Int,
+        0,
+        new ito::IntMeta(0, 1, 1, "Device parameter"),
+        tr("Enables (1), disables(0) the counter function.")
+            .toLatin1()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "counterCounts",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Device parameter"),
+        tr("Number of counts.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 }
 
@@ -404,6 +483,10 @@ ito::RetVal QuantumComposer::init(
             m_params["pulseCounter"].setVal<int>(answerInt);
 
             retValue +=
+                SendQuestionWithAnswerInteger(":PULSE0:OCO?", answerInt, m_requestTimeOutMS);
+            m_params["pulseCounter"].setVal<int>(answerInt);
+
+            retValue +=
                 SendQuestionWithAnswerString(":PULSE0:GAT:MOD?", answerStr, m_requestTimeOutMS);
             m_params["gateMode"].setVal<char*>(answerStr.data());
 
@@ -424,8 +507,27 @@ ito::RetVal QuantumComposer::init(
             m_params["triggerEdge"].setVal<char*>(answerStr.data());
 
             retValue +=
+                SendQuestionWithAnswerString(":PULSE0:ICL?", answerStr, m_requestTimeOutMS);
+            m_params["icLock"].setVal<char*>(answerStr.data());
+
+            retValue += SendQuestionWithAnswerString(":PULSE0:OCL?", answerStr, m_requestTimeOutMS);
+            m_params["ocLock"].setVal<char*>(answerStr.data());
+
+            retValue +=
                 SendQuestionWithAnswerDouble(":PULSE0:TRIG:LEV?", answerDouble, m_requestTimeOutMS);
             m_params["triggerLevel"].setVal<double>(answerDouble);
+
+            retValue +=
+                SendQuestionWithAnswerDouble(":PULSE0:PER?", answerDouble, m_requestTimeOutMS);
+            m_params["period"].setVal<double>(answerDouble);
+
+            retValue +=
+                SendQuestionWithAnswerInteger(":PULSE0:COUN:STAT?", answerInt, m_requestTimeOutMS);
+            m_params["counterState"].setVal<int>(answerInt);
+
+            retValue +=
+                SendQuestionWithAnswerInteger(":PULSE0:COUN:COUN?", answerInt, m_requestTimeOutMS);
+            m_params["counterCounts"].setVal<int>(answerInt);
         }
 
 
@@ -488,9 +590,13 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
 
     if (!retValue.containsError())
     {
-        // put your switch-case.. for getting the right value here
-
-        // finally, save the desired value in the argument val (this is a shared pointer!)
+        int answerInt;
+        if (key == "counterCounts")
+        {
+            retValue +=
+                SendQuestionWithAnswerInteger(":PULSE0:COUN:COUN?", answerInt, m_requestTimeOutMS);
+            val->setVal<int>(answerInt);
+        }
         *val = it.value();
     }
 
@@ -559,6 +665,12 @@ ito::RetVal QuantumComposer::setParam(
                 QString(":PULSE0:PCO %1").arg(val->getVal<int>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
+        else if (key == "offCounter")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:OCO %1").arg(val->getVal<int>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
         else if (key == "gateMode")
         {
             retValue += SendCommand(
@@ -603,6 +715,32 @@ ito::RetVal QuantumComposer::setParam(
             m_params["requestTimeOut"].setVal<int>(m_requestTimeOutMS);
             retValue += it->copyValueFrom(&(*val));
         }
+        else if (key == "icLock")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:ICL %1").arg(val->getVal<char*>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "ocLock")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:OCL %1").arg(val->getVal<char*>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "period")
+        {
+            qDebug() << QString::number(val->getVal<double>(), 'f', 8);
+            retValue += SendCommand(QString(":PULSE0:PER %1")
+                                        .arg(QString::number(val->getVal<double>(), 'f', 8).replace(".", ","))
+                                        .toLatin1());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "counterState")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:COUNT:STAT %1").arg(val->getVal<int>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
         else
         {
             // all parameters that don't need further checks can simply be assigned
@@ -615,88 +753,6 @@ ito::RetVal QuantumComposer::setParam(
     {
         emit parametersChanged(
             m_params); // send changed parameters to any connected dialogs or dock-widgets
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal QuantumComposer::startDevice(ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-
-    // todo:
-    //  if this function has been called for the first time (grabberStartedCount() == 1),
-    //  start the camera, allocate necessary buffers or do other work that is necessary
-    //  to prepare the camera for image acquisitions.
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal QuantumComposer::stopDevice(ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal QuantumComposer::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
-
-    // call retrieveData without argument. Retrieve data should then put the currently acquired
-    // image into the dataObject m_data of the camera. retValue += retrieveData();
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal QuantumComposer::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
-
-    if (!dObj)
-    {
-        retValue += ito::RetVal(
-            ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
-    }
-
-    if (!retValue.containsError())
-    {
-        // this method calls retrieveData with the passed dataObject as argument such that
-        // retrieveData is able to copy the image obtained by the camera directly into the given,
-        // external dataObject retValue += retrieveData(dObj);  //checkData is executed inside of
-        // retrieveData
     }
 
     if (waitCond)
@@ -847,6 +903,11 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
     ito::RetVal retValue = SendCommand(questionCommand);
     retValue += ReadString(_answer, readSigns, timeoutMS);
     qDebug() << _answer;
+
+    if (_answer.contains("?"))
+    {
+        _answer.replace("?", "");
+    }
     answer = _answer.toInt(&ok);
 
     if (!ok)
@@ -854,7 +915,7 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
+            tr("Error during SendQuestionWithAnswerInteger, converting %1 to double value.")
                 .arg(_answer.constData())
                 .toLatin1()
                 .data());
