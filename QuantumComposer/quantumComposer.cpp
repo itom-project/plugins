@@ -192,6 +192,35 @@ QuantumComposer::QuantumComposer() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
+        "state",
+        ito::ParamBase::Int,
+        0,
+        new ito::IntMeta(0, 1, 1, "Device parameter"),
+        tr("Enables (1), disables (0) the output for all channels. Command is the same as pressing "
+           "the RUN/STOP button.")
+            .toLatin1()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "burstCounter",
+        ito::ParamBase::Int,
+        1,
+        new ito::IntMeta(1, 9999999, 1, "Device parameter"),
+        tr("Number of pulses to generate in the burst mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "pulseCounter",
+        ito::ParamBase::Int,
+        1,
+        new ito::IntMeta(1, 9999999, 1, "Device parameter"),
+        tr("Number of pulses to inhibit output during the off cycle of the Duty Cycle mode.")
+            .toLatin1()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
         "gateMode",
         ito::ParamBase::String,
         "",
@@ -224,6 +253,16 @@ QuantumComposer::QuantumComposer() :
         0.20,
         new ito::DoubleMeta(0.20, 15.0, 0.01, "Device parameter"),
         tr("Gate threshold in units of V with a range of 0.20V to 15.0V.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "triggerMode",
+        ito::ParamBase::String,
+        "",
+        tr("Trigger mode (DIS: disabled, TRIG: triggered, enabled).").toLatin1().data());
+    sm = new ito::StringMeta(ito::StringMeta::String, "DIS", "Device parameter");
+    sm->addItem("TRIG");
+    paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -265,8 +304,9 @@ ito::RetVal QuantumComposer::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    QByteArray answer;
+    QByteArray answerStr;
     double answerDouble;
+    int answerInt;
 
     if (reinterpret_cast<ito::AddInBase*>((*paramsMand)[0].getVal<void*>())
             ->getBasePlugin()
@@ -297,6 +337,7 @@ ito::RetVal QuantumComposer::init(
         {
             baud = 115200;
         }
+
         retValue += m_pSer->setParam(
             QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, baud)),
             nullptr);
@@ -322,12 +363,12 @@ ito::RetVal QuantumComposer::init(
         m_pSer->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
         m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
 
-        retValue += SendQuestionWithAnswerString("*IDN?", answer, 1000);
+        retValue += SendQuestionWithAnswerString("*IDN?", answerStr, 1000);
 
         if (!retValue.containsError())
         {
             QByteArrayList idn =
-                answer.split(','); // split identification answer in lines and by comma
+                answerStr.split(','); // split identification answer in lines and by comma
             if (idn.length() == 4)
             {
                 m_params["manufacturer"].setVal<char*>(idn[0].data());
@@ -346,24 +387,41 @@ ito::RetVal QuantumComposer::init(
 
         if (!retValue.containsError())
         {
-            retValue += SendQuestionWithAnswerString(":PULSE0:MODE?", answer, m_requestTimeOutMS);
-            m_params["mode"].setVal<char*>(answer.data());
+            retValue +=
+                SendQuestionWithAnswerString(":PULSE0:MODE?", answerStr, m_requestTimeOutMS);
+            m_params["mode"].setVal<char*>(answerStr.data());
 
             retValue +=
-                SendQuestionWithAnswerString(":PULSE0:GAT:MOD?", answer, m_requestTimeOutMS);
-            m_params["gateMode"].setVal<char*>(answer.data());
+                SendQuestionWithAnswerInteger(":PULSE0:STAT?", answerInt, m_requestTimeOutMS);
+            m_params["state"].setVal<int>(answerInt);
+
+            retValue +=
+                SendQuestionWithAnswerInteger(":PULSE0:BCO?", answerInt, m_requestTimeOutMS);
+            m_params["burstCounter"].setVal<int>(answerInt);
+
+            retValue +=
+                SendQuestionWithAnswerInteger(":PULSE0:PCO?", answerInt, m_requestTimeOutMS);
+            m_params["pulseCounter"].setVal<int>(answerInt);
+
+            retValue +=
+                SendQuestionWithAnswerString(":PULSE0:GAT:MOD?", answerStr, m_requestTimeOutMS);
+            m_params["gateMode"].setVal<char*>(answerStr.data());
 
             retValue +=
                 SendQuestionWithAnswerDouble(":PULSE0:GAT:LEV?", answerDouble, m_requestTimeOutMS);
             m_params["gateLevel"].setVal<double>(answerDouble);
 
             retValue +=
-                SendQuestionWithAnswerString(":PULSE0:GAT:LOG?", answer, m_requestTimeOutMS);
-            m_params["gateLogic"].setVal<char*>(answer.data());
+                SendQuestionWithAnswerString(":PULSE0:GAT:LOG?", answerStr, m_requestTimeOutMS);
+            m_params["gateLogic"].setVal<char*>(answerStr.data());
 
             retValue +=
-                SendQuestionWithAnswerString(":PULSE0:TRIG:EDG?", answer, m_requestTimeOutMS);
-            m_params["triggerEdge"].setVal<char*>(answer.data());
+                SendQuestionWithAnswerString(":PULSE0:TRIG:MOD?", answerStr, m_requestTimeOutMS);
+            m_params["triggerMode"].setVal<char*>(answerStr.data());
+
+            retValue +=
+                SendQuestionWithAnswerString(":PULSE0:TRIG:EDG?", answerStr, m_requestTimeOutMS);
+            m_params["triggerEdge"].setVal<char*>(answerStr.data());
 
             retValue +=
                 SendQuestionWithAnswerDouble(":PULSE0:TRIG:LEV?", answerDouble, m_requestTimeOutMS);
@@ -483,6 +541,24 @@ ito::RetVal QuantumComposer::setParam(
                 QString(":PULSE0:MODE %1").arg(val->getVal<char*>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
+        else if (key == "state")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:STAT %1").arg(val->getVal<int>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "burstCounter")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:BCO %1").arg(val->getVal<int>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "pulseCounter")
+        {
+            retValue += SendCommand(
+                QString(":PULSE0:PCO %1").arg(val->getVal<int>()).toStdString().c_str());
+            retValue += it->copyValueFrom(&(*val));
+        }
         else if (key == "gateMode")
         {
             retValue += SendCommand(
@@ -502,10 +578,10 @@ ito::RetVal QuantumComposer::setParam(
                                         .toLatin1());
             retValue += it->copyValueFrom(&(*val));
         }
-        else if (key == "requestTimeOut")
+        else if (key == "triggerMode")
         {
-            m_requestTimeOutMS = val->getVal<int>();
-            m_params["requestTimeOut"].setVal<int>(m_requestTimeOutMS);
+            retValue += SendCommand(
+                QString(":PULSE0:TRIG:MOD %1").arg(val->getVal<char*>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "triggerEdge")
@@ -519,6 +595,12 @@ ito::RetVal QuantumComposer::setParam(
             retValue += SendCommand(QString(":PULSE0:TRIG:LEV %1")
                                         .arg(QString::number(val->getVal<double>()))
                                         .toLatin1());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "requestTimeOut")
+        {
+            m_requestTimeOutMS = val->getVal<int>();
+            m_params["requestTimeOut"].setVal<int>(m_requestTimeOutMS);
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -741,6 +823,31 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerDouble(
     qDebug() << _answer;
     _answer = _answer.replace(",", ".");
     answer = _answer.toDouble(&ok);
+
+    if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
+                .arg(_answer.constData())
+                .toLatin1()
+                .data());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
+    const QByteArray& questionCommand, int& answer, const int timeoutMS)
+{
+    int readSigns;
+    QByteArray _answer;
+    bool ok;
+    ito::RetVal retValue = SendCommand(questionCommand);
+    retValue += ReadString(_answer, readSigns, timeoutMS);
+    qDebug() << _answer;
+    answer = _answer.toInt(&ok);
 
     if (!ok)
     {
