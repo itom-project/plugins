@@ -71,7 +71,7 @@ The default parameters are: \n\
     ito::Param paramVal(
         "serialIOInstance",
         ito::ParamBase::HWRef | ito::ParamBase::In,
-        NULL,
+        nullptr,
         tr("An opened serial port.").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
@@ -201,34 +201,34 @@ ito::RetVal QuantumComposer::init(
         }
         else if (connectionType == "RS232")
         {
-            baud = 11520;
+            baud = 115200;
         }
         retValue += m_pSer->setParam(
             QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, baud)),
-            NULL);
+            nullptr);
         retValue += m_pSer->setParam(
             QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)),
-            NULL);
+            nullptr);
         retValue += m_pSer->setParam(
             QSharedPointer<ito::ParamBase>(
                 new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)),
-            NULL);
+            nullptr);
         retValue += m_pSer->setParam(
             QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)),
-            NULL);
+            nullptr);
         retValue += m_pSer->setParam(
             QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)),
-            NULL);
+            nullptr);
         retValue += m_pSer->setParam(
             QSharedPointer<ito::ParamBase>(
                 new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")),
-            NULL);
+            nullptr);
 
         QSharedPointer<QVector<ito::ParamBase>> _dummy;
-        m_pSer->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, NULL);
-        m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, NULL); 
+        m_pSer->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
+        m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr); 
 
-        retValue += SendQuestionWithAnswerString("*IDN?", answer, 500);
+        retValue += SendQuestionWithAnswerString("*IDN?", answer, 1000);
         qDebug() << answer;
         if (!retValue.containsError())
         {         
@@ -247,7 +247,7 @@ ito::RetVal QuantumComposer::init(
                 retValue += ito::RetVal(
                     ito::retError,
                     1,
-                    tr("Anser of the identification request is not valid!")
+                    tr("Answer of the identification request is not valid!")
                         .toLatin1()
                         .data());
             }
@@ -509,7 +509,7 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
     QByteArray endline;
 
     QSharedPointer<ito::Param> param(new ito::Param("endline"));
-    retValue += m_pSer->getParam(param, NULL);
+    retValue += m_pSer->getParam(param, nullptr);
 
     if (param->getType() == (ito::ParamBase::String & ito::paramTypeMask))
     {
@@ -529,11 +529,12 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
     {
         len = 0;
         timer.start();
+        _sleep(10);  // The amount of time required to receive, process, and repond to a command is approximately 10ms.
 
         while (!done && !retValue.containsError())
         {
             *curBufLen = buflen;
-            retValue += m_pSer->getVal(curBuf, curBufLen, NULL);
+            retValue += m_pSer->getVal(curBuf, curBufLen, nullptr);
 
             if (!retValue.containsError())
             {
@@ -545,6 +546,14 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
                 {
                     done = true;
                     result = result.mid(pos + endline.length(), curFrom);
+                }
+
+                if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        timeoutMS,
+                        tr("timeout during read string from SerialIO").toLatin1().data());
                 }
             }
         }
