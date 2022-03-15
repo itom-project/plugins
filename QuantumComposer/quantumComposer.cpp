@@ -40,15 +40,16 @@
 */
 QuantumComposerInterface::QuantumComposerInterface()
 {
-    m_type = ito::typeDataIO | ito::typeRawIO; // any grabber is a dataIO device AND its subtype grabber (bitmask ->
-                              // therefore the OR-combination).
+    m_type = ito::typeDataIO | ito::typeRawIO; // any grabber is a dataIO device AND its subtype
+                                               // grabber (bitmask -> therefore the OR-combination).
     setObjectName("QuantumComposer");
 
     m_description = QObject::tr("QuantumComposer");
 
     // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = "";
-    m_detaildescription = QObject::tr("QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
+    m_detaildescription = QObject::tr(
+        "QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
 \n\
 This plugin has been developed for the 9520 series via a RS232 interface. So you first have to create an instance of the SerialIO plugin \n\
 which is a mandatory input argument of the QuantumComposer plugin. \n\
@@ -81,7 +82,7 @@ The default parameters are: \n\
         ito::ParamBase::String,
         "USB",
         "Type of connection ('USB', 'RS232'). The Baud Rate for the USB connection will be set "
-           "to 38400 and for RS232 to 115200.");
+        "to 38400 and for RS232 to 115200.");
     ito::StringMeta* sm = new ito::StringMeta(ito::StringMeta::String, "USB");
     sm->addItem("RS232");
     paramVal.setMeta(sm, true);
@@ -123,37 +124,88 @@ Q_EXPORT_PLUGIN2(
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
    remove entries from m_params in this constructor or later in the init method
 */
-QuantumComposer::QuantumComposer() : AddInDataIO(), m_pSer(nullptr), m_delayAfterSendCommandMS(2)
+QuantumComposer::QuantumComposer() :
+    AddInDataIO(), m_pSer(nullptr), m_delayAfterSendCommandMS(2)
 {
-    ito::Param paramVal(
+    ito::Param paramVal = ito::Param(
         "name",
-        ito::ParamBase::String | ito::ParamBase::Readonly,
+        ito::ParamBase::String | ito::ParamBase::Readonly, 
         "QuantumComposer",
-        tr("Plugin for QuantumComposer pulse generator.").toLatin1().data());
+        tr("Plugin name.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param(
-        "Manufacturer",
+        "manufacturer",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Manufacturer identification.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param(
-        "Model",
+        "model",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Model identification.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param(
-        "SerialNumber",
+        "serialNumber",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Serial number.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param(
-        "Version",
+        "version",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Version number.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal =
+        ito::Param("requestTimeout", ito::ParamBase::Int, 0, tr("Request timeout for the SerialIO interface.").toLatin1().data());
+    paramVal.setMeta(
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 500, "SerialIO parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "mode",
+        ito::ParamBase::String,
+        "",
+        tr("Mode of the system output. (NORM: normal, SING: single shot, BURST: burst, DCYC: duty "
+           "cycle).")
+            .toLatin1()
+            .data());
+    ito::StringMeta* sm = new ito::StringMeta(ito::StringMeta::String, "NORM", "Device parameter");
+    sm->addItem("NORM");
+    sm->addItem("SING");
+    sm->addItem("BURST");
+    sm->addItem("DCYC");
+    sm->setCategory("Device parameter");
+    paramVal.setMeta(sm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "gateMode",
+        ito::ParamBase::String,
+        "",
+        tr("Global gate mode of the system output. (DIS: diabled, PULS: pulse inhibit, OUTP: "
+           "output inhibit, CHAN: channel)."
+           "cycle).")
+            .toLatin1()
+            .data());
+    ito::StringMeta* sm2 = new ito::StringMeta(ito::StringMeta::String, "DIS", "Device parameter");
+    sm2->addItem("DIS");
+    sm2->addItem("PULS");
+    sm2->addItem("OUTP");
+    sm2->addItem("CHAN");
+    sm2->setCategory("Device parameter");
+    paramVal.setMeta(sm2, true);
     m_params.insert(paramVal.getName(), paramVal);
 }
 
@@ -183,12 +235,15 @@ ito::RetVal QuantumComposer::init(
         (ito::typeDataIO | ito::typeRawIO))
     {
         m_pSer = (ito::AddInDataIO*)(*paramsMand)[0].getVal<void*>();
-   
     }
     else
     {
-        retValue +=
-            ito::RetVal(ito::retError, 1, tr("Input parameter is not a dataIO instance of ther SerialIO Plugin!").toLatin1().data());
+        retValue += ito::RetVal(
+            ito::retError,
+            1,
+            tr("Input parameter is not a dataIO instance of ther SerialIO Plugin!")
+                .toLatin1()
+                .data());
     }
 
     if (!retValue.containsError())
@@ -226,34 +281,33 @@ ito::RetVal QuantumComposer::init(
 
         QSharedPointer<QVector<ito::ParamBase>> _dummy;
         m_pSer->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
-        m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr); 
+        m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
 
         retValue += SendQuestionWithAnswerString("*IDN?", answer, 1000);
         qDebug() << answer;
         if (!retValue.containsError())
-        {         
+        {
             QByteArrayList idn =
-            answer.trimmed()
-                .split(','); // split identification answer in lines and by comma
+                answer.trimmed().split(','); // split identification answer in lines and by comma
             if (idn.length() == 4)
             {
-                m_params["Manufacturer"].setVal<char*>(idn[0].data());
-                m_params["Model"].setVal<char*>(idn[1].data());
-                m_params["SerialNumber"].setVal<char*>(idn[2].data());
-                m_params["Version"].setVal<char*>(idn[3].data());
+                m_params["manufacturer"].setVal<char*>(idn[0].data());
+                m_params["model"].setVal<char*>(idn[1].data());
+                m_params["serialNumber"].setVal<char*>(idn[2].data());
+                m_params["version"].setVal<char*>(idn[3].data());
             }
             else
             {
                 retValue += ito::RetVal(
                     ito::retError,
                     1,
-                    tr("Answer of the identification request is not valid!")
-                        .toLatin1()
-                        .data());
+                    tr("Answer of the identification request is not valid!").toLatin1().data());
             }
-            
         }
-        emit parametersChanged(m_params);                           
+
+        retValue += SendQuestionWithAnswerString(":PULSE0:MODE?", answer, 1000);
+
+        emit parametersChanged(m_params);
     }
 
     if (waitCond)
@@ -359,14 +413,16 @@ ito::RetVal QuantumComposer::setParam(
 
     if (!retValue.containsError())
     {
-        if (key == "demoKey1")
+        if (key == "Mode")
         {
-            // check the new value and if ok, assign it to the internal parameter
+            retValue += SendCommand(
+                QString(":PULSE0:MODE %1").arg(val->getVal<char*>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
-        else if (key == "demoKey2")
+        else if (key == "GateMode")
         {
-            // check the new value and if ok, assign it to the internal parameter
+            retValue += SendCommand(
+                QString(":PULSE0:GAT:MOD %1").arg(val->getVal<char*>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -529,7 +585,8 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
     {
         len = 0;
         timer.start();
-        _sleep(10);  // The amount of time required to receive, process, and repond to a command is approximately 10ms.
+        _sleep(100); // The amount of time required to receive, process, and repond to a command is
+                     // approximately 10ms.
 
         while (!done && !retValue.containsError())
         {
