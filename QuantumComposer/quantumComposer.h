@@ -64,7 +64,10 @@ class QuantumComposer : public ito::AddInDataIO
 
     private:
         ito::AddInDataIO* m_pSer;
-
+        int m_delayAfterSendCommandMS;
+        ito::RetVal SendCommand(const QByteArray& command);
+        ito::RetVal ReadString(QByteArray& result, int& len, const int timeoutMS);
+        ito::RetVal SendQuestionWithAnswerString(const QByteArray& questionCommand, QByteArray& answer, const int timeoutMS);
         
     public slots:
         //!< Get Camera-Parameter
@@ -81,8 +84,6 @@ class QuantumComposer : public ito::AddInDataIO
         //!< Stop the camera to disable acquire-commands
         ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //!< Softwaretrigger for the camera
-        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
-        //!< Wait for acquired picture, copy the picture to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);

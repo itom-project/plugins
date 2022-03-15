@@ -1,21 +1,37 @@
 /* ********************************************************************
-    Template for a camera / grabber plugin for the software itom
-    
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+    Plugin "PIPiezoControl" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
+
+    This file is part of a plugin for the measurement software itom.
+
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
 #include "quantumComposer.h"
-#include "pluginVersion.h"
 #include "gitVersion.h"
+#include "pluginVersion.h"
 
+#include <qmessagebox.h>
+#include <qplugin.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qplugin.h>
-#include <qmessagebox.h>
+#include <qwaitcondition.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
@@ -24,38 +40,55 @@
 */
 QuantumComposerInterface::QuantumComposerInterface()
 {
-    m_type = ito::typeDataIO; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
+    m_type = ito::typeDataIO | ito::typeRawIO; // any grabber is a dataIO device AND its subtype grabber (bitmask ->
+                              // therefore the OR-combination).
     setObjectName("QuantumComposer");
 
     m_description = QObject::tr("QuantumComposer");
 
-    //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
-"";
-    m_detaildescription = QObject::tr(docstring);
+    // for the docstring, please don't set any spaces at the beginning of the line.
+    char docstring[] = "";
+    m_detaildescription = QObject::tr("QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
+\n\
+This plugin has been developed for the 9520 series via a RS232 interface. So you first have to create an instance of the SerialIO plugin \n\
+which is a mandatory input argument of the QuantumComposer plugin. \n\
+The plugin sets the right RS232 parameter during initialization. \n\
+\n\
+The default parameters are: \n\
+* Baud Rate: 38400 (default for USB), 115200 (default for RS232)\n\
+* Data Bits: 8 \n\
+* Parity: None \n\
+* Stop Bits: 1\n\
+* endline: \\r\\n");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_license = QObject::tr("licensed under LGPL");
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal(
         "serialIOInstance",
         ito::ParamBase::HWRef | ito::ParamBase::In,
         NULL,
-        tr("An opened serial port.")
-            .toLatin1()
-            .data());
+        tr("An opened serial port.").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
+    m_initParamsMand.append(paramVal);
+
+    paramVal = ito::Param(
+        "connection",
+        ito::ParamBase::String,
+        "USB",
+        "Type of connection ('USB', 'RS232'). The Baud Rate for the USB connection will be set "
+           "to 38400 and for RS232 to 115200.");
+    ito::StringMeta* sm = new ito::StringMeta(ito::StringMeta::String, "USB");
+    sm->addItem("RS232");
+    paramVal.setMeta(sm, true);
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Destructor of Interface Class.
-/*!
-    
-*/
 QuantumComposerInterface::~QuantumComposerInterface()
 {
 }
@@ -72,7 +105,7 @@ ito::RetVal QuantumComposerInterface::closeThisInst(ito::AddInBase** addInInst)
 {
     REMOVE_PLUGININSTANCE(
         QuantumComposer) // the argument of the macro is the classname of the plugin
-   return ito::retOk;
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -84,21 +117,45 @@ Q_EXPORT_PLUGIN2(
                               // with small letters only)
 #endif
 
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of plugin.
 /*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
-    in this constructor or later in the init method
+    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
+   remove entries from m_params in this constructor or later in the init method
 */
-QuantumComposer::QuantumComposer() : AddInDataIO(), m_pSer(nullptr)
-    {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "QuantumComposer", nullptr);
+QuantumComposer::QuantumComposer() : AddInDataIO(), m_pSer(nullptr), m_delayAfterSendCommandMS(2)
+{
+    ito::Param paramVal(
+        "name",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "QuantumComposer",
+        tr("Plugin for QuantumComposer pulse generator.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-
-    }
+    paramVal = ito::Param(
+        "Manufacturer",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Manufacturer identification.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "Model",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Model identification.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "SerialNumber",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Serial number.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "Version",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Version number.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QuantumComposer::~QuantumComposer()
@@ -118,29 +175,94 @@ ito::RetVal QuantumComposer::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if (!retValue.containsError())
-    {
-        m_pSer = (ito::AddInDataIO*)(*paramsOpt)[0].getVal<void*>();
-        QSharedPointer<QVector<ito::ParamBase>> emptyParamVec(new QVector<ito::ParamBase>());
-        m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-        m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-    }   
+    QByteArray answer;
 
-    
-    
-    
+    if (reinterpret_cast<ito::AddInBase*>((*paramsMand)[0].getVal<void*>())
+            ->getBasePlugin()
+            ->getType() &
+        (ito::typeDataIO | ito::typeRawIO))
+    {
+        m_pSer = (ito::AddInDataIO*)(*paramsMand)[0].getVal<void*>();
+   
+    }
+    else
+    {
+        retValue +=
+            ito::RetVal(ito::retError, 1, tr("Input parameter is not a dataIO instance of ther SerialIO Plugin!").toLatin1().data());
+    }
+
     if (!retValue.containsError())
     {
-        emit parametersChanged(m_params);
+        QByteArray connectionType = paramsOpt->at(0).getVal<char*>();
+        int baud;
+        if (connectionType == "USB")
+        {
+            baud = 38400;
+        }
+        else if (connectionType == "RS232")
+        {
+            baud = 11520;
+        }
+        retValue += m_pSer->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, baud)),
+            NULL);
+        retValue += m_pSer->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)),
+            NULL);
+        retValue += m_pSer->setParam(
+            QSharedPointer<ito::ParamBase>(
+                new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)),
+            NULL);
+        retValue += m_pSer->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)),
+            NULL);
+        retValue += m_pSer->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)),
+            NULL);
+        retValue += m_pSer->setParam(
+            QSharedPointer<ito::ParamBase>(
+                new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")),
+            NULL);
+
+        QSharedPointer<QVector<ito::ParamBase>> _dummy;
+        m_pSer->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, NULL);
+        m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, NULL); 
+
+        retValue += SendQuestionWithAnswerString("*IDN?", answer, 500);
+        qDebug() << answer;
+        if (!retValue.containsError())
+        {         
+            QByteArrayList idn =
+            answer.trimmed()
+                .split(','); // split identification answer in lines and by comma
+            if (idn.length() == 4)
+            {
+                m_params["Manufacturer"].setVal<char*>(idn[0].data());
+                m_params["Model"].setVal<char*>(idn[1].data());
+                m_params["SerialNumber"].setVal<char*>(idn[2].data());
+                m_params["Version"].setVal<char*>(idn[3].data());
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    1,
+                    tr("Anser of the identification request is not valid!")
+                        .toLatin1()
+                        .data());
+            }
+            
+        }
+        emit parametersChanged(m_params);                           
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-    setInitialized(true); //init method has been finished (independent on retval)
+    setInitialized(true); // init method has been finished (independent on retval)
     return retValue;
 }
 
@@ -153,17 +275,17 @@ ito::RetVal QuantumComposer::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
-    //todo:
-    // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
+
+    // todo:
+    //  - disconnect the device if not yet done
+    //  - this funtion is considered to be the "inverse" of init.
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -176,22 +298,23 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
     bool hasIndex = false;
     int index;
     QString suffix;
-    QMap<QString,ito::Param>::iterator it;
+    QMap<QString, ito::Param>::iterator it;
 
-    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    // parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
     if (retValue == ito::retOk)
     {
-        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        // gets the parameter key from m_params map (read-only is allowed, since we only want to get
+        // the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
     if (!retValue.containsError())
     {
-        //put your switch-case.. for getting the right value here
+        // put your switch-case.. for getting the right value here
 
-        //finally, save the desired value in the argument val (this is a shared pointer!)
+        // finally, save the desired value in the argument val (this is a shared pointer!)
         *val = it.value();
     }
 
@@ -216,20 +339,21 @@ ito::RetVal QuantumComposer::setParam(
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
 
-    //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    // parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
     if (!retValue.containsError())
     {
-        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        // gets the parameter key from m_params map (read-only is not allowed and leads to
+        // ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
     if (!retValue.containsError())
     {
-        //here the new parameter is checked whether its type corresponds or can be cast into the
-        // value in m_params and whether the new type fits to the requirements of any possible
-        // meta structure.
+        // here the new parameter is checked whether its type corresponds or can be cast into the
+        //  value in m_params and whether the new type fits to the requirements of any possible
+        //  meta structure.
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
@@ -237,25 +361,26 @@ ito::RetVal QuantumComposer::setParam(
     {
         if (key == "demoKey1")
         {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
+            // check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "demoKey2")
         {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
+            // check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom(&(*val));
         }
         else
         {
-            //all parameters that don't need further checks can simply be assigned
-            //to the value in m_params (the rest is already checked above)
-            retValue += it->copyValueFrom( &(*val) );
+            // all parameters that don't need further checks can simply be assigned
+            // to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom(&(*val));
         }
     }
 
     if (!retValue.containsError())
     {
-        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+        emit parametersChanged(
+            m_params); // send changed parameters to any connected dialogs or dock-widgets
     }
 
     if (waitCond)
@@ -272,12 +397,12 @@ ito::RetVal QuantumComposer::startDevice(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
-    //todo:
-    // if this function has been called for the first time (grabberStartedCount() == 1),
-    // start the camera, allocate necessary buffers or do other work that is necessary
-    // to prepare the camera for image acquisitions.
-    
+
+    // todo:
+    //  if this function has been called for the first time (grabberStartedCount() == 1),
+    //  start the camera, allocate necessary buffers or do other work that is necessary
+    //  to prepare the camera for image acquisitions.
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -285,16 +410,12 @@ ito::RetVal QuantumComposer::startDevice(ItomSharedSemaphore* waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QuantumComposer::stopDevice(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
-    //todo:
-    // if the counter (obtained by grabberStartedCount()) drops to zero again, stop the camera, free all allocated
-    // image buffers of the camera... (it is the opposite from all things that have been started, allocated... in startDevice)
 
     if (waitCond)
     {
@@ -303,80 +424,18 @@ ito::RetVal QuantumComposer::stopDevice(ItomSharedSemaphore* waitCond)
     }
     return ito::retOk;
 }
-         
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal QuantumComposer::acquire(const int trigger, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    bool RetCode = false;
-    
-    //todo:
-    // trigger the camera for starting the acquisition of a new image (software trigger or make hardware trigger ready (depending on trigger (0: software trigger, default))
-    
-    //now the wait condition is released, such that itom (caller) stops waiting and continuous with its own execution.
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();  
-    }
-    
-    //todo:
-    // it is possible now, to wait here until the acquired image is ready
-    // if you want to do this here, wait for the finished image, get it and save it
-    // to any accessible buffer, for instance the m_data dataObject that is finally delivered
-    // via getVal or copyVal.
-    // 
-    // you can also implement this waiting and obtaining procedure in retrieveImage.
-    // If you do it here, the camera thread is blocked until the image is obtained, such that calls to getParam, setParam, stopDevice...
-    // are not executed during the waiting operation. They are queued and executed once the image is acquired and transmitted to the plugin.
-
-    return retValue;
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// usually it is not necessary to implement the checkData method, since the default implementation from AddInGrabber is already
-// sufficient.
-//
-// What is does:
-// - it obtains the image size from sizex, sizey, bpp
-// - it checks whether the rows, cols and type of m_data are unequal to the requested dimensions and type
-// - if so, m_data is reallocated, else nothing is done
-// - if an external data object is given (from copyVal), this object is checked in place of m_data
-// - the external data object is only reallocated if it is empty, else its size or its region of interest must exactly
-//    fit to the given size restrictions
-//
-// if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal MyGrabber::checkData(ito::DataObject *externalDataObject)
-{
-    return ito::retOk;
-}*/
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as reference.
-/*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
-    DataObject.
-    
-    This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
-    in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
-    \sa retrieveImage, copyVal
-*/
 ito::RetVal QuantumComposer::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
-    //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
-    //retValue += retrieveData();
+    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
 
-    if (waitCond) 
+    // call retrieveData without argument. Retrieve data should then put the currently acquired
+    // image into the dataObject m_data of the camera. retValue += retrieveData();
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -386,93 +445,128 @@ ito::RetVal QuantumComposer::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as a deep copy.
-/*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
-    The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
-    interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
-    an image stack is possible then)
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
-    \sa retrieveImage, getVal
-*/
 ito::RetVal QuantumComposer::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
+
     if (!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
+        retValue += ito::RetVal(
+            ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
-    
+
     if (!retValue.containsError())
     {
-        //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
-        //by the camera directly into the given, external dataObject
-        //retValue += retrieveData(dObj);  //checkData is executed inside of retrieveData
+        // this method calls retrieveData with the passed dataObject as argument such that
+        // retrieveData is able to copy the image obtained by the camera directly into the given,
+        // external dataObject retValue += retrieveData(dObj);  //checkData is executed inside of
+        // retrieveData
     }
-    
-    if (waitCond) 
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot called if the dock widget of the plugin becomes (in)visible
-/*!
-    Overwrite this method if the plugin has a dock widget. If so, you can connect the parametersChanged signal of the plugin
-    with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
-    a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
-*/
-//void QuantumComposer::dockWidgetVisibilityChanged(bool visible)
-//{
-//    if (getDockWidget())
-//    {
-//        QWidget *widget = getDockWidget()->widget();
-//        if (visible)
-//        {
-//            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-//
-//            emit parametersChanged(m_params);
-//        }
-//        else
-//        {
-//            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-//        }
-//    }
-//}
+ito::RetVal QuantumComposer::SendCommand(const QByteArray& command)
+{
+    ito::RetVal retVal;
+    retVal += m_pSer->setVal(command.data(), command.length(), nullptr);
+    if (m_delayAfterSendCommandMS > 0)
+    {
+        QMutex mutex;
+        mutex.lock();
+        QWaitCondition waitCondition;
+        waitCondition.wait(&mutex, m_delayAfterSendCommandMS);
+        mutex.unlock();
+    }
+
+    return retVal;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to show the configuration dialog
-/*!
-    This method is called from the main thread from itom and should show the configuration dialog of the plugin.
-    If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
-    of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
-    m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
-    The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
-    If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
-    If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
-    the things mentioned in this description.
-    
-    Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
-    has a configuration dialog.
-    
-    \sa hasConfDialog
-*/
-//const ito::RetVal QuantumComposer::showConfDialog(void)
-//{
-//    return apiShowConfigurationDialog(this, new DialogQuantumComposer(this));
-//}
+ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeoutMS)
+{
+    ito::RetVal retValue = ito::retOk;
+    QElapsedTimer timer;
+
+    bool done = false;
+    int curFrom = 0;
+    int pos = 0;
+
+    int buflen = 100;
+    QSharedPointer<int> curBufLen(new int);
+    QSharedPointer<char> curBuf(new char[buflen]);
+    result = "";
+
+    QByteArray endline;
+
+    QSharedPointer<ito::Param> param(new ito::Param("endline"));
+    retValue += m_pSer->getParam(param, NULL);
+
+    if (param->getType() == (ito::ParamBase::String & ito::paramTypeMask))
+    {
+        char* temp = param->getVal<char*>(); // borrowed reference
+        int len = temp[0] == 0 ? 0 : (temp[1] == 0 ? 1 : (temp[2] == 0 ? 2 : 3));
+        endline = QByteArray::fromRawData(temp, len);
+    }
+    else
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("could not read endline parameter from serial port").toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        len = 0;
+        timer.start();
+
+        while (!done && !retValue.containsError())
+        {
+            *curBufLen = buflen;
+            retValue += m_pSer->getVal(curBuf, curBufLen, NULL);
+
+            if (!retValue.containsError())
+            {
+                result += QByteArray(curBuf.data(), *curBufLen);
+                pos = result.indexOf(endline, curFrom);
+                curFrom = qMax(0, result.length() - 3);
+
+                if (pos >= 0) // found
+                {
+                    done = true;
+                    result = result.mid(pos + endline.length(), curFrom);
+                }
+            }
+        }
+
+        len = result.length();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::SendQuestionWithAnswerString(
+    const QByteArray& questionCommand, QByteArray& answer, const int timeoutMS)
+{
+    int readSigns;
+    ito::RetVal retValue = SendCommand(questionCommand);
+    retValue += ReadString(answer, readSigns, timeoutMS);
+
+    if (retValue.containsError())
+    {
+        std::cout << "Error during SendQuestionWithAnswerString" << std::endl;
+    }
+
+    return retValue;
+}
