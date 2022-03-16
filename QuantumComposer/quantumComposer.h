@@ -87,6 +87,18 @@ private:
     ito::RetVal setChannelWidths(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
     ito::RetVal setChannelDelays(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
     ito::RetVal setChannelSyncs(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+    ito::RetVal setChannelMuxs(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+    ito::RetVal setChannelPolarities(
+        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+    ito::RetVal setChannelOutputModes(
+        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+    ito::RetVal setChannelAdjustableAmplitude(
+        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+    ito::RetVal setChannelModes(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+    ito::RetVal setChannelBurstCounter(
+        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+
+    
 
 public slots:
     //!< Get Camera-Parameter
