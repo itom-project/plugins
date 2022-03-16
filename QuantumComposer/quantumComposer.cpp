@@ -379,7 +379,7 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(channelVal);
-    ito::int32 states[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    ito::int32 states[8] = {0,0,0,0,0,0,0,0,};
     paramVal = ito::Param(
         "statesList",
         ito::ParamBase::IntArray | ito::ParamBase::In,
@@ -559,7 +559,8 @@ QuantumComposer::QuantumComposer() :
         "outputModesList",
         ito::ParamBase::StringList,
         nullptr,
-        tr("List of output modes which are set to the output for the given channels (TTL = TTL/CMOS, "
+        tr("List of output modes which are set to the output for the given channels (TTL = "
+           "TTL/CMOS, "
            "ADJ = adjustable).")
             .toLatin1()
             .data());
@@ -664,7 +665,159 @@ QuantumComposer::QuantumComposer() :
         pMand,
         pOpt,
         pOut,
-        tr("Set the channel burst counter of the given channels.").toLatin1().data());
+        tr("Set the channel burst counter for the burst mode of the given channels.")
+            .toLatin1()
+            .data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels sync
+    pMand.append(channelVal);
+
+    paramVal = ito::Param(
+        "channelPulseCounterList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(1, 9999999, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of pulse counter values to generate during the ON cycle of the duty cycle mode "
+           "for the given channels (1 - 9999999). "
+           "List "
+           "must have the same length as the parameter channelIndexList.")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelPulseCounter",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the channel pulse counter during the ON cycles for the duty cycle modes of the "
+           "given channels.")
+            .toLatin1()
+            .data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels sync
+    pMand.append(channelVal);
+
+    paramVal = ito::Param(
+        "channelOffCounterList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(1, 9999999, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of pulse counter values to inhibit during the OFF cycle of the duty cycle mode "
+           "for the given channels (1 - 9999999). "
+           "List "
+           "must have the same length as the parameter channelIndexList.")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelOffCounter",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the channel pulse counter during the OFF cycles for the duty cycle modes of the "
+           "given channels.")
+            .toLatin1()
+            .data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels sync
+    pMand.append(channelVal);
+
+    paramVal = ito::Param(
+        "channelPulseWaitCounterList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(0, 9999999, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of pulse counter values to wait until enabling output of the duty cycle mode "
+           "for the given channels (0 - 9999999). "
+           "List "
+           "must have the same length as the parameter channelIndexList.")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelWaitCounter",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the channel pulse counter to wait until enabling output for the duty cycle modes of the "
+           "given channels.")
+            .toLatin1()
+            .data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels sync
+    pMand.append(channelVal);
+
+    paramVal = ito::Param(
+        "channelGateModeList",
+        ito::ParamBase::StringList,
+        nullptr,
+        tr("List of channel gate modes (DIS = disable, PULS = pulse inhibit, OUTP = output inhibit).")
+            .toLatin1()
+            .data());
+
+    ito::ByteArray gatesList[] = {
+        ito::ByteArray("DIS"),
+        ito::ByteArray("PULS"),
+        ito::ByteArray("OUTP")};
+    paramVal.setVal<ito::ByteArray*>(gatesList, 3);
+
+    sm = new ito::StringListMeta(ito::StringListMeta::String, 1, 8, 1, "Channel parameter");
+    sm->addItem("DIS");
+    sm->addItem("PULS");
+    sm->addItem("OUTP");
+    paramVal.setMeta(sm, true);
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelGatesModes",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the channel gates mode of the given channels.").toLatin1().data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels sync
+    pMand.append(channelVal);
+
+    paramVal = ito::Param(
+        "channelGateLogicList",
+        ito::ParamBase::StringList,
+        nullptr,
+        tr("List of channel gate logic level (LOW, HIGH).")
+            .toLatin1()
+            .data());
+
+    ito::ByteArray levelList[] = {
+        ito::ByteArray("LOW"), ito::ByteArray("HIGH")};
+    paramVal.setVal<ito::ByteArray*>(levelList, 2);
+
+    sm = new ito::StringListMeta(ito::StringListMeta::String, 1, 8, 1, "Channel parameter");
+    sm->addItem("LOW");
+    sm->addItem("HIGH");
+    paramVal.setMeta(sm, true);
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelGatesLogicLevel",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the channel gates logic level of the given channels.").toLatin1().data());
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -1372,10 +1525,76 @@ ito::RetVal QuantumComposer::execFunc(
             retValue += QuantumComposer::setChannelBurstCounter(*channelList, *burstCounters);
         }
     }
+    else if (funcName == "setChannelPulseCounter")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* pulseCounters = nullptr;
 
-    
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        pulseCounters = ito::getParamByName(&(*paramsMand), "channelPulseCounterList", &retValue);
 
-          
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelPulseCounter(*channelList, *pulseCounters);
+        }
+    }
+    else if (funcName == "setChannelOffCounter")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* pulseCounters = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        pulseCounters = ito::getParamByName(&(*paramsMand), "channelOffCounterList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelOffCounter(*channelList, *pulseCounters);
+        }
+    }
+    else if (funcName == "setChannelWaitCounter")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* pulseCounters = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        pulseCounters = ito::getParamByName(&(*paramsMand), "channelPulseWaitCounterList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelWaitCounter(*channelList, *pulseCounters);
+        }
+    }
+    else if (funcName == "setChannelGatesModes")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* gates = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        gates =
+            ito::getParamByName(&(*paramsMand), "channelGateModeList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelGatesModes(*channelList, *gates);
+        }
+    }
+
+           else if (funcName == "setChannelGatesLogicLevel")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* gates = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        gates = ito::getParamByName(&(*paramsMand), "channelGateLogicList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelGatesLogicLevel(*channelList, *gates);
+        }
+    }
+                      
+
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1764,6 +1983,184 @@ ito::RetVal QuantumComposer::setChannelBurstCounter(
             retValue += SendCommand(QString(":PULSE%1:BCO %2")
                                         .arg(channels[ch])
                                         .arg(QString::number(bursts[ch]))
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelPulseCounter(
+    ito::ParamBase& channelIndices, ito::ParamBase& pulseCounterList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const int* pulses = pulseCounterList.getVal<int*>();
+
+    if (channelIndices.getLen() != pulseCounterList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(pulseCounterList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:PCO %2")
+                                        .arg(channels[ch])
+                                        .arg(QString::number(pulses[ch]))
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelOffCounter(
+    ito::ParamBase& channelIndices, ito::ParamBase& pulseCounterList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const int* pulses = pulseCounterList.getVal<int*>();
+
+    if (channelIndices.getLen() != pulseCounterList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(pulseCounterList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:OCO %2")
+                                        .arg(channels[ch])
+                                        .arg(QString::number(pulses[ch]))
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelWaitCounter(
+    ito::ParamBase& channelIndices, ito::ParamBase& pulseCounterList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const int* pulses = pulseCounterList.getVal<int*>();
+
+    if (channelIndices.getLen() != pulseCounterList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(pulseCounterList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:WCO %2")
+                                        .arg(channels[ch])
+                                        .arg(QString::number(pulses[ch]))
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelGatesModes(
+    ito::ParamBase& channelIndices, ito::ParamBase& modesList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const ito::ByteArray* gates = modesList.getVal<const ito::ByteArray*>();
+
+    if (channelIndices.getLen() != modesList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(modesList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:CGAT %2")
+                                        .arg(channels[ch])
+                                        .arg(gates[ch].data())
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelGatesLogicLevel(
+    ito::ParamBase& channelIndices, ito::ParamBase& levelList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const ito::ByteArray* gates = levelList.getVal<const ito::ByteArray*>();
+
+    if (channelIndices.getLen() != levelList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(levelList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:CLOG %2")
+                                        .arg(channels[ch])
+                                        .arg(gates[ch].data())
                                         .toStdString()
                                         .c_str());
         }

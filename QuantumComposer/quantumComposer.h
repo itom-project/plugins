@@ -82,23 +82,23 @@ private:
         const QByteArray& questionCommand, int& answer, const int timeoutMS);
 
     // exec functions
-    ito::RetVal setChannelOutputState(
-        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelWidths(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelDelays(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelSyncs(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelMuxs(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelPolarities(
-        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelOutputModes(
-        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
+    ito::RetVal setChannelOutputState(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelWidths(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelDelays(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelSyncs(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelMuxs(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelPolarities(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelOutputModes(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
     ito::RetVal setChannelAdjustableAmplitude(
-        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelModes(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-    ito::RetVal setChannelBurstCounter(
-        ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
-
-    
+        ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelModes(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelBurstCounter(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelPulseCounter(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelOffCounter(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelWaitCounter(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelGatesModes(ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
+    ito::RetVal setChannelGatesLogicLevel(
+        ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
 
 public slots:
     //!< Get Camera-Parameter
