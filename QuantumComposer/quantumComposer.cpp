@@ -24,9 +24,9 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "quantumComposer.h"
+#include "common/helperCommon.h"
 #include "gitVersion.h"
 #include "pluginVersion.h"
-#include "common/helperCommon.h"
 
 #include <qmessagebox.h>
 #include <qplugin.h>
@@ -363,7 +363,7 @@ QuantumComposer::QuantumComposer() :
     m_params.insert(paramVal.getName(), paramVal);
 
     // EXEC functions
-    // register exec functions
+    // register exec functions to set channels output states
     QVector<ito::Param> pMand;
     QVector<ito::Param> pOpt;
     QVector<ito::Param> pOut;
@@ -398,6 +398,130 @@ QuantumComposer::QuantumComposer() :
         pOpt,
         pOut,
         tr("Enables/Disables the output state of the given channels.").toLatin1().data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels widths
+    paramVal = ito::Param(
+        "channelIndexList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(1, 8, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of channel indices which width should be set (ChA = 1, ChB = 2, "
+           "...).")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+
+    ito::float64 widths[8] = {
+        0.00000000200,
+        0.00000000200,
+        0.00000000200,
+        0.00000000200,
+        0.00000000200,
+        0.00000000200,
+        0.00000000200,
+        0.00000000200
+    };
+    paramVal = ito::Param(
+        "widthsList",
+        ito::ParamBase::DoubleArray | ito::ParamBase::In,
+        8,
+        widths,
+        new ito::DoubleArrayMeta(
+            0.00000000200, 999.99999999975, 0.00000000025, 1, 8, 1, "Channel parameter"),
+        tr("List of widths to set to the channels listed in the parameter channelIndexList. List "
+           "must have the same length as the parameter channelIndexList.")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelWidths",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the pulse width of the given channels.").toLatin1().data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels delays
+    paramVal = ito::Param(
+        "channelIndexList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(1, 8, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of channel indices which width should be set (ChA = 1, ChB = 2, "
+           "...).")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+
+    ito::float64 delays[8] = {
+        -999.99999999975,
+        -999.99999999975,
+        -999.99999999975,
+        -999.99999999975,
+        -999.99999999975,
+        -999.99999999975,
+        -999.99999999975,
+        -999.99999999975
+    };
+    paramVal = ito::Param(
+        "delaysList",
+        ito::ParamBase::DoubleArray | ito::ParamBase::In,
+        8,
+        delays,
+        new ito::DoubleArrayMeta(
+            -999.99999999975, 999.99999999975, 0.00000000025, 1, 8, 1, "Channel parameter"),
+        tr("List of delays to set to the channels listed in the parameter channelIndexList. List "
+           "must have the same length as the parameter channelIndexList.")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelDelays",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the pulse delays of the given channels.").toLatin1().data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // register exec functions to set channels sync
+    paramVal = ito::Param(
+        "channelIndexList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(1, 8, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of channel indices which width should be set (ChA = 1, ChB = 2, "
+           "...).")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+
+    paramVal = ito::Param(
+        "syncsList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(1, 8, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of channels to sync with the channels listed in the parameter channelIndexList. List "
+           "must have the same length as the parameter channelIndexList.")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+    registerExecFunc(
+        "setChannelSyncs",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Set the sync channels of the given channels.").toLatin1().data());
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -772,7 +896,6 @@ ito::RetVal QuantumComposer::setParam(
         }
         else if (key == "period")
         {
-            qDebug() << QString::number(val->getVal<double>(), 'f', 8);
             retValue += SendCommand(
                 QString(":PULSE0:PER %1")
                     .arg(QString::number(val->getVal<double>(), 'f', 8).replace(".", ","))
@@ -920,7 +1043,6 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerDouble(
     bool ok;
     ito::RetVal retValue = SendCommand(questionCommand);
     retValue += ReadString(_answer, readSigns, timeoutMS);
-    qDebug() << _answer;
     _answer = _answer.replace(",", ".");
     answer = _answer.toDouble(&ok);
 
@@ -946,7 +1068,6 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
     bool ok;
     ito::RetVal retValue = SendCommand(questionCommand);
     retValue += ReadString(_answer, readSigns, timeoutMS);
-    qDebug() << _answer;
 
     if (_answer.contains("?"))
     {
@@ -976,7 +1097,7 @@ ito::RetVal QuantumComposer::execFunc(
     ItomSharedSemaphore* waitCond)
 {
     ito::RetVal retValue = ito::retOk;
-    
+
 
     if (funcName == "setChannelOutputState")
     {
@@ -989,6 +1110,45 @@ ito::RetVal QuantumComposer::execFunc(
         if (!retValue.containsError())
         {
             retValue += QuantumComposer::setChannelOutputState(*channelList, *stateList);
+        }
+    }
+    else if (funcName == "setChannelWidths")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* widthsList = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        widthsList = ito::getParamByName(&(*paramsMand), "widthsList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelWidths(*channelList, *widthsList);
+        }
+    }
+       else if (funcName == "setChannelDelays")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* delaysList = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        delaysList = ito::getParamByName(&(*paramsMand), "delaysList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelDelays(*channelList, *delaysList);
+        }
+    }
+    else if (funcName == "setChannelSyncs")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* syncList = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        syncList = ito::getParamByName(&(*paramsMand), "syncsList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelSyncs(*channelList, *syncList);
         }
     }
 
@@ -1031,6 +1191,145 @@ ito::RetVal QuantumComposer::setChannelOutputState(
             retValue += SendCommand(QString(":PULSE%1:STAT %2")
                                         .arg(channels[ch])
                                         .arg(states[ch])
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelWidths(
+    ito::ParamBase& channelIndices, ito::ParamBase& widthsList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const double* widths = widthsList.getVal<double*>();
+
+    if (channelIndices.getLen() != widthsList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(widthsList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:WIDT %2")
+                                        .arg(channels[ch])
+                                        .arg(QString::number(widths[ch], 'f', 11))
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelDelays(
+    ito::ParamBase& channelIndices, ito::ParamBase& delaysList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const double* delays = delaysList.getVal<double*>();
+
+    if (channelIndices.getLen() != delaysList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(delaysList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:DEL %2")
+                                        .arg(channels[ch])
+                                        .arg(QString::number(delays[ch], 'f', 11))
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelSyncs(
+    ito::ParamBase& channelIndices, ito::ParamBase& syncsList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const int* syncs = syncsList.getVal<int*>();
+
+    if (channelIndices.getLen() != syncsList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and widths list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(syncsList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            QString channelName;
+            switch (syncs[ch])
+            {
+            case 0:
+                channelName = "To";
+                break;
+            case 1:
+                channelName = "CHA";
+                break;
+            case 2:
+                channelName = "CHB";
+                break;
+            case 3:
+                channelName = "CHC";
+                break;
+            case 4:
+                channelName = "CHD";
+                break;
+            case 5:
+                channelName = "CHE";
+                break;
+            case 6:
+                channelName = "CHF";
+                break;
+            case 7:
+                channelName = "CHG";
+                break;
+            case 8:
+                channelName = "CHH";
+                break;
+            default:
+                channelName = "To";
+                break;
+            }
+            retValue += SendCommand(QString(":PULSE%1:SYNC %2")
+                                        .arg(channels[ch])
+                                        .arg(channelName)
                                         .toStdString()
                                         .c_str());
         }
