@@ -74,6 +74,9 @@ class QuantumComposer : public ito::AddInDataIO
             const QByteArray& questionCommand, double &answer, const int timeoutMS);
         ito::RetVal SendQuestionWithAnswerInteger(
             const QByteArray& questionCommand, int& answer, const int timeoutMS);
+
+        // exec functions
+        ito::RetVal setChannelOutputState(ito::ParamBase& channelIndicesList, ito::ParamBase& statesList);
         
     public slots:
         //!< Get Camera-Parameter
@@ -85,8 +88,12 @@ class QuantumComposer : public ito::AddInDataIO
         //!< Free buffer, delete board, unload dll
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-        //checkData usually need not to be overwritten (see comments in source code)
-        //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal execFunc(
+            const QString funcName,
+            QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+            QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+            QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+            ItomSharedSemaphore* waitCond = NULL);
 
     private slots:
         //void dockWidgetVisibilityChanged(bool visible);

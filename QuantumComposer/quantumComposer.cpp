@@ -26,6 +26,7 @@
 #include "quantumComposer.h"
 #include "gitVersion.h"
 #include "pluginVersion.h"
+#include "common/helperCommon.h"
 
 #include <qmessagebox.h>
 #include <qplugin.h>
@@ -319,7 +320,8 @@ QuantumComposer::QuantumComposer() :
         "ocLock",
         ito::ParamBase::String,
         "",
-        tr("External clock output. T0 pulse or 50% duty cycle TTL output from 10MHz to 100MHz (T0, 10, 11, 12, 14, 16, 20, 25, 33, 50, 100).")
+        tr("External clock output. T0 pulse or 50% duty cycle TTL output from 10MHz to 100MHz (T0, "
+           "10, 11, 12, 14, 16, 20, 25, 33, 50, 100).")
             .toLatin1()
             .data());
     sm = new ito::StringMeta(ito::StringMeta::String, "T0", "Device parameter");
@@ -341,9 +343,7 @@ QuantumComposer::QuantumComposer() :
         ito::ParamBase::Double,
         100e-9,
         new ito::DoubleMeta(6e-8, 5000.0, 1e-8, "Device parameter"),
-        tr("T0 period in units of seconds (100ns - 5000s).")
-            .toLatin1()
-            .data());
+        tr("T0 period in units of seconds (100ns - 5000s).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -351,9 +351,7 @@ QuantumComposer::QuantumComposer() :
         ito::ParamBase::Int,
         0,
         new ito::IntMeta(0, 1, 1, "Device parameter"),
-        tr("Enables (1), disables(0) the counter function.")
-            .toLatin1()
-            .data());
+        tr("Enables (1), disables(0) the counter function.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -363,6 +361,46 @@ QuantumComposer::QuantumComposer() :
         new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Device parameter"),
         tr("Number of counts.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+
+    // EXEC functions
+    // register exec functions
+    QVector<ito::Param> pMand;
+    QVector<ito::Param> pOpt;
+    QVector<ito::Param> pOut;
+    ito::int32 channels[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    paramVal = ito::Param(
+        "channelIndexList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        channels,
+        new ito::IntArrayMeta(1, 8, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, "
+           "...).")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+    ito::int32 states[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    paramVal = ito::Param(
+        "statesList",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        8,
+        states,
+        new ito::IntArrayMeta(0, 1, 1, 1, 8, 1, "Channel parameter"),
+        tr("List of states to enalbe/disable channels listed in the parameter channelIndexList. "
+           "List must have the same length as the parameter channelIndexList.")
+            .toLatin1()
+            .data());
+    pMand.append(paramVal);
+
+    registerExecFunc(
+        "setChannelOutputState",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Enables/Disables the output state of the given channels.").toLatin1().data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -411,10 +449,12 @@ ito::RetVal QuantumComposer::init(
         if (connectionType == "USB")
         {
             baud = 38400;
+            retValue += SendCommand(":SYST:COMM:SER:USB 38400");
         }
         else if (connectionType == "RS232")
         {
             baud = 115200;
+            retValue += SendCommand(":SYST:COMM:SER:USB 115200");
         }
 
         retValue += m_pSer->setParam(
@@ -506,8 +546,7 @@ ito::RetVal QuantumComposer::init(
                 SendQuestionWithAnswerString(":PULSE0:TRIG:EDG?", answerStr, m_requestTimeOutMS);
             m_params["triggerEdge"].setVal<char*>(answerStr.data());
 
-            retValue +=
-                SendQuestionWithAnswerString(":PULSE0:ICL?", answerStr, m_requestTimeOutMS);
+            retValue += SendQuestionWithAnswerString(":PULSE0:ICL?", answerStr, m_requestTimeOutMS);
             m_params["icLock"].setVal<char*>(answerStr.data());
 
             retValue += SendQuestionWithAnswerString(":PULSE0:OCL?", answerStr, m_requestTimeOutMS);
@@ -590,6 +629,10 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
 
     if (!retValue.containsError())
     {
+        QSharedPointer<QVector<ito::ParamBase>> _dummy;
+        m_pSer->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
+        m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
+
         int answerInt;
         if (key == "counterCounts")
         {
@@ -730,9 +773,10 @@ ito::RetVal QuantumComposer::setParam(
         else if (key == "period")
         {
             qDebug() << QString::number(val->getVal<double>(), 'f', 8);
-            retValue += SendCommand(QString(":PULSE0:PER %1")
-                                        .arg(QString::number(val->getVal<double>(), 'f', 8).replace(".", ","))
-                                        .toLatin1());
+            retValue += SendCommand(
+                QString(":PULSE0:PER %1")
+                    .arg(QString::number(val->getVal<double>(), 'f', 8).replace(".", ","))
+                    .toLatin1());
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "counterState")
@@ -920,5 +964,77 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
                 .toLatin1()
                 .data());
     }
+    return retValue;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::execFunc(
+    const QString funcName,
+    QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+    QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+    QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+    ItomSharedSemaphore* waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    
+
+    if (funcName == "setChannelOutputState")
+    {
+        ito::ParamBase* channelList = nullptr;
+        ito::ParamBase* stateList = nullptr;
+
+        channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
+        stateList = ito::getParamByName(&(*paramsMand), "statesList", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += QuantumComposer::setChannelOutputState(*channelList, *stateList);
+        }
+    }
+
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QuantumComposer::setChannelOutputState(
+    ito::ParamBase& channelIndices, ito::ParamBase& statesList)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    const int* channels = channelIndices.getVal<int*>();
+    const int* states = statesList.getVal<int*>();
+
+    if (channelIndices.getLen() != statesList.getLen())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The lengths of the channel list (%1) and states list (%2) must be the same.")
+                .arg(channelIndices.getLen())
+                .arg(statesList.getLen())
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        for (int ch = 0; ch < channelIndices.getLen(); ch++)
+        {
+            retValue += SendCommand(QString(":PULSE%1:STAT %2")
+                                        .arg(channels[ch])
+                                        .arg(states[ch])
+                                        .toStdString()
+                                        .c_str());
+        }
+    }
+
     return retValue;
 }
