@@ -420,7 +420,7 @@ QuantumComposer::QuantumComposer() :
         8,
         widths,
         new ito::DoubleArrayMeta(
-            0.00000000200, 999.99999999975, 0.00000000025, 1, 8, 1, "Channel parameter"),
+            0.00000000200, 999.99999999975, 0.0, 1, 8, 1, "Channel parameter"),
         tr("List of widths to set to the channels listed in the parameter channelIndexList. List "
            "must have the same length as the parameter channelIndexList.")
             .toLatin1()
@@ -454,7 +454,7 @@ QuantumComposer::QuantumComposer() :
         8,
         delays,
         new ito::DoubleArrayMeta(
-            -999.99999999975, 999.99999999975, 0.00000000025, 1, 8, 1, "Channel parameter"),
+            -999.99999999975, 999.99999999975, 0.0, 1, 8, 1, "Channel parameter"),
         tr("List of delays to set to the channels listed in the parameter channelIndexList. List "
            "must have the same length as the parameter channelIndexList.")
             .toLatin1()
