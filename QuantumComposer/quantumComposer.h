@@ -9,7 +9,6 @@
 #define QUANTUMCOMPOSER_H
 
 #include "common/addInGrabber.h"
-#include "dialogQuantumComposer.h"
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------

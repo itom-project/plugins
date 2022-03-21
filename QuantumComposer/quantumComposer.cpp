@@ -902,7 +902,7 @@ ito::RetVal QuantumComposer::init(
         m_pSer->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
         m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
 
-        retValue += SendQuestionWithAnswerString("*IDN?", answerStr, 1000);
+        retValue += SendQuestionWithAnswerString("*IDN?", answerStr, m_requestTimeOutMS);
 
         if (!retValue.containsError())
         {
