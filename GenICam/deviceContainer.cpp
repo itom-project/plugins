@@ -68,7 +68,7 @@ QSharedPointer<GenTLSystem> GenTLOrganizer::getSystem(const QString &filename, i
     //check if this filename has already be opened
     foreach( const QWeakPointer<GenTLSystem> &system, m_systems)
     {
-        if (system.data() && system.data()->getCtiFile() == filename)
+        if (system.toStrongRef().data() && system.toStrongRef().data()->getCtiFile() == filename)
         {
             return system.toStrongRef();
         }
@@ -339,7 +339,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
         //check existing, opened interfaces
         for (int i = 0; i < m_interfaces.size(); ++i)
         {
-            if (m_interfaces[i].isNull() == false && m_interfaces[i].data()->getIfaceID() == interfaceID)
+            if (m_interfaces[i].isNull() == false && m_interfaces[i].toStrongRef().data()->getIfaceID() == interfaceID)
             {
                 return m_interfaces[i].toStrongRef();
             }
@@ -557,9 +557,9 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
         {
             if (m_devices[i].isNull() == false)
             {
-                usedDeviceIDs.insert(m_devices[i].data()->getDeviceID());
+                usedDeviceIDs.insert(m_devices[i].toStrongRef().data()->getDeviceID());
 
-                if (m_devices[i].data()->getDeviceID() == deviceID)
+                if (m_devices[i].toStrongRef().data()->getDeviceID() == deviceID)
                 {
                     retval += ito::RetVal::format(ito::retError,0,"device '%s' already in use", deviceID.constData());
                 }

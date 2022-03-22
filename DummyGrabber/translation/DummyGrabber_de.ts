@@ -97,7 +97,7 @@
 <context>
     <name>DummyGrabber</name>
     <message>
-        <location filename="../DummyGrabber.cpp" line="+234"/>
+        <location filename="../DummyGrabber.cpp" line="+280"/>
         <source>Minimum time between the start of two consecutive acquisitions [s], default: 0.0.</source>
         <translation type="unfinished">Mindestzeit zwischen zwei fortlaufenden Bildanforderungen [s], standard: 0,0.</translation>
     </message>
@@ -142,7 +142,7 @@
         <translation type="unfinished">Jeder String erlaubt</translation>
     </message>
     <message>
-        <location line="+377"/>
+        <location line="+394"/>
         <source>stopDevice of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;stopDevice&apos; des DummyGrabbers kann nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
@@ -152,12 +152,12 @@
         <translation type="unfinished">Falsche Bittiefe</translation>
     </message>
     <message>
-        <location line="+221"/>
+        <location line="+384"/>
         <source>image could not be obtained since no image has been acquired.</source>
         <translation type="unfinished">Es konnte kein Bild abgeholt werden, da keines angefordert wurde.</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-856"/>
         <source>size in x (cols) [px]</source>
         <translation type="unfinished">Größe in x (Spalten) [px]</translation>
     </message>
@@ -177,12 +177,12 @@
         <translation type="unfinished">Bittiefe des Images</translation>
     </message>
     <message>
-        <location line="+445"/>
+        <location line="+462"/>
         <source>Acquire of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;acquire&apos; kann vom DummyGrabber nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
     <message>
-        <location line="+144"/>
+        <location line="+307"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished">Das Datenobjekt von &apos;getVal&apos; ist NULL oder enthält ein falsches Bildformat</translation>
     </message>
@@ -199,7 +199,7 @@
         <translation type="vanished">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-743"/>
+        <location line="-931"/>
         <source>Width of virtual sensor chip</source>
         <translation type="unfinished">Breite des virtuellen Sensors</translation>
     </message>
@@ -213,11 +213,16 @@
         <source>Bits per Pixel, usually 8-16bit grayvalues</source>
         <translation type="unfinished">Bits pro Pixel, normalerweise 8-16 Bit Grauwerte</translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>Available dummy image types: noise (default), gaussianSpot</source>
+        <translation type="unfinished">Verfügbare Dummy-Bildtypen: Rauschen (standard), GaussianSpot</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-28"/>
+        <location line="-33"/>
         <source>A virtual white noise grabber</source>
         <translation type="unfinished">Ein virtueller Weißrausch-Grabber</translation>
     </message>
@@ -225,12 +230,28 @@
         <location line="+2"/>
         <source>The DummyGrabber is a virtual camera which emulates a camera with white noise. 
 
-The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera image is controlled using the parameter &apos;roi&apos; if the sizes stay within the limits given by the size of the camera chip.
+The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). You can choose between different image types (noise, GaussianSpot). The value range is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The gaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera image is controlled using the parameter &apos;roi&apos; if the sizes stay within the limits given by the size of the camera chip.
 
 You can initialize this camera either as a 2D sensor with a width and height &gt;= 4 or as line camera whose height is equal to 1. 
 
 This plugin can also be used as template for other grabber.</source>
         <translation type="unfinished">Der DummyGrabber ist eine virtuelle Kamera, womit eine Kamera mit weißem Rauschen simuliert wird.
+
+Die Kamera wird mit der maximalen Breite und Höhe des simulierten Kamerachips inizialisiert (beides muss ein Vielfaches von 4 sein). Es gibt unterschiedliche Bildtypen zur Auswahl (Rauschen, Gaußscher Spot) Der Wertebereich wird zwischen 0 und der aktuellen Bittiefe (bpp - bit per pixel) skaliert. Gaußscher Spot (gaussianSpot) erzeugt einen Spot, dessen Position und Amplitude durch ein zufälliges Rauschen leicht variiert wird. Die tatsächliche Größe des Kamerabilds wird über den Parameter &apos;ROI&apos; eingestellt, wenn die Maße innerhalb der Größe des Kamerachips liegen.
+
+Diese Kamera kann entweder als ein 2D-Sensor (Breite und Höhe &gt;= 4) oder als Linienkamera (Höhe = 1) inizialisiert werden.
+
+Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dienen.</translation>
+    </message>
+    <message>
+        <source>The DummyGrabber is a virtual camera which emulates a camera with white noise. 
+
+The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera image is controlled using the parameter &apos;roi&apos; if the sizes stay within the limits given by the size of the camera chip.
+
+You can initialize this camera either as a 2D sensor with a width and height &gt;= 4 or as line camera whose height is equal to 1. 
+
+This plugin can also be used as template for other grabber.</source>
+        <translation type="obsolete">Der DummyGrabber ist eine virtuelle Kamera, womit eine Kamera mit weißem Rauschen simuliert wird.
 
 Die Kamera wird mit der maximalen Breite und Höhe des simulierten Kamerachips inizialisiert (beides muss ein Vielfaches von 4 sein). Das Rauschen wird in Bereich zwischen 0 und der aktuellen Bittiefe (bpp - bit per pixel) skaliert. Die tatsächliche Größe des Kamerabilds wird über den Parameter &apos;ROI&apos; eingestellt, wenn die Maße innerhalb der Größe des Kamerachips liegen.
 
@@ -239,7 +260,7 @@ Diese Kamera kann entweder als ein 2D-Sensor (Breite und Höhe &gt;= 4) oder als
 Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dienen.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+17"/>
         <source>Licensed under LPGL.</source>
         <translation></translation>
     </message>
@@ -354,7 +375,7 @@ Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dien
     <message>
         <location line="+85"/>
         <source>full ROI</source>
-        <translation type="unfinished">Komplette ROI</translation>
+        <translation type="unfinished">Gesamt</translation>
     </message>
     <message>
         <location line="-343"/>

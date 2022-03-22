@@ -31,7 +31,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <qtimer.h>
+#include <qelapsedtimer.h>
 #include <qwaitcondition.h>
 #include <qelapsedtimer.h>
 #include <qdatetime.h>
@@ -1242,7 +1242,7 @@ ito::RetVal SMC100::SMCCheckStatus(const QVector<int> axis)
 ito::RetVal SMC100::SMCReadString(QByteArray &result, int &len, int timeoutMS, bool checkError, int axis /*= -1*/)
 {
     ito::RetVal retValue = ito::retOk;
-    QTime timer;
+    QElapsedTimer timer;
     
     bool done = false;
 

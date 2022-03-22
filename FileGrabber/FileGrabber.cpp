@@ -270,12 +270,12 @@ FileGrabber::FileGrabber() :
     paramVal = ito::Param("current_image", ito::ParamBase::Int, 0, 24, 24, tr("The current shown image").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("number_of_images", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 25, 25, tr("The maximal number if images").toLatin1().data());
+    paramVal = ito::Param("number_of_images", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 25, 25, tr("The maximal number of images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     m_fileList.clear();
 
-    m_searchFolder = "";
+    m_searchFolder.setPath("");
 
     m_preloadedObject = ito::DataObject();
 
@@ -504,11 +504,11 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if ( paramsMand->at(1).getVal<char*>() )
     {
-        m_searchFolder = QLatin1String(paramsMand->at(1).getVal<char*>());
+        m_searchFolder.setPath(QLatin1String(paramsMand->at(1).getVal<char*>()));
     }
     else
     {
-        m_searchFolder = "";
+        m_searchFolder.setPath("");
     }
 
     QString filter(fileEnding);
@@ -1372,7 +1372,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
             }*/
             else 
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("Nice try but wrong turn.").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("Unsupported image data type.").toLatin1().data());
             }
         }
         this->m_isgrabbing = false;

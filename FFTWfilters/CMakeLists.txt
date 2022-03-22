@@ -82,7 +82,7 @@ if(FFTW_FOUND)
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
     
-    itom_configure_plugin_documentation(${target_name} fftwFilters)
+    itom_configure_plugin_documentation(${target_name} fftwFilters "FFTW-Filter")
 
     # COPY SECTION
     set(COPY_SOURCES "")

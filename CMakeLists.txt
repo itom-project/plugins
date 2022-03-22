@@ -408,6 +408,14 @@ if(WIN32)
     endif(PLUGIN_QCam)
 endif()
 
+# QuantumComposer
+if(WIN32)
+    option(PLUGIN_QuantumComposer "Build with this plugin." ON)
+    if(PLUGIN_QuantumComposer)
+        add_subdirectory(QuantumComposer)
+    endif(PLUGIN_QuantumComposer)
+endif()
+
 # rawImport
 option(PLUGIN_rawImport "Build with this plugin." ON)
 if(PLUGIN_rawImport)
@@ -460,6 +468,14 @@ if(WIN32)
     if(PLUGIN_ThorlabsFF)
         add_subdirectory(ThorlabsFF)
     endif(PLUGIN_ThorlabsFF)
+endif()
+
+# ThorlabsKCubeDCServo KCube DC Servo
+if(WIN32)
+    option(PLUGIN_ThorlabsKCubeDCServo "Build with this plugin." OFF)
+    if(PLUGIN_ThorlabsKCubeDCServo)
+        add_subdirectory(ThorlabsKCubeDCServo)
+    endif(PLUGIN_ThorlabsKCubeDCServo)
 endif()
 
 # ThorlabsKCubeIM KCube inertial motor

@@ -52,7 +52,7 @@ class OphirPowermeter : public ito::AddInDataIO
 
     protected:
         //! Destructor
-        ~OphirPowermeter() {}
+        ~OphirPowermeter();
         //! Constructor
         OphirPowermeter();
         
@@ -71,8 +71,8 @@ class OphirPowermeter : public ito::AddInDataIO
         int m_delayAfterSendCommandMS;
         ito::DataObject m_data;
 
-        static QList<QByteArray> openedDevices;
-        static QList<QPair<long, long> > openedUSBHandlesAndChannels;
+        static QList<QByteArray> m_openedDevices;
+        static QList<QPair<long, long> > m_openedUSBHandlesAndChannels;
         std::wstring m_serialNo;
         QSharedPointer<OphirLMMeasurement> m_OphirLM;
         long m_handle;

@@ -107,15 +107,18 @@ class PIPiezoCtrl : public ito::AddInActuator
         ito::RetVal PIDummyRead(void); /*!< reads buffer of serial port without delay in order to clear it */
         ito::RetVal PIGetLastErrors( QVector<QPair<int,QByteArray> > &lastErrors );
         ito::RetVal PISendCommand(const QByteArray &command );
-        ito::RetVal PIReadString(QByteArray &result, int &len, int timeoutMS);
-        ito::RetVal PISendQuestionWithAnswerDouble( const QByteArray &questionCommand, double &answer, int timeoutMS );
-        ito::RetVal PISendQuestionWithAnswerDouble2( const QByteArray &questionCommand, int axisId, double &answer, int timeoutMS );
-        ito::RetVal PISendQuestionWithAnswerString( const QByteArray &questionCommand, QByteArray &answer, int timeoutMS );
+        ito::RetVal PIReadString(QByteArray &result, int &len, const int timeoutMS);
+        ito::RetVal PISendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, const int timeoutMS);
+        ito::RetVal PISendQuestionWithAnswerDouble2(const QByteArray &questionCommand, const int axisId, double &answer, const int timeoutMS);
+        ito::RetVal PISendQuestionWithAnswerInt2(const QByteArray& questionCommand, const int axisId, int& answer, const int timeoutMS);
+        ito::RetVal PISendQuestionWithAnswerString(const QByteArray &questionCommand, QByteArray &answer, const int timeoutMS);
         ito::RetVal PIIdentifyAndInitializeSystem(int keepSerialConfig);
         ito::RetVal convertPIErrorsToRetVal( QVector<QPair<int,QByteArray> > &lastErrors );
         ito::RetVal PISetOperationMode(bool localNotRemote);
         ito::RetVal PISetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         ito::RetVal PICheckStatus(void);
+
+        ito::RetVal PIFilterAnswerByteArray(QByteArray &answer, const int axisID);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
         

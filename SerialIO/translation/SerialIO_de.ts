@@ -62,7 +62,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+270"/>
+        <location filename="../SerialIO.cpp" line="+271"/>
         <location line="+157"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>
@@ -156,7 +156,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="+522"/>
+        <location filename="../dialogSerialIO.cpp" line="+525"/>
         <source>Char token not closed correctly or number to big.</source>
         <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
@@ -427,12 +427,12 @@ Beispiel
 <context>
     <name>dialogSerialIO</name>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="-73"/>
+        <location filename="../dialogSerialIO.cpp" line="-76"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+150"/>
         <source>Error: malformed command string - not send</source>
         <translation>Fehler: Syntaxfehler- nicht gesendet</translation>
     </message>
@@ -501,12 +501,12 @@ Beispiel
         <translation>Protokollierung</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+403"/>
         <source>Read delay</source>
         <translation>Leseverzögerung</translation>
     </message>
     <message>
-        <location line="-322"/>
+        <location line="-361"/>
         <source>Flow control</source>
         <translation>Flusskontrolle</translation>
     </message>
@@ -536,32 +536,32 @@ Beispiel
         <translation>Binär</translation>
     </message>
     <message>
-        <location line="-63"/>
+        <location line="-75"/>
         <source>Send</source>
         <translation>Senden</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+84"/>
         <source>Read</source>
         <translation>Lesen</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+71"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-211"/>
+        <location line="-221"/>
         <source>Use input below to send characters to the serial port. Characters will be send as their ASCII code from the character written. To directly write ASCII codes use the format $(code) or select Decimal, Hexadecimal or Binary separated by space.</source>
         <translation>Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
     </message>
     <message>
-        <location line="+221"/>
+        <location line="+231"/>
         <source>Apply</source>
         <translation>Übernehmen</translation>
     </message>
     <message>
-        <location line="-278"/>
+        <location line="-288"/>
         <source>Python Command</source>
         <translation>Python-Befehl</translation>
     </message>
@@ -638,12 +638,12 @@ Beispiel
     <message>
         <location line="+34"/>
         <location line="+49"/>
-        <location line="+463"/>
+        <location line="+451"/>
         <source>ms</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-498"/>
+        <location line="-486"/>
         <location line="+99"/>
         <source>\r</source>
         <translation></translation>
@@ -747,7 +747,12 @@ Beispiel
         <translation type="unfinished">Automatisches Lesen nach dem Senden</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+20"/>
+        <source>enable $(ascii-code) statement parsing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
         <source>OK</source>
         <translation></translation>
     </message>

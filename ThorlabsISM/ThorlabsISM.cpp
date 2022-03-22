@@ -44,6 +44,7 @@
 #include <qdebug.h>
 
 QList<QByteArray> ThorlabsISM::openedDevices = QList<QByteArray>();
+int ThorlabsISM::numberOfKinesisSimulatorConnections = 0;
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -107,6 +108,7 @@ This plugin has been tested with the cage rotator K10CR1.");
     
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("additionalGearFactor", ito::ParamBase::Double, 0.0000000001, 1.0e12, 1.0, tr("There seems to be an additional conversion factor for some devices between device and real world units. This can be given here.").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("connectToKinesisSimulator", ito::ParamBase::Int, 0, 1, 0, tr("If 1, a connection to the running Kinesis Simulator is established before starting to search for devices.").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -129,7 +131,7 @@ m_additionalFactor(1.0)
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
     m_params.insert("enabled", ito::Param("enabled", ito::ParamBase::Int, 0, 1, 1, tr("If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data()));
     m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Target speed in °/s (travelMode == %1) or mm/s (travelMode == %2)").arg(MOT_Rotational).arg(MOT_Linear).toLatin1().data()));
     m_params.insert("accel", ito::Param("accel", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Target acceleration in °/s^2 (travelMode == %1) or mm/s^2 (travelMode == %2)").arg(MOT_Rotational).arg(MOT_Linear).toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 20.0, tr("timeout for move operations in sec").toLatin1().data()));
@@ -177,6 +179,13 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     QByteArray serial = paramsOpt->at(0).getVal<char*>();
     double additionalGearFactor = paramsOpt->at(1).getVal<double>();
+    bool connectToKinesisSimulator = paramsOpt->at(2).getVal<int>() > 0;
+
+    if (connectToKinesisSimulator)
+    {
+        numberOfKinesisSimulatorConnections++;
+        TLI_InitializeSimulations();
+    }
 
     retval += checkError(TLI_BuildDeviceList(), "build device list");
     QByteArray existingSerialNumbers("", 256);
@@ -204,11 +213,28 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             existingSerialNumbers = existingSerialNumbers.left(idx);
         }
 
-        QList<QByteArray> serialNumbers = existingSerialNumbers.split(',');
+        QList<QByteArray> serialNumbers;
+
+        // filter all serial numbers for supported devices only
+        foreach(const QByteArray &serialNumber, existingSerialNumbers.split(','))
+        {
+            if (TLI_GetDeviceInfo(serialNumber.constData(), &deviceInfo) > 0)
+            {
+                if (deviceInfo.isKnownType && (
+                        deviceInfo.typeID == 45 /*Long Travel Stage*/ ||
+                        deviceInfo.typeID == 46 /*Lab Jack*/ || 
+                        deviceInfo.typeID == 49 /*Lab Jack*/ ||
+                        deviceInfo.typeID == 55 /*Cage Rotator*/))
+                {
+                    serialNumbers << serialNumber;
+                }
+            }
+        }
 
         if (serial == "")
         {
             bool found = false;
+
             for (int i = 0; i < serialNumbers.size(); ++i)
             {
                 if (!openedDevices.contains(serialNumbers[i]))
@@ -221,12 +247,13 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             
             if (!found)
             {
-                retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found.");
+                retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices of the supported types Long Travel Stage, Labjack, Cage Rotator found.");
             }
         }
         else
         {
             bool found = false;
+
             foreach(const QByteArray &s, serialNumbers)
             {
                 if (s == serial && s != "")
@@ -264,22 +291,13 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if (!retval.containsError())
     {
-        if (deviceInfo.isKnownType && (deviceInfo.typeID == 45 /*Long Travel Stage*/ || \
-            deviceInfo.typeID == 46 /*Lab Jack*/ || deviceInfo.typeID == 49 /*Lab Jack*/ || \
-            deviceInfo.typeID == 55 /*Cage Rotator*/))
-        {
-            memcpy(m_serialNo, serial.data(), std::min((size_t)serial.size(), sizeof(m_serialNo)));
-            retval += checkError(ISC_Open(m_serialNo), "open device");
+        memcpy(m_serialNo, serial.data(), std::min((size_t)serial.size(), sizeof(m_serialNo)));
+        retval += checkError(ISC_Open(m_serialNo), "open device");
 
-            if (!retval.containsError())
-            {
-                m_opened = true;
-                openedDevices.append(m_serialNo);
-            }
-        }
-        else
+        if (!retval.containsError())
         {
-            retval += ito::RetVal(ito::retError, 0, "the type of the device is not among the supported devices (Long Travel Stage, Labjack, Cage Rotator)");
+            m_opened = true;
+            openedDevices.append(m_serialNo);
         }
     }
 
@@ -381,6 +399,15 @@ ito::RetVal ThorlabsISM::close(ItomSharedSemaphore *waitCond)
         openedDevices.removeOne(m_serialNo);
     }
 
+    if (numberOfKinesisSimulatorConnections > 0)
+    {
+        numberOfKinesisSimulatorConnections--;
+
+        if (numberOfKinesisSimulatorConnections == 0)
+        {
+            TLI_UninitializeSimulations();
+        }
+    }
 
     if (waitCond)
     {

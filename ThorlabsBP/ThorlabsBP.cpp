@@ -139,7 +139,7 @@ ThorlabsBP::ThorlabsBP() :
     m_params.insert("maximumTravelRange", ito::Param("maximumTravelRange", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Maximum travel range for each axis in mm. This requires an actuator with built in position sensing. These values might not be correct if the motor is in open loop mode.").toLatin1().data()));
     m_params.insert("maximumVoltage", ito::Param("maximumVoltage", ito::ParamBase::IntArray, NULL, tr("Maximum output voltage (75, 100 or 150 V).").toLatin1().data()));
     
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data()));
 
     m_currentPos.fill(0.0, 1);
     m_currentStatus.fill(0, 1);

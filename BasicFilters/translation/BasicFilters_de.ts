@@ -719,41 +719,41 @@
     </message>
     <message>
         <location filename="../AdditionalFilters.cpp" line="+488"/>
-        <location line="+87"/>
+        <location line="+86"/>
         <location line="+146"/>
         <source>image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-231"/>
+        <location line="-230"/>
         <source>threshold for labeling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+231"/>
+        <location line="+230"/>
         <source>list of found labels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-228"/>
+        <location line="-227"/>
         <source>inavlid pixels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+21"/>
-        <location line="+84"/>
+        <location line="+83"/>
         <location line="+158"/>
         <source>image must be a 2D image!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-207"/>
+        <location line="-206"/>
         <source>input image should be normalized float (32 or 64) object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+25"/>
         <source>label id</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1064,7 +1064,7 @@ The radiuses are the distances from the given center point to the physical coord
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AdditionalFilters.cpp" line="-710"/>
+        <location filename="../AdditionalFilters.cpp" line="-709"/>
         <source>Finds connected areas in an image an assigns a label to them. 
                                                              In the input image according found regions get painted with the according label.
                                                              The returned list has the format x0,y0,x1,y1 for each label.

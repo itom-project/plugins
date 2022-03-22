@@ -83,7 +83,7 @@ target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS} ${QT5_
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
-itom_configure_plugin_documentation(${target_name} openCVFilters)
+itom_configure_plugin_documentation(${target_name} openCVFilters "OpenCV-Filters")
 
 # COPY SECTION
 set(COPY_SOURCES "")
