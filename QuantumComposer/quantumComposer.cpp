@@ -1,4 +1,4 @@
-/* ********************************************************************
+/*# ********************************************************************
     Plugin "PIPiezoControl" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut fuer Technische Optik (ITO),
@@ -911,9 +911,9 @@ ito::RetVal QuantumComposer::init(
             if (idn.length() == 4)
             {
                 m_params["manufacturer"].setVal<char*>(idn[0].data());
-                m_params["model"].setVal<char*>(idn[1].data());
-                m_params["serialNumber"].setVal<char*>(idn[2].data());
-                m_params["version"].setVal<char*>(idn[3].data());
+                m_params["model"].setVal<char*>(idn[0].data());
+                m_params["serialNumber"].setVal<char*>(idn[0].data());
+                m_params["version"].setVal<char*>(idn[0].data());
             }
             else
             {
@@ -1289,7 +1289,7 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
         while (!done && !retValue.containsError())
         {
             *curBufLen = buflen;
-            retValue += m_pSer->getVal(curBuf, curBufLen, nullptr);
+            retValue += m_pSer->getVal(curBuf, curBufLen, NULL);
 
             if (!retValue.containsError())
             {
@@ -1300,19 +1300,17 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
                 if (pos >= 0) // found
                 {
                     done = true;
-                    result = result.mid(pos + endline.length(), curFrom);
-                }
-
-                if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
-                {
-                    retValue += ito::RetVal(
-                        ito::retError,
-                        timeoutMS,
-                        tr("timeout during read string from SerialIO").toLatin1().data());
+                    result = result.left(pos);
                 }
             }
+
+            if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
+            {
+                retValue +=
+                    ito::RetVal(ito::retError, m_delayAfterSendCommandMS, tr("timeout during read string.").toLatin1().data());
+            }
         }
-        result = result.trimmed();
+
         len = result.length();
     }
 
