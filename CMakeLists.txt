@@ -408,14 +408,6 @@ if(WIN32)
     endif(PLUGIN_QCam)
 endif()
 
-# QuantumComposer
-if(WIN32)
-    option(PLUGIN_QuantumComposer "Build with this plugin." ON)
-    if(PLUGIN_QuantumComposer)
-        add_subdirectory(QuantumComposer)
-    endif(PLUGIN_QuantumComposer)
-endif()
-
 # rawImport
 option(PLUGIN_rawImport "Build with this plugin." ON)
 if(PLUGIN_rawImport)
