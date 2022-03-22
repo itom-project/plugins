@@ -429,6 +429,8 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelWidths",
         pMand,
@@ -1075,6 +1077,19 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
             it->setVal<int*>(values, m_numChannels);
             DELETE_AND_SET_NULL_ARRAY(values);
         }
+        else if (key == "widthsList")
+        {
+            double* values = new double[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerDouble(
+                    QString(":PULSE%1:WIDT?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<double*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
         *val = it.value();
     }
 
@@ -1352,9 +1367,10 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerDouble(
     bool ok;
     ito::RetVal retValue = SendCommand(questionCommand);
     retValue += ReadString(_answer, readSigns, timeoutMS);
+    qDebug() << _answer;
     _answer = _answer.replace(",", ".");
     answer = _answer.toDouble(&ok);
-
+    
     if (!ok)
     {
         retValue += ito::RetVal(
