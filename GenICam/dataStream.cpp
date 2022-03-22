@@ -1101,8 +1101,10 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         switch (pixelformat)
         {
         case PFNC_Mono8:
+            retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, dobj);
+            break;
         case PFNC_RGB8:
-            retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            retval += copyRGB8ToDataObject(ptr + buffer_offset, width, height, dobj);
             break;
         case PFNC_YCbCr422_8:
             retval += copyYCbCr422ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
@@ -1135,10 +1137,56 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, ito::DataObject &dobj)
 {
     //little or big endian is idle for mono8:
+    
     return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, height);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyRGB8ToDataObject(const char* ptr, const size_t& width, const size_t& height, ito::DataObject& dobj)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    cv::Mat_<ito::Rgba32>* matRes = (cv::Mat_<ito::Rgba32>*)(dobj.getCvPlaneMat(0));
+    ito::Rgba32* rowPtrDst;
+
+    rowPtrDst = matRes->ptr<ito::Rgba32>(0); // pointer of first element
+
+    // iterate rows 
+    int x;
+    int y;
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++)
+        {
+            rowPtrDst[y * width + x].r = *ptr;
+            ptr++;
+            rowPtrDst[y * width + x].g = *ptr;
+            ptr++;
+            rowPtrDst[y * width + x].b = *ptr;
+            ptr++;
+            rowPtrDst[y * width + x].a = 255; 
+        }
+    }
+
+    // this loop works too, but a bit slower
+    /*for (uint x = 0; x < width; x++)
+    {
+        for (uint y = 0; y < height; y++)
+        {
+            matRes->at<ito::Rgba32>(y, x).r = *ptr;
+            ptr++;
+            matRes->at<ito::Rgba32>(y, x).g = *ptr;
+            ptr++;
+            matRes->at<ito::Rgba32>(y, x).b = *ptr;
+            ptr++;
+            matRes->at<ito::Rgba32>(y, x).a = 255;
+        }
+    }*/
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1146,7 +1194,6 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
 {
     ito::RetVal retVal = ito::retOk;
 
-    size_t n = width * height;
     cv::Mat sourceImage = cv::Mat(height, width, CV_8UC3);
     ito::uint8* srcPtr = sourceImage.ptr<ito::uint8>(0);
 
