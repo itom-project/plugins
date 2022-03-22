@@ -70,6 +70,7 @@ private:
     ito::AddInDataIO* m_pSer;
     int m_delayAfterSendCommandMS;
     int m_requestTimeOutMS;
+    int m_numChannels = 8;
 
     ito::RetVal SendCommand(const QByteArray& command);
     ito::RetVal ReadString(QByteArray& result, int& len, const int timeoutMS);

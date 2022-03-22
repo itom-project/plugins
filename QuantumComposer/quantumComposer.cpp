@@ -56,6 +56,8 @@ This plugin has been developed for the 9520 series via a RS232 interface. So you
 which is a mandatory input argument of the QuantumComposer plugin. \n\
 The plugin sets the right RS232 parameter during initialization. \n\
 \n\
+Disable **Echo** of the system settings!\n\
+\n\
 The default parameters are: \n\
 * Baud Rate: 38400 (default for USB), 115200 (default for RS232)\n\
 * Data Bits: 8 \n\
@@ -391,6 +393,7 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
 
     registerExecFunc(
         "setChannelOutputState",
@@ -903,7 +906,6 @@ ito::RetVal QuantumComposer::init(
         m_pSer->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
 
         retValue += SendQuestionWithAnswerString("*IDN?", answerStr, m_requestTimeOutMS);
-
         if (!retValue.containsError())
         {
             QByteArrayList idn =
@@ -911,9 +913,9 @@ ito::RetVal QuantumComposer::init(
             if (idn.length() == 4)
             {
                 m_params["manufacturer"].setVal<char*>(idn[0].data());
-                m_params["model"].setVal<char*>(idn[0].data());
-                m_params["serialNumber"].setVal<char*>(idn[0].data());
-                m_params["version"].setVal<char*>(idn[0].data());
+                m_params["model"].setVal<char*>(idn[1].data());
+                m_params["serialNumber"].setVal<char*>(idn[2].data());
+                m_params["version"].setVal<char*>(idn[3].data());
             }
             else
             {
@@ -1059,6 +1061,19 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
             retValue +=
                 SendQuestionWithAnswerInteger(":PULSE0:COUN:COUN?", answerInt, m_requestTimeOutMS);
             val->setVal<int>(answerInt);
+        }
+        else if (key == "statesList")
+        {
+            int* values = new int[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerInteger(
+                    QString(":PULSE%1:STAT?").arg(ch).toStdString().c_str(),
+                    values[ch-1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
         }
         *val = it.value();
     }
@@ -1289,8 +1304,9 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
         while (!done && !retValue.containsError())
         {
             *curBufLen = buflen;
-            retValue += m_pSer->getVal(curBuf, curBufLen, NULL);
+            retValue += m_pSer->getVal(curBuf, curBufLen, nullptr);
 
+            
             if (!retValue.containsError())
             {
                 result += QByteArray(curBuf.data(), *curBufLen);
@@ -1313,7 +1329,6 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
 
         len = result.length();
     }
-
     return retValue;
 }
 
@@ -1626,6 +1641,7 @@ ito::RetVal QuantumComposer::setChannelOutputState(
     }
     else
     {
+        int* paramStates = m_params["statesList"].getVal<int*>();
         for (int ch = 0; ch < channelIndices.getLen(); ch++)
         {
             retValue += SendCommand(QString(":PULSE%1:STAT %2")
@@ -1633,6 +1649,7 @@ ito::RetVal QuantumComposer::setChannelOutputState(
                                         .arg(states[ch])
                                         .toStdString()
                                         .c_str());
+            paramStates[ch] = states[ch];
         }
     }
 
