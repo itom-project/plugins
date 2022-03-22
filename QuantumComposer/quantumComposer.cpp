@@ -465,6 +465,8 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelDelays",
         pMand,
@@ -490,6 +492,8 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelSyncs",
         pMand,
@@ -515,6 +519,8 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelMuxs",
         pMand,
@@ -541,12 +547,15 @@ QuantumComposer::QuantumComposer() :
         ito::ByteArray("NORM"), ito::ByteArray("COMP"), ito::ByteArray("INV")};
     paramVal.setVal<ito::ByteArray*>(strList, 3);
 
+
     sm = new ito::StringListMeta(ito::StringListMeta::String, 1, 8, 1, "Channel parameter");
     sm->addItem("NORM");
     sm->addItem("COMP");
     sm->addItem("INV");
     paramVal.setMeta(sm, true);
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelPolarities",
         pMand,
@@ -578,6 +587,7 @@ QuantumComposer::QuantumComposer() :
     sm->addItem("ADJ");
     paramVal.setMeta(sm, true);
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
     registerExecFunc(
         "setChannelOutputModes",
         pMand,
@@ -602,6 +612,7 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
     registerExecFunc(
         "setChannelAdjustableAmplitude",
         pMand,
@@ -640,6 +651,8 @@ QuantumComposer::QuantumComposer() :
     sm->addItem("DCYC");
     paramVal.setMeta(sm, true);
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelModes",
         pMand,
@@ -665,6 +678,7 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
     registerExecFunc(
         "setChannelBurstCounter",
         pMand,
@@ -1090,6 +1104,157 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
             it->setVal<double*>(values, m_numChannels);
             DELETE_AND_SET_NULL_ARRAY(values);
         }
+        else if (key == "delaysList")
+        {
+            double* values = new double[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerDouble(
+                    QString(":PULSE%1:DEL?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<double*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "syncsList")
+        {
+            int* values = new int[m_numChannels];
+            QByteArray answerStr;
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerString(
+                    QString(":PULSE%1:SYNC?").arg(ch).toStdString().c_str(),
+                    answerStr,
+                    m_requestTimeOutMS);
+                if (answerStr == "T0")
+                {
+                    values[ch - 1] = 0;
+                }
+                else if (answerStr == "CHA")
+                {
+                    values[ch - 1] = 1;
+                }
+                else if (answerStr == "CHB")
+                {
+                    values[ch - 1] = 2;
+                }
+                else if (answerStr == "CHC")
+                {
+                    values[ch - 1] = 3;
+                }
+                else if (answerStr == "CHD")
+                {
+                    values[ch - 1] = 4;
+                }
+                else if (answerStr == "CHE")
+                {
+                    values[ch - 1] = 5;
+                }
+                else if (answerStr == "CHF")
+                {
+                    values[ch - 1] = 6;
+                }
+                else if (answerStr == "CHG")
+                {
+                    values[ch - 1] = 7;
+                }
+                else if (answerStr == "CHH")
+                {
+                    values[ch - 1] = 8;
+                }
+            }
+            it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "muxsList")
+        {
+            int* values = new int[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerInteger(
+                    QString(":PULSE%1:MUX?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "polaritiesList")
+        {
+            ito::ByteArray* values = new ito::ByteArray[m_numChannels];
+            QByteArray answer;
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerString(
+                    QString(":PULSE%1:POL?").arg(ch).toStdString().c_str(),
+                    answer,
+                    m_requestTimeOutMS);
+                values[ch - 1] = answer.toStdString().c_str();
+            }
+            
+            it->setVal<ito::ByteArray*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "outputModesList")
+        {
+            ito::ByteArray* values = new ito::ByteArray[m_numChannels];
+            QByteArray answer;
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerString(
+                    QString(":PULSE%1:OUTP:MOD?").arg(ch).toStdString().c_str(),
+                    answer,
+                    m_requestTimeOutMS);
+                values[ch - 1] = answer.toStdString().c_str();
+            }
+
+            it->setVal<ito::ByteArray*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "amplitudesList")
+        {
+            double* values = new double[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerDouble(
+                    QString(":PULSE%1:OUTP:AMPL?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<double*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "channelModesList")
+        {
+            ito::ByteArray* values = new ito::ByteArray[m_numChannels];
+            QByteArray answer;
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerString(
+                    QString(":PULSE%1:CMOD?").arg(ch).toStdString().c_str(),
+                    answer,
+                    m_requestTimeOutMS);
+                values[ch - 1] = answer.toStdString().c_str();
+            }
+
+            it->setVal<ito::ByteArray*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "channelBurstCounterList")
+        {
+            int* values = new int[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerInteger(
+                    QString(":PULSE%1:BCO?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+
         *val = it.value();
     }
 
@@ -1367,7 +1532,6 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerDouble(
     bool ok;
     ito::RetVal retValue = SendCommand(questionCommand);
     retValue += ReadString(_answer, readSigns, timeoutMS);
-    qDebug() << _answer;
     _answer = _answer.replace(",", ".");
     answer = _answer.toDouble(&ok);
     
@@ -1770,7 +1934,7 @@ ito::RetVal QuantumComposer::setChannelSyncs(
             switch (syncs[ch])
             {
             case 0:
-                channelName = "To";
+                channelName = "T0";
                 break;
             case 1:
                 channelName = "CHA";
