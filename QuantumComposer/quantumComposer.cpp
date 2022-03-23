@@ -707,6 +707,8 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelPulseCounter",
         pMand,
@@ -736,6 +738,8 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelOffCounter",
         pMand,
@@ -765,6 +769,8 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelWaitCounter",
         pMand,
@@ -801,6 +807,8 @@ QuantumComposer::QuantumComposer() :
     sm->addItem("OUTP");
     paramVal.setMeta(sm, true);
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelGatesModes",
         pMand,
@@ -831,6 +839,8 @@ QuantumComposer::QuantumComposer() :
     sm->addItem("HIGH");
     paramVal.setMeta(sm, true);
     pMand.append(paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+
     registerExecFunc(
         "setChannelGatesLogicLevel",
         pMand,
@@ -1252,6 +1262,77 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
                     m_requestTimeOutMS);
             }
             it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "channelPulseCounterList")
+        {
+            int* values = new int[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerInteger(
+                    QString(":PULSE%1:PCO?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "channelOffCounterList")
+        {
+            int* values = new int[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerInteger(
+                    QString(":PULSE%1:OCO?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "channelPulseWaitCounterList")
+        {
+            int* values = new int[m_numChannels];
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerInteger(
+                    QString(":PULSE%1:WCO?").arg(ch).toStdString().c_str(),
+                    values[ch - 1],
+                    m_requestTimeOutMS);
+            }
+            it->setVal<int*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }            
+        else if (key == "channelGateModeList")
+        {
+            ito::ByteArray* values = new ito::ByteArray[m_numChannels];
+            QByteArray answer;
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerString(
+                    QString(":PULSE%1:CGAT?").arg(ch).toStdString().c_str(),
+                    answer,
+                    m_requestTimeOutMS);
+                values[ch - 1] = answer.toStdString().c_str();
+            }
+
+            it->setVal<ito::ByteArray*>(values, m_numChannels);
+            DELETE_AND_SET_NULL_ARRAY(values);
+        }
+        else if (key == "channelGateLogicList")
+        {
+            ito::ByteArray* values = new ito::ByteArray[m_numChannels];
+            QByteArray answer;
+            for (int ch = 1; ch <= m_numChannels; ch++)
+            {
+                retValue += SendQuestionWithAnswerString(
+                    QString(":PULSE%1:CLOG?").arg(ch).toStdString().c_str(),
+                    answer,
+                    m_requestTimeOutMS);
+                values[ch - 1] = answer.toStdString().c_str();
+            }
+
+            it->setVal<ito::ByteArray*>(values, m_numChannels);
             DELETE_AND_SET_NULL_ARRAY(values);
         }
 
