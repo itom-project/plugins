@@ -317,7 +317,7 @@ const QString DataObjectArithmetic::maxValueDoc = QObject::tr(
 The returned value will be an integer for all fixed-point data types and float for all floating point types. \n\
 The global maximum of complex data types is defined to be the global maximum of all absolute values. \n\
 \n\
-The filter is implemented for all data types besides RGBA32, DateTime and TimeDelta");
+The filter is implemented for all data types besides RGBA32");
 
 //-------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::maxValue(
