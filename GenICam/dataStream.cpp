@@ -1178,15 +1178,17 @@ ito::RetVal GenTLDataStream::copyRGB8ToDataObject(const char* ptr, const size_t&
     int y;
     for (y = 0; y < height; y++)
     {
+        rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
         for (x = 0; x < width; x++)
         {
-            rowPtrDst[y * width + x].r = *ptr;
+            rowPtrDst[x].r = *ptr;
             ptr++;
-            rowPtrDst[y * width + x].g = *ptr;
+            rowPtrDst[x].g = *ptr;
             ptr++;
-            rowPtrDst[y * width + x].b = *ptr;
+            rowPtrDst[x].b = *ptr;
             ptr++;
-            rowPtrDst[y * width + x].a = 255; 
+            rowPtrDst[x].a = 255; 
         }
     }
 
@@ -1312,15 +1314,16 @@ ito::RetVal GenTLDataStream::copyBGR8ToDataObject(const char* ptr, const size_t 
     int y;
     for (y = 0; y < height; y++)
     {
+        rowPtrDst = matRes->ptr<ito::Rgba32>(y);
         for (x = 0; x < width; x++)
         {
-            rowPtrDst[y * width + x].b = *ptr;
+            rowPtrDst[x].b = *ptr;
             ptr++;
-            rowPtrDst[y * width + x].g = *ptr;
+            rowPtrDst[x].g = *ptr;
             ptr++;
-            rowPtrDst[y * width + x].r = *ptr;
+            rowPtrDst[x].r = *ptr;
             ptr++;
-            rowPtrDst[y * width + x].a = 255;
+            rowPtrDst[x].a = 255;
         }
     }
 
