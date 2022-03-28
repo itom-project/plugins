@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -72,6 +72,8 @@ public:
 
 protected:
     ito::RetVal copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyRGB8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
+    ito::RetVal copyBGR8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
     ito::RetVal copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono12pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);

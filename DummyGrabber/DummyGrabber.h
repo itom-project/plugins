@@ -28,6 +28,7 @@
 #include "dialogDummyGrabber.h"
 
 #include <qsharedpointer.h>
+#include <qtimer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class DummyGrabberInterface : public ito::AddInInterfaceBase

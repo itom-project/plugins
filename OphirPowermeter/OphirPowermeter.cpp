@@ -173,7 +173,7 @@ OphirPowermeter::OphirPowermeter() :
         "timeout",
         ito::Param(
             "timeout",
-            ito::ParamBase::Int,
+            ito::ParamBase::Int | ito::ParamBase::Readonly,
             0,
             100000,
             1000,
@@ -1710,6 +1710,7 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore* wai
 
         while (!timer.hasExpired(timeout))
         {
+            Sleep(0.2);
 
             try
             {

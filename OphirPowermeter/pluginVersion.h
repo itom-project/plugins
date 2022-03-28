@@ -32,7 +32,7 @@
 
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 2
-#define PLUGIN_VERSION_PATCH 5
+#define PLUGIN_VERSION_PATCH 4
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION                                                                             \
     CREATE_VERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
