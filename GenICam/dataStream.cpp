@@ -1066,7 +1066,9 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         if (pixelformat != PFNC_Mono8 && 
             pixelformat != PFNC_Mono16 &&
             pixelformat != PFNC_RGB8 &&
-            pixelformat != PFNC_BGR12p)
+            pixelformat != PFNC_BGR8 &&
+            pixelformat != PFNC_BGR12p &&
+            pixelformat != PFNC_YCbCr422_8)
         {
             pSize = sizeof(temp);
             if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXEL_ENDIANNESS, &dtype, &temp, &pSize) != GenTL::GC_ERR_SUCCESS)
