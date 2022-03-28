@@ -301,3 +301,4 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.</source>
     </message>
 </context>
 </TS>
+

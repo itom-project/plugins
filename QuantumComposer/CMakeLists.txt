@@ -1,4 +1,4 @@
-set(target_name QuantumComposer)
+set(target_name QuantumComposer) 
 
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
