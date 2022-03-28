@@ -960,14 +960,6 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
                 pixelformat = PFNC_Mono8;
             }
         }
-        /*if (pixelformat == PFNC_BGR8)
-        {
-
-        }*/
-        if (pixelformat == PFNC_BGR10p || pixelformat == PFNC_BGR12p)
-        {
-            retval += ito::RetVal(ito::retWarning, 0, "Pixel formats BGR10p, BGR12p are not implemented as multi channel yet - although this device seems to support it.");
-        }
 
         bytes_pp_transferred = (float)PFNC_PIXEL_SIZE(pixelformat) / 8.0;
     }
@@ -1068,14 +1060,12 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             }
         }
         
+        
 
         //get pixel endianess
         if (pixelformat != PFNC_Mono8 && 
             pixelformat != PFNC_Mono16 &&
             pixelformat != PFNC_RGB8 &&
-            pixelformat != PFNC_YCbCr422_8 &&
-            pixelformat != PFNC_BGR8 &&
-            pixelformat != PFNC_BGR10p && 
             pixelformat != PFNC_BGR12p)
         {
             pSize = sizeof(temp);
@@ -1111,19 +1101,21 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         switch (pixelformat)
         {
         case PFNC_Mono8:
-            retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, dobj);
-            break;
+            retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
         case PFNC_RGB8:
-            retval += copyRGB8ToDataObject(ptr + buffer_offset, width, height, dobj);
+            retval += copyRGB8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_BGR8:
-            retval += copyBGR8ToDataObject(ptr + buffer_offset, width, height, dobj);
+            retval += copyBGR8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_YCbCr422_8:
             retval += copyYCbCr422ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono10:
         case PFNC_Mono12:
+        case PFNC_BGR12p:
+            retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
         case PFNC_Mono14:
         case PFNC_Mono16:
             retval += copyMono10to16ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
@@ -1132,9 +1124,6 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             retval += copyMono12PackedToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono12p:
-            retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
-            break;
-        case PFNC_BGR12p:
             retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case GVSP_Mono10Packed: //GigE specific
@@ -1156,15 +1145,14 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, ito::DataObject &dobj)
+ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj)
 {
     //little or big endian is idle for mono8:
-    
     return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, height);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyRGB8ToDataObject(const char* ptr, const size_t& width, const size_t& height, ito::DataObject& dobj)
+ito::RetVal GenTLDataStream::copyRGB8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj)
 {
     ito::RetVal retVal = ito::retOk;
 
@@ -1300,7 +1288,7 @@ ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(const char* ptr, const s
 }
 
 // BGR8 data to RGBa8 DataObject output
-ito::RetVal GenTLDataStream::copyBGR8ToDataObject(const char* ptr, const size_t &width, const size_t &height, ito::DataObject &dobj)
+ito::RetVal GenTLDataStream::copyBGR8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
 {
     ito::RetVal retVal = ito::retOk;
 

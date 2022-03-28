@@ -1568,37 +1568,37 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
                     }
                     else if (vendor != "")
                     {
-                    if (vendor.compare(infoVendor, Qt::CaseInsensitive) == 0)
-                    {
-                        filteredCtiFiles << file;
-                    }
+                        if (vendor.compare(infoVendor, Qt::CaseInsensitive) == 0)
+                        {
+                            filteredCtiFiles << file;
+                        }
                     }
                     else if (model != "")
                     {
-                    if (model.compare(infoModel, Qt::CaseInsensitive) == 0)
-                    {
-                        filteredCtiFiles << file;
-                    }
+                        if (model.compare(infoModel, Qt::CaseInsensitive) == 0)
+                        {
+                            filteredCtiFiles << file;
+                        }
                     }
                     else
                     {
-                    filteredCtiFiles << file;
+                        filteredCtiFiles << file;
                     }
                 }
                 else
                 {
-                filteredCtiFiles << file;
+                    filteredCtiFiles << file;
                 }
             }
             else
             {
-            if (producer == "" && vendor == "" && model == "")
-            {
-                i++;
-                std::cout << i << ". Unloadable cti-file: " << file.toLatin1().constData() << "\n" << std::endl;
-            }
+                if (producer == "" && vendor == "" && model == "")
+                {
+                    i++;
+                    std::cout << i << ". Unloadable cti-file: " << file.toLatin1().constData() << "\n" << std::endl;
+                }
 
-            tempRetVal += libRetVal;
+                tempRetVal += libRetVal;
             }
         }
 
@@ -1662,10 +1662,6 @@ ito::RetVal GenICamClass::checkData(ito::DataObject *externalDataObject)
         }
     }
     else
-    {
-        futureType = ito::tRGBA32;
-    }
-    if (std::strcmp(m_params["PixelFormat"].getVal<char*>(),"BGR8")==0)
     {
         futureType = ito::tRGBA32;
     }
