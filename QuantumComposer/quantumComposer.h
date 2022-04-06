@@ -1,5 +1,5 @@
 /*# ********************************************************************
-    Plugin "PIPiezoControl" for itom software
+    Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
