@@ -1122,7 +1122,12 @@ QList<gcstring> BasePort::getCommandNames() const
 
 
 //------------------------------------------------------------------------------------------------
-ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
+//call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
+/* The fallbackDevice might be useful for framegrabbers. In many cases the basic image
+format parameters are available by the framegrabber. However, there are framegrabbers
+where these parameters are only available by the camera device itself.
+*/
+ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSharedPointer<BasePort> fallbackDevice /*= nullptr*/) 
 {
     ito::RetVal retval;
     CIntegerPtr pInt;
@@ -1140,6 +1145,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     it = params.find("sizex");
     intMeta = it->getMetaT<ito::IntMeta>();
     pInt = m_device._GetNode("SensorWidth");
+
+    if (!pInt.IsValid() && fallbackDevice)
+    {
+        pInt = fallbackDevice->device()._GetNode("SensorWidth");
+    }
+
     if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
     {
         intMeta->setMin(0);
@@ -1158,6 +1169,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     else
     {
         pInt = m_device._GetNode("WidthMax");
+
+        if (!pInt.IsValid() && fallbackDevice)
+        {
+            pInt = fallbackDevice->device()._GetNode("WidthMax");
+        }
+
         if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
         {
         
@@ -1178,6 +1195,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 
     ito::IntMeta widthMeta(1, intMeta->getMax(), 1);
     pInt = m_device._GetNode("Width");
+
+    if (!pInt.IsValid() && fallbackDevice)
+    {
+        pInt = fallbackDevice->device()._GetNode("Width");
+    }
+
     if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
     {
         intMetaFromInteger(pInt, intMeta);
@@ -1192,6 +1215,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     it = params.find("sizey");
     intMeta = it->getMetaT<ito::IntMeta>();
     pInt = m_device._GetNode("SensorHeight");
+
+    if (!pInt.IsValid() && fallbackDevice)
+    {
+        pInt = fallbackDevice->device()._GetNode("SensorHeight");
+    }
+
     if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
     {
         
@@ -1211,6 +1240,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     else
     {
         pInt = m_device._GetNode("HeightMax");
+
+        if (!pInt.IsValid() && fallbackDevice)
+        {
+            pInt = fallbackDevice->device()._GetNode("HeightMax");
+        }
+
         if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
         {
         
@@ -1231,6 +1266,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
 
     ito::IntMeta heightMeta(1, intMeta->getMax(), 1);
     pInt = m_device._GetNode("Height");
+
+    if (!pInt.IsValid() && fallbackDevice)
+    {
+        pInt = fallbackDevice->device()._GetNode("Height");
+    }
+
     if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
     {
         intMetaFromInteger(pInt, intMeta);
@@ -1245,6 +1286,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     ito::IntMeta offsetXMeta(0, 0, 1);
     ito::IntMeta offsetYMeta(0, 0, 1);
     pInt = m_device._GetNode("OffsetX");
+
+    if (!pInt.IsValid() && fallbackDevice)
+    {
+        pInt = fallbackDevice->device()._GetNode("OffsetX");
+    }
+
     if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
     {
         offsetX = pInt->GetValue();
@@ -1253,6 +1300,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     }
 
     pInt = m_device._GetNode("OffsetY");
+
+    if (!pInt.IsValid() && fallbackDevice)
+    {
+        pInt = fallbackDevice->device()._GetNode("OffsetY");
+    }
+
     if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
     {
         offsetY = pInt->GetValue();
@@ -1280,6 +1333,12 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params) //c
     it = params.find("bpp");
     itColor = params.find("color");
     pEnum = m_device._GetNode("PixelFormat");
+
+    if (!pEnum.IsValid() && fallbackDevice)
+    {
+        pEnum = fallbackDevice->device()._GetNode("PixelFormat");
+    }
+
     intMeta = it->getMetaT<ito::IntMeta>();
 
     if (pEnum.IsValid() == false || !(pEnum->GetAccessMode() & (RO | RW)))
