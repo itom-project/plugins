@@ -555,9 +555,8 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                     }
                     else
                     {
-                        retValue += m_framegrabber->syncImageParameters(m_params, m_device);
+                        retValue += m_framegrabber->syncImageParameters(m_params);
                     }
-
                     m_stream->setPayloadSize(m_device->getPayloadSize());
                     retValue += checkData();
                 }
@@ -581,9 +580,8 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                 }
                 else
                 {
-                    retValue += m_framegrabber->syncImageParameters(m_params, m_device);
+                    retValue += m_framegrabber->syncImageParameters(m_params);
                 }
-
                 m_stream->setPayloadSize(m_device->getPayloadSize());
                 retValue += checkData();
             }
@@ -605,9 +603,8 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                 }
                 else
                 {
-                    retValue += m_framegrabber->syncImageParameters(m_params, m_device);
+                    retValue += m_framegrabber->syncImageParameters(m_params);
                 }
-
                 m_stream->setPayloadSize(m_device->getPayloadSize());
                 retValue += checkData();
             }
@@ -946,7 +943,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
             {
                 m_framegrabber->setCallbackParameterChangedReceiver(this);
                 retValue += m_framegrabber->createParamsFromDevice(m_params, visibilityLevel);
-                retValue += m_framegrabber->syncImageParameters(m_params, m_device);
+                retValue += m_framegrabber->syncImageParameters(m_params);
             }
             else
             {
