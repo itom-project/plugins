@@ -106,7 +106,7 @@ if(THORLABS_KINESIS_TEC_INCLUDE_DIR)
         FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
         )
 
-    itom_configure_plugin_documentation(${target_name} ThorlabsTEC)
+    itom_configure_plugin_documentation(${target_name} ThorlabsTCubeTEC)
 
 
     set(COPY_SOURCES "")
