@@ -39,7 +39,7 @@ void DockWidgetThorlabsTCubeTEC::parametersChanged(QMap<QString, ito::Param> par
         QByteArray sensorType = params["sensorType"].getVal<const char*>();
         ui.lblDeviceName->setText(params["deviceName"].getVal<const char*>());
         ui.lblSensorType->setText(sensorType);
-        ui.spinTarget->setValue(params["targetTemperature"].getVal<double>());
+        
 
         if (sensorType == "Transducer")
         {
@@ -70,6 +70,9 @@ void DockWidgetThorlabsTCubeTEC::parametersChanged(QMap<QString, ito::Param> par
     ui.lblCurrent->setText(QString("%1%2")
                                .arg(params["currentTemperature"].getVal<double>(), 0, 'f', 2)
                                .arg(m_unitSuffix));
+
+    // update the target temperature
+    ui.spinTarget->setValue(params["targetTemperature"].getVal<double>());
 }
 
 //-------------------------------------------------------------------------------------

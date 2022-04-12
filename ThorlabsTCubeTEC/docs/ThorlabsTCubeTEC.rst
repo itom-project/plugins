@@ -32,22 +32,32 @@ These parameters are available and can be used to configure the **ThorlabsTCubeT
 parameters of the constructor. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable
 parameters can be changed using *setParam*.
 
+**currentLimit**: {float}
+    The maximum current limit in mA.
+**currentTemperature**: {float}, read-only
+    The current temperature in °C or kOhm, depending on the sensor type
+**derivativeGain**: {float}
+    The derivative gain term for the temperature loop parameters (0-100%).
 **deviceName**: {str}, read-only
     description of the device
 **firmwareVersion**: {int}, read-only
     firmware version of the connected device
+**integralGain**: {float}
+    The integral gain term for the temperature loop parameters (0-100%).
 **name**: {str}, read-only
     name of the plugin
 **pollingInterval**: {int}, read-only
     device polling interval in ms
-**position**: {int}
-    position of the device (position1: 1, position2: 2)
+**proportionalGain**: {float}
+    The proportional gain term for the temperature loop parameters (1-100%).
+**sensorType**: {str}, read-only
+    Connected sensor type.
 **serialNumber**: {str}, read-only
     serial number of the device
 **softwareVersion**: {int}, read-only
     software version of the connected device
-**transitTime**: {int}
-    transit time of the device in ms
+**targetTemperature**: {float}
+    The current temperature in °C or kOhm, depending on the sensor type.
 
 Installation
 ============
@@ -61,10 +71,9 @@ This example shows how to initalized the device in **itom** and change the posit
 
     .. code-block:: python
         
-        flipper = dataIO("ThorlabsFF") # get instance of plugin
-        flipper.setParam("transitTime", 300) # set the transit time to 300 ms
-        flipper.setParam("position", 1) # flip to position 1
-        flipper.setParam("position", 2) # flip to position 2
+        # create a new instance of the device
+        tec = dataIO("ThorlabsTCubeTEC", serialNo="87000001", sensorType="Transducer")
+        tec.setParam("targetTemperature", 30.0) # set the target to 30°C
 
 
 Compilation
@@ -79,4 +88,4 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 Changelog
 =========
 
-* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
+* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.32.

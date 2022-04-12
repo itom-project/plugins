@@ -207,6 +207,46 @@ ThorlabsTCubeTEC::ThorlabsTCubeTEC() : AddInDataIO(), m_opened(false)
                 .toLatin1()
                 .data()));
 
+    m_params.insert(
+        "derivativeGain",
+        ito::Param(
+            "derivativeGain",
+            ito::ParamBase::Double,
+            0.0,
+            100.0,
+            0.0,
+            tr("The derivative gain term for the temperature loop parameters.").toLatin1().data()));
+
+    m_params.insert(
+        "integralGain",
+        ito::Param(
+            "integralGain",
+            ito::ParamBase::Double,
+            0.0,
+            100.0,
+            0.0,
+            tr("The integral gain term for the temperature loop parameters.").toLatin1().data()));
+
+    m_params.insert(
+        "proportionalGain",
+        ito::Param(
+            "proportionalGain",
+            ito::ParamBase::Double,
+            1.0,
+            100.0,
+            1.0,
+            tr("The proportional gain term for the temperature loop parameters.").toLatin1().data()));
+
+    m_params.insert(
+        "currentLimit",
+        ito::Param(
+            "currentLimit",
+            ito::ParamBase::Double,
+            0.0,
+            2000.0,
+            0.0,
+            tr("The maximum current limit in mA.").toLatin1().data()));
+
     if (hasGuiSupport())
     {
         // now create dock widget for this plugin
@@ -364,21 +404,33 @@ ito::RetVal ThorlabsTCubeTEC::init(
 
             if (!retValue.containsError())
             {
+                if (!TC_LoadSettings(m_serialNo))
+                {
+                    retValue +=
+                        ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded");
+                }
+            }
+
+            if (!retValue.containsError())
+            {
                 m_opened = true;
                 openedDevices.append(m_serialNo);
             }
 
             if (sensorType == "Transducer")
             {
-                retValue += checkError(TC_SetSensorType(m_serialNo, TC_Transducer), "TC_SetSensorType");
+                retValue +=
+                    checkError(TC_SetSensorType(m_serialNo, TC_Transducer), "TC_SetSensorType");
             }
             else if (sensorType == "TH20kOhm")
             {
-                retValue += checkError(TC_SetSensorType(m_serialNo, TC_TH20kOhm), "TC_SetSensorType");
+                retValue +=
+                    checkError(TC_SetSensorType(m_serialNo, TC_TH20kOhm), "TC_SetSensorType");
             }
             if (sensorType == "TH200kOhm")
             {
-                retValue += checkError(TC_SetSensorType(m_serialNo, TC_TH200kOhm), "TC_SetSensorType");
+                retValue +=
+                    checkError(TC_SetSensorType(m_serialNo, TC_TH200kOhm), "TC_SetSensorType");
             }
 
             // start device polling at pollingInterval intervals
@@ -402,6 +454,16 @@ ito::RetVal ThorlabsTCubeTEC::init(
             (double)TC_GetTemperatureReading(m_serialNo) / 100.0);
         m_params["targetTemperature"].setVal<double>(
             (double)TC_GetTemperatureSet(m_serialNo) / 100.0);
+
+        TC_LoopParameters pidParams;
+        TC_GetTempLoopParams(m_serialNo, &pidParams);
+
+        m_params["derivativeGain"].setVal<double>(100.0 * (double)pidParams.differentialGain / 32767.0);
+        m_params["integralGain"].setVal<double>(100.0 * (double)pidParams.integralGain / 32767.0);
+        m_params["proportionalGain"].setVal<double>(100.0 * (double)pidParams.proportionalGain / 32767.0);
+
+        double limit = TC_GetCurrentLimit(m_serialNo);
+        m_params["currentLimit"].setVal<double>(limit);
 
         switch (TC_GetSensorType(m_serialNo))
         {
@@ -485,7 +547,8 @@ ito::RetVal ThorlabsTCubeTEC::close(ItomSharedSemaphore* waitCond)
 }
 
 //-------------------------------------------------------------------------------------
-ito::RetVal ThorlabsTCubeTEC::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond)
+ito::RetVal ThorlabsTCubeTEC::getParam(
+    QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -509,8 +572,36 @@ ito::RetVal ThorlabsTCubeTEC::getParam(QSharedPointer<ito::Param> val, ItomShare
     {
         if (key == "currentTemperature")
         {
-            val->setVal<double>((double)TC_GetTemperatureReading(m_serialNo) / 100.0);
+            it->setVal<double>((double)TC_GetTemperatureReading(m_serialNo) / 100.0);
+            *val = it.value();
             emit parametersChanged(m_params);
+        }
+        else if (key == "derivativeGain")
+        {
+            TC_LoopParameters pidParams;
+            TC_GetTempLoopParams(m_serialNo, &pidParams);
+            it->setVal<double>(100.0 * (double)pidParams.differentialGain / 32767.0);
+            *val = it.value();
+        }
+        else if (key == "integralGain")
+        {
+            TC_LoopParameters pidParams;
+            TC_GetTempLoopParams(m_serialNo, &pidParams);
+            it->setVal<double>(100.0 * (double)pidParams.integralGain / 32767.0);
+            *val = it.value();
+        }
+        else if (key == "proportionalGain")
+        {
+            TC_LoopParameters pidParams;
+            TC_GetTempLoopParams(m_serialNo, &pidParams);
+            it->setVal<double>(100.0 * (double)pidParams.proportionalGain / 32767.0);
+            *val = it.value();
+        }
+        else if (key == "currentLimit")
+        {
+            double limit = TC_GetCurrentLimit(m_serialNo);
+            it->setVal<double>(limit);
+            *val = it.value();
         }
         else
         {
@@ -528,7 +619,8 @@ ito::RetVal ThorlabsTCubeTEC::getParam(QSharedPointer<ito::Param> val, ItomShare
 }
 
 //-------------------------------------------------------------------------------------
-ito::RetVal ThorlabsTCubeTEC::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond)
+ito::RetVal ThorlabsTCubeTEC::setParam(
+    QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -557,8 +649,79 @@ ito::RetVal ThorlabsTCubeTEC::setParam(QSharedPointer<ito::ParamBase> val, ItomS
     {
         if (key == "targetTemperature")
         {
-            retValue += checkError(TC_SetTemperature(m_serialNo, val->getVal<double>() * 100.0), "TC_SetTemperature");
-            it->setVal<double>((double)TC_GetTemperatureSet(m_serialNo) / 100.0);
+            double temp = val->getVal<double>();
+            retValue +=
+                checkError(TC_SetTemperature(m_serialNo, temp * 100.0), "TC_SetTemperature");
+
+            if (!retValue.containsError())
+            {
+                it->setVal<double>(temp);
+            }
+            else
+            {
+                Sleep(300);
+                it->setVal<double>((double)TC_GetTemperatureSet(m_serialNo) / 100.0);
+            }
+        }
+        else if (key == "derivativeGain")
+        {
+            double gain = val->getVal<double>();
+
+            TC_LoopParameters pidParams;
+            TC_GetTempLoopParams(m_serialNo, &pidParams);
+            pidParams.differentialGain = 32767 * gain / 100.0;
+            
+            retValue +=
+                checkError(TC_SetTempLoopParams(m_serialNo, &pidParams), "TC_SetTempLoopParams");
+
+            if (!retValue.containsError())
+            {
+                it->setVal<double>(gain);
+            }
+        }
+        else if (key == "integralGain")
+        {
+            double gain = val->getVal<double>();
+
+            TC_LoopParameters pidParams;
+            TC_GetTempLoopParams(m_serialNo, &pidParams);
+            pidParams.integralGain = 32767 * gain / 100.0;
+
+            retValue +=
+                checkError(TC_SetTempLoopParams(m_serialNo, &pidParams), "TC_SetTempLoopParams");
+
+            if (!retValue.containsError())
+            {
+                it->setVal<double>(gain);
+            }
+        }
+        else if (key == "proportionalGain")
+        {
+            double gain = val->getVal<double>();
+
+            TC_LoopParameters pidParams;
+            TC_GetTempLoopParams(m_serialNo, &pidParams);
+            pidParams.proportionalGain = 32767 * gain / 100.0;
+
+            retValue +=
+                checkError(TC_SetTempLoopParams(m_serialNo, &pidParams), "TC_SetTempLoopParams");
+
+            if (!retValue.containsError())
+            {
+                it->setVal<double>(gain);
+            }
+        }
+        else if (key == "currentLimit")
+        {
+            double limit = val->getVal<double>();
+
+            retValue +=
+                checkError(TC_SetCurrentLimit(m_serialNo, limit), "TC_SetCurrentLimit");
+
+            if (!retValue.containsError())
+            {
+                it->setVal<double>(limit);
+            }
         }
         else
         {
@@ -584,7 +747,7 @@ ito::RetVal ThorlabsTCubeTEC::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 //-------------------------------------------------------------------------------------
 /* if a dock widget is displayed, this timer is actived to continously update
 the current temperature and emit it via parametersChanged. */
-void ThorlabsTCubeTEC::timerEvent(QTimerEvent *event)
+void ThorlabsTCubeTEC::timerEvent(QTimerEvent* event)
 {
     if (m_opened)
     {
@@ -645,36 +808,140 @@ ito::RetVal ThorlabsTCubeTEC::checkError(short value, const char* message)
     {
         switch (value)
         {
-        case 1: return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
-        case 2: return ito::RetVal::format(ito::retError, 1, "%s: The Device could not be found. This can be generated if the function TLI_BuildDeviceList() has not been called.", message);
-        case 3: return ito::RetVal::format(ito::retError, 1, "%s: The Device must be opened before it can be accessed. See the appropriate Open function for your device.", message);
-        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
-        case 5: return ito::RetVal::format(ito::retError, 1, "%s: There are Insufficient resources to run this application.", message);
-        case 6: return ito::RetVal::format(ito::retError, 1, "%s: An invalid parameter has been supplied to the device.", message);
-        case 7: return ito::RetVal::format(ito::retError, 1, "%s: The Device is no longer present. The device may have been disconnected since the last TLI_BuildDeviceList() call.", message);
-        case 8: return ito::RetVal::format(ito::retError, 1, "%s: The device detected does not match that expected.", message);
-        case 16: return ito::RetVal::format(ito::retError, 1, "%s: The library for this device could not be found.", message);
-        case 17: return ito::RetVal::format(ito::retError, 1, "%s: No functions available for this device.", message);
-        case 18: return ito::RetVal::format(ito::retError, 1, "%s: The function is not available for this device.", message);
-        case 19: return ito::RetVal::format(ito::retError, 1, "%s: Bad function pointer detected.", message);
-        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
-        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
-        case 32: return ito::RetVal::format(ito::retError, 1, "%s: Attempt to open a device that was already open.", message);
-        case 33: return ito::RetVal::format(ito::retError, 1, "%s: The device has stopped responding.", message);
-        case 34: return ito::RetVal::format(ito::retError, 1, "%s: This function has not been implemented.", message);
-        case 35: return ito::RetVal::format(ito::retError, 1, "%s: The device has reported a fault.", message);
-        case 36: return ito::RetVal::format(ito::retError, 1, "%s: The function could not be completed at this time.", message);
-        case 40: return ito::RetVal::format(ito::retError, 1, "%s: The function could not be completed because the device is disconnected.", message);
-        case 41: return ito::RetVal::format(ito::retError, 1, "%s: The firmware has thrown an error", message);
-        case 42: return ito::RetVal::format(ito::retError, 1, "%s: The device has failed to initialize", message);
-        case 43: return ito::RetVal::format(ito::retError, 1, "%s: An Invalid channel address was supplied", message);
-        case 37: return ito::RetVal::format(ito::retError, 1, "%s: The device cannot perform this function until it has been Homed.", message);
-        case 38: return ito::RetVal::format(ito::retError, 1, "%s: The function cannot be performed as it would result in an illegal position.", message);
-        case 39: return ito::RetVal::format(ito::retError, 1, "%s: An invalid velocity parameter was supplied. The velocity must be greater than zero.", message);
-        case 44: return ito::RetVal::format(ito::retError, 1, "%s: This device does not support Homing. Check the Limit switch parameters are correct.", message);
-        case 45: return ito::RetVal::format(ito::retError, 1, "%s: An invalid jog mode was supplied for the jog function.", message);
-        case 46: return ito::RetVal::format(ito::retError, 1, "%s: There is no Motor Parameters available to convert Real World Units.", message);
-        case 47: return ito::RetVal::format(ito::retError, 1, "%s: Command temporarily unavailable, Device may be busy.", message);
+        case 1:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
+        case 2:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: The Device could not be found. This can be generated if the function "
+                "TLI_BuildDeviceList() has not been called.",
+                message);
+        case 3:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: The Device must be opened before it can be accessed. See the appropriate Open "
+                "function for your device.",
+                message);
+        case 4:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
+        case 5:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: There are Insufficient resources to run this application.",
+                message);
+        case 6:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: An invalid parameter has been supplied to the device.",
+                message);
+        case 7:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: The Device is no longer present. The device may have been disconnected since "
+                "the last TLI_BuildDeviceList() call.",
+                message);
+        case 8:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The device detected does not match that expected.", message);
+        case 16:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The library for this device could not be found.", message);
+        case 17:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: No functions available for this device.", message);
+        case 18:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The function is not available for this device.", message);
+        case 19:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: Bad function pointer detected.", message);
+        case 20:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+        case 21:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+        case 32:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: Attempt to open a device that was already open.", message);
+        case 33:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The device has stopped responding.", message);
+        case 34:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: This function has not been implemented.", message);
+        case 35:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The device has reported a fault.", message);
+        case 36:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The function could not be completed at this time.", message);
+        case 40:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: The function could not be completed because the device is disconnected.",
+                message);
+        case 41:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The firmware has thrown an error", message);
+        case 42:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: The device has failed to initialize", message);
+        case 43:
+            return ito::RetVal::format(
+                ito::retError, 1, "%s: An Invalid channel address was supplied", message);
+        case 37:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: The device cannot perform this function until it has been Homed.",
+                message);
+        case 38:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: The function cannot be performed as it would result in an illegal position.",
+                message);
+        case 39:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: An invalid velocity parameter was supplied. The velocity must be greater than "
+                "zero.",
+                message);
+        case 44:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: This device does not support Homing. Check the Limit switch parameters are "
+                "correct.",
+                message);
+        case 45:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: An invalid jog mode was supplied for the jog function.",
+                message);
+        case 46:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: There is no Motor Parameters available to convert Real World Units.",
+                message);
+        case 47:
+            return ito::RetVal::format(
+                ito::retError,
+                1,
+                "%s: Command temporarily unavailable, Device may be busy.",
+                message);
         default:
             return ito::RetVal::format(
                 ito::retError, value, "%s: unknown error %i.", message, value);
