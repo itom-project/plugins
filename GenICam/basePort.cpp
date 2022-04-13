@@ -1389,9 +1389,10 @@ QVector<PfncFormat> BasePort::supportedImageFormats(QVector<int> *bitdepths /*= 
 {
     if (m_supportedFormats.size() == 0)
     {
-        m_supportedFormats      << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16 << RGB8 << YCbCr422_8;
-        m_supportedFormatsBpp   << 8     << 10     << 10           << 10      << 12     << 12           << 12      << 14     << 16     << 8    << 8;
-        m_supportedFormatsColor << 0     << 0      << 0            << 0       << 0      << 0            << 0       << 0      << 0      << 0    << 1;
+
+        m_supportedFormats      << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16 << RGB8 << YCbCr422_8 << BGR8 << BGR10p << BGR12p;
+        m_supportedFormatsBpp   << 8     << 10     << 10           << 10      << 12     << 12           << 12      << 14     << 16     << 8    << 8          << 8    << 10     << 12;
+        m_supportedFormatsColor << 0     << 0      << 0            << 0       << 0      << 0            << 0       << 0      << 0      << 1    << 1          << 1    << 1      << 1;
 
         for (int i = 0; i < m_supportedFormats.size(); ++i)
         {

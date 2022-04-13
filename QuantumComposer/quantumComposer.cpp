@@ -1,5 +1,5 @@
 /*# ********************************************************************
-    Plugin "PIPiezoControl" for itom software
+    Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
@@ -29,6 +29,7 @@
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
+#include <qelapsedtimer.h>
 #include <qmessagebox.h>
 #include <qplugin.h>
 #include <qstring.h>
@@ -101,25 +102,25 @@ QuantumComposerInterface::~QuantumComposerInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QuantumComposerInterface::getAddInInst(ito::AddInBase** addInInst)
 {
-    NEW_PLUGININSTANCE(QuantumComposer) // the argument of the macro is the classname of the plugin
+    // the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(QuantumComposer)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QuantumComposerInterface::closeThisInst(ito::AddInBase** addInInst)
 {
-    REMOVE_PLUGININSTANCE(
-        QuantumComposer) // the argument of the macro is the classname of the plugin
+    // the argument of the macro is the classname of the plugin
+    REMOVE_PLUGININSTANCE(QuantumComposer)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(
-    quantumcomposerinterface,
-    QuantumComposerInterface) // the second parameter must correspond to the class-name of the
-                              // interface class, the first parameter is arbitrary (usually the same
-                              // with small letters only)
+// the second parameter must correspond to the class-name of the
+// interface class, the first parameter is arbitrary (usually the same
+// with small letters only)
+Q_EXPORT_PLUGIN2(quantumcomposerinterface, QuantumComposerInterface)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -382,7 +383,16 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     pMand.append(channelVal);
-    ito::int32 states[8] = {0,0,0,0,0,0,0,0,};
+    ito::int32 states[8] = {
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+    };
     paramVal = ito::Param(
         "statesList",
         ito::ParamBase::IntArray | ito::ParamBase::In,
@@ -423,8 +433,7 @@ QuantumComposer::QuantumComposer() :
         ito::ParamBase::DoubleArray | ito::ParamBase::In,
         8,
         widths,
-        new ito::DoubleArrayMeta(
-            0.00000000200, 999.99999999975, 0.0, 1, 8, 1, "Channel parameter"),
+        new ito::DoubleArrayMeta(0.00000000200, 999.99999999975, 0.0, 1, 8, 1, "Channel parameter"),
         tr("List of widths to set to the channels listed in the parameter channelIndexList. List "
            "must have the same length as the parameter channelIndexList.")
             .toLatin1()
@@ -777,7 +786,8 @@ QuantumComposer::QuantumComposer() :
         pMand,
         pOpt,
         pOut,
-        tr("Set the channel pulse counter to wait until enabling output for the duty cycle modes of the "
+        tr("Set the channel pulse counter to wait until enabling output for the duty cycle modes "
+           "of the "
            "given channels.")
             .toLatin1()
             .data());
@@ -792,14 +802,13 @@ QuantumComposer::QuantumComposer() :
         "channelGateModeList",
         ito::ParamBase::StringList,
         nullptr,
-        tr("List of channel gate modes (DIS = disable, PULS = pulse inhibit, OUTP = output inhibit).")
+        tr("List of channel gate modes (DIS = disable, PULS = pulse inhibit, OUTP = output "
+           "inhibit).")
             .toLatin1()
             .data());
 
     ito::ByteArray gatesList[] = {
-        ito::ByteArray("DIS"),
-        ito::ByteArray("PULS"),
-        ito::ByteArray("OUTP")};
+        ito::ByteArray("DIS"), ito::ByteArray("PULS"), ito::ByteArray("OUTP")};
     paramVal.setVal<ito::ByteArray*>(gatesList, 3);
 
     sm = new ito::StringListMeta(ito::StringListMeta::String, 1, 8, 1, "Channel parameter");
@@ -827,12 +836,9 @@ QuantumComposer::QuantumComposer() :
         "channelGateLogicList",
         ito::ParamBase::StringList,
         nullptr,
-        tr("List of channel gate logic level (LOW, HIGH).")
-            .toLatin1()
-            .data());
+        tr("List of channel gate logic level (LOW, HIGH).").toLatin1().data());
 
-    ito::ByteArray levelList[] = {
-        ito::ByteArray("LOW"), ito::ByteArray("HIGH")};
+    ito::ByteArray levelList[] = {ito::ByteArray("LOW"), ito::ByteArray("HIGH")};
     paramVal.setVal<ito::ByteArray*>(levelList, 2);
 
     sm = new ito::StringListMeta(ito::StringListMeta::String, 1, 8, 1, "Channel parameter");
@@ -1096,7 +1102,7 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
             {
                 retValue += SendQuestionWithAnswerInteger(
                     QString(":PULSE%1:STAT?").arg(ch).toStdString().c_str(),
-                    values[ch-1],
+                    values[ch - 1],
                     m_requestTimeOutMS);
             }
             it->setVal<int*>(values, m_numChannels);
@@ -1203,7 +1209,7 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
                     m_requestTimeOutMS);
                 values[ch - 1] = answer.toStdString().c_str();
             }
-            
+
             it->setVal<ito::ByteArray*>(values, m_numChannels);
             DELETE_AND_SET_NULL_ARRAY(values);
         }
@@ -1303,7 +1309,7 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
             }
             it->setVal<int*>(values, m_numChannels);
             DELETE_AND_SET_NULL_ARRAY(values);
-        }            
+        }
         else if (key == "channelGateModeList")
         {
             ito::ByteArray* values = new ito::ByteArray[m_numChannels];
@@ -1568,7 +1574,7 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
             *curBufLen = buflen;
             retValue += m_pSer->getVal(curBuf, curBufLen, nullptr);
 
-            
+
             if (!retValue.containsError())
             {
                 result += QByteArray(curBuf.data(), *curBufLen);
@@ -1584,8 +1590,10 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
 
             if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
             {
-                retValue +=
-                    ito::RetVal(ito::retError, m_delayAfterSendCommandMS, tr("timeout during read string.").toLatin1().data());
+                retValue += ito::RetVal(
+                    ito::retError,
+                    m_delayAfterSendCommandMS,
+                    tr("timeout during read string.").toLatin1().data());
             }
         }
 
@@ -1616,7 +1624,7 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerDouble(
     retValue += ReadString(_answer, readSigns, timeoutMS);
     _answer = _answer.replace(",", ".");
     answer = _answer.toDouble(&ok);
-    
+
     if (!ok)
     {
         retValue += ito::RetVal(
@@ -1832,7 +1840,8 @@ ito::RetVal QuantumComposer::execFunc(
         ito::ParamBase* pulseCounters = nullptr;
 
         channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
-        pulseCounters = ito::getParamByName(&(*paramsMand), "channelPulseWaitCounterList", &retValue);
+        pulseCounters =
+            ito::getParamByName(&(*paramsMand), "channelPulseWaitCounterList", &retValue);
 
         if (!retValue.containsError())
         {
@@ -1845,8 +1854,7 @@ ito::RetVal QuantumComposer::execFunc(
         ito::ParamBase* gates = nullptr;
 
         channelList = ito::getParamByName(&(*paramsMand), "channelIndexList", &retValue);
-        gates =
-            ito::getParamByName(&(*paramsMand), "channelGateModeList", &retValue);
+        gates = ito::getParamByName(&(*paramsMand), "channelGateModeList", &retValue);
 
         if (!retValue.containsError())
         {
@@ -1854,7 +1862,7 @@ ito::RetVal QuantumComposer::execFunc(
         }
     }
 
-           else if (funcName == "setChannelGatesLogicLevel")
+    else if (funcName == "setChannelGatesLogicLevel")
     {
         ito::ParamBase* channelList = nullptr;
         ito::ParamBase* gates = nullptr;
@@ -1867,7 +1875,6 @@ ito::RetVal QuantumComposer::execFunc(
             retValue += QuantumComposer::setChannelGatesLogicLevel(*channelList, *gates);
         }
     }
-                      
 
 
     if (waitCond)
