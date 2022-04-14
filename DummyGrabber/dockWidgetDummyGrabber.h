@@ -36,7 +36,7 @@ class DockWidgetDummyGrabber : public ito::AbstractAddInDockWidget
     Q_OBJECT
 
     public:
-        DockWidgetDummyGrabber(ito::AddInDataIO *grabber);
+        DockWidgetDummyGrabber(ito::AddInDataIO* dataIO);
         ~DockWidgetDummyGrabber() {};
 
     private:
@@ -47,7 +47,6 @@ class DockWidgetDummyGrabber : public ito::AbstractAddInDockWidget
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
-
 
     private slots:
         void on_spinBox_offset_valueChanged(int d);

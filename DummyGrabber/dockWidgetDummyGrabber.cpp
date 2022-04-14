@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "DummyGrabber" for itom software
+    Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -23,8 +23,8 @@
 #include "dockWidgetDummyGrabber.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *grabber) :
-    AbstractAddInDockWidget(grabber),
+DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *dataIO) :
+    AbstractAddInDockWidget(dataIO),
     m_inEditing(false),
     m_firstRun(true)
 {
