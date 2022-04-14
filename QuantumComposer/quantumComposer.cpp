@@ -29,6 +29,9 @@
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
+#include "dialogQuantumComposer.h"
+#include "dockWidgetQuantumComposer.h"
+
 #include <qelapsedtimer.h>
 #include <qmessagebox.h>
 #include <qplugin.h>
@@ -857,6 +860,16 @@ QuantumComposer::QuantumComposer() :
     pMand.clear();
     pOpt.clear();
     pOut.clear();
+
+    if (hasGuiSupport())
+    {
+        // now create dock widget for this plugin
+        DockWidgetQuantumComposer* dw = new DockWidgetQuantumComposer(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable |
+            QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char*>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2451,4 +2464,36 @@ ito::RetVal QuantumComposer::setChannelGatesLogicLevel(
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void QuantumComposer::dockWidgetVisibilityChanged(bool visible)
+{
+    if (getDockWidget())
+    {
+        QWidget* widget = getDockWidget()->widget();
+        if (visible)
+        {
+            connect(
+                this,
+                SIGNAL(parametersChanged(QMap<QString, ito::Param>)),
+                widget,
+                SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            emit parametersChanged(m_params);
+        }
+        else
+        {
+            disconnect(
+                this,
+                SIGNAL(parametersChanged(QMap<QString, ito::Param>)),
+                widget,
+                SLOT(parametersChanged(QMap<QString, ito::Param>)));
+        }
+    }
+}
+
+   //----------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal QuantumComposer::showConfDialog(void)
+{
+    return apiShowConfigurationDialog(this, new DialogQuantumComposer(this));
 }

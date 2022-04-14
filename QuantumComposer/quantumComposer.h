@@ -56,19 +56,13 @@ protected:
     //! Constructor
     QuantumComposer();
 
-    // ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired
-    // picture */
-
 public:
     friend class QuantumComposerInterface;
-    // const ito::RetVal showConfDialog(void);
+    const ito::RetVal showConfDialog(void);
     int hasConfDialog(void)
     {
         return 1;
-    }; //!< indicates that this plugin has got a configuration dialog
-
-    char* bufferPtr; // this can be a pointer holding the image array from the camera. This buffer
-                     // is then copied to the dataObject m_data (defined in AddInGrabber)
+    }; 
 
 private:
     ito::AddInDataIO* m_pSer;
@@ -105,11 +99,8 @@ private:
         ito::ParamBase& channelIndicesList, ito::ParamBase& valList);
 
 public slots:
-    //!< Get Camera-Parameter
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
-    //!< Set Camera-Parameter
     ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond);
-    //!< Initialise board, load dll, allocate buffer
     ito::RetVal init(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
@@ -125,7 +116,7 @@ public slots:
         ItomSharedSemaphore* waitCond = NULL);
 
 private slots:
-    // void dockWidgetVisibilityChanged(bool visible);
+     void dockWidgetVisibilityChanged(bool visible);
 };
 
 #endif // QUANTUMCOMPOSER_H
