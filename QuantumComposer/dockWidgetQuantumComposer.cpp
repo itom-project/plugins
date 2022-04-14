@@ -34,7 +34,10 @@ DockWidgetQuantumComposer::DockWidgetQuantumComposer(ito::AddInDataIO* dataIO) :
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetQuantumComposer::parametersChanged(QMap<QString, ito::Param> params)
  {
-    
+    ui.lblManu->setText(params["manufacturer"].getVal<char*>());
+    ui.lblModel->setText(params["model"].getVal<char*>());
+    ui.lblVersion->setText(params["version"].getVal<char*>());
+    ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
 
     if (m_firstRun)
     {
@@ -53,8 +56,8 @@ void DockWidgetQuantumComposer::parametersChanged(QMap<QString, ito::Param> para
 
 //----------------------------------------------------------------------------------------------------------------------------------
  void DockWidgetQuantumComposer::identifierChanged(const QString& identifier)
- {
-    
+{
+    ui.lblID->setText(identifier);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

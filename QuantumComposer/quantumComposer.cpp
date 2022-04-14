@@ -40,14 +40,10 @@
 #include <qwaitcondition.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of Interface Class.
-/*!
-    \todo add necessary information about your plugin here.
-*/
 QuantumComposerInterface::QuantumComposerInterface()
 {
-    m_type = ito::typeDataIO | ito::typeRawIO; // any grabber is a dataIO device AND its subtype
-                                               // grabber (bitmask -> therefore the OR-combination).
+    m_type = ito::typeDataIO | ito::typeRawIO; 
+
     setObjectName("QuantumComposer");
 
     m_description = QObject::tr("QuantumComposer");
@@ -105,7 +101,6 @@ QuantumComposerInterface::~QuantumComposerInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QuantumComposerInterface::getAddInInst(ito::AddInBase** addInInst)
 {
-    // the argument of the macro is the classname of the plugin
     NEW_PLUGININSTANCE(QuantumComposer)
     return ito::retOk;
 }
@@ -113,25 +108,16 @@ ito::RetVal QuantumComposerInterface::getAddInInst(ito::AddInBase** addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QuantumComposerInterface::closeThisInst(ito::AddInBase** addInInst)
 {
-    // the argument of the macro is the classname of the plugin
     REMOVE_PLUGININSTANCE(QuantumComposer)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-// the second parameter must correspond to the class-name of the
-// interface class, the first parameter is arbitrary (usually the same
-// with small letters only)
 Q_EXPORT_PLUGIN2(quantumcomposerinterface, QuantumComposerInterface)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of plugin.
-/*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
-   remove entries from m_params in this constructor or later in the init method
-*/
 QuantumComposer::QuantumComposer() :
     AddInDataIO(), m_pSer(nullptr), m_delayAfterSendCommandMS(100), m_requestTimeOutMS(500)
 {
@@ -180,7 +166,7 @@ QuantumComposer::QuantumComposer() :
         ito::ParamBase::Int,
         m_requestTimeOutMS,
         new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "SerialIO parameter"),
-        tr("Request timeout for the SerialIO interface.").toLatin1().data());
+        tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -878,10 +864,6 @@ QuantumComposer::~QuantumComposer()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! initialization of plugin
-/*!
-    \sa close
-*/
 ito::RetVal QuantumComposer::init(
     QVector<ito::ParamBase>* paramsMand,
     QVector<ito::ParamBase>* paramsOpt,
@@ -1041,6 +1023,8 @@ ito::RetVal QuantumComposer::init(
         emit parametersChanged(m_params);
     }
 
+    setIdentifier(QString::number(getID()));
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1048,22 +1032,15 @@ ito::RetVal QuantumComposer::init(
     }
 
     setInitialized(true); // init method has been finished (independent on retval)
+    
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shutdown of plugin
-/*!
-    \sa init
-*/
 ito::RetVal QuantumComposer::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-
-    // todo:
-    //  - disconnect the device if not yet done
-    //  - this funtion is considered to be the "inverse" of init.
 
     if (waitCond)
     {
@@ -1090,8 +1067,6 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
 
     if (retValue == ito::retOk)
     {
-        // gets the parameter key from m_params map (read-only is allowed, since we only want to get
-        // the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
@@ -1385,16 +1360,11 @@ ito::RetVal QuantumComposer::setParam(
 
     if (!retValue.containsError())
     {
-        // gets the parameter key from m_params map (read-only is not allowed and leads to
-        // ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
     if (!retValue.containsError())
     {
-        // here the new parameter is checked whether its type corresponds or can be cast into the
-        //  value in m_params and whether the new type fits to the requirements of any possible
-        //  meta structure.
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
@@ -1502,16 +1472,13 @@ ito::RetVal QuantumComposer::setParam(
         }
         else
         {
-            // all parameters that don't need further checks can simply be assigned
-            // to the value in m_params (the rest is already checked above)
             retValue += it->copyValueFrom(&(*val));
         }
     }
 
     if (!retValue.containsError())
     {
-        emit parametersChanged(
-            m_params); // send changed parameters to any connected dialogs or dock-widgets
+        emit parametersChanged(m_params); 
     }
 
     if (waitCond)
@@ -1578,9 +1545,7 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
     {
         len = 0;
         timer.start();
-        _sleep(m_delayAfterSendCommandMS); // The amount of time required to receive, process, and
-                                           // repond to a command is
-        // approximately 10ms.
+        _sleep(m_delayAfterSendCommandMS); 
 
         while (!done && !retValue.containsError())
         {

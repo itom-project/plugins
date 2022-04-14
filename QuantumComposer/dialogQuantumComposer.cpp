@@ -34,7 +34,6 @@ DialogQuantumComposer::DialogQuantumComposer(ito::AddInBase* instance) :
 {
     ui.setupUi(this);
     
-    //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableGUI(false);
 };
 
@@ -46,14 +45,24 @@ DialogQuantumComposer::~DialogQuantumComposer()
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogQuantumComposer::parametersChanged(QMap<QString, ito::Param> params)
 {
+    m_currentParameters = params;
+
     if (m_firstRun)
     {
         setWindowTitle(QString(params["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+        
+        ui.spinBoxTimeout->setValue(params["requestTimeout"].getVal<int>());
+
+        ito::StringMeta* sm = (ito::StringMeta*)(params["mode"].getMeta());
+        for (int x = 0; x < sm->getLen(); x++)
+        {
+            ui.comboBoxMode->addItem(sm->getString(x));
+            int index = ui.comboBoxMode->findText(params["mode"].getVal<char*>());
+        }
 
         m_firstRun = false;
     }
-    
-    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
+
     enableGUI(true);
 
     m_currentParameters = params;
@@ -64,6 +73,27 @@ ito::RetVal DialogQuantumComposer::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
+
+    if (ui.spinBoxTimeout->isEnabled())
+    {
+        int bin = ui.spinBoxTimeout->value();
+        if (m_currentParameters["requestTimeout"].getVal<int>() != bin)
+        {
+            values.append(QSharedPointer<ito::ParamBase>(
+                new ito::ParamBase("requestTimeout", ito::ParamBase::Int, bin)));
+        }
+    }
+
+    if (ui.comboBoxMode->isEnabled())
+    {
+        QString mode = ui.comboBoxMode->currentText();
+        if (m_currentParameters["mode"].getVal<char*>() != mode)
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(
+                "mode", ito::ParamBase::String, mode.toLatin1().data())));
+        }
+    }
+
     
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
