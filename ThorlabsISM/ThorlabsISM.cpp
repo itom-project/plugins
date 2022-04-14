@@ -121,9 +121,9 @@ This plugin has been tested with the cage rotator K10CR1.");
 */
 ThorlabsISM::ThorlabsISM() :
 AddInActuator(),
-m_async(0),
-m_opened(false),
-m_additionalFactor(1.0)
+    m_async(0), 
+    m_opened(false), 
+    m_additionalFactor(1.0)
 {
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsISM", tr("Name of the plugin").toLatin1().data()));
     m_params.insert("numaxis", ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("number of axes (channels)").toLatin1().data()));
@@ -132,15 +132,73 @@ m_additionalFactor(1.0)
     m_params.insert("enabled", ito::Param("enabled", ito::ParamBase::Int, 0, 1, 1, tr("If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.").toLatin1().data()));
 
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data()));
-    m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Target speed in °/s (travelMode == %1) or mm/s (travelMode == %2)").arg(MOT_Rotational).arg(MOT_Linear).toLatin1().data()));
-    m_params.insert("accel", ito::Param("accel", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Target acceleration in °/s^2 (travelMode == %1) or mm/s^2 (travelMode == %2)").arg(MOT_Rotational).arg(MOT_Linear).toLatin1().data()));
-    m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 20.0, tr("timeout for move operations in sec").toLatin1().data()));
+    m_params.insert(
+        "speed",
+        ito::Param(
+            "speed",
+            ito::ParamBase::Double,
+            0.0,
+            std::numeric_limits<double>::infinity(),
+            0.0,
+            tr("Target speed in %1/s (travelMode == %2) or mm/s (travelMode == %3)")
+                .arg(QLatin1String("\u00B0"))
+                .arg(MOT_Rotational)
+                .arg(MOT_Linear)
+                .toLatin1()
+                .data()));
+    m_params.insert(
+        "accel",
+        ito::Param(
+            "accel",
+            ito::ParamBase::Double,
+            0.0,
+            std::numeric_limits<double>::infinity(),
+            0.0,
+            tr("Target acceleration in %1/s^2 (travelMode == %2) or mm/s^2 (travelMode == %3)")
+                .arg(QLatin1String("\u00B0"))
+                .arg(MOT_Rotational)
+                .arg(MOT_Linear)
+                .toLatin1()
+                .data()));
+    m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 60.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("homingAvailable", ito::Param("homingAvailable", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if actuator supports a home drive, else 0").toLatin1().data()));
     m_params.insert("homed", ito::Param("homed", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("1 if actuator is 'homed', else 0").toLatin1().data()));
     m_params.insert("travelMode", ito::Param("travelMode", ito::ParamBase::Int | ito::ParamBase::Readonly, MOT_TravelModeUndefined, MOT_Rotational, MOT_TravelModeUndefined, tr("travel mode: linear (%1), rotational (%2), undefined (%3)").arg(MOT_Linear).arg(MOT_Rotational).arg(MOT_TravelModeUndefined).toLatin1().data()));
-    m_params.insert("stagePosMin", ito::Param("stagePosMin", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Minimum stage position in mm (travelMode == %1) or ° (travelMode == %2). For °, given positions will be wrapped by 360°.").arg(MOT_Linear).arg(MOT_Rotational).toLatin1().data()));
-    m_params.insert("stagePosMax", ito::Param("stagePosMax", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, std::numeric_limits<double>::infinity(), 0.0, tr("Maximum stage position in mm (travelMode == %1) or ° (travelMode == %2). For °, given positions will be wrapped by 360°.").arg(MOT_Linear).arg(MOT_Rotational).toLatin1().data()));
+    m_params.insert(
+        "stagePosMin",
+        ito::Param(
+            "stagePosMin",
+            ito::ParamBase::Double | ito::ParamBase::Readonly,
+            0.0,
+            std::numeric_limits<double>::infinity(),
+            0.0,
+            tr("Minimum stage position in mm (travelMode == %1) or %2 (travelMode == %3). For "
+               "%4, given positions will be wrapped by 360%5 for absolute moves.")
+                .arg(MOT_Linear)   
+                .arg(QLatin1String("\u00B0"))
+                .arg(MOT_Rotational)
+                .arg(QLatin1String("\u00B0"))
+                .arg(QLatin1String("\u00B0"))
+                .toLatin1()
+                .data()));
+    m_params.insert(
+        "stagePosMax",
+        ito::Param(
+            "stagePosMax",
+            ito::ParamBase::Double | ito::ParamBase::Readonly,
+            0.0,
+            std::numeric_limits<double>::infinity(),
+            0.0,
+            tr("Maximum stage position in mm (travelMode == %1) or %2 (travelMode == %3). For %4, "
+               "given positions will be wrapped by 360%5 for absolute moves.")
+                .arg(MOT_Linear)
+                .arg(QLatin1String("\u00B0"))
+                .arg(MOT_Rotational)
+                .arg(QLatin1String("\u00B0"))
+                .arg(QLatin1String("\u00B0"))
+                .toLatin1()
+                .data()));
 
     m_params.insert("restCurrent", ito::Param("restCurrent", ito::ParamBase::Int, 0, 100, 20, tr("Percentage of full power to give while not moving.").toLatin1().data()));
     m_params.insert("moveCurrent", ito::Param("moveCurrent", ito::ParamBase::Int, 0, 100, 100, tr("Percentage of full power to give while moving.").toLatin1().data()));
@@ -340,8 +398,6 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["accel"].setVal<double>(deviceUnit2RealWorldUnit(accel,2));
 
 
-
-
         MOT_PowerParameters powerParams;
         retval += checkError(ISC_GetPowerParams(m_serialNo, &powerParams), "get motor power parameters");
         m_params["restCurrent"].setVal<int>(powerParams.restPercentage);
@@ -358,7 +414,7 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         retval += getStatus(status, NULL);
         
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -1024,62 +1080,41 @@ ito::RetVal ThorlabsISM::setPosRel(const int axis, const double pos, ItomSharedS
     else
     {
         QVector<int> axis_(1, 0);
-        double newRelPosition = pos; //real world unit unit
+        m_targetPos[0] = m_currentPos[0] + pos;
+        sendTargetUpdate();
 
-        if (m_params["travelMode"].getVal<int>() == MOT_Rotational)
-        {
-            double newPositionAbs = m_currentPos[0] + newRelPosition;
-            int c = newPositionAbs / 360;
-            newPositionAbs -= (c * 360);
-            if (newPositionAbs < 0.0)
-            {
-                newPositionAbs += 360.0;
-            }
-            newRelPosition = (newPositionAbs - m_currentPos[0]);
-        }
+        retval += checkError(ISC_SetMoveRelativeDistance(m_serialNo, realWorldUnit2DeviceUnit(pos, 0)), "set move relative position");
 
-        if ((m_currentPos[0] + newRelPosition) < m_params["stagePosMin"].getVal<double>() || (m_currentPos[0] + newRelPosition) > m_params["stagePosMax"].getVal<double>())
+        if (!retval.containsError())
         {
-            retval += ito::RetVal::format(ito::retError, 0, "new position out of range of stage [%f,%f].", m_params["stagePosMin"].getVal<double>(), m_params["stagePosMax"].getVal<double>());
-        }
-        else
-        {
-            m_targetPos[0] = m_currentPos[0] + newRelPosition;
-            sendTargetUpdate();
-
-            retval += checkError(ISC_SetMoveRelativeDistance(m_serialNo, realWorldUnit2DeviceUnit(newRelPosition,0)), "set move relative position");
+            retval += checkError(ISC_MoveRelativeDistance(m_serialNo), "move relative");
 
             if (!retval.containsError())
             {
-                retval += checkError(ISC_MoveRelativeDistance(m_serialNo), "move relative");
+                setStatus(axis_, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                sendStatusUpdate();
 
-                if (!retval.containsError())
-                {
-                    setStatus(axis_, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                    sendStatusUpdate();
-
-                    if (m_async && waitCond)
-                    {
-                        waitCond->returnValue = retval;
-                        waitCond->release();
-                        waitCond = NULL;
-                    }
-
-                    retval += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis_); //drops into timeout
-                }
-
-                if (!retval.containsError())
-                {
-                    replaceStatus(axis_, ito::actuatorMoving, ito::actuatorAtTarget);
-                    sendStatusUpdate();
-                }
-
-                if (!m_async && waitCond)
+                if (m_async && waitCond)
                 {
                     waitCond->returnValue = retval;
                     waitCond->release();
                     waitCond = NULL;
                 }
+
+                retval += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis_); //drops into timeout
+            }
+
+            if (!retval.containsError())
+            {
+                replaceStatus(axis_, ito::actuatorMoving, ito::actuatorAtTarget);
+                sendStatusUpdate();
+            }
+
+            if (!m_async && waitCond)
+            {
+                waitCond->returnValue = retval;
+                waitCond->release();
+                waitCond = NULL;
             }
         }
     }
