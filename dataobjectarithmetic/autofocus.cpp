@@ -177,7 +177,7 @@ result = sum(sqrt(H*H + V*V)) / numPixelsPerPlane");
     {
         ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D or 3D source image data object (u)int8, (u)int16, int32 only.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("method", ito::ParamBase::String | ito::ParamBase::In, "Brenner", tr("method used to determine the autofocus.").toLatin1().data());
+        param = ito::Param("method", ito::ParamBase::String | ito::ParamBase::In, "3x3Sobel", tr("method used to determine the autofocus.").toLatin1().data());
         ito::StringMeta sm(ito::StringMeta::String);
         sm.addItem("3x3Sobel");
         sm.addItem("3x3Scharr");
