@@ -34,22 +34,34 @@ parameters can be changed using *setParam*.
 
 **currentLimit**: {float}
     The maximum current limit in mA.
+    
+    *Value range: [0, 2000], Default: 1000*
 **currentTemperature**: {float}, read-only
     The current temperature in °C or kOhm, depending on the sensor type
+    
+    *Value range: [-45, 145], Default: -87.39*
 **derivativeGain**: {float}
-    The derivative gain term for the temperature loop parameters (0-100%).
+    The derivative gain term for the temperature loop parameters.
+    
+    *Value range: [0, 100], Default: 0.183111*
 **deviceName**: {str}, read-only
     description of the device
 **firmwareVersion**: {int}, read-only
     firmware version of the connected device
 **integralGain**: {float}
-    The integral gain term for the temperature loop parameters (0-100%).
+    The integral gain term for the temperature loop parameters.
+    
+    *Value range: [0, 100], Default: 0.0122074*
 **name**: {str}, read-only
     name of the plugin
 **pollingInterval**: {int}, read-only
     device polling interval in ms
+    
+    *Value range: [1, 10000], Default: 200*
 **proportionalGain**: {float}
-    The proportional gain term for the temperature loop parameters (1-100%).
+    The proportional gain term for the temperature loop parameters.
+    
+    *Value range: [1, 100], Default: 0.0457778*
 **sensorType**: {str}, read-only
     Connected sensor type.
 **serialNumber**: {str}, read-only
@@ -57,17 +69,19 @@ parameters can be changed using *setParam*.
 **softwareVersion**: {int}, read-only
     software version of the connected device
 **targetTemperature**: {float}
-    The current temperature in °C or kOhm, depending on the sensor type.
+    The target temperature in °C or kOhm, depending on the sensor type.
+    
+    *Value range: [-45, 145], Default: -87.39*
 
 Installation
 ============
 
-Install the Thorlabs Kinesis software and USB Drivers. 
+Install the Thorlabs Kinesis software and USB Drivers.  
 
 Usage
 ============
 
-This example shows how to initalized the device in **itom** and change the position:
+This example shows how to initialized the device in **itom** and change the position:
 
     .. code-block:: python
         

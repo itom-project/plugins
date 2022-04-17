@@ -191,7 +191,7 @@ ThorlabsTCubeTEC::ThorlabsTCubeTEC() : AddInDataIO(), m_opened(false)
             -45.0,
             200.0,
             0.0,
-            tr("The current temperature in \u00B0C or kOhm, depending on the sensor type")
+            tr("The current temperature in \xc2\xb0\x43 or kOhm, depending on the sensor type")
                 .toLatin1()
                 .data()));
 
@@ -203,7 +203,7 @@ ThorlabsTCubeTEC::ThorlabsTCubeTEC() : AddInDataIO(), m_opened(false)
             -45.0,
             200.0,
             0.0,
-            tr("The current temperature in \u00B0C or kOhm, depending on the sensor type.")
+            tr("The target temperature in \xc2\xb0\x43 or kOhm, depending on the sensor type.")
                 .toLatin1()
                 .data()));
 
