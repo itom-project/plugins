@@ -235,7 +235,9 @@ ThorlabsTCubeTEC::ThorlabsTCubeTEC() : AddInDataIO(), m_opened(false)
             1.0,
             100.0,
             1.0,
-            tr("The proportional gain term for the temperature loop parameters.").toLatin1().data()));
+            tr("The proportional gain term for the temperature loop parameters.")
+                .toLatin1()
+                .data()));
 
     m_params.insert(
         "currentLimit",
@@ -246,6 +248,16 @@ ThorlabsTCubeTEC::ThorlabsTCubeTEC() : AddInDataIO(), m_opened(false)
             2000.0,
             0.0,
             tr("The maximum current limit in mA.").toLatin1().data()));
+
+    m_params.insert(
+        "enableControl",
+        ito::Param(
+            "enableControl",
+            ito::ParamBase::Int,
+            0,
+            1,
+            1,
+            tr("Enable (1) or disable (0) cube for computer control.").toLatin1().data()));
 
     if (hasGuiSupport())
     {
@@ -435,6 +447,15 @@ ito::RetVal ThorlabsTCubeTEC::init(
 
             // start device polling at pollingInterval intervals
             TC_StartPolling(m_serialNo, m_params["pollingInterval"].getVal<int>());
+
+            if (m_params["enableControl"].getVal<int>() > 0)
+            {
+                retValue += checkError(TC_Enable(m_serialNo), "TC_Enable");
+            }
+            else
+            {
+                retValue += checkError(TC_Disable(m_serialNo), "TC_Disable");
+            }
         }
         else
         {
@@ -458,9 +479,14 @@ ito::RetVal ThorlabsTCubeTEC::init(
         TC_LoopParameters pidParams;
         TC_GetTempLoopParams(m_serialNo, &pidParams);
 
-        m_params["derivativeGain"].setVal<double>(100.0 * (double)pidParams.differentialGain / 32767.0);
-        m_params["integralGain"].setVal<double>(100.0 * (double)pidParams.integralGain / 32767.0);
-        m_params["proportionalGain"].setVal<double>(100.0 * (double)pidParams.proportionalGain / 32767.0);
+        // it seems that the documentation is wrong, and a differentialGain, integralGain,
+        // proportionalGain value of 100.0 is equal to 100%
+        m_params["derivativeGain"].setVal<double>(
+            /*100.0 * */ (double)pidParams.differentialGain); // / 32767.0);
+        m_params["integralGain"].setVal<double>(
+            /*100.0 * */ (double)pidParams.integralGain); // / 32767.0);
+        m_params["proportionalGain"].setVal<double>(
+            /*100.0 * */ (double)pidParams.proportionalGain); // / 32767.0);
 
         double limit = TC_GetCurrentLimit(m_serialNo);
         m_params["currentLimit"].setVal<double>(limit);
@@ -576,25 +602,37 @@ ito::RetVal ThorlabsTCubeTEC::getParam(
             *val = it.value();
             emit parametersChanged(m_params);
         }
+        else if (key == "targetTemperature")
+        {
+            it->setVal<double>((double)TC_GetTemperatureSet(m_serialNo) / 100.0);
+            *val = it.value();
+            emit parametersChanged(m_params);
+        }
         else if (key == "derivativeGain")
         {
             TC_LoopParameters pidParams;
             TC_GetTempLoopParams(m_serialNo, &pidParams);
-            it->setVal<double>(100.0 * (double)pidParams.differentialGain / 32767.0);
+            // it seems that the documentation is wrong, and a differentialGain value of 100.0 is
+            // equal to 100%
+            it->setVal<double>(/*100.0 * */(double)pidParams.differentialGain); // / 32767.0);
             *val = it.value();
         }
         else if (key == "integralGain")
         {
             TC_LoopParameters pidParams;
             TC_GetTempLoopParams(m_serialNo, &pidParams);
-            it->setVal<double>(100.0 * (double)pidParams.integralGain / 32767.0);
+            // it seems that the documentation is wrong, and a integralGain value of 100.0 is equal
+            // to 100%
+            it->setVal<double>(/*100.0 * */(double)pidParams.integralGain); // / 32767.0);
             *val = it.value();
         }
         else if (key == "proportionalGain")
         {
             TC_LoopParameters pidParams;
             TC_GetTempLoopParams(m_serialNo, &pidParams);
-            it->setVal<double>(100.0 * (double)pidParams.proportionalGain / 32767.0);
+            // it seems that the documentation is wrong, and a proportionalGain value of 100.0 is
+            // equal to 100%
+            it->setVal<double>(/*100.0 * */(double)pidParams.proportionalGain); // / 32767.0);
             *val = it.value();
         }
         else if (key == "currentLimit")
@@ -669,8 +707,10 @@ ito::RetVal ThorlabsTCubeTEC::setParam(
 
             TC_LoopParameters pidParams;
             TC_GetTempLoopParams(m_serialNo, &pidParams);
-            pidParams.differentialGain = 32767 * gain / 100.0;
-            
+            // it seems that the documentation is wrong, and a differentialGain value of 100.0 is
+            // equal to 100%
+            pidParams.differentialGain = /*32767 * */ gain /*/ 100.0*/;
+
             retValue +=
                 checkError(TC_SetTempLoopParams(m_serialNo, &pidParams), "TC_SetTempLoopParams");
 
@@ -685,7 +725,9 @@ ito::RetVal ThorlabsTCubeTEC::setParam(
 
             TC_LoopParameters pidParams;
             TC_GetTempLoopParams(m_serialNo, &pidParams);
-            pidParams.integralGain = 32767 * gain / 100.0;
+            // it seems that the documentation is wrong, and a integralGain value of 100.0 is equal
+            // to 100%
+            pidParams.integralGain = /*32767 **/ gain /*/ 100.0*/;
 
             retValue +=
                 checkError(TC_SetTempLoopParams(m_serialNo, &pidParams), "TC_SetTempLoopParams");
@@ -701,7 +743,9 @@ ito::RetVal ThorlabsTCubeTEC::setParam(
 
             TC_LoopParameters pidParams;
             TC_GetTempLoopParams(m_serialNo, &pidParams);
-            pidParams.proportionalGain = 32767 * gain / 100.0;
+            // it seems that the documentation is wrong, and a proportionalGain value of 100.0 is
+            // equal to 100%
+            pidParams.proportionalGain = /*32767 **/ gain /*/ 100.0*/;
 
             retValue +=
                 checkError(TC_SetTempLoopParams(m_serialNo, &pidParams), "TC_SetTempLoopParams");
@@ -715,13 +759,27 @@ ito::RetVal ThorlabsTCubeTEC::setParam(
         {
             double limit = val->getVal<double>();
 
-            retValue +=
-                checkError(TC_SetCurrentLimit(m_serialNo, limit), "TC_SetCurrentLimit");
+            retValue += checkError(TC_SetCurrentLimit(m_serialNo, limit), "TC_SetCurrentLimit");
 
             if (!retValue.containsError())
             {
                 it->setVal<double>(limit);
             }
+        }
+        else if (key == "enableControl")
+        {
+            int state = val->getVal<int>();
+
+            if (state > 0)
+            {
+                retValue += checkError(TC_Enable(m_serialNo), "enable control");
+            }
+            else
+            {
+                retValue += checkError(TC_Enable(m_serialNo), "disable control");
+            }
+
+            retValue += it->copyValueFrom(&(*val));
         }
         else
         {

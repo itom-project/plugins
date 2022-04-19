@@ -72,6 +72,10 @@ parameters can be changed using *setParam*.
     The target temperature in °C or kOhm, depending on the sensor type.
     
     *Value range: [-45, 145], Default: -87.39*
+**enableControl**: {int}
+    Enable (1) or disable (0) cube for computer control.
+    
+    *Value range: [0, 1], Default: 1*
 
 Installation
 ============
