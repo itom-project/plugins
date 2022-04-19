@@ -1,6 +1,6 @@
 /* ********************************************************************
 Plugin "ThorlabsKCubePA" for itom software
-Copyright (C) 2018, TRUMPF Laser- & Systemtechnik GmbH, Ditzingen
+Copyright (C) 2018, TRUMPF SE + Co. KG, Ditzingen
 
 This file is part of a plugin for the measurement software itom.
 

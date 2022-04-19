@@ -2,8 +2,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),,
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, TRUMPF SE + Co. KG, Ditzingen
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -79,7 +78,7 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.\
 For the USB type it is necessary to install the COM object which comes with StarLab form Ophir.\
 Download page: https://www.ophiropt.com/laser--measurement/software/com-object");
 
-    m_author = "J. Krauter, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh";
+    m_author = "J. Krauter, TRUMPF SE + Co. KG";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

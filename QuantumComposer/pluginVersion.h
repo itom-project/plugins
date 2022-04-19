@@ -1,8 +1,7 @@
 /* /*# ********************************************************************
     Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, TRUMPF SE + Co. KG, Ditzingen
 
     This file is part of a plugin for the measurement software itom.
 
@@ -32,9 +31,9 @@
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "Trumpf"
+#define PLUGIN_COMPANY        "TRUMPF SE + Co. KG, Ditzingen"
 #define PLUGIN_AUTHOR         "Johann Krauter"
-#define PLUGIN_COPYRIGHT      ""
+#define PLUGIN_COPYRIGHT      "TRUMPF SE + Co. KG"
 #define PLUGIN_NAME           "QuantumComposer"
 
 //----------------------------------------------------------------------------------------------------------------------------------
