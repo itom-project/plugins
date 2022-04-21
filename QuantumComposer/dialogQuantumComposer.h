@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "DummyGrabber" for itom software
+    Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -20,38 +20,44 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETDUMMYGRABBER_H
-#define DOCKWIDGETDUMMYGRABBER_H
+#ifndef DIALOGQUANTUMCOMPOSER_H
+#define DIALOGQUANTUMCOMPOSER_H
 
-#include "common/abstractAddInDockWidget.h"
-#include "common/addInGrabber.h"
+#include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
-#include <qmap.h>
-#include <qstring.h>
+#include "dialogQuantumComposer.h"
 
-#include "ui_dockWidgetDummyGrabber.h"
+#include "ui_dialogQuantumComposer.h" 
 
-class DockWidgetDummyGrabber : public ito::AbstractAddInDockWidget
+namespace ito
+{
+    class AddInBase; //forward declaration
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+class DialogQuantumComposer : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
-    public:
-        DockWidgetDummyGrabber(ito::AddInDataIO* dataIO);
-        ~DockWidgetDummyGrabber() {};
-
     private:
-        Ui::DockWidgetDummyGrabber ui;
-        bool m_inEditing;
+        Ui::dialogQuantumComposer ui; //! Handle to the dialog
         bool m_firstRun;
+
+        void enableGUI(bool enabled);
+
+    public:
+        DialogQuantumComposer(ito::AddInBase* actuator);
+        ~DialogQuantumComposer();
+
+        ito::RetVal applyParameters();
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
-        void identifierChanged(const QString &identifier);
+
 
     private slots:
-        void on_spinBox_offset_valueChanged(int d);
-        void on_spinBox_gain_valueChanged(int d);
-        void on_doubleSpinBox_integration_time_valueChanged(double d);
 };
 
 #endif

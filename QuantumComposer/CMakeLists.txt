@@ -1,4 +1,4 @@
-set(target_name QuantumComposer)
+set(target_name QuantumComposer) 
 
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
@@ -40,17 +40,20 @@ include_directories(
     #add further include directories here
 )
 
-link_directories(    
-)
+link_directories()
 
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/quantumComposer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogQuantumComposer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetQuantumComposer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h 
 )
 
 set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/quantumComposer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogQuantumComposer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetQuantumComposer.cpp
 )
 
 if(MSVC)

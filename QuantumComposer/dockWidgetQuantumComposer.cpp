@@ -20,10 +20,10 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dockWidgetDummyGrabber.h"
+#include "dockWidgetQuantumComposer.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *dataIO) :
+DockWidgetQuantumComposer::DockWidgetQuantumComposer(ito::AddInDataIO* dataIO) :
     AbstractAddInDockWidget(dataIO),
     m_inEditing(false),
     m_firstRun(true)
@@ -32,21 +32,15 @@ DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *dataIO) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
+void DockWidgetQuantumComposer::parametersChanged(QMap<QString, ito::Param> params)
  {
-    ui.spinBpp->setValue(params["bpp"].getVal<int>());
-    ui.spinWidth->setValue(params["sizex"].getVal<int>());
-    ui.spinHeight->setValue(params["sizey"].getVal<int>());
+    ui.lblManu->setText(params["manufacturer"].getVal<char*>());
+    ui.lblModel->setText(params["model"].getVal<char*>());
+    ui.lblVersion->setText(params["version"].getVal<char*>());
+    ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
 
     if (m_firstRun)
     {
-        ui.spinBox_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
-        ui.horizontalSlider_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
-
-        ui.spinBox_offset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
-        ui.horizontalSlider_offset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
-
-        ui.doubleSpinBox_integration_time->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
 
         m_firstRun = false;
     }
@@ -55,26 +49,19 @@ DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *dataIO) :
     {
         m_inEditing = true;
 
-        ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
-        ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-        ui.doubleSpinBox_integration_time->setSingleStep(1);
-        ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>() *1000.0);
-
-        ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-        ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
 
         m_inEditing = false;
     }
  }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::identifierChanged(const QString &identifier)
+ void DockWidgetQuantumComposer::identifierChanged(const QString& identifier)
 {
     ui.lblID->setText(identifier);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::on_spinBox_gain_valueChanged(int d)
+void DockWidgetQuantumComposer::on_spinBox_gain_valueChanged(int d)
 {
     if (!m_inEditing)
     {
@@ -86,7 +73,7 @@ void DockWidgetDummyGrabber::on_spinBox_gain_valueChanged(int d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::on_spinBox_offset_valueChanged(int d)
+void DockWidgetQuantumComposer::on_spinBox_offset_valueChanged(int d)
 {
     if (!m_inEditing)
     {
@@ -98,7 +85,7 @@ void DockWidgetDummyGrabber::on_spinBox_offset_valueChanged(int d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::on_doubleSpinBox_integration_time_valueChanged(double d)
+void DockWidgetQuantumComposer::on_doubleSpinBox_integration_time_valueChanged(double d)
 {
     if (!m_inEditing)
     {

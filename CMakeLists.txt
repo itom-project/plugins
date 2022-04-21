@@ -1,4 +1,4 @@
-project(itom_plugins) 
+project(itom_plugins)
 
 cmake_minimum_required(VERSION 3.1...3.15)
 

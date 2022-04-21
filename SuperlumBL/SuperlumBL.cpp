@@ -98,7 +98,7 @@ It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).");
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
-	paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Device name of the Superlum BroadLighter. Only S-840-B-I-20 is implemented and tested.").toLatin1().data());
+	paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::In, "S-840-B-I-20", tr("Device name of the Superlum BroadLighter. Only S-840-B-I-20 is implemented and tested.").toLatin1().data());
 	ito::StringMeta *deviceMeta = new ito::StringMeta(ito::StringMeta::String);
 	deviceMeta->addItem("S-840-B-I-20");
     paramVal.setMeta(deviceMeta, true);
@@ -507,7 +507,7 @@ ito::RetVal SuperlumBL::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     ito::RetVal retval = ito::retOk;
     QByteArray answer;
 
-    QString deviceName = paramsMand->at(1).getVal<char*>(); //working?
+    QByteArray deviceName = paramsMand->at(1).getVal<const char*>();
 
     if (deviceName == "S-840-B-I-20")
 	{
@@ -516,7 +516,7 @@ ito::RetVal SuperlumBL::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 	}
 	else
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("Device name '%s' not supported").toLatin1().data(), deviceName.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("Device name '%s' not supported").toLatin1().data(), deviceName.data());
     }
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))

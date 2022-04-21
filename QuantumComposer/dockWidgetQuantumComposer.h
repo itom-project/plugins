@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "DummyGrabber" for itom software
+    Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -20,8 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETDUMMYGRABBER_H
-#define DOCKWIDGETDUMMYGRABBER_H
+#ifndef DOCKWIDGETQUANTUMCOMPOSER_H
+#define DOCKWIDGETQUANTUMCOMPOSER_H
 
 #include "common/abstractAddInDockWidget.h"
 #include "common/addInGrabber.h"
@@ -29,24 +29,25 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetDummyGrabber.h"
+#include "ui_DockWidgetQuantumComposer.h"
 
-class DockWidgetDummyGrabber : public ito::AbstractAddInDockWidget
+class DockWidgetQuantumComposer : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetDummyGrabber(ito::AddInDataIO* dataIO);
-        ~DockWidgetDummyGrabber() {};
+        DockWidgetQuantumComposer(ito::AddInDataIO* grabber);
+        ~DockWidgetQuantumComposer(){};
 
     private:
-        Ui::DockWidgetDummyGrabber ui;
+        Ui::DockWidgetQuantumComposer ui;
         bool m_inEditing;
         bool m_firstRun;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
+
 
     private slots:
         void on_spinBox_offset_valueChanged(int d);

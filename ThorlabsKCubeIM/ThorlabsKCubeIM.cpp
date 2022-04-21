@@ -1,8 +1,7 @@
 /* ********************************************************************
     Plugin "ThorlabsISM" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2021, TRUMPF GmbH, Ditzingen
 
     This file is part of a plugin for the measurement software itom.
   
@@ -79,7 +78,7 @@ Please install the Kinesis driver package in advance with the same bit-version (
 \n\
 This plugin has been tested with the cage rotator KIM101.");
 
-    m_author = "J. Krauter, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh";
+    m_author = "J. Krauter, TRUMPF SE + Co. KG, Ditzingen";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
