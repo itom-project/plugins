@@ -1095,7 +1095,6 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
     ito::RetVal retVal(ito::retOk);
     bool done = false;
     bool timeout = false;
-    char motor;
     QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;

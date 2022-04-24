@@ -539,7 +539,6 @@ ito::RetVal ThorlabsISM::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
     QVector<QPair<int, QByteArray> > lastitError;
-    double realValue;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
