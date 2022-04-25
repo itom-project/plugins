@@ -102,6 +102,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     m_detaildescription = tr(docstring).arg(major).arg(minor);*/
     m_detaildescription = tr(
 "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
+\n\
 * UI145xSE-C (colored, USB2) \n\
 * UI124xSE-M (monochrome, USB2) \n\
 * UI224xSE-M (monochrome, USB2) \n\
