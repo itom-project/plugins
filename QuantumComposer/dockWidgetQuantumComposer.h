@@ -50,9 +50,7 @@ class DockWidgetQuantumComposer : public ito::AbstractAddInDockWidget
 
 
     private slots:
-        void on_spinBox_offset_valueChanged(int d);
-        void on_spinBox_gain_valueChanged(int d);
-        void on_doubleSpinBox_integration_time_valueChanged(double d);
+        void on_radioButtonOutput_toggled(bool checked);
 };
 
 #endif
