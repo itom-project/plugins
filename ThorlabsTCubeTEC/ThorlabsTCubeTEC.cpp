@@ -57,7 +57,7 @@ It requires the new Kinesis driver package from Thorlabs and implements the inte
 \n\
 Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. \n\
 \n\
-This plugin has been tested with ....");
+This plugin has been tested with both the simulated T-Cube TEC controller of Kinesis and a real device.");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
