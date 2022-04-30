@@ -1,25 +1,25 @@
 ===================
- FFTW Filters
+ FFTW-Filter
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`fftwFilters`
-**Type**:       :plugintype:`fftwFilters`
-**License**:    :pluginlicense:`fftwFilters`
+**Summary**:    :pluginsummary:`FFTW-Filter`
+**Type**:       :plugintype:`FFTW-Filter`
+**License**:    :pluginlicense:`FFTW-Filter`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`fftwFilters`
+**Author**:     :pluginauthor:`FFTW-Filter`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: fftwFilters
+    :plugin: FFTW-Filter
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: fftwFilters
+    :plugin: FFTW-Filter
     :overviewonly:
 
 Filters
@@ -28,7 +28,7 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: fftwFilters
+    :plugin: FFTW-Filter
 
 Changelog
 =========

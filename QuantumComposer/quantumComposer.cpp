@@ -58,14 +58,19 @@ This plugin has been developed for the 9520 series via a RS232 interface. So you
 which is a mandatory input argument of the QuantumComposer plugin. \n\
 The plugin sets the right RS232 parameter during initialization. \n\
 \n\
-Disable **Echo** of the system settings!\n\
-\n\
 The default parameters are: \n\
-* Baud Rate: 38400 (default for USB), 115200 (default for RS232)\n\
-* Data Bits: 8 \n\
-* Parity: None \n\
-* Stop Bits: 1\n\
-* endline: \\r\\n");
+\n\
+========== ======================================================\n\
+Baud Rate  38400 (default for USB), 115200 (default for RS232)\n\
+Data Bits  8\n\
+Parity     None\n\
+Stop bits  1\n\
+endline    \\r\\n\n\
+========== ======================================================\n\
+\n\
+.. warning::\n\
+\n\
+    Disable **Echo** of the system settings!");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
@@ -174,14 +179,13 @@ QuantumComposer::QuantumComposer() :
         "mode",
         ito::ParamBase::String,
         "",
-        tr("Mode of the system output. (NORM: normal, SING: single shot, BURST: burst, DCYC: duty "
+        tr("Mode of the system output. (NORM: normal, SING: single shot, BURS: burst, DCYC: duty "
            "cycle).")
             .toLatin1()
             .data());
     ito::StringMeta* sm = new ito::StringMeta(ito::StringMeta::String, "NORM", "Device parameter");
-    sm->addItem("NORM");
     sm->addItem("SING");
-    sm->addItem("BURST");
+    sm->addItem("BURS");
     sm->addItem("DCYC");
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -235,7 +239,6 @@ QuantumComposer::QuantumComposer() :
             .toLatin1()
             .data());
     sm = new ito::StringMeta(ito::StringMeta::String, "DIS", "Device parameter");
-    sm->addItem("DIS");
     sm->addItem("PULS");
     sm->addItem("OUTP");
     sm->addItem("CHAN");
@@ -633,21 +636,21 @@ QuantumComposer::QuantumComposer() :
         ito::ParamBase::StringList,
         nullptr,
         tr("List of channel modes which are set to the output for the given channels (NORM = "
-           "normal, SING = single shot, BURST = burst, DCYC = duty cycle).")
+           "normal, SING = single shot, BURS = burst, DCYC = duty cycle).")
             .toLatin1()
             .data());
 
     ito::ByteArray chModeList[] = {
         ito::ByteArray("NORM"),
         ito::ByteArray("SING"),
-        ito::ByteArray("BURST"),
+        ito::ByteArray("BURS"),
         ito::ByteArray("DCYC")};
     paramVal.setVal<ito::ByteArray*>(chModeList, 4);
 
     sm = new ito::StringListMeta(ito::StringListMeta::String, 1, 8, 1, "Channel parameter");
     sm->addItem("NORM");
     sm->addItem("SING");
-    sm->addItem("BURST");
+    sm->addItem("BURS");
     sm->addItem("DCYC");
     paramVal.setMeta(sm, true);
     pMand.append(paramVal);
@@ -975,7 +978,7 @@ ito::RetVal QuantumComposer::init(
 
             retValue +=
                 SendQuestionWithAnswerInteger(":PULSE0:OCO?", answerInt, m_requestTimeOutMS);
-            m_params["pulseCounter"].setVal<int>(answerInt);
+            m_params["offCounter"].setVal<int>(answerInt);
 
             retValue +=
                 SendQuestionWithAnswerString(":PULSE0:GAT:MOD?", answerStr, m_requestTimeOutMS);

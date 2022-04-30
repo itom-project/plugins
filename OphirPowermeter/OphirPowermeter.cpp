@@ -1113,7 +1113,7 @@ ito::RetVal OphirPowermeter::init(
                                                                      .toLatin1()
                                                                      .data());
                 }
-                catch (const _com_error& e)
+                catch (const _com_error& /*e*/)
                 {
                     m_params["calibrationDueDate"].setVal<char*>("not available");
                 }

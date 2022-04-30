@@ -3692,7 +3692,7 @@ When you want to use the cvWarpAffine method with this rotation matrix your cent
     QObject::tr("Applies an affine transformation onto a 2D dataObject.\n\
 The function warpAffine transforms the source dataObject using the specified matrix:\n\
 \n\
-dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):\n\
+.. math:: dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):\n\
 \n\
 When the flag WARP_INVERSE_MAP is set.\n\
 Otherwise, the transformation is first inverted with invertAffineTransform\n\

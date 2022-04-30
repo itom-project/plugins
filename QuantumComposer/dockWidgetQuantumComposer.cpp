@@ -41,14 +41,16 @@ void DockWidgetQuantumComposer::parametersChanged(QMap<QString, ito::Param> para
 
     if (m_firstRun)
     {
-
+        ui.radioButtonOutput->setChecked(bool(params["state"].getVal<int>()));
         m_firstRun = false;
     }
     
     if (!m_inEditing)
     {
         m_inEditing = true;
-
+        int state = params["state"].getVal<int>();
+        bool boolState = bool(state);
+        ui.radioButtonOutput->setChecked(boolState);
 
         m_inEditing = false;
     }
@@ -61,40 +63,14 @@ void DockWidgetQuantumComposer::parametersChanged(QMap<QString, ito::Param> para
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetQuantumComposer::on_spinBox_gain_valueChanged(int d)
+void DockWidgetQuantumComposer::on_radioButtonOutput_toggled(bool checked)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,d/100.0));
+        QSharedPointer<ito::ParamBase> p(
+            new ito::ParamBase("state", ito::ParamBase::Int, int(checked)));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetQuantumComposer::on_spinBox_offset_valueChanged(int d)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,d/100.0));
-        setPluginParameter(p, msgLevelWarningAndError);
-        m_inEditing = false;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetQuantumComposer::on_doubleSpinBox_integration_time_valueChanged(double d)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,d/1000.0));
-        setPluginParameter(p, msgLevelWarningAndError);
-        m_inEditing = false;
-    }
-}
-
-
-
