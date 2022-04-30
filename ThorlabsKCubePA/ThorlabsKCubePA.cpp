@@ -675,22 +675,39 @@ ito::RetVal ThorlabsKCubePA::checkError(short value, const char* message)
     {
         switch (value)
         {
-        case 1:
-            return ito::RetVal::format(ito::retError, value, "%s: The FTDI functions have not been initialized.", message);
-        case 2:
-            return ito::RetVal::format(ito::retError, value, "%s: The device could not be found.", message);
-        case 3:
-            return ito::RetVal::format(ito::retError, value, "%s: The device must be opened before it can be accessed.", message);
-		case 7:
-			return ito::RetVal::format(ito::retError, value, "%s: The Device is no longer present.", message);
-        case 37:
-            return ito::RetVal::format(ito::retError, value, "%s: The device cannot perform the function until it has been homed (call calib() before).", message);
-        case 38:
-            return ito::RetVal::format(ito::retError, value, "%s: The function cannot be performed as it would result in an illegal position.", message);
-        case 39:
-            return ito::RetVal::format(ito::retError, value, "%s: An invalid velocity parameter was supplied. The velocity must be greater than zero. ", message);
+        case 1: return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
+        case 2: return ito::RetVal::format(ito::retError, 1, "%s: The Device could not be found. This can be generated if the function TLI_BuildDeviceList() has not been called.", message);
+        case 3: return ito::RetVal::format(ito::retError, 1, "%s: The Device must be opened before it can be accessed. See the appropriate Open function for your device.", message);
+        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
+        case 5: return ito::RetVal::format(ito::retError, 1, "%s: There are Insufficient resources to run this application.", message);
+        case 6: return ito::RetVal::format(ito::retError, 1, "%s: An invalid parameter has been supplied to the device.", message);
+        case 7: return ito::RetVal::format(ito::retError, 1, "%s: The Device is no longer present. The device may have been disconnected since the last TLI_BuildDeviceList() call.", message);
+        case 8: return ito::RetVal::format(ito::retError, 1, "%s: The device detected does not match that expected.", message);
+        case 16: return ito::RetVal::format(ito::retError, 1, "%s: The library for this device could not be found.", message);
+        case 17: return ito::RetVal::format(ito::retError, 1, "%s: No functions available for this device.", message);
+        case 18: return ito::RetVal::format(ito::retError, 1, "%s: The function is not available for this device.", message);
+        case 19: return ito::RetVal::format(ito::retError, 1, "%s: Bad function pointer detected.", message);
+        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+        case 32: return ito::RetVal::format(ito::retError, 1, "%s: Attempt to open a device that was already open.", message);
+        case 33: return ito::RetVal::format(ito::retError, 1, "%s: The device has stopped responding.", message);
+        case 34: return ito::RetVal::format(ito::retError, 1, "%s: This function has not been implemented.", message);
+        case 35: return ito::RetVal::format(ito::retError, 1, "%s: The device has reported a fault.", message);
+        case 36: return ito::RetVal::format(ito::retError, 1, "%s: The function could not be completed at this time.", message);
+        case 40: return ito::RetVal::format(ito::retError, 1, "%s: The function could not be completed because the device is disconnected.", message);
+        case 41: return ito::RetVal::format(ito::retError, 1, "%s: The firmware has thrown an error", message);
+        case 42: return ito::RetVal::format(ito::retError, 1, "%s: The device has failed to initialize", message);
+        case 43: return ito::RetVal::format(ito::retError, 1, "%s: An Invalid channel address was supplied", message);
+        case 37: return ito::RetVal::format(ito::retError, 1, "%s: The device cannot perform this function until it has been Homed.", message);
+        case 38: return ito::RetVal::format(ito::retError, 1, "%s: The function cannot be performed as it would result in an illegal position.", message);
+        case 39: return ito::RetVal::format(ito::retError, 1, "%s: An invalid velocity parameter was supplied. The velocity must be greater than zero.", message);
+        case 44: return ito::RetVal::format(ito::retError, 1, "%s: This device does not support Homing. Check the Limit switch parameters are correct.", message);
+        case 45: return ito::RetVal::format(ito::retError, 1, "%s: An invalid jog mode was supplied for the jog function.", message);
+        case 46: return ito::RetVal::format(ito::retError, 1, "%s: There is no Motor Parameters available to convert Real World Units.", message);
+        case 47: return ito::RetVal::format(ito::retError, 1, "%s: Command temporarily unavailable, Device may be busy.", message);
         default:
-            return ito::RetVal::format(ito::retError, value, "%s: unknown error %i.", message, value);
+            return ito::RetVal::format(
+                ito::retError, value, "%s: unknown error %i.", message, value);
         }
     }
 }

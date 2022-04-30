@@ -1,5 +1,5 @@
-#here you give your project a unique name (replace ThorlabsFF by the desired project name of your plugin)
-set(target_name ThorlabsFF)
+#here you give your project a unique name (replace ThorlabsTEC by the desired project name of your plugin)
+set(target_name ThorlabsTCubeTEC)
 
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
@@ -29,18 +29,18 @@ include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name})
 
-set(THORLABS_KINESIS_FF_LIBNAME "Thorlabs.MotionControl.FilterFlipper")
+set(THORLABS_KINESIS_TEC_LIBNAME "Thorlabs.MotionControl.TCube.TEC")
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
 if(THORLABS_KINESIS_DIRECTORY)
     if(WIN32)
-        find_path( THORLABS_KINESIS_FF_INCLUDE_DIR "${THORLABS_KINESIS_FF_LIBNAME}.h" PATHS ${THORLABS_KINESIS_DIRECTORY})
-        find_library (THORLABS_KINESIS_FF_LIBRARY ${THORLABS_KINESIS_FF_LIBNAME} PATHS ${THORLABS_KINESIS_DIRECTORY})
+        find_path( THORLABS_KINESIS_TEC_INCLUDE_DIR "${THORLABS_KINESIS_TEC_LIBNAME}.h" PATHS ${THORLABS_KINESIS_DIRECTORY})
+        find_library (THORLABS_KINESIS_TEC_LIBRARY ${THORLABS_KINESIS_TEC_LIBNAME} PATHS ${THORLABS_KINESIS_DIRECTORY})
     endif(WIN32)
 endif(THORLABS_KINESIS_DIRECTORY)
 
-if(THORLABS_KINESIS_FF_INCLUDE_DIR)
+if(THORLABS_KINESIS_TEC_INCLUDE_DIR)
 
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 
@@ -50,7 +50,7 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
         ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
-        ${THORLABS_KINESIS_FF_INCLUDE_DIR}
+        ${THORLABS_KINESIS_TEC_INCLUDE_DIR}
     )
 
     link_directories(
@@ -58,16 +58,16 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     )
 
     set(PLUGIN_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsFF.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsFF.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsTCubeTEC.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsTCubeTEC.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
         #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsFF.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsFF.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsTCubeTEC.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsTCubeTEC.cpp
         #add further source files here
     )
 
@@ -78,7 +78,7 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     endif()
 
     set(PLUGIN_UI
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsFF.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsTCubeTEC.ui
     )
 
     set(PLUGIN_RCC
@@ -97,7 +97,7 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 
-    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${THORLABS_KINESIS_FF_LIBRARY})
+    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${THORLABS_KINESIS_TEC_LIBRARY})
 
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
     itom_library_translation(
@@ -106,7 +106,7 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
         FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
         )
 
-    itom_configure_plugin_documentation(${target_name} ThorlabsFF)
+    itom_configure_plugin_documentation(${target_name} ThorlabsTCubeTEC)
 
 
     set(COPY_SOURCES "")
@@ -118,14 +118,14 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
     set(BINARY_FILES 
-        "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.FilterFlipper.dll"
+        "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.TCube.TEC.dll"
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.DeviceManager.dll"
         "${THORLABS_KINESIS_DIRECTORY}/ftd2xx.dll"
         )
     
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
     
-else(THORLABS_KINESIS_FF_INCLUDE_DIR)
-    message(WARNING "${THORLABS_KINESIS_FF_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
-endif(THORLABS_KINESIS_FF_INCLUDE_DIR)
+else(THORLABS_KINESIS_TEC_INCLUDE_DIR)
+    message(WARNING "${THORLABS_KINESIS_TEC_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
+endif(THORLABS_KINESIS_TEC_INCLUDE_DIR)
 

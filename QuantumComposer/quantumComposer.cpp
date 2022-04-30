@@ -38,6 +38,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qwaitcondition.h>
+#include <qelapsedtimer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QuantumComposerInterface::QuantumComposerInterface()

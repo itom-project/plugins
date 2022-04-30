@@ -28,7 +28,7 @@ The following parameters are mandatory or optional for initializing an instance 
 Parameters
 ==========
 
-These parameters are available and can be used to configure the **ThorlabsKCubeIM** instance. Many of them are directly initialized by the
+These parameters are available and can be used to configure the **ThorlabsFF** instance. Many of them are directly initialized by the
 parameters of the constructor. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable
 parameters can be changed using *setParam*.
 
