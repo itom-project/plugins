@@ -75,16 +75,13 @@ public:
 
     QList<gcstring> getCommandNames() const;
 
-    inline CNodeMapRef device() const { return m_device; }
-
     void setParamsLocked(bool locked);
 
     virtual void resyncAllParameters() = 0;
 
     ito::RetVal invokeCommandNode(const gcstring &name, ito::tRetValue errorLevel = ito::retError);
 
-    //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
-    ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params, QSharedPointer<BasePort> fallbackDevice = nullptr); 
+    ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params); //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
 
     QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL, QVector<int> *colortypes = NULL);
 

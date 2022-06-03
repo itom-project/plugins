@@ -30,32 +30,60 @@ Parameters
 
 Every instance of this plugin has the following parameters:
 
-**color**: {int}
+**color**: int
     0: Red, 1: Green, 2: Blue, 3: White
-**gamma**: {int}
-    0: disable gamma correction, 1: enable gamma correction; default disable (see also 'lut')
-**lut**: {seq. of int (char)}
-    Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.
-**name**: {str}, read-only
+    
+    *Value range: [0, 3], Default: 3*
+**dObj**: dataObject
+    DataObject with pixel values to display.
+**gamma**: int
+    0: disable gamma correction, 1: enable gamma correction; default disable (see also
+    'lut')
+    
+    *Value range: [0, 1], Default: 0*
+**lut**: Sequence[int] (char)
+    Lookup table for a gamma correction with 256 values. The gamma correction itself is
+    en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by
+    lut[value]. Per default the lut is a 1:1 relation.
+**name**: str, read-only
     name of the plugin
-**numgraybits**: {int}, read-only
+**numgraybits**: int, read-only
     Number of different images: Phaseshift + GrayCode + 2
-**numimg**: {int}
+    
+    *Value range: [0, 80], Default: 5*
+**numimg**: int
     Number of current image (phase images, dark image, bright image, graycode images)
-**orientation**: {int}
+    
+    *Value range: [-1, 10], Default: 0*
+**orientation**: int
     0: vertical, 1: horizontal; default: vertical
-**period**: {int}
+    
+    *Value range: [0, 1], Default: 0*
+**period**: int
     Cosine period in pixel. This must be a multiple of 2 and the number of 'phaseshift'.
-**phaseshift**: {int}
-    Count of phase shifts. If this value is changed and the 'period' does not fit to the new value, the 'period' is adapted to the next possible value.
-**x0**: {int}
+    
+    *Value range: [4:2:4096], Default: 12*
+**phaseshift**: int
+    Count of phase shifts. If this value is changed and the 'period' does not fit to the new
+    value, the 'period' is adapted to the next possible value.
+    
+    *Value range: [3, 8], Default: 4*
+**x0**: int
     x0 position of display window [px]
-**xsize**: {int}
+    
+    *Value range: [0, 1920], Default: 1820*
+**xsize**: int
     width of window [px]
-**y0**: {int}
+    
+    *Value range: [3, 1920], Default: 100*
+**y0**: int
     y0 position of display window [px]
-**ysize**: {int}
+    
+    *Value range: [0, 1080], Default: 0*
+**ysize**: int
     height of window [px]
+    
+    *Value range: [3, 1080], Default: 100*
 
 Gamma correction
 =================

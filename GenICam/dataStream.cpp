@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -1066,6 +1066,8 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         if (pixelformat != PFNC_Mono8 && 
             pixelformat != PFNC_Mono16 &&
             pixelformat != PFNC_RGB8 &&
+            pixelformat != PFNC_BGR8 &&
+            pixelformat != PFNC_BGR12p &&
             pixelformat != PFNC_YCbCr422_8)
         {
             pSize = sizeof(temp);
@@ -1101,14 +1103,22 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         switch (pixelformat)
         {
         case PFNC_Mono8:
-        case PFNC_RGB8:
             retval += copyMono8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
+        case PFNC_RGB8:
+            retval += copyRGB8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
+        case PFNC_BGR8:
+            retval += copyBGR8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_YCbCr422_8:
             retval += copyYCbCr422ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono10:
         case PFNC_Mono12:
+        case PFNC_BGR12p:
+            retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
         case PFNC_Mono14:
         case PFNC_Mono16:
             retval += copyMono10to16ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
@@ -1125,6 +1135,9 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         case PFNC_Mono10p:
             retval += copyMono10pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
+        case PFNC_BGR10p:
+            retval += copyMono10pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
         default:
             retval += ito::RetVal::format(ito::retError, 0, "Pixel format %i (%s) is not yet supported.", pixelformat, GetPixelFormatName((PfncFormat)pixelformat));
             break;
@@ -1135,10 +1148,73 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj)
+ito::RetVal GenTLDataStream::copyMono8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj)
 {
     //little or big endian is idle for mono8:
     return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, height);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyRGB8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    cv::Mat_<ito::Rgba32>* matRes = (cv::Mat_<ito::Rgba32>*)(dobj.getCvPlaneMat(0));
+    ito::Rgba32* rowPtrDst;
+
+    rowPtrDst = matRes->ptr<ito::Rgba32>(0); // pointer of first element
+
+    // iterate rows 
+    int x;
+    int y;
+    for (y = 0; y < height; y++)
+    {
+        rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
+        for (x = 0; x < width; x++)
+        {
+            rowPtrDst[x].r = *ptr;
+            ptr++;
+            rowPtrDst[x].g = *ptr;
+            ptr++;
+            rowPtrDst[x].b = *ptr;
+            ptr++;
+            rowPtrDst[x].a = 255; 
+        }
+    }
+
+    return ito::retOk;
+}
+
+// BGR8 data to RGBa8 DataObject output
+ito::RetVal GenTLDataStream::copyBGR8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    cv::Mat_<ito::Rgba32>* matRes = (cv::Mat_<ito::Rgba32>*)(dobj.getCvPlaneMat(0));
+    ito::Rgba32* rowPtrDst;
+
+    rowPtrDst = matRes->ptr<ito::Rgba32>(0); // pointer of first element
+
+    // iterate rows
+    int x;
+    int y;
+    for (y = 0; y < height; y++)
+    {
+        rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+        for (x = 0; x < width; x++)
+        {
+            rowPtrDst[x].b = *ptr;
+            ptr++;
+            rowPtrDst[x].g = *ptr;
+            ptr++;
+            rowPtrDst[x].r = *ptr;
+            ptr++;
+            rowPtrDst[x].a = 255;
+        }
+    }
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1146,7 +1222,6 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
 {
     ito::RetVal retVal = ito::retOk;
 
-    size_t n = width * height;
     cv::Mat sourceImage = cv::Mat(height, width, CV_8UC3);
     ito::uint8* srcPtr = sourceImage.ptr<ito::uint8>(0);
 

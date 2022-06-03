@@ -144,8 +144,10 @@ tested with the following spectrometers: \
     m_autoSavePolicy = ito::autoSaveNever;
 
     ito::Param paramVal = ito::Param("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0x1992, tr("VendorID of spectrometer, 0x1992 for AvaSpec-3648, 0x471 for AvaSpec-ULS3648...").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setRepresentation(ito::ParamMeta::HexNumber);
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("ProductID", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0x0667, tr("ProductID of spectrometer, 0x0667 for spectrometer").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setRepresentation(ito::ParamMeta::HexNumber);
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("isUSB3", ito::ParamBase::Int, 0, 1, 0, tr("Indicates if the device is a USB3 device").toLatin1().data());
     m_initParamsOpt.append(paramVal);

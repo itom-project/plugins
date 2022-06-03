@@ -119,7 +119,7 @@ This fit can be executed by different fit strategies: \n\
 The probability values are only important for the least median fit and determine the number of iterations for the \n\
 a random search using the equation \n\
 \n\
-iterations >= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))");
+.. math:: iterations >= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))");
 
 RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -435,10 +435,10 @@ Depending on the orders, the fitted polynomial, whose coefficients are returned 
 \n\
     if (orderX <= orderY): \n\
     \n\
-        f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
+        .. math:: f(x,y) = \\sum_{i=0}^{orderX} \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
     \n\
-        f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
+        .. math:: f(x,y) = \\sum_{j=0}^{orderY} \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. \n\
 \n\
@@ -506,10 +506,10 @@ Depending on the orders, the fitted polynomial, whose coefficients are returned 
 \n\
     if (orderX <= orderY): \n\
     \n\
-        z = f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
+        .. math:: z = f(x,y) = \\sum_{i=0}^{orderX} \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
     \n\
-        z = f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
+        .. math:: z = f(x,y) = \\sum_{j=0}^{orderY} \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. \n\
 \n\
@@ -573,10 +573,10 @@ direction: \n\
 \n\
     if (orderX <= orderY): \n\
     \n\
-        f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
+        .. math:: f(x,y) = \\sum_{i=0}^{orderX} \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
     \n\
-        f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
+        .. math:: f(x,y) = \\sum_{j=0}^{orderY} \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.");
 
@@ -633,10 +633,10 @@ direction: \n\
 \n\
     if (orderX <= orderY): \n\
     \n\
-        f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
+        .. math:: f(x,y) = \\sum_{i=0}^{orderX} \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
     else: \n\
     \n\
-        f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
+        .. math:: f(x,y) = \\sum_{j=0}^{orderY} \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.");
 
@@ -1570,7 +1570,7 @@ template<typename _Tp> cv::Mat FittingFilters::getNaNMask(const cv::Mat* mat)
         int8* rowNaNPtr = mask.ptr<int8>(y);
         for (int x = 0; x < mat->cols; x++)
         {
-            rowNaNPtr[x] = cvIsNaN(rowPtr[x]) == true ? 255 : 0;
+            rowNaNPtr[x] = (cvIsNaN(rowPtr[x]) > 0) ? 255 : 0;
         }
     }
 

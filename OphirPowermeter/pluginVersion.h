@@ -1,8 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, TRUMPF SE + Co. KG, Ditzingen
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -38,8 +37,8 @@
     CREATE_VERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING                                                                      \
     CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY "Trumpf Lasersystems For Semiconductor Manufacturing Gmbh, Ditzingen"
-#define PLUGIN_COPYRIGHT "(C) 2020, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh"
+#define PLUGIN_COMPANY "TRUMPF SE + Co. KG, Ditzingen"
+#define PLUGIN_COPYRIGHT "(C) 2020, TRUMPF SE + Co. KG"
 #define PLUGIN_NAME "OphirPowermeter"
 
 //----------------------------------------------------------------------------------------------------------------------------------
