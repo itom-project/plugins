@@ -273,7 +273,7 @@ GLDisplay::GLDisplay() :
 
     constructionResult = ito::retOk;
 
-    //set QGLFormat
+    //set QSurfaceFormat
     QSurfaceFormat format;
 
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);

@@ -25,9 +25,7 @@
 
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 
-
 #include <qopenglwidget.h>
-#include <qopenglfunctions.h>
 #include <qvector.h>
 
 #include <qopenglfunctions.h> //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build

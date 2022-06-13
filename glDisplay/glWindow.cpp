@@ -31,13 +31,6 @@
 #include <qdir.h>
 #include <qdebug.h>
 
-//#ifdef WIN32
-//        #define NOMINMAX
-//        #include <Windows.h>
-//        #include <gl/GL.h>
-//        #include <gl/GLU.h>
-//#endif
-
 #include "common/retVal.h"
 
 #include "glWindow.h"
@@ -133,7 +126,7 @@ void GLWindow::initializeGL()
         m_glf->initializeOpenGLFunctions();
     }
 
-    glEnable(GL_DEPTH_TEST);
+    m_glf->glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
 
     // Make sure that textures are enabled.
@@ -745,12 +738,8 @@ ito::RetVal GLWindow::setCurrentTexture(const int index)
 //---------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GLWindow::setPos(const int &x, const int &y)
 {
-    repaint();
-    QRect f1 = frameGeometry();
     move(x, y);
     repaint();
-    QRect f2 = frameGeometry();
-    qDebug() << "before: " << f1 << " after: " << f2;
     return ito::retOk;
 }
 
