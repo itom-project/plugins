@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "dispWindow" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,27 +24,23 @@
 #include "dispWindow.h"
 
 #include <qmessagebox.h>
-//#include "common/addInInterface.h"
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetDispWindow::DockWidgetDispWindow(ito::AddInDataIO *dispWindow) :
-    AbstractAddInDockWidget(dispWindow),
-    m_inEditing(false),
-    m_firstRun(true),
-    m_curNumPhaseShifts(-1),
-    m_curNumGrayCodes(-1),
-    m_numimgChangeInProgress(false)
+//----------------------------------------------------------------------------------------------------
+DockWidgetDispWindow::DockWidgetDispWindow(ito::AddInDataIO* dispWindow) :
+    AbstractAddInDockWidget(dispWindow), m_inEditing(false), m_firstRun(true),
+    m_curNumPhaseShifts(-1), m_curNumGrayCodes(-1), m_numimgChangeInProgress(false)
 {
-    ui.setupUi(this); 
- }
+    ui.setupUi(this);
+}
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
 void DockWidgetDispWindow::parametersChanged(QMap<QString, ito::Param> params)
 {
     int tempNumPhaseShifts = params["phaseshift"].getVal<int>();
     int tempNumGrayCodes = params["numgraybits"].getVal<int>();
 
-    if (m_firstRun || tempNumPhaseShifts != m_curNumPhaseShifts || tempNumGrayCodes != m_curNumGrayCodes)
+    if (m_firstRun || tempNumPhaseShifts != m_curNumPhaseShifts ||
+        tempNumGrayCodes != m_curNumGrayCodes)
     {
         m_curNumPhaseShifts = tempNumPhaseShifts;
         m_curNumGrayCodes = tempNumGrayCodes;
@@ -73,7 +69,8 @@ void DockWidgetDispWindow::parametersChanged(QMap<QString, ito::Param> params)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        //check the value of all given parameters and adjust your widgets according to them (value only should be enough)
+        // check the value of all given parameters and adjust your widgets according to them (value
+        // only should be enough)
 
         ui.comboBox->setCurrentIndex(params["numimg"].getVal<int>());
 
@@ -81,20 +78,20 @@ void DockWidgetDispWindow::parametersChanged(QMap<QString, ito::Param> params)
     }
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
 void DockWidgetDispWindow::on_comboBox_currentIndexChanged(int index)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("numimg",ito::ParamBase::Int,index));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("numimg", ito::ParamBase::Int, index));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDispWindow::identifierChanged(const QString &identifier)
+//-------------------------------------------------------------------------------------
+void DockWidgetDispWindow::identifierChanged(const QString& identifier)
 {
     ui.lblID->setText(identifier);
 }
