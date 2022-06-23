@@ -259,7 +259,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 		if (!channel)
 		{
 			retValue += sendCommand(devID, "PM:CHAN 1");
-			retValue += m_params["channels"].setVal<ito::uint8>(2);
+			retValue += m_params["channels"].setVal<int>(2);
             
 
 			retValue += checkData();	
@@ -267,7 +267,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 		else
 		{
 			retValue += sendCommand(devID, "PM:CHAN 1");
-			retValue += m_params["channels"].setVal<ito::uint8>(1);
+			retValue += m_params["channels"].setVal<int>(1);
             m_params["wavelengthB"].setFlags(ito::ParamBase::Readonly);
             m_params["filterTypeB"].setFlags(ito::ParamBase::Readonly);
             m_params["attenuatorB"].setFlags(ito::ParamBase::Readonly);
@@ -765,7 +765,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
                 retValue += m_params["wavelengthA"].setVal<int>(lambda);
             }
 
-            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            if (m_params["channels"].getVal<int>() == 2)
             {
                 retValue += sendCommand(devID, "PM:CHAN 2");
 
@@ -811,7 +811,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
             {
                 retValue += m_params["attenuatorA"].setVal<int>(state);
             }
-            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            if (m_params["channels"].getVal<int>() == 2)
             {
                 memset(rBuffer, -52, sizeof(rBuffer));
                 retValue += sendCommand(devID, "PM:CHAN 2");
@@ -839,7 +839,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
                     retValue += m_params["offsetValueA"].setVal<double>(val);
                 }
             }
-            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            if (m_params["channels"].getVal<int>() == 2)
             {
                 memset(rBuffer, -52, sizeof(rBuffer));
                 retValue += sendCommand(devID, "PM:CHAN 2");
@@ -871,7 +871,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
                     retValue += m_params["filterTypeA"].setVal<int>(val);
                 }
             }
-            if (m_params["channels"].getVal<ito::uint8>() == 2)
+            if (m_params["channels"].getVal<int>() == 2)
             {
                 memset(rBuffer, -52, sizeof(rBuffer));
                 retValue += sendCommand(devID, "PM:CHAN 2");
@@ -921,7 +921,7 @@ ito::RetVal Newport2936::checkData(ito::DataObject *externalDataObject)
 	int futureType = ito::tFloat64;
 	ito::RetVal retval;
 
-	if (m_params["channels"].getVal<ito::uint8>() == 2)
+	if (m_params["channels"].getVal<int>() == 2)
 	{
 		futureWidth = 2;
 	}
