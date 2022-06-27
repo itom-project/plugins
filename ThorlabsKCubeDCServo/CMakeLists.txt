@@ -97,6 +97,8 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     
     set(BINARY_FILES 
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.KCube.DCServo.dll"
+        "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.DeviceManager.dll"
+        "${THORLABS_KINESIS_DIRECTORY}/ftd2xx.dll"
         )
     
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)

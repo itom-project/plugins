@@ -891,7 +891,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 \n\
 The function remap transforms the source image using the specified map: \n\
 \n\
-dst(x,y) = src(map_x(x, y), map_y(x, y)) \n\
+.. math:: dst(x,y) = src(map1(x, y), map2(x, y)) \n\
 \n\
 where values of pixels with non-integer coordinates are computed using one of available interpolation methods. map_x and map_y can be encoded as \n\
 separate floating-point maps in map_1 and map_2 respectively, or interleaved floating-point maps of (x,y) in map_1 , \n\

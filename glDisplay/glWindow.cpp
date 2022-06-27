@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GLDisplay" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -29,13 +29,7 @@
 #include <iostream>
 #include <qfileinfo.h>
 #include <qdir.h>
-
-#ifdef WIN32
-        #define NOMINMAX
-        #include <Windows.h>
-        #include <gl/GL.h>
-        #include <gl/GLU.h>
-#endif
+#include <qdebug.h>
 
 #include "common/retVal.h"
 
@@ -95,37 +89,28 @@ void main(void) \
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
-    : QGLWidget(format, parent, shareWidget, f), m_gammaCorrection(false),
-#if QT_VERSION >= 0x050000
+GLWindow::GLWindow(QWidget *parent, Qt::WindowFlags f)
+    : QOpenGLWidget(parent, f), m_gammaCorrection(false),
     m_init(false),
 #if _DEBUG
-    m_pLogger(NULL),
+    m_pLogger(nullptr),
 #endif
-    m_glf(NULL)
-#else
-    m_init(false)
-#endif
+    m_glf(nullptr)
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GLWindow::~GLWindow()
 {
-#if QT_VERSION >= 0x050000
 #if _DEBUG
     if (m_pLogger)
     {
         delete m_pLogger;
-        m_pLogger = NULL;
+        m_pLogger = nullptr;
     }
 #endif
-    if (m_glf)
-    {
-        delete m_glf;
-        m_glf = NULL;
-    }
-#endif
+
+    m_glf = nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -133,35 +118,15 @@ void GLWindow::initializeGL()
 {
     ito::RetVal retval;
 
-#if QT_VERSION > 0x050000
-    m_glf = new QOpenGLFunctions(context()->contextHandle());
+    // Set up the rendering context, load shaders and other resources, etc.:
+    m_glf = QOpenGLContext::currentContext()->functions();
+
     if (m_glf)
     {
         m_glf->initializeOpenGLFunctions();
     }
-#else
-    //initializeGLFunctions(); 
-#endif
 
-//OpenGL debugging in Qt5 requires a debug-context (see Qt5 help). However, this context needs to be manually created and passed
-//to the constructor of GLWindow. This is not done yet.
-//#if QT_VERSION > 0x050000 && _DEBUG
-//    
-//    m_pLogger = new QOpenGLDebugLogger( this );
-//
-//    connect( m_pLogger, SIGNAL( messageLogged( QOpenGLDebugMessage ) ),
-//             this, SLOT( onMessageLogged( QOpenGLDebugMessage ) ),
-//             Qt::DirectConnection );
-//
-//    //initialization will fail if GL_KHR_debug extension of OpenGL is not available
-//    if ( m_pLogger->initialize() ) 
-//    {
-//        m_pLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
-//        m_pLogger->enableMessages();
-//    }
-//#endif
-
-    glEnable(GL_DEPTH_TEST);
+    m_glf->glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
 
     // Make sure that textures are enabled.
@@ -170,9 +135,8 @@ void GLWindow::initializeGL()
 
     //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408
 
-    qglClearColor(Qt::white);
+    m_glf->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-#if QT_VERSION >= 0x050000
     if (shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, VERTEX_SHADER) == false)
     {
         QString log = shaderProgram.log();
@@ -189,20 +153,6 @@ void GLWindow::initializeGL()
     m_vao = new QOpenGLVertexArrayObject(this);
     m_vao->create();
     m_vao->bind();
-#else
-    if (shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER) == false)
-    {
-        QString log = shaderProgram.log();
-        qDebug() << "error adding vertex shader: " << log;
-        retval += ito::RetVal::format(ito::retError, 0, "error adding vertex shader: %s", log.toLatin1().data());
-    }
-    if (shaderProgram.addShaderFromSourceCode(QGLShader::Fragment, FRAGMENT_SHADER) == false)
-    {
-        QString log = shaderProgram.log();
-        qDebug() << "error adding fragment shader: " << log;
-        retval += ito::RetVal::format(ito::retError, 0, "error adding fragment shader: %s", log.toLatin1().data());
-    }
-#endif
     
     if (shaderProgram.link() == false)
     {
@@ -236,7 +186,6 @@ void GLWindow::initializeGL()
         shaderProgram.setUniformValue("color", QColor(Qt::white));
         shaderProgram.setUniformValue("gamma", 0);
 
-#if QT_VERSION >= 0x050000
         if (m_vertexBuffer.create())
         {
             m_vertexBuffer.setUsagePattern( QOpenGLBuffer::StaticDraw );
@@ -266,7 +215,6 @@ void GLWindow::initializeGL()
         {
             retval += ito::RetVal(ito::retError, 0, "OpenGL implementation does not support buffers or no OpenGL context available (error creating buffer)");
         }
-#endif
 
         shaderProgram.release();
     }
@@ -289,11 +237,9 @@ void GLWindow::initializeGL()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GLWindow::shutdown(ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal GLWindow::shutdown(ItomSharedSemaphore *waitCond /*= nullptr*/)
 {
-#if QT_VERSION >= 0x050000
     m_vertexBuffer.destroy();
-#endif
 
     shaderProgram.removeAllShaders();
     shaderProgram.release();
@@ -334,46 +280,48 @@ void GLWindow::paintGL()
 
     if (m_textures.size() > 0)
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        m_glf->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         m_currentTexture = qBound(0, m_currentTexture, m_textures.size() - 1);
         const TextureItem &item = m_textures[m_currentTexture];
 
         //glActiveTexture(GL_TEXTURE0); //https://bugreports.qt-project.org/browse/QTBUG-27408
-        glBindTexture(GL_TEXTURE_2D, item.texture);        
+        m_glf->glBindTexture(GL_TEXTURE_2D, item.texture);
         m_glErrors += checkGLError();
         
         if (item.textureWrapS == 0)
         {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //scaled in reality, set by texture coordinates
+            m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //scaled in reality, set by texture coordinates
         }
         else
         {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, item.textureWrapS);
+            m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, item.textureWrapS);
         }
 
         if (item.textureWrapT == 0)
         {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); //scaled in reality, set by texture coordinates
+            m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); //scaled in reality, set by texture coordinates
         }
         else
         {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, item.textureWrapT);
+            m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, item.textureWrapT);
         }
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, item.textureMinFilter);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, item.textureMagFilter);
+        m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, item.textureMinFilter);
+        m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, item.textureMagFilter);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        m_glf->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         //glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
         checkGLError();
 
         qreal scaleX = (qreal)size.width() / (qreal)item.width;
+
         if (item.textureWrapS == 0)
         {
             scaleX = 1.0;
         }
         qreal scaleY = (qreal)size.height() / (qreal)item.height;
+
         if (item.textureWrapT == 0)
         {
             scaleY = 1.0;
@@ -384,7 +332,6 @@ void GLWindow::paintGL()
         m_textureCoordinates[3].setX(scaleX);
         m_textureCoordinates[1].setX(scaleX);
 
-#if QT_VERSION >= 0x050000
         m_vao->bind();
         //m_glErrors += checkGLError();
         shaderProgram.enableAttributeArray("vertex");
@@ -393,20 +340,13 @@ void GLWindow::paintGL()
         shaderProgram.enableAttributeArray("textureCoordinate");
         shaderProgram.setAttributeBuffer("textureCoordinate", GL_FLOAT, 0, 2); //load m_textureBuffer to Shader variable 'vertex'
         m_glErrors += checkGLError();
-#else
-        shaderProgram.enableAttributeArray("vertex");
-        shaderProgram.setAttributeArray("vertex", m_vertices.constData());
-        shaderProgram.enableAttributeArray("textureCoordinate");
-        shaderProgram.setAttributeArray("textureCoordinate", m_textureCoordinates.constData());
-        m_glErrors += checkGLError();
-#endif
 
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        m_glf->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
         shaderProgram.disableAttributeArray("vertex");
         shaderProgram.disableAttributeArray("textureCoordinate");
         
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
         m_glErrors += checkGLError(); //opengl error is normal!
 
         //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
@@ -418,7 +358,7 @@ void GLWindow::paintGL()
 //----------------------------------------------------------------------------------------------------------------------------------
 //firstTextureIndex == -1: new texture(s) is/are appended to the stack
 //else: the given texture(s) replace the one stored at the given index position and following positions if a 3D data object is given as textures.
-ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, int firstTextureIndex /*= -1*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, int firstTextureIndex /*= -1*/, ItomSharedSemaphore *waitCond /*= nullptr*/)
 {
     makeCurrent();
 
@@ -428,8 +368,8 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
     m_objects.append(textures);
 
     int width, height, nrOfItems;
-    const cv::Mat *plane = NULL;
-    ito::uint32 *data = NULL;
+    const cv::Mat *plane = nullptr;
+    ito::uint32 *data = nullptr;
     const ito::uint8 *cvLinePtr;
     const ito::Rgba32 *cvLinePtrRgba;
     bool valid;
@@ -495,8 +435,8 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
 
     if (!retval.containsError())
     {
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  //black background
-        glClear(GL_COLOR_BUFFER_BIT);          //clear screen buffer
+        m_glf->glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  //black background
+        m_glf->glClear(GL_COLOR_BUFFER_BIT);          //clear screen buffer
 
         data = new ito::uint32[width*height];
 
@@ -536,7 +476,7 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
 
             if (firstTextureIndex == -1) //add texture(s)
             {
-                glGenTextures(1, &(item.texture));
+                m_glf->glGenTextures(1, &(item.texture));
                 this->checkGLError();
             }
             else //edit the given texture
@@ -544,15 +484,15 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
                 item = m_textures[firstTextureIndex + i];
             }
 
-            glBindTexture(GL_TEXTURE_2D, item.texture);
+            m_glf->glBindTexture(GL_TEXTURE_2D, item.texture);
             this->checkGLError();
 
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            m_glf->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
             this->checkGLError();
             
             qDebug() << glIsTexture(item.texture);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
             item.textureMagFilter = GL_NEAREST;
             item.textureMinFilter = GL_NEAREST;
@@ -668,14 +608,14 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
         }
 
         delete[] data;
-        data = NULL;
+        data = nullptr;
     }
 
     *nrOfTotalTextures = m_textures.size();
 
     doneCurrent();
 
-    updateGL();
+    update();
 
     if (waitCond)
     {
@@ -687,7 +627,7 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GLWindow::grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal GLWindow::grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond /*= nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
@@ -700,8 +640,8 @@ ito::RetVal GLWindow::grabFramebuffer(const QString &filename, ItomSharedSemapho
     }
     else
     {
-        updateGL();
-        QImage shot = grabFrameBuffer(false);
+        update();
+        QImage shot = QOpenGLWidget::grabFramebuffer();
         bool ok = shot.save(filepath.absoluteFilePath( finfo.fileName() ) );
 
         if (!ok)
@@ -728,7 +668,7 @@ ito::RetVal GLWindow::setColor(const QColor &color)
     shaderProgram.setUniformValue("color", color);
     shaderProgram.release();
     doneCurrent();
-    updateGL();
+    update();
     return retval;
 }
 
@@ -737,16 +677,16 @@ ito::RetVal GLWindow::setClearColor(const QColor &color)
 {
     ito::RetVal retval;
     makeCurrent();
-    qglClearColor(color);
+    m_glf->glClearColor(color.redF(), color.greenF(), color.blueF(), color.alphaF()); //  qglClearColor(color);
     doneCurrent();
-    updateGL();
+    update();
     return retval;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GLWindow::checkGLError()
 {
-    GLenum ret = glGetError();
+    GLenum ret = m_glf->glGetError();
     ito::RetVal retval;
 
     switch (ret)
@@ -791,7 +731,7 @@ ito::RetVal GLWindow::setCurrentTexture(const int index)
     makeCurrent();
     m_currentTexture = qBound(0, index, m_textures.size()-1);
     doneCurrent();
-    updateGL();
+    update();
     return ito::retOk;
 }
 
@@ -799,6 +739,7 @@ ito::RetVal GLWindow::setCurrentTexture(const int index)
 ito::RetVal GLWindow::setPos(const int &x, const int &y)
 {
     move(x, y);
+    repaint();
     return ito::retOk;
 }
 
@@ -812,6 +753,12 @@ ito::RetVal GLWindow::setSize(const int &width, const int &height)
     return retval;
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GLWindow::setPosAndSize(int x, int y, int width, int height)
+{
+    return setPos(x, y) + setSize(width, height);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GLWindow::enableGammaCorrection(bool enabled)
 {
@@ -821,7 +768,7 @@ ito::RetVal GLWindow::enableGammaCorrection(bool enabled)
     shaderProgram.setUniformValue("gamma", enabled ? 1 : 0);
     shaderProgram.release();
     doneCurrent();
-    updateGL();
+    update();
     m_gammaCorrection = enabled;
     return retval;
 }
@@ -845,11 +792,11 @@ void GLWindow::setLUT(QVector<unsigned char> &lut)
     shaderProgram.release();
     doneCurrent();
 
-    updateGL();
+    update();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GLWindow::getErrors(ItomSharedSemaphore *waitCond/* = NULL*/)
+ito::RetVal GLWindow::getErrors(ItomSharedSemaphore *waitCond/* = nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal r = m_glErrors;

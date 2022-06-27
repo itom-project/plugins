@@ -2,8 +2,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),,
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, TRUMPF SE + Co. KG, Ditzingen
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -79,7 +78,7 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.\
 For the USB type it is necessary to install the COM object which comes with StarLab form Ophir.\
 Download page: https://www.ophiropt.com/laser--measurement/software/com-object");
 
-    m_author = "J. Krauter, Trumpf Lasersystems For Semiconductor Manufacturing Gmbh";
+    m_author = "J. Krauter, TRUMPF SE + Co. KG";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
@@ -173,7 +172,7 @@ OphirPowermeter::OphirPowermeter() :
         "timeout",
         ito::Param(
             "timeout",
-            ito::ParamBase::Int | ito::ParamBase::Readonly,
+            ito::ParamBase::Int,
             0,
             100000,
             1000,
@@ -1114,7 +1113,7 @@ ito::RetVal OphirPowermeter::init(
                                                                      .toLatin1()
                                                                      .data());
                 }
-                catch (const _com_error& e)
+                catch (const _com_error& /*e*/)
                 {
                     m_params["calibrationDueDate"].setVal<char*>("not available");
                 }
@@ -1710,7 +1709,6 @@ ito::RetVal OphirPowermeter::acquire(const int trigger, ItomSharedSemaphore* wai
 
         while (!timer.hasExpired(timeout))
         {
-            Sleep(0.2);
 
             try
             {

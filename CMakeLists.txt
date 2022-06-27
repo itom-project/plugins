@@ -1,4 +1,4 @@
-project(itom_plugins) 
+project(itom_plugins)
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
@@ -414,6 +414,14 @@ if(WIN32)
     endif(PLUGIN_QCam)
 endif()
 
+# QuantumComposer
+if(WIN32)
+    option(PLUGIN_QuantumComposer "Build with this plugin." ON)
+    if(PLUGIN_QuantumComposer)
+        add_subdirectory(QuantumComposer)
+    endif(PLUGIN_QuantumComposer)
+endif()
+
 # rawImport
 option(PLUGIN_rawImport "Build with this plugin." ON)
 if(PLUGIN_rawImport)
@@ -454,23 +462,31 @@ endif()
 
 # ThorlabsBP benchtop piezo
 if(WIN32)
-    option(PLUGIN_ThorlabsBP "Build with this plugin." OFF)
+    option(PLUGIN_ThorlabsBP "Build the Thorlabs benchtop piezo plugin." OFF)
     if(PLUGIN_ThorlabsBP)
         add_subdirectory(ThorlabsBP)
     endif(PLUGIN_ThorlabsBP)
 endif()
 
-# ThorlabsFF benchtop piezo
+# ThorlabsFF filter flipper
 if(WIN32)
-    option(PLUGIN_ThorlabsFF "Build with this plugin." OFF)
+    option(PLUGIN_ThorlabsFF "Build the Thorlabs filter flipper plugin." OFF)
     if(PLUGIN_ThorlabsFF)
         add_subdirectory(ThorlabsFF)
     endif(PLUGIN_ThorlabsFF)
 endif()
 
+# ThorlabsTCubeTEC TCube TEC controller (temperature controller)
+if(WIN32)
+    option(PLUGIN_ThorlabsTCubeTEC "Build the Thorlabs TCube TEC plugin." OFF)
+    if(PLUGIN_ThorlabsTCubeTEC)
+        add_subdirectory(ThorlabsTCubeTEC)
+    endif()
+endif()
+
 # ThorlabsKCubeDCServo KCube DC Servo
 if(WIN32)
-    option(PLUGIN_ThorlabsKCubeDCServo "Build with this plugin." OFF)
+    option(PLUGIN_ThorlabsKCubeDCServo "Build the Thorlabs KCube DC Servo plugin." OFF)
     if(PLUGIN_ThorlabsKCubeDCServo)
         add_subdirectory(ThorlabsKCubeDCServo)
     endif(PLUGIN_ThorlabsKCubeDCServo)
@@ -478,7 +494,7 @@ endif()
 
 # ThorlabsKCubeIM KCube inertial motor
 if(WIN32)
-    option(PLUGIN_ThorlabsKCubeIM "Build with this plugin." OFF)
+    option(PLUGIN_ThorlabsKCubeIM "Build the Thorlabs KCube inertial motor plugin." OFF)
     if(PLUGIN_ThorlabsKCubeIM)
         add_subdirectory(ThorlabsKCubeIM)
     endif(PLUGIN_ThorlabsKCubeIM)
@@ -486,7 +502,7 @@ endif()
 
 # ThorlabsKCubePA KCube position aligner
 if(WIN32)
-    option(PLUGIN_ThorlabsKCubePA "Build with this plugin." OFF)
+    option(PLUGIN_ThorlabsKCubePA "Build the Thorlabs KCube position aligner plugin." OFF)
     if(PLUGIN_ThorlabsKCubePA)
         add_subdirectory(ThorlabsKCubePA)
     endif(PLUGIN_ThorlabsKCubePA)

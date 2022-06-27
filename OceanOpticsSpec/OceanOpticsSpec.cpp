@@ -132,8 +132,10 @@ Tested with: \
     m_autoSavePolicy = ito::autoSaveNever;
 
     ito::Param paramVal = ito::Param("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0x2457, tr("VendorID of spectrometer, 0x2457 for OceanOptics STS").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setRepresentation(ito::ParamMeta::HexNumber);
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("ProductID", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0x4000, tr("ProductID of spectrometer, 0x4000 for STS").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setRepresentation(ito::ParamMeta::HexNumber);
     m_initParamsMand.append(paramVal);
 }
 

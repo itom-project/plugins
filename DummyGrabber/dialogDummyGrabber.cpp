@@ -145,7 +145,6 @@ ito::RetVal DialogDummyGrabber::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
-    bool success = false;
 
     if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {

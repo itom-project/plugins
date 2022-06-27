@@ -79,6 +79,9 @@ target_link_libraries(${target_name} ${OpenCV_LIBS} ${QT5_LIBRARIES} ${ITOM_SDK_
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
+#documentation
+itom_configure_plugin_documentation(${target_name} dataObjectIO)
+
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")

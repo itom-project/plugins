@@ -40,18 +40,8 @@ if(THORLABS_KINESIS_BP_INCLUDE_DIR)
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
-
-
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
     itom_find_package_qt(ON Widgets Xml LinguistTools)
-
-    
-
-            
-
-    
-
-
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -118,6 +108,7 @@ if(THORLABS_KINESIS_BP_INCLUDE_DIR)
     set(BINARY_FILES 
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.Benchtop.Piezo.dll"
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.DeviceManager.dll"
+        "${THORLABS_KINESIS_DIRECTORY}/ftd2xx.dll"
         )
     
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)

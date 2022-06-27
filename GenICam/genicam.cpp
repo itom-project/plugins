@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -79,7 +79,7 @@ Indicate the right interface or leave 'interface' empty, in order to get a list 
 In order to keep this plugin compatible to other camera plugins, the additional parameters 'integration_time', 'roi', 'sizex', 'sizey', \n\
 and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Width', 'Height', 'OffsetX', 'OffsetY' or 'PixelFormat'. \n\
 \n\
-Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14, Mono16, YCbCr422_8. \n\
+Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14, Mono16, YCbCr422_8, RGB8, BGR8, BGR10p, BGR12p. \n\
 In order to operate framegrabber-based cameras (CoaXPress, Camera Link) with this plugin, please read the additional information in the \n\
 documenation of this plugin. \n\
 \n\
@@ -555,8 +555,9 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                     }
                     else
                     {
-                        retValue += m_framegrabber->syncImageParameters(m_params);
+                        retValue += m_framegrabber->syncImageParameters(m_params, m_device);
                     }
+
                     m_stream->setPayloadSize(m_device->getPayloadSize());
                     retValue += checkData();
                 }
@@ -580,8 +581,9 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                 }
                 else
                 {
-                    retValue += m_framegrabber->syncImageParameters(m_params);
+                    retValue += m_framegrabber->syncImageParameters(m_params, m_device);
                 }
+
                 m_stream->setPayloadSize(m_device->getPayloadSize());
                 retValue += checkData();
             }
@@ -603,8 +605,9 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                 }
                 else
                 {
-                    retValue += m_framegrabber->syncImageParameters(m_params);
+                    retValue += m_framegrabber->syncImageParameters(m_params, m_device);
                 }
+
                 m_stream->setPayloadSize(m_device->getPayloadSize());
                 retValue += checkData();
             }
@@ -943,7 +946,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
             {
                 m_framegrabber->setCallbackParameterChangedReceiver(this);
                 retValue += m_framegrabber->createParamsFromDevice(m_params, visibilityLevel);
-                retValue += m_framegrabber->syncImageParameters(m_params);
+                retValue += m_framegrabber->syncImageParameters(m_params, m_device);
             }
             else
             {

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GLDisplay" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -32,6 +32,7 @@
 #include <QtCore/QtPlugin>
 #include <qdesktopwidget.h>
 #include <qapplication.h>
+#include <qsurfaceformat.h>
 
 #ifndef WIN32
     #include <unistd.h>
@@ -125,7 +126,7 @@ Allowed values for these tags are: \n\
     paramVal = ito::Param("ysize", ito::ParamBase::Int, 0, 4096, 0, tr("height of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].").toLatin1().data());
+    paramVal = ito::Param("lut", ito::ParamBase::CharArray, nullptr, tr("Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 }
 
@@ -143,11 +144,10 @@ GLDisplayInterface::~GLDisplayInterface()
 *    the openGL window is opened here, based on a qgl widget.
 */
 GLDisplay::GLDisplay() :
-    m_pWindow(NULL)
+    m_pWindow(nullptr)
 {
     QDesktopWidget *qdesk = QApplication::desktop();
     int scount = qdesk->screenCount();
-//    int sprim = qdesk->primaryScreen();
     int maxwidth = 0, maxheight = 0, maxx0 = -4096, minx0 = 4096, maxy0 = -4096, miny0 = 4096;
     int defx0 = 0, defy0 = 0, defwidth = 3, defheight = 3;
     QRect geometry;
@@ -155,26 +155,32 @@ GLDisplay::GLDisplay() :
     for (int num = 0; num < scount; num++)
     {
         geometry = qdesk->screenGeometry(num);
+
         if (geometry.width() > maxwidth)
         {
             maxwidth = geometry.width();
         }
+
         if (geometry.height() > maxheight)
         {
             maxheight = geometry.height();
         }
+
         if (geometry.x() + geometry.width() > maxx0)
         {
             maxx0 = geometry.x() + geometry.width();
         }
+
         if (geometry.y() + geometry.height() > maxy0)
         {
             maxy0 = geometry.y() + geometry.height();
         }
+
         if (geometry.x() < minx0)
         {
             minx0 = geometry.x();
         }
+
         if (geometry.y() < miny0)
         {
             miny0 = geometry.y();
@@ -184,8 +190,12 @@ GLDisplay::GLDisplay() :
     if (scount > 1)
     {
         int prjscreen = 0;
+
         while (prjscreen == qdesk->primaryScreen())
+        {
             prjscreen++;
+        }
+
         geometry = qdesk->screenGeometry(prjscreen);
         defheight = geometry.height();
         defwidth = geometry.width();
@@ -206,7 +216,7 @@ GLDisplay::GLDisplay() :
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
     //register exec functions
-    QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("meanGrayValues", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("mean grey values from intensity calibration").toLatin1().data());
+    QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("meanGrayValues", ito::ParamBase::DoubleArray | ito::ParamBase::In, nullptr, tr("mean grey values from intensity calibration").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("calcLut", pMand, pOpt, pOut, tr("Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter 'lut')"));
@@ -214,7 +224,7 @@ GLDisplay::GLDisplay() :
     pMand = QVector<ito::Param>() << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("absolute filename of the file where the grabbing image should be saved").toLatin1().data());
     registerExecFunc("grabFramebuffer", pMand, pOpt, pOut, tr("grab the current OpenGL frame as image and saves it to the given filename. The image format is guessed from the suffix of the filename (default QImage formats supported)"));
 
-    pMand = QVector<ito::Param>() << ito::Param("textures", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("two or three dimensional data object with the texture(s) to add to the stack of textures.").toLatin1().data());
+    pMand = QVector<ito::Param>() << ito::Param("textures", ito::ParamBase::DObjPtr | ito::ParamBase::In, nullptr, tr("two or three dimensional data object with the texture(s) to add to the stack of textures.").toLatin1().data());
     registerExecFunc("addTextures", pMand, pOpt, pOut, tr("method to add further textures"));
 
     pMand << ito::Param("firstTextureIndex", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("first index (zero-based) of given texture that is replaced. If a 3D data object is given, the following textures are replaced, too.").toLatin1().data());
@@ -253,7 +263,7 @@ GLDisplay::GLDisplay() :
     paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("0: disable gamma correction, 1: enable gamma correction; default disable (see also 'lut')").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.").toLatin1().data());
+    paramVal = ito::Param("lut", ito::ParamBase::CharArray, nullptr, tr("Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //initialize m_lut with default values (1:1 relation)
@@ -263,60 +273,33 @@ GLDisplay::GLDisplay() :
 
     constructionResult = ito::retOk;
 
-    //set QGLFormat
-    QGLFormat::OpenGLVersionFlags glVer = QGLFormat::openGLVersionFlags();
-    QGLFormat fmt;
+    //set QSurfaceFormat
+    QSurfaceFormat format;
 
-    fmt.setDoubleBuffer(1);
-    fmt.setOverlay(0);
-    fmt.setDirectRendering(1);
-    fmt.setStereo(0);
-    fmt.setSwapInterval(1);
-    if (fmt.swapInterval() != -1)
-    {
-        fmt.setSwapInterval(0);
-    }
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setStereo(false);
+    format.setSwapInterval(1);
 
-    fmt.setProfile(QGLFormat::CoreProfile);
-
-    if (glVer.testFlag(QGLFormat::OpenGL_Version_3_1))
+    if (format.swapInterval() != -1)
     {
-        fmt.setVersion(3, 1);
-    }
-    else if (glVer.testFlag(QGLFormat::OpenGL_Version_3_0))
-    {
-        fmt.setVersion(3, 0);
-    }
-    else if (glVer.testFlag(QGLFormat::OpenGL_Version_2_1))
-    {
-        fmt.setVersion(2, 1);
-    }
-    else if (glVer.testFlag(QGLFormat::OpenGL_Version_2_0))
-    {
-        fmt.setVersion(2, 0);
-    }
-    else
-    {
-        constructionResult += ito::RetVal(ito::retError, 0, tr("Supported OpenGL Version is lower than 2.0 and therefore not supported").toLatin1().data());
+        format.setSwapInterval(0);
     }
 
-    qDebug() << fmt.majorVersion();
-    qDebug() << fmt.minorVersion();
+    format.setVersion(2, 0);
+    format.setProfile(QSurfaceFormat::CoreProfile);
 
     if (!constructionResult.containsError())
     {
-        fmt.setDepth(0);
-
-        m_pWindow = new GLWindow(fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint); //0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
-        //if (m_pWindow == NULL)
-        //{
-        //    return;
-        //}
+        m_pWindow = new GLWindow(nullptr, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+        m_pWindow->setFormat(format);
         
         m_pWindow->setCursor(Qt::BlankCursor);
         m_pWindow->setWindowTitle("GLDisplay");
         m_pWindow->move(defx0, defy0);
         m_pWindow->resize(defwidth, defheight);
+
         m_pWindow->show();
 
         if (hasGuiSupport())
@@ -325,7 +308,7 @@ GLDisplay::GLDisplay() :
             DockWidgetGLDisplay *DispWinWid = new DockWidgetGLDisplay(this);
             Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
             QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-            createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+            createDockWidget(QString(m_params["name"].getVal<const char*>()), features, areas, DispWinWid);
         }
     }
 }
@@ -551,7 +534,7 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     if (!retval.containsError())
     {
         // mandatory and optional parameters
-        if (paramsMand == NULL || paramsOpt == NULL)
+        if (paramsMand == nullptr || paramsOpt == nullptr)
         {
             retval += ito::RetVal(ito::retError, 0, tr("mandatory or optional parameters vector not initialized!!").toLatin1().data());
         }
@@ -577,6 +560,8 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
     if (!retval.containsError())
     {
+        setIdentifier(QString::number(getID()));
+
         int x0, y0, xsize, ysize;
         ito::IntMeta *roiMeta;
 
@@ -602,11 +587,12 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             m_params["y0"].setVal<int>(y0);
             m_params["xsize"].setVal<int>(xsize);
             m_params["ysize"].setVal<int>(ysize);
-            QMetaObject::invokeMethod(m_pWindow, "setPos", Q_ARG(int, x0), Q_ARG(int, y0));
-            QMetaObject::invokeMethod(m_pWindow, "setSize", Q_ARG(int, xsize), Q_ARG(int, ysize));
+            
+            QMetaObject::invokeMethod(m_pWindow, "setPosAndSize", Q_ARG(int, x0), Q_ARG(int, y0), Q_ARG(int, xsize), Q_ARG(int, ysize));
         }
 
         int lutLen = paramsOpt->at(4).getLen();
+
         if (lutLen > 0)
         {
             if (lutLen != 256)
@@ -623,8 +609,6 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Q_ARG(bool, true));
             }
         }
-
-        setIdentifier(QString::number(getID()));
     }
 
     if (waitCond)
@@ -642,10 +626,6 @@ ito::RetVal GLDisplay::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
-
-    /*ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
-    QMetaObject::invokeMethod(m_pWindow, "shutdown", Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
-    qDebug() << locker2->waitAndProcessEvents(10000);*/
 
     if (waitCond)
     {
@@ -727,9 +707,9 @@ ito::RetVal GLDisplay::interpolateLUT(QVector<double> &grayvalues, QVector<unsig
 ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue = ito::retOk;
-    ito::ParamBase *param1 = NULL;
-    ito::ParamBase *param2 = NULL;
-    ito::ParamBase *param3 = NULL;
+    ito::ParamBase *param1 = nullptr;
+    ito::ParamBase *param2 = nullptr;
+    ito::ParamBase *param3 = nullptr;
     QVector<QPair<int, QByteArray> > lastError;
 
     if (funcName == "calcLut")
@@ -821,7 +801,7 @@ ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<i
         waitCond->returnValue = retValue;
         waitCond->release();
         waitCond->deleteSemaphore();
-        waitCond = NULL;
+        waitCond = nullptr;
     }
 
     return retValue;

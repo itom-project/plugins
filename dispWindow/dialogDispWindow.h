@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "dispWindow" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,48 +23,46 @@
 #ifndef DIALOGDISPWINDOW_H
 #define DIALOGDISPWINDOW_H
 
+#include "common/abstractAddInConfigDialog.h"
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
-#include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogDispWindow.h"
 
-#include <qstring.h>
-#include <qmap.h>
 #include <qabstractbutton.h>
+#include <qmap.h>
+#include <qstring.h>
 
-namespace ito
-{
-    class AddInBase; //forward declaration
+namespace ito {
+class AddInBase; // forward declaration
 }
 
 class PrjWindow;
 
-class DialogDispWindow : public ito::AbstractAddInConfigDialog 
+class DialogDispWindow : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
-    public:
-        DialogDispWindow(ito::AddInBase *grabber, PrjWindow *prjWindow);
-        ~DialogDispWindow() {};
+public:
+    DialogDispWindow(ito::AddInBase* grabber, PrjWindow* prjWindow);
+    ~DialogDispWindow(){};
 
-        ito::RetVal applyParameters();
+    ito::RetVal applyParameters();
 
-    private:
-        bool m_firstRun;
-        bool m_inEditing;
+private:
+    bool m_firstRun;
+    bool m_inEditing;
 
-        Ui::DialogDispWindow ui;
-        PrjWindow *m_pWindow;
+    Ui::DialogDispWindow ui;
+    PrjWindow* m_pWindow;
 
-    public slots:
-        void parametersChanged(QMap<QString, ito::Param> params);
+public slots:
+    void parametersChanged(QMap<QString, ito::Param> params);
 
-    private slots:
-        void on_buttonBox_clicked(QAbstractButton* btn);
+private slots:
+    void on_buttonBox_clicked(QAbstractButton* btn);
 
-        void on_horizontalSlider_valueChanged(int value);
-
+    void on_horizontalSlider_valueChanged(int value);
 };
 
 #endif

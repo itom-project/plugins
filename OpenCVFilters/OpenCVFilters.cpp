@@ -1007,14 +1007,15 @@ ito::RetVal OpenCVFilters::cvBlur(
     retval = ito::dObjHelper::verifyDataObjectType(
         dObjImages,
         "sourceImage",
-        7,
+        8,
         ito::tInt8,
         ito::tUInt8,
         ito::tInt16,
         ito::tUInt16,
         ito::tInt32,
         ito::tFloat32,
-        ito::tFloat64);
+        ito::tFloat64,
+        ito::tRGBA32);
     if (retval.containsError())
     {
         return retval;
@@ -1378,14 +1379,15 @@ ito::RetVal OpenCVFilters::cvMedianBlur(
     retval = ito::dObjHelper::verifyDataObjectType(
         dObjImages,
         "sourceImage",
-        7,
+        8,
         ito::tInt8,
         ito::tUInt8,
         ito::tInt16,
         ito::tUInt16,
         ito::tInt32,
         ito::tFloat32,
-        ito::tFloat64);
+        ito::tFloat64,
+        ito::tRGBA32);
     if (retval.containsError())
         return retval;
 
@@ -1699,14 +1701,15 @@ ito::RetVal OpenCVFilters::cvFlip(
         retval += ito::dObjHelper::verifyDataObjectType(
             dObjImages,
             "srcImage",
-            7,
+            8,
             ito::tInt8,
             ito::tUInt8,
             ito::tInt16,
             ito::tUInt16,
             ito::tInt32,
             ito::tFloat32,
-            ito::tFloat64);
+            ito::tFloat64, 
+            ito::tRGBA32);
     }
 
     // if (planes > 0)
@@ -1908,14 +1911,15 @@ ito::RetVal OpenCVFilters::cvRotate(
         retval += ito::dObjHelper::verifyDataObjectType(
             dObjImages,
             "srcImage",
-            7,
+            8,
             ito::tInt8,
             ito::tUInt8,
             ito::tInt16,
             ito::tUInt16,
             ito::tInt32,
             ito::tFloat32,
-            ito::tFloat64);
+            ito::tFloat64,
+            ito::tRGBA32);
     }
 
     if (!retval.containsError())
@@ -2102,14 +2106,15 @@ ito::RetVal OpenCVFilters::cvRot180(
         retval += ito::dObjHelper::verifyDataObjectType(
             dObjImages,
             "srcImage",
-            7,
+            8,
             ito::tInt8,
             ito::tUInt8,
             ito::tInt16,
             ito::tUInt16,
             ito::tInt32,
             ito::tFloat32,
-            ito::tFloat64);
+            ito::tFloat64,
+            ito::tRGBA32);
     }
 
     if (!retval.containsError())
@@ -3692,7 +3697,7 @@ When you want to use the cvWarpAffine method with this rotation matrix your cent
     QObject::tr("Applies an affine transformation onto a 2D dataObject.\n\
 The function warpAffine transforms the source dataObject using the specified matrix:\n\
 \n\
-dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):\n\
+.. math:: dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):\n\
 \n\
 When the flag WARP_INVERSE_MAP is set.\n\
 Otherwise, the transformation is first inverted with invertAffineTransform\n\

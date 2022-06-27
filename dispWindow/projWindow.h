@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "dispWindow" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -20,25 +20,25 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PROJWINDOW_H
-#define PROJWINDOW_H
+#pragma once
 
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 
-#include <QtOpenGL/qgl.h>
+#include <qopenglwidget.h>
 #include <qopenglfunctions.h>
+#include <qopenglbuffer.h>
 #include <qopenglvertexarrayobject.h>
 #include "DataObject/dataobj.h"
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 
-//----------------------------------------------------------------------------------------------------------------------------------
-class PrjWindow : public QGLWidget
+//-------------------------------------------------------------------------------------
+class PrjWindow : public QOpenGLWidget
 {
     Q_OBJECT
 
     public:
-        PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &format, QWidget *parent = 0, const QGLWidget *shareWidget = 0, Qt::WindowFlags f = 0);
+        PrjWindow(const QMap<QString, ito::Param> &params, QWidget *parent = 0, Qt::WindowFlags f = 0);
         ~PrjWindow();
 
         int getNumImages(void) const;
@@ -67,7 +67,6 @@ class PrjWindow : public QGLWidget
     protected:
 
     private:
-        QGLFormat::OpenGLVersionFlags m_glVer;
         int m_isInit;
         int m_color;
         int m_grayBitsVert;
@@ -107,7 +106,7 @@ class PrjWindow : public QGLWidget
         ito::RetVal cosineInit();
         ito::RetVal graycodeInit();
         ito::RetVal setupProjection();
-        int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
+        int initOGL3(GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
             GLint &UniformTexture, GLint &UniformColor, GLuint &ArrayBufferName, GLuint &ElementBufferName);
 
         // Deleter Function
@@ -122,32 +121,28 @@ class PrjWindow : public QGLWidget
         void setPos(int xpos, int ypos);
         ito::RetVal setColor(const int col);
 
-        ito::RetVal shutDown(ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal configProjection(int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal configProjectionFull(int xpos, int sizex, int ypos, int sizey, int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal shutDown(ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal configProjection(int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal configProjectionFull(int xpos, int sizex, int ypos, int sizey, int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = nullptr);
 
         void enableInit() { if (!(m_isInit & paramsValid)) m_isInit |= paramsValid; };
         void disableInit() { m_isInit &= ~paramsValid; };
 
-        ito::RetVal showFirstImg(ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal showNextImg(ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal showFirstGrayImg(ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal showFirstCosImg(ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal showFirstImg(ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal showNextImg(ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal showFirstGrayImg(ItomSharedSemaphore *waitCond = nullptr);
+        ito::RetVal showFirstCosImg(ItomSharedSemaphore *waitCond = nullptr);
 
         ito::RetVal showImageNum(const int num);
 
-        ito::RetVal setGammaPrj(const int grayValue, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setGammaPrj(const int grayValue, ItomSharedSemaphore *waitCond = nullptr);
 
-        ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = nullptr);
 
         ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
         void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
-        ito::RetVal setDObj(ito::DataObject *dObj, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setDObj(ito::DataObject *dObj, ItomSharedSemaphore *waitCond = nullptr);
 
     private slots:
 
 };
-
-//----------------------------------------------------------------------------------------------------------------------------------
-
-#endif // PROJWINDOW_H

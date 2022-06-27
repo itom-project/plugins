@@ -33,13 +33,14 @@ parameters of the constructor. During the runtime of an instance, the value of t
 parameters can be changed using *setParam*.
 
 **accel**: {float}
-    Target acceleration in ?/s^2 (travelMode == 2) or mm/s^2 (travelMode == 1)
+    Target acceleration in °/s^2 (travelMode == 2) or mm/s^2 (travelMode == 1)
 **async**: {int}
-    asychronous (1) or sychronous (0) mode
+    asychronous (1) or synchronous (0) mode
 **deviceName**: {str}, read-only
     Description of the device
 **enabled**: {int}
-    If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.
+    If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can
+    be turned by hand.
 **homed**: {int}, read-only
     1 if actuator is 'homed', else 0
 **homingAvailable**: {int}, read-only
@@ -47,7 +48,7 @@ parameters can be changed using *setParam*.
 **moveCurrent**: {int}
     Percentage of full power to give while moving.
 **name**: {str}, read-only
-    ThorlabsISM
+    Name of the plugin
 **numaxis**: {int}, read-only
     number of axes (channels)
 **restCurrent**: {int}
@@ -55,11 +56,13 @@ parameters can be changed using *setParam*.
 **serialNumber**: {str}, read-only
     Serial number of the device
 **speed**: {float}
-    Target speed in ?/s (travelMode == 2) or mm/s (travelMode == 1)
+    Target speed in °/s (travelMode == 2) or mm/s (travelMode == 1)
 **stagePosMax**: {float}, read-only
-    Maximum stage position in mm (travelMode == 1) or ? (travelMode == 2). For ?, given positions will be wrapped by 360?.
+    Maximum stage position in mm (travelMode == 1) or ° (travelMode == 2). For °, given
+    positions will be wrapped by 360° for absolute moves.
 **stagePosMin**: {float}, read-only
-    Minimum stage position in mm (travelMode == 1) or ? (travelMode == 2). For ?, given positions will be wrapped by 360?.
+    Minimum stage position in mm (travelMode == 1) or ° (travelMode == 2). For °, given
+    positions will be wrapped by 360° for absolute moves.
 **timeout**: {float}
     timeout for move operations in sec
 **travelMode**: {int}, read-only

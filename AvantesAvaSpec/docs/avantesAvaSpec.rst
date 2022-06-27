@@ -62,7 +62,7 @@ Every acquired image will have a tag 'timestamp' defined. It contains the timest
 startup of the spectrometer.
 
 Vendor and Product ID
-================
+======================
 
 If the vendor or product ID is unknown, open the libUsb plugin and select the optional parameter "print info of all devices". This will give you a list of all usb devices connectable with libUSB.
 

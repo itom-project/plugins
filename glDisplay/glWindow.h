@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GLDisplay" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -25,8 +25,7 @@
 
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 
-
-#include <QGLWidget>
+#include <qopenglwidget.h>
 #include <qvector.h>
 
 #include <qopenglfunctions.h> //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
@@ -45,12 +44,12 @@
 #include "common/sharedStructuresQt.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class GLWindow : public QGLWidget
+class GLWindow : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-    GLWindow(const QGLFormat &format, QWidget *parent = 0, const QGLWidget *shareWidget = 0, Qt::WindowFlags f = 0);
+    GLWindow(QWidget *parent = 0, const Qt::WindowFlags f = 0);
     ~GLWindow();
 
 protected:
@@ -95,21 +94,19 @@ private:
     ito::RetVal m_glErrors;
 
 public slots:
-    ito::RetVal getErrors(ItomSharedSemaphore *waitCond = NULL);
-    ito::RetVal shutdown(ItomSharedSemaphore *waitCond = NULL);
-    ito::RetVal addOrEditTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, int firstTextureIndex = -1, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal getErrors(ItomSharedSemaphore *waitCond = nullptr);
+    ito::RetVal shutdown(ItomSharedSemaphore *waitCond = nullptr);
+    ito::RetVal addOrEditTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, int firstTextureIndex = -1, ItomSharedSemaphore *waitCond = nullptr);
     ito::RetVal setColor(const QColor &color);
     ito::RetVal setClearColor(const QColor &color);
-    ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = nullptr);
     ito::RetVal setCurrentTexture(const int index);
     ito::RetVal setPos(const int &x, const int &y);
     ito::RetVal setSize(const int &width, const int &height);
+    ito::RetVal setPosAndSize(int x, int y, int width, int height);
     ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
     void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
-
-#if QT_VERSION >= 0x050100 //do not anything to this #if line, since the moc'er cannot read this. Do not make a _DEBUG define, since this is not accepted by the moc'er either
     void onMessageLogged( QOpenGLDebugMessage message );
-#endif
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

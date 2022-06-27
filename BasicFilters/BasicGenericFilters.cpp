@@ -2681,13 +2681,13 @@ ito::RetVal BasicFilters::genericGaussianParams(QVector<ito::Param> *paramsMand,
         param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Resulting dataObject that has the same size and type than the sourceImage.").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Size of kernel in x-direction (odd values only)").toLatin1().data());
-        paramsMand->append(param);
+        paramsOpt->append(param);
         param = ito::Param("kernely", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Size of kernel in y-direction (odd values only)").toLatin1().data());
-        paramsMand->append(param);
+        paramsOpt->append(param);
         param = ito::Param("sigmaX", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
-        paramsMand->append(param);
+        paramsOpt->append(param);
         param = ito::Param("sigmaY", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in y direction").toLatin1().data());
-        paramsMand->append(param);
+        paramsOpt->append(param);
         param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1, NaN values of sourceImage will be replaced by interpolated filter values in destImage, else destImage also contains NaN values at these positions (0, default).").toLatin1().data());
         paramsOpt->append(param);
     }
@@ -2765,8 +2765,8 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
         return retval;
 
     // get the kernelsize
-    ito::int32 kernelX = (*paramsMand)[2].getVal<int>();
-    ito::int32 kernelY = (*paramsMand)[3].getVal<int>();
+    ito::int32 kernelX = (*paramsOpt)[0].getVal<int>();
+    ito::int32 kernelY = (*paramsOpt)[1].getVal<int>();
 
     if (kernelX % 2 == 0) //even
     {
@@ -2778,11 +2778,11 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
 
-    ito::float64 sigmaX = (*paramsMand)[4].getVal<double>();
-    ito::float64 sigmaY = (*paramsMand)[5].getVal<double>();
+    ito::float64 sigmaX = (*paramsOpt)[2].getVal<double>();
+    ito::float64 sigmaY = (*paramsOpt)[3].getVal<double>();
     
 
-    bool replaceNaN = (*paramsOpt)[0].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
+    bool replaceNaN = (*paramsOpt)[4].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
 
     switch(dObjSrc->getType())
     {

@@ -1,8 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, TRUMPF Laser & Systemtechnik GmbH, Ditzingen
 
     This file is part of itom and its software development toolkit (SDK).
 

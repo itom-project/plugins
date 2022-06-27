@@ -4,8 +4,8 @@ set(target_name Ximea)
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(XIMEA_BUILD_API_VERSION "4.10" CACHE STRING "Expected API version")
-set_property(CACHE XIMEA_BUILD_API_VERSION PROPERTY STRINGS 3.16 4.10 "4.15 or newer")
+set(XIMEA_BUILD_API_VERSION "4.15 or newer" CACHE STRING "Expected API version")
+set_property(CACHE XIMEA_BUILD_API_VERSION PROPERTY STRINGS "4.15 or newer" 4.10)
 option(XIMEA_BUILD_INCLUDE_SHADING "Build with shading support from API-Version" OFF)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
@@ -37,11 +37,11 @@ find_path( XIMEA_APIDIR m3Api.h DOC "XIMEA Api directory (must contain the file 
 
 if(XIMEA_APIDIR)
 
-    if(XIMEA_BUILD_API_VERSION VERSION_EQUAL "3.16")
-        add_definitions(-DUSE_API_3_16)
-    else(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.10")
+
+    if(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.10")
+        message(STATUS "USE_API_4_10 defined")
         add_definitions(-DUSE_API_4_10)
-    endif(XIMEA_BUILD_API_VERSION VERSION_EQUAL "3.16")
+    endif(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.10")
     
     message(STATUS "Ximea used API VERSION: ${XIMEA_BUILD_API_VERSION}" )
 

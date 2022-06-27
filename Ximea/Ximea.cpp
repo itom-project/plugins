@@ -225,11 +225,9 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("buffers_queue_size", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 3, 1, tr("Number of buffers in the queue.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-#if !defined(USE_API_3_16)
+
     paramVal = ito::Param("timing_mode", ito::ParamBase::Int, XI_ACQ_TIMING_MODE_FREE_RUN, XI_ACQ_TIMING_MODE_FRAME_RATE, XI_ACQ_TIMING_MODE_FREE_RUN, tr("Acquisition timing: %1: free run (default), %2: by frame rate.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
-#else
-    paramVal = ito::Param("timing_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 0, 0 , tr("Acquisition timing: not available due to old Ximea API.").toLatin1().data());
-#endif
+
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Framerate of image acquisition (in fps). This parameter reflects the current framerate. If timing_mode is in XI_ACQ_TIMING_MODE_FREE_RUN (%1, default), the framerate is readonly and fixed to the highest possible rate. For xiQ cameras only, timing_mode can be set to XI_ACQ_TIMING_MODE_FRAME_RATE (%2) and the framerate is adjustable to a fixed value.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -354,7 +352,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["sensor_type"].setVal<char*>(strBuf);
                 }
 
-#if defined(USE_API_4_10) || defined(USE_API_3_16)
+#if defined(USE_API_4_10)
 
                 char serial_number[20] = "";
                 DWORD strSize = 20 * sizeof(char);
@@ -374,7 +372,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data());
                     m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
                 }
-#endif //defined(USE_API_4_10) || defined(USE_API_3_16)
+#endif //defined(USE_API_4_10)
 
                 strBufSize = 1024 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
@@ -465,14 +463,11 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 //int availableBandwidth;
                 //retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_AVAILABLE_BANDWIDTH, &availableBandwidth, &pSize, &intType), "XI_PRM_AVAILABLE_BANDWIDTH", QString::number(availableBandwidth));
                 //std::cout << "available bandwidth: " << availableBandwidth << std::endl;
-#ifndef USE_API_3_16
-
                 if (bandwidthLimit > 0) //manually set bandwidthLimit
                 {
                     retValue += setXimeaParam(XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
                     retValue += setXimeaParam(XI_PRM_LIMIT_BANDWIDTH, bandwidthLimit);
                 }
-#endif
             }
 
             // Load parameterlist from XML-file
@@ -1000,7 +995,7 @@ ito::RetVal Ximea::LoadLib(void)
 #else
 #if _WIN64
 #if UNICODE
-#if defined(USE_API_4_10) || defined(USE_API_3_16)
+#if defined(USE_API_4_10)
     ximeaLib = LoadLibrary(L"./lib/xiapi64.dll"); //L"./lib/m3apiX64.dll");
 #else
     ximeaLib = LoadLibrary(L"./lib/xiapi64.dll"); //L"./lib/m3apiX64.dll");
@@ -1066,7 +1061,7 @@ ito::RetVal Ximea::LoadLib(void)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
 
-#if !defined(USE_API_4_10) && !defined(USE_API_3_16)
+#if defined(USE_API_4_10)
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) dlsym(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
@@ -1085,7 +1080,7 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) dlsym(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
-#endif //!defined(USE_API_4_10) && !defined(USE_API_3_16)
+#endif defined(USE_API_4_10)
 
 #else //#linux
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) GetProcAddress(ximeaLib, "xiGetNumberDevices")) == NULL)
@@ -1112,7 +1107,7 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
-#if !defined(USE_API_4_10) && !defined(USE_API_3_16)
+#if defined(USE_API_4_10)
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
@@ -1131,7 +1126,7 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
-#endif //!defined(USE_API_4_10) && !defined(USE_API_3_16)
+#endif //!defined(USE_API_4_10)
         
 #endif //linux
     }
@@ -1370,32 +1365,9 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
             int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
             int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
-#ifdef USE_API_3_16
-            if (enable)
-            {
-                integration_time += integration_time / 4;
-                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType)))
-                retValue += getErrStr(pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), intType), "XI_PRM_INFO", QString::number(enable));
-                retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &intSize, &intType), "XI_PRM_INFO", QString::number(enable)); 
-
-                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), intType)))
-                //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), intType)))
-                //{
-                //    retValue += getErrStr(ret, "XI_PRM_HDR_RATIO", QString::number(knee1));
-                //}
-                retValue += getErrStr(pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType), "XI_PRM_EXPOSURE", QString::number(integration_time));
-            }
-            else
-            {
-                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType)))
-                retValue += getErrStr(pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), intType), "XI_PRM_HDR", QString::number(enable));
-                retValue += getErrStr(pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType), "XI_PRM_EXPOSURE", QString::number(integration_time));
-            }
-#else  
             retValue += checkError(pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType), XI_PRM_HDR, QString::number(enable));
             if (!retValue.containsError())
                 it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-#endif
         }
         else if (QString::compare(key, "hdr_it1", Qt::CaseInsensitive) == 0)
         {

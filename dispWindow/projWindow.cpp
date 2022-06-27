@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "dispWindow" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -20,46 +20,36 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 #ifndef WIN32
-    #include <unistd.h>
+#include <unistd.h>
 #endif
 
+#include <iostream>
+#include <qdir.h>
 #include <qevent.h>
+#include <qfileinfo.h>
+#include <qimage.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <iostream>
-#include <qfileinfo.h>
-#include <qdir.h>
-#include <qimage.h>
-
-#if (defined WIN32)
-        #define NOMINMAX
-        #include <Windows.h>
-        #include <gl/GL.h>
-        #include <gl/GLU.h>
-#endif
-
-#ifdef __APPLE__
-    #include <OpenGL/gl.h>
-    #include <OpenGL/glu.h>
-#endif
 
 #include "projWindow.h"
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//CAREFUL: With NVIDIA drivers >~ 347.xx, no command at all may stay before the #version directive (even no line break or spaces).
-//         else, it will lead to the C0204 error (version directive must be first statement and must not be repeated)
+//-------------------------------------------------------------------------------------
+// CAREFUL: With NVIDIA drivers >~ 347.xx, no command at all may stay before the #version directive
+// (even no line break or spaces).
+//         else, it will lead to the C0204 error (version directive must be first statement and must
+//         not be repeated)
 
-    const GLint POSITION = 0;
-    GLsizei const ElementCount = 6; //was 4 for GL_QUAD
-    
-    //! fragment and vertex shaders for gl v2 and gl v3
-    //! the fragment shader multiplies input vertices with the transformation matrix MVP, the
-    //! fragment shader calculates the texture pixel (and color) for each pixel. In addition a 
-    //! gamma correction can be applied using a simple lookup vektor (lutarr)
-    
-    const char *VERTEX_SHADER_SOURCE = "#version 110\n\
+const GLint POSITION = 0;
+GLsizei const ElementCount = 6; // was 4 for GL_QUAD
+
+//! fragment and vertex shaders for gl v2 and gl v3
+//! the fragment shader multiplies input vertices with the transformation matrix MVP, the
+//! fragment shader calculates the texture pixel (and color) for each pixel. In addition a
+//! gamma correction can be applied using a simple lookup vektor (lutarr)
+
+const char* VERTEX_SHADER_SOURCE = "#version 110\n\
                                     \
     uniform mat4 MVP;               \
     attribute vec4 position;        \
@@ -72,7 +62,7 @@
     }                               \
     ";
 
-    const char *VERTEX_SHADER_SOURCE130 = "#version 130\n\
+const char* VERTEX_SHADER_SOURCE130 = "#version 130\n\
                                     \
     uniform mat4 MVP;               \
     in vec4 position;               \
@@ -85,7 +75,7 @@
     }                               \
     ";
 
-    const char *FRAGMENT_SHADER_SOURCE = "#version 110\n\
+const char* FRAGMENT_SHADER_SOURCE = "#version 110\n\
                                         \
     uniform sampler2D textureObject;          \
     uniform int gamma;                  \
@@ -108,7 +98,7 @@
     }                                   \
     ";
 
-    const char *FRAGMENT_SHADER_SOURCE130 = "#version 130\n\
+const char* FRAGMENT_SHADER_SOURCE130 = "#version 130\n\
                                         \
     uniform sampler2D textureObject;          \
     uniform int gamma;                  \
@@ -132,56 +122,67 @@
     }                                   \
     ";
 
-    //texture2d is deprecated since shader language 1.3 (version 130), use texture instead
+// texture2d is deprecated since shader language 1.3 (version 130), use texture instead
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** initialize openGL (above version two - i.e. using vertex and fragment shaders)
-*    @param [in]        glVer        openGL version
-*    @param [out]     ProgramName        reference to shader program on the gpu
-*    @param [out]    UniformMVP        reference to transformation matrix on the gpu
-*    @param [out]     UniformLut        reference to lookup table memory on the gpu
-*    @param [out]     UniformGamma     reference to gamma flag (gpu)
-*    @param [out]    UniformTexture     reference to texture buffer (gpu)
-*    @param [out]    ArrayBufferName reference to array buffer (gpu)
-*    @param [out]    ElementBufferName reference to element buffer (array buffer alignment) (gpu) 
-*    @return        zero for no error, openGL error code otherwise
-*
-*    the function tries to compile the vertex and fragment shader code and to link the shader program. Afterwards
-*    the variable positions for the parameters needed by the frag and vert shader are determined and returned.
-*    The lut and the transformation are preloaded with standard values (linear lut and unity matrix).
-*/
-int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
-        GLint &UniformTexture, GLint &UniformColor, GLuint &ArrayBufferName, GLuint &ElementBufferName)
+ *    @param [in]        glVer        openGL version
+ *    @param [out]     ProgramName        reference to shader program on the gpu
+ *    @param [out]    UniformMVP        reference to transformation matrix on the gpu
+ *    @param [out]     UniformLut        reference to lookup table memory on the gpu
+ *    @param [out]     UniformGamma     reference to gamma flag (gpu)
+ *    @param [out]    UniformTexture     reference to texture buffer (gpu)
+ *    @param [out]    ArrayBufferName reference to array buffer (gpu)
+ *    @param [out]    ElementBufferName reference to element buffer (array buffer alignment) (gpu)
+ *    @return        zero for no error, openGL error code otherwise
+ *
+ *    the function tries to compile the vertex and fragment shader code and to link the shader
+ * program. Afterwards the variable positions for the parameters needed by the frag and vert shader
+ * are determined and returned. The lut and the transformation are preloaded with standard values
+ * (linear lut and unity matrix).
+ */
+int PrjWindow::initOGL3(
+    GLuint& ProgramName,
+    GLint& UniformMVP,
+    GLint& UniformLut,
+    GLint& UniformGamma,
+    GLint& UniformTexture,
+    GLint& UniformColor,
+    GLuint& ArrayBufferName,
+    GLuint& ElementBufferName)
 {
     int ret = 0;
     char buf[1024];
     int len = 0;
 
     //!> create fragment and vertex shader
-    GLuint VertexShader   = m_glf->glCreateShader(GL_VERTEX_SHADER);
+    GLuint VertexShader = m_glf->glCreateShader(GL_VERTEX_SHADER);
     GLuint FragmentShader = m_glf->glCreateShader(GL_FRAGMENT_SHADER);
 
     //!> load source code for fragment and vertex shader and change version number of vertex and
     //!> fragment shader code to match the set version of the opengl context, in order to avoid
     //!> backward compatible code generation (slow)
-    char *VertFinal = NULL;
-    char *FragFinal = NULL;
-    ret = glGetError();
-    if (glVer < 4096)
+    char* vertexBufReplaced = nullptr;
+    char* fragmentBufReplaced = nullptr;
+    ret = m_glf->glGetError();
+
+    auto oglVer = format().version();
+
+    if (oglVer < qMakePair(3, 0))
     {
-        VertFinal = _strdup(VERTEX_SHADER_SOURCE);
-        FragFinal = _strdup(FRAGMENT_SHADER_SOURCE);
+        vertexBufReplaced = _strdup(VERTEX_SHADER_SOURCE);
+        fragmentBufReplaced = _strdup(FRAGMENT_SHADER_SOURCE);
     }
     else
     {
-        VertFinal = _strdup(VERTEX_SHADER_SOURCE130);
-        FragFinal = _strdup(FRAGMENT_SHADER_SOURCE130);
+        vertexBufReplaced = _strdup(VERTEX_SHADER_SOURCE130);
+        fragmentBufReplaced = _strdup(FRAGMENT_SHADER_SOURCE130);
     }
 
-    char *vertVerPos = strstr(VertFinal, "#version");
-    char *fragVerPos = strstr(FragFinal, "#version");
+    char* vertVerPos = strstr(vertexBufReplaced, "#version");
+    char* fragVerPos = strstr(fragmentBufReplaced, "#version");
 
-    if (glVer >= 32768)
+    if (oglVer >= qMakePair(3, 3))
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '3';
@@ -191,7 +192,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '3';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_3_2)
+    else if (oglVer >= qMakePair(3, 2))
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '5';
@@ -201,7 +202,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '5';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_3_1)
+    else if (oglVer >= qMakePair(3, 1))
     {
         /*vertVerPos[9] = '1';
         vertVerPos[10] = '4';
@@ -211,7 +212,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '4';
         fragVerPos[11] = '0';*/
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_3_0)
+    else if (oglVer >= qMakePair(3, 0))
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '3';
@@ -221,7 +222,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '3';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_2_1)
+    else if (oglVer >= qMakePair(2, 1))
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '2';
@@ -231,7 +232,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '2';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_2_0)
+    else if (oglVer >= qMakePair(2, 0))
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '1';
@@ -242,15 +243,16 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[11] = '0';
     }
 
-    m_glf->glShaderSource(VertexShader, 1, (const GLchar**)&VertFinal, NULL);
-    m_glf->glShaderSource(FragmentShader, 1, (const GLchar**)&FragFinal, NULL);
-    free(VertFinal);
-    free(FragFinal);
+
+    m_glf->glShaderSource(VertexShader, 1, (const GLchar**)&vertexBufReplaced, nullptr);
+    m_glf->glShaderSource(FragmentShader, 1, (const GLchar**)&fragmentBufReplaced, nullptr);
+    free(vertexBufReplaced);
+    free(fragmentBufReplaced);
 
     //!> compile vertex shader
     m_glf->glCompileShader(VertexShader);
     m_glf->glGetShaderiv(VertexShader, GL_COMPILE_STATUS, &ret);
-    
+
     if (ret != GL_TRUE)
     {
         memset(buf, 0, 1024);
@@ -261,13 +263,14 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     //!> compile fragment shader
     m_glf->glCompileShader(FragmentShader);
     m_glf->glGetShaderiv(FragmentShader, GL_COMPILE_STATUS, &ret);
-    
+
     if (ret != GL_TRUE)
     {
         memset(buf, 0, 1024);
         m_glf->glGetShaderInfoLog(FragmentShader, 1024, &len, buf);
         std::cerr << "error compiling fragment shader\n" << buf << "\n";
     }
+
 
     //!> create program and attach compiled vertex and fragment shader to it
     ProgramName = m_glf->glCreateProgram();
@@ -277,7 +280,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     //!> link shader program
     m_glf->glLinkProgram(ProgramName);
     m_glf->glGetProgramiv(ProgramName, GL_LINK_STATUS, &ret);
-    
+
     if (ret != GL_TRUE)
     {
         memset(buf, 0, 1024);
@@ -293,12 +296,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     UniformColor = m_glf->glGetUniformLocation(ProgramName, "color");
 
     // Compute the MVP (Model View Projection matrix)
-    float MVP[4][4] = {
-        {1.0, 0, 0, 0},
-        {0, 1.0, 0, 0},
-        {0, 0, 1.0, 0},
-        {0, 0, 0, 1.0}
-    };
+    float MVP[4][4] = {{1.0, 0, 0, 0}, {0, 1.0, 0, 0}, {0, 0, 1.0, 0}, {0, 0, 0, 1.0}};
 
     //!> Bind the program for use
     m_glf->glUseProgram(ProgramName);
@@ -312,41 +310,36 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     m_glf->glUniform1i(UniformGamma, 0);
 
     GLint ElementSize = ElementCount * sizeof(GLint);
-    GLint ElementData[ElementCount] = {0, 1, 3, 1, 2, 3}; //was before: {0, 1, 2, 3};
+    GLint ElementData[ElementCount] = {0, 1, 3, 1, 2, 3}; // was before: {0, 1, 2, 3};
 
     GLsizei const VertexCount = 4;
     GLsizeiptr PositionSize = VertexCount * 4 * sizeof(GLfloat);
-    GLfloat PositionData[VertexCount*2][2] = {
-        {-1.0f, -1.0f},    //Vertex
-        {0.0f, 1.0},    //Texture
+    GLfloat PositionData[VertexCount * 2][2] = {
+        {-1.0f, -1.0f}, // Vertex
+        {0.0f, 1.0}, // Texture
 
-        {-1.0f, 1.0f},    //V
-        {0.0f, 0.0f},    //T
+        {-1.0f, 1.0f}, // V
+        {0.0f, 0.0f}, // T
 
-        {1.0f, -1.0f},    //V
-        {1.0f, 1.0f},    //T
+        {1.0f, -1.0f}, // V
+        {1.0f, 1.0f}, // T
 
-        {1.0f, 1.0f},    //V
-        {1.0f, 0.0f}    //T
+        {1.0f, 1.0f}, // V
+        {1.0f, 0.0f} // T
     };
+
 
     //!> create vertex buffer on device
     m_glf->glGenBuffers(1, &ArrayBufferName);
     m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
 
-    m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
+    m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
     //!> copy vertex coordinates
     m_glf->glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
-    
-#if QT_VERSION < 0x050300
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-#else
+
     m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     m_glf->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-#endif
 
     //!> unbind buffer
     m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -362,47 +355,24 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
 
     m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
     m_glf->glUniform1i(UniformGamma, m_gamma);
-    m_vao->release();
+    ////m_vao->release();
     m_glf->glUseProgram(0);
 
-    ret = glGetError();
+    ret = m_glf->glGetError();
 
     return ret;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
-    : QGLWidget(format, parent, shareWidget, f),
-    m_glVer(-1),
-    m_isInit(unInit),
-    m_color(0),
-    m_grayBitsVert(0),
-    m_grayBitsHoriz(0),
-    m_phaShift(4),
-    m_period(12),
-    m_orientation(0),
-    m_gamma(0),
-    m_imgNum(0),
-    m_direction(1),
-    m_gammaCol(0),
-    m_lutTex(0),
-    m_cosImgsVert(0),
-    m_cosImgsHoriz(0),
-    m_grayImgsVert(0),
-    m_grayImgsHoriz(0),
-    m_glf(NULL),
-    m_vao(NULL),
-    ProgramName(0),
-    ArrayBufferName(0),
-    ElementBufferName(0),
-    UniformMVP(0),
-    UniformTexture(0),
-    UniformLut(0),
-    UniformGamma(0),
-    UniformColor(0)
+//-------------------------------------------------------------------------------------
+PrjWindow::PrjWindow(
+    const QMap<QString, ito::Param>& params, QWidget* parent, const Qt::WindowFlags f) :
+    QOpenGLWidget(parent, f),
+    m_isInit(unInit), m_color(0), m_grayBitsVert(0), m_grayBitsHoriz(0), m_phaShift(4),
+    m_period(12), m_orientation(0), m_gamma(0), m_imgNum(0), m_direction(1), m_gammaCol(0),
+    m_lutTex(0), m_cosImgsVert(0), m_cosImgsHoriz(0), m_grayImgsVert(0), m_grayImgsHoriz(0),
+    m_glf(nullptr), m_vao(nullptr), ProgramName(0), ArrayBufferName(0), ElementBufferName(0),
+    UniformMVP(0), UniformTexture(0), UniformLut(0), UniformGamma(0), UniformColor(0)
 {
-    m_glVer = QGLFormat::openGLVersionFlags();
-
     int ret = 0;
 
     m_period = params["period"].getVal<int>();
@@ -418,7 +388,7 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     }
     else
     {
-        //initialize m_lut with default values (1:1 relation)
+        // initialize m_lut with default values (1:1 relation)
         for (int i = 0; i < 256; i++)
         {
             m_lut[i] = i;
@@ -426,7 +396,7 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PrjWindow::~PrjWindow()
 {
     hide();
@@ -436,58 +406,61 @@ PrjWindow::~PrjWindow()
     if (m_isInit & initFail)
         return;
 
-    if (m_glVer >= QGLFormat::OpenGL_Version_2_0 /*32*/)
-    {
-        m_glf->glDeleteBuffers(1, &ElementBufferName);
-        m_glf->glDeleteBuffers(1, &ArrayBufferName);
-        m_glf->glDeleteProgram(ProgramName);
-    }
-    else
-    {
-//        glActiveTexture(GL_TEXTURE1);
-//        glBindTexture(GL_TEXTURE_1D, m_lutTex);
-//        glDeleteTextures(1, &m_lutTex);
-//        glActiveTexture(GL_TEXTURE0);
-    }
+    m_glf->glDeleteBuffers(1, &ElementBufferName);
+    m_glf->glDeleteBuffers(1, &ArrayBufferName);
+    m_glf->glDeleteProgram(ProgramName);
 
-    if (m_glf)
-    {
-        delete m_glf;
-    }
+    m_glf = nullptr;
 
     m_lut.clear();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PrjWindow::initializeGL()
 {
     int ret = 0;
 
     // set basic parameters
-    if (m_glVer < QGLFormat::OpenGL_Version_2_0 /*32*/)
+    if (format().version() < qMakePair(2, 0))
     {
         std::cerr << "OpenGL < 2.0 not supported with Qt5" << std::endl;
     }
     else
     {
-        // Create VAO for first object to render
-        // see http://stackoverflow.com/questions/17578266/where-are-glgenvertexarrays-glbindvertexarrays-in-qt-5-1
-        m_vao = new QOpenGLVertexArrayObject( this );
-        m_vao->create();
-        m_vao->bind();
+        // Set up the rendering context, load shaders and other resources, etc.:
+        m_glf = QOpenGLContext::currentContext()->functions();
 
-
-        m_glf = new QOpenGLFunctions(context()->contextHandle());
-        if (!m_glf)
+        if (m_glf)
+        {
+            m_glf->initializeOpenGLFunctions();
+        }
+        else
         {
             m_isInit |= initFail;
             ret = GL_INVALID_OPERATION;
         }
-        m_glf->initializeOpenGLFunctions();
-        
+
+        // Create VAO for first object to render
+        // see
+        // http://stackoverflow.com/questions/17578266/where-are-glgenvertexarrays-glbindvertexarrays-in-qt-5-1
+        m_vao = new QOpenGLVertexArrayObject(this);
+        m_vao->create();
+        m_vao->bind();
+
+        m_glf->glEnable(GL_DEPTH_TEST);
+        m_glf->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
         if (ret == 0)
         {
-            ret = initOGL3(m_glVer, ProgramName, UniformMVP, UniformLut, UniformGamma, UniformTexture, UniformColor, ArrayBufferName, ElementBufferName);
+            ret = initOGL3(
+                ProgramName,
+                UniformMVP,
+                UniformLut,
+                UniformGamma,
+                UniformTexture,
+                UniformColor,
+                ArrayBufferName,
+                ElementBufferName);
         }
         else
         {
@@ -496,29 +469,32 @@ void PrjWindow::initializeGL()
         }
     }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    //Screen und Tiefenpuffer leeren
+    m_glf->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Screen und Tiefenpuffer leeren
 
-    if ((ret = glGetError()))
+
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error setting up projection window: " << ret << "\n";
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PrjWindow::resizeGL(int width, int height)
 {
-    paintGL();
+    repaint();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PrjWindow::paintGL()
 {
     static int drawScene = 0;
 
     if ((drawScene == 1) || (m_isInit != idleState) || (m_isInit & initFail))
+    {
         return;
+    }
+
     drawScene = 1;
-    makeCurrent();
 
     if (m_imgNum == -1)
     {
@@ -541,91 +517,60 @@ void PrjWindow::paintGL()
             red = green = blue = m_gammaCol / 255.0;
         }
 
-        glClearColor(red, green, blue, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-    else if (m_glVer < QGLFormat::OpenGL_Version_2_0 /*32*/)
-    {
-        int width = this->width();
-        int height = this->height();
-
-        glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
-
-        glBegin(GL_QUADS);
-        glTexCoord2f(0, 1); glVertex3i(0, 0, 0);
-        glTexCoord2f(1, 1); glVertex3i(width, 0, 0);
-        glTexCoord2f(1, 0); glVertex3i(width, height, 0);
-        glTexCoord2f(0, 0); glVertex3i(0, height, 0);
-        glEnd();
-
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_glf->glClearColor(red, green, blue, 0.0f);
+        m_glf->glClear(GL_COLOR_BUFFER_BIT);
     }
     else
     {
-        if (m_imgNum == -1)
-        {
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);    //black background
-            glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
-        }
-
         //!> Bind shader program
         m_glf->glActiveTexture(GL_TEXTURE0);
+
         m_glf->glUseProgram(ProgramName);
+
         m_vao->bind();
-#if QT_VERSION < 0x050300
-        if (m_imgNum == -2)
-            glBindTexture(GL_TEXTURE_2D, m_textureDObj);
-        else
-            glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
-#else
+
         if (m_imgNum == -2)
             m_glf->glBindTexture(GL_TEXTURE_2D, m_textureDObj);
         else
             m_glf->glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
-#endif
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        m_glf->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         //!> bind vertex buffer
-        m_vao->bind();
+        ////m_vao->bind();
         //!> enable the previously set up attribute
         m_glf->glEnableVertexAttribArray(POSITION);
 
         m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
 
         //!> draw buffers
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // GL_TRIANGLES was GL_QUADS before
+        m_glf->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // GL_TRIANGLES was GL_QUADS before
+
 
         //!> disable the previously set up attributes
         m_glf->glDisableVertexAttribArray(POSITION);
-        m_vao->release();
+        ////m_vao->release();
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
         //!> Unbind shader program
         m_glf->glUseProgram(0);
     }
 
-    //!> flush buffers, wait for drawing to finish and jic swap the buffers (we do not have double buffering)
-    swapBuffers();
-    int ret = glGetError();
+    int ret = m_glf->glGetError();
+
     if (ret)
     {
         std::cerr << "error while drawing openGl scene: " << ret << "\n";
     }
 
-    doneCurrent();
+    // doneCurrent();
     drawScene = 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::cosineExit()
 {
     ito::RetVal retval(ito::retOk);
@@ -638,32 +583,23 @@ ito::RetVal PrjWindow::cosineExit()
         m_isInit &= ~cosIsInit;
         Sleep(100);
 
-        if (m_glVer < QGLFormat::OpenGL_Version_2_0 /*32*/)
-        {
-            glDisable(GL_TEXTURE_2D);
-            if ((ret = glGetError()))
-            {
-                std::cerr << "error disable texture (cosine exit)\n";
-                retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
-            }
-        }
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        if ((ret = glGetError()))
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error unbind texture (cosine exit)\n";
             retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
-        glDeleteTextures(m_phaShift, m_texture);
-        if ((ret = glGetError()))
+        m_glf->glDeleteTextures(m_phaShift, m_texture);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error delete texture (cosine exit)\n";
             retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
-        glDeleteTextures(m_phaShift, &m_texture[m_phaShift + m_grayBitsVert + 2]);
-        if ((ret = glGetError()))
+        m_glf->glDeleteTextures(m_phaShift, &m_texture[m_phaShift + m_grayBitsVert + 2]);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error delete texture 2 (cosine exit)\n";
             retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
@@ -672,37 +608,38 @@ ito::RetVal PrjWindow::cosineExit()
 
     m_isInit &= ~cosIsInit;
 
-
-    if (m_cosImgsHoriz != NULL)
+    if (m_cosImgsHoriz != nullptr)
     {
         for (n = 0; n < m_phaShift; n++)
         {
-            if (m_cosImgsVert[n] != NULL)
+            if (m_cosImgsVert[n] != nullptr)
             {
                 free(m_cosImgsHoriz[n]);
             }
         }
+
         free(m_cosImgsHoriz);
-        m_cosImgsHoriz = NULL;
+        m_cosImgsHoriz = nullptr;
     }
 
-    if (m_cosImgsVert != NULL)
+    if (m_cosImgsVert != nullptr)
     {
         for (n = 0; n < m_phaShift; n++)
         {
-            if (m_cosImgsVert[n]!=NULL)
+            if (m_cosImgsVert[n] != nullptr)
             {
                 free(m_cosImgsVert[n]);
             }
         }
+
         free(m_cosImgsVert);
-        m_cosImgsVert = NULL;
+        m_cosImgsVert = nullptr;
     }
 
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::graycodeExit()
 {
     ito::RetVal retval(ito::retOk);
@@ -714,32 +651,26 @@ ito::RetVal PrjWindow::graycodeExit()
         m_isInit &= ~grayIsInit;
         Sleep(100);
 
-        if (m_glVer < QGLFormat::OpenGL_Version_2_0 /*32*/)
-        {
-            glDisable(GL_TEXTURE_2D);
-            if ((ret = glGetError()))
-            {
-                std::cerr << "error disable texture (graycode exit)\n";
-                retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
-            }
-        }
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        if ((ret = glGetError()))
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error unbind texture (graycode exit)\n";
             retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
-        glDeleteTextures(m_grayBitsVert + 2, &m_texture[m_phaShift]);
-        if ((ret = glGetError()))
+        m_glf->glDeleteTextures(m_grayBitsVert + 2, &m_texture[m_phaShift]);
+
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error delete texture (graycode exit)\n";
             retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
-        glDeleteTextures(m_grayBitsVert + 2, &m_texture[m_phaShift * 2 + m_grayBitsVert + 2]);
-        if ((ret = glGetError()))
+        m_glf->glDeleteTextures(
+            m_grayBitsVert + 2, &m_texture[m_phaShift * 2 + m_grayBitsVert + 2]);
+
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error delete texture 2 (graycode exit)\n";
             retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
@@ -747,36 +678,39 @@ ito::RetVal PrjWindow::graycodeExit()
     }
 
     m_isInit &= ~grayIsInit;
-    if (m_grayImgsHoriz != NULL)
+
+    if (m_grayImgsHoriz != nullptr)
     {
         for (n = 0; n < m_grayBitsHoriz + 2; n++)
         {
-            if (m_grayImgsHoriz[n] != NULL)
+            if (m_grayImgsHoriz[n] != nullptr)
             {
                 free(m_grayImgsHoriz[n]);
             }
         }
+
         free(m_grayImgsHoriz);
-        m_grayImgsHoriz = NULL;
+        m_grayImgsHoriz = nullptr;
     }
 
-    if (m_grayImgsVert != NULL)
+    if (m_grayImgsVert != nullptr)
     {
         for (n = 0; n < m_grayBitsVert + 2; n++)
         {
-            if (m_grayImgsVert[n] != NULL)
+            if (m_grayImgsVert[n] != nullptr)
             {
                 free(m_grayImgsVert[n]);
             }
         }
+
         free(m_grayImgsVert);
-        m_grayImgsVert = NULL;
+        m_grayImgsVert = nullptr;
     }
 
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::cosineInit()
 {
     ito::RetVal retval(ito::retOk);
@@ -785,9 +719,8 @@ ito::RetVal PrjWindow::cosineInit()
     int ret = 0;
     int width = this->width();
     int height = this->height();
-    unsigned char **phasedummy = NULL, *tempimg=NULL;
-
-    double *phaseVals = NULL;
+    unsigned char **phasedummy = nullptr, *tempimg = nullptr;
+    double* phaseVals = nullptr;
     double minval;
     double maxval;
 
@@ -801,46 +734,57 @@ ito::RetVal PrjWindow::cosineInit()
         cosineExit();
     }
 
-    if ((phasedummy = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
+    if ((phasedummy = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == nullptr)
     {
         std::cerr << "error out of memory (cosine init 1)\n";
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 1)").toLatin1().data());
+        retval = ito::RetVal(
+            ito::retError, 0, QObject::tr("error out of memory (cosine init 1)").toLatin1().data());
         goto end;
     }
-    if ((m_cosImgsVert = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
+    if ((m_cosImgsVert = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == nullptr)
     {
         std::cerr << "error out of memory (cosine init 2)\n";
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 2)").toLatin1().data());
+        retval = ito::RetVal(
+            ito::retError, 0, QObject::tr("error out of memory (cosine init 2)").toLatin1().data());
         goto end;
     }
-    if ((m_cosImgsHoriz = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
+    if ((m_cosImgsHoriz = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == nullptr)
     {
         std::cerr << "error out of memory (cosine init 3)\n";
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 3)").toLatin1().data());
+        retval = ito::RetVal(
+            ito::retError, 0, QObject::tr("error out of memory (cosine init 3)").toLatin1().data());
         goto end;
     }
 
-    for(i = 0; i < m_phaShift; i++)
+    for (i = 0; i < m_phaShift; i++)
     {
-        if((phasedummy[i] = (unsigned char*)malloc(m_period * sizeof(*phasedummy[i]))) == NULL)
+        if ((phasedummy[i] = (unsigned char*)malloc(m_period * sizeof(*phasedummy[i]))) == nullptr)
         {
             std::cerr << "error out of memory (cosine init 4)\n";
-            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 4)").toLatin1().data());
+            retval = ito::RetVal(
+                ito::retError,
+                0,
+                QObject::tr("error out of memory (cosine init 4)").toLatin1().data());
             goto end;
         }
-        if((m_cosImgsVert[i] = (unsigned char*)malloc(width * height)) == NULL)
+        if ((m_cosImgsVert[i] = (unsigned char*)malloc(width * height)) == nullptr)
         {
             std::cerr << "error out of memory (cosine init 5)\n";
-            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 5)").toLatin1().data());
+            retval = ito::RetVal(
+                ito::retError,
+                0,
+                QObject::tr("error out of memory (cosine init 5)").toLatin1().data());
 
 
             goto end;
         }
-        if((m_cosImgsHoriz[i] = (unsigned char*)malloc(width * height)) == NULL)
+        if ((m_cosImgsHoriz[i] = (unsigned char*)malloc(width * height)) == nullptr)
         {
-
             std::cerr << "error out of memory (cosine init 6)\n";
-            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 6)").toLatin1().data());
+            retval = ito::RetVal(
+                ito::retError,
+                0,
+                QObject::tr("error out of memory (cosine init 6)").toLatin1().data());
             goto end;
         }
     }
@@ -854,7 +798,8 @@ ito::RetVal PrjWindow::cosineInit()
 
     for (j = 0; j < m_period / 2; j++)
     {
-        phaseVals[m_period - j - 1] = phaseVals[j] = (cos((double)M_PI * 2.0 * ((j + 0.5) / ((double)m_period))));
+        phaseVals[m_period - j - 1] = phaseVals[j] =
+            (cos((double)M_PI * 2.0 * ((j + 0.5) / ((double)m_period))));
         if (phaseVals[j] < minval)
             minval = phaseVals[j];
         if (phaseVals[j] > maxval)
@@ -868,7 +813,8 @@ ito::RetVal PrjWindow::cosineInit()
         {
             for (j = 0; j < m_period; j++)
             {
-                phasedummy[i][j] = (unsigned char)((phaseVals[(m_period - (j - (m_period / m_phaShift) * i)) % m_period] - minval) / (maxval - minval) * 255.0);
+                phasedummy[i][j] =
+                    (unsigned char)((phaseVals[(m_period - (j - (m_period / m_phaShift) * i)) % m_period] - minval) / (maxval - minval) * 255.0);
             }
         }
         //!> Cosine fringes to left
@@ -876,33 +822,38 @@ ito::RetVal PrjWindow::cosineInit()
         {
             for (j = 0; j < m_period; j++)
             {
-                phasedummy[i][j] = (unsigned char)((phaseVals[(j + (m_period / m_phaShift) * i) % m_period] - minval) / (maxval - minval) * 255.0);
+                phasedummy[i][j] =
+                    (unsigned char)((phaseVals[(j + (m_period / m_phaShift) * i) % m_period] - minval) / (maxval - minval) * 255.0);
             }
         }
     }
+
     delete[] phaseVals;
 
     //!> filling of the "images"
     if ((tempimg = (unsigned char*)calloc(width * height, sizeof(unsigned char))) == 0)
     {
         std::cerr << "error out of memory (cosine init 7)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("error out of memory (cosine init 7)").toLatin1().data());
+        retval = ito::RetVal(
+            ito::retError, ret, tr("error out of memory (cosine init 7)").toLatin1().data());
         goto end;
     }
 
-    glGenTextures(m_phaShift, m_texture);
-    if ((ret = glGetError()))
+    m_glf->glGenTextures(m_phaShift, m_texture);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error gen texture (cosine init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (cosine init)").toLatin1().data());
+        retval = ito::RetVal(
+            ito::retError, ret, tr("error gen texture (cosine init)").toLatin1().data());
         goto end;
     }
 
-    glGenTextures(m_phaShift, &m_texture[m_phaShift + m_grayBitsVert + 2]);
-    if ((ret = glGetError()))
+    m_glf->glGenTextures(m_phaShift, &m_texture[m_phaShift + m_grayBitsVert + 2]);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error gen texture (graycode / cosine init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (graycode / cosine init)").toLatin1().data());
+        retval = ito::RetVal(
+            ito::retError, ret, tr("error gen texture (graycode / cosine init)").toLatin1().data());
         goto end;
     }
 
@@ -912,7 +863,7 @@ ito::RetVal PrjWindow::cosineInit()
         memset(tempimg, 0, width * height * sizeof(unsigned char));
 
         //!> vertical fringes
-        if(i < m_phaShift)
+        if (i < m_phaShift)
         {
             for (m = 0; m < height; m++)
             {
@@ -920,7 +871,7 @@ ito::RetVal PrjWindow::cosineInit()
                 {
                     for (k = 0; k < m_period; k++)
                     {
-                        if((j + k) < width)
+                        if ((j + k) < width)
                         {
                             tempimg[m * width + j + k] = phasedummy[i][k];
                         }
@@ -942,7 +893,7 @@ ito::RetVal PrjWindow::cosineInit()
                 {
                     for (j = 0; j < width; j++)
                     {
-                        if((m + k) < height)
+                        if ((m + k) < height)
                         {
                             tempimg[(m + k) * width + j] = phasedummy[i - m_phaShift][k];
                         }
@@ -958,37 +909,38 @@ ito::RetVal PrjWindow::cosineInit()
 
         if (i < m_phaShift)
         {
-            glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[i]);
+            m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[i]);
         }
         else
         {
-            glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[i + m_grayBitsVert + 2]);
+            m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[i + m_grayBitsVert + 2]);
         }
 
-        if ((ret = glGetError()))
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error bind texture (cosine init)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-        if ((ret = glGetError()))
+        m_glf->glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error tex image (cosine init)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 end:
-    glBindTexture(GL_TEXTURE_2D, 0);
-    if (phasedummy != NULL)
+    m_glf->glBindTexture(GL_TEXTURE_2D, 0);
+    if (phasedummy != nullptr)
     {
-        for(i = 0; i < m_phaShift; i++)
+        for (i = 0; i < m_phaShift; i++)
         {
-            if (phasedummy[i] != NULL)
+            if (phasedummy[i] != nullptr)
                 free(phasedummy[i]);
         }
         free(phasedummy);
@@ -1010,7 +962,7 @@ end:
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::graycodeInit()
 {
     ito::RetVal retval(ito::retOk);
@@ -1020,8 +972,8 @@ ito::RetVal PrjWindow::graycodeInit()
     int ret = 0;
     int width = this->width();
     int height = this->height();
-    unsigned char **grayVert = NULL, **grayHoriz = NULL, *tempimg = NULL;
-    
+    unsigned char **grayVert = nullptr, **grayHoriz = nullptr, *tempimg = nullptr;
+
     if (!(m_isInit & paramsValid) || (m_isInit & initFail))
     {
         return retval;
@@ -1042,51 +994,55 @@ ito::RetVal PrjWindow::graycodeInit()
         widthHoriz *= 2;
     }
 
-    if ((tempimg = (unsigned char *)calloc(width * height, sizeof(unsigned char))) == NULL)
+    if ((tempimg = (unsigned char*)calloc(width * height, sizeof(unsigned char))) == nullptr)
     {
         std::cerr << "out of memory (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
-    //local graycode sequenz
-    if((grayVert = (unsigned char**)malloc((m_grayBitsVert + 2) * sizeof(unsigned char*))) == NULL)
+    // local graycode sequenz
+    if ((grayVert = (unsigned char**)malloc((m_grayBitsVert + 2) * sizeof(unsigned char*))) ==
+        nullptr)
     {
         std::cerr << "out of memory (graycode init 1)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
-    if((grayHoriz = (unsigned char**)malloc((m_grayBitsHoriz + 2) * sizeof(unsigned char*))) == NULL)
+    if ((grayHoriz = (unsigned char**)malloc((m_grayBitsHoriz + 2) * sizeof(unsigned char*))) ==
+        nullptr)
     {
         std::cerr << "out of memory (graycode init 2)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
-    if((m_grayImgsVert = (unsigned char**)malloc((m_grayBitsVert + 2) * sizeof(unsigned char*))) == NULL)
+    if ((m_grayImgsVert = (unsigned char**)malloc((m_grayBitsVert + 2) * sizeof(unsigned char*))) ==
+        nullptr)
     {
         std::cerr << "out of memory (graycode init 3)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
-    if((m_grayImgsHoriz = (unsigned char**)malloc((m_grayBitsHoriz + 2) * sizeof(unsigned char*))) == NULL)
+    if ((m_grayImgsHoriz =
+             (unsigned char**)malloc((m_grayBitsHoriz + 2) * sizeof(unsigned char*))) == nullptr)
     {
         std::cerr << "out of memory (graycode init 4)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
-    for(i = 0; i < m_grayBitsVert + 2; i++)
+    for (i = 0; i < m_grayBitsVert + 2; i++)
     {
-        if((grayVert[i] = (unsigned char *)calloc(widthVert, sizeof(unsigned char))) == NULL)
+        if ((grayVert[i] = (unsigned char*)calloc(widthVert, sizeof(unsigned char))) == nullptr)
         {
             std::cerr << "out of memory (graycode init 5)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
     }
-    for(i = 0; i < m_grayBitsHoriz + 2; i++)
+    for (i = 0; i < m_grayBitsHoriz + 2; i++)
     {
-        if((grayHoriz[i] = (unsigned char *)calloc(widthHoriz, sizeof(unsigned char))) == NULL)
+        if ((grayHoriz[i] = (unsigned char*)calloc(widthHoriz, sizeof(unsigned char))) == nullptr)
         {
             std::cerr << "out of memory (graycode init 6)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
@@ -1094,18 +1050,18 @@ ito::RetVal PrjWindow::graycodeInit()
         }
     }
 
-    for(i = 0; i < m_grayBitsVert + 2; i++)
+    for (i = 0; i < m_grayBitsVert + 2; i++)
     {
-        if((m_grayImgsVert[i] = (unsigned char *)malloc(width * height)) == NULL)
+        if ((m_grayImgsVert[i] = (unsigned char*)malloc(width * height)) == nullptr)
         {
             std::cerr << "out of memory (graycode init 7)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
     }
-    for(i = 0; i < m_grayBitsHoriz + 2; i++)
+    for (i = 0; i < m_grayBitsHoriz + 2; i++)
     {
-        if((m_grayImgsHoriz[i] = (unsigned char *)malloc(width * height)) == NULL)
+        if ((m_grayImgsHoriz[i] = (unsigned char*)malloc(width * height)) == nullptr)
         {
             std::cerr << "out of memory (graycode init 8)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
@@ -1113,7 +1069,7 @@ ito::RetVal PrjWindow::graycodeInit()
         }
     }
 
-    //create first vertical image
+    // create first vertical image
     for (i = 0; i < widthVert; i++)
     {
         if (i < widthVert / 2)
@@ -1137,12 +1093,12 @@ ito::RetVal PrjWindow::graycodeInit()
         }
     }
 
-    //other images are filled
+    // other images are filled
     for (j = 1; j < m_grayBitsVert; j++)
     {
         for (i = 0; i < widthVert; i++)
         {
-            if(i < widthVert / 2)
+            if (i < widthVert / 2)
             {
                 grayVert[j][i] = grayVert[j - 1][2 * i];
             }
@@ -1156,7 +1112,7 @@ ito::RetVal PrjWindow::graycodeInit()
     {
         for (i = 0; i < widthHoriz; i++)
         {
-            if(i < widthHoriz / 2)
+            if (i < widthHoriz / 2)
             {
                 grayHoriz[j][i] = grayHoriz[j - 1][2 * i];
             }
@@ -1167,7 +1123,7 @@ ito::RetVal PrjWindow::graycodeInit()
         }
     }
 
-    if(width < widthVert)
+    if (width < widthVert)
     {
         loopendx = width;
     }
@@ -1176,16 +1132,16 @@ ito::RetVal PrjWindow::graycodeInit()
         loopendx = widthVert;
     }
 
-    glGenTextures(m_grayBitsVert + 2, &m_texture[m_phaShift]);
-    if ((ret = glGetError()))
+    m_glf->glGenTextures(m_grayBitsVert + 2, &m_texture[m_phaShift]);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error genTextures 2 (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
-    glGenTextures(m_grayBitsHoriz + 2, &m_texture[m_phaShift * 2 + m_grayBitsVert + 2]);
-    if ((ret = glGetError()))
+    m_glf->glGenTextures(m_grayBitsHoriz + 2, &m_texture[m_phaShift * 2 + m_grayBitsVert + 2]);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error genTextures 2 (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
@@ -1196,84 +1152,88 @@ ito::RetVal PrjWindow::graycodeInit()
     memcpy(m_grayImgsVert[0], tempimg, width * height);
     memcpy(m_grayImgsHoriz[0], tempimg, width * height);
 
-    glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift]);
-    if ((ret = glGetError()))
+    m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift]);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error bind texture black image (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    if ((ret = glGetError()))
+    m_glf->glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error tex image black image (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
-    glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[2 * m_phaShift + m_grayBitsVert + 2]);
-    if ((ret = glGetError()))
+    m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[2 * m_phaShift + m_grayBitsVert + 2]);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error bind texture black image 2 (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    if ((ret = glGetError()))
+    m_glf->glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error tex image black image 2 (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
     memset(tempimg, 255, width * height * sizeof(unsigned char));
     memcpy(m_grayImgsVert[1], tempimg, width * height);
     memcpy(m_grayImgsHoriz[1], tempimg, width * height);
 
-    glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift + 1]);
-    if ((ret = glGetError()))
+    m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift + 1]);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error bind texture white image (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    if ((ret = glGetError()))
+    m_glf->glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error tex image white image (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
-    glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[2 * m_phaShift + m_grayBitsVert + 3]);
-    if ((ret = glGetError()))
+    m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[2 * m_phaShift + m_grayBitsVert + 3]);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error bind texture white image 2 (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-    if ((ret = glGetError()))
+    m_glf->glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    if ((ret = m_glf->glGetError()))
     {
         std::cerr << "error tex image white image 2 (graycode init)\n";
         retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
-    for(i = 0; i < m_grayBitsVert; i++)
+    for (i = 0; i < m_grayBitsVert; i++)
     {
         memset(tempimg, 0, width * height * sizeof(unsigned char));
-        for(j = 0; j < loopendx;j ++)
+        for (j = 0; j < loopendx; j++)
         {
-            if(grayVert[i][j] == 255)
+            if (grayVert[i][j] == 255)
             {
                 for (k = 0; k < height; k++)
                 {
@@ -1283,26 +1243,27 @@ ito::RetVal PrjWindow::graycodeInit()
         }
         memcpy(m_grayImgsVert[i + 2], tempimg, width * height);
 
-        glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift + i + 2]);
-        if ((ret = glGetError()))
+        m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift + i + 2]);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error bind texture (graycode init)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-        if ((ret = glGetError()))
+        m_glf->glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     //!> bitwise copying
-    if(height < widthHoriz)
+    if (height < widthHoriz)
     {
         loopendy = height;
     }
@@ -1311,14 +1272,14 @@ ito::RetVal PrjWindow::graycodeInit()
         loopendy = widthHoriz;
     }
 
-    for(i = 0; i < m_grayBitsHoriz; i++)
+    for (i = 0; i < m_grayBitsHoriz; i++)
     {
         memset(tempimg, 0, width * height * sizeof(unsigned char));
-        for(j = 0; j < loopendy; j++)
+        for (j = 0; j < loopendy; j++)
         {
-            if(grayHoriz[i][j] == 255)
+            if (grayHoriz[i][j] == 255)
             {
-                for(k = 0; k < width; k++)
+                for (k = 0; k < width; k++)
                 {
                     tempimg[j * width + k] |= 255;
                 }
@@ -1326,29 +1287,31 @@ ito::RetVal PrjWindow::graycodeInit()
         }
         memcpy(m_grayImgsHoriz[i + 2], tempimg, width * height);
 
-        glBindTexture(GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift * 2 + m_grayBitsVert + i + 4]);
-        if ((ret = glGetError()))
+        m_glf->glBindTexture(
+            GL_TEXTURE_2D, (GLuint)m_texture[m_phaShift * 2 + m_grayBitsVert + i + 4]);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error bind texture (graycode init)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
-        if ((ret = glGetError()))
+        m_glf->glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 end:
-    glBindTexture(GL_TEXTURE_2D, 0);
+    m_glf->glBindTexture(GL_TEXTURE_2D, 0);
     if (grayVert)
     {
-        for(i = 0; i < m_grayBitsVert + 2; i++)
+        for (i = 0; i < m_grayBitsVert + 2; i++)
         {
             if (grayVert[i])
             {
@@ -1356,12 +1319,12 @@ end:
             }
         }
         free(grayVert);
-        grayVert = NULL;
+        grayVert = nullptr;
     }
 
     if (grayHoriz)
     {
-        for(i = 0; i < m_grayBitsHoriz + 2; i++)
+        for (i = 0; i < m_grayBitsHoriz + 2; i++)
         {
             if (grayHoriz[i])
             {
@@ -1369,7 +1332,7 @@ end:
             }
         }
         free(grayHoriz);
-        grayHoriz = NULL;
+        grayHoriz = nullptr;
     }
 
     if (tempimg)
@@ -1389,7 +1352,7 @@ end:
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::setupProjection()
 {
     ito::RetVal retval(ito::retOk);
@@ -1397,21 +1360,30 @@ ito::RetVal PrjWindow::setupProjection()
     unsigned char bitsTemp;
 
     // test if smallest fringe has a width (in pixels) that is a multiple of 2 (pixels)
-    //this is required to provide a symmetrical distribution of cosines over the pixel values
+    // this is required to provide a symmetrical distribution of cosines over the pixel values
     if (m_period % 2 != 0)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "The period of the cosine fringes (%i px) must be dividable by 2.", m_period);
+        retval += ito::RetVal::format(
+            ito::retError,
+            0,
+            "The period of the cosine fringes (%i px) must be dividable by 2.",
+            m_period);
     }
 
     // period must dividable by the number of shifts
-    if(m_period % m_phaShift != 0)
+    if (m_period % m_phaShift != 0)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "The period of the cosine fringes (%i px) must be dividable by the number of phaseshifts (%i).", m_period, m_phaShift);
+        retval += ito::RetVal::format(
+            ito::retError,
+            0,
+            "The period of the cosine fringes (%i px) must be dividable by the number of "
+            "phaseshifts (%i).",
+            m_period,
+            m_phaShift);
     }
 
     if (!retval.containsError())
     {
-
         if (m_period < width())
         {
             bitsTemp = floor(log(width() / (float)m_period) / log(2.0));
@@ -1454,7 +1426,7 @@ ito::RetVal PrjWindow::setupProjection()
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::setSize(int sizex, int sizey, bool reCalcGL)
 {
     ito::RetVal retval;
@@ -1478,19 +1450,19 @@ ito::RetVal PrjWindow::setSize(int sizex, int sizey, bool reCalcGL)
 
         if (!retval.containsError())
         {
-
             GLsizei width = this->width();
             GLsizei height = this->height();
             // Set the display viewport
-            glViewport(0, 0, width, height);
+            m_glf->glViewport(0, 0, width, height);
 
             m_isInit |= paramsValid;
 
-            if(reCalcGL)
+            if (reCalcGL)
             {
                 retval += cosineInit();
                 retval += graycodeInit();
-                numberOfImagesChanged(this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
+                numberOfImagesChanged(
+                    this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
             }
         }
         doneCurrent();
@@ -1499,7 +1471,7 @@ ito::RetVal PrjWindow::setSize(int sizex, int sizey, bool reCalcGL)
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PrjWindow::setPos(int xpos, int ypos)
 {
     QPoint newPos(xpos, ypos);
@@ -1509,8 +1481,8 @@ void PrjWindow::setPos(int xpos, int ypos)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void PrjWindow::setLUT(QVector<unsigned char> &lut)
+//-------------------------------------------------------------------------------------
+void PrjWindow::setLUT(QVector<unsigned char>& lut)
 {
     m_lut = lut;
 
@@ -1532,122 +1504,64 @@ void PrjWindow::setLUT(QVector<unsigned char> &lut)
     m_glf->glUseProgram(ProgramName);
     m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
     m_glf->glUseProgram(0);
-    
+
     doneCurrent();
     m_isInit |= oldval;
 
-    paintGL();
+    repaint();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::setColor(const int col)
 {
     ito::RetVal retval = ito::retOk;
 
-    if (m_glVer <= QGLFormat::OpenGL_Version_2_0 /*32*/)
+    float color[4][4] = {
+        {1.0, 0.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0, 0.0},
+        {0.0, 0.0, 1.0, 0.0},
+        {0.0, 0.0, 0.0, 1.0},
+    };
+
+    switch (col)
     {
-        GLint glval;
-        GLfloat *par, *pag, *pab;
-        int colbit;
+    case 0:
+        color[1][1] = 0;
+        color[2][2] = 0;
+        break;
 
-        if (col == 0)
-            colbit = 1;
-        else if (col == 1)
-            colbit = 2;
-        else if (col == 2)
-            colbit = 4;
-        else
-            colbit = 7;
+    case 1:
+        color[0][0] = 0;
+        color[2][2] = 0;
+        break;
 
-        par = (GLfloat*)calloc(256, sizeof(GLfloat));
-        pag = (GLfloat*)calloc(256, sizeof(GLfloat));
-        pab = (GLfloat*)calloc(256, sizeof(GLfloat));
-
-        for (float i = 0; i < 256; i++)
-        {
-            par[(int)i] = i / 255.0 * (colbit & 1);
-            pag[(int)i] = i / 255.0 * (colbit & 2) / 2.0;
-            pab[(int)i] = i / 255.0 * (colbit & 4) / 4.0;
-        }
-
-        makeCurrent();
-        glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
-//        ret = glGetError();
-
-        glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 256, pag);
-//        ret = glGetError();
-        glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 256, par);
-//        ret = glGetError();
-        glPixelMapfv(GL_PIXEL_MAP_I_TO_B, 256, pab);
-//        ret = glGetError();
-
-        free(par);
-        free(pag);
-        free(pab);
-
-        glPixelTransferi(GL_RED_SCALE, 1);
-        glPixelTransferi(GL_RED_BIAS, 0);
-        glPixelTransferi(GL_GREEN_SCALE, 1);
-        glPixelTransferi(GL_GREEN_BIAS, 0);
-        glPixelTransferi(GL_BLUE_SCALE, 1);
-        glPixelTransferi(GL_BLUE_BIAS, 0);
-        glPixelTransferf(GL_ALPHA_SCALE, 0.0);
-        glPixelTransferf(GL_ALPHA_BIAS,  1.0);
-
-        glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
-        doneCurrent();
-
-        paintGL();
+    case 2:
+        color[0][0] = 0;
+        color[1][1] = 0;
+        break;
     }
-    else
-    {
-        float color[4][4] = {
-            {1.0, 0.0, 0.0, 0.0},
-            {0.0, 1.0, 0.0, 0.0},
-            {0.0, 0.0, 1.0, 0.0},
-            {0.0, 0.0, 0.0, 1.0},
-        };
 
-        switch (col)
-        {
-            case 0:
-                color[1][1] = 0;
-                color[2][2] = 0;
-            break;
+    int oldval = m_isInit;
+    m_isInit &= ~paramsValid;
 
-            case 1:
-                color[0][0] = 0;
-                color[2][2] = 0;
-            break;
+    makeCurrent();
 
-            case 2:
-                color[0][0] = 0;
-                color[1][1] = 0;
-            break;
-        }
+    //!> Bind the program for use
+    m_glf->glUseProgram(ProgramName);
+    //!> Set the value of color calculation (initially white)
+    m_glf->glUniformMatrix4fv(UniformColor, 1, GL_FALSE, &color[0][0]);
+    //!> Bind the program for use
+    m_glf->glUseProgram(0);
 
-        int oldval = m_isInit;
-        m_isInit &= ~paramsValid;
+    doneCurrent();
+    m_isInit |= oldval;
 
-        makeCurrent();
-
-        //!> Bind the program for use
-        m_glf->glUseProgram(ProgramName);
-        //!> Set the value of color calculation (initially white)
-        m_glf->glUniformMatrix4fv(UniformColor, 1, GL_FALSE, &color[0][0]);
-        //!> Bind the program for use
-        m_glf->glUseProgram(0);
-
-        doneCurrent();
-        m_isInit |= oldval;
-
-        paintGL();
-    }
+    repaint();
 
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::enableGammaCorrection(bool enabled)
 {
     ito::RetVal retval = ito::retOk;
@@ -1668,20 +1582,20 @@ ito::RetVal PrjWindow::enableGammaCorrection(bool enabled)
     doneCurrent();
     m_isInit |= oldval;
 
-    paintGL();
+    repaint();
 
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::setGammaPrj(const int grayValue, ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::setGammaPrj(const int grayValue, ItomSharedSemaphore* waitCond)
 {
     ito::RetVal retval = ito::retOk;
 
     m_gammaCol = grayValue;
     m_imgNum = -1;
 
-    paintGL();
+    repaint();
 
     if (waitCond)
     {
@@ -1692,15 +1606,15 @@ ito::RetVal PrjWindow::setGammaPrj(const int grayValue, ItomSharedSemaphore *wai
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::showFirstImg(ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::showFirstImg(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 
     m_imgNum = 0;
 
-    paintGL();
+    repaint();
 
     if (waitCond)
     {
@@ -1711,8 +1625,8 @@ ito::RetVal PrjWindow::showFirstImg(ItomSharedSemaphore *waitCond)
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::showNextImg(ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::showNextImg(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
@@ -1732,7 +1646,7 @@ ito::RetVal PrjWindow::showNextImg(ItomSharedSemaphore *waitCond)
         }
     }
 
-    paintGL();
+    repaint();
 
     if (waitCond)
     {
@@ -1743,14 +1657,14 @@ ito::RetVal PrjWindow::showNextImg(ItomSharedSemaphore *waitCond)
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::showFirstGrayImg(ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::showFirstGrayImg(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
     m_imgNum = 0;
 
-    paintGL();
+    repaint();
 
     if (waitCond)
     {
@@ -1761,8 +1675,8 @@ ito::RetVal PrjWindow::showFirstGrayImg(ItomSharedSemaphore *waitCond)
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::showFirstCosImg(ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::showFirstCosImg(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
@@ -1776,7 +1690,7 @@ ito::RetVal PrjWindow::showFirstCosImg(ItomSharedSemaphore *waitCond)
         m_imgNum = 2 + m_grayBitsHoriz;
     }
 
-    paintGL();
+    repaint();
 
     if (waitCond)
     {
@@ -1787,7 +1701,7 @@ ito::RetVal PrjWindow::showFirstCosImg(ItomSharedSemaphore *waitCond)
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::showImageNum(const int num)
 {
     if (m_orientation <= 0)
@@ -1821,26 +1735,25 @@ ito::RetVal PrjWindow::showImageNum(const int num)
         }
     }
 
-    paintGL();
+    repaint();
 
     return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PrjWindow::getOrientationClearedCurImg(void) const
 {
     if (m_orientation <= 0)
     {
         return m_imgNum;
-        
     }
     else
     {
-        return ( m_imgNum - (m_phaShift + m_grayBitsVert + 2) );
+        return (m_imgNum - (m_phaShift + m_grayBitsVert + 2));
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 void PrjWindow::resizeEvent(QResizeEvent *pevent)
 {
@@ -1848,7 +1761,7 @@ void PrjWindow::resizeEvent(QResizeEvent *pevent)
     resize(newSize.width(), newSize.height());
 }
 */
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PrjWindow::getNumImages() const
 {
     if (m_orientation <= 0)
@@ -1861,7 +1774,7 @@ int PrjWindow::getNumImages() const
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PrjWindow::getNumGrayImages(void) const
 {
     if (m_orientation <= 0)
@@ -1873,8 +1786,8 @@ int PrjWindow::getNumGrayImages(void) const
         return m_grayBitsHoriz;
     }
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::shutDown(ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::shutDown(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
@@ -1885,7 +1798,7 @@ ito::RetVal PrjWindow::shutDown(ItomSharedSemaphore *waitCond)
     makeCurrent();
     cosineExit();
     graycodeExit();
-    glDeleteTextures(1, &m_textureDObj);
+    m_glf->glDeleteTextures(1, &m_textureDObj);
     doneCurrent();
 
     if (waitCond)
@@ -1895,16 +1808,20 @@ ito::RetVal PrjWindow::shutDown(ItomSharedSemaphore *waitCond)
     }
     return retval;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::configProjection(int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::configProjection(
+    int period, int phaseShift, int orient, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 
     bool updateNecessary = false;
-    if (m_phaShift != phaseShift) updateNecessary = true;
-    if (m_period != period) updateNecessary = true;
-    if (m_orientation != orient) updateNecessary = true;
+    if (m_phaShift != phaseShift)
+        updateNecessary = true;
+    if (m_period != period)
+        updateNecessary = true;
+    if (m_orientation != orient)
+        updateNecessary = true;
 
     if ((m_isInit ^ idleState) > 0 || updateNecessary)
     {
@@ -1915,13 +1832,12 @@ ito::RetVal PrjWindow::configProjection(int period, int phaseShift, int orient, 
 
         makeCurrent();
 
-        //delete existing textures (if some exists)
+        // delete existing textures (if some exists)
         retval += cosineExit();
         retval += graycodeExit();
 
         if (!retval.containsError())
         {
-
             m_phaShift = phaseShift;
             m_period = period;
             retval += setupProjection();
@@ -1936,11 +1852,11 @@ ito::RetVal PrjWindow::configProjection(int period, int phaseShift, int orient, 
         }
 
         // generate texture for DObj
-        glGenTextures(1, &m_textureDObj);
+        m_glf->glGenTextures(1, &m_textureDObj);
 
         doneCurrent();
 
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
             m_isInit |= paramsValid;
 
@@ -1963,15 +1879,18 @@ ito::RetVal PrjWindow::configProjection(int period, int phaseShift, int orient, 
                 {
                     m_imgNum = m_phaShift + m_grayBitsVert + 2;
                 }
-                else if (m_imgNum >=  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 2)
+                else if (
+                    m_imgNum >= m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 2)
                 {
-                    m_imgNum =  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 1;
+                    m_imgNum = m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 1;
                 }
             }
         }
-        paintGL();
 
-        numberOfImagesChanged(this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
+        repaint();
+
+        numberOfImagesChanged(
+            this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
     }
 
     if (waitCond)
@@ -1982,8 +1901,16 @@ ito::RetVal PrjWindow::configProjection(int period, int phaseShift, int orient, 
 
     return retval;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::configProjectionFull(int xpos, int sizex, int ypos, int sizey, int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::configProjectionFull(
+    int xpos,
+    int sizex,
+    int ypos,
+    int sizey,
+    int period,
+    int phaseShift,
+    int orient,
+    ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
@@ -2001,8 +1928,9 @@ ito::RetVal PrjWindow::configProjectionFull(int xpos, int sizex, int ypos, int s
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond /*= NULL*/)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::grabFramebuffer(
+    const QString& filename, ItomSharedSemaphore* waitCond /*= nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
@@ -2011,17 +1939,22 @@ ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaph
 
     if (filepath.exists() == false)
     {
-        retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.absolutePath().toLatin1().data());
+        retval += ito::RetVal::format(
+            ito::retError, 0, "folder '%s' does not exist", finfo.absolutePath().toLatin1().data());
     }
     else
     {
-        paintGL();
-        QImage shot = grabFrameBuffer(false);
-        bool ok = shot.save(filepath.absoluteFilePath( finfo.fileName() ) );
+        repaint();
+        QImage shot = QOpenGLWidget::grabFramebuffer();
+        bool ok = shot.save(filepath.absoluteFilePath(finfo.fileName()));
 
         if (!ok)
         {
-            retval += ito::RetVal::format(ito::retError,0,"error while saving grabbed framebuffer to '%s'", filepath.absoluteFilePath( finfo.fileName() ).toLatin1().data());
+            retval += ito::RetVal::format(
+                ito::retError,
+                0,
+                "error while saving grabbed framebuffer to '%s'",
+                filepath.absoluteFilePath(finfo.fileName()).toLatin1().data());
         }
     }
 
@@ -2034,43 +1967,53 @@ ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaph
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::setDObj(ito::DataObject *dObj, ItomSharedSemaphore *waitCond)
+//-------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::setDObj(ito::DataObject* dObj, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
     if (!dObj || dObj->getDims() > 2 || dObj->getSize(0) < 1 || dObj->getSize(1) < 1)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("DataObject must not be NULL").toLatin1().data());
+        retval +=
+            ito::RetVal(ito::retError, 0, tr("DataObject must not be nullptr").toLatin1().data());
     }
     else
     {
         int sizex = dObj->getSize(1), sizey = dObj->getSize(0), ret = 0;
-        
+
         makeCurrent();
-        glBindTexture(GL_TEXTURE_2D, (GLuint)m_textureDObj);
-        if ((ret = glGetError()))
+        m_glf->glBindTexture(GL_TEXTURE_2D, (GLuint)m_textureDObj);
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error bind texture (setDObj)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, sizex, sizey, 0, GL_RED, GL_UNSIGNED_BYTE, dObj->rowPtr(0, 0));
-        if ((ret = glGetError()))
+        m_glf->glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RED,
+            sizex,
+            sizey,
+            0,
+            GL_RED,
+            GL_UNSIGNED_BYTE,
+            dObj->rowPtr(0, 0));
+        if ((ret = m_glf->glGetError()))
         {
             std::cerr << "error tex image (setDObj)\n";
             retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_glf->glBindTexture(GL_TEXTURE_2D, 0);
         doneCurrent();
 
         m_imgNum = -2;
         setSize(sizex, sizey);
-        paintGL();
-    }   
+        repaint();
+    }
 
 end:
     if (waitCond)
@@ -2082,4 +2025,4 @@ end:
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
