@@ -3277,7 +3277,7 @@ ito::RetVal DataObjectArithmetic::findMultiSpotsParams(
         "backgroundNoise",
         ito::ParamBase::Int | ito::ParamBase::In,
         0,
-        4095,
+        65535,
         3,
         tr("maximum difference between two adjacent background values (used for deciding if pixel "
            "belongs to background or peak, only necessary in mode 0)")
@@ -3287,7 +3287,7 @@ ito::RetVal DataObjectArithmetic::findMultiSpotsParams(
         "minPeakHeight",
         ito::ParamBase::Int | ito::ParamBase::In,
         2,
-        4095,
+        65535,
         7,
         tr("minimum height of a peak (its maximum and the neighbouring background, only necessary "
            "in mode 0).")
@@ -3297,7 +3297,7 @@ ito::RetVal DataObjectArithmetic::findMultiSpotsParams(
         "maxPeakDiameter",
         ito::ParamBase::Int | ito::ParamBase::In,
         3,
-        65000,
+        65535,
         15,
         tr("maximum diameter of a peak (this is used to distinguish between neighbouring peaks and "
            "the determination of the sub-pixel peak position).")
@@ -3318,7 +3318,7 @@ ito::RetVal DataObjectArithmetic::findMultiSpotsParams(
         "maxBackgroundLevel",
         ito::ParamBase::Int | ito::ParamBase::In,
         0,
-        4095,
+        65535,
         5,
         tr("maximum background level for subpixel determination, in mode 2 this value is the "
            "single value used to determine if value is a peak.")
