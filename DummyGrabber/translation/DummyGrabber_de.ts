@@ -142,7 +142,12 @@
         <translation type="unfinished">Jeder String erlaubt</translation>
     </message>
     <message>
-        <location line="+394"/>
+        <location line="+11"/>
+        <source>one or two options allowed.</source>
+        <translation type="unfinished">Ein bis zwei Auswahlmöglichkeiten erlaubt.</translation>
+    </message>
+    <message>
+        <location line="+400"/>
         <source>stopDevice of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;stopDevice&apos; des DummyGrabbers kann nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
@@ -157,7 +162,7 @@
         <translation type="unfinished">Es konnte kein Bild abgeholt werden, da keines angefordert wurde.</translation>
     </message>
     <message>
-        <location line="-856"/>
+        <location line="-873"/>
         <source>size in x (cols) [px]</source>
         <translation type="unfinished">Größe in x (Spalten) [px]</translation>
     </message>
@@ -177,7 +182,7 @@
         <translation type="unfinished">Bittiefe des Images</translation>
     </message>
     <message>
-        <location line="+462"/>
+        <location line="+479"/>
         <source>Acquire of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;acquire&apos; kann vom DummyGrabber nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
@@ -199,7 +204,7 @@
         <translation type="vanished">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-931"/>
+        <location line="-948"/>
         <source>Width of virtual sensor chip</source>
         <translation type="unfinished">Breite des virtuellen Sensors</translation>
     </message>

@@ -338,10 +338,6 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.</s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Not implemented, use calibmode to set actual position as zero.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This device have only one axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -358,11 +354,15 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.</s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>interrupt occurred</source>
+        <source>Name of the plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name of the plugin</source>
+        <source>%1 units per steps is not a valid value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error home zeroing: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

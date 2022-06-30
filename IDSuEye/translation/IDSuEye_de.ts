@@ -303,13 +303,14 @@
 <context>
     <name>IDSInterface</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="+129"/>
+        <location filename="../IDSInterface.cpp" line="+130"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-26"/>
+        <location line="-27"/>
         <source>This plugin supports IDS uEye cameras and has currently been tested with the following models: 
+
 * UI145xSE-C (colored, USB2) 
 * UI124xSE-M (monochrome, USB2) 
 * UI224xSE-M (monochrome, USB2) 
@@ -332,7 +333,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>Camera ID (user-definable in IDS camera manager) of the camera to open (0: the next free camera will opened [default], 1-254: specific camera ID)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -445,7 +446,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2032"/>
+        <location line="+2102"/>
         <source>Error during check data, external dataObject invalid. Frame burst is %1, the external object must then have %1 planes.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -461,7 +462,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2153"/>
+        <location line="-2223"/>
         <source>Model identifier of the attached camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -526,7 +527,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+825"/>
+        <location line="+895"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -539,7 +540,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="-60"/>
+        <location filename="../IDSInterface.cpp" line="-61"/>
         <source>IDS uEye grabber.</source>
         <translation type="unfinished"></translation>
     </message>

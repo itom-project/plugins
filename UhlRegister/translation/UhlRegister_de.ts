@@ -172,7 +172,7 @@
 <context>
     <name>UhlRegister</name>
     <message>
-        <location filename="../UhlRegister.cpp" line="+172"/>
+        <location filename="../UhlRegister.cpp" line="+170"/>
         <source>UHL errormessage: </source>
         <translation type="unfinished">Uhl Fehlermeldung: </translation>
     </message>
@@ -347,7 +347,7 @@ Wenn es sich wirklich um einen Uhltisch handelt, sollte ein anderer Joystick aus
 <context>
     <name>UhlRegisterInterface</name>
     <message>
-        <location line="-1431"/>
+        <location line="-1429"/>
         <source>DLL for old 2-3 axis Uhl-Controller</source>
         <translation>DLL für alte 2-3 achsige Uhltische</translation>
     </message>

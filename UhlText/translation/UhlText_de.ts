@@ -172,7 +172,7 @@
 <context>
     <name>UhlText</name>
     <message>
-        <location filename="../UhlText.cpp" line="+334"/>
+        <location filename="../UhlText.cpp" line="+332"/>
         <location line="+22"/>
         <source>No signs read after 10 tries</source>
         <translation type="unfinished">Keine Antwort auch nach 10 Versuchen</translation>
@@ -548,7 +548,7 @@
 <context>
     <name>UhlTextInterface</name>
     <message>
-        <location line="-2239"/>
+        <location line="-2237"/>
         <source>DLL for 2-4 axis Uhl / Lang LStep-Controller</source>
         <translation type="unfinished">DLL für 2-4 achsige Uhltische / LStep-Kontroller</translation>
     </message>

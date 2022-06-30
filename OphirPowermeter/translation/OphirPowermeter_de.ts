@@ -100,10 +100,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The given input serial %1 has not been found in serial number of connected devices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No serialIO plugin instance given. A SerialIO instance is needed to use the RS232 type of powermeter.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -159,15 +155,31 @@
         <source>Calibration due date.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Could not read head serial number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cound not read instrument serial number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No USB device was found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>More like one device was found. Initialization only possible with the corresponding serial number for the plugin input parameter *serialNo*.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OphirPowermeterInterface</name>
     <message>
-        <source>Serial number of the device to be loaded, if empty, the first device that is detected will be opened</source>
+        <source>An opened serial port (the right communication parameters will be set by this plugin).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An opened serial port (the right communication parameters will be set by this plugin).</source>
+        <source>Serial number of the device to be connected. If empty, all found serial numbers will be printed and the first device that is detected will be opened.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -185,7 +197,7 @@
         <source>The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. 
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. 
 
-Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.</source>
+Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.For the USB type it is necessary to install the COM object which comes with StarLab form Ophir.Download page: https://www.ophiropt.com/laser--measurement/software/com-object</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

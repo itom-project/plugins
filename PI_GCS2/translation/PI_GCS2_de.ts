@@ -4,7 +4,7 @@
 <context>
     <name>DialogPIPiezoCtrl</name>
     <message>
-        <location filename="../../PIPiezoCtrl/dialogPIPiezoCtrl.cpp" line="+48"/>
+        <location filename="../../PIPiezoCtrl/dialogPIPiezoCtrl.cpp" line="+70"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -56,7 +56,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+12"/>
+        <source>velocity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source> mm/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>Position limits</source>
         <translation type="unfinished"></translation>
     </message>
@@ -252,7 +262,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+4"/>
+        <source>asychronous (1) or synchronous (0) mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Number of axes (here always 1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -282,13 +297,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>asychronous (1) or sychronous (0) mode</source>
+        <location line="+31"/>
+        <source>The current com-port ID of this specific device. -1 means undefined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>The current com-port ID of this specific device. -1 means undefined</source>
+        <location line="+3"/>
+        <source>Axis is referenced (1), not referenced (0), idle (-1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>velocity of the stage for the controller type C663 in mm per s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -324,7 +344,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+175"/>
         <source>deviceName could not be parsed to a valid COM-port number</source>
         <translation type="unfinished"></translation>
     </message>
@@ -359,19 +379,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+84"/>
-        <location line="+34"/>
+        <location line="+106"/>
+        <source>not implemented for this controller type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+37"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+51"/>
-        <location line="+967"/>
+        <location line="+1094"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-918"/>
+        <location line="-1036"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -387,12 +411,12 @@
     </message>
     <message>
         <location line="+68"/>
-        <location line="+726"/>
+        <location line="+829"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-588"/>
+        <location line="-680"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -514,14 +538,25 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1171"/>
+        <location line="-1319"/>
+        <location line="+2"/>
+        <source>name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <source>Check flags (or-combination possible): 0x01: check position boundaries before positioning and actualize current position after positioning (default: on), 0x02: check for errors when positioning (default: off), 0x04: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1241"/>
-        <location line="+49"/>
+        <location line="+1345"/>
+        <location line="+40"/>
         <source>value could not be parsed to a double value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>value could not be parsed to a int value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -535,7 +570,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+214"/>
+        <location line="+250"/>
+        <source>PI device is not referenced. Use the .calib command to reference the device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -557,7 +597,7 @@
         <source>PI actuators following the GCS2 command set (e.g. E753) 
 This plugin is developped for single axis controllers following the GCS2 commandset. 
 
-Tested with E753, don&apos;t work with E-662 and E-665! 
+Tested with E753 and C663, don&apos;t work with E-662 and E-665! 
 
 For the initialization you can connect to the device (if possible) via a USB port, a serial port 
 or a TCP/IP connection. Depending on the connection you should use the initialization parameters 

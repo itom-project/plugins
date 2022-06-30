@@ -4,7 +4,7 @@
 <context>
     <name>DialogPIPiezoCtrl</name>
     <message>
-        <location filename="../dialogPIPiezoCtrl.cpp" line="+48"/>
+        <location filename="../dialogPIPiezoCtrl.cpp" line="+70"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -56,7 +56,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+12"/>
+        <source>velocity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source> mm/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>Position limits</source>
         <translation type="unfinished"></translation>
     </message>
@@ -277,7 +287,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="-30"/>
+        <location line="+2"/>
+        <source>name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Current type of controller, e.g. E-662, E-665, E-753...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -289,6 +305,16 @@
     <message>
         <location line="+15"/>
         <source>The current com-port ID of this specific device. -1 means undefined</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Axis is referenced (1), not referenced (0), idle (-1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>velocity of the stage for the controller type C663 in mm per s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -324,7 +350,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+175"/>
         <source>deviceName could not be parsed to a valid COM-port number</source>
         <translation type="unfinished"></translation>
     </message>
@@ -359,19 +385,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+84"/>
-        <location line="+34"/>
+        <location line="+106"/>
+        <source>not implemented for this controller type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+37"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+51"/>
-        <location line="+967"/>
+        <location line="+1094"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-918"/>
+        <location line="-1036"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -387,12 +417,12 @@
     </message>
     <message>
         <location line="+68"/>
-        <location line="+726"/>
+        <location line="+829"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-588"/>
+        <location line="-680"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -514,14 +544,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1171"/>
+        <location line="-1275"/>
         <source>Check flags (or-combination possible): 0x01: check position boundaries before positioning and actualize current position after positioning (default: on), 0x02: check for errors when positioning (default: off), 0x04: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1241"/>
-        <location line="+49"/>
+        <location line="+1345"/>
+        <location line="+40"/>
         <source>value could not be parsed to a double value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>value could not be parsed to a int value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -535,7 +570,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+214"/>
+        <location line="+250"/>
+        <source>PI device is not referenced. Use the .calib command to reference the device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -562,12 +602,12 @@
     <name>QObject</name>
     <message>
         <location line="-36"/>
-        <source>PI Piezos E662, E-816, E-621, E-625, E665</source>
+        <source>PI Piezos E-662, E-816, E-621, E-625, E-665, C-663</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
-        <source>The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.Different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) are implemented.
+        <source>The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.Different PI-Piezo Controller (E-816, E-621, E-625, E-665, E-662 or C-663) are implemented.
 
 It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization. 
 

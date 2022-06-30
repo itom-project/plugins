@@ -563,7 +563,7 @@ If you change any parameters like speed or acceleration, set the values and then
 <context>
     <name>USBMotion3XIII</name>
     <message>
-        <location line="+245"/>
+        <location line="+240"/>
         <source>indicates whether motor driver is connected (1) or not (0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -954,7 +954,7 @@ If you change any parameters like speed or acceleration, set the values and then
 <context>
     <name>USBMotion3XIIIInterface</name>
     <message>
-        <location line="-1691"/>
+        <location line="-1686"/>
         <source>serial number or string of the device to open, or &apos;auto&apos; if next unused device should be opened or &apos;0&apos;,&apos;1&apos;... to indicate the index of the device to open.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -96,7 +96,7 @@
 <context>
     <name>FireGrabber</name>
     <message>
-        <location filename="../FireGrabber.cpp" line="+148"/>
+        <location filename="../FireGrabber.cpp" line="+146"/>
         <source>vendor ID of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -310,7 +310,7 @@
 <context>
     <name>FireGrabberInterface</name>
     <message>
-        <location line="-2094"/>
+        <location line="-2092"/>
         <source>specific number of the camera, don&apos;t use with cameraNumber (0 = unused) - this parameter does not exist in linux version.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -597,7 +597,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
 <context>
     <name>SuperlumBS</name>
     <message>
-        <location line="+30"/>
+        <location line="+28"/>
         <source>The current com-port ID of this specific device. -1 means undefined.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -866,7 +866,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
 <context>
     <name>SuperlumBSInterface</name>
     <message>
-        <location line="-1260"/>
+        <location line="-1258"/>
         <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>

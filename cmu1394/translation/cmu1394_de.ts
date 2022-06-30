@@ -4,7 +4,7 @@
 <context>
     <name>CMU1394</name>
     <message>
-        <location filename="../cmu1394.cpp" line="+178"/>
+        <location filename="../cmu1394.cpp" line="+173"/>
         <location line="+44"/>
         <source>Error in copyFromData2D. Size of Buffer unequal size of DataObject</source>
         <translation type="unfinished"></translation>
@@ -125,27 +125,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <location line="+15"/>
+        <location line="+14"/>
+        <location line="+22"/>
         <source>FireWire: StartDataCapture failed,
 maybe video rate too high!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
-        <location line="+15"/>
-        <location line="+8"/>
+        <location line="-18"/>
+        <location line="+22"/>
+        <location line="+12"/>
         <source>FireWire: StartDataCapture failed,
 time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Parameter not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+67"/>
         <source>Maximal number of CMU1394 grabber already running</source>
         <translation type="unfinished"></translation>
     </message>
@@ -266,7 +266,7 @@ time out!</source>
 <context>
     <name>CMU1394Interface</name>
     <message>
-        <location line="-1259"/>
+        <location line="-1273"/>
         <source>Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.</source>
         <translation type="unfinished"></translation>
     </message>

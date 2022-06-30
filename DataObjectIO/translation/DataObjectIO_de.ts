@@ -23,12 +23,12 @@
     <message>
         <location line="+3"/>
         <source>ASCII Surface Data File (*.sdf)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>ASCII or binary Surface Data File (*.sdf)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ASCII oder binäres Surface Data File (*.sdf)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -69,23 +69,23 @@
         <location line="+3"/>
         <location line="+6"/>
         <source>Raw-XML (*.ido *.idh)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-3"/>
         <location line="+6"/>
         <source>ASCII Data (*.txt *.csv *.tsv)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ASCII-Daten (*.txt *.csv *.tsv)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Veeco Nanoscope III (*.001 *.002 *.003 *.004)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
@@ -96,7 +96,7 @@
         <location line="+39"/>
         <location line="+818"/>
         <source>2D-DataObject of anytype or 3-planes DataObject of uint8</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beliebiges 2D-dataObject oder dataObject mit 3 Ebenen vom Typ uint8</translation>
     </message>
     <message>
         <location line="-816"/>
@@ -185,7 +185,7 @@
         <location line="+411"/>
         <location line="+529"/>
         <source>Source file name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Quelldateiname</translation>
     </message>
     <message>
         <location line="-3826"/>
@@ -229,7 +229,7 @@
     <message>
         <location line="+2"/>
         <source>Absolute or relative path to the Veeco nanoscope file (suffix 001, 002, 003, ...).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Absoluter oder relativer Pfad von Veeco nanoscope file (suffix 001, 002, 003, ...).</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -252,7 +252,7 @@
     <message>
         <location line="-1863"/>
         <source>2D-DataObject of anytype</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beliebiges 2D-dataObject</translation>
     </message>
     <message>
         <location line="-505"/>
@@ -262,12 +262,12 @@
     <message>
         <location line="+76"/>
         <source>Compression rate, 0: high, 100: low</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Komprimierungsrate (0: hoch, 100: niedrig)</translation>
     </message>
     <message>
         <location line="+76"/>
         <source>Compression rate, 0: high, 9: low</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Komprimierungsrate (0: hoch, 9: niedrig)</translation>
     </message>
     <message>
         <location line="+357"/>
@@ -411,7 +411,7 @@
         <location line="-431"/>
         <location line="+435"/>
         <source>Complex data types not supported</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Daten vom Typ Complex werden nicht unterstützt</translation>
     </message>
     <message>
         <location line="-419"/>
@@ -536,7 +536,7 @@
     <message>
         <location line="-59"/>
         <source>data format not supported</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dieses Datenformat wird nicht unterstützt</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -619,7 +619,7 @@
     <message>
         <location line="+184"/>
         <source>1D data object of any real data type. No invalid values are allowed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1D-dataObjekt eines beliebigen realen Datentyps. Keine ungültigen Werte erlaubt.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -645,7 +645,7 @@
         <location filename="../avantes.cpp" line="+2"/>
         <location filename="../DataObjectIO.cpp" line="+2"/>
         <source>Source filename</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Quelldateiname</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -731,13 +731,13 @@
     <message>
         <location line="-322"/>
         <source>cv::imwrite exited with false!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">cv::imwrite wurd mit &apos;Flase&apos; beendet!</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+487"/>
         <source>%1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-55"/>
@@ -770,7 +770,7 @@
     <message>
         <location line="+103"/>
         <source>Any type of dataObject</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beliebiger dataObject-Typ</translation>
     </message>
     <message>
         <location line="+502"/>

@@ -4,7 +4,7 @@
 <context>
     <name>FringeProj</name>
     <message>
-        <location filename="../FringeProj.cpp" line="+640"/>
+        <location filename="../FringeProj.cpp" line="+638"/>
         <source>Calculate the indexmap for graycode image stack</source>
         <translation type="unfinished"></translation>
     </message>
@@ -215,7 +215,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-538"/>
+        <location line="-536"/>
         <source>Algorithms used for fringe projection (phase shifting and Gray code)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -230,7 +230,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+604"/>
+        <location line="+602"/>
         <source>creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value. 
 
 The gray-code has a maximal width of graycodeBitWidth. Hence, N corresponds 1 &lt;&lt; (graycodeBitWidth+1) 

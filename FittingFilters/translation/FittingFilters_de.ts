@@ -274,22 +274,7 @@ Furthermore this plugin also contains methods to finally subtract or reconstruct
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
-        <source>fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy) 
-
-This fit can be executed by different fit strategies: 
-- leastSquareFit minimizes the sum of  the squared distances of all valid points to the plane (direct solution)
-- leastSquareFitSVD does the same using a svd algorithm 
-- leastMedianFit minimizes the median of the absolute distances of all valid points to the plane 
-
-The probability values are only important for the least median fit and determine the number of iterations for the 
-a random search using the equation 
-
-iterations &gt;= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+142"/>
+        <location line="+169"/>
         <source>subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy) 
 
 If the destinationImage is not the same than the sourceImage, the destinationImage finally is a new data object with the same size and type than the sourceImage and contains the data of the sourceImage subtracted by the given plane. If both are the same, the subtraction is executed in-place. 
@@ -305,7 +290,22 @@ This method firstly executes the filter *fitPlane* followed by *subtractPlane*.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="-257"/>
+        <source>fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy) 
+
+This fit can be executed by different fit strategies: 
+- leastSquareFit minimizes the sum of  the squared distances of all valid points to the plane (direct solution)
+- leastSquareFitSVD does the same using a svd algorithm 
+- leastMedianFit minimizes the median of the absolute distances of all valid points to the plane 
+
+The probability values are only important for the least median fit and determine the number of iterations for the 
+a random search using the equation 
+
+.. math:: iterations &gt;= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+315"/>
         <source>This method fits a two-dimensional polynomial of given order in x- and y-direction to the data &apos;inputData&apos;. 
 
 For the fit, the optional scale and offset values of the input data object are considered. The fit is executed in double precision, such that the input is converted to float64 (if not yet done). NaN values in the input data object are ignored. Optionally, you can give a weighting data object (needs to have the same dimension and size than inputData) such that the values are weighted with the values of the data object &apos;weights&apos;. Values with corresponding weights &lt;= 0 are ignored as well. 
@@ -314,10 +314,10 @@ Depending on the orders, the fitted polynomial, whose coefficients are returned 
 
     if (orderX &lt;= orderY): 
     
-        f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
+        .. math:: f(x,y) = \sum_{i=0}^{orderX} \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
     
-        f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
+        .. math:: f(x,y) = \sum_{j=0}^{orderY} \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. 
 
@@ -338,10 +338,10 @@ Depending on the orders, the fitted polynomial, whose coefficients are returned 
 
     if (orderX &lt;= orderY): 
     
-        z = f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
+        .. math:: z = f(x,y) = \sum_{i=0}^{orderX} \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
     
-        z = f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
+        .. math:: z = f(x,y) = \sum_{j=0}^{orderY} \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. 
 
@@ -360,10 +360,10 @@ The polynomial coefficients (p0, p1, ...) are those returned by the filter &apos
 
     if (orderX &lt;= orderY): 
     
-        f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
+        .. math:: f(x,y) = \sum_{i=0}^{orderX} \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
     
-        f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
+        .. math:: f(x,y) = \sum_{j=0}^{orderY} \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.</source>
         <translation type="unfinished"></translation>
@@ -377,10 +377,10 @@ The polynomial coefficients (p0, p1, ...) are those returned by the filter &apos
 
     if (orderX &lt;= orderY): 
     
-        f(x,y) = \sum_{i=0}^orderX \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
+        .. math:: f(x,y) = \sum_{i=0}^{orderX} \sum_{j=0}^{orderY-i} p_{ij} x^i y^j 
     else: 
     
-        f(x,y) = \sum_{j=0}^orderY \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
+        .. math:: f(x,y) = \sum_{j=0}^{orderY} \sum_{i=0}^{orderX-i} p_{ij} x^i y^j 
 
 The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.</source>
         <translation type="unfinished"></translation>

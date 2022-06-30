@@ -211,7 +211,7 @@
 <context>
     <name>LeicaMotorFocus</name>
     <message>
-        <location filename="../LeicaMotorFocus.cpp" line="+260"/>
+        <location filename="../LeicaMotorFocus.cpp" line="+258"/>
         <source>Unexspected #(17) at first sign in buffer. Sign deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -365,7 +365,7 @@
 <context>
     <name>LeicaMotorFocusInterface</name>
     <message>
-        <location line="-1000"/>
+        <location line="-998"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished"></translation>
     </message>

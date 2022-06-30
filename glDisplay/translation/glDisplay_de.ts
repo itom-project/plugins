@@ -135,7 +135,7 @@
 <context>
     <name>GLDisplay</name>
     <message>
-        <location filename="../glDisplay.cpp" line="+209"/>
+        <location filename="../glDisplay.cpp" line="+219"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -225,12 +225,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+44"/>
-        <source>Supported OpenGL Version is lower than 2.0 and therefore not supported</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+149"/>
+        <location line="+166"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -255,12 +250,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+43"/>
         <source>You need to pass a lut with 256 values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+59"/>
         <source>insufficient gray values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -288,7 +283,7 @@
 <context>
     <name>GLDisplayInterface</name>
     <message>
-        <location line="-726"/>
+        <location line="-705"/>
         <source>Frameless window to display images using OpenGL</source>
         <translation type="unfinished"></translation>
     </message>
