@@ -3061,6 +3061,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 
     QString imgPalette(palette);
     QFileInfo fileName(QString::fromLatin1(filename));
+    QDir folder = fileName.absoluteDir();
 
     if (fileName.fileName().isEmpty())
     {
@@ -3070,6 +3071,11 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
     if (fileName.exists() && !fileName.isWritable())
     {
         return ito::RetVal(ito::retError, 0, tr("File is not writeable.").toLatin1().data());
+    }
+
+    if (!folder.exists())
+    {
+        return ito::RetVal(ito::retError, 0, tr("The target directory '%1' does not exist.").arg(folder.absolutePath()).toLatin1().data());
     }
 
     std::vector<int> save_params;
