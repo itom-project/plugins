@@ -4441,7 +4441,7 @@ template<typename _Tp> ito::RetVal doWriteDataD(ito::DataObject *dObjSrc, QTextS
     return retval;
 }
 
-template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextStream *dataOut, const int asTuple, const int noPhys,
+template<typename _Tp> ito::RetVal doWriteData(const ito::DataObject *dObjSrc, QTextStream *dataOut, const int asTuple, const int noPhys,
     QChar wrapSign, QChar separatorSign, QString separatorLines, QString separatorMatrices)
 {
     ito::RetVal retval(ito::retOk);
@@ -4466,10 +4466,10 @@ template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextSt
                     for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
                     {
                         *dataOut << wrapSign << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale)) << wrapSign;
-                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) -1 )
                             *dataOut << separatorSign;
                     }
-                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) - 1)
+                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) -1 )
                         *dataOut << separatorLines;
                 }
                 if (nm < dObjSrc->getNumPlanes() - 1)
@@ -4486,10 +4486,10 @@ template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextSt
                     for (int nx = 0; nx < dObjSrc->getSize(dObjSrc->getDims() - 1); nx++)
                     {
                         *dataOut << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale));
-                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1 )
                             *dataOut << separatorSign;
                     }
-                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) - 1)
+                    if (ny < dObjSrc->getSize(dObjSrc->getDims() - 2) - 1 )
                         *dataOut << separatorLines;
                 }
                 if (nm < dObjSrc->getNumPlanes() - 1)
@@ -4524,8 +4524,11 @@ template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextSt
                         *dataOut << wrapSign << QString::number((nx - xoffset) * xscale) << wrapSign << separatorSign;
                         *dataOut << wrapSign << QString::number((ny - xoffset) * yscale) << wrapSign << separatorSign;
                         *dataOut << wrapSign << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale)) << wrapSign;
-                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
-                            *dataOut << separatorLines;
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) )
+                            if ((nm != dObjSrc->getNumPlanes() - 1) ||
+                                (ny != dObjSrc->getSize(dObjSrc->getDims() - 2) - 1) ||
+                                (nx != dObjSrc->getSize(dObjSrc->getDims() - 1) - 1))
+                                *dataOut << separatorLines;
                     }
                 }
                 if (nm < dObjSrc->getNumPlanes() - 1)
@@ -4544,8 +4547,11 @@ template<typename _Tp> ito::RetVal doWriteData(ito::DataObject *dObjSrc, QTextSt
                         *dataOut << QString::number((nx - xoffset) * xscale) << separatorSign;
                         *dataOut << QString::number((ny - xoffset) * yscale) << separatorSign;
                         *dataOut << QString::number(cv::saturate_cast<_Tp>((srcPtr[nx] - zoffset) * zscale));
-                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1) - 1)
-                            *dataOut << separatorLines;
+                        if (nx < dObjSrc->getSize(dObjSrc->getDims() - 1))
+                            if ((nm != dObjSrc->getNumPlanes() - 1) ||
+                                (ny != dObjSrc->getSize(dObjSrc->getDims() - 2) - 1) ||
+                                (nx != dObjSrc->getSize(dObjSrc->getDims() - 1) - 1))
+                                *dataOut << separatorLines;
                     }
                 }
                 if (nm < dObjSrc->getNumPlanes() - 1)
