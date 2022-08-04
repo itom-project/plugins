@@ -4,7 +4,7 @@
 <context>
     <name>BasicFilters</name>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="+3456"/>
+        <location filename="../BasicSpecialFilters.cpp" line="+3454"/>
         <location filename="../BasicFilters.cpp" line="+258"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
@@ -263,25 +263,25 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-3260"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-3258"/>
         <location line="+139"/>
         <location line="+72"/>
         <location line="+169"/>
-        <location line="+2084"/>
+        <location line="+2082"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2459"/>
+        <location line="-2457"/>
         <location line="+139"/>
         <location line="+77"/>
-        <location line="+2248"/>
+        <location line="+2246"/>
         <location line="+410"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2869"/>
+        <location line="-2867"/>
         <source>Error: Input image must be 3D</source>
         <translation type="unfinished"></translation>
     </message>
@@ -449,11 +449,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>0: Bresenham or Nearest, 1: weighted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+26"/>
         <location line="+5"/>
         <source>Error: sourceImage is Null-Pointer</source>
@@ -575,7 +570,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-377"/>
+        <location line="-962"/>
+        <source>0: Bresenham or Nearest Neighbour, 1: weighted (not implemented, yet).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+585"/>
         <location line="+379"/>
         <source>0: clip values outside of given range (default), 1: clip inside</source>
         <translation type="unfinished"></translation>

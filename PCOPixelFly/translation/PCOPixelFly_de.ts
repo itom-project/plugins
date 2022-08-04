@@ -244,7 +244,7 @@
 <context>
     <name>PCOPixelFly</name>
     <message>
-        <location filename="../PCOPixelFly.cpp" line="+149"/>
+        <location filename="../PCOPixelFly.cpp" line="+147"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -504,7 +504,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1739"/>
+        <location line="-1737"/>
         <source>PCO Pixelfly cameras</source>
         <translation type="unfinished"></translation>
     </message>
@@ -521,7 +521,7 @@ Please install first the necessary drivers for the camera and grabber board from
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+446"/>
+        <location line="+444"/>
         <source>no Error</source>
         <translation type="unfinished"></translation>
     </message>

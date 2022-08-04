@@ -16,30 +16,30 @@
     <message>
         <location line="+15"/>
         <location line="+807"/>
-        <location line="+371"/>
-        <location line="+304"/>
-        <location line="+209"/>
-        <location line="+194"/>
-        <location line="+973"/>
+        <location line="+372"/>
+        <location line="+305"/>
+        <location line="+210"/>
+        <location line="+195"/>
+        <location line="+974"/>
         <location line="+221"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+95"/>
-        <location filename="../OpenCVFilters.cpp" line="-3074"/>
+        <location filename="../OpenCVFilters.cpp" line="-3079"/>
         <location line="+807"/>
-        <location line="+371"/>
-        <location line="+304"/>
-        <location line="+209"/>
-        <location line="+194"/>
-        <location line="+973"/>
+        <location line="+372"/>
+        <location line="+305"/>
+        <location line="+210"/>
+        <location line="+195"/>
+        <location line="+974"/>
         <location line="+221"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-3030"/>
+        <location filename="../OpenCVFilters.cpp" line="-3035"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -52,26 +52,26 @@
         <location line="+102"/>
         <location line="+362"/>
         <location line="+280"/>
-        <location line="+371"/>
-        <location line="+2450"/>
+        <location line="+372"/>
+        <location line="+2454"/>
         <source>Error: source is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2760"/>
+        <location line="-2764"/>
         <source>Error: anchor should be &apos;int8&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../calib3d.cpp" line="+443"/>
-        <location filename="../OpenCVFilters.cpp" line="-555"/>
+        <location filename="../OpenCVFilters.cpp" line="-556"/>
         <location line="+18"/>
         <location line="+342"/>
-        <location line="+228"/>
-        <location line="+330"/>
-        <location line="+365"/>
-        <location line="+205"/>
-        <location line="+188"/>
+        <location line="+229"/>
+        <location line="+331"/>
+        <location line="+366"/>
+        <location line="+206"/>
+        <location line="+189"/>
         <location line="+257"/>
         <location line="+709"/>
         <location line="+224"/>
@@ -81,7 +81,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-3017"/>
+        <location filename="../OpenCVFilters.cpp" line="-3022"/>
         <source>All types except complex64 and complex128 are accepted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -123,25 +123,25 @@
     <message>
         <location line="-332"/>
         <location line="+362"/>
-        <location line="+3103"/>
+        <location line="+3108"/>
         <source>source and destination object must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3494"/>
+        <location line="-3499"/>
         <source>This string defines how the filter should handle pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+99"/>
         <location line="+362"/>
-        <location line="+3094"/>
+        <location line="+3099"/>
         <location line="+36"/>
         <source>border type %1 is unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3472"/>
+        <location line="-3477"/>
         <location line="+362"/>
         <source>anchor must be in range [0,%1];[0,%2]</source>
         <translation type="unfinished"></translation>
@@ -198,7 +198,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+128"/>
         <source>Error: anchor has wrong size or number of dims</source>
         <translation type="unfinished"></translation>
     </message>
@@ -209,16 +209,16 @@
     </message>
     <message>
         <location line="+13"/>
-        <location line="+326"/>
-        <location line="+2229"/>
+        <location line="+327"/>
+        <location line="+2232"/>
         <location line="+270"/>
         <source>No compatible dataObject type found for given OpenCV matrix type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2265"/>
-        <location line="+209"/>
-        <location line="+194"/>
+        <location line="-2268"/>
+        <location line="+210"/>
+        <location line="+195"/>
         <source>Error: input object must not be empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -233,7 +233,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+166"/>
+        <location line="+167"/>
         <source>Rotated object by 180� using cvRotate180-Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -817,14 +817,14 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-2287"/>
-        <location line="+1788"/>
+        <location filename="../OpenCVFilters.cpp" line="-2291"/>
+        <location line="+1792"/>
         <location line="+229"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1883"/>
+        <location line="-1887"/>
         <source>Image of type Integer or float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -839,13 +839,13 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
-        <location line="+912"/>
+        <location line="+55"/>
+        <location line="+915"/>
         <source>Error: kernel must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-902"/>
+        <location line="-905"/>
         <source>Error: kernelsize &gt; 3 and object is not uint8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -856,9 +856,9 @@ The following values are possible:
     </message>
     <message>
         <location line="+236"/>
-        <location line="+209"/>
-        <location line="+194"/>
-        <location line="+973"/>
+        <location line="+210"/>
+        <location line="+195"/>
+        <location line="+974"/>
         <location line="+221"/>
         <source>Error: nDim-stacks not supported yet, only 2D and 3D.</source>
         <translation type="unfinished"></translation>
@@ -884,7 +884,7 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-694"/>
+        <location line="-696"/>
         <source>Flipped left/rigth with cvFlip-Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1040,7 +1040,7 @@ The following values are possible:
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="-1727"/>
+        <location filename="../OpenCVFilters.cpp" line="-1730"/>
         <source>Wrapped algorithms from OpenCV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1120,7 +1120,7 @@ Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+188"/>
         <source>2D-dimentional fourier-transformation using cv::DFT.
 
 This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.The result is a complex-dataObject. The axis-scales and units are invertes and modified.
@@ -1171,7 +1171,7 @@ Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+303"/>
+        <location line="+304"/>
         <source>This filter flips the image left to right. 
 
 This filter applies the flip method cvFlip of OpenCV with the flipCode &gt; 0 to a 2D source data object. The result is contained in the destination object
@@ -1191,7 +1191,7 @@ It is allowed to let the filter work inplace if you give the same input than des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+200"/>
         <source>This filter rotates the image by 90� count clock wise. 
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
@@ -1211,7 +1211,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+215"/>
+        <location line="+216"/>
         <source>This filter rotates the image by 180�. 
 
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The result is contained in the destination object
@@ -1221,7 +1221,7 @@ It is allowed to let the filter work inplace if you give the same input than des
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+167"/>
+        <location line="+168"/>
         <source>Set single spikes at measurement edges to a new value. 
 
 This filter creates a binary mask for the input object. The value of mask(y,x) will be 1 if value of input(y,x) is within the specified range and is finite.The mask is eroded and than dilated by kernel size using openCV cv::erode and cv::dilate with a single iteration. In the last step the value of output(y,x) is set to newValue if mask(y,x) is 0.
@@ -1328,7 +1328,7 @@ When you want to use the cvWarpAffine method with this rotation matrix your cent
         <source>Applies an affine transformation onto a 2D dataObject.
 The function warpAffine transforms the source dataObject using the specified matrix:
 
-dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):
+.. math:: dst(x,y)=src(M11x+M12y+M13,M21x+M22y+M23):
 
 When the flag WARP_INVERSE_MAP is set.
 Otherwise, the transformation is first inverted with invertAffineTransform
@@ -1457,7 +1457,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 
 The function remap transforms the source image using the specified map: 
 
-dst(x,y) = src(map_x(x, y), map_y(x, y)) 
+.. math:: dst(x,y) = src(map1(x, y), map2(x, y)) 
 
 where values of pixels with non-integer coordinates are computed using one of available interpolation methods. map_x and map_y can be encoded as 
 separate floating-point maps in map_1 and map_2 respectively, or interleaved floating-point maps of (x,y) in map_1 , 

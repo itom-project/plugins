@@ -266,7 +266,7 @@
     <message>
         <location line="+225"/>
         <source>timeout while reading from serial port.</source>
-        <translation type="unfinished">Zeitüberschreitung beim Lesen vom Serial-Port.</translation>
+        <translation>Zeitüberschreitung beim Lesen vom Serial-Port.</translation>
     </message>
     <message>
         <location line="-138"/>
@@ -719,7 +719,7 @@ Beispiel
     <message>
         <location line="+205"/>
         <source>E.g. Test$(10)</source>
-        <translation type="unfinished">z. B. Test$(10)</translation>
+        <translation>z.B. Test$(10)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -729,27 +729,27 @@ Beispiel
     <message>
         <location line="+16"/>
         <source>Bytes separated by space, e.g. 255 10 13</source>
-        <translation type="unfinished">Bytes getrennt durch ein Leerzeichen, z. B. 255 10 13</translation>
+        <translation>Bytes getrennt durch ein Leerzeichen, z.B. 255 10 13</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Bytes separated by space, e.g. 4f a 1b</source>
-        <translation type="unfinished">Bytes getrennt durch ein Leerzeichen, z. B. 4f a 1b</translation>
+        <translation>Bytes getrennt durch ein Leerzeichen, z.B. 4f a 1b</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Bytes separated by space, e.g. 1010 11111111 100</source>
-        <translation type="unfinished">Bytes getrennt durch ein Leerzeichen, z. B. 1010 11111111 100</translation>
+        <translation>Bytes getrennt durch ein Leerzeichen, z.B. 1010 11111111 100</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>automatically read answer after send</source>
-        <translation type="unfinished">Automatisches Lesen nach dem Senden</translation>
+        <translation>Automatisches Lesen nach dem Senden</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>enable $(ascii-code) statement parsing</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingabe von Sonderzeichen über $(ASCII-Code) aktivieren</translation>
     </message>
     <message>
         <location line="+31"/>

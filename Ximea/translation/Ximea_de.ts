@@ -285,11 +285,6 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Acquisition timing: not available due to old Ximea API.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+3"/>
         <source>Framerate of image acquisition (in fps). This parameter reflects the current framerate. If timing_mode is in XI_ACQ_TIMING_MODE_FREE_RUN (%1, default), the framerate is readonly and fixed to the highest possible rate. For xiQ cameras only, timing_mode can be set to XI_ACQ_TIMING_MODE_FRAME_RATE (%2) and the framerate is adjustable to a fixed value.</source>
         <translation type="unfinished"></translation>
@@ -355,7 +350,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+321"/>
+        <location line="+318"/>
         <source>Camera is not connected or does not work properly!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -442,7 +437,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+929"/>
+        <location line="+906"/>
         <source>stopDevice ignored since camera was not started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -463,13 +458,13 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2020"/>
+        <location line="-1997"/>
         <location line="+46"/>
         <source>Cannot get function mmProcessFrame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-966"/>
+        <location line="-961"/>
         <source>Gain in % (the percentage is mapped to the dB-values).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -504,7 +499,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+28"/>
         <source>Set the input pin modes for all available gpi pins. This is a list whose lengths corresponds to the number of available pins. Use gpi_mode[i] to access the i-th pin. %1: Off, %2: trigger, %3: external signal input (not implemented by Ximea api)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -534,7 +529,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+432"/>
+        <location line="+429"/>
         <source>Camera handle deleted before closing procedure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -895,7 +890,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+182"/>
         <source>frame_burst_count != 1 can only be applied if trigger_selector = frame_burst_start (%i) and trigger_mode != off (0)</source>
         <translation type="unfinished"></translation>
     </message>

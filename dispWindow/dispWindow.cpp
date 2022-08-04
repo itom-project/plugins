@@ -360,7 +360,7 @@ DispWindow::DispWindow() : m_pWindow(nullptr)
         -1,
         100,
         0,
-        tr("Number of current image (phase images, dark image, bright image, graycode images)")
+        tr("Number of current image (phase images, dark image, flatfield image, graycode images)")
             .toLatin1()
             .data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1020,7 +1020,7 @@ ito::RetVal DispWindow::getVal(void* data, ItomSharedSemaphore* waitCond)
     if (dObj->getType() != ito::tUInt8)
     {
         retval =
-            ito::RetVal(ito::retError, 0, tr("wrong data type (uint8) required").toLatin1().data());
+            ito::RetVal(ito::retError, 0, tr("wrong data type (uint8 required)").toLatin1().data());
         goto end;
     }
 

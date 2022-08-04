@@ -42,7 +42,7 @@
 <context>
     <name>QCam</name>
     <message>
-        <location filename="../QCam.cpp" line="+100"/>
+        <location filename="../QCam.cpp" line="+98"/>
         <source>Integration time of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -335,7 +335,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1105"/>
+        <location line="-1103"/>
         <source>Firewire QCam cameras from QImaging</source>
         <translation type="unfinished"></translation>
     </message>

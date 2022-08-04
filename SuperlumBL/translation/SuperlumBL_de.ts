@@ -178,7 +178,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
 <context>
     <name>SuperlumBL</name>
     <message>
-        <location line="+28"/>
+        <location line="+26"/>
         <source>Name of plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -304,7 +304,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
 <context>
     <name>SuperlumBLInterface</name>
     <message>
-        <location line="-643"/>
+        <location line="-641"/>
         <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>

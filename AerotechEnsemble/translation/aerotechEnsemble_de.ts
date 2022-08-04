@@ -4,7 +4,7 @@
 <context>
     <name>AerotechEnsemble</name>
     <message>
-        <location filename="../aerotechEnsemble.cpp" line="+150"/>
+        <location filename="../aerotechEnsemble.cpp" line="+145"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -226,7 +226,7 @@
 <context>
     <name>AerotechEnsembleInterface</name>
     <message>
-        <location line="-1212"/>
+        <location line="-1207"/>
         <source>list of axes IDs that are enabled (0..9). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
         <translation>Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden]</translation>
     </message>

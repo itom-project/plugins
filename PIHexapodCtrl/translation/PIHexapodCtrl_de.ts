@@ -173,7 +173,7 @@
 <context>
     <name>PIHexapodCtrl</name>
     <message>
-        <location filename="../PIHexapodCtrl.cpp" line="+185"/>
+        <location filename="../PIHexapodCtrl.cpp" line="+183"/>
         <source>asychronous (1.0) or sychronous (0.0) mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -203,7 +203,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+200"/>
+        <location line="+198"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
@@ -213,7 +213,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+647"/>
+        <location line="+477"/>
+        <source>Error reading from device!
+%1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+169"/>
         <source>Parameter Syntax Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -413,7 +420,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+71"/>
         <source>No serial port open, pointer is NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -434,7 +441,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+87"/>
         <source>getting pivot point: coordinate name &apos;%c&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -444,12 +451,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-866"/>
+        <location line="-863"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1124"/>
+        <location line="-1121"/>
         <source>Set the system Pivot-Point (origin of rotation)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -499,7 +506,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+504"/>
+        <location line="+502"/>
         <source>Too many axes given. Only %i axes available.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -509,20 +516,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+346"/>
-        <source>Error reading from device!
-%s
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+49"/>
+        <location line="+394"/>
         <location line="+63"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1158"/>
+        <location line="-1155"/>
         <location line="+10"/>
         <source>Position of the Pivot-Point in x</source>
         <translation type="unfinished"></translation>
@@ -550,12 +550,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+684"/>
+        <location line="+682"/>
         <source>Error. Addressed axis twice</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+737"/>
+        <location line="+734"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -568,7 +568,7 @@
 <context>
     <name>PIHexapodCtrlInterface</name>
     <message>
-        <location line="-1583"/>
+        <location line="-1576"/>
         <source>PI Hexapods H810, H824, H840, H850</source>
         <translation type="unfinished"></translation>
     </message>

@@ -4,7 +4,7 @@
 <context>
     <name>AvantesAvaSpec</name>
     <message>
-        <location filename="../avantesAvaSpec.cpp" line="+173"/>
+        <location filename="../avantesAvaSpec.cpp" line="+194"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,12 +62,12 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+522"/>
+        <location line="+576"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+246"/>
         <source>Wrong picture type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -90,13 +90,18 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
 <context>
     <name>AvantesAvaSpecInterface</name>
     <message>
-        <location line="-925"/>
+        <location line="-1006"/>
         <source>VendorID of spectrometer, 0x1992 for AvaSpec-3648, 0x471 for AvaSpec-ULS3648...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>ProductID of spectrometer, 0x0667 for spectrometer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Indicates if the device is a USB3 device</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -156,17 +161,17 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../avantesAvaSpec.cpp" line="-20"/>
+        <location filename="../avantesAvaSpec.cpp" line="-25"/>
         <source>Avantes AvaSpec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. It uses a low-level libusb connection to communicate with the devices and has been tested with the following spectrometers: * AvaSpec 3468 USB-Spectrometer * AvaSpec 2048 USB-Spectrometer.</source>
+        <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. It uses a low-level libusb connection to communicate with the devices and has been tested with the following spectrometers: * AvaSpec 3468 USB-Spectrometer * AvaSpec 2048 USB-Spectrometer * AvaSpec-ULS2048CL-EVO USB3-Spectrometer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>

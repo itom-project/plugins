@@ -130,4 +130,4 @@ Changelog
 =========
 
 * itom setup 3.2.1: This plugin has been compiled using the NerianSceneScanPro API 7.0
-* itom setup 4.1.0: This plugin has been compiled using the NerianSceneScanPro API 7.0
+* itom setup >4.1.0: This plugin has been compiled using the NerianSceneScanPro API 7.0

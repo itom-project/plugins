@@ -37,52 +37,52 @@
     <message>
         <location filename="../LibModBus.cpp" line="+138"/>
         <source>IP Adress or COM-Port of the target device</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">IP-Adresse oder COM-Port des Zielgeräts</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>TCP Port for ModbusTCP or slave ID for ModbusRTU</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">TCP-Port für ModbusTCP oder Slave-ID für ModbusRTU</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The baudrate of the port for RTU communication</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Baudrate für den Port der RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Parity for RTU communication (N,E,O)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Parität für die RTU-Kommunikation (N,E,O)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Number of bits to be written in line for RTU communication</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Anzahl Bits die pro Zeile über die RTU-Kommunikation geschrieben werden</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Stop bits after every n bits for RTU communication</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stop-Bits nach jedem n-ten Bit für die RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enables command-line output of different readouts (e.g. register values of getVal)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aktiviert Kommandozeilenausgabe von unterschliedlichen Anzeigen (z.B. Registerwerte von getVal)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Default string for register addressing. Coding is &apos;Reg1Address,Reg1Size;Reg2Address,Reg2Size...&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Standard-String für Registeradressierung. Die Kodierung ist &apos;Reg1Address, Reg1Size; Reg2Address, Reg2Size ...&apos;</translation>
     </message>
     <message>
         <location line="+176"/>
         <source>invalid target device</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ungültiges Zeilgerät</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Unable to allocate libmodbus context</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aktivieren um libmodbus-Kontext zuzuordnen</translation>
     </message>
     <message>
         <location line="+63"/>
@@ -105,7 +105,7 @@
     <message>
         <location line="-362"/>
         <source>itom-plugin for a modbus communication</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">itom-Plugin für eine modbus-Komminikation</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -115,42 +115,47 @@ Registers are addressed using the modbus_read_registers (0x03) and modbus_write_
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. 
 The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag &apos;registers&apos; containing a string with address and number of consecutive registers seperated by &apos;,&apos; and different registers seperated by &apos;;&apos; i.e.: &apos;10,2;34,1;77,4&apos; to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:&apos;10,2;34;77,4&apos; 
 If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be used for addressing.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">LibModBus ist ein itom-Plugin, das eine Kommunikationsschnittstelle mit modbusTCP und modbusRTU bereitstellt.
+Das Plugin basiert auf der libmodbus v3.1.1 Bibliothek und wurde nur unter Windows getestet.
+Register werden durch modbus_read_registers (0x03) und modbus_write_registers (0x10) Funktionen von libmodbus adressiert, Spulen durch modbus_read_bits (0x01) und modbus_write_bits (0x0F).
+Die genutzten Plugin-Funktionen sind getVal(dObj) und setVal(dObj) mit einem dataObject der Größe 1xN, während N die Nummer des Registers ist, welches gelesen/geschrieben werden soll.
+Erwartet wird ein dataObject entweder vom Typ uint16 für Register oder uint8 für Spulen. Die Adressierung des Registers wird über das MetaTag &apos;registers&apos; des dataObjects durchgeführt, welches einen String mit der Adresse und Anzahl der aufeinanderfolgenden Register getrennt durch Komme und verschiedene Register getrennt durch Semikolon, z.B. &apos;10,2;34,1;77,4&apos; zur Adressierung der Register 10,11;34;77..80. Anzahl 1 von fortlaufenden Registern kann weggelassen werden; im Beispiel: &apos;10,2;34;77,4&apos;
+Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&apos;] zur Adressierung genutzt.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Adresse des Zielgeräts: IP-Adresse für ModbusTCP (z.B. 127.0.0.1) oder COM-Port für ModbusRTU (z.B. COM1)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The number of the TCP port for ModBusTCP (default 502) or slave ID for ModbusRTU</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">TCP-Port für ModbusTCP (standardmäßig 502) oder Slave-ID für ModbusRTU</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The baudrate of the port for RTU communication</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Baudrate für den Port der RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Parity for RTU communication (N,E,O)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Parität für die RTU-Kommunikation (N,E,O)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Number of bits to be written in line for RTU communication</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Anzahl Bits die pro Zeile über die RTU-Kommunikation geschrieben werden</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Stop bits after every n bits for RTU communication</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stop-Bits nach jedem n-ten Bit für die RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enables command-line output of different readouts (e.g. register values of getVal)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aktiviert Commandozeilenausgabe für unterschiedliche Meldungen (z.B. Registerwert von getVal)</translation>
     </message>
 </context>
 <context>
@@ -223,23 +228,23 @@ If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be u
     <message>
         <location line="+250"/>
         <source>Modbus-connect failed!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Modbus-Verbindung schlug fehl!</translation>
     </message>
     <message>
         <location line="+123"/>
         <location line="+131"/>
         <source>Data type of input object must be uint16 for registers or uint8 for coils</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datentyp des Eingangsobjekts muss für Register uint16 und für Spulen uint8 sein</translation>
     </message>
     <message>
         <location line="-55"/>
         <source>Size of given data object does not match number of requested registers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des dataObjects entspricht nicht der Anzahl der geforderten Register</translation>
     </message>
     <message>
         <location line="+140"/>
         <source>Size of given data object does not match number of transmitted registers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des dataObjects entspricht nicht der Anzahl der gesendeten Register</translation>
     </message>
     <message>
         <source>Serialport-Interface</source>
