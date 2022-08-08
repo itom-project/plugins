@@ -352,38 +352,14 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     m_params["sensor_type"].setVal<char*>(strBuf);
                 }
 
-#if defined(USE_API_4_10)
-
                 char serial_number[20] = "";
                 DWORD strSize = 20 * sizeof(char);
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &strSize, &strType), "get: " XI_PRM_DEVICE_SN);
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &strSize, &strType), "get:  XI_PRM_DEVICE_SN");
                 if (!retValue.containsError())
                 {
                     m_params["serial_number"].setVal<char*>(serial_number);
                     m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_number);
                 }
-
-#else
-                int serial_number;
-                XI_RETURN errorCode = pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType);
-                
-                ito::RetVal tempRetValue = checkError(errorCode, "get XI_PRM_DEVICE_SN");
-                if (!tempRetValue.containsError())
-                {
-                    QString serial_numberHex = QString::number(serial_number, 16);
-                    m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data());
-                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
-                }
-                else if (errorCode == 12)// With the Ximea api 4.24, the serial number cannot be read out for cameras of the XiC type. 
-                {
-                    m_params["serial_number"].setVal<char*>("unknown serial number");
-                    m_identifier = QString("%1 (cam number: %2)").arg(m_params["sensor_type"].getVal<char*>()).arg(m_params["cam_number"].getVal<int>());
-                }
-                else
-                {
-                    retValue = tempRetValue;
-                }
-#endif //defined(USE_API_4_10)
 
                 strBufSize = 1024 * sizeof(char);
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
