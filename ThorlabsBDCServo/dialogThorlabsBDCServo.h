@@ -1,11 +1,11 @@
 /* ********************************************************************
-    Plugin "ThorlabsBPDCServo" for itom software
+    Plugin "ThorlabsBDCServo" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,53 +23,51 @@
 #ifndef DIALOGTHORLABSBP_H
 #define DIALOGTHORLABSBP_H
 
-#include "common/sharedStructures.h"
-#include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 #include "common/addInInterface.h"
+#include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
 
-#include "ui_dialogThorlabsBPDCServo.h"
+#include "ui_dialogThorlabsBDCServo.h"
 
-#include <qdialog.h>
-#include <qstring.h>
-#include <qmap.h>
 #include <qabstractbutton.h>
+#include <qdialog.h>
+#include <qmap.h>
 #include <qsharedpointer.h>
+#include <qstring.h>
 
-namespace ito
-{
-    class AddInBase; //forward declaration
+namespace ito {
+class AddInBase; // forward declaration
 }
 
-class DialogThorlabsBPDCServo : public ito::AbstractAddInConfigDialog
+class DialogThorlabsBDCServo : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
-    public:
-    DialogThorlabsBPDCServo(ito::AddInActuator* actuator);
-        ~DialogThorlabsBPDCServo();
+public:
+    DialogThorlabsBDCServo(ito::AddInActuator* actuator);
+    ~DialogThorlabsBDCServo();
 
-        ito::RetVal applyParameters();
+    ito::RetVal applyParameters();
 
-    private:
-        void enableDialog(bool enabled);
+private:
+    void enableDialog(bool enabled);
 
-        Ui::DialogThorlabsBPDCServo ui;
-        bool m_firstRun;
-        ito::AddInActuator *m_pAia;
-        QMap<QString, ito::Param> temporaryParams;
-        int m_currentAxis;
+    Ui::DialogThorlabsBDCServo ui;
+    bool m_firstRun;
+    ito::AddInActuator* m_pAia;
+    QMap<QString, ito::Param> temporaryParams;
+    int m_currentAxis;
 
-        void currentAxisChanged(int newAxis);
+    void currentAxisChanged(int newAxis);
 
-    public slots:
-        void parametersChanged(QMap<QString, ito::Param> params);
+public slots:
+    void parametersChanged(QMap<QString, ito::Param> params);
 
-    private slots:
-        void on_buttonBox_clicked(QAbstractButton* btn);
-        void on_btnCalib_clicked();
-        void on_comboAxisSelector_currentIndexChanged(int index);
-
+private slots:
+    void on_buttonBox_clicked(QAbstractButton* btn);
+    void on_btnCalib_clicked();
+    void on_comboAxisSelector_currentIndexChanged(int index);
 };
 
 #endif

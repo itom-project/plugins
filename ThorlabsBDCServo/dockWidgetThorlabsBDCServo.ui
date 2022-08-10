@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DockWidgetThorlabsBPDCServo</class>
- <widget class="QWidget" name="DockWidgetThorlabsBPDCServo">
+ <class>DockWidgetThorlabsBDCServo</class>
+ <widget class="QWidget" name="DockWidgetThorlabsBDCServo">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Thorlabs BP DCServo</string>
+   <string>Thorlabs BDC Servo</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>

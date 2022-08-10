@@ -3,19 +3,19 @@
 ===========================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`ThorlabsBPDCServo`
-**Type**:       :plugintype:`ThorlabsBPDCServo`
-**License**:    :pluginlicense:`ThorlabsBPDCServo`
+**Summary**:    :pluginsummary:`ThorlabsBDCServo`
+**Type**:       :plugintype:`ThorlabsBDCServo`
+**License**:    :pluginlicense:`ThorlabsBDCServo`
 **Platforms**:  Windows
-**Devices**:    One or multi-axis piezo controllers of type Thorlabs Benchtop Piezo
-**Author**:     :pluginauthor:`ThorlabsBPDCServo`
+**Devices**:    Thorlabs 30 mm XY Stage with Integrated Controller, Brushed DC Servo Motors
+**Author**:     :pluginauthor:`ThorlabsBDCServo`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: ThorlabsBPDCServo
+    :plugin: ThorlabsBDCServo
 
 Initialization
 ==============
@@ -23,7 +23,7 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: ThorlabsBPDCServo
+        :plugin: ThorlabsBDCServo
 
 Parameters
 ===========

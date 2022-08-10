@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "ThorlabsBPDCServo" for itom software
+    Plugin "ThorlabsBDCServo" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
@@ -25,8 +25,8 @@
 
 #include "common/addInInterface.h"
 
-#include "dialogThorlabsBPDCServo.h"
-#include "dockWidgetThorlabsBPDCServo.h"
+#include "dialogThorlabsBDCServo.h"
+#include "dockWidgetThorlabsBDCServo.h"
 
 #include <qbytearray.h>
 #include <qlibrary.h>
@@ -36,9 +36,9 @@
 #include <qvector.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @class ThorlabsBPDCServoInterface
+/** @class ThorlabsBDCServoInterface
  */
-class ThorlabsBPDCServoInterface : public ito::AddInInterfaceBase
+class ThorlabsBDCServoInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase")
@@ -47,8 +47,8 @@ class ThorlabsBPDCServoInterface : public ito::AddInInterfaceBase
 
 protected:
 public:
-    ThorlabsBPDCServoInterface();
-    ~ThorlabsBPDCServoInterface(){};
+    ThorlabsBDCServoInterface();
+    ~ThorlabsBDCServoInterface(){};
     ito::RetVal getAddInInst(ito::AddInBase** addInInst);
 
 private:
@@ -65,20 +65,20 @@ public slots:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @class ThorlabsBPDCServo
+/** @class ThorlabsBDCServo
  */
-class ThorlabsBPDCServo : public ito::AddInActuator
+class ThorlabsBDCServo : public ito::AddInActuator
 {
     Q_OBJECT
 
 protected:
-    ThorlabsBPDCServo();
-    ~ThorlabsBPDCServo()
+    ThorlabsBDCServo();
+    ~ThorlabsBDCServo()
     {
     }
 
 public:
-    friend class ThorlabsBPDCServoInterface;
+    friend class ThorlabsBDCServoInterface;
 
     const ito::RetVal showConfDialog(void); /*!<shows the configuration dialog*/
     int hasConfDialog(void)

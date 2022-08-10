@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogThorlabsBPDCServo</class>
- <widget class="QDialog" name="DialogThorlabsBPDCServo">
+ <class>DialogThorlabsBDCServo</class>
+ <widget class="QDialog" name="DialogThorlabsBDCServo">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>412</width>
-    <height>341</height>
+    <height>277</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Thorlabs BP DCServo</string>
+   <string>Thorlabs BDC Servo</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -156,45 +156,14 @@
         <string>Axis settings</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Maximum travel range:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLabel" name="lblTravelRange">
-          <property name="text">
-           <string>0 µm</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" colspan="3">
+        <item row="3" column="0" colspan="2">
          <widget class="QPushButton" name="btnCalib">
           <property name="text">
            <string>Zero this axis (requires few seconds)</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="QComboBox" name="comboAxisSelector"/>
-        </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QCheckBox" name="checkEnabled">
-          <property name="text">
-           <string>Axis enabled</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" colspan="3">
-         <widget class="QCheckBox" name="checkControlMode">
-          <property name="text">
-           <string>Closed loop</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="3">
+        <item row="1" column="0" colspan="2">
          <widget class="Line" name="line">
           <property name="lineWidth">
            <number>1</number>
@@ -207,31 +176,15 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_12">
+        <item row="2" column="0" colspan="2">
+         <widget class="QCheckBox" name="checkEnabled">
           <property name="text">
-           <string>Maximum output voltage:</string>
+           <string>Axis enabled</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1" colspan="2">
-         <widget class="QComboBox" name="comboMaximumVoltage">
-          <item>
-           <property name="text">
-            <string>75 V</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>100 V</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>150 V</string>
-           </property>
-          </item>
-         </widget>
+        <item row="0" column="0" colspan="2">
+         <widget class="QComboBox" name="comboAxisSelector"/>
         </item>
        </layout>
       </widget>

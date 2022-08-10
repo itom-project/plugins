@@ -1,4 +1,4 @@
-set(target_name ThorlabsBPDCServo)
+set(target_name ThorlabsBDCServo)
 
 
 cmake_minimum_required(VERSION 3.1...3.15)
@@ -24,18 +24,18 @@ include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-set(THORLABS_KINESIS_BPDCServo_LIBNAME "Thorlabs.MotionControl.Benchtop.DCServo")
+set(THORLABS_KINESIS_BDCServo_LIBNAME "Thorlabs.MotionControl.Benchtop.DCServo")
 
 if(THORLABS_KINESIS_DIRECTORY)
     if(WIN32)
-        find_path( THORLABS_KINESIS_BPDCServo_INCLUDE_DIR "${THORLABS_KINESIS_BPDCServo_LIBNAME}.h" PATHS ${THORLABS_KINESIS_DIRECTORY})
-        find_library (THORLABS_KINESIS_BPDCServo_LIBRARY ${THORLABS_KINESIS_BPDCServo_LIBNAME} PATHS ${THORLABS_KINESIS_DIRECTORY})
+        find_path( THORLABS_KINESIS_BDCServo_INCLUDE_DIR "${THORLABS_KINESIS_BDCServo_LIBNAME}.h" PATHS ${THORLABS_KINESIS_DIRECTORY})
+        find_library (THORLABS_KINESIS_BDCServo_LIBRARY ${THORLABS_KINESIS_BDCServo_LIBNAME} PATHS ${THORLABS_KINESIS_DIRECTORY})
     endif(WIN32)
 endif(THORLABS_KINESIS_DIRECTORY)
 
 
 
-if(THORLABS_KINESIS_BPDCServo_INCLUDE_DIR)
+if(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)
 
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -48,28 +48,28 @@ if(THORLABS_KINESIS_BPDCServo_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${ITOM_SDK_INCLUDE_DIRS}
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
-            ${THORLABS_KINESIS_BPDCServo_INCLUDE_DIR}
+            ${THORLABS_KINESIS_BDCServo_INCLUDE_DIR}
     )
 
     #message(FATAL_ERROR ${LIBDIR})
 
     set(PLUGIN_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsBPDCServo.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBPDCServo.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsBPDCServo.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsBDCServo.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBDCServo.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsBDCServo.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
     set(PLUGIN_UI
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsBPDCServo.ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBPDCServo.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsBDCServo.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBDCServo.ui
     )
 
     set(PLUGIN_SOURCES 
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsBPDCServo.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBPDCServo.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsBPDCServo.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsBDCServo.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBDCServo.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsBDCServo.cpp
     )
 
     set(PLUGIN_RCC
@@ -88,7 +88,7 @@ if(THORLABS_KINESIS_BPDCServo_INCLUDE_DIR)
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-    target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${THORLABS_KINESIS_BPDCServo_LIBRARY})
+    target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${THORLABS_KINESIS_BDCServo_LIBRARY})
 
 
 
@@ -96,7 +96,7 @@ if(THORLABS_KINESIS_BPDCServo_INCLUDE_DIR)
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
-    itom_configure_plugin_documentation(${target_name} ThorlabsBPDCServo)
+    itom_configure_plugin_documentation(${target_name} ThorlabsBDCServo)
 
     # COPY SECTION
     set(COPY_SOURCES "")
@@ -113,6 +113,6 @@ if(THORLABS_KINESIS_BPDCServo_INCLUDE_DIR)
     
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
     
-else(THORLABS_KINESIS_BPDCServo_INCLUDE_DIR)
-    message(WARNING "${THORLABS_KINESIS_BPDCServo_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
-endif(THORLABS_KINESIS_BPDCServo_INCLUDE_DIR)
+else(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)
+    message(WARNING "${THORLABS_KINESIS_BDCServo_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
+endif(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)

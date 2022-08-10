@@ -1,11 +1,11 @@
 /* ********************************************************************
-    Plugin "ThorlabsBPDCServo" for itom software
+    Plugin "ThorlabsBDCServo" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -20,33 +20,29 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dialogThorlabsBPDCServo.h"
+#include "dialogThorlabsBDCServo.h"
 
-#include <qmetaobject.h>
 #include <qdialogbuttonbox.h>
-#include <qsharedpointer.h>
 #include <qmessagebox.h>
+#include <qmetaobject.h>
+#include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogThorlabsBPDCServo::DialogThorlabsBPDCServo(ito::AddInActuator* actuator) :
-    AbstractAddInConfigDialog(actuator),
-    m_firstRun(true),
-    m_pAia(actuator),
-    m_currentAxis(-1)
+DialogThorlabsBDCServo::DialogThorlabsBDCServo(ito::AddInActuator* actuator) :
+    AbstractAddInConfigDialog(actuator), m_firstRun(true), m_pAia(actuator), m_currentAxis(-1)
 {
     ui.setupUi(this);
 
-    //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogThorlabsBPDCServo::~DialogThorlabsBPDCServo()
+DialogThorlabsBDCServo::~DialogThorlabsBDCServo()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogThorlabsBPDCServo::parametersChanged(QMap<QString, ito::Param> params)
+void DialogThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> params)
 {
     m_currentParameters = params;
     temporaryParams = params;
@@ -54,14 +50,15 @@ void DialogThorlabsBPDCServo::parametersChanged(QMap<QString, ito::Param> params
 
     if (m_firstRun)
     {
-        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+        setWindowTitle(
+            QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
         ui.lblDevice->setText(params["deviceName"].getVal<char*>());
         ui.lblSerial->setText(QString("%1").arg(params["serialNumber"].getVal<char*>()));
 
         ui.comboAxisSelector->clear();
-        
-        const int *channels = params["channel"].getVal<int*>();
+
+        const int* channels = params["channel"].getVal<int*>();
         for (int i = 0; i < numaxis; ++i)
         {
             ui.comboAxisSelector->addItem(QString("Axis %1, Channel %2").arg(i).arg(channels[i]));
@@ -80,50 +77,45 @@ void DialogThorlabsBPDCServo::parametersChanged(QMap<QString, ito::Param> params
         currentAxisChanged(0);
     }
 
-    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
+    // now activate group boxes, since information is available now (at startup, information is not
+    // available, since parameters are sent by a signal)
     enableDialog(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogThorlabsBPDCServo::applyParameters()
+ito::RetVal DialogThorlabsBDCServo::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
-    QVector<QSharedPointer<ito::ParamBase> > values;
+    QVector<QSharedPointer<ito::ParamBase>> values;
     currentAxisChanged(m_currentAxis);
 
     int async = ui.checkAsync->isChecked() ? 1 : 0;
     if (async != m_currentParameters["async"].getVal<int>())
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, async)));
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("async", ito::ParamBase::Int, async)));
     }
 
     double timeout = ui.spinTimeout->value();
-    if (std::abs(timeout - m_currentParameters["timeout"].getVal<double>()) > std::numeric_limits<double>::epsilon())
+    if (std::abs(timeout - m_currentParameters["timeout"].getVal<double>()) >
+        std::numeric_limits<double>::epsilon())
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
     }
 
     if (m_currentParameters["enabled"] != temporaryParams["enabled"])
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["enabled"])));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["enabled"])));
     }
 
-    if (m_currentParameters["controlMode"] != temporaryParams["controlMode"])
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["controlMode"])));
-    }
-
-    if (m_currentParameters["maximumVoltage"] != temporaryParams["maximumVoltage"])
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["maximumVoltage"])));
-    }
-    
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogThorlabsBPDCServo::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogThorlabsBDCServo::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -131,86 +123,64 @@ void DialogThorlabsBPDCServo::on_buttonBox_clicked(QAbstractButton* btn)
 
     if (role == QDialogButtonBox::RejectRole)
     {
-        reject(); //close dialog with reject
+        reject(); // close dialog with reject
     }
     else if (role == QDialogButtonBox::AcceptRole)
     {
-        accept(); //AcceptRole
+        accept(); // AcceptRole
     }
     else
     {
-        applyParameters(); //ApplyRole
+        applyParameters(); // ApplyRole
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogThorlabsBPDCServo::enableDialog(bool enabled)
+void DialogThorlabsBDCServo::enableDialog(bool enabled)
 {
     ui.groupGeneral->setEnabled(enabled);
     ui.groupAxis->setEnabled(enabled);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogThorlabsBPDCServo::on_btnCalib_clicked()
+void DialogThorlabsBDCServo::on_btnCalib_clicked()
 {
     if (m_pAia)
     {
         enableDialog(false);
         ui.buttonBox->setEnabled(false);
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_pAia, "calib", Q_ARG(int, m_currentAxis), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-		ui.btnCalib->setEnabled(false);
-        observeInvocation(locker.getSemaphore(), ito::AbstractAddInConfigDialog::msgLevelWarningAndError);
+        QMetaObject::invokeMethod(
+            m_pAia,
+            "calib",
+            Q_ARG(int, m_currentAxis),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        ui.btnCalib->setEnabled(false);
+        observeInvocation(
+            locker.getSemaphore(), ito::AbstractAddInConfigDialog::msgLevelWarningAndError);
         enableDialog(true);
         ui.buttonBox->setEnabled(true);
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogThorlabsBPDCServo::on_comboAxisSelector_currentIndexChanged(int index)
+void DialogThorlabsBDCServo::on_comboAxisSelector_currentIndexChanged(int index)
 {
     currentAxisChanged(index);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogThorlabsBPDCServo::currentAxisChanged(int newAxis)
+void DialogThorlabsBDCServo::currentAxisChanged(int newAxis)
 {
     if (m_currentAxis >= 0)
     {
-        temporaryParams["enabled"].getVal<int*>()[m_currentAxis] = ui.checkEnabled->isChecked() ? 1 : 0;
-        temporaryParams["controlMode"].getVal<int*>()[m_currentAxis] = ui.checkControlMode->isChecked() ? 1 : 0;
-        switch (ui.comboMaximumVoltage->currentIndex())
-        {
-        case 0:
-            temporaryParams["maximumVoltage"].getVal<int*>()[m_currentAxis] = 75;
-            break;
-        case 1:
-            temporaryParams["maximumVoltage"].getVal<int*>()[m_currentAxis] = 100;
-            break;
-        case 2:
-            temporaryParams["maximumVoltage"].getVal<int*>()[m_currentAxis] = 150;
-            break;
-        }
+        temporaryParams["enabled"].getVal<int*>()[m_currentAxis] =
+            ui.checkEnabled->isChecked() ? 1 : 0;
     }
 
     ui.checkEnabled->setChecked(temporaryParams["enabled"].getVal<int*>()[newAxis] > 0);
-    ui.checkControlMode->setChecked(temporaryParams["controlMode"].getVal<int*>()[newAxis] > 0);
-    ui.checkControlMode->setEnabled(temporaryParams["hasFeedback"].getVal<int*>()[newAxis] > 0);
-    switch (temporaryParams["maximumVoltage"].getVal<int*>()[newAxis])
-    {
-    case 75:
-        ui.comboMaximumVoltage->setCurrentIndex(0);
-        break;
-    case 100:
-        ui.comboMaximumVoltage->setCurrentIndex(1);
-        break;
-    case 150:
-        ui.comboMaximumVoltage->setCurrentIndex(2);
-        break;
-    }
-    ui.lblTravelRange->setText(QString(QLatin1String("%1 µm")).arg(temporaryParams["maximumTravelRange"].getVal<double*>()[newAxis] * 1000.0));
 
-    if (temporaryParams["zeroed"].getVal<int*>()[newAxis])
+    if (temporaryParams["homed"].getVal<int*>()[newAxis])
     {
         ui.btnCalib->setText("This axis is already zeroed.");
         ui.btnCalib->setEnabled(false);
@@ -222,6 +192,4 @@ void DialogThorlabsBPDCServo::currentAxisChanged(int newAxis)
     }
 
     m_currentAxis = newAxis;
-
-    
 }

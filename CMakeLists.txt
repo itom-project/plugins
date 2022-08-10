@@ -462,6 +462,14 @@ if(WIN32)
     endif(PLUGIN_ThorlabsBP)
 endif()
 
+# ThorlabsBDCServo benchtop DC Servo
+if(WIN32)
+    option(PLUGIN_ThorlabsBDCServo "Build the Thorlabs benchtop DC Servo plugin." OFF)
+    if(PLUGIN_ThorlabsBDCServo)
+        add_subdirectory(ThorlabsBDCServo)
+    endif(PLUGIN_ThorlabsBDCServo)
+endif()
+
 # ThorlabsFF filter flipper
 if(WIN32)
     option(PLUGIN_ThorlabsFF "Build the Thorlabs filter flipper plugin." OFF)

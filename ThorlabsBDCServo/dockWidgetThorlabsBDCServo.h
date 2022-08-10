@@ -1,11 +1,11 @@
 /* ********************************************************************
-    Plugin "ThorlabsBPDCServo" for itom software
+    Plugin "ThorlabsBDCServo" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -29,28 +29,27 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetThorlabsBPDCServo.h"
+#include "ui_dockWidgetThorlabsBDCServo.h"
 
-class DockWidgetThorlabsBPDCServo : public ito::AbstractAddInDockWidget
+class DockWidgetThorlabsBDCServo : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
-    public:
-    DockWidgetThorlabsBPDCServo(ito::AddInActuator* myPlugin);
-        ~DockWidgetThorlabsBPDCServo(){};
+public:
+    DockWidgetThorlabsBDCServo(ito::AddInActuator* myPlugin);
+    ~DockWidgetThorlabsBDCServo(){};
 
-    private:
-        void enableWidget(bool enabled);
-        bool m_firstRun;
-        ito::AddInActuator *m_pActuator;
+private:
+    void enableWidget(bool enabled);
+    bool m_firstRun;
+    ito::AddInActuator* m_pActuator;
 
-        Ui::DockWidgetThorlabsBPDCServo ui;
+    Ui::DockWidgetThorlabsBDCServo ui;
 
-    public slots:
-        void parametersChanged(QMap<QString, ito::Param> params);
-        void identifierChanged(const QString &identifier) { };
-        void dockWidgetVisibilityChanged(bool visible);
-
+public slots:
+    void parametersChanged(QMap<QString, ito::Param> params);
+    void identifierChanged(const QString& identifier){};
+    void dockWidgetVisibilityChanged(bool visible);
 };
 
 #endif
