@@ -1,6 +1,6 @@
 set(target_name Ximea) 
 
-
+ 
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -134,7 +134,7 @@ if(XIMEA_APIDIR)
     
 if(WIN32)
     if(BUILD_TARGET64)
-        file(GLOB dlls "${XIMEA_APIDIR}/x64/*.dll")
+        file(GLOB_RECURSE dlls "${XIMEA_APIDIR}/*.dll")
     else(BUILD_TARGET64)    
         file(GLOB dlls "${XIMEA_APIDIR}/x86/*.dll")
     endif(BUILD_TARGET64)
