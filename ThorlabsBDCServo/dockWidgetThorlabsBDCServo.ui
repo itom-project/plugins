@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>390</width>
-    <height>237</height>
+    <width>509</width>
+    <height>464</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -128,19 +128,25 @@
       <item>
        <widget class="MotorAxisController" name="motorAxisController">
         <property name="numAxis">
-         <number>1</number>
+         <number>2</number>
         </property>
         <property name="defaultAxisUnit">
-         <enum>MotorAxisController::UnitDeg</enum>
+         <enum>MotorAxisController::UnitMm</enum>
         </property>
         <property name="defaultAxisType">
-         <enum>MotorAxisController::TypeRotational</enum>
+         <enum>MotorAxisController::TypeLinear</enum>
         </property>
         <property name="refreshAvailable">
          <bool>true</bool>
         </property>
         <property name="cancelAvailable">
-         <bool>false</bool>
+         <bool>true</bool>
+        </property>
+        <property name="defaultRelativeStepSize">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="defaultDecimals">
+         <number>3</number>
         </property>
         <property name="movementType">
          <enum>MotorAxisController::MovementAbsolute</enum>

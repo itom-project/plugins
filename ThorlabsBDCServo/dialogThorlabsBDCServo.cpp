@@ -187,7 +187,7 @@ void DialogThorlabsBDCServo::currentAxisChanged(int newAxis)
     }
     else
     {
-        ui.btnCalib->setText("Calibrate and zero this axis (requires few seconds).");
+        ui.btnCalib->setText("homing axes.");
         ui.btnCalib->setEnabled(true);
     }
 

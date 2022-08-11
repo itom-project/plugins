@@ -44,7 +44,7 @@
 #include <qdebug.h>
 
 QList<QByteArray> ThorlabsBDCServo::openedDevices = QList<QByteArray>();
-
+int ThorlabsBDCServo::numberOfKinesisSimulatorConnections = 0;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -112,6 +112,16 @@ The position values are always in mm if the corresponding axis is in closed-loop
            "opened will be opened")
             .toLatin1()
             .data()));
+    m_initParamsOpt.append(ito::Param(
+        "connectToKinesisSimulator",
+        ito::ParamBase::Int,
+        0,
+        1,
+        0,
+        tr("If 1, a connection to the running Kinesis Simulator is established before starting to "
+           "search for devices.")
+            .toLatin1()
+            .data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -150,6 +160,13 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             ito::ParamBase::String | ito::ParamBase::Readonly,
             "",
             tr("Description of the device").toLatin1().data()));
+    m_params.insert(
+        "firmware",
+        ito::Param(
+            "firmware",
+            ito::ParamBase::String | ito::ParamBase::Readonly,
+            "",
+            tr("Firmware version of the device").toLatin1().data())); 
     m_params.insert(
         "serialNumber",
         ito::Param(
@@ -205,6 +222,17 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             ito::ParamBase::IntArray,
             NULL,
             tr("Velocity values for each axis in device units.").toLatin1().data()));
+    m_params.insert(
+        "maximumTravelRange",
+        ito::Param(
+            "maximumTravelRange",
+            ito::ParamBase::DoubleArray | ito::ParamBase::Readonly,
+            NULL,
+            tr("Maximum travel range for each axis in mm. This requires an actuator with built in "
+               "position sensing. These values might not be correct if the motor is in open loop "
+               "mode.")
+                .toLatin1()
+                .data()));
 
     m_params.insert(
         "async",
@@ -243,6 +271,14 @@ ito::RetVal ThorlabsBDCServo::init(
     ito::RetVal retval = ito::retOk;
 
     QByteArray serial = paramsOpt->at(0).getVal<char*>();
+
+    bool connectToKinesisSimulator = paramsOpt->at(1).getVal<int>() > 0;
+
+    if (connectToKinesisSimulator)
+    {
+        numberOfKinesisSimulatorConnections++;
+        TLI_InitializeSimulations();
+    }
 
     retval += checkError(TLI_BuildDeviceList(), "build device list");
     QByteArray existingSerialNumbers("", 256);
@@ -333,6 +369,7 @@ ito::RetVal ThorlabsBDCServo::init(
             setIdentifier(QLatin1String(serial.data()));
             m_params["deviceName"].setVal<char*>(deviceInfo.description);
         }
+        m_params["firmware"].setVal<char>(BDC_GetFirmwareVersion(m_serialNo, 1));
     }
 
     if (!retval.containsError())
@@ -401,6 +438,7 @@ ito::RetVal ThorlabsBDCServo::init(
         m_dummyValues = QSharedPointer<QVector<double>>(new QVector<double>(m_numChannels, 0.0));
 
         m_params["numaxis"].setVal<int>(m_numChannels);
+        m_params["enabled"].setMeta(new ito::IntArrayMeta(0, 1, 1, m_numChannels, m_numChannels, 1), true);
         m_currentPos.fill(0.0, m_numChannels);
         m_currentStatus.fill(
             ito::actuatorAvailable | ito::actuatorEnabled | ito::actuatorAtTarget, m_numChannels);
@@ -413,29 +451,55 @@ ito::RetVal ThorlabsBDCServo::init(
         m_params["enabled"].setVal<int*>(dummy, m_numChannels);
         m_params["homed"].setMeta(
             new ito::IntArrayMeta(0, 1, 1, m_numChannels, m_numChannels, 1), true);
-        m_params["homed"].setVal<int*>(dummy, m_numChannels);
+
+        int* homed = new int[m_numChannels];
+        for (int i = 0; i < m_numChannels; ++i)
+        {
+            homed[i] = !BDC_NeedsHoming(m_serialNo, m_channelIndices[i]);
+        }
+        m_params["homed"].setVal<int*>(homed, m_numChannels);
+
+        m_params["maximumTravelRange"].setMeta(
+            new ito::DoubleArrayMeta(
+                -std::numeric_limits<double>::max(),
+                std::numeric_limits<double>::max(),
+                0.0,
+                m_numChannels,
+                m_numChannels,
+                1),
+            true);
         for (int i = 0; i < m_numChannels; ++i)
         {
             dummy[i] = m_channelIndices[i];
         }
         m_params["channel"].setVal<int*>(dummy, m_numChannels);
 
-        m_params["acceleration"].setMeta(
-            new ito::IntArrayMeta(0, 1, 1, m_numChannels, m_numChannels, 1), true);
-        m_params["velocity"].setMeta(
-            new ito::IntArrayMeta(0, 1, 1, m_numChannels, m_numChannels, 1), true);
-
         int* dummyAcceleration = new int[m_numChannels];
         int* dummyVelocity = new int[m_numChannels];
+        double* maxVelocity = new double[m_numChannels];
+        double* maxAcceleration = new double[m_numChannels];
         for (int i = 0; i < m_numChannels; ++i)
         {
-            BDC_GetVelParams(m_serialNo, i, &dummyAcceleration[i], &dummyVelocity[i]);
+            
+            BDC_GetVelParams(
+                m_serialNo, m_channelIndices[i], &dummyAcceleration[i], &dummyVelocity[i]);
+            BDC_GetMotorVelocityLimits(
+                m_serialNo, m_channelIndices[i], &maxVelocity[i], &maxAcceleration[i]);
         }
         m_params["acceleration"].setVal<int*>(dummyAcceleration, m_numChannels);
         m_params["velocity"].setVal<int*>(dummyVelocity, m_numChannels);
 
+        m_params["acceleration"].setMeta(
+            new ito::IntArrayMeta(0, 1, int(maxAcceleration[0]), m_numChannels, m_numChannels, 1), true);
+        m_params["velocity"].setMeta(
+            new ito::IntArrayMeta(0, 1, int(maxVelocity[0]), m_numChannels, m_numChannels, 1), true);
+
+        updateRanges();
 
         DELETE_AND_SET_NULL_ARRAY(dummy);
+        DELETE_AND_SET_NULL_ARRAY(maxVelocity);
+        DELETE_AND_SET_NULL_ARRAY(maxAcceleration);
+        DELETE_AND_SET_NULL_ARRAY(homed);
         DELETE_AND_SET_NULL_ARRAY(dummyAcceleration);
         DELETE_AND_SET_NULL_ARRAY(dummyVelocity);
     }
@@ -455,6 +519,18 @@ ito::RetVal ThorlabsBDCServo::init(
 
     setInitialized(true); // init method has been finished (independent on retval)
     return retval;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void ThorlabsBDCServo::updateRanges()
+{
+    ito::float64* values = new ito::float64[m_numChannels];
+    for (int i = 0; i < m_numChannels; ++i)
+    {
+        values[i] = (ito::float64)BDC_GetStageAxisMaxPos(m_serialNo, m_channelIndices[i]) / 1000;  // micrometer values
+    }
+    m_params["maximumTravelRange"].setVal<ito::float64*>(values, m_numChannels);
+    DELETE_AND_SET_NULL_ARRAY(values);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -865,12 +941,16 @@ ito::RetVal ThorlabsBDCServo::calib(const QVector<int> axis, ItomSharedSemaphore
             getStatus(status, NULL);
 
             QVector<int> allAxes;
+            getPos(allAxes, m_dummyValues, NULL);
+            int* homed = new int[m_numChannels];
             for (int i = 0; i < m_numChannels; ++i)
             {
                 allAxes << i;
+                homed[i] = !BDC_NeedsHoming(m_serialNo, m_channelIndices[i]);
             }
-
-            getPos(allAxes, m_dummyValues, NULL);
+            m_params["homed"].setVal<int*>(homed, m_numChannels);
+            
+            DELETE_AND_SET_NULL_ARRAY(homed);
         }
     }
 
@@ -1011,6 +1091,8 @@ ito::RetVal ThorlabsBDCServo::getPos(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
+    //const ito::float64* maximumTravelRange = m_params["maximumTravelRange"].getVal<ito::float64*>();
+
     int idx;
 
     for (int i = 0; i < axis.size(); ++i)
@@ -1022,9 +1104,8 @@ ito::RetVal ThorlabsBDCServo::getPos(
             retval += ito::RetVal::format(ito::retError, 0, "invalid axis index %i", idx);
             break;
         }
-
         // in mm
-        m_currentPos[idx] = (ito::float64)BDC_GetPosition(m_serialNo, m_channelIndices[idx]);
+        m_currentPos[idx] = (ito::float64)BDC_GetPosition(m_serialNo, m_channelIndices[idx]) / 1000;
         (*pos)[i] = m_currentPos[idx];
     }
 
@@ -1073,6 +1154,8 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
+
+    const ito::float64* maximumTravelRange = m_params["maximumTravelRange"].getVal<ito::float64*>();
     int idx;
     int flags = 0;
     DWORD s;
@@ -1108,8 +1191,19 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
         for (int i = 0; i < axis.size(); ++i)
         {
             idx = axis[i];
-            m_targetPos[idx] = pos[i];
-            flags += (1 << idx);
+
+            if (pos[i] < -maximumTravelRange[idx] || pos[i] > maximumTravelRange[idx])
+            {
+                retval +=
+                    ito::RetVal::format(ito::retError, 0, "target of axis %i out of bounds.", idx);
+                break;
+            }
+            else
+            {
+                idx = axis[i];
+                m_targetPos[idx] = pos[i] * 1000;
+                flags += (1 << idx);
+            }
         }
     }
 
@@ -1122,10 +1216,8 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
             idx = axis[i];
 
             retval += checkError(
-                BDC_SetMoveAbsolutePosition(m_serialNo, m_channelIndices[idx], m_targetPos[idx]),
+                BDC_MoveToPosition(m_serialNo, m_channelIndices[idx], m_targetPos[idx]),
                 "set absolute position");
-            retval += checkError(
-                BDC_MoveAbsolute(m_serialNo, m_channelIndices[idx]), "move absolute position");
         }
 
         if (!retval.containsError())
@@ -1214,6 +1306,7 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
     ito::RetVal retval;
     int idx;
     double newAbsPos;
+    const ito::float64* maximumTravelRange = m_params["maximumTravelRange"].getVal<ito::float64*>();
     int flags = 0;
     DWORD s;
 
@@ -1251,7 +1344,16 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
         {
             idx = axis[i];
             newAbsPos = m_currentPos[idx] + pos[i];
-            m_targetPos[idx] = newAbsPos;
+            if (newAbsPos < -maximumTravelRange[idx] || newAbsPos > maximumTravelRange[idx])
+            {
+                retval +=
+                    ito::RetVal::format(ito::retError, 0, "target of axis %i out of bounds.", idx);
+                break;
+            }
+            else
+            {
+                m_targetPos[idx] = newAbsPos;
+            }
             flags += (1 << idx);
         }
     }
@@ -1264,7 +1366,7 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
         {
             idx = axis[i];
             retval += checkError(
-                BDC_MoveRelative(m_serialNo, m_channelIndices[idx], m_targetPos[idx]),
+                BDC_MoveRelative(m_serialNo, m_channelIndices[idx], pos[idx] * 1000),
                 "move relative");
         }
 
@@ -1342,68 +1444,120 @@ ito::RetVal ThorlabsBDCServo::requestStatusAndPosition(bool sendCurrentPos, bool
 }
 
 
-//----------------------------------------------------------------------------------------------------------------
+///----------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsBDCServo::waitForDone(
     const int timeoutMS,
     const QVector<int> axis /*if empty -> all axis*/,
-    const int flags /*for your use*/)
+    const int /*flags*/ /*for your use*/)
 {
     ito::RetVal retval(ito::retOk);
     bool done = false;
-    Sleep(120); // to be sure that the first requested status is correct
-    QVector<double> oldCurrentPos = m_currentPos;
+    DWORD status;
+    Sleep(250); // to be sure that the first requested status is correct
     QElapsedTimer timer;
     timer.start();
+    qint64 lastTime = timer.elapsed();
+    int idx;
 
-    while (!done && !retval.containsError())
+    while (!done && !retval.containsWarningOrError())
     {
-        memcpy(oldCurrentPos.data(), m_currentPos.data(), sizeof(double) * m_currentPos.size());
-
-        done = true;
-        retval += getPos(axis, m_dummyValues, NULL);
-
-        foreach (int a, axis)
+        if (isInterrupted())
         {
-            if ((std::abs(m_targetPos[a] - m_currentPos[a]) > 50.0e-6) ||
-                (std::abs(oldCurrentPos[a] - m_currentPos[a]) > 10.0e-6))
+            
+
+            for (int i = 0; i < axis.size(); ++i)
             {
-                done = false;
+                idx = axis[i];
+                retval +=
+                    checkError(BDC_StopImmediate(m_serialNo, m_channelIndices[idx]), "stop immediate");
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
             }
-        }
+            
 
-        if (timer.elapsed() > timeoutMS)
+            retval += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
+            done = true;
+
+            sendStatusUpdate(true);
+        }
+        else if (timer.elapsed() > timeoutMS)
         {
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
+            int idx;
+
+            for (int i = 0; i < axis.size(); ++i)
+            {
+                idx = axis[i];
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
+                retval += checkError(
+                    BDC_StopImmediate(m_serialNo, m_channelIndices[idx]), "stop immediate");
+            }
+            
             retval += ito::RetVal(ito::retError, 0, tr("timeout occurred").toLatin1().data());
             done = true;
-        }
 
-        if (done)
-        { // Position reached and movement done
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
             sendStatusUpdate(true);
-            break;
         }
         else
         {
-            sendStatusUpdate(false);
-        }
+            for (int i = 0; i < axis.size(); ++i)
+            {
+                idx = axis[i];
+                status = BDC_GetStatusBits(m_serialNo, m_channelIndices[idx]);
+                setStatus(
+                    axis,
+                    ito::actuatorAvailable | ((status & 0x80000000) ? ito::actuatorEnabled : 0),
+                    ito::actMovingMask | ito::actSwitchesMask);
 
-        if (!done)
-        {
+                if (status & (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008))
+                {
+                    setStatus(
+                        axis, ito::actuatorEndSwitch, ito::actMovingMask | ito::actStatusMask);
+                    done = true;
+                    retval +=
+                        ito::RetVal(ito::retError, 0, tr("end switch reached").toLatin1().data());
+                }
+                else if ((status & (0x00000010 | 0x00000020)) == 0)
+                {
+                    // motor is at target
+                    done = true;
+                }
+            }
+
+            if (done)
+            { // Position reached and movement done
+                int idx;
+
+                for (int i = 0; i < axis.size(); ++i)
+                {
+                    idx = axis[i];
+                    replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+                }
+                
+                sendStatusUpdate(true);
+                sendStatusUpdate(false);
+                break;
+            }
+            else
+            {
+                if ((timer.elapsed() - lastTime) > 250.0)
+                {
+                    int idx;
+
+                    for (int i = 0; i < axis.size(); ++i)
+                    {
+                        idx = axis[i];
+                        m_currentPos[0] = BDC_GetPosition(m_serialNo, m_channelIndices[idx]);
+                    }
+                    
+                    sendStatusUpdate(false);
+                    lastTime = timer.elapsed();
+                }
+            }
+
             if (!retval.containsError())
             {
                 setAlive();
             }
-
-            Sleep(120);
         }
-    }
-
-    if (retval.containsError())
-    {
-        replaceStatus(axis, ito::actuatorMoving, ito::actuatorUnknown);
-        sendStatusUpdate(true);
     }
 
     return retval;
