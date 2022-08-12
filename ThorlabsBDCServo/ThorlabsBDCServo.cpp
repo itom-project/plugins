@@ -43,7 +43,6 @@
 
 #include <qdebug.h>
 
-#include <iostream>
 
 QList<QByteArray> ThorlabsBDCServo::openedDevices = QList<QByteArray>();
 int ThorlabsBDCServo::numberOfKinesisSimulatorConnections = 0;
@@ -165,13 +164,6 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             "",
             tr("Description of the device").toLatin1().data()));
     m_params.insert(
-        "firmware",
-        ito::Param(
-            "firmware",
-            ito::ParamBase::String | ito::ParamBase::Readonly,
-            "",
-            tr("Firmware version of the device").toLatin1().data()));
-    m_params.insert(
         "serialNumber",
         ito::Param(
             "serialNumber",
@@ -216,15 +208,19 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
         "acceleration",
         ito::Param(
             "acceleration",
-            ito::ParamBase::IntArray,
-            NULL,
+            ito::ParamBase::Double,
+            0.0,
+            10.0,
+            0.0,
             tr("Acceleration values for each axis in device units.").toLatin1().data()));
     m_params.insert(
         "velocity",
         ito::Param(
             "velocity",
-            ito::ParamBase::IntArray,
-            NULL,
+            ito::ParamBase::Double,
+            0.0,
+            100.0,
+            0.0,
             tr("Velocity values for each axis in device units.").toLatin1().data()));
     m_params.insert(
         "maximumTravelRange",
@@ -373,8 +369,6 @@ ito::RetVal ThorlabsBDCServo::init(
             setIdentifier(QLatin1String(serial.data()));
             m_params["deviceName"].setVal<char*>(deviceInfo.description);
         }
-
-        m_params["firmware"].setVal<char>(BDC_GetFirmwareVersion(m_serialNo, 1));
     }
 
     if (!retval.containsError())
@@ -470,34 +464,27 @@ ito::RetVal ThorlabsBDCServo::init(
         }
         m_params["channel"].setVal<int*>(dummy, m_numChannels);
 
-        int* dummyAcceleration = new int[m_numChannels];
-        int* dummyVelocity = new int[m_numChannels];
-        double* maxVelocity = new double[m_numChannels];
-        double* maxAcceleration = new double[m_numChannels];
-        for (int i = 0; i < m_numChannels; ++i)
-        {
-            BDC_GetVelParams(
-                m_serialNo, m_channelIndices[i], &dummyAcceleration[i], &dummyVelocity[i]);
-            BDC_GetMotorVelocityLimits(
-                m_serialNo, m_channelIndices[i], &maxVelocity[i], &maxAcceleration[i]);
-        }
-        m_params["acceleration"].setVal<int*>(dummyAcceleration, m_numChannels);
-        m_params["velocity"].setVal<int*>(dummyVelocity, m_numChannels);
+        int currentVelocity, currentAcceleration;
+        double acceleration;
+        double velocity;
+        double maxVelocity;
+        double maxAcceleration;
+        BDC_GetVelParams(m_serialNo, 1, &currentAcceleration, &currentVelocity);
+        BDC_GetRealValueFromDeviceUnit(m_serialNo, 1, currentAcceleration, &acceleration, 2);
+        BDC_GetRealValueFromDeviceUnit(m_serialNo, 1, currentVelocity, &velocity, 1);
 
-        m_params["acceleration"].setMeta(
-            new ito::IntArrayMeta(0, 1, int(maxAcceleration[0]), m_numChannels, m_numChannels, 1),
-            true);
-        m_params["velocity"].setMeta(
-            new ito::IntArrayMeta(0, 1, int(maxVelocity[0]), m_numChannels, m_numChannels, 1),
-            true);
+        BDC_GetMotorVelocityLimits(m_serialNo, 1, &maxVelocity, &maxAcceleration);
+
+        m_params["acceleration"].setVal<int>(acceleration);
+        m_params["acceleration"].setMeta(new ito::DoubleMeta(0, maxAcceleration));
+        
+        m_params["velocity"].setVal<int>(velocity);
+        m_params["velocity"].setMeta(new ito::DoubleMeta(0, maxVelocity));
 
         updateRanges();
 
         DELETE_AND_SET_NULL_ARRAY(dummy);
-        DELETE_AND_SET_NULL_ARRAY(maxVelocity);
-        DELETE_AND_SET_NULL_ARRAY(maxAcceleration);
-        DELETE_AND_SET_NULL_ARRAY(dummyAcceleration);
-        DELETE_AND_SET_NULL_ARRAY(dummyVelocity);
+
     }
 
     if (!retval.containsError())
@@ -730,106 +717,47 @@ ito::RetVal ThorlabsBDCServo::setParam(
         }
         else if (key == "velocity")
         {
-            if (hasIndex)
-            {
-                retValue += checkError(
-                    BDC_SetVelParams(
-                        m_serialNo,
-                        index,
-                        m_params["acceleration"].getVal<int*>()[index],
-                        val->getVal<int>()),
-                    "set velocity");
+            double acceleration = m_params["acceleration"].getVal<double>();
+            double velocity = val->getVal<double>();
+            int newAcceleration, newVelocity;
+            
+            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, acceleration, &newAcceleration, 2);
+            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, velocity, &newVelocity, 1);
+            retValue += checkError(BDC_SetVelParams(m_serialNo, 1, newAcceleration, newVelocity), "set veloctiy");
 
-                if (!retValue.containsError())
-                {
-                    it->getVal<int*>()[index] = val->getVal<int>();
-                }
-                else
-                {
-                    Sleep(160);
-                    QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
-                    retValue += getStatus(status, NULL);
-                }
+            if (!retValue.containsError())
+            {
+                it->copyValueFrom(&(*val));
             }
             else
             {
-                const int* values =
-                    val->getVal<int*>(); // are alway m_numChannels values due to meta information
-                for (int i = 0; i < m_numChannels; ++i)
-                {
-                    retValue += checkError(
-                        BDC_SetVelParams(
-                            m_serialNo,
-                            m_channelIndices[i],
-                            m_params["acceleration"].getVal<int*>()[i],
-                            values[i]),
-                        "set velocity");
-                }
-
-                if (!retValue.containsError())
-                {
-                    it->copyValueFrom(&(*val));
-                }
-                else
-                {
-                    Sleep(160);
-                    QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
-                    retValue += getStatus(status, NULL);
-                }
+                Sleep(160);
+                QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
+                retValue += getStatus(status, NULL);
             }
         }
         else if (key == "acceleration")
         {
-            if (hasIndex)
-            {
-                retValue += checkError(
-                    BDC_SetVelParams(
-                        m_serialNo,
-                        index,
-                        val->getVal<int>(),
-                        m_params["velocity"].getVal<int*>()[index]),
-                    "set acceleration");
+            double acceleration = val->getVal<double>();
+            double velocity = m_params["velocity"].getVal<double>();
+            int newAcceleration, newVelocity;
 
-                if (!retValue.containsError())
-                {
-                    it->getVal<int*>()[index] = val->getVal<int>();
-                }
-                else
-                {
-                    Sleep(160);
-                    QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
-                    retValue += getStatus(status, NULL);
-                }
+            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, acceleration, &newAcceleration, 2);
+            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, velocity, &newVelocity, 1);
+            retValue += checkError(
+                BDC_SetVelParams(m_serialNo, 1, newAcceleration, newVelocity), "set velocity");
+
+            if (!retValue.containsError())
+            {
+                it->copyValueFrom(&(*val));
             }
             else
             {
-                const int* values =
-                    val->getVal<int*>(); // are alway m_numChannels values due to meta information
-                for (int i = 0; i < m_numChannels; ++i)
-                {
-                    retValue += checkError(
-                        BDC_SetVelParams(
-                            m_serialNo,
-                            m_channelIndices[i],
-                            values[i],
-                            m_params["velocty"].getVal<int*>()[i]),
-                        "set acceleration");
-                }
-
-                if (!retValue.containsError())
-                {
-                    it->copyValueFrom(&(*val));
-                }
-                else
-                {
-                    Sleep(160);
-                    QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
-                    retValue += getStatus(status, NULL);
-                }
+                Sleep(160);
+                QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
+                retValue += getStatus(status, NULL);
             }
         }
-
-
         //---------------------------
         else
         {
@@ -1210,15 +1138,10 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
 
             BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]);
 
-            std::cout << "target pos: " << m_targetPos[idx] * mmToDeviceUnit << "\n" << std::endl;
             retval += checkError(
                 BDC_MoveToPosition(
                     m_serialNo, m_channelIndices[idx], int(m_targetPos[idx] * mmToDeviceUnit)),
                 "set absolute position");
-
-            std::cout << "target pos: " << m_targetPos[idx] * mmToDeviceUnit << "\n" << std::endl;
-            std::cout << "current pos: " << m_currentPos[idx] * mmToDeviceUnit << "\n" << std::endl;
-            // Sleep(200);
         }
 
         if (!retval.containsError())
@@ -1588,122 +1511,6 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
 
     return retVal;
 }
-
-// ito::RetVal ThorlabsBDCServo::waitForDone(
-//     const int timeoutMS, const QVector<int> axis, const int flags)
-//{
-//     ito::RetVal retVal(ito::retOk);
-//     bool done = false;
-//     bool timeout = false;
-//     QElapsedTimer timer;
-//     QMutex waitMutex;
-//     QWaitCondition waitCondition;
-//
-//     // reset interrupt flag
-//     isInterrupted();
-//
-//     long delay = 200; //[ms]
-//
-//     timer.start();
-//
-//     // if axis is empty, all axes should be observed by this method
-//     QVector<int> _axis = axis;
-//
-//     while (!done && !timeout)
-//     {
-//         // now check if the interrupt flag has been set (e.g. by a button click on its dock
-//         widget) if (!done && isInterrupted())
-//         {
-//             // set the status of all axes from moving to interrupted (only if moving was set
-//             before) replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
-//             sendStatusUpdate(true);
-//             // todo: force all axes to stop
-//             for each (auto axis in _axis)
-//             {
-//                 retVal += checkError(
-//                     BDC_StopImmediate(m_serialNo, m_channelIndices[axis]),
-//                     "error while interrupt movement");
-//             }
-//             // set the status of all axes from moving to interrupted (only if moving was set
-//             // before)
-//
-//             retVal += ito::RetVal(ito::retWarning, -1, "Movement interrupted");
-//
-//             done = true;
-//             return retVal;
-//         }
-//
-//         // short delay
-//         waitMutex.lock();
-//         waitCondition.wait(&waitMutex, delay);
-//         waitMutex.unlock();
-//         setAlive();
-//
-//
-//         if (timeoutMS > -1 && !done)
-//         {
-//             double currentTime = timer.elapsed();
-//             if (currentTime > timeoutMS) // timeout
-//             {
-//                 // todo: obtain the current position, status... of all given axes
-//                 foreach (const int& i, axis)
-//                 {
-//                     QSharedPointer<double> _pos(new double);
-//                     retVal += getPos(i, _pos, NULL);
-//                     m_currentPos[i] = *_pos;
-//                     m_targetPos[i] = m_currentPos[i];
-//                     setStatus(axis, ito::actuatorAtTarget, ito::actStatusMask);
-//                 }
-//                 timeout = true;
-//             }
-//             else
-//             {
-//                 foreach (const int& i, _axis)
-//                 {
-//                     QSharedPointer<double> _pos(new double);
-//                     retVal += getPos(i, _pos, NULL);
-//                     m_currentPos[i] = *_pos;
-//                     float dist = m_targetPos[i] - m_currentPos[i];
-//                     if (std::abs(dist) > 1e-3)
-//                     {
-//                         setStatus(
-//                             m_currentStatus[i],
-//                             ito::actuatorMoving,
-//                             ito::actSwitchesMask | ito::actStatusMask);
-//                         done = false; // not done yet
-//                     }
-//                     else
-//                     {
-//                         setStatus(
-//                             m_currentStatus[i],
-//                             ito::actuatorAtTarget,
-//                             ito::actSwitchesMask | ito::actStatusMask);
-//                         done = true;
-//                     }
-//                 }
-//             }
-//         }
-//
-//         if (!timeout)
-//         {
-//             sendStatusUpdate();
-//             Sleep(20);
-//         }
-//     }
-//
-//     if (timeout)
-//     {
-//         // timeout occured, set the status of all currently moving axes to timeout
-//         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
-//         retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
-//         sendStatusUpdate(true);
-//     }
-//
-//     replaceStatus(_axis, ito::actuatorMoving, ito::actuatorAtTarget);
-//     sendStatusUpdate();
-//
-//     return retVal;
-// }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ThorlabsBDCServo::dockWidgetVisibilityChanged(bool visible)
