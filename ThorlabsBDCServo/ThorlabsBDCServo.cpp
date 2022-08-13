@@ -41,13 +41,11 @@
 
 #include "Thorlabs.MotionControl.Benchtop.DCServo.h"
 
-#include <qdebug.h>
 #include <iostream>
+#include <qdebug.h>
 
 QList<QByteArray> ThorlabsBDCServo::openedDevices = QList<QByteArray>();
 int ThorlabsBDCServo::numberOfKinesisSimulatorConnections = 0;
-
-int mmToDeviceUnit = 10000;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -96,9 +94,7 @@ It requires the new Kinesis driver package from Thorlabs and implements the inte
 \n\
 Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. \n\
 \n\
-This plugin has been tested with the Benchtop DC Servo M30XY. \n\
-\n\
-The position values are always in mm if the corresponding axis is in closed-loop mode and if a strain gauge feedback is connected.");
+This plugin has been tested with the Benchtop DC Servo M30XY. \n");
 
     m_author = "J. Krauter, TRUMPF SE + Co. KG, Ditzingen";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -191,7 +187,7 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             ito::ParamBase::Double,
             0.0,
             200.0,
-            5.0,
+            15.0,
             tr("Timeout for positioning in seconds.").toLatin1().data()));
 
     m_params.insert(
@@ -1103,8 +1099,10 @@ ito::RetVal ThorlabsBDCServo::getPos(
             break;
         }
         // in mm
-        m_currentPos[idx] =
-            (ito::float64)BDC_GetPosition(m_serialNo, m_channelIndices[idx]) / mmToDeviceUnit;
+        int deviceUnit = BDC_GetPosition(m_serialNo, m_channelIndices[idx]);
+        ito::float64 posMM;
+        BDC_GetRealValueFromDeviceUnit(m_serialNo, m_channelIndices[idx], deviceUnit, &posMM, 0);
+        m_currentPos[idx] = posMM;
         (*pos)[i] = m_currentPos[idx];
     }
 
@@ -1220,9 +1218,12 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
 
             BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]);
 
+            int deviceVal;
+            BDC_GetDeviceUnitFromRealValue(
+                m_serialNo, m_channelIndices[idx], m_targetPos[idx], &deviceVal, 0);
             retval += checkError(
                 BDC_MoveToPosition(
-                    m_serialNo, m_channelIndices[idx], int(m_targetPos[idx] * mmToDeviceUnit)),
+                    m_serialNo, m_channelIndices[idx], deviceVal),
                 "set absolute position");
         }
 
@@ -1239,7 +1240,7 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
             }
 
             retval += waitForDone(
-                m_params["timeout"].getVal<ito::float64>() * mmToDeviceUnit,
+                m_params["timeout"].getVal<ito::float64>() * 1e3,
                 axis,
                 flags); // drops into timeout
         }
@@ -1377,10 +1378,15 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
         for (int i = 0; i < axis.size(); ++i)
         {
             idx = axis[i];
+
+            BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]);
+
+            int deviceVal;
+            BDC_GetDeviceUnitFromRealValue(
+                m_serialNo, m_channelIndices[idx], pos[i], &deviceVal, 0);
             retval += checkError(
-                BDC_MoveRelative(m_serialNo, m_channelIndices[idx], pos[i] * mmToDeviceUnit),
-                "move relative");
-            Sleep(200);
+                BDC_MoveRelative(m_serialNo, m_channelIndices[idx], deviceVal),
+                "set relative position");
         }
 
         if (!retval.containsError())
@@ -1396,7 +1402,7 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
             }
 
             retval += waitForDone(
-                m_params["timeout"].getVal<ito::float64>() * mmToDeviceUnit,
+                m_params["timeout"].getVal<ito::float64>() * 1e3,
                 axis,
                 flags); // drops into timeout
         }

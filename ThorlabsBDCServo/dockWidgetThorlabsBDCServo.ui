@@ -143,7 +143,13 @@
          <bool>true</bool>
         </property>
         <property name="defaultRelativeStepSize">
-         <double>1.000000000000000</double>
+         <double>0.010000000000000</double>
+        </property>
+        <property name="axisNames">
+         <stringlist>
+          <string>CH 1</string>
+          <string>CH 2</string>
+         </stringlist>
         </property>
         <property name="defaultDecimals">
          <number>3</number>

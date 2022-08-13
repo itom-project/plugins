@@ -71,6 +71,14 @@ void DialogThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> params)
     ui.spinTimeout->setValue(params["timeout"].getVal<int>());
     ui.spinTimeout->setMaximum(params["timeout"].getMax());
 
+    ui.doubleSpinBoxAcceleration->setMaximum(params["acceleration"].getMax());
+    ui.doubleSpinBoxVelocity->setMaximum(params["velocity"].getMax());
+    ui.doubleSpinBoxBacklash->setMaximum(params["backlash"].getMax());
+
+    ui.doubleSpinBoxAcceleration->setMinimum(params["acceleration"].getMin());
+    ui.doubleSpinBoxVelocity->setMinimum(params["velocity"].getMin());
+    ui.doubleSpinBoxBacklash->setMinimum(params["backlash"].getMin());
+
     if (numaxis > 0)
     {
         ui.comboAxisSelector->setCurrentIndex(0);
@@ -180,9 +188,16 @@ void DialogThorlabsBDCServo::currentAxisChanged(int newAxis)
 
     ui.checkEnabled->setChecked(temporaryParams["enabled"].getVal<int*>()[newAxis] > 0);
 
+    ui.doubleSpinBoxAcceleration->setValue(
+        temporaryParams["acceleration"].getVal<ito::float64*>()[newAxis]);
+    ui.doubleSpinBoxVelocity->setValue(
+        temporaryParams["velocity"].getVal<ito::float64*>()[newAxis]);
+    ui.doubleSpinBoxBacklash->setValue(
+        temporaryParams["backlash"].getVal<ito::float64*>()[newAxis]);
+
     if (temporaryParams["homed"].getVal<int*>()[newAxis])
     {
-        ui.btnCalib->setText("This axis is already zeroed.");
+        ui.btnCalib->setText("This axis is already homed.");
         ui.btnCalib->setEnabled(false);
     }
     else
