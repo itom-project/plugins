@@ -42,7 +42,7 @@
 #include "Thorlabs.MotionControl.Benchtop.DCServo.h"
 
 #include <qdebug.h>
-
+#include <iostream>
 
 QList<QByteArray> ThorlabsBDCServo::openedDevices = QList<QByteArray>();
 int ThorlabsBDCServo::numberOfKinesisSimulatorConnections = 0;
@@ -52,7 +52,7 @@ int mmToDeviceUnit = 10000;
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail creates new instance of ThorlabsBDCServoInterface and returns the instance-pointer
-    \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created
+    \param [in,out] addInInst is a ito::float64 pointer of type ito::AddInBase. The newly created
    ThorlabsBDCServoInterface-instance is stored in *addInInst \return retOk \sa ThorlabsBDCServo
 */
 ito::RetVal ThorlabsBDCServoInterface::getAddInInst(ito::AddInBase** addInInst)
@@ -65,8 +65,8 @@ ito::RetVal ThorlabsBDCServoInterface::getAddInInst(ito::AddInBase** addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail Closes an instance of of ThorlabsBPInterface. This instance is given by parameter
-   addInInst. \param [in] double pointer to the instance which should be deleted. \return retOk \sa
-   ThorlabsBDCServo
+   addInInst. \param [in] ito::float64 pointer to the instance which should be deleted. \return
+   retOk \sa ThorlabsBDCServo
 */
 ito::RetVal ThorlabsBDCServoInterface::closeThisInst(ito::AddInBase** addInInst)
 {
@@ -164,6 +164,13 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             "",
             tr("Description of the device").toLatin1().data()));
     m_params.insert(
+        "firmwareVersion",
+        ito::Param(
+            "firmwareVersion",
+            ito::ParamBase::Int | ito::ParamBase::Readonly,
+            0,
+            tr("Firmware version of the device").toLatin1().data()));
+    m_params.insert(
         "serialNumber",
         ito::Param(
             "serialNumber",
@@ -210,26 +217,35 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             "acceleration",
             ito::ParamBase::DoubleArray,
             NULL,
-            tr("Acceleration values for each axis in device units.").toLatin1().data()));
+            tr("Acceleration values for each axis in mm/s^2.").toLatin1().data()));
     m_params.insert(
         "velocity",
         ito::Param(
             "velocity",
             ito::ParamBase::DoubleArray,
             NULL,
-            tr("Velocity values for each axis in device units.").toLatin1().data()));
+            tr("Velocity values for each axis in mm/s.").toLatin1().data()));
     m_params.insert(
-        "maximumTravelRange",
+        "maximumTravelPosition",
         ito::Param(
-            "maximumTravelRange",
+            "maximumTravelPosition",
             ito::ParamBase::DoubleArray | ito::ParamBase::Readonly,
             NULL,
-            tr("Maximum travel range for each axis in mm. This requires an actuator with built in "
-               "position sensing. These values might not be correct if the motor is in open loop "
-               "mode.")
-                .toLatin1()
-                .data()));
-
+            tr("Maximum travel position for each axis in mm.").toLatin1().data()));
+    m_params.insert(
+        "minimumTravelPosition",
+        ito::Param(
+            "minimumTravelPosition",
+            ito::ParamBase::DoubleArray | ito::ParamBase::Readonly,
+            NULL,
+            tr("Minimum travel position for each axis in mm. ").toLatin1().data()));
+    m_params.insert(
+        "backlash",
+        ito::Param(
+            "backlash",
+            ito::ParamBase::DoubleArray,
+            NULL,
+            tr("Backlash distance setting in mm (used to control hysteresis).").toLatin1().data()));
     m_params.insert(
         "async",
         ito::Param(
@@ -418,8 +434,11 @@ ito::RetVal ThorlabsBDCServo::init(
             int err = BDC_LoadSettings(m_serialNo, channel);
             if (!err)
             {
-                retval +=
-                    ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded.");
+                retval += ito::RetVal(
+                    ito::retWarning,
+                    0,
+                    "settings of device could not be loaded. You may must check 'persist setting "
+                    "to device' in Kinesis software.");
             }
 
             if (!BDC_StartPolling(m_serialNo, channel, 200))
@@ -430,7 +449,8 @@ ito::RetVal ThorlabsBDCServo::init(
         }
 
         m_numChannels = m_channelIndices.size();
-        m_dummyValues = QSharedPointer<QVector<double>>(new QVector<double>(m_numChannels, 0.0));
+        m_dummyValues =
+            QSharedPointer<QVector<ito::float64>>(new QVector<ito::float64>(m_numChannels, 0.0));
 
         m_params["numaxis"].setVal<int>(m_numChannels);
         m_currentPos.fill(0.0, m_numChannels);
@@ -438,36 +458,35 @@ ito::RetVal ThorlabsBDCServo::init(
             ito::actuatorAvailable | ito::actuatorEnabled | ito::actuatorAtTarget, m_numChannels);
         m_targetPos.fill(0.0, m_numChannels);
 
-        int* dummy = new int[m_numChannels];
-        memset(dummy, 0, m_numChannels * sizeof(int));
+        int* intDummy = new int[m_numChannels];
+        memset(intDummy, 0, m_numChannels * sizeof(int));
         m_params["enabled"].setMeta(new ito::IntArrayMeta(0, 1, 1, 0, m_numChannels, 1), true);
 
-        m_params["enabled"].setVal<int*>(dummy, m_numChannels);
+        m_params["enabled"].setVal<int*>(intDummy, m_numChannels);
         m_params["homed"].setMeta(new ito::IntArrayMeta(0, 1, 1, 0, m_numChannels, 1), true);
 
-        m_params["maximumTravelRange"].setMeta(
-            new ito::DoubleArrayMeta(
-                -std::numeric_limits<double>::max(),
-                std::numeric_limits<double>::max(),
-                0.0,
-                m_numChannels,
-                m_numChannels,
-                1),
+
+        ito::float64* minPos = new ito::float64[m_numChannels];
+        ito::float64* maxPos = new ito::float64[m_numChannels];
+        for (int i = 0; i < m_numChannels; ++i)
+        {
+            BDC_GetMotorTravelLimits(m_serialNo, m_channelIndices[i], &minPos[i], &maxPos[i]);
+        }
+        m_params["maximumTravelPosition"].setVal<ito::float64*>(maxPos, m_numChannels);
+        m_params["minimumTravelPosition"].setVal<ito::float64*>(minPos, m_numChannels);
+
+        m_params["maximumTravelPosition"].setMeta(
+            new ito::DoubleArrayMeta(maxPos[0], maxPos[0], 0.0, m_numChannels, m_numChannels, 1),
+            true);
+        m_params["minimumTravelPosition"].setMeta(
+            new ito::DoubleArrayMeta(minPos[0], minPos[0], 0.0, m_numChannels, m_numChannels, 1),
             true);
 
-        ito::float64* travelRange = new ito::float64[m_numChannels];
         for (int i = 0; i < m_numChannels; ++i)
         {
-            travelRange[i] = (ito::float64)BDC_GetStageAxisMaxPos(m_serialNo, m_channelIndices[i]) /
-                mmToDeviceUnit; // micrometer values
+            intDummy[i] = m_channelIndices[i];
         }
-        m_params["maximumTravelRange"].setVal<ito::float64*>(travelRange, m_numChannels);
-    
-        for (int i = 0; i < m_numChannels; ++i)
-        {
-            dummy[i] = m_channelIndices[i];
-        }
-        m_params["channel"].setVal<int*>(dummy, m_numChannels);
+        m_params["channel"].setVal<int*>(intDummy, m_numChannels);
 
         int currentVelocity, currentAcceleration;
         ito::float64* acceleration = new ito::float64[m_numChannels];
@@ -494,9 +513,23 @@ ito::RetVal ThorlabsBDCServo::init(
         m_params["velocity"].setMeta(
             new ito::DoubleArrayMeta(0.0, maxVelocity[0], 0.0, m_numChannels, m_numChannels));
 
+        ito::float64* doubleDummy = new ito::float64[m_numChannels];
+        for (int i = 0; i < m_numChannels; ++i)
+        {
+            doubleDummy[i] = (ito::float64)BDC_GetBacklash(m_serialNo, m_channelIndices[i]);
+        }
+        m_params["backlash"].setVal<ito::float64*>(doubleDummy, m_numChannels);
 
-        DELETE_AND_SET_NULL_ARRAY(dummy);
-        DELETE_AND_SET_NULL_ARRAY(travelRange);
+        m_params["backlash"].setMeta(
+            new ito::DoubleArrayMeta(0.0, 5.0, 0.0, m_numChannels, m_numChannels));
+
+        m_params["firmwareVersion"].setVal<int>(
+            (int)BDC_GetFirmwareVersion(m_serialNo, m_channelIndices[0]));
+
+        DELETE_AND_SET_NULL_ARRAY(intDummy);
+        DELETE_AND_SET_NULL_ARRAY(doubleDummy);
+        DELETE_AND_SET_NULL_ARRAY(minPos);
+        DELETE_AND_SET_NULL_ARRAY(maxPos);
         DELETE_AND_SET_NULL_ARRAY(acceleration);
         DELETE_AND_SET_NULL_ARRAY(velocity);
         DELETE_AND_SET_NULL_ARRAY(maxVelocity);
@@ -727,10 +760,14 @@ ito::RetVal ThorlabsBDCServo::setParam(
 
             for (int i = 0; i < m_numChannels; ++i)
             {
-                BDC_GetDeviceUnitFromRealValue(
-                    m_serialNo, m_channelIndices[i], acceleration[i], &newAcceleration, 2);
-                BDC_GetDeviceUnitFromRealValue(
-                    m_serialNo, m_channelIndices[i], velocity[i], &newVelocity, 1);
+                retValue += checkError(
+                    BDC_GetDeviceUnitFromRealValue(
+                        m_serialNo, m_channelIndices[i], acceleration[i], &newAcceleration, 2),
+                    "acceleration devie to real value");
+                retValue += checkError(
+                    BDC_GetDeviceUnitFromRealValue(
+                        m_serialNo, m_channelIndices[i], velocity[i], &newVelocity, 1),
+                    "velocity device to real value");
                 retValue += checkError(
                     BDC_SetVelParams(m_serialNo, m_channelIndices[i], newAcceleration, newVelocity),
                     "set velocity");
@@ -755,13 +792,38 @@ ito::RetVal ThorlabsBDCServo::setParam(
 
             for (int i = 0; i < m_numChannels; ++i)
             {
-                BDC_GetDeviceUnitFromRealValue(
-                    m_serialNo, m_channelIndices[i], acceleration[i], &newAcceleration, 2);
-                BDC_GetDeviceUnitFromRealValue(
-                    m_serialNo, m_channelIndices[i], velocity[i], &newVelocity, 1);
+                retValue += checkError(
+                    BDC_GetDeviceUnitFromRealValue(
+                        m_serialNo, m_channelIndices[i], acceleration[i], &newAcceleration, 2),
+                    "acceleration devie to real value");
+                retValue += checkError(
+                    BDC_GetDeviceUnitFromRealValue(
+                        m_serialNo, m_channelIndices[i], velocity[i], &newVelocity, 1),
+                    "velocity device to real value");
                 retValue += checkError(
                     BDC_SetVelParams(m_serialNo, m_channelIndices[i], newAcceleration, newVelocity),
                     "set acceleration");
+            }
+
+            if (!retValue.containsError())
+            {
+                it->copyValueFrom(&(*val));
+            }
+            else
+            {
+                Sleep(160);
+                QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
+                retValue += getStatus(status, NULL);
+            }
+        }
+        else if (key == "backlash")
+        {
+            ito::float64* backlash = val->getVal<ito::float64*>();
+
+            for (int i = 0; i < m_numChannels; ++i)
+            {
+                retValue += checkError(
+                    BDC_SetBacklash(m_serialNo, m_channelIndices[i], backlash[i]), "set backlash");
             }
 
             if (!retValue.containsError())
@@ -861,7 +923,7 @@ ito::RetVal ThorlabsBDCServo::calib(const QVector<int> axis, ItomSharedSemaphore
             foreach (int ax, axis)
             {
                 s = BDC_GetStatusBits(m_serialNo, m_channelIndices[ax]);
-                if (s & 0x00000020)
+                if (s & 0x00000200)
                 {
                     done = false;
                 }
@@ -996,7 +1058,7 @@ ito::RetVal ThorlabsBDCServo::getStatus(
    terminated \return retOk
 */
 ito::RetVal ThorlabsBDCServo::getPos(
-    const int axis, QSharedPointer<double> pos, ItomSharedSemaphore* waitCond)
+    const int axis, QSharedPointer<ito::float64> pos, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     QVector<int> axes(1, axis);
@@ -1022,13 +1084,12 @@ ito::RetVal ThorlabsBDCServo::getPos(
    terminated \return retOk
 */
 ito::RetVal ThorlabsBDCServo::getPos(
-    const QVector<int> axis, QSharedPointer<QVector<double>> pos, ItomSharedSemaphore* waitCond)
+    const QVector<int> axis,
+    QSharedPointer<QVector<ito::float64>> pos,
+    ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-
-    // const ito::float64* maximumTravelRange =
-    // m_params["maximumTravelRange"].getVal<ito::float64*>();
 
     int idx;
 
@@ -1069,10 +1130,10 @@ ito::RetVal ThorlabsBDCServo::getPos(
    terminated \sa SMCSetPos \return retOk
 */
 ito::RetVal ThorlabsBDCServo::setPosAbs(
-    const int axis, const double pos, ItomSharedSemaphore* waitCond)
+    const int axis, const ito::float64 pos, ItomSharedSemaphore* waitCond)
 {
     QVector<int> axes(1, axis);
-    QVector<double> positions(1, pos);
+    QVector<ito::float64> positions(1, pos);
     return setPosAbs(axes, positions, waitCond);
 }
 
@@ -1088,12 +1149,16 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
    terminated \sa SMCSetPos \return retOk
 */
 ito::RetVal ThorlabsBDCServo::setPosAbs(
-    const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
+    const QVector<int> axis, QVector<ito::float64> pos, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
-    const ito::float64* maximumTravelRange = m_params["maximumTravelRange"].getVal<ito::float64*>();
+    const ito::float64* maximumTravelPosition =
+        m_params["maximumTravelPosition"].getVal<ito::float64*>();
+
+    const ito::float64* minimumTravelPosition =
+        m_params["minimumTravelPosition"].getVal<ito::float64*>();
     int idx;
     int flags = 0;
     DWORD s;
@@ -1130,7 +1195,7 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
         {
             idx = axis[i];
 
-            if (pos[i] < -maximumTravelRange[idx] || pos[i] > maximumTravelRange[idx])
+            if (pos[i] < minimumTravelPosition[idx] || pos[i] > maximumTravelPosition[idx])
             {
                 retval +=
                     ito::RetVal::format(ito::retError, 0, "target of axis %i out of bounds.", idx);
@@ -1174,7 +1239,7 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
             }
 
             retval += waitForDone(
-                m_params["timeout"].getVal<double>() * mmToDeviceUnit,
+                m_params["timeout"].getVal<ito::float64>() * mmToDeviceUnit,
                 axis,
                 flags); // drops into timeout
         }
@@ -1214,10 +1279,10 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
    terminated \sa SMCSetPos \return retOk
 */
 ito::RetVal ThorlabsBDCServo::setPosRel(
-    const int axis, const double pos, ItomSharedSemaphore* waitCond)
+    const int axis, const ito::float64 pos, ItomSharedSemaphore* waitCond)
 {
     QVector<int> axes(1, axis);
-    QVector<double> positions(1, pos);
+    QVector<ito::float64> positions(1, pos);
     return setPosRel(axes, positions, waitCond);
 
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1244,13 +1309,16 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
    terminated \sa SMCSetPos \return retOk
 */
 ito::RetVal ThorlabsBDCServo::setPosRel(
-    const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
+    const QVector<int> axis, QVector<ito::float64> pos, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     int idx;
-    double newAbsPos;
-    const ito::float64* maximumTravelRange = m_params["maximumTravelRange"].getVal<ito::float64*>();
+    ito::float64 newAbsPos;
+    const ito::float64* maximumTravelPosition =
+        m_params["maximumTravelPosition"].getVal<ito::float64*>();
+    const ito::float64* minimumTravelPosition =
+        m_params["minimumTravelPosition"].getVal<ito::float64*>();
     int flags = 0;
     DWORD s;
 
@@ -1288,7 +1356,7 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
         {
             idx = axis[i];
             newAbsPos = m_currentPos[idx] + pos[i];
-            if (newAbsPos < -maximumTravelRange[idx] || newAbsPos > maximumTravelRange[idx])
+            if (newAbsPos < minimumTravelPosition[idx] || newAbsPos > maximumTravelPosition[idx])
             {
                 retval +=
                     ito::RetVal::format(ito::retError, 0, "target of axis %i out of bounds.", idx);
@@ -1328,7 +1396,7 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
             }
 
             retval += waitForDone(
-                m_params["timeout"].getVal<double>() * mmToDeviceUnit,
+                m_params["timeout"].getVal<ito::float64>() * mmToDeviceUnit,
                 axis,
                 flags); // drops into timeout
         }
@@ -1405,7 +1473,7 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
     WORD messageType;
     WORD messageId;
     DWORD messageData;
-    QSharedPointer<double> pos_(new double);
+    QSharedPointer<ito::float64> pos_(new ito::float64);
 
     // reset interrupt flag
     isInterrupted();
@@ -1424,8 +1492,8 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
             if (!done && isInterrupted())
             {
                 // todo: force all axes to stop
-                retVal +=
-                    checkError(BDC_StopImmediate(m_serialNo, m_channelIndices[idx]), "stop profiled");
+                retVal += checkError(
+                    BDC_StopImmediate(m_serialNo, m_channelIndices[idx]), "stop immediate");
 
                 // set the status of all axes from moving to interrupted (only if moving was set
                 // before)
@@ -1443,7 +1511,7 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
 
         if (timeoutMS > -1)
         {
-            double currentTime = timer.elapsed();
+            ito::float64 currentTime = timer.elapsed();
 
             if (currentTime > timeoutMS) // timeout
             {
