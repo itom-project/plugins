@@ -492,7 +492,7 @@ ito::RetVal ThorlabsBDCServo::init(
             new ito::DoubleArrayMeta(0.0, maxAcceleration[0], 0.0, m_numChannels, m_numChannels));
         m_params["velocity"].setVal<ito::float64*>(velocity, m_numChannels);
         m_params["velocity"].setMeta(
-            new ito::DoubleArrayMeta(0.0, velocity[0], 0.0, m_numChannels, m_numChannels));
+            new ito::DoubleArrayMeta(0.0, maxVelocity[0], 0.0, m_numChannels, m_numChannels));
 
 
         DELETE_AND_SET_NULL_ARRAY(dummy);
