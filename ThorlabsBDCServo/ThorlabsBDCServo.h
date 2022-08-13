@@ -95,8 +95,6 @@ private:
     static QList<QByteArray> openedDevices;
     static int numberOfKinesisSimulatorConnections;
 
-    void updateRanges();
-
     QVector<int> m_channelIndices; // this vector has the length of 'numAxis' and gives the thorlabs
                                    // channel index for every axis.
     int m_numChannels;

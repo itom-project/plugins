@@ -208,19 +208,15 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
         "acceleration",
         ito::Param(
             "acceleration",
-            ito::ParamBase::Double,
-            0.0,
-            10.0,
-            0.0,
+            ito::ParamBase::DoubleArray,
+            NULL,
             tr("Acceleration values for each axis in device units.").toLatin1().data()));
     m_params.insert(
         "velocity",
         ito::Param(
             "velocity",
-            ito::ParamBase::Double,
-            0.0,
-            100.0,
-            0.0,
+            ito::ParamBase::DoubleArray,
+            NULL,
             tr("Velocity values for each axis in device units.").toLatin1().data()));
     m_params.insert(
         "maximumTravelRange",
@@ -458,6 +454,15 @@ ito::RetVal ThorlabsBDCServo::init(
                 m_numChannels,
                 1),
             true);
+
+        ito::float64* travelRange = new ito::float64[m_numChannels];
+        for (int i = 0; i < m_numChannels; ++i)
+        {
+            travelRange[i] = (ito::float64)BDC_GetStageAxisMaxPos(m_serialNo, m_channelIndices[i]) /
+                mmToDeviceUnit; // micrometer values
+        }
+        m_params["maximumTravelRange"].setVal<ito::float64*>(travelRange, m_numChannels);
+    
         for (int i = 0; i < m_numChannels; ++i)
         {
             dummy[i] = m_channelIndices[i];
@@ -465,26 +470,37 @@ ito::RetVal ThorlabsBDCServo::init(
         m_params["channel"].setVal<int*>(dummy, m_numChannels);
 
         int currentVelocity, currentAcceleration;
-        double acceleration;
-        double velocity;
-        double maxVelocity;
-        double maxAcceleration;
-        BDC_GetVelParams(m_serialNo, 1, &currentAcceleration, &currentVelocity);
-        BDC_GetRealValueFromDeviceUnit(m_serialNo, 1, currentAcceleration, &acceleration, 2);
-        BDC_GetRealValueFromDeviceUnit(m_serialNo, 1, currentVelocity, &velocity, 1);
+        ito::float64* acceleration = new ito::float64[m_numChannels];
+        ito::float64* velocity = new ito::float64[m_numChannels];
+        ito::float64* maxVelocity = new ito::float64[m_numChannels];
+        ito::float64* maxAcceleration = new ito::float64[m_numChannels];
 
-        BDC_GetMotorVelocityLimits(m_serialNo, 1, &maxVelocity, &maxAcceleration);
+        for (int i = 0; i < m_numChannels; ++i)
+        {
+            BDC_GetVelParams(
+                m_serialNo, m_channelIndices[i], &currentAcceleration, &currentVelocity);
+            BDC_GetRealValueFromDeviceUnit(
+                m_serialNo, m_channelIndices[i], currentAcceleration, &acceleration[i], 2);
+            BDC_GetRealValueFromDeviceUnit(
+                m_serialNo, m_channelIndices[i], currentVelocity, &velocity[i], 1);
+            BDC_GetMotorVelocityLimits(
+                m_serialNo, m_channelIndices[i], &maxVelocity[i], &maxAcceleration[i]);
+        }
 
-        m_params["acceleration"].setVal<int>(acceleration);
-        m_params["acceleration"].setMeta(new ito::DoubleMeta(0, maxAcceleration));
-        
-        m_params["velocity"].setVal<int>(velocity);
-        m_params["velocity"].setMeta(new ito::DoubleMeta(0, maxVelocity));
+        m_params["acceleration"].setVal<ito::float64*>(acceleration, m_numChannels);
+        m_params["acceleration"].setMeta(
+            new ito::DoubleArrayMeta(0.0, maxAcceleration[0], 0.0, m_numChannels, m_numChannels));
+        m_params["velocity"].setVal<ito::float64*>(velocity, m_numChannels);
+        m_params["velocity"].setMeta(
+            new ito::DoubleArrayMeta(0.0, velocity[0], 0.0, m_numChannels, m_numChannels));
 
-        updateRanges();
 
         DELETE_AND_SET_NULL_ARRAY(dummy);
-
+        DELETE_AND_SET_NULL_ARRAY(travelRange);
+        DELETE_AND_SET_NULL_ARRAY(acceleration);
+        DELETE_AND_SET_NULL_ARRAY(velocity);
+        DELETE_AND_SET_NULL_ARRAY(maxVelocity);
+        DELETE_AND_SET_NULL_ARRAY(maxAcceleration);
     }
 
     if (!retval.containsError())
@@ -504,18 +520,6 @@ ito::RetVal ThorlabsBDCServo::init(
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-void ThorlabsBDCServo::updateRanges()
-{
-    ito::float64* values = new ito::float64[m_numChannels];
-    for (int i = 0; i < m_numChannels; ++i)
-    {
-        values[i] = (ito::float64)BDC_GetStageAxisMaxPos(m_serialNo, m_channelIndices[i]) /
-            mmToDeviceUnit; // micrometer values
-    }
-    m_params["maximumTravelRange"].setVal<ito::float64*>(values, m_numChannels);
-    DELETE_AND_SET_NULL_ARRAY(values);
-}
 
 //---------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal ThorlabsBDCServo::showConfDialog(void)
@@ -717,13 +721,20 @@ ito::RetVal ThorlabsBDCServo::setParam(
         }
         else if (key == "velocity")
         {
-            double acceleration = m_params["acceleration"].getVal<double>();
-            double velocity = val->getVal<double>();
+            ito::float64* acceleration = m_params["acceleration"].getVal<ito::float64*>();
+            ito::float64* velocity = val->getVal<ito::float64*>();
             int newAcceleration, newVelocity;
-            
-            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, acceleration, &newAcceleration, 2);
-            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, velocity, &newVelocity, 1);
-            retValue += checkError(BDC_SetVelParams(m_serialNo, 1, newAcceleration, newVelocity), "set veloctiy");
+
+            for (int i = 0; i < m_numChannels; ++i)
+            {
+                BDC_GetDeviceUnitFromRealValue(
+                    m_serialNo, m_channelIndices[i], acceleration[i], &newAcceleration, 2);
+                BDC_GetDeviceUnitFromRealValue(
+                    m_serialNo, m_channelIndices[i], velocity[i], &newVelocity, 1);
+                retValue += checkError(
+                    BDC_SetVelParams(m_serialNo, m_channelIndices[i], newAcceleration, newVelocity),
+                    "set velocity");
+            }
 
             if (!retValue.containsError())
             {
@@ -738,14 +749,20 @@ ito::RetVal ThorlabsBDCServo::setParam(
         }
         else if (key == "acceleration")
         {
-            double acceleration = val->getVal<double>();
-            double velocity = m_params["velocity"].getVal<double>();
+            ito::float64* velocity = m_params["velocity"].getVal<ito::float64*>();
+            ito::float64* acceleration = val->getVal<ito::float64*>();
             int newAcceleration, newVelocity;
 
-            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, acceleration, &newAcceleration, 2);
-            BDC_GetDeviceUnitFromRealValue(m_serialNo, 1, velocity, &newVelocity, 1);
-            retValue += checkError(
-                BDC_SetVelParams(m_serialNo, 1, newAcceleration, newVelocity), "set velocity");
+            for (int i = 0; i < m_numChannels; ++i)
+            {
+                BDC_GetDeviceUnitFromRealValue(
+                    m_serialNo, m_channelIndices[i], acceleration[i], &newAcceleration, 2);
+                BDC_GetDeviceUnitFromRealValue(
+                    m_serialNo, m_channelIndices[i], velocity[i], &newVelocity, 1);
+                retValue += checkError(
+                    BDC_SetVelParams(m_serialNo, m_channelIndices[i], newAcceleration, newVelocity),
+                    "set acceleration");
+            }
 
             if (!retValue.containsError())
             {
