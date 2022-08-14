@@ -84,6 +84,67 @@ parameters can be changed using *setParam*.
     
     *2 values required, Value range: [0, 2.6], Default: [2.6, 2.6]*
 
+
+Exemplary usage from Python
+=======================================
+
+In the following examples, it is shown how to use this Plugin in itom. The example shows a typical measurement routine. First the homing run is performed, then the stage moves to a start position and from there a certain range is rastered in both axes. 
+
+.. code-block:: python
+
+    from itom import actuator
+    import numpy as np
+
+    # init a actuator
+    mot = actuator("ThorlabsBDCServo")
+
+    # set some parameter
+    mot.setParam("velocity", [2.6, 2.6])
+    mot.setParam("acceleration", [5.0,5.0])
+    mot.setParam("backlash", [0,0])
+
+    # home both axes of stage
+    mot.calib(0, 1)
+
+    # move to a arbitrary start position of -5.0 mm, 2.0 mm
+    startPos = (-5.0, 2.0)
+    mot.setPosAbs(0, startPos[0], 1, startPos[1])
+
+    # measurement parameter
+    numX = 10
+    numY = 10
+
+    rangeX = 1.0  # mm
+    rangeY = 1.0  # mm
+
+    stepX = rangeX / numX  # mm
+    stepY = rangeY / numY  # mm
+
+    # save start position of routine
+    measureStartPos = mot.getPos(0, 1)
+
+    # create vectors of absolute position
+    xVec = np.arange(measureStartPos[0], measureStartPos[0] + rangeX + stepX, stepY)
+    yVec = np.arange(measureStartPos[1], measureStartPos[1] + rangeY + stepY, stepY)
+
+    # move by using absolute positions
+    for absX in xVec:
+        mot.setPosAbs(0, absX)
+        for absY in yVec:
+            mot.setPosAbs(1, absY)
+            print("x: {}, y: {}".format(mot.getPos(0), mot.getPos(1)))
+
+    # do the some by using relative movement
+    mot.setPosAbs(0, startPos[0], 1, startPos[1])
+    measureStartPos = mot.getPos(0, 1)
+
+    for idxX in range(numX):
+        mot.setPosRel(0, stepX)
+        mot.setPosAbs(1, measureStartPos[1])
+        for idxY in range(numY):
+            mot.setPosRel(1, stepY)
+            print("x: {}, y: {}".format(mot.getPos(0), mot.getPos(1)))
+
 Compilation
 ===========
 
@@ -96,3 +157,4 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 
 Changelog
 ==========
+
