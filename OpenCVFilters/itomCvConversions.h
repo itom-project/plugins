@@ -27,11 +27,9 @@
 #include "common/param.h"
 #include "DataObject/dataobj.h"
 
-#if (CV_MAJOR_VERSION >= 4)
-    #include "opencv2/cvconfig.h"
-#else
+#if (CV_MAJOR_VERSION < 4)
     #include "opencv/cv.h"
-#endif //  OpenCV_VERSION_MAJOR > 4:
+#endif
 
 namespace itomcv
 {
