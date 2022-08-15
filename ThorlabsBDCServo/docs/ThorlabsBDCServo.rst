@@ -99,6 +99,7 @@ In the following examples, it is shown how to use this Plugin in itom. The examp
     mot = actuator("ThorlabsBDCServo")
 
     # set some parameter
+    mot.setParam("enabled", [1,1])
     mot.setParam("velocity", [2.6, 2.6])
     mot.setParam("acceleration", [5.0,5.0])
     mot.setParam("backlash", [0,0])
@@ -129,7 +130,7 @@ In the following examples, it is shown how to use this Plugin in itom. The examp
 
     # move by using absolute positions
     for absX in xVec:
-        mot.setPosAbs(0, absX)
+        mot.setPosAbs(0, absX, 1, measureStartPos[1])
         for absY in yVec:
             mot.setPosAbs(1, absY)
             print("x: {}, y: {}".format(mot.getPos(0), mot.getPos(1)))
