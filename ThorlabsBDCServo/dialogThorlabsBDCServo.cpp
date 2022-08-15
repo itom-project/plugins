@@ -58,10 +58,9 @@ void DialogThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> params)
 
         ui.comboAxisSelector->clear();
 
-        const int* channels = params["channel"].getVal<int*>();
-        for (int i = 0; i < numaxis; ++i)
+        for (int i = 1; i <= numaxis; ++i)
         {
-            ui.comboAxisSelector->addItem(QString("Axis %1, Channel %2").arg(i).arg(channels[i]));
+            ui.comboAxisSelector->addItem(QString("Channel %1").arg(i));
         }
 
         m_firstRun = false;
