@@ -41,7 +41,7 @@
 
 #include "Thorlabs.MotionControl.Benchtop.DCServo.h"
 
-#include <iostream>
+//#include <iostream>
 #include <qdebug.h>
 
 QList<QByteArray> ThorlabsBDCServo::openedDevices = QList<QByteArray>();
@@ -174,20 +174,13 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             "",
             tr("Serial number of the device").toLatin1().data()));
     m_params.insert(
-        "channel",
-        ito::Param(
-            "channel",
-            ito::ParamBase::IntArray | ito::ParamBase::Readonly,
-            NULL,
-            tr("Channel number of each axis.").toLatin1().data()));
-    m_params.insert(
         "timeout",
         ito::Param(
             "timeout",
             ito::ParamBase::Double,
             0.0,
             200.0,
-            15.0,
+            5.0,
             tr("Timeout for positioning in seconds.").toLatin1().data()));
 
     m_params.insert(
@@ -466,7 +459,9 @@ ito::RetVal ThorlabsBDCServo::init(
         ito::float64* maxPos = new ito::float64[m_numChannels];
         for (int i = 0; i < m_numChannels; ++i)
         {
-            BDC_GetMotorTravelLimits(m_serialNo, m_channelIndices[i], &minPos[i], &maxPos[i]);
+            retval += checkError(
+                BDC_GetMotorTravelLimits(m_serialNo, m_channelIndices[i], &minPos[i], &maxPos[i]),
+                "get motor travel limits");
         }
         m_params["maximumTravelPosition"].setVal<ito::float64*>(maxPos, m_numChannels);
         m_params["minimumTravelPosition"].setVal<ito::float64*>(minPos, m_numChannels);
@@ -492,14 +487,22 @@ ito::RetVal ThorlabsBDCServo::init(
 
         for (int i = 0; i < m_numChannels; ++i)
         {
-            BDC_GetVelParams(
-                m_serialNo, m_channelIndices[i], &currentAcceleration, &currentVelocity);
-            BDC_GetRealValueFromDeviceUnit(
-                m_serialNo, m_channelIndices[i], currentAcceleration, &acceleration[i], 2);
-            BDC_GetRealValueFromDeviceUnit(
-                m_serialNo, m_channelIndices[i], currentVelocity, &velocity[i], 1);
-            BDC_GetMotorVelocityLimits(
-                m_serialNo, m_channelIndices[i], &maxVelocity[i], &maxAcceleration[i]);
+            retval += checkError(
+                BDC_GetVelParams(
+                    m_serialNo, m_channelIndices[i], &currentAcceleration, &currentVelocity),
+                "get velocity params");
+            retval += checkError(
+                BDC_GetRealValueFromDeviceUnit(
+                    m_serialNo, m_channelIndices[i], currentAcceleration, &acceleration[i], 2),
+                "convert real value to devuce unit");
+            retval += checkError(
+                BDC_GetRealValueFromDeviceUnit(
+                    m_serialNo, m_channelIndices[i], currentVelocity, &velocity[i], 1),
+                "convert real value to device unit");
+            retval += checkError(
+                BDC_GetMotorVelocityLimits(
+                    m_serialNo, m_channelIndices[i], &maxVelocity[i], &maxAcceleration[i]),
+                "get motor velocity limits");
         }
 
         m_params["acceleration"].setVal<ito::float64*>(acceleration, m_numChannels);
@@ -842,6 +845,7 @@ ito::RetVal ThorlabsBDCServo::setParam(
 
     if (!retValue.containsError())
     {
+        Sleep(60);
         emit parametersChanged(
             m_params); // send changed parameters to any connected dialogs or dock-widgets
     }
@@ -895,7 +899,7 @@ ito::RetVal ThorlabsBDCServo::calib(const QVector<int> axis, ItomSharedSemaphore
             if ((s & 0x80000000) == 0)
             {
                 retval += ito::RetVal::format(
-                    ito::retError, 0, "axis %i is disabled and cannot be zeroed.", ax);
+                    ito::retError, 0, "axis %i is disabled and cannot be homed.", ax);
             }
         }
     }
@@ -1098,6 +1102,8 @@ ito::RetVal ThorlabsBDCServo::getPos(
             retval += ito::RetVal::format(ito::retError, 0, "invalid axis index %i", idx);
             break;
         }
+        retval += checkError(
+            BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]), "clear message queue");
         // in mm
         int deviceUnit = BDC_GetPosition(m_serialNo, m_channelIndices[idx]);
         ito::float64 posMM;
@@ -1105,6 +1111,8 @@ ito::RetVal ThorlabsBDCServo::getPos(
         m_currentPos[idx] = posMM;
         (*pos)[i] = m_currentPos[idx];
     }
+
+    Sleep(60);
 
     sendStatusUpdate(false);
 
@@ -1216,14 +1224,16 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
         {
             idx = axis[i];
 
-            BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]);
+            retval += checkError(
+                BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]), "clear message queue");
 
             int deviceVal;
-            BDC_GetDeviceUnitFromRealValue(
-                m_serialNo, m_channelIndices[idx], m_targetPos[idx], &deviceVal, 0);
             retval += checkError(
-                BDC_MoveToPosition(
-                    m_serialNo, m_channelIndices[idx], deviceVal),
+                BDC_GetDeviceUnitFromRealValue(
+                    m_serialNo, m_channelIndices[idx], m_targetPos[idx], &deviceVal, 0),
+                "convert real value to device unit");
+            retval += checkError(
+                BDC_MoveToPosition(m_serialNo, m_channelIndices[idx], deviceVal),
                 "set absolute position");
         }
 
@@ -1378,12 +1388,13 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
         for (int i = 0; i < axis.size(); ++i)
         {
             idx = axis[i];
-
-            BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]);
-
+            retval += checkError(
+                BDC_ClearMessageQueue(m_serialNo, m_channelIndices[idx]), "clear message queue");
             int deviceVal;
-            BDC_GetDeviceUnitFromRealValue(
-                m_serialNo, m_channelIndices[idx], pos[i], &deviceVal, 0);
+            retval += checkError(
+                BDC_GetDeviceUnitFromRealValue(
+                    m_serialNo, m_channelIndices[idx], pos[i], &deviceVal, 0),
+                "convert real value to device unit");
             retval += checkError(
                 BDC_MoveRelative(m_serialNo, m_channelIndices[idx], deviceVal),
                 "set relative position");
@@ -1465,7 +1476,6 @@ ito::RetVal ThorlabsBDCServo::requestStatusAndPosition(bool sendCurrentPos, bool
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsBDCServo::waitForDone(
     const int timeoutMS, const QVector<int> axis, const int flags)
@@ -1536,6 +1546,7 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
                 for (int i = 0; i < axis.size(); ++i)
                 {
                     int idx = axis[i];
+                    Sleep(delay);
                     while (BDC_MessageQueueSize(m_serialNo, m_channelIndices[idx]) > 0)
                     {
                         if (BDC_GetNextMessage(
@@ -1545,29 +1556,26 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
                                 &messageId,
                                 &messageData))
                         {
-                            if (messageType == 2 && messageId == 1)
+                            if ((messageType == 2 || messageType == 3) && messageId == 1)
                             {
-                                foreach (const int& i, axis)
-                                {
-                                    retVal += getPos(i, pos_, nullptr);
-                                    m_currentPos[i] = *pos_;
+                                retVal += getPos(i, pos_, nullptr);
+                                m_currentPos[i] = *pos_;
 
-                                    if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05))
-                                    {
-                                        setStatus(
-                                            m_currentStatus[i],
-                                            ito::actuatorAtTarget,
-                                            ito::actSwitchesMask | ito::actStatusMask);
-                                        done = true; // not done yet
-                                    }
-                                    else
-                                    {
-                                        setStatus(
-                                            m_currentStatus[i],
-                                            ito::actuatorMoving,
-                                            ito::actSwitchesMask | ito::actStatusMask);
-                                        done = false;
-                                    }
+                                if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05))
+                                {
+                                    setStatus(
+                                        m_currentStatus[i],
+                                        ito::actuatorAtTarget,
+                                        ito::actSwitchesMask | ito::actStatusMask);
+                                    done = true; 
+                                }
+                                else
+                                {
+                                    setStatus(
+                                        m_currentStatus[i],
+                                        ito::actuatorMoving,
+                                        ito::actSwitchesMask | ito::actStatusMask);
+                                    done = false; 
                                 }
                             }
                         }
@@ -1658,7 +1666,8 @@ ito::RetVal ThorlabsBDCServo::checkError(short value, const char* message)
             return ito::RetVal::format(
                 ito::retError,
                 1,
-                "%s: The Device must be opened before it can be accessed. See the appropriate Open "
+                "%s: The Device must be opened before it can be accessed. See the appropriate "
+                "Open "
                 "function for your device.",
                 message);
         case 4:
@@ -1680,7 +1689,8 @@ ito::RetVal ThorlabsBDCServo::checkError(short value, const char* message)
             return ito::RetVal::format(
                 ito::retError,
                 1,
-                "%s: The Device is no longer present. The device may have been disconnected since "
+                "%s: The Device is no longer present. The device may have been disconnected "
+                "since "
                 "the last TLI_BuildDeviceList() call.",
                 message);
         case 8:
@@ -1744,20 +1754,23 @@ ito::RetVal ThorlabsBDCServo::checkError(short value, const char* message)
             return ito::RetVal::format(
                 ito::retError,
                 1,
-                "%s: The function cannot be performed as it would result in an illegal position.",
+                "%s: The function cannot be performed as it would result in an illegal "
+                "position.",
                 message);
         case 39:
             return ito::RetVal::format(
                 ito::retError,
                 1,
-                "%s: An invalid velocity parameter was supplied. The velocity must be greater than "
+                "%s: An invalid velocity parameter was supplied. The velocity must be greater "
+                "than "
                 "zero.",
                 message);
         case 44:
             return ito::RetVal::format(
                 ito::retError,
                 1,
-                "%s: This device does not support Homing. Check the Limit switch parameters are "
+                "%s: This device does not support Homing. Check the Limit switch parameters "
+                "are "
                 "correct.",
                 message);
         case 45:
