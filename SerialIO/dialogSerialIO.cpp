@@ -317,7 +317,7 @@ ito::RetVal dialogSerialIO::applyParameters()
 #else
             QByteArray var = ui.combo_endline->currentData().toByteArray();
 #endif
-            memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
+            memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
         break;
     }
     if (strcmp(m_currentParameters["endline"].getVal<char*>(), endline) != 0)
@@ -349,7 +349,7 @@ ito::RetVal dialogSerialIO::applyParameters()
 #else
             QByteArray var = ui.combo_endlineRead->currentData().toByteArray();
 #endif
-            memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
+            memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
         break;
     }
     if (strcmp(m_currentParameters["endlineRead"].getVal<char*>(), endline) != 0)

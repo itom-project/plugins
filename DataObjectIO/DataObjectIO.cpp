@@ -34,7 +34,7 @@
 #include <string.h>
 #include <qdatetime.h>
 #include <qdir.h>
-#include <qtextcodec.h>
+//#include <qtextcodec.h>
 
 #include "opencv2/highgui/highgui.hpp"
 
@@ -933,7 +933,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
     QImage image;
-    QFileInfo fileinfo = QString::fromLatin1(filename);
+    QFileInfo fileinfo(QString::fromLatin1(filename));
 
     if (!fileinfo.exists())
     {
@@ -5217,7 +5217,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
         }
 
         rowPtr = myMat->ptr<ito::float32>(y);
-        xsizetmp = std::min(xsize, curLineData.size());
+        xsizetmp = std::min(xsize, (int)curLineData.size());
 
         for (int x = 0; x < xsizetmp; x++)
         {

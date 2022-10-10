@@ -1566,7 +1566,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
         else
         {
             //prepend prebuf to data
-            int numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
+            int numCharactersForPrebuf = std::min((int)m_preBuf.size(), *length);
             int remainingCharactersInData = *length - numCharactersForPrebuf;
             memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
             m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
@@ -1588,7 +1588,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
         if (!m_preBuf.isEmpty())
         {
             //prepend prebuf to data
-            numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
+            numCharactersForPrebuf = std::min((int)m_preBuf.size(), *length);
             memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
             m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
         }

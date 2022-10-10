@@ -643,7 +643,11 @@ ito::RetVal DataObjectIO::loadZygoMetroProParams(QVector<ito::Param> *paramsMand
                     obj.setTag("scanDescription", header.scan_descr);
                     obj.setTag("intensityRange", header.intens_range);
                     QDateTime timestamp;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+                    timestamp.setSecsSinceEpoch(header.time_stamp);
+#else
                     timestamp.setTime_t(header.time_stamp);
+#endif
                     obj.setTag("timestamp", timestamp.toString().toLatin1().data());
                     obj.setTag("automaticGainControl", header.agc);
                     obj.setTag("exitPupilDiameter", header.exit_pupil_diam);

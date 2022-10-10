@@ -85,11 +85,9 @@ HRESULT ImageGrabber::initImageGrabber(IMFMediaSource *pSource, GUID VideoFormat
     SafeRelease(&ig_pTopology);
 
 	ig_pSource = pSource;
-
-
-
-
     hr = pSource->CreatePresentationDescriptor(&pPD);
+    DWORD cTypes = 0;
+
     if (FAILED(hr))
     {
         goto err;
@@ -97,19 +95,21 @@ HRESULT ImageGrabber::initImageGrabber(IMFMediaSource *pSource, GUID VideoFormat
 
     BOOL fSelected;
     hr = pPD->GetStreamDescriptorByIndex(0, &fSelected, &pSD);
+
     if (FAILED(hr))
     {
         goto err;
     }
 
     hr = pSD->GetMediaTypeHandler(&pHandler);
+
     if (FAILED(hr))
     {
         goto err;
     }
 
-    DWORD cTypes = 0;
     hr = pHandler->GetMediaTypeCount(&cTypes);
+
     if (FAILED(hr))
     {
         goto err;
@@ -218,14 +218,13 @@ HRESULT ImageGrabber::startGrabbing(void)
     PropVariantInit(&var);
 
     HRESULT hr = S_OK;
+    HRESULT hrStatus = S_OK;
+    MediaEventType met;
 
     CHECK_HR(hr = ig_pSession->SetTopology(0, ig_pTopology));
     CHECK_HR(hr = ig_pSession->Start(&GUID_NULL, &var));
 
     m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Start Grabbing of the images\n", ig_DeviceID);
-
-    HRESULT hrStatus = S_OK;
-    MediaEventType met;
 
     while (1)
     {

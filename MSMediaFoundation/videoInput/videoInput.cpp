@@ -457,7 +457,7 @@ unsigned int VideoInput::getHeight(unsigned int deviceID)
     \return name or "Empty" if it does not exist
     \sa VideoDevice::getName, VideoDevices::getDevice
 */
-wchar_t *VideoInput::getNameVideoDevice(unsigned int deviceID)
+const wchar_t *VideoInput::getNameVideoDevice(unsigned int deviceID)
 {
 	if (m_accessToDevices)
 	{

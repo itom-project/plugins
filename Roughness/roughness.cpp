@@ -1843,7 +1843,7 @@ ito::RetVal Roughness::roughnessProfile(QVector<ito::ParamBase> *paramsMand, QVe
             p_mand[2].setVal<ito::DataObject*>(&waviness);
             p_mand[3].setVal<double>(lc);
             p_mand[4].setVal<double>(ls);
-            p_opt[0].setVal<char*>("auto");
+            p_opt[0].setVal<const char*>("auto");
             p_opt[1].setVal<int>(periodicity);
             p_opt[2].setVal<double>(cutoff_factor);
             retval += apiFilterCall("calcRoughnessProfile", &p_mand, &p_opt, &p_out);

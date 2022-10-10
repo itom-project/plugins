@@ -733,6 +733,7 @@ long VideoDevice::enumerateCaptureFormats(IMFMediaSource *pSource)
     IMFStreamDescriptor *pSD = NULL;
     IMFMediaTypeHandler *pHandler = NULL;
     IMFMediaType *pType = NULL;
+	DWORD cTypes = 0;
 
     HRESULT hr = pSource->CreatePresentationDescriptor(&pPD);
     if (FAILED(hr))
@@ -753,7 +754,6 @@ long VideoDevice::enumerateCaptureFormats(IMFMediaSource *pSource)
         goto done;
     }
 
-    DWORD cTypes = 0;
     hr = pHandler->GetMediaTypeCount(&cTypes);
     if (FAILED(hr))
     {

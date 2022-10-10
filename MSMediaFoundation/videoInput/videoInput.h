@@ -153,7 +153,7 @@ public:
 	unsigned int getHeight(unsigned int deviceID);
 
 	// Getting name of VideoDevice with deviceID
-	wchar_t *getNameVideoDevice(unsigned int deviceID);
+	const wchar_t *getNameVideoDevice(unsigned int deviceID);
 	
 	// Getting interface MediaSource for Media Foundation from VideoDevice with deviceID
 	IMFMediaSource *getMediaSource(unsigned int deviceID);
