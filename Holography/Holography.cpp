@@ -123,10 +123,10 @@ Holography::~Holography()
 *
 *    Here are the filter functions defined that are available through this addIn.
 *    These are:
-*        - calcCiMap            calculate code index map (graycode)
-*        - calcPhaseMapN        calculate phase map from n phase images
-*        - calcPhaseMap4        calculate phase map from 4 90° shifted phase images
-*        - unwrapPhaseGray    unwrap modulo 2 pi phase map using a code index map
+*        - FresnelCalcProp  Calculate propagator used for a subsequent Fresnel propagation
+*        - FresnelDoProp    Apply / propagate provided wavefield using Fresnel propagation and the previously calculated propagator
+*        - RSCalcProp       Calculate propagator used for a subsequent Rayleigh-Sommerfeld propagation
+*        - RSDoProp         Calculate propagator used for a subsequent Rayleigh-Sommerfeld propagation
 */
 ito::RetVal Holography::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
@@ -257,11 +257,11 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     if (retval.containsError()) return retval;
 
     paramsMand->append(ito::Param("dObjOut", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d complex output data field"));
-    paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in x-direction"));
-    paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in y-direction"));
-    paramsMand->append( ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance") );
-    paramsMand->append( ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation") );	
-    paramsMand->append( ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation") );
+    paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in x-direction in mu"));
+    paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in y-direction in mu"));
+    paramsMand->append( ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance in mu") );
+    paramsMand->append( ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation in mu") );	
+    paramsMand->append( ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation in mu") );
 
     paramsOpt->append(ito::Param("makeSquare", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, "make square propagators only"));
     paramsOpt->append(ito::Param("dtype", ito::ParamBase::Int | ito::ParamBase::In, ito::tComplex64, ito::tComplex128, ito::tComplex128, "data type for phase masks"));
@@ -485,11 +485,11 @@ end:
     if (retval.containsError()) return retval;
 
     paramsMand->append(ito::Param("dObjOut", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d complex output data field"));
-    paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in x-direction"));
-    paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in y-direction"));
-    paramsMand->append(ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance"));
-    paramsMand->append(ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation"));
-    paramsMand->append(ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation"));
+    paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in x-direction in mu"));
+    paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in y-direction in mu"));
+    paramsMand->append(ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance in mu"));
+    paramsMand->append(ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation in mu"));
+    paramsMand->append(ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation in mu"));
 
     paramsOpt->append(ito::Param("dtype", ito::ParamBase::Int | ito::ParamBase::In, ito::tComplex64, ito::tComplex128, ito::tComplex128, "data type for phase masks"));
 
