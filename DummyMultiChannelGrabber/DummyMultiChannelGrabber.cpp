@@ -873,6 +873,33 @@ ito::RetVal DummyMultiChannelGrabber::getVal(void *vpdObj, ItomSharedSemaphore *
     return retValue;
 }
 
+ito::RetVal DummyMultiChannelGrabber::getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    retValue += retrieveData();
+
+    if (!retValue.containsError())
+    {
+        if (dataObjMap == NULL)
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 1004, tr("QMap<QString, ito::DataObject*> of getVal is NULL").toLatin1().data());
+        }
+        else
+        {
+            retValue += sendDataToListeners(0); // don't wait for live image, since user should get the image as fast as possible.
+            QMap<QString, ito::DataObject*>::iterator it = (*dataObjMap).begin();
+            while (it != (*dataObjMap).end())
+            {
+                *(it.value()) = this->m_channels[it.key()].data;
+                ++it;
+            }    
+        }
+    }
+    return retValue;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
