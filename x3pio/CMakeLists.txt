@@ -70,6 +70,9 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     add_definitions(-DISO5436_2_LIBRARY)
 
+    # see https://stackoverflow.com/questions/48882439/how-to-restore-auto-ptr-in-visual-studio-c17
+    add_definitions(-D_HAS_AUTO_PTR_ETC=1)
+
 
     if(DEFINED MSVC_VERSION)
         # Library postfix/ prefix for different vs version
