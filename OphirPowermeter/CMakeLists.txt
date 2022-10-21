@@ -1,6 +1,5 @@
 set(target_name OphirPowermeter) 
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -23,12 +22,10 @@ include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 itom_find_package_qt(ON Widgets Core LinguistTools)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
-
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -57,9 +54,7 @@ set(PLUGIN_SOURCES
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif()
-
-
+endif(MSVC)
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
@@ -74,9 +69,7 @@ string( REPLACE "/MP" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
 message(STATUS "Deleted /MP flag from CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 
-
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-
 
 #translation
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})

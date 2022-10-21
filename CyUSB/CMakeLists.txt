@@ -19,7 +19,6 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
@@ -27,38 +26,18 @@ include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 itom_find_package_qt(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
+find_package(CyAPI QUIET)
 
-find_path( CyAPI_INCLUDE_DIR CyAPI.h DOC "Include directory of CyAPI static include directory")
+if(CYAPI_INCLUDE_DIRS)
 
-
-if(CyAPI_INCLUDE_DIR)
-
-    if(BUILD_TARGET64)
-        find_library(CyAPI_LIB_DIR CyAPI PATHS ${CyAPI_INCLUDE_DIR}/../lib PATH_SUFFIXES x64)
-        #find_file(CyAPI_BIN_DIR CyAPI.dll PATHS ${CyAPI_INCLUDE_DIR} PATH_SUFFIXES x64)
-    else(BUILD_TARGET64)
-        find_library(CyAPI_LIB_DIR CyAPI PATHS ${CyAPI_INCLUDE_DIR}/../lib PATH_SUFFIXES x86)
-        #find_file(CyAPI_BIN_DIR CyAPI.dll PATHS ${CyAPI_INCLUDE_DIR} PATH_SUFFIXES x86)
-    endif(BUILD_TARGET64)
-
-
-    
-
-
-            
-
-
-
- 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${ITOM_SDK_INCLUDE_DIRS}
-            ${CyAPI_INCLUDE_DIR}
+        ${CYAPI_INCLUDE_DIRS}
     )
 
     set(PLUGIN_HEADERS
@@ -80,9 +59,8 @@ if(CyAPI_INCLUDE_DIR)
     set(PLUGIN_RCC
     )
     
-    link_directories(${CyAPI_LIB_DIR})
+    link_directories(${CYAPI_LIB_DIRS})
     
-
     #Add version information to the plugIn-dll unter MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
@@ -95,12 +73,12 @@ if(CyAPI_INCLUDE_DIR)
     
     if(MSVC)
         if(MSVC_VERSION GREATER 1800)
-            target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${CyAPI_LIB_DIR} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} setupapi legacy_stdio_definitions)
+            target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${CYAPI_LIB_DIRS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} setupapi legacy_stdio_definitions)
         else(MSVC_VERSION GREATER 1800)
-            target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${CyAPI_LIB_DIR} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} setupapi)
+            target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${CYAPI_LIB_DIRS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} setupapi)
         endif(MSVC_VERSION GREATER 1800)
     else()
-        target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${CyAPI_LIB_DIR} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} setupapi)
+        target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${CYAPI_LIB_DIRS} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} setupapi)
     endif()
                    
     #translation
@@ -115,9 +93,8 @@ if(CyAPI_INCLUDE_DIR)
     itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    #itom_post_build_copy_files_to_lib_folder(${target_name} CyAPI_BIN_DIR)
+    #itom_post_build_copy_files_to_lib_folder(${target_name} CyAPI_BIN_DIR)  
     
-    
-else(CyAPI_INCLUDE_DIR)
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
-endif(CyAPI_INCLUDE_DIR)
+else(CYAPI_INCLUDE_DIRS)
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
+endif(CYAPI_INCLUDE_DIRS)

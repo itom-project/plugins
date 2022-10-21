@@ -1,6 +1,5 @@
 set(target_name DslrRemote)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -17,7 +16,6 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
 if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
-
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
@@ -43,7 +41,7 @@ if(WIN32)
     add_subdirectory(libgphoto2_port)
     add_subdirectory(camlibs)
 else()
-    find_package(libgphoto REQUIRED)
+    find_package(GPhoto REQUIRED)
 endif()
 
 if(WIN32 OR LIBGPHOTO_FOUND)
@@ -51,14 +49,9 @@ if(WIN32 OR LIBGPHOTO_FOUND)
             endif(BUILD_UNICODE)
     add_definitions(-DCMAKE)
 
-            
-        
-
-
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
     
     include("CreateEndianHeader.cmake")
-
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -92,8 +85,6 @@ endif(WIN32)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
 
-
-
     add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
     
     # Qt: enable all automoc, autouic and autorcc.
@@ -109,7 +100,6 @@ if(WIN32)
 else()
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${LIBGPHOTO_LIBRARIES})
 endif()
-
 
 if(WIN32)
     add_dependencies(${target_name} regex)

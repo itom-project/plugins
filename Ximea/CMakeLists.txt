@@ -1,11 +1,10 @@
 set(target_name Ximea) 
-
  
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(XIMEA_BUILD_API_VERSION "4.15 or newer" CACHE STRING "Expected API version")
-set_property(CACHE XIMEA_BUILD_API_VERSION PROPERTY STRINGS "4.15 or newer" 4.10)
+set(XIMEA_BUILD_API_VERSION "4.25 or newer" CACHE STRING "Expected API version")
+set_property(CACHE XIMEA_BUILD_API_VERSION PROPERTY STRINGS "4.25 or newer" 4.25)
 option(XIMEA_BUILD_INCLUDE_SHADING "Build with shading support from API-Version" OFF)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
@@ -18,7 +17,6 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
 if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
-
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -33,48 +31,36 @@ itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 
-find_path( XIMEA_APIDIR m3Api.h DOC "XIMEA Api directory (must contain the file m3Api.h)")
+find_package(Ximea)
+
+find_path(XIMEA_APIDIR XIApi.h DOC "XIMEA Api directory (must contain the file m3Api.h)")
+
+message(STATUS "XIMEA_APIDIR: " ${XIMEA_APIDIR})
 
 if(XIMEA_APIDIR)
 
-
-    if(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.10")
-        message(STATUS "USE_API_4_10 defined")
-        add_definitions(-DUSE_API_4_10)
-    endif(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.10")
+    #if(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.25")
+    #    message(STATUS "USE_API_4_10 defined")
+    #    add_definitions(-DUSE_API_4_10)
+    #endif(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.25")
     
-    message(STATUS "Ximea used API VERSION: ${XIMEA_BUILD_API_VERSION}" )
+    message(STATUS "Ximea used API VERSION: ${XIMEA_SDK_VERSION}" )
 
     if(XIMEA_BUILD_INCLUDE_SHADING)
         add_definitions(-DUSE_SHADING)
     endif(XIMEA_BUILD_INCLUDE_SHADING)    
     
-    
-    #
-            
-    
-
-
-
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${ITOM_SDK_INCLUDE_DIRS}
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
-            ${XIMEA_APIDIR}
+        ${XIMEA_SDK_INCLUDE_DIR}
     )
 
-    if(BUILD_TARGET64)
-        link_directories(
-            
-            ${XIMEA_APIDIR}/x64
-        )
-    else(BUILD_TARGET64)
-        link_directories(
-            
-            ${XIMEA_APIDIR}/x86
-        )
-    endif(BUILD_TARGET64)
+	message(STATUS ${XIMEA_SDK_BINARY_DIR})
+
+    link_directories( ${XIMEA_SDK_BINARY_DIR} )
 
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.h
@@ -90,29 +76,23 @@ if(XIMEA_APIDIR)
     )
 
     set(PLUGIN_SOURCES 
-
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
     )
 
-    set(PLUGIN_RCC
-    )
+    set(PLUGIN_RCC	)
 
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
-
 
     #handle translations BEGIN STEP 1
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     set(TRANSLATION_OUTPUT_FILES)
     set(TRANSLATIONS_FILES)
 
-
-
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
 
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
@@ -133,14 +113,10 @@ if(XIMEA_APIDIR)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     
 if(WIN32)
-    if(BUILD_TARGET64)
-        file(GLOB_RECURSE dlls "${XIMEA_APIDIR}/*.dll")
-    else(BUILD_TARGET64)    
-        file(GLOB dlls "${XIMEA_APIDIR}/x86/*.dll")
-    endif(BUILD_TARGET64)
+    file(GLOB_RECURSE dlls "${XIMEA_SDK_BINARY_DIR}/*.dll")
     itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
-endif(WIN32)
-        
+endif(WIN32)	
+		
 else(XIMEA_APIDIR)
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
 endif(XIMEA_APIDIR)

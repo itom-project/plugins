@@ -39,6 +39,14 @@ The major part of this driver is usually installed under **C:/Program Files/Nati
 **C:/Program Files (x86)/National Instruments**. Some important libraries are also copied to the 
 **C:/Windows/System32**, where they are found from the itom plugin.
 
+If you choose a different installation folder but the defaulft, please set the **NIDAQMX_ROOT**
+environment variable to the equivivalent "C:/Program Files (x86)/National Instruments"
+folder.
+
+Please be aware that multiple driver versions exists, some of which lead to linker errors
+during the build process. For the latest build the binary and header files at
+**[NiDAQmx-Foleder]/Shared/ExternalCompilerSupport/C** are used.
+
 If you also want to compile the plugin, make sure that you enable the option
 **Applications Development Supports / ANSI C Support** in the installer. This can also be done
 by modifying the installation using the tab **Progam and Features** in the Windows Control Panel
@@ -55,6 +63,7 @@ the **NI-DAQmx** driver is only available as RPM-package for Red Hat, SUSE and C
 
 See this knowledge base entry (https://knowledge.ni.com/KnowledgeArticleDetails?id=kA00Z00000159XISAY)
 and see the links, where to download the linux driver and how to install it.
+
 
 Initialization
 ==============
@@ -86,6 +95,7 @@ of the plugin. Finite input tasks can also have a **reference trigger**, that is
 to stop the acquisition upon a certain input trigger. If this **refTriggerMode** is set, the
 finite task behaves like a continuous task (see examples below) and acquires data from the start
 signal until all conditions of the reference trigger are fulfilled.
+
 
 Parameters
 ==========
@@ -210,6 +220,7 @@ writeable parameters can be changed using *setParam*.
     Indicates if the task is currently running (1) or stopped / inactive (0).
 **taskType**: {str}, read-only
     task type: analogInput, analogOutput, digitalInput, digitalOutput
+
 
 Usage
 ======
@@ -2161,3 +2172,4 @@ Changelog
 * itom setup 4.0.0: Complete renewed plugin implementation. This plugin is incompatible to earlier version of
   this plugin and provides much more features. It has been compiled using NI-DAQmx 19.6.0 (Windows)
 * itom setup 4.1.0: This plugin has been compiled using the NI-DAQmx 19.6.0 (Windows)
+* itom setup 4.3.0: This plugin has been compiled using the NI-DAQmx 22.5.0 (Windows)

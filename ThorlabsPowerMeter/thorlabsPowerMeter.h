@@ -2,7 +2,7 @@
 itom software
 URL: http://www.uni-stuttgart.de/ito
 Copyright (C) 2018, Institut fuer Technische Optik (ITO),,
-Universität Stuttgart, Germany
+Universitï¿½t Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut für Technische
+In addition, as a special exception, the Institut fï¿½r Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -31,7 +31,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "common/addInInterface.h"
 #include "dialogThorlabsPowerMeter.h"
 #include "DataObject/dataobj.h"
-#if defined(USE_API_1_02) 
+#if defined(USE_API_1_0_2) 
     #include "visa.h"
 #else
     #include "visatype.h"

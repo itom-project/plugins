@@ -1,6 +1,5 @@
 set(target_name FFTWfilters)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -16,14 +15,12 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 itom_find_package_qt(ON Widgets Core Xml LinguistTools)
@@ -33,12 +30,6 @@ find_package(FFTW 3)
 
 if(FFTW_FOUND)
     
-
-            
-    
-
-
-
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -63,13 +54,11 @@ if(FFTW_FOUND)
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
-
     
     #handle translations BEGIN STEP 1
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     set(TRANSLATION_OUTPUT_FILES)
     set(TRANSLATIONS_FILES)
-
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
     
@@ -101,5 +90,5 @@ if(FFTW_FOUND)
     endif(WIN32)
 
 else(FFTW_FOUND)
-    message(WARNING "fftw could not be found. ${target_name} will not be build")
+    message(SEND_ERROR "fftw could not be found. ${target_name} will not be build")
 endif(FFTW_FOUND)

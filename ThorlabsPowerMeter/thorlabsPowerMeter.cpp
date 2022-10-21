@@ -42,7 +42,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QElapsedTimer> 
 
 #include "dockWidgetThorlabsPowerMeter.h"
-#if defined(USE_API_1_02) 
+#if defined(USE_API_1_0_2) 
     #include <PM100D.h>
 #define PM(name) PM100D_##name
 #else
@@ -217,7 +217,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     ViUInt32   count = 0;            //counts found devices
     ViStatus status;
 
-#ifdef USE_API_1_02 //Thorlabs Power Meter (1.02)
+#ifdef USE_API_1_0_2 //Thorlabs Power Meter (1.02)
     ViChar     rscStr[VI_FIND_BUFLEN]; // resource string
     ViFindList findList;
 
@@ -266,11 +266,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
             for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
             {
-#if defined(USE_API_3_02)
-                std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
-#else
                 std::cout << deviceInfo[i].toLatin1().data() << std::endl;
-#endif
             }
 
 
@@ -314,17 +310,11 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
             //try to open device
             status = PM(init)(deviceName.toLatin1().data(), VI_OFF, VI_OFF, &m_instrument);
-#if defined(USE_API_3_02)
-            if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
-            {
-                retval += checkError(status);
-            }
-#else
             if (status != VI_SUCCESS)
             {
                 retval += checkError(status);
             }
-#endif
+
         }
 
         ViChar name[256];

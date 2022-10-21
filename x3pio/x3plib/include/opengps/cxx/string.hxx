@@ -44,9 +44,7 @@
 # include <opengps/cxx/opengps.hxx>
 #endif
 
-#if linux
-   #include <iostream>
-#endif
+#include <iostream>
 #include <string>
 
 #if defined(SHARED_OPENGPS_LIBRARY) || defined(BUILD_ISO5436_2_XML_DLL)

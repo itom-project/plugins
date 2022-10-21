@@ -16,22 +16,15 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 itom_find_package_qt(ON Core Widgets LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
-
-
-
-
-
 
 if(BUILD_TARGET64)
     message(WARNING "AerotechA3200 can only be build for 32bit. ${target_name} will not be build")
@@ -106,7 +99,4 @@ else(BUILD_TARGET64)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-    # copy dlls in itoms lib folder
-    #file(GLOB dlls "${BINARY_PATH}/*.dll")
-    #itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
 endif(BUILD_TARGET64)

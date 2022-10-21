@@ -71,7 +71,7 @@ An instance of this plugin has the following internal parameters:
 Usage
 =============
 
-In order to use this plugin, please install the Vimba SDK from Allied Vision in version 2.0 or higher (see http://www.alliedvisiontec.com/de/produkte/software.html).
+In order to use this plugin, please install the Vimba SDK from Allied Vision in version 2.0 or higher (see https://www.alliedvision.com/de/support/software-downloads/).
 During the installation, the necessary Vimba DLLs (VimbaC.dll and VimbaCPP.dll) should be copied into the system directory of Windows, such that no further steps need to be
 done using the AVT cameras within **itom**. If this is not the case, copy both libraries from the Vimba installation folder to the lib-folder of itom (make sure that you use
 the 64bit versions for 64bit itom and vice versa).

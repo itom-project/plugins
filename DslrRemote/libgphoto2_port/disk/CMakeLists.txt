@@ -1,6 +1,5 @@
 set(target_name libgphoto2_port_disk)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -73,7 +72,7 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-log.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-info-list.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-result.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/disk
+    ${CMAKE_CURRENT_SOURCE_DIR}/disk.c
 )
 
 #Add version information to the plugIn-dll unter MSVC

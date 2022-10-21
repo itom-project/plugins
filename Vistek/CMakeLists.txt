@@ -1,6 +1,5 @@
 set(target_name Vistek)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -15,7 +14,6 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
 if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
-
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -32,9 +30,6 @@ itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 if(BUILD_TARGET64)
     add_definitions(-DX64 -D_X64)
 endif(BUILD_TARGET64)
-
-
-
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -72,7 +67,6 @@ set(PLUGIN_UI
 set(PLUGIN_RCC
 )
 
-
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
@@ -85,7 +79,6 @@ add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_U
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-
 
 
 #translation

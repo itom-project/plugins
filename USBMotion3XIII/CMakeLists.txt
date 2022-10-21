@@ -1,6 +1,5 @@
 set(target_name USBMotion3XIII)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -28,10 +27,6 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 find_package(ITOM_SDK REQUIRED)
 itom_find_package_qt(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
-
-
-
-
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
