@@ -1,25 +1,27 @@
 ===================
- Fringe Proj
+ Holography
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`FringeProj`
-**Type**:       :plugintype:`FringeProj`
-**License**:    :pluginlicense:`FringeProj`
+**Summary**:    :pluginsummary:`Holography`
+**Type**:       :plugintype:`Holography`
+**License**:    :pluginlicense:`Holography`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`FringeProj`
+**Author**:     :pluginauthor:`Holography`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: FringeProj
+    :plugin: Holography
+	
+	Algorithms used for digital holography, such as Rayleigh Sommerfield and Fresnel propagation
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: FringeProj
+    :plugin: Holography
     :overviewonly:
 
 Filters
@@ -28,5 +30,5 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: FringeProj
+    :plugin: Holography
 

@@ -102,38 +102,38 @@ In the following script, the first detectable power meter is connected and a osc
 plot is opened that displays a moving graph of recent intensity values:
 
 .. code-block:: python
-	
-	if not "pmXXX" in globals():
-    pmXXX = dataIO("ThorlabsPowerMeter", "")
-    
-	numPoints = 1000
-	image = dataObject.zeros([1,numPoints],'float64')
-	[i,plot_handle] = plot1(image)
 
-	def timeout():
-		global timer_id
-		d = dataObject()
-		pmXXX.acquire() #acquire new intensity value
-		
-		image[0,0:numPoints-1] = image[0,1:] #shift pixels to the left by one...
-		
-		pmXXX.getVal(d) #get the recently acquired value
-		image.copyMetaInfo(d)
-		image[0,numPoints-1] = d[0,0] #...append new value to the end of image
-		
-		if plot_handle.exists():
-			try:
-				plot_handle["source"] = image #update the displayed image
-			except:
-				pass
-		else:
-			print("Figure has been closed. Stop acquisition...")
-			timer_id.stop()
-			del timer_id
+    if not "pmXXX" in globals():
+        pmXXX = dataIO("ThorlabsPowerMeter", "")
 
-	timer_id = timer(50, timeout) #call timeout every 50ms
+    numPoints = 1000
+    image = dataObject.zeros([1,numPoints],'float64')
+    [i,plot_handle] = plot1(image)
 
-       
+    def timeout():
+        global timer_id
+        d = dataObject()
+        pmXXX.acquire() #acquire new intensity value
+        
+        image[0,0:numPoints-1] = image[0,1:] #shift pixels to the left by one...
+        
+        pmXXX.getVal(d) #get the recently acquired value
+        image.copyMetaInfo(d)
+        image[0,numPoints-1] = d[0,0] #...append new value to the end of image
+        
+        if plot_handle.exists():
+            try:
+                plot_handle["source"] = image #update the displayed image
+            except:
+                pass
+        else:
+            print("Figure has been closed. Stop acquisition...")
+            timer_id.stop()
+            del timer_id
+
+    timer_id = timer(50, timeout) #call timeout every 50ms
+
+
 Changelog
 =========
 
