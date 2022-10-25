@@ -899,6 +899,62 @@ ito::RetVal DummyMultiChannelGrabber::getValByMap(QSharedPointer<QMap<QString, i
     }
     return retValue;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DummyMultiChannelGrabber::retrieveData(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    if (m_isgrabbing == false)
+    {
+        retValue += ito::RetVal(ito::retError, 1002,
+            tr("image could not be obtained since no image has been acquired.").toLatin1().data());
+    }
+    else
+    {
+        if (dataObjMap)
+        {
+            QMap<QString, ito::DataObject*>::const_iterator it = (*dataObjMap).constBegin();
+            while (it != (*dataObjMap).constEnd())
+            {
+                m_channels[it.key()].data.deepCopyPartial(*it.value());
+                ++it;
+            }
+
+        }
+
+        m_isgrabbing = false;
+    }
+
+    return retValue;
+}
+ito::RetVal DummyMultiChannelGrabber::copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
+{
+
+    ito::RetVal retValue(ito::retOk);
+
+    retValue += checkData(*dataObjMap);
+    retValue += retrieveData(dataObjMap);
+
+    if (!retValue.containsError())
+    {
+        if (dataObjMap == NULL)
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 1004, tr("QMap<QString, ito::DataObject*> of getVal is NULL").toLatin1().data());
+        }
+        else
+        {
+            retValue += sendDataToListeners(0); // don't wait for live image, since user should get the image as fast as possible.
+            QMap<QString, ito::DataObject*>::iterator it = (*dataObjMap).begin();
+            while (it != (*dataObjMap).end())
+            {
+                *(it.value()) = this->m_channels[it.key()].data;
+                ++it;
+            }
+        }
+    }
+    return retValue;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
