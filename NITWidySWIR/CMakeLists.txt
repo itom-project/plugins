@@ -50,10 +50,12 @@ if(NITLIBRARY_INCLUDE_DIR)
         #add further include directories here
     )
     
+	message(STATUS "NITLIBRARY_SDK_DIR: " ${NITLIBRARY_SDK_DIR})
+	
     if(BUILD_TARGET64)
-		find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
+		find_library(NITLIBRARY_LIB NITLibrary NITLibrary_x64-2_4_1 NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
     else(BUILD_TARGET64)
-        find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x86)
+        find_library(NITLIBRARY_LIB NITLibrary NITLibrary_x86-2_4_1 NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x86)
     endif(BUILD_TARGET64)
 	
     set(PLUGIN_HEADERS

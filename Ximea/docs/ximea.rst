@@ -192,7 +192,7 @@ which is needed to determine the SDK version number and binary file location.
 Alternatively you can manually set the CMAKE **XIMEA_SDK_VERSION**.
 
 To finde the SDK either set the CMAKE variable **XIMEA_APIDIR** or the evironment variable **XIMEA_SDK_ROOT**
-to the API directory (e.g. C:\XIMEA\API).
+to the API directory (e.g. C:\XIMEA\API\xiAPI).
 
 *Linux:*
 
