@@ -1,6 +1,5 @@
 set(target_name PCOCamera)
 
-
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 3.1...3.15)
@@ -35,26 +34,6 @@ include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-
-#################################################################
-# Automatic package detection
-#   add here FIND_PACKAGE commands for searching for 3rd party
-#   libraries
-#
-#   for detecting Qt, use itom_find_package_qt instead of the
-#   native command, since itom_find_package_qt detects the Qt4 or 5
-#   version.
-#################################################################
-
-# the itom SDK needs to be detected, use the COMPONENTS keyword
-# to define which library components are needed. Possible values
-# are:
-# - dataobject for the ito::DataObject (usually required)
-# - itomCommonLib (RetVal, Param,...) (required)
-# - itomCommonQtLib (AddInInterface,...) (required)
-# - itomWidgets (further widgets) (may be used in dock widget...)
-# - pointcloud (pointCloud, point, polygonMesh...) (optional)
-# if no components are indicated, all components above are used
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
 
@@ -80,10 +59,6 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     else(PCO_Camera_BUILD_API_VERSION VERSION_EQUAL "really old")
         add_definitions(-DPCO_SDK_OLD)
     endif(PCO_Camera_BUILD_API_VERSION VERSION_EQUAL "1.24 or newer")
-
-    #################################################################
-    # General settings and preprocessor settings
-    #################################################################
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)

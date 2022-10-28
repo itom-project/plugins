@@ -21,10 +21,7 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-set(IDS_DEVELOP_DIRECTORY "" CACHE PATH "path to develop directory of IDS SDK")
-if(NOT IDS_DEVELOP_DIRECTORY)
-	set(IDS_DEVELOP_DIRECTORY $ENV{ISD_UEYE_ROOT}develop)
-endif(NOT IDS_DEVELOP_DIRECTORY)
+set(IDS_DEVELOP_DIRECTORY "$ENV{IDS_UEYE_ROOT}" CACHE PATH "path to develop directory of IDS SDK")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 

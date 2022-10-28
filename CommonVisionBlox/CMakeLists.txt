@@ -1,6 +1,5 @@
 set(target_name CommonVisionBlox)
 
-
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 3.1...3.15)
@@ -27,7 +26,11 @@ include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-if(DEFINED ENV{CVB_ROOT})
+if(NOT CVB_DIR)
+	set(CVB_DIR $ENV{CVB_ROOT})
+endif(NOT CVB_DIR)
+
+if(DEFINED CVB_DIR)
 
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
     find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
@@ -38,12 +41,12 @@ if(DEFINED ENV{CVB_ROOT})
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
         ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended) 
-        "$ENV{CVB_ROOT}\\Lib\\C"
+        "${CVB_DIR}\\Lib\\C"
     )
 
     link_directories(
         #add all linker directories
-        "$ENV{CVB_ROOT}\\Lib\\C"
+        "${CVB_DIR}\\Lib\\C"
     )
 
     set(PLUGIN_HEADERS
@@ -90,6 +93,6 @@ if(DEFINED ENV{CVB_ROOT})
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-else(DEFINED ENV{CVB_ROOT})
+else(DEFINED CVB_DIR)
     message(SEND_ERROR "Environment variable CVB_ROOT for common vision blox not found. ${target_name} will not be build.")
-endif(DEFINED ENV{CVB_ROOT})
+endif(DEFINED CVB_DIR)
