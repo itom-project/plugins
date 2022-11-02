@@ -34,7 +34,12 @@
 #include <string.h>
 #include <qdatetime.h>
 #include <qdir.h>
-//#include <qtextcodec.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #include<qtextcodec.h>
+#else 
+    #include<qstringconverter.h>
+#endif
 
 #include "opencv2/highgui/highgui.hpp"
 
@@ -3007,7 +3012,7 @@ void DataObjectIO::checkAndModifyFilenameSuffix(QFileInfo &file, const QString &
     if (wrongSuffix)
     {
         QString fixedName = QString("%1/%2.%3").arg(file.absolutePath()).arg(file.completeBaseName()).arg(desiredAndAllowedSuffix);
-        file = QDir::toNativeSeparators(fixedName);
+        file = QFileInfo(QDir::toNativeSeparators(fixedName));
     }
 }
 
@@ -4688,8 +4693,12 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
         QString encoding = paramsOpt->at(7).getVal<char*>();
 
         if (encoding != "")
-        {
+        {  
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
+#else
+            if (!QStringConverter::encodingForName(encoding.toLatin1()).has_value())
+#endif
             {
                 ret += ito::RetVal::format(ito::retError, 0, "encoding '%s' is unknown", encoding.toLatin1().data());
             }
@@ -4708,7 +4717,12 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
 
         QLocale::setDefault(local);
         QTextStream textStream(&dataOut);
-        textStream.setCodec(encoding.toLatin1().data());
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        textStream.setCodec(encoding.toLatin1().data()); 
+#else
+        textStream.setEncoding(QStringConverter::Latin1);
+#endif
 
         switch (dObjSrc->getType())
         {
@@ -4860,8 +4874,12 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
 		QString encoding = paramsOpt->at(5).getVal<char*>();
 
 		if (encoding != "")
-		{
-			if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
+        {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) 
+            if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
+#else
+            if (!QStringConverter::encodingForName(encoding.toLatin1()).has_value())
+#endif
 			{
 				ret += ito::RetVal::format(ito::retError, 0, "encoding '%s' is unknown", encoding.toLatin1().data());
 			}
