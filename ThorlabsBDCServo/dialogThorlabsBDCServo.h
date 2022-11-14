@@ -56,7 +56,6 @@ private:
     Ui::DialogThorlabsBDCServo ui;
     bool m_firstRun;
     ito::AddInActuator* m_pAia;
-    QMap<QString, ito::Param> temporaryParams;
     int m_currentAxis;
 
     void currentAxisChanged(int newAxis);

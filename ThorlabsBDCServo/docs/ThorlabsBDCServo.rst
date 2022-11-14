@@ -158,3 +158,4 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 Changelog
 ==========
 
+* v0.1.1: Fix bug of timeout during ``setPosAbs``.
