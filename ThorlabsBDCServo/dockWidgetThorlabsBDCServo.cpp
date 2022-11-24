@@ -54,6 +54,7 @@ void DockWidgetThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> par
 
     const int* enabled = params["enabled"].getVal<int*>();
     const int* homed = params["homed"].getVal<int*>();
+    const int* channel = params["channel"].getVal<int*>();
     const ito::float64* maximumTravelPosition =
         params["maximumTravelPosition"].getVal<ito::float64*>();
     const ito::float64* minimumTravelPosition =
@@ -65,11 +66,11 @@ void DockWidgetThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> par
 
         if (homed[i])
         {
-            ui.motorAxisController->setAxisName(i, QString("Axis 1, homed"));
+            ui.motorAxisController->setAxisName(i, QString("Axis %1, homed").arg(channel[i]));
         }
         else
         {
-            ui.motorAxisController->setAxisName(i, QString("Axis 2, not homed"));
+            ui.motorAxisController->setAxisName(i, QString("Axis %1, not homed").arg(channel[i]));
         }
 
         ui.motorAxisController->setAxisUnit(i, MotorAxisController::UnitMm);
