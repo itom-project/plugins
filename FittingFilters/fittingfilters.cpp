@@ -1916,17 +1916,17 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                 *((*paramsOpt)[6].getVal<ito::DataObject*>()) = statisticObject;
             }
 
-			QString msg;
-			if (method == "LMedSPlane")
-			{
-				msg = tr("%1 of %2 found invalid areas filled with method = %3, maxAreaSize = %4, regionType = %5, regionExtend = %6, validPointProbability = %7, allowedErrorProbability = %8").arg(numTotalFilledAreas).arg(numTotalAreas).arg(QString(method)).arg(maxAreaSize).arg(QString(regionType)).arg(*extend).arg(valid_probability).arg(alarm_rate);
-				outputObject.addToProtocol(std::string(msg.toLatin1().data()));
-			}
-			else
-			{
-				msg = tr("%1 of %2 found invalid areas filled with method = %3, maxAreaSize = %4, regionType = %5, regionExtend = %6").arg(numTotalFilledAreas).arg(numTotalAreas).arg(QString(method)).arg(maxAreaSize).arg(QString(regionType)).arg(*extend);
-				outputObject.addToProtocol(std::string(msg.toLatin1().data()));
-			}
+            QString msg;
+            if (method == "LMedSPlane")
+            {
+                msg = tr("%1 of %2 found invalid areas filled with method = %3, maxAreaSize = %4, regionType = %5, regionExtend = %6, validPointProbability = %7, allowedErrorProbability = %8").arg(numTotalFilledAreas).arg(numTotalAreas).arg(QString(method)).arg(maxAreaSize).arg(QString(regionType)).arg(*extend).arg(valid_probability).arg(alarm_rate);
+                outputObject.addToProtocol(std::string(msg.toLatin1().data()));
+            }
+            else
+            {
+                msg = tr("%1 of %2 found invalid areas filled with method = %3, maxAreaSize = %4, regionType = %5, regionExtend = %6").arg(numTotalFilledAreas).arg(numTotalAreas).arg(QString(method)).arg(maxAreaSize).arg(QString(regionType)).arg(*extend);
+                outputObject.addToProtocol(std::string(msg.toLatin1().data()));
+            }
         }
 
         *((*paramsMand)[1].getVal<ito::DataObject*>()) = outputObject;
@@ -1935,7 +1935,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
     (*paramsOut)[0].setVal<int>(numTotalAreas);
     (*paramsOut)[1].setVal<int>(numTotalFilledAreas);
 
-	
+    
 
     return retval;
 }
