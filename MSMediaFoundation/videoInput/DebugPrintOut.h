@@ -6,14 +6,14 @@ class DebugPrintOut
 public:
     DebugPrintOut();
 
-	~DebugPrintOut();
+    ~DebugPrintOut();
 
-	void printOut(const char *format, ...);
+    void printOut(const char *format, ...);
 
-	void setVerbose(bool state);
+    void setVerbose(bool state);
 
 private:
-	bool m_verbose;
-		
+    bool m_verbose;
+        
 };
 

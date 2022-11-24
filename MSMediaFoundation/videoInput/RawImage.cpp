@@ -9,33 +9,33 @@
 
 RawImage::RawImage(unsigned int size): ri_new(0), ri_pixels(NULL)
 {
-	ri_size = size;
+    ri_size = size;
 
-	ri_pixels = new unsigned char[size];
+    ri_pixels = new unsigned char[size];
 
-	memset((void *)ri_pixels,0,ri_size);
+    memset((void *)ri_pixels,0,ri_size);
 }
 
 bool RawImage::isNew()
 {
-	return (ri_new > 0);
+    return (ri_new > 0);
 }
 
 unsigned int RawImage::getSize()
 {
-	return ri_size;
+    return ri_size;
 }
 
 RawImage::~RawImage(void)
 {
-	delete []ri_pixels;
+    delete []ri_pixels;
 
-	ri_pixels = NULL;
+    ri_pixels = NULL;
 }
 
 long RawImage::CreateInstance(RawImage **ppRImage,unsigned int size)
 {
-	*ppRImage = new (std::nothrow) RawImage(size);
+    *ppRImage = new (std::nothrow) RawImage(size);
 
     if (ppRImage == NULL)
     {
@@ -46,42 +46,42 @@ long RawImage::CreateInstance(RawImage **ppRImage,unsigned int size)
 
 void RawImage::setCopy(const BYTE * pSampleBuffer)
 {
-	memcpy(ri_pixels, pSampleBuffer, ri_size);
+    memcpy(ri_pixels, pSampleBuffer, ri_size);
 
-	ri_new = 1;
+    ri_new = 1;
 }
 
 void RawImage::fastCopy(const BYTE * pSampleBuffer)
 {
 #if _WIN64
-	memcpy(ri_pixels, pSampleBuffer, ri_size);
+    memcpy(ri_pixels, pSampleBuffer, ri_size);
 #else
-	int *bsrc = (int *)pSampleBuffer;
+    int *bsrc = (int *)pSampleBuffer;
 
-	int *dst = (int *)ri_pixels;
+    int *dst = (int *)ri_pixels;
 
-	unsigned int buffersize = ri_size/4;
-	
-	_asm
-	{
-		mov ESI, bsrc
+    unsigned int buffersize = ri_size/4;
+    
+    _asm
+    {
+        mov ESI, bsrc
 
-		mov EDI, dst
+        mov EDI, dst
 
-		mov ECX, buffersize
+        mov ECX, buffersize
 
-		cld
+        cld
 
-		rep movsd
-	}
+        rep movsd
+    }
 #endif
 
-	ri_new = 1;
+    ri_new = 1;
 }
 
 unsigned char * RawImage::getpPixels()
 {
-	ri_new = 0;
+    ri_new = 0;
 
     return ri_pixels;
 }

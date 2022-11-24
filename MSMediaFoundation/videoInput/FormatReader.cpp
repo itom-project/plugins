@@ -12,37 +12,37 @@ HRESULT SpecialCaseAttributeValueNew(GUID guid, const PROPVARIANT& var, MediaTyp
 
 unsigned int *GetParameter(GUID guid, MediaType &out)
 {
-	if (guid == MF_MT_YUV_MATRIX) 
-		return &(out.MF_MT_YUV_MATRIX);
+    if (guid == MF_MT_YUV_MATRIX) 
+        return &(out.MF_MT_YUV_MATRIX);
 
-	if (guid == MF_MT_VIDEO_LIGHTING) 
-		return &(out.MF_MT_VIDEO_LIGHTING);
-		
-	if (guid == MF_MT_DEFAULT_STRIDE) 
-		return &(out.MF_MT_DEFAULT_STRIDE);
-		
-	if (guid == MF_MT_VIDEO_CHROMA_SITING) 
-		return &(out.MF_MT_VIDEO_CHROMA_SITING);
-	
-	if (guid == MF_MT_VIDEO_NOMINAL_RANGE) 
-		return &(out.MF_MT_VIDEO_NOMINAL_RANGE);
+    if (guid == MF_MT_VIDEO_LIGHTING) 
+        return &(out.MF_MT_VIDEO_LIGHTING);
+        
+    if (guid == MF_MT_DEFAULT_STRIDE) 
+        return &(out.MF_MT_DEFAULT_STRIDE);
+        
+    if (guid == MF_MT_VIDEO_CHROMA_SITING) 
+        return &(out.MF_MT_VIDEO_CHROMA_SITING);
+    
+    if (guid == MF_MT_VIDEO_NOMINAL_RANGE) 
+        return &(out.MF_MT_VIDEO_NOMINAL_RANGE);
 
-	if (guid == MF_MT_ALL_SAMPLES_INDEPENDENT) 
-		return &(out.MF_MT_ALL_SAMPLES_INDEPENDENT);
-	
-	if (guid == MF_MT_FIXED_SIZE_SAMPLES) 
-		return &(out.MF_MT_FIXED_SIZE_SAMPLES);
+    if (guid == MF_MT_ALL_SAMPLES_INDEPENDENT) 
+        return &(out.MF_MT_ALL_SAMPLES_INDEPENDENT);
+    
+    if (guid == MF_MT_FIXED_SIZE_SAMPLES) 
+        return &(out.MF_MT_FIXED_SIZE_SAMPLES);
 
-	if (guid == MF_MT_SAMPLE_SIZE) 
-		return &(out.MF_MT_SAMPLE_SIZE);
+    if (guid == MF_MT_SAMPLE_SIZE) 
+        return &(out.MF_MT_SAMPLE_SIZE);
 
-	if (guid == MF_MT_VIDEO_PRIMARIES) 
-		return &(out.MF_MT_VIDEO_PRIMARIES);
+    if (guid == MF_MT_VIDEO_PRIMARIES) 
+        return &(out.MF_MT_VIDEO_PRIMARIES);
 
-	if (guid == MF_MT_INTERLACE_MODE) 
-		return &(out.MF_MT_INTERLACE_MODE);
+    if (guid == MF_MT_INTERLACE_MODE) 
+        return &(out.MF_MT_INTERLACE_MODE);
 
-	return NULL;
+    return NULL;
 }
 
 HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType &out)
@@ -71,7 +71,7 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
 
     hr = SpecialCaseAttributeValueNew(guid, var, out);
 
-	unsigned int *p;
+    unsigned int *p;
 
     if (FAILED(hr))
     {
@@ -83,12 +83,12 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
         {
         case VT_UI4:
 
-			p = GetParameter(guid, out);
+            p = GetParameter(guid, out);
 
-			if (p) 
-			{
-				*p = var.ulVal;
-			}
+            if (p) 
+            {
+                *p = var.ulVal;
+            }
 
             break;
 
@@ -101,47 +101,47 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
             break;
 
         case VT_CLSID:
-			if (guid == MF_MT_AM_FORMAT_TYPE)
-			{
-				hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
+            if (guid == MF_MT_AM_FORMAT_TYPE)
+            {
+                hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
 
-				if (SUCCEEDED(hr))
-				{
-					out.MF_MT_AM_FORMAT_TYPE = MF_MT_AM_FORMAT_TYPE;
+                if (SUCCEEDED(hr))
+                {
+                    out.MF_MT_AM_FORMAT_TYPE = MF_MT_AM_FORMAT_TYPE;
 
-					out.pMF_MT_AM_FORMAT_TYPEName = pGuidValName;
+                    out.pMF_MT_AM_FORMAT_TYPEName = pGuidValName;
 
-					pGuidValName = NULL;
-				}
-			}
+                    pGuidValName = NULL;
+                }
+            }
 
-			if (guid == MF_MT_MAJOR_TYPE)
-			{
-				hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
+            if (guid == MF_MT_MAJOR_TYPE)
+            {
+                hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
 
-				if (SUCCEEDED(hr))
-				{
-					out.MF_MT_MAJOR_TYPE = MF_MT_MAJOR_TYPE;
+                if (SUCCEEDED(hr))
+                {
+                    out.MF_MT_MAJOR_TYPE = MF_MT_MAJOR_TYPE;
 
-					out.pMF_MT_MAJOR_TYPEName = pGuidValName;
+                    out.pMF_MT_MAJOR_TYPEName = pGuidValName;
 
-					pGuidValName = NULL;
-				}
-			}
+                    pGuidValName = NULL;
+                }
+            }
 
-			if (guid == MF_MT_SUBTYPE)
-			{
-				hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
+            if (guid == MF_MT_SUBTYPE)
+            {
+                hr = GetGUIDNameNew(*var.puuid, &pGuidValName);
 
-				if (SUCCEEDED(hr))
-				{
-					out.MF_MT_SUBTYPE = MF_MT_SUBTYPE;
+                if (SUCCEEDED(hr))
+                {
+                    out.MF_MT_SUBTYPE = MF_MT_SUBTYPE;
 
-					out.pMF_MT_SUBTYPEName = pGuidValName;
+                    out.pMF_MT_SUBTYPEName = pGuidValName;
 
-					pGuidValName = NULL;
-				}
-			}
+                    pGuidValName = NULL;
+                }
+            }
 
             break;
 
@@ -233,7 +233,7 @@ HRESULT LogVideoAreaNew(const PROPVARIANT& var)
 {
     if (var.caub.cElems < sizeof(MFVideoArea))
     {
-		return S_OK;
+        return S_OK;
     }
 
     MFVideoArea *pArea = (MFVideoArea*)var.caub.pElems;
@@ -243,62 +243,62 @@ HRESULT LogVideoAreaNew(const PROPVARIANT& var)
 
 HRESULT SpecialCaseAttributeValueNew(GUID guid, const PROPVARIANT& var, MediaType &out)
 {
-	if (guid == MF_MT_FRAME_SIZE)
-	{
-		UINT32 uHigh = 0, uLow = 0;
+    if (guid == MF_MT_FRAME_SIZE)
+    {
+        UINT32 uHigh = 0, uLow = 0;
 
-		LogUINT32AsUINT64New(var, uHigh, uLow);
-		
-		out.width = uHigh;
-		
-		out.height = uLow;
+        LogUINT32AsUINT64New(var, uHigh, uLow);
+        
+        out.width = uHigh;
+        
+        out.height = uLow;
 
-		out.MF_MT_FRAME_SIZE = out.width * out.height;
-	}
-	else
-	if (guid == MF_MT_FRAME_RATE)
-	{
-		UINT32 uHigh = 0, uLow = 0;
+        out.MF_MT_FRAME_SIZE = out.width * out.height;
+    }
+    else
+    if (guid == MF_MT_FRAME_RATE)
+    {
+        UINT32 uHigh = 0, uLow = 0;
 
-		LogUINT32AsUINT64New(var, uHigh, uLow);
-		
-		out.MF_MT_FRAME_RATE = uHigh;
-		
-		out.MF_MT_FRAME_RATE_low = uLow;
-	}
-	else
-	if (guid == MF_MT_FRAME_RATE_RANGE_MAX)
-	{
-		UINT32 uHigh = 0, uLow = 0;
+        LogUINT32AsUINT64New(var, uHigh, uLow);
+        
+        out.MF_MT_FRAME_RATE = uHigh;
+        
+        out.MF_MT_FRAME_RATE_low = uLow;
+    }
+    else
+    if (guid == MF_MT_FRAME_RATE_RANGE_MAX)
+    {
+        UINT32 uHigh = 0, uLow = 0;
 
-		LogUINT32AsUINT64New(var, uHigh, uLow);
-		
-		out.MF_MT_FRAME_RATE_RANGE_MAX = uHigh;
-		
-		out.MF_MT_FRAME_RATE_RANGE_MAX_low = uLow;
-	}
-	else
-	if (guid == MF_MT_FRAME_RATE_RANGE_MIN)
-	{
-		UINT32 uHigh = 0, uLow = 0;
+        LogUINT32AsUINT64New(var, uHigh, uLow);
+        
+        out.MF_MT_FRAME_RATE_RANGE_MAX = uHigh;
+        
+        out.MF_MT_FRAME_RATE_RANGE_MAX_low = uLow;
+    }
+    else
+    if (guid == MF_MT_FRAME_RATE_RANGE_MIN)
+    {
+        UINT32 uHigh = 0, uLow = 0;
 
-		LogUINT32AsUINT64New(var, uHigh, uLow);
-		
-		out.MF_MT_FRAME_RATE_RANGE_MIN = uHigh;
-		
-		out.MF_MT_FRAME_RATE_RANGE_MIN_low = uLow;
-	}
-	else
-	if (guid == MF_MT_PIXEL_ASPECT_RATIO)
-	{
-		UINT32 uHigh = 0, uLow = 0;
+        LogUINT32AsUINT64New(var, uHigh, uLow);
+        
+        out.MF_MT_FRAME_RATE_RANGE_MIN = uHigh;
+        
+        out.MF_MT_FRAME_RATE_RANGE_MIN_low = uLow;
+    }
+    else
+    if (guid == MF_MT_PIXEL_ASPECT_RATIO)
+    {
+        UINT32 uHigh = 0, uLow = 0;
 
-		LogUINT32AsUINT64New(var, uHigh, uLow);
-		
-		out.MF_MT_PIXEL_ASPECT_RATIO = uHigh;
-		
-		out.MF_MT_PIXEL_ASPECT_RATIO_low = uLow;
-	}	     
+        LogUINT32AsUINT64New(var, uHigh, uLow);
+        
+        out.MF_MT_PIXEL_ASPECT_RATIO = uHigh;
+        
+        out.MF_MT_PIXEL_ASPECT_RATIO_low = uLow;
+    }         
     else
     {
         return S_FALSE;
@@ -466,15 +466,15 @@ FormatReader::FormatReader(void)
 
 MediaType FormatReader::Read(IMFMediaType *pType)
 {
-	UINT32 count = 0;
+    UINT32 count = 0;
 
-	HRESULT hr = S_OK;
+    HRESULT hr = S_OK;
 
-	MediaType out;
+    MediaType out;
 
-	hr = pType->LockStore();
+    hr = pType->LockStore();
 
-	if (FAILED(hr))
+    if (FAILED(hr))
     {
         return out;
     }
@@ -485,7 +485,7 @@ MediaType FormatReader::Read(IMFMediaType *pType)
     {
         return out;
     }
-	
+    
     for (UINT32 i = 0; i < count; i++)
     {
         hr = LogAttributeValueByIndexNew(pType, i, out);
@@ -496,9 +496,9 @@ MediaType FormatReader::Read(IMFMediaType *pType)
         }
     }
 
-	hr = pType->UnlockStore();
+    hr = pType->UnlockStore();
 
-	if (FAILED(hr))
+    if (FAILED(hr))
     {
         return out;
     }

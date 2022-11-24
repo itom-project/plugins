@@ -27,76 +27,76 @@ VideoDevices::~VideoDevices(void)
 //--------------------------------------------------------
 void VideoDevices::clearDevices()
 {
-	std::vector<VideoDevice *>::iterator i = m_devices.begin();
+    std::vector<VideoDevice *>::iterator i = m_devices.begin();
 
     for (; i != m_devices.end(); ++i)
     {
         delete (*i);
     }
 
-	m_devices.clear();
+    m_devices.clear();
 }
 
 
 //--------------------------------------------------------
 VideoDevice * VideoDevices::getDevice(unsigned int i)
 {
-	if (i >= m_devices.size())
-	{
-		return NULL;
-	}
+    if (i >= m_devices.size())
+    {
+        return NULL;
+    }
 
-	if (i < 0)
-	{
-		return NULL;
-	}
+    if (i < 0)
+    {
+        return NULL;
+    }
 
-	return m_devices[i];
+    return m_devices[i];
 }
 
 //---------------------------------------------------------------------
 long VideoDevices::initDevices(IMFAttributes *pAttributes)
 {
-	HRESULT hr = S_OK;
-		
-	IMFActivate **ppDevices = NULL;
+    HRESULT hr = S_OK;
+        
+    IMFActivate **ppDevices = NULL;
 
-	clearDevices();
+    clearDevices();
 
     UINT32 count;
-	
-	hr = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
+    
+    hr = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
 
-	if (SUCCEEDED(hr))
+    if (SUCCEEDED(hr))
     {
         if (count > 0)
-		{
-			for(UINT32 i = 0; i < count; i++)
-			{
-				VideoDevice *vd = new VideoDevice;
+        {
+            for(UINT32 i = 0; i < count; i++)
+            {
+                VideoDevice *vd = new VideoDevice;
 
-				vd->readInfoOfDevice(ppDevices[i], i);
+                vd->readInfoOfDevice(ppDevices[i], i);
 
-				m_devices.push_back(vd);		
+                m_devices.push_back(vd);        
 
-				SafeRelease(&ppDevices[i]);
-			}
+                SafeRelease(&ppDevices[i]);
+            }
 
-			SafeRelease(ppDevices);
-		}
-		else
-			hr = -1;
+            SafeRelease(ppDevices);
+        }
+        else
+            hr = -1;
     }
-	else
-	{
-		m_debugPrintOut->printOut("VideoDevices: The instances of the VideoDevice class cannot be created\n");
-	}
+    else
+    {
+        m_debugPrintOut->printOut("VideoDevices: The instances of the VideoDevice class cannot be created\n");
+    }
 
-	return hr;
+    return hr;
 }
 
 //--------------------------------------------------------
 size_t VideoDevices::getCount()
 {
-	return m_devices.size();
+    return m_devices.size();
 }
