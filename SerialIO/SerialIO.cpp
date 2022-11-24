@@ -550,12 +550,12 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 
     const char testBuf[3] = {0, 0, 0};
 
-	int len = strlen(params.endline)+1;//add one for endline
-	strcpy(m_serParams.endline, params.endline);
-	while (3 - len > 0)
-	{
-		m_serParams.endline[(len++)] = 0;
-	}
+    int len = strlen(params.endline)+1;//add one for endline
+    strcpy(m_serParams.endline, params.endline);
+    while (3 - len > 0)
+    {
+        m_serParams.endline[(len++)] = 0;
+    }
 
     m_serParams.sendDelay = params.sendDelay;
 
