@@ -35,7 +35,7 @@ DockWidgetOceanOpticsSpec::DockWidgetOceanOpticsSpec(ito::AddInDataIO *grabber) 
  {
     if (m_firstRun)
     {
-		m_inEditing = true;
+        m_inEditing = true;
 
         ui.rangeWidget_ROI->setMaximum(params["sizex"].getVal<int>());
 
@@ -46,18 +46,18 @@ DockWidgetOceanOpticsSpec::DockWidgetOceanOpticsSpec(ito::AddInDataIO *grabber) 
         ui.spinBox_average->setMinimum(params["average"].getMin()); 
         ui.spinBox_average->setSingleStep(1);
 
-		/*ui.comboDarkCorrection->clear();
-		ui.comboDarkCorrection->addItem("No");
-		ui.comboDarkCorrection->addItem("Static correction");
-		ui.comboDarkCorrection->addItem("Dynamic correction");
-		ui.comboDarkCorrection->setToolTip( \
+        /*ui.comboDarkCorrection->clear();
+        ui.comboDarkCorrection->addItem("No");
+        ui.comboDarkCorrection->addItem("Static correction");
+        ui.comboDarkCorrection->addItem("Dynamic correction");
+        ui.comboDarkCorrection->setToolTip( \
 "Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
 dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. \n\
 Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software \n\
 AvaSpec) and subtracts different mean values for odd and even pixels.");*/
 
         m_firstRun = false;
-		m_inEditing = false;
+        m_inEditing = false;
     }
     
     if (!m_inEditing)
@@ -70,8 +70,8 @@ AvaSpec) and subtracts different mean values for odd and even pixels.");*/
         ui.rangeWidget_ROI->setMaximumValue(roi[2]);
 
         ui.spinBox_average->setValue(params["average"].getVal<int>());
-		//ui.comboDarkCorrection->setCurrentIndex(params["dark_correction"].getVal<int>());
-		//ui.comboDarkCorrection->setDisabled(params["dark_correction"].getFlags() & ito::ParamBase::Readonly);
+        //ui.comboDarkCorrection->setCurrentIndex(params["dark_correction"].getVal<int>());
+        //ui.comboDarkCorrection->setDisabled(params["dark_correction"].getFlags() & ito::ParamBase::Readonly);
 
         m_inEditing = false;
     }
