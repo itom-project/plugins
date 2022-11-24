@@ -504,10 +504,10 @@ ito::RetVal ThorlabsBDCServo::init(
 
         m_params["acceleration"].setVal<ito::float64*>(acceleration, m_numChannels);
         m_params["acceleration"].setMeta(
-            new ito::DoubleArrayMeta(0.0, maxAcceleration[0], 0.0, m_numChannels, m_numChannels));
+            new ito::DoubleArrayMeta(0.01, maxAcceleration[0], 0.01, m_numChannels, m_numChannels));
         m_params["velocity"].setVal<ito::float64*>(velocity, m_numChannels);
         m_params["velocity"].setMeta(
-            new ito::DoubleArrayMeta(0.0, maxVelocity[0], 0.0, m_numChannels, m_numChannels));
+            new ito::DoubleArrayMeta(0.01, maxVelocity[0], 0.01, m_numChannels, m_numChannels));
 
         ito::float64* doubleDummy = new ito::float64[m_numChannels];
         for (int i = 0; i < m_numChannels; ++i)
@@ -1160,6 +1160,7 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
     int idx;
     int flags = 0;
     DWORD s;
+    bool released = false;
 
     if (isMotorMoving())
     {
@@ -1210,7 +1211,9 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
 
     if (!retval.containsError())
     {
-        sendTargetUpdate();
+        // set status of all given axes to moving and keep all flags related to the status and
+        // switches
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
 
         for (int i = 0; i < axis.size(); ++i)
         {
@@ -1229,38 +1232,36 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
 
         if (!retval.containsError())
         {
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendTargetUpdate();
             sendStatusUpdate();
 
-            if (m_async && waitCond)
+            // release the wait condition now, if async is true (itom considers this method to be
+            // finished now due to the threaded call)
+            if (m_async && waitCond && !released)
             {
                 waitCond->returnValue = retval;
                 waitCond->release();
-                waitCond = NULL;
+                released = true;
             }
 
             retval += waitForDone(
                 m_params["timeout"].getVal<ito::float64>() * 1e3,
                 axis,
                 flags); // drops into timeout
-        }
 
-        if (!retval.containsError())
-        {
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate(false);
-            sendTargetUpdate();
-        }
-
-        if (!m_async && waitCond)
-        {
-            waitCond->returnValue = retval;
-            waitCond->release();
-            waitCond = NULL;
+            // release the wait condition now, if async is false (itom waits until now if async is
+            // false, hence in the synchronous mode)
+            if (!m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retval;
+                waitCond->release();
+                released = true;
+            }
         }
     }
 
-    if (waitCond)
+    // if the wait condition has not been released yet, do it now
+    if (waitCond && !released)
     {
         waitCond->returnValue = retval;
         waitCond->release();
@@ -1322,6 +1323,7 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
         m_params["minimumTravelPosition"].getVal<ito::float64*>();
     int flags = 0;
     DWORD s;
+    bool released = false;
 
     if (isMotorMoving())
     {
@@ -1373,7 +1375,7 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
 
     if (!retval.containsError())
     {
-        sendTargetUpdate();
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
 
         for (int i = 0; i < axis.size(); ++i)
         {
@@ -1391,38 +1393,35 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
 
         if (!retval.containsError())
         {
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendTargetUpdate();
             sendStatusUpdate();
 
-            if (m_async && waitCond)
+            // release the wait condition now, if async is true (itom considers this method to be
+            // finished now due to the threaded call)
+            if (m_async && waitCond && !released)
             {
                 waitCond->returnValue = retval;
                 waitCond->release();
-                waitCond = NULL;
+                released = true;
             }
 
             retval += waitForDone(
                 m_params["timeout"].getVal<ito::float64>() * 1e3,
                 axis,
                 flags); // drops into timeout
-        }
 
-        if (!retval.containsError())
-        {
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate(false);
-            sendTargetUpdate();
-        }
-
-        if (!m_async && waitCond)
-        {
-            waitCond->returnValue = retval;
-            waitCond->release();
-            waitCond = NULL;
+            // release the wait condition now, if async is false (itom waits until now if async is
+            // false, hence in the synchronous mode)
+            if (!m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retval;
+                waitCond->release();
+                released = true;
+            }
         }
     }
 
-    if (waitCond)
+    if (waitCond && !released)
     {
         waitCond->returnValue = retval;
         waitCond->release();
@@ -1481,125 +1480,82 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
     DWORD messageData;
     QSharedPointer<ito::float64> pos_(new ito::float64);
 
-    // reset interrupt flag
-    isInterrupted();
-
-    long delay = 60; //[ms]
-
     timer.start();
-
-    while (!done && !timeout)
+    while (!done && !retVal.containsWarningOrError())
     {
-        for (int i = 0; i < axis.size(); ++i)
+        if (!retVal.containsError())
         {
-            int idx = axis[i];
-            // now check if the interrupt flag has been set (e.g. by a button click on its dock
-            // widget)
-            if (!done && isInterrupted())
-            {
-                // todo: force all axes to stop
-                retVal += checkError(
-                    BDC_StopImmediate(m_serialNo, m_channelIndices[idx]), "stop immediate");
-
-                // set the status of all axes from moving to interrupted (only if moving was set
-                // before)
-                replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
-                sendStatusUpdate(true);
-
-                retVal += ito::RetVal(ito::retError, 0, "interrupt occurred");
-                return retVal;
-            }
+            // short delay of 60ms
+            waitMutex.lock();
+            waitCondition.wait(&waitMutex, 60);
+            waitMutex.unlock();
+            setAlive();
         }
 
-        // short delay
-        Sleep(delay);
-        setAlive();
-
-        if (timeoutMS > -1)
+        for (int i = 0; i < axis.size(); ++i)
         {
-            ito::float64 currentTime = timer.elapsed();
+            retVal += getPos(i, pos_, nullptr);
+            m_currentPos[i] = *pos_;
 
-            if (currentTime > timeoutMS) // timeout
+            BDC_WaitForMessage(
+                m_serialNo, m_channelIndices[axis[i]], &messageType, &messageId, &messageData);
+            if ((messageType != 2 || messageId != 1)) // wait for completion
             {
-                // todo: obtain the current position, status... of all given axes
-                foreach (const int& i, axis)
+                foreach (const int& i, axis)  // update status to moving
                 {
-                    retVal += getPos(i, pos_, nullptr);
-                    m_currentPos[i] = *pos_;
-                    m_targetPos[i] = m_currentPos[i];
-                    setStatus(axis, ito::actuatorAtTarget, ito::actStatusMask);
+                    setStatus(
+                        m_currentStatus[i],
+                        ito::actuatorMoving,
+                        ito::actSwitchesMask | ito::actStatusMask);
                 }
-                timeout = true;
+                done = false;
             }
             else
             {
-                for (int i = 0; i < axis.size(); ++i)
+                foreach (const int& i, axis)  // update status to at target
                 {
-                    int idx = axis[i];
-                    while (BDC_MessageQueueSize(m_serialNo, m_channelIndices[idx]) > 0)
-                    {
-                        if (BDC_GetNextMessage(
-                                m_serialNo,
-                                m_channelIndices[idx],
-                                &messageType,
-                                &messageId,
-                                &messageData))
-                        {
-                            if (messageType == 2 && messageId == 1)
-                            {
-                                foreach (const int& i, axis)
-                                {
-                                    retVal += getPos(i, pos_, nullptr);
-                                    m_currentPos[i] = *pos_;
-
-                                    if ((std::abs(m_targetPos[i] - m_currentPos[i]) < 0.05))
-                                    {
-                                        setStatus(
-                                            m_currentStatus[i],
-                                            ito::actuatorAtTarget,
-                                            ito::actSwitchesMask | ito::actStatusMask);
-                                        done = true; // not done yet
-                                    }
-                                    else
-                                    {
-                                        setStatus(
-                                            m_currentStatus[i],
-                                            ito::actuatorMoving,
-                                            ito::actSwitchesMask | ito::actStatusMask);
-                                        done = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    setStatus(
+                        m_currentStatus[i],
+                        ito::actuatorAtTarget,
+                        ito::actSwitchesMask | ito::actStatusMask);
                 }
-
-                foreach (const int& i, axis)
-                {
-                    retVal += getPos(i, pos_, nullptr);
-                    m_currentPos[i] = *pos_;
-                }
+                done = true;
             }
         }
 
-        if (!timeout)
+        sendStatusUpdate(false);
+
+        if (!done && isInterrupted()) // interrupt the movement
         {
-            sendStatusUpdate();
-            Sleep(20);
+            for (int i = 0; i < axis.size(); ++i)
+            {
+                retVal += checkError(
+                    BDC_StopImmediate(m_serialNo, m_channelIndices[axis[i]]),
+                    "stop immediate");
+            }
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
+            sendStatusUpdate(true);
+            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
+            return retVal;
+        }
+
+        if (timer.hasExpired(timeoutMS))  // timeout during movement
+        {
+            timeout = true;
+            // timeout occured, set the status of all currently moving axes to timeout
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
+            retVal += ito::RetVal(ito::retError, 9999, "timeout occurred during movement");
+            sendStatusUpdate(true);
         }
     }
 
-    if (timeout)
+    foreach (const int& i, axis)  // update current positions
     {
-        // timeout occured, set the status of all currently moving axes to timeout
-        replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
-        retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
-        sendStatusUpdate(true);
+        retVal += getPos(i, pos_, nullptr);
+        m_currentPos[i] = *pos_;
     }
 
-    replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-    sendStatusUpdate();
-
+    sendStatusUpdate(true);
     return retVal;
 }
 
