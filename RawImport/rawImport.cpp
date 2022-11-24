@@ -363,7 +363,7 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
 
 
     // did not find ppm / tiff, then check pgm
-	filenameLoad = filenamePath + dcrawExt;
+    filenameLoad = filenamePath + dcrawExt;
     if (!QFileInfo::exists(filenameLoad))
     {
         dcrawExt = ".pgm";
@@ -374,8 +374,8 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     retval += apiFilterParamBase("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
     if (!retval.containsWarningOrError())
     {
-		filterParamsMand[0].setVal<char*>((char*)image);
-		filterParamsMand[1].setVal<char*>(filenameLoad.toLatin1().data());
+        filterParamsMand[0].setVal<char*>((char*)image);
+        filterParamsMand[1].setVal<char*>(filenameLoad.toLatin1().data());
         retval += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
     }
     delete readProc;
