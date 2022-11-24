@@ -45,8 +45,8 @@ DialogThorlabsBDCServo::~DialogThorlabsBDCServo()
 void DialogThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> params)
 {
     m_currentParameters = params;
-    temporaryParams = params;
-    int numaxis = params["numaxis"].getVal<int>();
+    int numaxis = params["numaxis"].getVal<ito::int32>();
+    int currentAxisShown = ui.comboAxisSelector->currentIndex();
 
     if (m_firstRun)
     {
@@ -58,7 +58,7 @@ void DialogThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> params)
 
         ui.comboAxisSelector->clear();
 
-        const int* channels = params["channel"].getVal<int*>();
+        const int* channels = params["channel"].getVal<ito::int32*>();
         for (int i = 0; i < numaxis; ++i)
         {
             ui.comboAxisSelector->addItem(QString("Axis %1, Channel %2").arg(i).arg(channels[i]));
@@ -67,8 +67,8 @@ void DialogThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
 
-    ui.checkAsync->setChecked(params["async"].getVal<int>());
-    ui.spinTimeout->setValue(params["timeout"].getVal<int>());
+    ui.checkAsync->setChecked(params["async"].getVal<ito::int32>());
+    ui.spinTimeout->setValue(params["timeout"].getVal<double>());
     ui.spinTimeout->setMaximum(params["timeout"].getMax());
 
     ui.doubleSpinBoxAcceleration->setMaximum(params["acceleration"].getMax());
@@ -78,6 +78,13 @@ void DialogThorlabsBDCServo::parametersChanged(QMap<QString, ito::Param> params)
     ui.doubleSpinBoxAcceleration->setMinimum(params["acceleration"].getMin());
     ui.doubleSpinBoxVelocity->setMinimum(params["velocity"].getMin());
     ui.doubleSpinBoxBacklash->setMinimum(params["backlash"].getMin());
+
+    ui.doubleSpinBoxAcceleration->setValue(
+        params["acceleration"].getVal<ito::float64*>()[currentAxisShown]);
+    ui.doubleSpinBoxBacklash->setValue(
+        params["backlash"].getVal<ito::float64*>()[currentAxisShown]);
+    ui.doubleSpinBoxVelocity->setValue(
+        params["velocity"].getVal<ito::float64*>()[currentAxisShown]);
 
     if (numaxis > 0)
     {
@@ -95,27 +102,81 @@ ito::RetVal DialogThorlabsBDCServo::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase>> values;
-    currentAxisChanged(m_currentAxis);
+    int currentAxisShown = ui.comboAxisSelector->currentIndex();
+    int numberAxis = m_currentParameters["numaxis"].getVal<ito::int32>();
 
     int async = ui.checkAsync->isChecked() ? 1 : 0;
-    if (async != m_currentParameters["async"].getVal<int>())
+    if (async != m_currentParameters["async"].getVal<ito::int32>())
     {
         values.append(QSharedPointer<ito::ParamBase>(
             new ito::ParamBase("async", ito::ParamBase::Int, async)));
     }
 
     double timeout = ui.spinTimeout->value();
-    if (std::abs(timeout - m_currentParameters["timeout"].getVal<double>()) >
+    if (std::abs(timeout - m_currentParameters["timeout"].getVal<ito::float64>()) >
         std::numeric_limits<double>::epsilon())
     {
         values.append(QSharedPointer<ito::ParamBase>(
             new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
     }
 
-    if (m_currentParameters["enabled"] != temporaryParams["enabled"])
+    int checked = int(ui.checkEnabled->isChecked());
+    if (m_currentParameters["enabled"].getVal<ito::int32*>()[currentAxisShown] != checked)
     {
-        values.append(
-            QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["enabled"])));
+        int enabled[] = {0, 0};
+        memcpy(
+            enabled,
+            m_currentParameters["enabled"].getVal<ito::int32*>(),
+            numberAxis * sizeof(ito::int32));
+        enabled[currentAxisShown] = checked;
+
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("enabled", ito::ParamBase::IntArray, 2, enabled)));
+    }
+
+    double accel = ui.doubleSpinBoxAcceleration->value();
+    if (std::abs(accel - m_currentParameters["acceleration"].getVal<ito::float64*>()[currentAxisShown]) >
+        std::numeric_limits<double>::epsilon())
+    {
+        double accelerations[] = {0.0, 0.0};
+        memcpy(
+            accelerations,
+            m_currentParameters["acceleration"].getVal<ito::float64*>(),
+            numberAxis * sizeof(ito::float64));
+        accelerations[currentAxisShown] = accel;
+
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("acceleration", ito::ParamBase::DoubleArray, 2, accelerations)));
+    }
+
+    double vel = ui.doubleSpinBoxVelocity->value();
+    if (std::abs(vel - m_currentParameters["velocity"].getVal<ito::float64*>()[currentAxisShown]) >
+        std::numeric_limits<double>::epsilon())
+    {
+        double velocity[] = {0.0, 0.0};
+        memcpy(
+            velocity,
+            m_currentParameters["velocity"].getVal<ito::float64*>(),
+            numberAxis * sizeof(ito::float64*));
+        velocity[currentAxisShown] = vel;
+
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("velocity", ito::ParamBase::DoubleArray, 2, velocity)));
+    }
+
+    double back = ui.doubleSpinBoxVelocity->value();
+    if (std::abs(back - m_currentParameters["backlash"].getVal<ito::float64*>()[currentAxisShown]) >
+        std::numeric_limits<double>::epsilon())
+    {
+        double backlash[] = {0.0, 0.0};
+        memcpy(
+            backlash,
+            m_currentParameters["backlash"].getVal<ito::float64*>(),
+            numberAxis * sizeof(ito::float64*));
+        backlash[currentAxisShown] = back;
+
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("backlash", ito::ParamBase::DoubleArray, 2, backlash)));
     }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
@@ -182,20 +243,20 @@ void DialogThorlabsBDCServo::currentAxisChanged(int newAxis)
 {
     if (m_currentAxis >= 0)
     {
-        temporaryParams["enabled"].getVal<int*>()[m_currentAxis] =
+        m_currentParameters["enabled"].getVal<ito::int32*>()[m_currentAxis] =
             ui.checkEnabled->isChecked() ? 1 : 0;
     }
 
-    ui.checkEnabled->setChecked(temporaryParams["enabled"].getVal<int*>()[newAxis] > 0);
+    ui.checkEnabled->setChecked(m_currentParameters["enabled"].getVal<ito::int32*>()[newAxis] > 0);
 
     ui.doubleSpinBoxAcceleration->setValue(
-        temporaryParams["acceleration"].getVal<ito::float64*>()[newAxis]);
+        m_currentParameters["acceleration"].getVal<ito::float64*>()[newAxis]);
     ui.doubleSpinBoxVelocity->setValue(
-        temporaryParams["velocity"].getVal<ito::float64*>()[newAxis]);
+        m_currentParameters["velocity"].getVal<ito::float64*>()[newAxis]);
     ui.doubleSpinBoxBacklash->setValue(
-        temporaryParams["backlash"].getVal<ito::float64*>()[newAxis]);
+        m_currentParameters["backlash"].getVal<ito::float64*>()[newAxis]);
 
-    if (temporaryParams["homed"].getVal<int*>()[newAxis])
+    if (m_currentParameters["homed"].getVal<ito::int32*>()[newAxis])
     {
         ui.btnCalib->setText("This axis is already homed.");
         ui.btnCalib->setEnabled(false);
