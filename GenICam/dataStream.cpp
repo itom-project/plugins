@@ -28,7 +28,6 @@
 #include <qfileinfo.h>
 #include <qdebug.h>
 #include <qset.h>
-#include <qregexp.h>
 #include <qthread.h>
 #include "common/sharedStructures.h"
 #include <iostream>

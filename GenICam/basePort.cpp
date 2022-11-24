@@ -26,8 +26,8 @@
 
 #include <qfileinfo.h>
 #include <qdebug.h>
+#include <qregularexpression.h>
 #include <qset.h>
-#include <qregexp.h>
 #include <qurl.h>
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
@@ -278,29 +278,40 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
 
     if (url.toLower().startsWith("local:"))
     {
-        QRegExp regExp("^local:(///)?([a-zA-Z0-9\\._\\- ]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?SchemaVersion=.+)?$");
-        regExp.setCaseSensitivity(Qt::CaseInsensitive);
+        QRegularExpression regExp("^local:(///)?([a-zA-Z0-9\\._\\- "
+            "]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?SchemaVersion=.+)?$",
+            QRegularExpression::CaseInsensitiveOption);
 
         infoString += QString("* XML file location: %1 device\n").arg(QLatin1String(m_deviceName));
 
-        if (regExp.indexIn(url) >= 0)
+        QRegularExpressionMatch match = regExp.match(url);
+
+        if (match.hasMatch())
         {
-            if (regExp.cap(2).endsWith("zip", Qt::CaseInsensitive))
+            if (match.captured(2).endsWith("zip", Qt::CaseInsensitive))
             {
                 isXmlNotZip = false;
             }
 
             bool ok;
-            qulonglong addr = regExp.cap(3).toLatin1().toULongLong(&ok, 16);
+            qulonglong addr = match.captured(3).toLatin1().toULongLong(&ok, 16);
             if (!ok)
             {
-                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as hex address", regExp.cap(3).toLatin1().constData());
+                retval += ito::RetVal::format(
+                    ito::retError,
+                    0,
+                    "cannot parse '%s' as hex address",
+                    match.captured(3).toLatin1().constData());
             }
 
-            int size = regExp.cap(4).toLatin1().toInt(&ok, 16);
+            int size = match.captured(4).toLatin1().toInt(&ok, 16);
             if (!ok)
             {
-                retval += ito::RetVal::format(ito::retError, 0 , "cannot parse '%s' as size", regExp.cap(4).toLatin1().constData());
+                retval += ito::RetVal::format(
+                    ito::retError,
+                    0,
+                    "cannot parse '%s' as size",
+                    match.captured(4).toLatin1().constData());
             }
 
             if (!retval.containsError())
@@ -319,12 +330,15 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
     {
         infoString += QString("* XML file location: File system\n");
 
-        QRegExp regExp("^file:(///)?([a-zA-Z0-9\\._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$");
-        regExp.setCaseSensitivity(Qt::CaseInsensitive);
+        QRegularExpression regExp(
+            "^file:(///)?([a-zA-Z0-9\\._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$",
+            QRegularExpression::CaseInsensitiveOption);
+        
+        QRegularExpressionMatch match = regExp.match(url);
 
-        if (regExp.indexIn(url) >= 0)
+        if (match.hasMatch())
         {
-            QString url1 = regExp.cap(2);
+            QString url1 = match.captured(2);
 #ifdef WIN32
             if (url1.size() >= 2 && url1[1] == '|')
             {

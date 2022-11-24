@@ -27,7 +27,6 @@
 #include <qfileinfo.h>
 #include <qdebug.h>
 #include <qset.h>
-#include <qregexp.h>
 #include <qurl.h>
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"

@@ -29,7 +29,6 @@
 #include <qfileinfo.h>
 #include <qdebug.h>
 #include <qset.h>
-#include <qregexp.h>
 #include "common/sharedStructures.h"
 #include <iostream>
 
@@ -653,7 +652,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             {
                 //try to open the interface with the given interfaceID
                 sDeviceID[0] = '\0';
-                memcpy(sDeviceID, deviceID.constData(), sizeof(char) * std::min(deviceID.size(),(int)piSize));
+                memcpy(sDeviceID, deviceID.constData(), sizeof(char) * std::min<int>(deviceID.size(),(int)piSize));
                 sDeviceID[piSize-1] = '\0';
             }
 
