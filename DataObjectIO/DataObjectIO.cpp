@@ -44,9 +44,9 @@
 #include "opencv2/highgui/highgui.hpp"
 
 #if CV_MAJOR_VERSION >= 4
-	#include "opencv2/imgproc/types_c.h"
-	#include "opencv2/imgproc/imgproc_c.h"
-	#include "opencv2//imgcodecs/legacy/constants_c.h"
+    #include "opencv2/imgproc/types_c.h"
+    #include "opencv2/imgproc/imgproc_c.h"
+    #include "opencv2//imgcodecs/legacy/constants_c.h"
 #endif
 
 #include "common/sharedStructuresGraphics.h"
@@ -200,8 +200,8 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::loadNanoscopeIII, DataObjectIO::loadNanoscopeIIIParams, loadNanoscopeIIIDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Veeco Nanoscope III (*.001 *.002 *.003 *.004)"));
     m_filterList.insert("loadNanoscopeIII", filter);
 
-	filter = new FilterDef(DataObjectIO::loadAvantesRaw, DataObjectIO::loadAvantesRawParams, loadAvantesRawDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)"));
-	m_filterList.insert("loadAvantesRaw", filter);
+    filter = new FilterDef(DataObjectIO::loadAvantesRaw, DataObjectIO::loadAvantesRawParams, loadAvantesRawDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)"));
+    m_filterList.insert("loadAvantesRaw", filter);
 
     filter = new FilterDef(DataObjectIO::loadZygoMetroPro, DataObjectIO::loadZygoMetroProParams, loadZygoMetroProDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Zygo MetroPro Data File (*.dat)"));
     m_filterList.insert("loadZygoMetroPro", filter);
@@ -4401,7 +4401,7 @@ template<typename _Tp> ito::RetVal doWriteDataD(ito::DataObject *dObjSrc, QTextS
             yoffset = dObjSrc->getAxisOffset(0);
         }
 
-		if (!wrapSign.isNull())
+        if (!wrapSign.isNull())
         {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
@@ -4461,7 +4461,7 @@ template<typename _Tp> ito::RetVal doWriteData(const ito::DataObject *dObjSrc, Q
 
     if (!asTuple)
     {
-		if (!wrapSign.isNull())
+        if (!wrapSign.isNull())
         {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
@@ -4517,7 +4517,7 @@ template<typename _Tp> ito::RetVal doWriteData(const ito::DataObject *dObjSrc, Q
             yoffset = dObjSrc->getAxisOffset(0);
         }
 
-		if (!wrapSign.isNull())
+        if (!wrapSign.isNull())
         {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
@@ -4689,7 +4689,7 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
         }
 
         QString wrapSign_ = QString::fromLatin1(paramsOpt->at(6).getVal<char*>());
-		QChar wrapSign = wrapSign_.size() > 0 ? wrapSign_[0] : QChar();
+        QChar wrapSign = wrapSign_.size() > 0 ? wrapSign_[0] : QChar();
         QString encoding = paramsOpt->at(7).getVal<char*>();
 
         if (encoding != "")
@@ -4811,8 +4811,8 @@ ito::RetVal DataObjectIO::loadDataFromTxtParams(QVector<ito::Param> *paramsMand,
         param = ito::Param("wrapSign", ito::ParamBase::String | ito::ParamBase::In, "", tr("Sometimes numbers are wrapped by a sign (.e.g '2.3' or \"4.5\"). If so, indicate the character(s) that wrap the numbers.").toLatin1().data());
         paramsOpt->append(param);
 
-		param = ito::Param("encoding", ito::ParamBase::String | ito::ParamBase::In, "", tr("encoding of text file, e.g. UTF-8, UTF-16, ISO 8859-1... Default: empty string -> the encoding is guessed due to a auto-detection of the first 64 bytes in the text file (using the BOM (Byte Order Mark)).").toLatin1().data());
-		paramsOpt->append(param);
+        param = ito::Param("encoding", ito::ParamBase::String | ito::ParamBase::In, "", tr("encoding of text file, e.g. UTF-8, UTF-16, ISO 8859-1... Default: empty string -> the encoding is guessed due to a auto-detection of the first 64 bytes in the text file (using the BOM (Byte Order Mark)).").toLatin1().data());
+        paramsOpt->append(param);
     }
 
     return retval;
@@ -4871,53 +4871,65 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
         }
 
         QString wrapSign = paramsOpt->at(4).getVal<char*>();
-		QString encoding = paramsOpt->at(5).getVal<char*>();
+        QString encoding = paramsOpt->at(5).getVal<char*>();
 
-		if (encoding != "")
+        if (encoding != "")
         {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) 
             if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
 #else
             if (!QStringConverter::encodingForName(encoding.toLatin1()).has_value())
 #endif
-			{
-				ret += ito::RetVal::format(ito::retError, 0, "encoding '%s' is unknown", encoding.toLatin1().data());
-			}
-		}
-		else
-		{
-			//try to guess encoding
-			QTextCodec* tc = QTextCodec::codecForUtfText(dataIn.read(64));
-			dataIn.seek(0);
-			if (tc)
-			{
-				encoding = tc->name();
-			}
-			else
-			{
-				ret += ito::RetVal(ito::retWarning, 0, "encoding of file can not be guessed. UTF-8 is assumed.");
-				encoding = "UTF-8";
-			}
-		}
+            {
+                ret += ito::RetVal::format(ito::retError, 0, "encoding '%s' is unknown", encoding.toLatin1().data());
+            }
+        }
+        else
+        {
+            // try to guess encoding
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QTextCodec* tc = QTextCodec::codecForUtfText(dataIn.read(64));
+#else
+            auto tc = QStringConverter::encodingForData(dataIn.read(64));
+#endif            
+            
+            dataIn.seek(0);
+            if (tc.has_value())
+            {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                encoding = tc->name();
+#else
+                encoding = QStringConverter::nameForEncoding(tc.value());
+#endif            
+            }
+            else
+            {
+                ret += ito::RetVal(ito::retWarning, 0, "encoding of file can not be guessed. UTF-8 is assumed.");
+                encoding = "UTF-8";
+            }
+        }
 
-		if (!ret.containsError())
-		{
-			ito::float64 zscale(0.0);
+        if (!ret.containsError())
+        {
+            ito::float64 zscale(0.0);
 
-			QTextStream textStream(&dataIn);
-			textStream.setCodec(encoding.toLatin1().data());
+            QTextStream textStream(&dataIn);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            textStream.setCodec(encoding.toLatin1().data());
+#else
+            textStream.setEncoding(QStringConverter::encodingForName(encoding.toLatin1().data()).value());
+#endif
+            ret += analyseTXTData(textStream, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines);
+            if (!ret.containsError())
+            {
+                if (!dataIn.seek(0))
+                {
+                    dataIn.reset();
+                }
 
-			ret += analyseTXTData(textStream, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines);
-			if (!ret.containsError())
-			{
-				if (!dataIn.seek(0))
-				{
-					dataIn.reset();
-				}
-
-				ret += readTXTDataBlock(textStream, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines, wrapSign);
-			}
-		}
+                ret += readTXTDataBlock(textStream, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines, wrapSign);
+            }
+        }
     }
 
     if (dataIn.isOpen())
@@ -5036,12 +5048,12 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
             if (comma == 0 && points == 0)
             {
                 decimalSign = '.';
-				separator = (tabs > 0) ? '\t' : ' ';
+                separator = (tabs > 0) ? '\t' : ' ';
             }
             else if (tabs == 0 && space == 0 && sim == 0 && comma == 0)
             {
                 decimalSign = '.';
-				separator = ' ';
+                separator = ' ';
             }
             else if (comma != 0 && points != 0)
             {
