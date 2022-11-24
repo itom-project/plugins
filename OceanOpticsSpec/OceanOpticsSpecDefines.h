@@ -120,7 +120,7 @@ typedef struct
     uint8                   m_SourceType;
 } TriggerType;
 
-typedef struct
+typedef struct MeasConfigType
 {
     uint16                  m_StartPixel = 0;
     uint16                  m_StopPixel = MAX_NR_PIXELS;
@@ -132,7 +132,7 @@ typedef struct
     //uint8                   m_SaturationDetection;
     //TriggerType             m_Trigger;
     //ControlSettingsType     m_Control;
-} MeasConfigType;
+};
 
 // bugfix 09-09-08: MeasConfigType is nested in StandAloneType
 // -> do not add prefix, define a new type
@@ -265,7 +265,8 @@ typedef struct
 //    uint32 bytes_remaining;
 //}OcHeader;
 
-typedef struct {
+typedef struct OcHeader
+{
     uint8 start_bytes[2] = { 0xC1, 0xC0 };// -don't reverse byte order
     uint16 protocol_version =  0x1100 ; // = swapped 0x1000
     uint16 flags =  0x0000; // bit 2^n: 0 response, 1 ACK[d], 2 ACKreq[h], 3 NACK[d], 4 exc[d], 5 protocol_deprecated[d]

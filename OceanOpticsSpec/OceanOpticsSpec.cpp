@@ -310,7 +310,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_params["serial_number"].setVal<char*>(sn);
         }
 
-        m_params["detector_name"].setVal<char*>("Default");
+        m_params["detector_name"].setVal<char*>(tr("Default").toLatin1().data());
         m_numberDeadPixels = -1; //none expected, but -1 for correction
 
         *(uint32*)cmd = 0x00180100;// 0x00011800; // 0x001 801 00 - get wavelength coefficient count
