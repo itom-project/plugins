@@ -3124,8 +3124,8 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
         {
             default:
                 return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
-			case ito::Shape::Circle:
-			//case ito::PrimitiveContainer::tCircle:
+            case ito::Shape::Circle:
+            //case ito::PrimitiveContainer::tCircle:
                 if (dObjPrimitiv->getType() == ito::tFloat32)
                 {
                     x0 = dObjPrimitiv->at<ito::float32>(0, 2);
@@ -3141,7 +3141,7 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
                     rB = dObjPrimitiv->at<ito::float64>(0, 5);
                 }
                 break;
-			case ito::Shape::Ellipse:
+            case ito::Shape::Ellipse:
                 if (dObjPrimitiv->getType() == ito::tFloat32)
                 {
                     x0 = dObjPrimitiv->at<ito::float32>(0, 2);
@@ -3157,7 +3157,7 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
                     rB = dObjPrimitiv->at<ito::float64>(0, 6);
                 }
                 break;
-			case ito::Shape::Rectangle:
+            case ito::Shape::Rectangle:
                 if (dObjPrimitiv->getType() == ito::tFloat32)
                 {
                     x0 = dObjPrimitiv->at<ito::float32>(0, 2);
@@ -3173,7 +3173,7 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
                     y1 = dObjPrimitiv->at<ito::float64>(0, 6);
                 }
                 break;
-			case ito::Shape::Square:
+            case ito::Shape::Square:
                 if (dObjPrimitiv->getType() == ito::tFloat32)
                 {
                     x0 = dObjPrimitiv->at<ito::float32>(0, 2) - dObjPrimitiv->at<ito::float32>(0, 5) / 2.0;
@@ -3200,8 +3200,8 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
         {
             default:
                 return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
-			case ito::Shape::Circle:
-			case ito::Shape::Ellipse:
+            case ito::Shape::Circle:
+            case ito::Shape::Ellipse:
                 if (dObjPrimitiv->getType() == ito::tFloat32)
                 {
                     x0 = (dObjPrimitiv->at<ito::float32>(2, 0) + dObjPrimitiv->at<ito::float32>(4, 0)) / 2.0;
@@ -3217,8 +3217,8 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
                     rB = fabs(dObjPrimitiv->at<ito::float64>(3, 0) - dObjPrimitiv->at<ito::float64>(5, 0)) / 2.0;
                 }
                 break;
-			case ito::Shape::Rectangle:
-			case ito::Shape::Square:
+            case ito::Shape::Rectangle:
+            case ito::Shape::Square:
                 if (dObjPrimitiv->getType() == ito::tFloat32)
                 {
                     x0 = dObjPrimitiv->at<ito::float32>(2, 0);
@@ -3243,24 +3243,24 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
     switch(type & 0x000000FF)
     {
-		case ito::Shape::Circle:
-		case ito::Shape::Ellipse:
+        case ito::Shape::Circle:
+        case ito::Shape::Ellipse:
             x0 = x0 / xScale + xOffset;
             y0 = y0 / yScale + yOffset;
             rA = rA / xScale;
             rB = rB / yScale;
             y1 = 0.0;
             x1 = 0.0;
-			if (fabs(rA - rB) < dObjDst->getAxisScale(xDim) && fabs(rA - rB) < dObjDst->getAxisScale(yDim)) type = ito::Shape::Circle;
-			else type = ito::Shape::Ellipse;
+            if (fabs(rA - rB) < dObjDst->getAxisScale(xDim) && fabs(rA - rB) < dObjDst->getAxisScale(yDim)) type = ito::Shape::Circle;
+            else type = ito::Shape::Ellipse;
 
             if (!ito::isNotZero(rA) || !ito::isNotZero(rB))  
             {
                 return ito::RetVal(ito::retError, 0, tr("Error: radii of geometricElement must not be zero").toLatin1().data());
             }
             break;
-		case ito::Shape::Rectangle:
-		case ito::Shape::Square:
+        case ito::Shape::Rectangle:
+        case ito::Shape::Square:
             x0 = x0 / xScale + xOffset;
             y0 = y0 / yScale + yOffset;
             x1 = x1 / xScale + xOffset;
@@ -3286,14 +3286,14 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
             switch(type & 0x000000FF)
             {
-				case ito::Shape::Circle:
+                case ito::Shape::Circle:
                     fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Ellipse:
+                case ito::Shape::Ellipse:
                     fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Rectangle:
-				case ito::Shape::Square:
+                case ito::Shape::Rectangle:
+                case ito::Shape::Square:
                     fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
                     break;
                 default:
@@ -3308,14 +3308,14 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
             switch(type & 0x000000FF)
             {
-				case ito::Shape::Circle:
+                case ito::Shape::Circle:
                     fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Ellipse:
+                case ito::Shape::Ellipse:
                     fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Rectangle:
-				case ito::Shape::Square:
+                case ito::Shape::Rectangle:
+                case ito::Shape::Square:
                     fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
                     break;
                 default:
@@ -3330,14 +3330,14 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
             switch(type & 0x000000FF)
             {
-				case ito::Shape::Circle:
+                case ito::Shape::Circle:
                     fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Ellipse:
+                case ito::Shape::Ellipse:
                     fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Rectangle:
-				case ito::Shape::Square:
+                case ito::Shape::Rectangle:
+                case ito::Shape::Square:
                     fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
                     break;
                 default:
@@ -3352,14 +3352,14 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
             switch(type & 0x000000FF)
             {
-				case ito::Shape::Circle:
+                case ito::Shape::Circle:
                     fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Ellipse:
+                case ito::Shape::Ellipse:
                     fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Rectangle:
-				case ito::Shape::Square:
+                case ito::Shape::Rectangle:
+                case ito::Shape::Square:
                     fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
                     break;
                 default:
@@ -3374,14 +3374,14 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
             switch(type & 0x000000FF)
             {
-				case ito::Shape::Circle:
+                case ito::Shape::Circle:
                     fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Ellipse:
+                case ito::Shape::Ellipse:
                     fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Rectangle:
-				case ito::Shape::Square:
+                case ito::Shape::Rectangle:
+                case ito::Shape::Square:
                     fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
                     break;
                 default:
@@ -3396,14 +3396,14 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
             switch(type & 0x000000FF)
             {
-				case ito::Shape::Circle:
+                case ito::Shape::Circle:
                     fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Ellipse:
+                case ito::Shape::Ellipse:
                     fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Rectangle:
-				case ito::Shape::Square:
+                case ito::Shape::Rectangle:
+                case ito::Shape::Square:
                     fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
                     break;
                 default:
@@ -3418,14 +3418,14 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
             switch(type & 0x000000FF)
             {
-				case ito::Shape::Circle:
+                case ito::Shape::Circle:
                     fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Ellipse:
+                case ito::Shape::Ellipse:
                     fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
                     break;
-				case ito::Shape::Rectangle:
-				case ito::Shape::Square:
+                case ito::Shape::Rectangle:
+                case ito::Shape::Square:
                     fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
                     break;
                 default:
