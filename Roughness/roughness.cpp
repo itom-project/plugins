@@ -1406,16 +1406,16 @@ ito::RetVal Roughness::calcRoughnessProfile(QVector<ito::ParamBase> *paramsMand,
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("unsupported mode").toLatin1().data());
             }
 
-			QString msg;
-			msg = tr("Roughness filtered with L_c = %1 and L_s = %2, mode = %3").arg(lc).arg(ls).arg(mode);
-			roughness.addToProtocol(std::string(msg.toLatin1().data()));
-			roughness.setTag("lc", lc);
-			roughness.setTag("ls", ls);
+            QString msg;
+            msg = tr("Roughness filtered with L_c = %1 and L_s = %2, mode = %3").arg(lc).arg(ls).arg(mode);
+            roughness.addToProtocol(std::string(msg.toLatin1().data()));
+            roughness.setTag("lc", lc);
+            roughness.setTag("ls", ls);
 
-			msg = tr("Waviness filtered with L_c = %1 and L_s = %2, mode = %3").arg(lc).arg(ls).arg(mode);
-			waviness.addToProtocol(std::string(msg.toLatin1().data()));
-			waviness.setTag("lc", lc);
-			waviness.setTag("ls", ls);
+            msg = tr("Waviness filtered with L_c = %1 and L_s = %2, mode = %3").arg(lc).arg(ls).arg(mode);
+            waviness.addToProtocol(std::string(msg.toLatin1().data()));
+            waviness.setTag("lc", lc);
+            waviness.setTag("ls", ls);
         }
     }
 
