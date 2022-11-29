@@ -4889,19 +4889,19 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
             // try to guess encoding
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             QTextCodec* tc = QTextCodec::codecForUtfText(dataIn.read(64));
+            dataIn.seek(0);
+            if (tc)
+            {
+                encoding = tc->name();
+            }
 #else
             auto tc = QStringConverter::encodingForData(dataIn.read(64));
-#endif            
-            
             dataIn.seek(0);
             if (tc.has_value())
             {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-                encoding = tc->name();
-#else
                 encoding = QStringConverter::nameForEncoding(tc.value());
-#endif            
             }
+#endif            
             else
             {
                 ret += ito::RetVal(ito::retWarning, 0, "encoding of file can not be guessed. UTF-8 is assumed.");
