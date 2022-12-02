@@ -302,7 +302,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                         QRegularExpressionMatch match = regExp.match(answer);
                         if (match.hasMatch() && !retValue.containsError())
                         {                        
-                            if (((match.captured().toInt()) & 2) == 2)
+                            if (((match.captured(1).toInt()) & 2) == 2)
                             {
                                 outputOpt = true;//optical output enabled
                             }	
@@ -327,14 +327,14 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                                  S_840_B_I_20)) // raises error, if 1st an 2nd try fail, but may not
                                                 // be neccessary for disabling.
                             {                        
-                                if (((match.captured().toInt()) & 2) == 2)
+                                if (((match.captured(1).toInt()) & 2) == 2)
                                 {
                                     Sleep(500);
                                     retValue += SendQuestionWithAnswerString(request, answer, 500); //2nd try
                                     match = regExp.match(answer);
                                     if (match.hasMatch() && !retValue.containsError())
                                     {
-                                        if (((match.captured().toInt()) & 2) == 2) // still on!
+                                        if (((match.captured(1).toInt()) & 2) == 2) // still on!
                                         {
                                             m_params["optical_output"].setVal<int>(1);
                                             retValue += ito::RetVal::format(ito::retError, 0, tr("Could not disable optical output. Answer was '%s'.").toLatin1().data(), answer.data());
@@ -365,7 +365,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                                 !retValue.containsError()) //&& (m_deviceType == S_840_B_I_20))//
                                                            //raises error, if 1st an 2nd try fail.
                             {                        
-                                if (((match.captured().toInt()) & 2) == 2)
+                                if (((match.captured(1).toInt()) & 2) == 2)
                                 {
                                     m_params["optical_output"].setVal<int>(1); // 1st try worked
                                 }	
@@ -376,7 +376,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                                     match = regExp.match(answer);
                                     if (match.hasMatch() && !retValue.containsError())
                                     {
-                                        if (((match.captured().toInt()) & 2) == 2) // on!
+                                        if (((match.captured(1).toInt()) & 2) == 2) // on!
                                         {
                                             m_params["optical_output"].setVal<int>(1); // 2nd try worked
                                         }
@@ -421,7 +421,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     QRegularExpressionMatch match = regExp.match(answer);
                     if (match.hasMatch() && !retValue.containsError())
                     {                        
-                        if (((match.captured().toInt()) & 2) == 2)
+                        if (((match.captured(1).toInt()) & 2) == 2)
                         {
                             outputOpt = true;
                         }
@@ -429,7 +429,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                         {
                             outputOpt = false;
                         }
-                        if (((match.captured().toInt()) & 16) == 16)
+                        if (((match.captured(1).toInt()) & 16) == 16)
                         {
                             powermod = true; //means high
                         }
@@ -565,7 +565,7 @@ ito::RetVal SuperlumBL::close(ItomSharedSemaphore *waitCond)
     QRegularExpressionMatch match = regExp.match(answer);
     if (match.hasMatch() >= 0 && !retValue.containsError())
     {                        
-        if (((match.captured().toInt()) & 2) == 2)
+        if (((match.captured(1).toInt()) & 2) == 2)
         {
             retValue += SendQuestionWithAnswerString("S21", answer, 500);  //disable optical output
         }	
@@ -813,7 +813,7 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
         QRegularExpressionMatch match = regExp.match(answer);
         if (match.hasMatch() && !retval.containsError())
         {                        
-            if (((match.captured().toInt()) & 2) == 2)
+            if (((match.captured(1).toInt()) & 2) == 2)
             {
                 m_params["optical_output"].setVal<int>(1);
             }	
@@ -821,7 +821,7 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
             {
                 m_params["optical_output"].setVal<int>(0);
             }
-            if (((match.captured().toInt()) & 16) == 16)
+            if (((match.captured(1).toInt()) & 16) == 16)
             {	
                 m_params["power_mode"].setVal<int>(1);
             }

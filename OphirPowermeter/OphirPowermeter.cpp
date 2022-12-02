@@ -467,7 +467,7 @@ ito::RetVal OphirPowermeter::init(
                 while (regMatchIt.hasNext())
                 {
                     QRegularExpressionMatch regMatch = regMatchIt.next();
-                    list << regMatch.captured(0);
+                    list << regMatch.captured(1);
                     found = true;
 
                 }
@@ -592,7 +592,7 @@ ito::RetVal OphirPowermeter::init(
                 while (regMatchIt.hasNext())
                 {
                     QRegularExpressionMatch regMatch = regMatchIt.next();
-                    list << regMatch.captured(0);
+                    list << regMatch.captured(1);
                     found = true;
                 }
 
@@ -745,7 +745,7 @@ ito::RetVal OphirPowermeter::init(
                 while (regMatchIt.hasNext())
                 {
                     QRegularExpressionMatch regMatch = regMatchIt.next();
-                    list << regMatch.captured(0);
+                    list << regMatch.captured(1);
                 }
 
                 m_params["wavelengthSet"].setVal<char*>(list.at(0).toLatin1().data());

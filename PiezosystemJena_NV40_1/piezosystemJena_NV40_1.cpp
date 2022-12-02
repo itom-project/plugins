@@ -965,10 +965,10 @@ ito::RetVal PiezosystemJena_NV40_1::readString(QByteArray &result, int &len, int
     if (!retValue.containsError())
     {
         QRegularExpression reg("^err,(\\d)$");
-        QRegularExpressionMatchIterator matchIt = reg.globalMatch(result);
-        if (matchIt.hasNext())
+        QRegularExpressionMatch match = reg.match(result);
+        if (match.hasMatch())
         {
-            switch (matchIt.next().captured().toInt())
+            switch (match.captured(1).toInt())
             {
             case 1:
                 retValue += ito::RetVal(ito::retError, 0, tr("unknown command").toLatin1().data());
@@ -1126,7 +1126,7 @@ ito::RetVal PiezosystemJena_NV40_1::identifyAndInitializeSystem(QString &identif
 
         if (match.hasMatch())
         {
-            identifier = match.captured();
+            identifier = match.captured(1);
         }
         else
         {

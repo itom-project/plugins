@@ -81,7 +81,7 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
     }
     else
     {
-        QString physicalName = match.captured(0) + "/" + match.captured(1);
+        QString physicalName = match.captured(1) + "/" + match.captured(2);
 
         if (physicalName.contains(":"))
         {
@@ -89,9 +89,9 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
             return NULL;
         }
 
-        int inConfig = match.captured(2).toInt();
-        double minInputVoltage = match.captured(3).toDouble();
-        double maxInputVoltage = match.captured(4).toDouble();
+        int inConfig = match.captured(3).toInt();
+        double minInputVoltage = match.captured(4).toDouble();
+        double maxInputVoltage = match.captured(5).toDouble();
         NiAnalogInputChannel *ai = new NiAnalogInputChannel(physicalName);
         ai->setTerminalConfig((NiAITerminalConfig)inConfig);
         ai->setMinInputLim(minInputVoltage);
@@ -192,7 +192,7 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
     }
     else
     {
-        QString physicalName = match.captured(0) + "/" + match.captured(1);
+        QString physicalName = match.captured(1) + "/" + match.captured(2);
 
         if (physicalName.contains(":"))
         {
@@ -200,8 +200,8 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
             return NULL;
         }
 
-        double minOutputVoltage = match.captured(2).toDouble();
-        double maxOutputVoltage = match.captured(3).toDouble();
+        double minOutputVoltage = match.captured(3).toDouble();
+        double maxOutputVoltage = match.captured(4).toDouble();
         NiAnalogOutputChannel *ai = new NiAnalogOutputChannel(physicalName);
         ai->setMinOutputLim(minOutputVoltage);
         ai->setMaxOutputLim(maxOutputVoltage);

@@ -107,13 +107,8 @@ It is initialized by dataIO(\"SuperlumBS\", SerialIO).");
 QStringList regexHelper(const char* reg, const char* charToInspect)
 {
     QRegularExpression regExp(reg);
-    QRegularExpressionMatchIterator matchIter = regExp.globalMatch(charToInspect);
-    QStringList result;
-    while (matchIter.hasNext())
-    {
-        QRegularExpressionMatch match = matchIter.next();
-        result.append(match.captured());
-    }
+    QRegularExpressionMatch match = regExp.match(charToInspect);
+    QStringList result = match.capturedTexts();
     return result;
 }
 
@@ -300,12 +295,13 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     // Optical output needs to be disabled before changing operation mode
                     request = QByteArray("S20");
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //optical output check query
-                    QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
-                    if (!regexStringList.isEmpty() && !retValue.containsError())
+                    QRegularExpression regEx("^A2(\\d{3,3})(\\d{2,2})");
+                    QRegularExpressionMatch match = regEx.match(answer);
+                    if (match.hasMatch() && !retValue.containsError())
                     {        
                         request = QByteArray("S6") + QByteArray::number(val->getVal<int>());    
                         bool optical;
-                        switch (regexStringList[0].toInt())
+                        switch (match.captured(1).toInt())
                         {
                             case 97:
                             case 101:
@@ -336,7 +332,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                             QStringList regexStringList2 = regexHelper("^A6(1|2|3|4)$", answer);
                             if (!regexStringList2.isEmpty() && !retValue.containsError())
                             {
-                                m_params["operation_mode"].setVal<int>(regexStringList2[0].toInt());
+                                m_params["operation_mode"].setVal<int>(regexStringList2[1].toInt());
                             }
                             else 
                             {
@@ -398,7 +394,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {                        
-                        switch (regexStringList[0].toInt())
+                        switch (regexStringList[1].toInt())
                         {
                             case 97: 
                             case 101:
@@ -472,7 +468,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {                        
-                        switch (regexStringList[0].toInt())
+                        switch (regexStringList[1].toInt())
                         {
                             case 99: //optical output enabled
                             case 103:
@@ -499,7 +495,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     QStringList regexStringList2 = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
                     if (!regexStringList2.isEmpty() && !retValue.containsError())
                     {                        
-                        switch (regexStringList2[0].toInt())
+                        switch (regexStringList2[1].toInt())
                         {
                             case 97: //low power mode
                             case 99:
@@ -592,7 +588,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["wavelength"].setVal<double>(
-                            0.05 * regexStringList[0].toInt() + 700);
+                            0.05 * regexStringList[1].toInt() + 700);
                     }
                     else
                     {
@@ -611,7 +607,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                         
                         if (regexStringList.length() > 0 && !retValue.containsError())
                         {
-                            m_params["sweep_speed"].setVal<int>(regexStringList[0].toInt());
+                            m_params["sweep_speed"].setVal<int>(regexStringList[1].toInt());
                         }
                         else
                         {
@@ -628,7 +624,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
                         if (regexStringList.length() > 0 && !retValue.containsError())
                         {
-                            m_params["sweep_speed"].setVal<int>(10 * regexStringList[0].toInt());
+                            m_params["sweep_speed"].setVal<int>(10 * regexStringList[1].toInt());
                         }
                         else
                         {
@@ -650,7 +646,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["modification_end_wavelength"].setVal<double>(
-                            0.05 * regexStringList[0].toInt() + 700);
+                            0.05 * regexStringList[1].toInt() + 700);
                     }
                     else
                     {
@@ -667,7 +663,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["modification_start_wavelength"].setVal<double>(
-                            0.05 * regexStringList[0].toInt() + 700);
+                            0.05 * regexStringList[1].toInt() + 700);
                     }
                     else
                     {
@@ -684,7 +680,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["wavelength_first"].setVal<double>(
-                            0.05 * regexStringList[0].toInt() + 700);
+                            0.05 * regexStringList[1].toInt() + 700);
                     }
                     else
                     {
@@ -701,7 +697,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["wavelength_second"].setVal<double>(
-                            0.05 * regexStringList[0].toInt() + 700);
+                            0.05 * regexStringList[1].toInt() + 700);
                     }
                     else
                     {
@@ -765,7 +761,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     QStringList regexStringList = regexHelper("^A77(\\d{2,2})", answer); 
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {                        
-                        switch (regexStringList[0].toInt())
+                        switch (regexStringList[1].toInt())
                         {
                             case 1:
                                 m_params["modulation_frequency"].setVal<double>(0.1);
@@ -897,7 +893,7 @@ ito::RetVal SuperlumBS::close(ItomSharedSemaphore *waitCond)
     QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer); 
     if (!regexStringList.isEmpty() && !retValue.containsError())
     {                        
-        switch (regexStringList[0].toInt())
+        switch (regexStringList[1].toInt())
         {
             case 99: 
             case 103:
@@ -1422,7 +1418,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A51(\\d{4,4})", answer); 
         if (!regexStringList.isEmpty() && !retval.containsError())
         {            
-            double value = 0.05 * regexStringList[0].toDouble() + 700;
+            double value = 0.05 * regexStringList[1].toDouble() + 700;
             m_params["full_tuning_range_LOW_end"].setVal<double>(value);            
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_LOW_end"].getMeta())->setMin(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_LOW_start"].getMeta())->setMin(value);
@@ -1447,7 +1443,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A52(\\d{4,4})", answer); 
         if (!regexStringList.isEmpty() && !retval.containsError())
         {            
-            double value = 0.05 * regexStringList[0].toDouble() + 700;
+            double value = 0.05 * regexStringList[1].toDouble() + 700;
             m_params["full_tuning_range_LOW_start"].setVal<double>(value);
             
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_LOW_end"].getMeta())->setMax(value);
@@ -1473,7 +1469,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A53(\\d{4,4})", answer); 
         if (!regexStringList.isEmpty() && !retval.containsError())
         {            
-            double value = 0.05 * regexStringList[0].toDouble() + 700;
+            double value = 0.05 * regexStringList[1].toDouble() + 700;
             m_params["full_tuning_range_HIGH_end"].setVal<double>(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_HIGH_end"].getMeta())->setMin(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_HIGH_start"].getMeta())->setMin(value);
@@ -1498,7 +1494,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A54(\\d{4,4})", answer); 
         if (!regexStringList.isEmpty() && !retval.containsError())
         {            
-            double value = 0.05 * regexStringList[0].toDouble() + 700;
+            double value = 0.05 * regexStringList[1].toDouble() + 700;
             m_params["full_tuning_range_HIGH_start"].setVal<double>(value);
             
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_HIGH_start"].getMeta())->setMax(value);
@@ -1524,7 +1520,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer); 
         if (!regexStringList.isEmpty() && !retval.containsError())
         {                        
-            switch (regexStringList[0].toInt())
+            switch (regexStringList[1].toInt())
             {
                 case 97:
                 case 101:
@@ -1554,7 +1550,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList2 = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer); 
         if (!regexStringList2.isEmpty() && !retval.containsError())
         {                        
-            switch (regexStringList2[0].toInt())
+            switch (regexStringList2[1].toInt())
             {
                 case 0:
                     m_params["operation_booster"].setVal<int>(-1);
@@ -1589,7 +1585,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A4(\\d{3,3})(\\d{2,2})", answer); 
         if (!regexStringList.isEmpty() && !retval.containsError())
         {                        
-            switch (regexStringList[0].toInt())
+            switch (regexStringList[1].toInt())
             {
                 case 97:
                 case 101:
@@ -1644,7 +1640,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A6(1|2|3|4)$", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
-            m_params["operation_mode"].setVal<int>(regexStringList[0].toInt());
+            m_params["operation_mode"].setVal<int>(regexStringList[1].toInt());
         }
         else
         {
@@ -1660,7 +1656,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A71(\\d{4,4})", answer);            
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
-            m_params["wavelength"].setVal<double>(0.05 * regexStringList[0].toInt() + 700);
+            m_params["wavelength"].setVal<double>(0.05 * regexStringList[1].toInt() + 700);
         }
         else
         {
@@ -1677,7 +1673,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             m_params["modification_start_wavelength"].setVal<double>(
-                0.05 * regexStringList[0].toInt() + 700);
+                0.05 * regexStringList[1].toInt() + 700);
         }
         else
         {
@@ -1694,7 +1690,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             m_params["modification_end_wavelength"].setVal<double>(
-                0.05 * regexStringList[0].toInt() + 700);
+                0.05 * regexStringList[1].toInt() + 700);
         }
         else
         {
@@ -1710,14 +1706,14 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A74(\\d{4,4})", answer);           
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
-            if (regexStringList[0].toInt() == 0)
+            if (regexStringList[1].toInt() == 0)
             {
                 request = QByteArray("S78");
                 retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | sweep speed from 2 - 9 nm/s (1-byte code)
                 QStringList regexStringList2 = regexHelper("^A78(\\d{1,1})", answer);
                 if (!regexStringList2.isEmpty() && !retval.containsError())
                 {
-                    m_params["sweep_speed"].setVal<int>(regexStringList2[0].toInt());
+                    m_params["sweep_speed"].setVal<int>(regexStringList2[1].toInt());
                 }
                 else
                 {
@@ -1726,7 +1722,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
             }
             else
             {
-                m_params["sweep_speed"].setVal<int>(10 * regexStringList[0].toInt());
+                m_params["sweep_speed"].setVal<int>(10 * regexStringList[1].toInt());
             }
         }
         else
@@ -1743,7 +1739,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A75(\\d{4,4})", answer);           
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
-            m_params["wavelength_first"].setVal<double>(0.05 * regexStringList[0].toInt() + 700);
+            m_params["wavelength_first"].setVal<double>(0.05 * regexStringList[1].toInt() + 700);
         }
         else
         {
@@ -1759,7 +1755,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A76(\\d{4,4})", answer);            
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
-            m_params["wavelength_second"].setVal<double>(0.05 * regexStringList[0].toInt() + 700);
+            m_params["wavelength_second"].setVal<double>(0.05 * regexStringList[1].toInt() + 700);
         }
         else
         {
@@ -1775,7 +1771,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QStringList regexStringList = regexHelper("^A77(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {                        
-            switch (regexStringList[0].toInt())
+            switch (regexStringList[1].toInt())
             {
                 case 1:
                     m_params["modulation_frequency"].setVal<double>(0.1);
