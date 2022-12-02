@@ -1299,10 +1299,10 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             switch (m_interfaceType)
             {
             case FlyCapture2::INTERFACE_USB2:
-                m_params["cam_interface"].setVal<char*>("USB2");
+                m_params["cam_interface"].setVal<const char*>("USB2");
                 break;
             case FlyCapture2::INTERFACE_USB3:
-                m_params["cam_interface"].setVal<char*>("USB3");
+                m_params["cam_interface"].setVal<const char*>("USB3");
                 break;
             default:
                 retVal += ito::RetVal(ito::retError, 0, tr("unsupported interface (GigE, IEEE1394...)").toLatin1().data());
@@ -1329,12 +1329,12 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             }
             else if (QString::compare(colorMode, "gray", Qt::CaseInsensitive) == 0)
             {
-                m_params["color_mode"].setVal<char*>("gray");
+                m_params["color_mode"].setVal<const char*>("gray");
                 m_colouredOutput = false;
             }
             else
             {
-                m_params["color_mode"].setVal<char*>("color");
+                m_params["color_mode"].setVal<const char*>("color");
                 m_colouredOutput = true;
             }
         }

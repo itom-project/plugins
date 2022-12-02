@@ -438,7 +438,7 @@ ito::RetVal UhlRegister::waitForDone(const int timeoutMS, const QVector<int> axi
     ito::RetVal retVal(ito::retOk);
     bool done = false;
     bool timeout = false;
-    QTime timer;
+    QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
     long delay = UHLDELAY; //[ms]

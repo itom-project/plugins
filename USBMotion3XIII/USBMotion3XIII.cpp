@@ -31,6 +31,7 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 #include <qmutex.h>
+#include <qelapsedtimer.h>
 #include <qwaitcondition.h>
 
 #ifdef linux
@@ -1874,7 +1875,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
     short v1, v2, v3;
     int x1, x2, x3;
     char motor;
-    QTime timer;
+    QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
     long delay = 100; //[ms]

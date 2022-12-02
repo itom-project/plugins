@@ -653,7 +653,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     double gain = 0;
     double offset = 0;
 
-    QFile paramFile = NULL;
+    QFile paramFile();
 
     m_iFireWire_VideoFormat = (*paramsMand)[0].getVal<int>();
     m_iFireWire_VideoMode = (*paramsMand)[1].getVal<int>();

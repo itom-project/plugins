@@ -25,7 +25,7 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-itom_find_package_qt(ON Widgets Xml OpenGL LinguistTools)
+itom_find_package_qt(ON OpenGLWidgets Widgets Xml OpenGL LinguistTools)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(OpenGL)

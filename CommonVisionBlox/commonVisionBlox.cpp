@@ -438,7 +438,7 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
                             retValue += getParamBool(nodeName, value);
                             if (!retValue.containsError())
                             {
-                                it->setVal<char*>(value ? "true":"false");
+                                it->setVal<const char*>(value ? "true":"false");
                             }
 
                             std::cout << nodeName << ": " << value << "(bool, " << info << ")\n" << std::endl;

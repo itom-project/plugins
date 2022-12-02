@@ -331,7 +331,7 @@ ito::RetVal QCam::close(ItomSharedSemaphore *waitCond)
         retValue += stopDevice(NULL);
     }
     
-    if (m_camHandle > 0)
+    if (m_camHandle)
     {
         retValue += errorCheck(QCam_SetStreaming(m_camHandle, false));
         retValue += errorCheck(QCam_CloseCamera(m_camHandle));

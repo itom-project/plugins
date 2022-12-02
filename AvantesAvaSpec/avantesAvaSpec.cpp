@@ -332,119 +332,119 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             switch (m_deviceConfig.m_Detector.m_SensorType)
             {
             case SENS_HAMS8378_256:
-                m_params["detector_name"].setVal<char*>("HAMS8378_256");
+                m_params["detector_name"].setVal<const char*>("HAMS8378_256");
                 break;
 
             case SENS_HAMS8378_1024:
-                m_params["detector_name"].setVal<char*>("HAMS8378_1024");
+                m_params["detector_name"].setVal<const char*>("HAMS8378_1024");
                 break;
             case SENS_ILX554:
-                m_params["detector_name"].setVal<char*>("ILX554");
+                m_params["detector_name"].setVal<const char*>("ILX554");
                 m_numberDeadPixels = 18; //uint8 const ILX_FIRST_USED_DARK_PIXEL = 2; uint8 const ILX_USED_DARK_PIXELS = 14; uint8 const ILX_TOTAL_DARK_PIXELS = 18;
                 m_numberOfCorrectionValues = 14;
                 m_startCorrectionIndex = 2;
                 break;
             case SENS_HAMS9201:
-                m_params["detector_name"].setVal<char*>("HAMS9201");
+                m_params["detector_name"].setVal<const char*>("HAMS9201");
                 break;
             case SENS_TCD1304:
-                m_params["detector_name"].setVal<char*>("TCD1304");
+                m_params["detector_name"].setVal<const char*>("TCD1304");
                 m_numberDeadPixels = 13; //uint8 const TCD_FIRST_USED_DARK_PIXEL = 0; uint8 const TCD_USED_DARK_PIXELS = 12; uint8 const TCD_TOTAL_DARK_PIXELS = 13;
                 m_numberOfCorrectionValues = 12;
                 m_startCorrectionIndex = 0;
                 break;
             case SENS_TSL1301:
-                m_params["detector_name"].setVal<char*>("TSL1301");
+                m_params["detector_name"].setVal<const char*>("TSL1301");
                 break;
             case SENS_TSL1401:
-                m_params["detector_name"].setVal<char*>("TSL1401");
+                m_params["detector_name"].setVal<const char*>("TSL1401");
                 break;
             case SENS_HAMS8378_512:
-                m_params["detector_name"].setVal<char*>("HAMS8378_512");
+                m_params["detector_name"].setVal<const char*>("HAMS8378_512");
                 break;
             case SENS_HAMS9840:
-                m_params["detector_name"].setVal<char*>("HAMS9840");
+                m_params["detector_name"].setVal<const char*>("HAMS9840");
                 m_numberDeadPixels = 8; //uint8 const HAMS9840_FIRST_USED_DARK_PIXEL = 0; uint8 const HAMS9840_USED_DARK_PIXELS = 8; uint8 const HAMS9840_TOTAL_DARK_PIXELS = 8;
                 m_numberOfCorrectionValues = 8;
                 m_startCorrectionIndex = 0;
                 break;
             case SENS_ILX511:
-                m_params["detector_name"].setVal<char*>("ILX511");
+                m_params["detector_name"].setVal<const char*>("ILX511");
                 m_numberDeadPixels = 18; //uint8 const ILX_FIRST_USED_DARK_PIXEL = 2; uint8 const ILX_USED_DARK_PIXELS = 14; uint8 const ILX_TOTAL_DARK_PIXELS = 18;
                 m_numberOfCorrectionValues = 14;
                 m_startCorrectionIndex = 2;
                 break;
             case SENS_HAMS10420_2048X64:
-                m_params["detector_name"].setVal<char*>("HAMS10420_2048X64");
+                m_params["detector_name"].setVal<const char*>("HAMS10420_2048X64");
                 m_numberDeadPixels = 4; //uint8 const     HAMS10420_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS10420_USED_DARK_PIXELS = 4; uint8 const     HAMS10420_TOTAL_DARK_PIXELS = 4;
                 m_numberOfCorrectionValues = 4;
                 m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS11071_2048X64:
-                m_params["detector_name"].setVal<char*>("HAMS11071_2048X64");
+                m_params["detector_name"].setVal<const char*>("HAMS11071_2048X64");
                 m_numberDeadPixels = 4; //uint8 const     HAMS11071_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS11071_USED_DARK_PIXELS = 4; uint8 const     HAMS11071_TOTAL_DARK_PIXELS = 4;
                 m_numberOfCorrectionValues = 4;
                 m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS7031_1024X122:
-                m_params["detector_name"].setVal<char*>("HAMS7031_1024X122");
+                m_params["detector_name"].setVal<const char*>("HAMS7031_1024X122");
                 m_numberDeadPixels = 4; //uint8 const     HAMS7031_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS7031_USED_DARK_PIXELS = 4; uint8 const     HAMS7031_TOTAL_DARK_PIXELS = 4;
                 m_numberOfCorrectionValues = 4;
                 m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS7031_1024X58:
-                m_params["detector_name"].setVal<char*>("HAMS7031_1024X58");
+                m_params["detector_name"].setVal<const char*>("HAMS7031_1024X58");
                 m_numberDeadPixels = 4; //uint8 const     HAMS7031_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS7031_USED_DARK_PIXELS = 4; uint8 const     HAMS7031_TOTAL_DARK_PIXELS = 4;
                 m_numberOfCorrectionValues = 4;
                 m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS11071_2048X16:
-                m_params["detector_name"].setVal<char*>("HAMS11071_2048X16");
+                m_params["detector_name"].setVal<const char*>("HAMS11071_2048X16");
                 m_numberDeadPixels = 4; //uint8 const     HAMS11071_FIRST_USED_DARK_PIXEL = 0; uint8 const     HAMS11071_USED_DARK_PIXELS = 4; uint8 const     HAMS11071_TOTAL_DARK_PIXELS = 4;
                 m_numberOfCorrectionValues = 4;
                 m_startCorrectionIndex = 0;
                 break;
             case SENS_HAMS11155:
-                m_params["detector_name"].setVal<char*>("HAMS11155");
+                m_params["detector_name"].setVal<const char*>("HAMS11155");
                 m_numberDeadPixels = -1; //guess it!
                 break;
             case SENS_SU256LSB:
-                m_params["detector_name"].setVal<char*>("SU256LSB");
+                m_params["detector_name"].setVal<const char*>("SU256LSB");
                 m_numberDeadPixels = -1; //guess it!
                 break;
             case SENS_SU512LDB:
-                m_params["detector_name"].setVal<char*>("SU512LDB");
+                m_params["detector_name"].setVal<const char*>("SU512LDB");
                 m_numberDeadPixels = -1; //guess it!
                 break;
             case SENS_HAMS11638:
-                m_params["detector_name"].setVal<char*>("SENS_HAMS11638");
+                m_params["detector_name"].setVal<const char*>("SENS_HAMS11638");
                 m_numberDeadPixels = -1; //guess it!                
                 break;
             case SENS_HAMS11639:
-                m_params["detector_name"].setVal<char*>("SENS_HAMS11639");
+                m_params["detector_name"].setVal<const char*>("SENS_HAMS11639");
                 m_numberDeadPixels = 0;
                 m_isUsb3 = true; //this sensor is only available in USB3 devices
                 break;
             case SENS_HAMS12443:
-                m_params["detector_name"].setVal<char*>("SENS_HAMS12443");
+                m_params["detector_name"].setVal<const char*>("SENS_HAMS12443");
                 m_numberDeadPixels = -1; //guess it!
                 break;
             case SENS_HAMG9208_512:
-                m_params["detector_name"].setVal<char*>("SENS_HAMG9208_512");
+                m_params["detector_name"].setVal<const char*>("SENS_HAMG9208_512");
                 m_numberDeadPixels = -1; //guess it!
                 m_isUsb3 = true; //this sensor is only available in USB3 devices
                 break;
             case SENS_HAMG13913:
-                m_params["detector_name"].setVal<char*>("SENS_HAMG13913");
+                m_params["detector_name"].setVal<const char*>("SENS_HAMG13913");
                 m_numberDeadPixels = -1; //guess it!
                 break;
             case SENS_HAMS13496:
-                m_params["detector_name"].setVal<char*>("SENS_HAMS13496");
+                m_params["detector_name"].setVal<const char*>("SENS_HAMS13496");
                 m_numberDeadPixels = -1; //guess it!
                 m_isUsb3 = true; //this sensor is only available in USB3 devices
                 break;
             default:
-                m_params["detector_name"].setVal<char*>("unknown");
+                m_params["detector_name"].setVal<const char*>("unknown");
                 m_numberDeadPixels = -1; //guess it!
                 break;
             }

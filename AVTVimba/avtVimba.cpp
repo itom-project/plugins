@@ -294,13 +294,13 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
                     switch (m_interfaceType)
                     {
                     case VmbInterfaceEthernet:
-                        m_params["interface"].setVal<char*>("GigE");
+                        m_params["interface"].setVal<const char*>("GigE");
                         break;
                     case VmbInterfaceFirewire:
-                        m_params["interface"].setVal<char*>("Firewire");
+                        m_params["interface"].setVal<const char*>("Firewire");
                         break;
                     case VmbInterfaceUsb:
-                        m_params["interface"].setVal<char*>("USB");
+                        m_params["interface"].setVal<const char*>("USB");
                         break;
                     default:
                         retValue += ito::RetVal(ito::retError, 0, "unknown or unsupported transport type (GigE, Firewire...)");

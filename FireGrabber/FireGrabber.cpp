@@ -1255,8 +1255,8 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     ito::RetVal retValue(ito::retOk);
 
     // get the optional parameters "cameraID" and "vendorID"
-    int nodeNR = NULL;
-    int tempID = NULL;
+    int nodeNR = 0;
+    int tempID = 0;
     //Allied: vendorID = 673537
     //Allied Pike: cameraID = 269109919 (specific!!!)
     //Allied Marlin: cameraID = 235356461 (specific!!!)

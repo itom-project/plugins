@@ -338,8 +338,8 @@ ito::RetVal FirgelliLAC::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     bool deviceOpen = false;
-	PCHAR pipename = "\\MCHP_EP1";
-	PCHAR VidPid = "vid_04d8&pid_fc5f";
+	PCHAR pipename = const_cast<char*>("\\MCHP_EP1");
+    PCHAR VidPid = const_cast<char*>("vid_04d8&pid_fc5f");
 
     double spoolMax = paramsMand->value(0).getVal<double>(); // 0: mand parameter "spoolMax"
     int deviceNum = paramsOpt->value(0).getVal<int>(); //  0: opt parameter "deviceNum"
@@ -394,7 +394,7 @@ ito::RetVal FirgelliLAC::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (deviceOpen)
     {
         retval += m_params["spoolMax"].setVal<double>(spoolMax);
-        retval += m_params["deviceID"].setVal<char*>("FirgelliLAC");  // ToDo!
+        retval += m_params["deviceID"].setVal<const char*>("FirgelliLAC");  // ToDo!
         retval += m_params["speed"].setVal<double>(50.0);
         retval += m_params["accuracy"].setVal<double>(98.0);
         

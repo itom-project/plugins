@@ -28,6 +28,7 @@
 #include "gitVersion.h"
 
 #include <qstring.h>
+#include <qelapsedtimer.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
@@ -329,7 +330,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
     ito::RetVal retVal(ito::retOk);
     bool done = false;
     bool timeout = false;
-    QTime timer;
+    QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
     long delay = LMFDELAY; //[ms]

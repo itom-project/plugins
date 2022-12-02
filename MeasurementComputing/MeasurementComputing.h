@@ -71,13 +71,13 @@ class MeasurementComputing : public ito::AddInDataIO
 		ito::RetVal setBitOut(ito::ParamBase &port, ito::ParamBase &bit, ito::ParamBase &value);
 
 		int rangeCodeStringToInt(char* rangeCodeString);
-		char* rangeCodeIntToString(int rangeCodeInt);
+		QString rangeCodeIntToString(int rangeCodeInt);
 
 		int tempScaleStringToInt(char* tempScaleString);
-		char* tempScaleIntToString(int tempScaleInt);
+		QString tempScaleIntToString(int tempScaleInt);
 
 		int digDevTypeStringToInt(char* digDevTypeString);
-		char* digDevTypeIntToString(int digDevTypeInt);
+		QString digDevTypeIntToString(int digDevTypeInt);
 
 		inline int bitToInt(int bit)
 		{

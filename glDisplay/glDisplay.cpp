@@ -30,7 +30,12 @@
 #include <string.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <qdesktopwidget.h>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    #include <qdesktopwidget.h>
+#else
+    #include <qguiapplication.h>
+    #include <qscreen.h>
+#endif
 #include <qapplication.h>
 #include <qsurfaceformat.h>
 
@@ -146,15 +151,15 @@ GLDisplayInterface::~GLDisplayInterface()
 GLDisplay::GLDisplay() :
     m_pWindow(nullptr)
 {
-    QDesktopWidget *qdesk = QApplication::desktop();
-    int scount = qdesk->screenCount();
+    const QList<QScreen*> screens = QGuiApplication::screens();
+    const int scount = screens.length();
     int maxwidth = 0, maxheight = 0, maxx0 = -4096, minx0 = 4096, maxy0 = -4096, miny0 = 4096;
     int defx0 = 0, defy0 = 0, defwidth = 3, defheight = 3;
     QRect geometry;
 
     for (int num = 0; num < scount; num++)
     {
-        geometry = qdesk->screenGeometry(num);
+        geometry = screens[num]->geometry();
 
         if (geometry.width() > maxwidth)
         {
@@ -188,15 +193,8 @@ GLDisplay::GLDisplay() :
     }
 
     if (scount > 1)
-    {
-        int prjscreen = 0;
-
-        while (prjscreen == qdesk->primaryScreen())
-        {
-            prjscreen++;
-        }
-
-        geometry = qdesk->screenGeometry(prjscreen);
+    {        
+        geometry = QGuiApplication::primaryScreen()->geometry();
         defheight = geometry.height();
         defwidth = geometry.width();
         defx0 = geometry.x();

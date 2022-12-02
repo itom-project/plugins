@@ -42,9 +42,9 @@ include_directories(
 link_directories(
 )
 
-if(NOT QT5_FOUND)
+if(NOT QT6_FOUND AND NOT QT5_FOUND)
     include(${QT_USE_FILE})
-endif(NOT QT5_FOUND)
+endif(NOT QT6_FOUND AND NOT QT5_FOUND)
 
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogGWInstekPSP.h
@@ -59,10 +59,12 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGWInstekPSP.ui
 )
 
-if(QT5_FOUND)
+if(QT6_FOUND)
+    QT6_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
+elseif(QT5_FOUND)
     QT5_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
 else()
-    message(SEND_ERROR "Currently only Qt5 is supported")
+    message(SEND_ERROR "Currently only Qt5 and Qt6 are supported")
 endif()
 
 set(PLUGIN_SOURCES 
