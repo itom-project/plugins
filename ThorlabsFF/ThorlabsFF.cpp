@@ -181,7 +181,7 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         else // serial number input given
         {
             bool found = false;
-            for each (const QByteArray &s in serialNumbers)
+            for (const QByteArray &s : serialNumbers)
             {
                 if (s == serialNo && s != "")
                 {
