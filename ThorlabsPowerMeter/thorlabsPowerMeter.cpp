@@ -264,7 +264,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
         {
             std::cout << "Thorlabs power meter devices \n" << std::endl;
 
-            for (ViUInt32 i = 0; i < std::min((int)count, static_cast<int>(foundDevices.size())); ++i)
+            for (ViUInt32 i = 0; i < std::min<int>((int)count, foundDevices.size()); ++i)
             {
 #if defined(USE_API_3_02)
                 std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
