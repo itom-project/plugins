@@ -3012,7 +3012,7 @@ void DataObjectIO::checkAndModifyFilenameSuffix(QFileInfo &file, const QString &
     if (wrongSuffix)
     {
         QString fixedName = QString("%1/%2.%3").arg(file.absolutePath()).arg(file.completeBaseName()).arg(desiredAndAllowedSuffix);
-        file = QFileInfo(QDir::toNativeSeparators(fixedName));
+        file.setFile(QDir::toNativeSeparators(fixedName));
     }
 }
 
@@ -4721,7 +4721,7 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         textStream.setCodec(encoding.toLatin1().data()); 
 #else
-        textStream.setEncoding(QStringConverter::Latin1);
+        textStream.setEncoding(QStringConverter::encodingForName(encoding.toLatin1().data()).value());
 #endif
 
         switch (dObjSrc->getType())

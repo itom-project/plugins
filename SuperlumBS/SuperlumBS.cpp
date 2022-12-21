@@ -104,7 +104,7 @@ It is initialized by dataIO(\"SuperlumBS\", SerialIO).");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QStringList regexHelper(const char* reg, const char* charToInspect)
+QStringList regexHelper(const char* reg, const QByteArray& charToInspect)
 {
     QRegularExpression regExp(reg);
     QRegularExpressionMatch match = regExp.match(charToInspect);
