@@ -42,10 +42,6 @@ include_directories(
 link_directories(
 )
 
-if(NOT QT6_FOUND AND NOT QT5_FOUND)
-    include(${QT_USE_FILE})
-endif(NOT QT6_FOUND AND NOT QT5_FOUND)
-
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLeicaMotorFocus.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLeicaMotorFocus.h
