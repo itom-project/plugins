@@ -5,10 +5,10 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#include "dockWidgetMyGrabber.h"
+#include "dockWidgetGoPro.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetMyGrabber::DockWidgetMyGrabber(ito::AddInDataIO *grabber) :
+DockWidgetGoPro::DockWidgetGoPro(ito::AddInDataIO *grabber) :
     AbstractAddInDockWidget(grabber),
     m_inEditing(false),
     m_firstRun(true)
@@ -17,7 +17,7 @@ DockWidgetMyGrabber::DockWidgetMyGrabber(ito::AddInDataIO *grabber) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyGrabber::parametersChanged(QMap<QString, ito::Param> params)
+void DockWidgetGoPro::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
@@ -37,7 +37,7 @@ void DockWidgetMyGrabber::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// void DockWidgetMyGrabber::on_contrast_valueChanged(int i)
+// void DockWidgetGoPro::on_contrast_valueChanged(int i)
 // {
     // if (!m_inEditing)
     // {
@@ -49,7 +49,7 @@ void DockWidgetMyGrabber::parametersChanged(QMap<QString, ito::Param> params)
 // }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyGrabber::identifierChanged(const QString &identifier)
+void DockWidgetGoPro::identifierChanged(const QString &identifier)
 {
     ui.lblIdentifier->setText(identifier);
 }

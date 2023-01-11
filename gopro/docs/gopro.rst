@@ -1,21 +1,21 @@
 ===================
- MyGrabber
+ GoPro
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MyGrabber`
-**Type**:       :plugintype:`MyGrabber`
-**License**:    :pluginlicense:`MyGrabber`
-**Platforms**:  Some words about supported operating systems
-**Devices**:    Some words about supported devices
-**Author**:     :pluginauthor:`MyGrabber`
+**Summary**:    :pluginsummary:`GoPro`
+**Type**:       :plugintype:`GoPro`
+**License**:    :pluginlicense:`GoPro`
+**Platforms**:  Windows, Linux
+**Devices**:    GoPro Hero 
+**Author**:     :pluginauthor:`GoPro`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MyGrabber
+    :plugin: GoPro
 
 Initialization
 ==============
@@ -23,4 +23,4 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MyGrabber
+        :plugin: GoPro

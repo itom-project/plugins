@@ -5,23 +5,23 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#ifndef MYGRABBER_H
-#define MYGRABBER_H
+#ifndef GOPRO_H
+#define GOPRO_H
 
 #include "common/addInGrabber.h"
 #include <qsharedpointer.h>
-#include "dialogMyGrabber.h"
+#include "dialogGoPro.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MyGrabberInterface 
+  *\class    GoProInterface 
   *
-  *\brief    Interface-Class for MyGrabber-Class
+  *\brief    Interface-Class for GoPro-Class
   *
-  *    \sa    AddInDataIO, MyGrabber
+  *    \sa    AddInDataIO, GoPro
   *
   */
-class MyGrabberInterface : public ito::AddInInterfaceBase
+class GoProInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
@@ -29,8 +29,8 @@ class MyGrabberInterface : public ito::AddInInterfaceBase
     PLUGIN_ITOM_API
 
     public:
-        MyGrabberInterface();
-        ~MyGrabberInterface();
+        GoProInterface();
+        ~GoProInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);
 
     private:
@@ -40,23 +40,23 @@ class MyGrabberInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MyGrabber
+  *\class    GoPro
 
   */
-class MyGrabber : public ito::AddInGrabber
+class GoPro : public ito::AddInGrabber
 {
     Q_OBJECT
 
     protected:
         //! Destructor
-        ~MyGrabber();
+        ~GoPro();
         //! Constructor
-        MyGrabber();
+        GoPro();
         
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         
     public:
-        friend class MyGrabberInterface;
+        friend class GoProInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
         
@@ -94,4 +94,4 @@ class MyGrabber : public ito::AddInGrabber
         void dockWidgetVisibilityChanged(bool visible);
 };
 
-#endif // MYGRABBER_H
+#endif // GoPro_H

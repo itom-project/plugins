@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogMyGrabber</class>
- <widget class="QDialog" name="DialogMyGrabber">
+ <class>DialogGoPro</class>
+ <widget class="QDialog" name="DialogGoPro">
   <property name="geometry">
    <rect>
     <x>0</x>

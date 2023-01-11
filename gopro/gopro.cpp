@@ -8,7 +8,7 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "myGrabber.h"
+#include "GoPro.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
@@ -17,19 +17,19 @@
 #include <qplugin.h>
 #include <qmessagebox.h>
 
-#include "dockWidgetMyGrabber.h"
+#include "dockWidgetGoPro.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
     \todo add necessary information about your plugin here.
 */
-MyGrabberInterface::MyGrabberInterface()
+GoProInterface::GoProInterface()
 {
     m_type = ito::typeDataIO | ito::typeGrabber; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
-    setObjectName("MyGrabber");
+    setObjectName("GoPro");
 
-    m_description = QObject::tr("MyGrabber");
+    m_description = QObject::tr("GoPro");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
@@ -54,27 +54,27 @@ Put a detailed description about what the plugin is doing, what is needed to get
 /*!
     
 */
-MyGrabberInterface::~MyGrabberInterface()
+GoProInterface::~GoProInterface()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
+ito::RetVal GoProInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(MyGrabber) //the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(GoPro) //the argument of the macro is the classname of the plugin
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
+ito::RetVal GoProInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   REMOVE_PLUGININSTANCE(MyGrabber) //the argument of the macro is the classname of the plugin
+   REMOVE_PLUGININSTANCE(GoPro) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(mygrabberinterface, MyGrabberInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
+    Q_EXPORT_PLUGIN2(GoProinterface, GoProInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
 #endif
 
 
@@ -86,9 +86,9 @@ ito::RetVal MyGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
     in this constructor or later in the init method
 */
-MyGrabber::MyGrabber() : AddInGrabber(), m_isgrabbing(false)
+GoPro::GoPro() : AddInGrabber(), m_isgrabbing(false)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyGrabber", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GoPro", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
@@ -110,7 +110,7 @@ MyGrabber::MyGrabber() : AddInGrabber(), m_isgrabbing(false)
     m_params.insert(paramVal.getName(), paramVal);
     
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetMyGrabber *dw = new DockWidgetMyGrabber(this);
+    DockWidgetGoPro *dw = new DockWidgetGoPro(this);
     
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -118,7 +118,7 @@ MyGrabber::MyGrabber() : AddInGrabber(), m_isgrabbing(false)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MyGrabber::~MyGrabber()
+GoPro::~GoPro()
 {
 }
 
@@ -127,7 +127,7 @@ MyGrabber::~MyGrabber()
 /*!
     \sa close
 */
-ito::RetVal MyGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -167,7 +167,7 @@ ito::RetVal MyGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 /*!
     \sa init
 */
-ito::RetVal MyGrabber::close(ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -186,7 +186,7 @@ ito::RetVal MyGrabber::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -223,7 +223,7 @@ ito::RetVal MyGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -285,7 +285,7 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::startDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -306,7 +306,7 @@ ito::RetVal MyGrabber::startDevice(ItomSharedSemaphore *waitCond)
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::stopDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -332,7 +332,7 @@ ito::RetVal MyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -371,7 +371,7 @@ ito::RetVal MyGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
+ito::RetVal GoPro::retrieveData(ito::DataObject *externalDataObject)
 {
     //todo: this is just a basic example for getting the buffered image to m_data or the externally given data object
     //enhance it and adjust it for your needs
@@ -453,7 +453,7 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
 //    fit to the given size restrictions
 //
 // if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal MyGrabber::checkData(ito::DataObject *externalDataObject)
+/*ito::RetVal GoPro::checkData(ito::DataObject *externalDataObject)
 {
     return ito::retOk;
 }*/
@@ -473,7 +473,7 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
     
     \sa retrieveImage, copyVal
 */
-ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -517,7 +517,7 @@ ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     
     \sa retrieveImage, getVal
 */
-ito::RetVal MyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal GoPro::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -557,7 +557,7 @@ ito::RetVal MyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
     a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
 */
-void MyGrabber::dockWidgetVisibilityChanged(bool visible)
+void GoPro::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
@@ -595,7 +595,7 @@ void MyGrabber::dockWidgetVisibilityChanged(bool visible)
     
     \sa hasConfDialog
 */
-const ito::RetVal MyGrabber::showConfDialog(void)
+const ito::RetVal GoPro::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogMyGrabber(this));
+    return apiShowConfigurationDialog(this, new DialogGoPro(this));
 }

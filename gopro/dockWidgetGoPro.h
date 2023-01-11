@@ -5,8 +5,8 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETMYGRABBER_H
-#define DOCKWIDGETMYGRABBER_H
+#ifndef DOCKWIDGETGOPRO_H
+#define DOCKWIDGETGOPRO_H
 
 #include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
@@ -15,18 +15,18 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetMyGrabber.h"
+#include "ui_dockWidgetGoPro.h"
 
-class DockWidgetMyGrabber : public ito::AbstractAddInDockWidget
+class DockWidgetGoPro : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetMyGrabber(ito::AddInDataIO *grabber);
-        ~DockWidgetMyGrabber() {};
+        DockWidgetGoPro(ito::AddInDataIO *grabber);
+        ~DockWidgetGoPro() {};
 
     private:
-        Ui::DockWidgetMyGrabber ui;
+        Ui::DockWidgetGoPro ui;
         bool m_inEditing;
         bool m_firstRun;
 

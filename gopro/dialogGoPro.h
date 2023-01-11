@@ -5,14 +5,14 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#ifndef DIALOGMYGRABBER_H
-#define DIALOGMYGRABBER_H
+#ifndef DIALOGGOPRO_H
+#define DIALOGGOPRO_H
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
-#include "ui_dialogMyGrabber.h"
+#include "ui_dialogGoPro.h"
 
 #include <qstring.h>
 #include <qmap.h>
@@ -23,13 +23,13 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogMyGrabber : public ito::AbstractAddInConfigDialog 
+class DialogGoPro : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        DialogMyGrabber(ito::AddInBase *grabber);
-        ~DialogMyGrabber() {};
+        DialogGoPro(ito::AddInBase *grabber);
+        ~DialogGoPro() {};
 
         ito::RetVal applyParameters();
 
@@ -37,7 +37,7 @@ class DialogMyGrabber : public ito::AbstractAddInConfigDialog
         void enableDialog(bool enabled);
         bool m_firstRun;
 
-        Ui::DialogMyGrabber ui;
+        Ui::DialogGoPro ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

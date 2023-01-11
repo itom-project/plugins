@@ -5,7 +5,7 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#include "dialogMyGrabber.h"
+#include "dialogGoPro.h"
 
 #include "common/addInInterface.h"
 
@@ -14,7 +14,7 @@
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogMyGrabber::DialogMyGrabber(ito::AddInBase *grabber) :
+DialogGoPro::DialogGoPro(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true)
 {
@@ -26,7 +26,7 @@ DialogMyGrabber::DialogMyGrabber(ito::AddInBase *grabber) :
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogMyGrabber::parametersChanged(QMap<QString, ito::Param> params)
+void DialogGoPro::parametersChanged(QMap<QString, ito::Param> params)
 {
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
@@ -48,7 +48,7 @@ void DialogMyGrabber::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogMyGrabber::applyParameters()
+ito::RetVal DialogGoPro::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -66,7 +66,7 @@ ito::RetVal DialogMyGrabber::applyParameters()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogMyGrabber::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogGoPro::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -87,7 +87,7 @@ void DialogMyGrabber::on_buttonBox_clicked(QAbstractButton* btn)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogMyGrabber::enableDialog(bool enabled)
+void DialogGoPro::enableDialog(bool enabled)
 {
     //e.g.
     ui.group1->setEnabled(enabled);

@@ -7,7 +7,7 @@
 ###################################################################
 ###################################################################
 
-#here you give your project a unique name (replace MyGrabberPlugin by the desired project name of your plugin)
+#here you give your project a unique name (replace GoProPlugin by the desired project name of your plugin)
 set(target_name GoPro)
 
 # this should be the first line of your project.

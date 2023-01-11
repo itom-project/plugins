@@ -16,10 +16,10 @@
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "Your Company Name"
-#define PLUGIN_AUTHOR         "AuthorName"
-#define PLUGIN_COPYRIGHT      "Your Copyright"
-#define PLUGIN_NAME           "MyGrabber"
+#define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
+#define PLUGIN_AUTHOR         "Johann Krauter"
+#define PLUGIN_COPYRIGHT      "(C) 2023, ITO, University Stuttgart"
+#define PLUGIN_NAME           "GoPro"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
