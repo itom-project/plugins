@@ -33,8 +33,9 @@
     #include <qdesktopwidget.h>
 #else
     #include <qguiapplication.h>
-    #include <qscreen.h>
 #endif
+
+#include <qscreen.h>
 #include <qstringlist.h>
 #include <string.h>
 
