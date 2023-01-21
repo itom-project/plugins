@@ -373,6 +373,17 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
         dm->setRepresentation(ito::ParamMeta::Linear); // show a linear slider in generic paramEditorWidget...
         globalParam.insert(paramVal.getName(), paramVal);
 
+        paramVal = ito::Param(
+            "triggerMode",
+            ito::ParamBase::String,
+            "software",
+            tr("trigger mode of the camera (freerun or software)").toLatin1().data());
+        ito::StringMeta* sm =
+            new ito::StringMeta(ito::StringMeta::String, "software", "AcquisitionControl");
+        sm->addItem("freerun");
+        paramVal.setMeta(sm, true);
+        globalParam.insert(paramVal.getName(), paramVal);
+
         paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101,
                               tr("Binning of different pixel, binning = x-factor * 100 + y-factor").toLatin1().data());
         paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
@@ -390,11 +401,13 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
 
         paramVal = ito::Param("demoEnumString", ito::ParamBase::String, "mode 1",
                               tr("enumeration string (mode 1, mode 2, mode 3)").toLatin1().data());
-        ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "mode 1", "DemoParameters");
+        sm = new ito::StringMeta(ito::StringMeta::String, "mode 1", "DemoParameters");
         sm->addItem("mode 2");
         sm->addItem("mode 3");
         paramVal.setMeta(sm, true);
         globalParam.insert(paramVal.getName(), paramVal);
+
+
 
         paramVal = ito::Param("demoArbitraryString", ito::ParamBase::String, "any string",
                               tr("any string allowed").toLatin1().data());
@@ -676,51 +689,33 @@ ito::RetVal DummyMultiChannelGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Call this method to trigger a new image.
-/*!
-    By this method a new image is trigger by the camera, that means the acquisition of the image starts in the moment,
-   this method is called. The new image is then stored either in internal camera memory or in internal memory of this
-   class.
-
-    \note This method is similar to VideoCapture::grab() of openCV
-
-    \param [in] trigger may describe the trigger parameter (unused here)
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError if camera has not been started or an older image lies in memory which
-   has not be fetched by getVal, yet. \sa getVal
-*/
-ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
+ito::RetVal DummyMultiChannelGrabber::generateImageData()
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
-
     double frame_time = m_params["frame_time"].getVal<double>();
     double integration_time = m_params["integration_time"].getVal<double>();
     float gain = m_params["gain"].getVal<double>();
     float offset = m_params["offset"].getVal<double>();
     int min, max = 0;
     bool ok = false;
-    AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(m_params["pixelFormat"].getVal<char *>(), min, max, ok);
+    AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(
+        m_params["pixelFormat"].getVal<char*>(), min, max, ok);
     if (!ok)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("pixel format is not a integer format").toLatin1().data());
+        retValue += ito::RetVal(
+            ito::retError, 0, tr("pixel format is not a integer format").toLatin1().data());
     }
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
     if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(
-            ito::retError, 1002,
-            tr("Acquire of DummyMultiChannelGrabber can not be executed, since camera has not been started.")
+            ito::retError,
+            1002,
+            tr("Can not acquire image, since camera has not been "
+               "started.")
                 .toLatin1()
                 .data());
     }
-    else
+    if (!retValue.containsError())
     {
         m_isgrabbing = true;
 
@@ -736,20 +731,20 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
 
         m_startOfLastAcquisition = cv::getTickCount();
         // ito::uint32 seed = m_startOfLastAcquisition % std::numeric_limits<ito::uint32>::max();
-        cv::RNG &rng = cv::theRNG();
+        cv::RNG& rng = cv::theRNG();
 
         if (m_totalBinning == 1)
         {
             if (max < 256)
             {
                 ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(max);
-                ito::uint8 *linePtr;
+                ito::uint8* linePtr;
                 foreach (ChannelContainer container, m_channels)
                 {
-                    ito::DataObject &channelObj = container.data;
+                    ito::DataObject& channelObj = container.data;
                     for (int m = 0; m < channelObj.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint8 *)channelObj.rowPtr(0, m);
+                        linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
                         for (int n = 0; n < channelObj.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
@@ -760,13 +755,13 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             else if (max < 65536)
             {
                 ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(max);
-                ito::uint16 *linePtr;
+                ito::uint16* linePtr;
                 foreach (ChannelContainer container, m_channels)
                 {
-                    ito::DataObject &channelObj = container.data;
+                    ito::DataObject& channelObj = container.data;
                     for (int m = 0; m < channelObj.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint16 *)channelObj.rowPtr(0, m);
+                        linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
                         for (int n = 0; n < channelObj.getSize(1); ++n)
                         {
                             *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
@@ -780,16 +775,17 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             if (max < 256)
             {
                 ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(max);
-                ito::uint8 *linePtr;
+                ito::uint8* linePtr;
                 foreach (ChannelContainer container, m_channels)
                 {
-                    ito::DataObject &channelObj = container.data;
+                    ito::DataObject& channelObj = container.data;
                     for (int m = 0; m < channelObj.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint8 *)channelObj.rowPtr(0, m);
+                        linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
                         for (int n = 0; n < channelObj.getSize(1); ++n)
                         {
-                            *linePtr++ = fastrand_mean<ito::uint8>(rng, maxInt, m_totalBinning, offset, gain);
+                            *linePtr++ = fastrand_mean<ito::uint8>(
+                                rng, maxInt, m_totalBinning, offset, gain);
                         }
                     }
                 }
@@ -797,16 +793,17 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             else if (max < 65536)
             {
                 ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(max);
-                ito::uint16 *linePtr;
+                ito::uint16* linePtr;
                 foreach (ChannelContainer container, m_channels)
                 {
-                    ito::DataObject &channelObj = container.data;
+                    ito::DataObject& channelObj = container.data;
                     for (int m = 0; m < channelObj.getSize(0); ++m)
                     {
-                        linePtr = (ito::uint16 *)channelObj.rowPtr(0, m);
+                        linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
                         for (int n = 0; n < channelObj.getSize(1); ++n)
                         {
-                            *linePtr++ = fastrand_mean<ito::uint16>(rng, maxInt, m_totalBinning, offset, gain);
+                            *linePtr++ = fastrand_mean<ito::uint16>(
+                                rng, maxInt, m_totalBinning, offset, gain);
                         }
                     }
                 }
@@ -823,6 +820,58 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
             }
         }
     }
+    ////pack all channel images to a QMap
+    QSharedPointer<QMap<QString, ito::DataObject> > returnMap(new QMap<QString, ito::DataObject>);
+    QMap<QString, ChannelContainer>::iterator it = m_channels.begin();
+    while (it != m_channels.end())
+    {
+        (*returnMap)[it.key()] = it.value().data;
+        ++it;
+    } 
+    emit newGrabberData(returnMap);
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Call this method to trigger a new image.
+/*!
+    By this method a new image is trigger by the camera, that means the acquisition of the image starts in the moment,
+   this method is called. The new image is then stored either in internal camera memory or in internal memory of this
+   class.
+
+    \note This method is similar to VideoCapture::grab() of openCV
+
+    \param [in] trigger may describe the trigger parameter (unused here)
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk if everything is ok, retError if camera has not been started or an older image lies in memory which
+   has not be fetched by getVal, yet. \sa getVal
+*/
+ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    ItomSharedSemaphoreLocker locker(waitCond);
+    if (strcmp(m_params["triggerMode"].getVal<const char*>(), "software")==0)
+    {
+        retValue += generateImageData();
+
+    }
+    else
+    {
+        retValue += ito::RetVal(
+            ito::retWarning,
+            0,
+            tr("The trigger mode of the camera is set to freerun therefore calling acquire is "
+               "useless.")
+                .toLatin1()
+                .data());
+    }
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    
+
 
     return retValue;
 }
