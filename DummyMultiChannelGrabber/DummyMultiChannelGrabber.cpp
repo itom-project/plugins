@@ -241,8 +241,9 @@ const ito::RetVal DummyMultiChannelGrabber::showConfDialog(void)
     \param [in] uniqueID is an unique identifier for this DummyMultiChannelGrabber-instance
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
-DummyMultiChannelGrabber::DummyMultiChannelGrabber()
-    : AddInMultiChannelGrabber("testtest"), m_isgrabbing(false), m_totalBinning(1), m_lineCamera(false)
+DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
+    AddInMultiChannelGrabber("testtest"), m_isgrabbing(false), m_totalBinning(1),
+    m_lineCamera(false), m_freerunTimer(this)
 {
     if (hasGuiSupport())
     {
@@ -253,6 +254,7 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber()
             QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
     }
+    connect(&m_freerunTimer, &QTimer::timeout, this, &DummyMultiChannelGrabber::generateImageData);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -351,8 +353,8 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
         dm->setRepresentation(ito::ParamMeta::Linear); // show a linear slider in generic paramEditorWidget...
         globalParam.insert(paramVal.getName(), paramVal);
 
-        paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 60.0, 0.0,
-                              tr("Minimum integration time for an acquisition [s], default: 0.0 (as fast as possible).")
+        paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 60.0, 0.001,
+                              tr("Minimum integration time for an acquisition [s], default: 0.001.")
                                   .toLatin1()
                                   .data());
         dm = paramVal.getMetaT<ito::DoubleMeta>();
@@ -604,6 +606,28 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
         m_isgrabbing = false; // we need to trigger again since the roi changed
         ok = false;           // we want to further process the parameter by setParam to set the size etc.
     }
+    if (key == "integration_time")
+    {
+        bool timerIsRunning = m_freerunTimer.isActive();
+        m_freerunTimer.stop();
+        m_freerunTimer.setInterval(
+            int((val->getVal<double>() + m_params["frame_time"].getVal<double>()) * 1000.0));
+        if (timerIsRunning)
+        {
+            m_freerunTimer.start();
+        }
+    }
+    if (key == "frame_time")
+    {
+        bool timerIsRunning = m_freerunTimer.isActive();
+        m_freerunTimer.stop();
+        m_freerunTimer.setInterval(
+            int((val->getVal<double>() + m_params["integration_time"].getVal<double>()) * 1000.0));
+        if (timerIsRunning)
+        {
+            m_freerunTimer.start();
+        }
+    }
     else
     {
         ok = false; // set ok to false to let setParam process the parameter
@@ -642,7 +666,10 @@ ito::RetVal DummyMultiChannelGrabber::startDevice(ItomSharedSemaphore *waitCond)
         m_startOfLastAcquisition = 0;
         m_isgrabbing = false;
     }
-
+    if (strcmp(m_params["triggerMode"].getVal<const char*>(), "freerun") == 0)
+    {
+        m_freerunTimer.start(int((m_params["frame_time"].getVal<double>()+m_params["integration_time"].getVal<double>()) * 1000.0));
+    }
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -679,7 +706,10 @@ ito::RetVal DummyMultiChannelGrabber::stopDevice(ItomSharedSemaphore *waitCond)
                 .data());
         setGrabberStarted(0);
     }
-
+    else
+    {
+        m_freerunTimer.stop();
+    }
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -718,8 +748,7 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
     if (!retValue.containsError())
     {
         m_isgrabbing = true;
-
-        if (frame_time > 0.0)
+        if (strcmp(m_params["triggerMode"].getVal<const char*>(), "software") == 0 && (frame_time > 0.0))
         {
             double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
 
@@ -810,7 +839,8 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
             }
         }
 
-        if (integration_time > 0.0)
+        if((strcmp(m_params["triggerMode"].getVal<const char*>(), "software") == 0) &&
+                (integration_time > 0.0))
         {
             double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
 
@@ -827,7 +857,7 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
     {
         (*returnMap)[it.key()] = it.value().data;
         ++it;
-    } 
+    }
     emit newGrabberData(returnMap);
     return retValue;
 }

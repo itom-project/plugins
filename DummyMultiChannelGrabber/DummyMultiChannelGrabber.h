@@ -74,7 +74,7 @@ class DummyMultiChannelGrabber : public ito::AddInMultiChannelGrabber
         int64 m_startOfLastAcquisition;
         ito::uint8 m_totalBinning;
         bool m_lineCamera;
-        ito::RetVal generateImageData();
+        QTimer m_freerunTimer;
 
     signals:
 
@@ -91,6 +91,8 @@ class DummyMultiChannelGrabber : public ito::AddInMultiChannelGrabber
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+        ito::RetVal generateImageData();
+
 
 
 };
