@@ -30,9 +30,6 @@ itom_find_package_qt(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 
-
-
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -79,11 +76,11 @@ target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_
 
 
 
-if(NOT QT5_FOUND)
+if(NOT (QT5_FOUND OR QT6_FOUND))
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")
     endif()
-endif(NOT QT5_FOUND)
+endif()
 
 #translation
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
