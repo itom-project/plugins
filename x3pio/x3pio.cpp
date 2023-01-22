@@ -158,7 +158,7 @@ OpenGPS::String TimeStamp(void)
     std::wostringstream sout;
     sout << std::setfill(_T('0')) << std::setw(4) << (lt->tm_year+1900) << _T('-') << std::setw(2) << lt->tm_mon << _T('-') << std::setw(2) << lt->tm_mday
         << _T('T') << std::setw(2) << lt->tm_hour << _T(':') << std::setw(2) << lt->tm_min << _T(':') << std::setw(2) << lt->tm_sec << _T(".0")
-        << tzoffsign << setw(2) << tzoff_habs << _T(':') << setw(2) << tzoff_m;
+        << tzoffsign << std::setw(2) << tzoff_habs << _T(':') << std::setw(2) << tzoff_m;
 
     std::basic_string<wchar_t> s = sout.str();
     return sout.str();
