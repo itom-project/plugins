@@ -52,7 +52,8 @@ class GoPro : public ito::AddInGrabber
         //! Constructor
         GoPro();
         
-        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
+        ito::RetVal retrieveData(
+            ito::DataObject* externalDataObject = nullptr); /*!< Wait for acquired picture */
         
     public:
         friend class GoProInterface;
@@ -62,9 +63,25 @@ class GoPro : public ito::AddInGrabber
     private:
         bool m_isGrabbing; /*!< Check if acquire was executed */
         bool m_isStreaming;
+        int m_imgChannels; /*!< number of channels of the camera image due to current parameterization */
+        int m_colorMode;
+        int m_imgCols;
+        int m_imgRows;
+        int m_imgBpp;
+
+        enum tColorMode
+        {
+            modeAuto,
+            modeColor,
+            modeRed,
+            modeGreen,
+            modeBlue,
+            modeGray
+        };
 
         VideoCapture m_VideoCapture;
         Mat m_pDataMatBuffer;
+        Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
 
         QNetworkAccessManager m_NetworkManager;
 
@@ -74,7 +91,10 @@ class GoPro : public ito::AddInGrabber
         //!< Set Camera-Parameter
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
         //!< Initialise board, load dll, allocate buffer
-        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal init(
+            QVector<ito::ParamBase>* paramsMand,
+            QVector<ito::ParamBase>* paramsOpt,
+            ItomSharedSemaphore* waitCond = nullptr);
         //!< Free buffer, delete board, unload dll
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 
@@ -83,7 +103,7 @@ class GoPro : public ito::AddInGrabber
         //!< Stop the camera to disable acquire-commands
         ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //!< Softwaretrigger for the camera
-        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal acquire(const int trigger, ItomSharedSemaphore* waitCond = nullptr);
         //!< Wait for acquired picture, copy the picture to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
@@ -93,7 +113,7 @@ class GoPro : public ito::AddInGrabber
         void post(QString location, QByteArray data);
         
         //checkData usually need not to be overwritten (see comments in source code)
-        //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal checkData(ito::DataObject *externalDataObject = nullptr);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

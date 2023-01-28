@@ -51,8 +51,22 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_license = QObject::tr("The plugin's license string");
     m_aboutThis = QObject::tr(GITVERSION); 
 
-    //add mandatory and optional parameters for the initialization here.
-    //append them to m_initParamsMand or m_initParamsOpt.
+    ito::Param paramVal = ito::Param(
+        "colorMode",
+        ito::ParamBase::String,
+        "auto",
+        tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)")
+            .toLatin1()
+            .data());
+    ito::StringMeta meta(ito::StringMeta::String);
+    meta.addItem("auto");
+    meta.addItem("color");
+    meta.addItem("red");
+    meta.addItem("green");
+    meta.addItem("blue");
+    meta.addItem("gray");
+    paramVal.setMeta(&meta, false);
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,6 +112,17 @@ ito::RetVal GoProInterface::closeThisInst(ito::AddInBase **addInInst)
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    int roi[] = {0, 0, 4048, 4048};
+    paramVal = ito::Param(
+        "roi",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        4,
+        roi,
+        tr("ROI (x,y,width,height)").toLatin1().data());
+    ito::RectMeta* rm = new ito::RectMeta(ito::RangeMeta(0, 4048), ito::RangeMeta(0, 4048));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -180,6 +205,177 @@ void GoPro::post(QString location, QByteArray data)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GoPro::checkData(ito::DataObject* externalDataObject)
+{
+    ito::RetVal retValue = ito::retOk;
+
+    if (!m_VideoCapture.grab())
+    {
+        retValue += ito::RetVal(ito::retError, 0, "could not acquire one test image");
+    }
+
+    if (!retValue.containsError())
+    {
+        if (!m_VideoCapture.retrieve(m_pDataMatBuffer))
+        {
+            QThread::msleep(200);
+    
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        m_imgChannels = m_pDataMatBuffer.channels();
+        m_imgCols = m_pDataMatBuffer.cols;
+        m_imgRows = m_pDataMatBuffer.rows;
+        m_imgBpp = (int)m_pDataMatBuffer.elemSize1() * 8;
+
+        static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(m_imgCols);
+        static_cast<ito::IntMeta*>(m_params["sizey"].getMeta())->setMax(m_imgRows);
+        m_params["sizex"].setVal<int>(m_imgCols);
+        m_params["sizey"].setVal<int>(m_imgRows);
+
+        ito::RectMeta* rm = new ito::RectMeta(
+            ito::RangeMeta(0, m_imgCols, 1, 1, m_imgCols, 1),
+            ito::RangeMeta(0, m_imgRows, 1, 1, m_imgRows, 1));
+        m_params["roi"].setMeta(rm, true);
+        int* roi = m_params["roi"].getVal<int*>();
+        roi[0] = 0;
+        roi[1] = 0;
+        roi[2] = m_imgCols;
+        roi[3] = m_imgRows;
+
+        m_params["bpp"].setMeta(new ito::IntMeta(8, m_imgBpp), true);
+        m_params["bpp"].setVal<int>(m_imgBpp);
+
+        if (m_imgBpp < 8 || m_imgBpp > 32)
+        {
+            return ito::RetVal(ito::retError, 0, tr("unknown bpp").toLatin1().data());
+        }
+    }
+
+    
+
+    int futureHeight = m_params["sizey"].getVal<int>();
+    int futureWidth = m_params["sizex"].getVal<int>();
+    int futureChannels;
+    int futureType;
+
+    const char* colorMode = m_params["color_mode"].getVal<char*>();
+    if (m_imgChannels == 1 && (m_colorMode == modeGray || m_colorMode == modeAuto))
+    {
+        futureChannels = 1;
+    }
+    else if (m_imgChannels == 3 && (m_colorMode == modeColor || m_colorMode == modeAuto))
+    {
+        futureChannels = 3;
+    }
+    else
+    {
+        futureChannels = 1;
+    }
+
+    int bpp = m_params["bpp"].getVal<int>();
+
+    if (bpp <= 8 && futureChannels == 1)
+    {
+        futureType = ito::tUInt8;
+    }
+    else if (bpp <= 16 && futureChannels == 1)
+    {
+        futureType = ito::tUInt16;
+    }
+    else if (bpp <= 32 && futureChannels == 1)
+    {
+        futureType = ito::tInt32;
+    }
+    else if (futureChannels == 1)
+    {
+        futureType = ito::tFloat64;
+    }
+    else if (futureChannels == 3 && bpp <= 8)
+    {
+        futureType = ito::tRGBA32;
+    }
+    else
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toLatin1().data());
+    }
+
+    if (futureType == ito::tRGBA32 &&
+        (m_alphaChannel.cols != futureWidth || m_alphaChannel.rows != futureHeight))
+    {
+        m_alphaChannel = cv::Mat(futureHeight, futureWidth, CV_8UC1, cv::Scalar(255));
+    }
+
+    if (!externalDataObject)
+    {
+        if (m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)futureHeight ||
+            m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+        {
+            m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+
+            if (futureType == ito::tRGBA32)
+            {
+                // copy alpha channel to 4th channel in m_data
+                const int relations[] = {0, 3};
+                cv::mixChannels(&m_alphaChannel, 1, m_data.get_mdata()[0], 1, relations, 1);
+            }
+        }
+    }
+    else
+    {
+        int dims = externalDataObject->getDims();
+        if (externalDataObject->getDims() == 0) // empty external dataObject
+        {
+            *externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+        }
+        else if (externalDataObject->calcNumMats() != 1)
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error during check data, external dataObject invalid. Object has more than 1 "
+                   "plane or 0 planes. It must be of right size and type or an uninitialized "
+                   "image.")
+                    .toLatin1()
+                    .data());
+        }
+        else if (
+            externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight ||
+            externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth ||
+            externalDataObject->getType() != futureType)
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error during check data, external dataObject invalid. Object must be of right "
+                   "size and type or a uninitialized image.")
+                    .toLatin1()
+                    .data());
+        }
+
+        if (futureType == ito::tRGBA32)
+        {
+            // copy alpha channel to 4th channel in m_data
+            const int relations[] = {0, 3};
+            cv::mixChannels(
+                &m_alphaChannel,
+                1,
+                (cv::Mat*)externalDataObject->get_mdata()[externalDataObject->seekMat(0)],
+                1,
+                relations,
+                1);
+        }
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
 ito::RetVal GoPro::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
@@ -195,9 +391,16 @@ ito::RetVal GoPro::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     m_params["sizey"].setVal<int>(480);
     m_params["bpp"].setVal<int>(24);
 
+    if (!retValue.containsError())
+    {
+        QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase(
+            "color_mode", ito::ParamBase::String, paramsOpt->at(0).getVal<char*>()));
+        retValue += setParam(colorMode, NULL);
+    }
 
     if (!retValue.containsError())
     {
+        
         emit parametersChanged(m_params);
     }
     
@@ -299,22 +502,55 @@ ito::RetVal GoPro::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
     if (!retValue.containsError())
     {
-        //if (key == "demoKey1")
-        //{
-        //    //check the new value and if ok, assign it to the internal parameter
-        //    retValue += it->copyValueFrom( &(*val) );
-        //}
-        //else if (key == "demoKey2")
-        //{
-        //    //check the new value and if ok, assign it to the internal parameter
-        //    retValue += it->copyValueFrom( &(*val) );
-        //}
-        //else
-        //{
-        //    //all parameters that don't need further checks can simply be assigned
-        //    //to the value in m_params (the rest is already checked above)
-        //    retValue += it->copyValueFrom( &(*val) );
-        //}
+        if (key == "color_mode")
+        {
+            const char* mode = val->getVal<char*>();
+
+            if (m_imgChannels == 1)
+            {
+                if (QString::compare(mode, "auto") != 0 || QString::compare(mode, "gray") != 0)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        "The connected grayscale camera cannot be operated in any colored "
+                        "colorMode");
+                }
+            }
+            else if (m_imgChannels == 3 && m_imgBpp > 8)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    "The connected color camera cannot output an color image since the bit depth "
+                    "is > 8");
+            }
+
+            if (!retValue.containsError())
+            {
+                switch (mode[0])
+                {
+                case 'a':
+                    m_colorMode = modeAuto;
+                    break;
+                case 'c':
+                    m_colorMode = modeColor;
+                    break;
+                case 'g':
+                    if (mode[2] == 'a')
+                        m_colorMode = modeGray;
+                    else
+                        m_colorMode = modeGreen;
+                    break;
+                case 'r':
+                    m_colorMode = modeRed;
+                    break;
+                case 'b':
+                    m_colorMode = modeBlue;
+                    break;
+                }
+            }
+        }
     }
 
     if (!retValue.containsError())
@@ -341,14 +577,19 @@ ito::RetVal GoPro::startDevice(ItomSharedSemaphore *waitCond)
 
 
     QThread* awakeThread = new QThread(this);
-    QTimer* aliveTimer = new QTimer(this);
+    QTimer* aliveTimer = new QTimer(nullptr);
     aliveTimer->setInterval(500);
     aliveTimer->stop();
     aliveTimer->moveToThread(awakeThread);
     aliveTimer->start();
     connect(aliveTimer, SIGNAL(timeout()), SLOT(videoCaptureTimerCallBack()), Qt::DirectConnection);
-    connect(awakeThread, SIGNAL(started()), aliveTimer, SLOT(started()));
+    connect(awakeThread, SIGNAL(started()), aliveTimer, SLOT(start()));
     awakeThread->start();
+
+    if (m_VideoCapture.isOpened())
+    {
+        m_VideoCapture.release();
+    }
 
     m_VideoCapture.open("udp://10.5.5.9:8554");
 
@@ -366,6 +607,11 @@ ito::RetVal GoPro::startDevice(ItomSharedSemaphore *waitCond)
             ito::retError,
             0,
             tr("Connecting to video stream was not successful!").toUtf8().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        checkData();
     }
     
     if (waitCond)
@@ -433,9 +679,6 @@ ito::RetVal GoPro::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             retValue +=
                 ito::RetVal(ito::retError, 0, tr("Could not acquire a new image!").toUtf8().data());
         }
-        cv::Mat *internalMat = m_data.getCvPlaneMat(0);
-        cv::Mat temp = m_pDataMatBuffer;
-        m_data = m_pDataMatBuffer;
     }
 
     return retValue;
@@ -444,51 +687,216 @@ ito::RetVal GoPro::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GoPro::retrieveData(ito::DataObject *externalDataObject)
 {
-    //todo: this is just a basic example for getting the buffered image to m_data or the externally given data object
-    //enhance it and adjust it for your needs
     ito::RetVal retValue(ito::retOk);
 
-    ito::DataObject *dataObj = externalDataObject ? externalDataObject : &m_data;
+    bool RetCode = false;
+    cv::Mat* internalMat = NULL;
 
-    bool hasListeners = (m_autoGrabbingListeners.size() > 0);
-    bool copyExternal = (externalDataObject != NULL);
-    
-    const int bufferWidth = m_params["sizex"].getVal<int>();
-    const int bufferHeight = m_params["sizey"].getVal<int>();
+    int curxsize = m_params["sizex"].getVal<int>();
+    int curysize = m_params["sizey"].getVal<int>();
+    const int* roi = m_params["roi"].getVal<int*>();
+    int x0 = roi[0];
+    int y0 = roi[1];
+    bool resizeRequired = (x0 > 0 || y0 > 0);
 
-    qDebug() << "channels: " << m_pDataMatBuffer.channels();
-    qDebug() << "width: " << m_pDataMatBuffer.size().width;
-    qDebug() << "height: " << m_pDataMatBuffer.size().height;
-    qDebug() << "dtype: " << m_pDataMatBuffer.type();
+    ito::DataObject* dataObj = &m_data;
+    if (externalDataObject)
+    {
+        dataObj = externalDataObject;
+    }
 
+    bool hasListeners = false;
+    if (m_autoGrabbingListeners.size() > 0)
+    {
+        hasListeners = true;
+    }
 
     if (m_isGrabbing == false)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
+        retValue += ito::RetVal(
+            ito::retWarning,
+            0,
+            tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
     else
     {
-        //step 1: create m_data (if not yet available)
-        if (externalDataObject && hasListeners)
+        //retValue += m_acquisitionRetVal;
+        //m_acquisitionRetVal = ito::retOk;
+    }
+
+    if (!retValue.containsError())
+    {
+        if (m_pDataMatBuffer.cols == 0 || m_pDataMatBuffer.rows == 0)
         {
-            retValue += checkData(NULL); //update m_data
-            retValue += checkData(externalDataObject); //update external object
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("Error: grabbed image is empty").toLatin1().data());
         }
         else
         {
-            retValue += checkData(externalDataObject); //update external object or m_data
-        }
-        
-        if (!retValue.containsError())
-        {
-            if (m_pDataMatBuffer.cols == 0 || m_pDataMatBuffer.rows == 0)
+            int desiredBpp = m_params["bpp"].getVal<int>();
+            cv::Mat tempImage;
+
+            if (m_imgCols != curxsize || m_imgRows != curysize)
+            {
+                resizeRequired = true;
+            }
+
+            if (m_imgBpp != 8 && m_imgBpp != 16)
             {
                 retValue += ito::RetVal(
-                    ito::retError, 0, tr("Error: grabbed image is empty").toLatin1().data());
+                    ito::retError,
+                    0,
+                    tr("Error: bpp other than 8 or 16 not allowed.").toLatin1().data());
+            }
+            else if (m_imgChannels != 1 && m_imgChannels != 3)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Error: channels sizes other than 1 or 3 not allowed.").toLatin1().data());
+            }
+            else if ((desiredBpp != 8 && desiredBpp != 16))
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Error: desired bpp must be 8 or 16 bit.").toLatin1().data());
             }
             else
             {
-                m_data.deepCopyPartial(*externalDataObject);
+                // step 1. check ROI
+                if (resizeRequired == false)
+                {
+                    tempImage = m_pDataMatBuffer;
+                }
+                else
+                {
+                    cv::Range ranges[] = {
+                        cv::Range(y0, y0 + curysize), cv::Range(x0, x0 + curxsize)};
+                    tempImage = cv::Mat(m_pDataMatBuffer, ranges);
+                }
+
+                // step 2. check whether 3 channel color should be transformed to 1 channel
+                // grayscale
+                if (m_imgChannels == 3 && m_colorMode == modeGray)
+                {
+#if (CV_MAJOR_VERSION >= 4)
+                    cv::cvtColor(
+                        tempImage,
+                        tempImage,
+                        cv::COLOR_BGR2GRAY,
+                        0); // camera provides BGR images in OpenCV
+#else
+                    cv::cvtColor(
+                        tempImage,
+                        tempImage,
+                        CV_BGR2GRAY,
+                        0); // camera provides BGR images in OpenCV
+#endif
+                }
+
+                // step 3: create m_data (if not yet available)
+                if (externalDataObject && hasListeners)
+                {
+                    retValue += checkData(NULL); // update m_data
+                    retValue += checkData(externalDataObject); // update external object
+                }
+                else
+                {
+                    retValue += checkData(externalDataObject); // update external object or m_data
+                }
+
+                if (!retValue.containsError())
+                {
+                    // step 4: check whether tempImage must be converted to other type
+                    if (desiredBpp != m_imgBpp)
+                    {
+                        if (desiredBpp == 8)
+                        {
+                            tempImage.convertTo(tempImage, CV_8U);
+                        }
+                        else if (desiredBpp == 16)
+                        {
+                            tempImage.convertTo(tempImage, CV_16U);
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal(
+                                ito::retError,
+                                0,
+                                tr("Error while converting data format. Unsupported format.")
+                                    .toLatin1()
+                                    .data());
+                        }
+                    }
+                }
+
+                if (!retValue.containsError())
+                {
+                    if (tempImage.channels() == 1)
+                    {
+                        internalMat = dataObj->getCvPlaneMat(0);
+                        tempImage.copyTo(*(internalMat));
+
+                        if (externalDataObject && hasListeners)
+                        {
+                            internalMat = m_data.getCvPlaneMat(0);
+                            tempImage.copyTo(*(internalMat));
+                        }
+                    }
+                    else if (
+                        tempImage.channels() == 3 &&
+                        (m_colorMode == modeAuto || m_colorMode == modeColor))
+                    {
+                        cv::Mat out[] = {*(
+                            dataObj->getCvPlaneMat(0))}; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) ,
+                                                         //*(cv::Mat*)(dataObj->get_mdata()[1]) ,
+                                                         //*(cv::Mat*)(dataObj->get_mdata()[2]) };
+                        int fromTo[] = {0, 0, 1, 1, 2, 2}; //{0,2,1,1,2,0}; //implicit BGR (camera)
+                                                           //-> BGR (dataObject style) conversion
+
+                        cv::mixChannels(&tempImage, 1, out, 1, fromTo, 3);
+
+                        if (externalDataObject && hasListeners)
+                        {
+                            cv::Mat out[] = {*(dataObj->getCvPlaneMat(0))};
+                            cv::mixChannels(&tempImage, 1, out, 1, fromTo, 3);
+                        }
+                    }
+                    else if (tempImage.channels() == 3) // R,G,B selection
+                    {
+                        cv::Mat out[] = {*(dataObj->getCvPlaneMat(0))};
+                        int fromTo[] = {0, 0};
+                        switch (m_colorMode)
+                        {
+                        case modeRed:
+                            fromTo[0] = 2;
+                            break; // red
+                        case modeGreen:
+                            fromTo[0] = 1;
+                            break; // green
+                        default /*3*/:
+                            fromTo[0] = 0;
+                            break; // blue
+                        }
+                        cv::mixChannels(&tempImage, 1, out, 1, fromTo, 1);
+
+                        if (externalDataObject && hasListeners)
+                        {
+                            cv::Mat out[] = {*(m_data.getCvPlaneMat(0))};
+                            cv::mixChannels(&tempImage, 1, out, 1, fromTo, 1);
+                        }
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("unknown color, conversion... combination in retrieveImage")
+                                .toLatin1()
+                                .data());
+                    }
+                }
             }
         }
 
