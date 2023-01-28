@@ -1,11 +1,4 @@
-/* ********************************************************************
-    Template for a camera / grabber plugin for the software itom
-    
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
-*********************************************************************** */
-
-#define ITOM_IMPORT_API
+﻿#define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
 #include "GoPro.h"
@@ -15,15 +8,28 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qplugin.h>
-#include <qmessagebox.h>
+#include <qurl.h>
+
+#include <qobject.h>
+
+#include <qnetworkreply.h>
+#include <qnetworkrequest.h>
+#include <qurlquery.h>
+#include <qtimer.h>
+#include <qeventloop.h>
+#include <qjsondocument.h>
 
 #include "dockWidgetGoPro.h"
 
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/videoio.hpp>
+
+using namespace std;
+using namespace cv;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
-/*!
-    \todo add necessary information about your plugin here.
-*/
 GoProInterface::GoProInterface()
 {
     m_type = ito::typeDataIO | ito::typeGrabber; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
@@ -51,9 +57,6 @@ Put a detailed description about what the plugin is doing, what is needed to get
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
-/*!
-    
-*/
 GoProInterface::~GoProInterface()
 {
 }
@@ -77,17 +80,10 @@ ito::RetVal GoProInterface::closeThisInst(ito::AddInBase **addInInst)
     Q_EXPORT_PLUGIN2(GoProinterface, GoProInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
 #endif
 
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of plugin.
-/*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
-    in this constructor or later in the init method
-*/
-GoPro::GoPro() : AddInGrabber(), m_isgrabbing(false)
-{
+    GoPro::GoPro() : AddInGrabber(), m_isGrabbing(false), m_NetworkManager(this), m_pDataMatBuffer(cv::Mat())
+    {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GoPro", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -102,6 +98,23 @@ GoPro::GoPro() : AddInGrabber(), m_isgrabbing(false)
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "color_mode",
+        ito::ParamBase::String,
+        "auto",
+        tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)")
+            .toLatin1()
+            .data());
+    ito::StringMeta meta(ito::StringMeta::String);
+    meta.addItem("auto");
+    meta.addItem("color");
+    meta.addItem("red");
+    meta.addItem("green");
+    meta.addItem("blue");
+    meta.addItem("gray");
+    paramVal.setMeta(&meta, false);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
@@ -122,31 +135,67 @@ GoPro::~GoPro()
 {
 }
 
+void GoPro::readyRead()
+{
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    qDebug() << reply->readAll();
+
+}
+
+void GoPro::replyFinished(QNetworkReply& reply)
+{
+    if (reply.isFinished())
+    {
+        qDebug() << reply.readAll();
+    }
+}
+
+void GoPro::slotReadyRead()
+{
+    bool a = true;
+}
+
+void GoPro::slotError()
+{
+    bool a = true;
+}
+
+void GoPro::slotSslErrors(QNetworkReply& reply, const QList<QSslError>& error)
+{
+    bool a = true;
+}
+
+void GoPro::get(QString location)
+{
+    QNetworkReply* reply = m_NetworkManager.get(QNetworkRequest(QUrl(location)));
+    connect(reply, &QNetworkReply::readyRead, this, &GoPro::readyRead);
+}
+
+void GoPro::post(QString location, QByteArray data)
+{
+    QNetworkRequest request = QNetworkRequest(QUrl(location));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "test/plain");
+    QNetworkReply* reply = m_NetworkManager.post(request, data);
+    connect(reply, &QNetworkReply::readyRead, this, &GoPro::readyRead);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
-/*!
-    \sa close
-*/
 ito::RetVal GoPro::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    //steps todo:
-    // - get all initialization parameters
-    // - try to detect your device
-    // - establish a connection to the device
-    // - synchronize the current parameters of the device with the current values of parameters inserted in m_params
-    // - if an identifier string of the device is available, set it via setIdentifier("yourIdentifier")
-    // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
-    // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
-    // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
+    //post("https://postman-echo.com/post", data);
+    get("http://10.5.5.9/gp/gpControl/execute?p1=gpStream&a1=proto_v2&c1=restart");
+
+    m_VideoCapture = VideoCapture();
     
-    if (!retValue.containsError())
-    {        
-        retValue += checkData();
-    }
-    
+    m_params["sizex"].setVal<int>(848);
+    m_params["sizey"].setVal<int>(480);
+    m_params["bpp"].setVal<int>(24);
+
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
@@ -164,17 +213,15 @@ ito::RetVal GoPro::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! shutdown of plugin
-/*!
-    \sa init
-*/
 ito::RetVal GoPro::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
-    //todo:
-    // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
+
+    if (m_VideoCapture.isOpened())
+    {
+        m_VideoCapture.release();
+    }
 
     if (waitCond)
     {
@@ -252,22 +299,22 @@ ito::RetVal GoPro::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
     if (!retValue.containsError())
     {
-        if (key == "demoKey1")
-        {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
-        }
-        else if (key == "demoKey2")
-        {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
-        }
-        else
-        {
-            //all parameters that don't need further checks can simply be assigned
-            //to the value in m_params (the rest is already checked above)
-            retValue += it->copyValueFrom( &(*val) );
-        }
+        //if (key == "demoKey1")
+        //{
+        //    //check the new value and if ok, assign it to the internal parameter
+        //    retValue += it->copyValueFrom( &(*val) );
+        //}
+        //else if (key == "demoKey2")
+        //{
+        //    //check the new value and if ok, assign it to the internal parameter
+        //    retValue += it->copyValueFrom( &(*val) );
+        //}
+        //else
+        //{
+        //    //all parameters that don't need further checks can simply be assigned
+        //    //to the value in m_params (the rest is already checked above)
+        //    retValue += it->copyValueFrom( &(*val) );
+        //}
     }
 
     if (!retValue.containsError())
@@ -291,11 +338,35 @@ ito::RetVal GoPro::startDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     
     incGrabberStarted(); //increment a counter to see how many times startDevice has been called
-    
-    //todo:
-    // if this function has been called for the first time (grabberStartedCount() == 1),
-    // start the camera, allocate necessary buffers or do other work that is necessary
-    // to prepare the camera for image acquisitions.
+
+
+    QThread* awakeThread = new QThread(this);
+    QTimer* aliveTimer = new QTimer(this);
+    aliveTimer->setInterval(500);
+    aliveTimer->stop();
+    aliveTimer->moveToThread(awakeThread);
+    aliveTimer->start();
+    connect(aliveTimer, SIGNAL(timeout()), SLOT(videoCaptureTimerCallBack()), Qt::DirectConnection);
+    connect(awakeThread, SIGNAL(started()), aliveTimer, SLOT(started()));
+    awakeThread->start();
+
+    m_VideoCapture.open("udp://10.5.5.9:8554");
+
+    awakeThread->quit();
+    awakeThread->wait();
+    aliveTimer->deleteLater();
+    delete awakeThread;
+    awakeThread = nullptr;
+
+    //TODO add local loop single shot to send isAlive as long as open takes
+    // check if succeeded
+    if (!m_VideoCapture.isOpened())
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Connecting to video stream was not successful!").toUtf8().data());
+    }
     
     if (waitCond)
     {
@@ -336,20 +407,7 @@ ito::RetVal GoPro::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    bool RetCode = false;
 
-    if (grabberStartedCount() <= 0)
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("Tried to acquire an image without having started the device.").toLatin1().data());
-    }
-    else
-    {
-        m_isgrabbing = true;
-    }
-    
-    //todo:
-    // trigger the camera for starting the acquisition of a new image (software trigger or make hardware trigger ready (depending on trigger (0: software trigger, default))
-    
     //now the wait condition is released, such that itom (caller) stops waiting and continuous with its own execution.
     if (waitCond)
     {
@@ -357,15 +415,28 @@ ito::RetVal GoPro::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         waitCond->release();  
     }
     
-    //todo:
-    // it is possible now, to wait here until the acquired image is ready
-    // if you want to do this here, wait for the finished image, get it and save it
-    // to any accessible buffer, for instance the m_data dataObject that is finally delivered
-    // via getVal or copyVal.
-    // 
-    // you can also implement this waiting and obtaining procedure in retrieveImage.
-    // If you do it here, the camera thread is blocked until the image is obtained, such that calls to getParam, setParam, stopDevice...
-    // are not executed during the waiting operation. They are queued and executed once the image is acquired and transmitted to the plugin.
+    if (grabberStartedCount() <= 0)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Tried to acquire an image without having started the device.").toLatin1().data());
+    }
+    else
+    {
+        m_isGrabbing = true;
+        //m_VideoCapture.retrieve(m_pDataMatBuffer);
+        m_VideoCapture.read(m_pDataMatBuffer);
+
+        if (!m_VideoCapture.grab())
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 0, tr("Could not acquire a new image!").toUtf8().data());
+        }
+        cv::Mat *internalMat = m_data.getCvPlaneMat(0);
+        cv::Mat temp = m_pDataMatBuffer;
+        m_data = m_pDataMatBuffer;
+    }
 
     return retValue;
 }
@@ -385,9 +456,13 @@ ito::RetVal GoPro::retrieveData(ito::DataObject *externalDataObject)
     const int bufferWidth = m_params["sizex"].getVal<int>();
     const int bufferHeight = m_params["sizey"].getVal<int>();
 
+    qDebug() << "channels: " << m_pDataMatBuffer.channels();
+    qDebug() << "width: " << m_pDataMatBuffer.size().width;
+    qDebug() << "height: " << m_pDataMatBuffer.size().height;
+    qDebug() << "dtype: " << m_pDataMatBuffer.type();
 
 
-    if (m_isgrabbing == false)
+    if (m_isGrabbing == false)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
@@ -406,73 +481,26 @@ ito::RetVal GoPro::retrieveData(ito::DataObject *externalDataObject)
         
         if (!retValue.containsError())
         {
-            if (m_data.getType() == ito::tUInt8)
+            if (m_pDataMatBuffer.cols == 0 || m_pDataMatBuffer.rows == 0)
             {
-                if (copyExternal)
-                {
-                    retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-                }
-                if (!copyExternal || hasListeners)
-                {
-                    retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-                }
-            }
-            else if (m_data.getType() == ito::tUInt16)
-            {
-                if (copyExternal)
-                {
-                    retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
-                }
-                if (!copyExternal || hasListeners)
-                {
-                    retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
-                }
+                retValue += ito::RetVal(
+                    ito::retError, 0, tr("Error: grabbed image is empty").toLatin1().data());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("copying image buffer not possible since unsupported type.").toLatin1().data());
+                m_data.deepCopyPartial(*externalDataObject);
             }
         }
 
-        m_isgrabbing = false;
+        m_isGrabbing = false;
     }
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// usually it is not necessary to implement the checkData method, since the default implementation from AddInGrabber is already
-// sufficient.
-//
-// What is does:
-// - it obtains the image size from sizex, sizey, bpp
-// - it checks whether the rows, cols and type of m_data are unequal to the requested dimensions and type
-// - if so, m_data is reallocated, else nothing is done
-// - if an external data object is given (from copyVal), this object is checked in place of m_data
-// - the external data object is only reallocated if it is empty, else its size or its region of interest must exactly
-//    fit to the given size restrictions
-//
-// if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal GoPro::checkData(ito::DataObject *externalDataObject)
-{
-    return ito::retOk;
-}*/
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
-/*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
-    DataObject.
-    
-    This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
-    in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
-    \sa retrieveImage, copyVal
-*/
 ito::RetVal GoPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -489,7 +517,7 @@ ito::RetVal GoPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
         if (dObj)
         {
-            (*dObj) = m_data; //copy reference to externally given object
+            (*dObj) = this->m_data; //copy reference to externally given object
         }
     }
 
@@ -504,19 +532,6 @@ ito::RetVal GoPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
-/*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
-    The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
-    interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
-    an image stack is possible then)
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
-    \sa retrieveImage, getVal
-*/
 ito::RetVal GoPro::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -552,11 +567,6 @@ ito::RetVal GoPro::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot called if the dock widget of the plugin becomes (in)visible
-/*!
-    Overwrite this method if the plugin has a dock widget. If so, you can connect the parametersChanged signal of the plugin
-    with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
-    a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
-*/
 void GoPro::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -577,25 +587,13 @@ void GoPro::dockWidgetVisibilityChanged(bool visible)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! method called to show the configuration dialog
-/*!
-    This method is called from the main thread from itom and should show the configuration dialog of the plugin.
-    If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
-    of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
-    m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
-    The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
-    If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
-    If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
-    the things mentioned in this description.
-    
-    Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
-    has a configuration dialog.
-    
-    \sa hasConfDialog
-*/
 const ito::RetVal GoPro::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogGoPro(this));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void GoPro::videoCaptureTimerCallBack()
+{
+    setAlive();
 }

@@ -90,7 +90,7 @@ find_package(OpenCV COMPONENTS core highgui videoio REQUIRED) #if you require op
 # autorcc (for parsing qrc resource files ) and autouic (for parsing ui files) in terms
 # of settings the properties of this target (see below):
 # set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-itom_find_package_qt(ON Core Widgets LinguistTools)
+itom_find_package_qt(ON Core Widgets Network LinguistTools)
 
 #################################################################
 # General settings and preprocessor settings

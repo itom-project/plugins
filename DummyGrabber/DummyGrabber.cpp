@@ -783,10 +783,9 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
 
     double frame_time = m_params["frame_time"].getVal<double>();
     double integration_time = m_params["integration_time"].getVal<double>();
-    int bpp = m_params["bpp"].getVal<double>();
+    int bpp = m_params["bpp"].getVal<int>();
     float gain = m_params["gain"].getVal<double>();
     float offset = m_params["offset"].getVal<double>();
-
 
     if (waitCond)
     {

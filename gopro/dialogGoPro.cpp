@@ -1,10 +1,3 @@
-/* ********************************************************************
-    Template for a camera / grabber plugin for the software itom
-    
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
-*********************************************************************** */
-
 #include "dialogGoPro.h"
 
 #include "common/addInInterface.h"

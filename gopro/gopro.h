@@ -1,16 +1,15 @@
-/* ********************************************************************
-    Template for a camera / grabber plugin for the software itom
-    
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
-*********************************************************************** */
-
 #ifndef GOPRO_H
 #define GOPRO_H
 
 #include "common/addInGrabber.h"
 #include <qsharedpointer.h>
+#include <qnetworkaccessmanager.h>
 #include "dialogGoPro.h"
+
+#include "opencv2/opencv.hpp"
+
+using namespace std;
+using namespace cv;
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
@@ -60,12 +59,15 @@ class GoPro : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
         
-        char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
-
     private:
-        bool m_isgrabbing; /*!< Check if acquire was executed */
+        bool m_isGrabbing; /*!< Check if acquire was executed */
+        bool m_isStreaming;
 
-        
+        VideoCapture m_VideoCapture;
+        Mat m_pDataMatBuffer;
+
+        QNetworkAccessManager m_NetworkManager;
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
@@ -86,12 +88,23 @@ class GoPro : public ito::AddInGrabber
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+
+        void get(QString location);
+        void post(QString location, QByteArray data);
         
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+
+        void readyRead();
+        void replyFinished(QNetworkReply& reply);
+        void slotReadyRead();
+        void slotError();
+        void slotSslErrors(QNetworkReply& reply, const QList<QSslError> &error);
+
+        void videoCaptureTimerCallBack();
 };
 
 #endif // GoPro_H
