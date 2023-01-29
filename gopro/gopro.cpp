@@ -265,14 +265,14 @@ ito::RetVal GoPro::checkData(ito::DataObject* externalDataObject)
 {
     ito::RetVal retValue = ito::retOk;
 
-    if (!m_VideoCapture.grab())
+    if (!m_VideoCapture->grab())
     {
         retValue += ito::RetVal(ito::retError, 0, "could not acquire one test image");
     }
 
     if (!retValue.containsError())
     {
-        if (!m_VideoCapture.retrieve(m_pDataMatBuffer))
+        if (!m_VideoCapture->retrieve(m_pDataMatBuffer))
         {
             QThread::msleep(200);
     
@@ -441,7 +441,7 @@ ito::RetVal GoPro::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     //post("https://postman-echo.com/post", data);
     get("http://10.5.5.9/gp/gpControl/execute?p1=gpStream&a1=proto_v2&c1=restart");
 
-    m_VideoCapture = VideoCapture();
+    m_VideoCapture = new VideoCapture();
 
     // set optional parameters
     if (!retValue.containsError())
@@ -476,9 +476,15 @@ ito::RetVal GoPro::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if (m_VideoCapture.isOpened())
+    if (m_VideoCapture->isOpened())
     {
-        m_VideoCapture.release();
+        m_VideoCapture->release();
+    }
+
+    if (m_VideoCapture)
+    {
+        delete m_VideoCapture;
+        m_VideoCapture = nullptr;
     }
 
     if (waitCond)
@@ -641,12 +647,12 @@ ito::RetVal GoPro::startDevice(ItomSharedSemaphore *waitCond)
     connect(awakeThread, SIGNAL(started()), aliveTimer, SLOT(start()));
     awakeThread->start();
 
-    if (m_VideoCapture.isOpened())
+    if (m_VideoCapture->isOpened())
     {
-        m_VideoCapture.release();
+        m_VideoCapture->release();
     }
 
-    m_VideoCapture.open("udp://10.5.5.9:8554");
+    m_VideoCapture->open(String("udp://10.5.5.9:8554"));
 
     awakeThread->quit();
     awakeThread->wait();
@@ -656,7 +662,7 @@ ito::RetVal GoPro::startDevice(ItomSharedSemaphore *waitCond)
 
     //TODO add local loop single shot to send isAlive as long as open takes
     // check if succeeded
-    if (!m_VideoCapture.isOpened())
+    if (!m_VideoCapture->isOpened())
     {
         retValue += ito::RetVal(
             ito::retError,
@@ -727,9 +733,9 @@ ito::RetVal GoPro::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     {
         m_isGrabbing = true;
         //m_VideoCapture.retrieve(m_pDataMatBuffer);
-        m_VideoCapture.read(m_pDataMatBuffer);
+        m_VideoCapture->read(m_pDataMatBuffer);
 
-        if (!m_VideoCapture.grab())
+        if (!m_VideoCapture->grab())
         {
             retValue +=
                 ito::RetVal(ito::retError, 0, tr("Could not acquire a new image!").toUtf8().data());

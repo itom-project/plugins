@@ -79,7 +79,7 @@ class GoPro : public ito::AddInGrabber
             modeGray
         };
 
-        VideoCapture m_VideoCapture;
+        VideoCapture *m_VideoCapture;
         Mat m_pDataMatBuffer;
         Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
 
