@@ -24,6 +24,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
+#include <opencv2/core/utils/logger.hpp>
 
 using namespace std;
 using namespace cv;
@@ -67,7 +68,26 @@ Put a detailed description about what the plugin is doing, what is needed to get
     meta.addItem("gray");
     paramVal.setMeta(&meta, false);
     m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param(
+        "OpenCVLoggerLevel",
+        ito::ParamBase::Int,
+        utils::logging::LOG_LEVEL_WARNING,
+        new ito::IntMeta(0, 6, 1),
+        tr("OpenCV logger level for debugging. (SILENT = %1, FATAL = %2, ERROR = %3, WARNING = %4, "
+           "INFO = %5, DEBUG = %6, VERBOSE = %7).")
+            .arg(utils::logging::LOG_LEVEL_SILENT)
+            .arg(utils::logging::LOG_LEVEL_FATAL)
+            .arg(utils::logging::LOG_LEVEL_ERROR)
+            .arg(utils::logging::LOG_LEVEL_WARNING)
+            .arg(utils::logging::LOG_LEVEL_INFO)
+            .arg(utils::logging::LOG_LEVEL_DEBUG)
+            .arg(utils::logging::LOG_LEVEL_VERBOSE)
+            .toUtf8()
+            .data());
+    m_initParamsOpt.append(paramVal);
 }
+       
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
@@ -101,27 +121,63 @@ ito::RetVal GoProInterface::closeThisInst(ito::AddInBase **addInInst)
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GoPro", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
+    paramVal = ito::Param(
+        "x0",
+        ito::ParamBase::Int | ito::ParamBase::In,
+        0,
+        848,
+        0,
+        tr("first pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
+    paramVal = ito::Param(
+        "y0",
+        ito::ParamBase::Int | ito::ParamBase::In,
+        0,
+        480,
+        0,
+        tr("first pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
+    paramVal = ito::Param(
+        "x1",
+        ito::ParamBase::Int | ito::ParamBase::In,
+        0,
+        1920,
+        848,
+        tr("last pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
+    paramVal = ito::Param(
+        "y1",
+        ito::ParamBase::Int | ito::ParamBase::In,
+        0,
+        1920,
+        480,
+        tr("last pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
+    paramVal = ito::Param(
+        "sizex",
+        ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In,
+        1,
+        3840,
+        848,
+        tr("width of ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
+    paramVal = ito::Param(
+        "sizey",
+        ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In,
+        1,
+        3840,
+        848,
+        tr("height of ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    int roi[] = {0, 0, 4048, 4048};
+    int roi[] = {0, 0, 848, 480};
     paramVal = ito::Param(
         "roi",
         ito::ParamBase::IntArray | ito::ParamBase::In,
         4,
         roi,
         tr("ROI (x,y,width,height)").toLatin1().data());
-    ito::RectMeta* rm = new ito::RectMeta(ito::RangeMeta(0, 4048), ito::RangeMeta(0, 4048));
+    ito::RectMeta* rm = new ito::RectMeta(ito::RangeMeta(0, 3840), ito::RangeMeta(0, 3840));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -142,7 +198,7 @@ ito::RetVal GoProInterface::closeThisInst(ito::AddInBase **addInInst)
     paramVal.setMeta(&meta, false);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 3*8, 3*8, tr("bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -386,16 +442,15 @@ ito::RetVal GoPro::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     get("http://10.5.5.9/gp/gpControl/execute?p1=gpStream&a1=proto_v2&c1=restart");
 
     m_VideoCapture = VideoCapture();
-    
-    m_params["sizex"].setVal<int>(848);
-    m_params["sizey"].setVal<int>(480);
-    m_params["bpp"].setVal<int>(24);
 
+    // set optional parameters
     if (!retValue.containsError())
     {
         QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase(
             "color_mode", ito::ParamBase::String, paramsOpt->at(0).getVal<char*>()));
         retValue += setParam(colorMode, NULL);
+
+        utils::logging::setLogLevel(saturate_cast<utils::logging::LogLevel>(paramsOpt->at(1).getVal<int>()));
     }
 
     if (!retValue.containsError())
