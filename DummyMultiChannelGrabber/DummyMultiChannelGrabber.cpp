@@ -323,13 +323,33 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
                               tr("bitdepth of images: mono8, mono10, mono12, mono16").toLatin1().data());
         paramVal.setMeta(m, true);
         standardParam.insert(paramVal.getName(), paramVal);
+        
+        double axisOffset[] = {0.0, 0.0};
+        paramVal = ito::Param(
+            "axisOffset",
+            ito::ParamBase::DoubleArray,
+            2,
+            axisOffset,
+            tr("axis offset").toLatin1().data());
+        standardParam.insert(paramVal.getName(), paramVal);
+
+        double axisScale[] = {1.0, 1.0};
+        paramVal = ito::Param(
+            "axisScale",
+            ito::ParamBase::DoubleArray,
+            2,
+            axisScale,
+            tr("axis scale").toLatin1().data());
+        standardParam.insert(paramVal.getName(), paramVal);
 
         QMap<QString, ChannelContainer> channelMap;
         for (int i = 0; i < numChannel; i++)
         {
             channelMap.insert(QString("channel_%1").arg(i),
                               ChannelContainer(standardParam["roi"], standardParam["pixelFormat"],
-                                               standardParam["sizex"], standardParam["sizey"]));
+                    standardParam["sizex"],
+                    standardParam["sizey"],
+                    standardParam["axisOffset"], standardParam["axisScale"]));
         }
 
         channelMap["channel_1"].m_channelParam.insert(
