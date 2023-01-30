@@ -25,6 +25,10 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+
+# make a small Qt search to get the QT6_FOUND variable.
+itom_find_package_qt(ON Widgets)
+
 if(QT6_FOUND)
     itom_find_package_qt(ON OpenGLWidgets Widgets Xml OpenGL LinguistTools)
 else()

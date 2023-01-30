@@ -34,8 +34,9 @@
     #include <qdesktopwidget.h>
 #else
     #include <qguiapplication.h>
-    #include <qscreen.h>
 #endif
+
+#include <qscreen.h>
 #include <qapplication.h>
 #include <qsurfaceformat.h>
 

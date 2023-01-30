@@ -24,7 +24,14 @@
 
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 
-#include <QtOpenGLWidgets/qopenglwidget.h>
+#include <QtGlobal>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <QtOpenGLWidgets/qopenglwidget.h>
+#else
+    #include <qopenglwidget.h>
+#endif
+
 #include <qopenglfunctions.h>
 #include <qopenglbuffer.h>
 #include <qopenglvertexarrayobject.h>
