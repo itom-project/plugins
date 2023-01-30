@@ -103,6 +103,7 @@ then the stage moves to a start position and from there a certain range is raste
     mot = actuator("ThorlabsBDCServo")
 
     # set some parameter
+    mot.setParam("enabled", [1,1])
     mot.setParam("velocity", [2.6, 2.6])
     mot.setParam("acceleration", [5.0,5.0])
     mot.setParam("backlash", [0,0])
@@ -133,7 +134,7 @@ then the stage moves to a start position and from there a certain range is raste
 
     # move by using absolute positions
     for absX in xVec:
-        mot.setPosAbs(0, absX)
+        mot.setPosAbs(0, absX, 1, measureStartPos[1])
         for absY in yVec:
             mot.setPosAbs(1, absY)
             print("x: {}, y: {}".format(mot.getPos(0), mot.getPos(1)))
@@ -166,4 +167,4 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 Changelog
 ==========
 
-* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.
+* v0.1.1: Fix bug of timeout during ``setPosAbs``.* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.

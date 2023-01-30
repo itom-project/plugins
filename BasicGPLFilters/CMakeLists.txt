@@ -53,12 +53,6 @@ set(PLUGIN_HEADERS
 set(plugin_ui
 )
 
-if(QT5_FOUND)
-    QT5_WRAP_UI(PLUGIN_UI_MOC ${plugin_ui})
-else()
-    message(SEND_ERROR "Currently only Qt5 is supported")
-endif()
-
 set(PLUGIN_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicGPLFilters.cpp
 )

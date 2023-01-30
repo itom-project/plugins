@@ -30,10 +30,12 @@ if(ITOM_SDK_PCL_SUPPORT)
     find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
     find_package(OpenCV COMPONENTS core REQUIRED)
     
-    include(Setup_PCL_Plugins)
+    
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface recognition PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
             
     find_file(PCL_HAS_SURFACE_NURBS "nurbs_data.h" PATHS ${PCL_INCLUDE_DIRS} PATH_SUFFIXES "pcl/surface/on_nurbs")
+    
+
     if(PCL_HAS_SURFACE_NURBS)
         add_definitions(-DPCLHASSURFACENURBS -D_PCLHASSURFACENURBS)
     else()
