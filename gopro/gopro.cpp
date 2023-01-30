@@ -761,13 +761,41 @@ ito::RetVal GoPro::acquire(const int trigger, ItomSharedSemaphore* waitCond)
     {
         m_isGrabbing = true;
 
+        m_VideoCapture->set(cv::CAP_PROP_POS_FRAMES, 0);
+        m_VideoCapture->set(cv::CAP_PROP_BUFFERSIZE, 0);
+        cv::Mat frame; 
         // grab and retrieve new image
-        if (!m_VideoCapture->read(m_pDataMatBuffer))
+        if (!m_VideoCapture->read(frame))
         {
             retValue +=
                 ito::RetVal(ito::retError, 0, tr("Could not acquire a new image!").toUtf8().data());
         }
+        else
+        {
+            m_pDataMatBuffer = frame.clone();        
+        }
+        if (!m_VideoCapture->grab())
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 0, tr("Grab next image was not possible!").toUtf8().data());
+        }
+
+        cv::namedWindow("GoPRO", cv::WINDOW_NORMAL);
+
+        cv::imshow("GoPRO", frame);
+
+        qDebug() << "back end: " << m_VideoCapture->getBackendName().c_str();
+        qDebug() << "pos msec: " << m_VideoCapture->get(cv::CAP_PROP_POS_MSEC);
+        qDebug() << "fps: " << m_VideoCapture->get(cv ::CAP_PROP_FPS);
+        qDebug() << "num frames: " << m_VideoCapture->get(cv::CAP_PROP_FRAME_COUNT);
+        double idx = m_VideoCapture->get(cv::CAP_PROP_POS_FRAMES);
+        qDebug() << "index of frames: " << idx;
+        m_VideoCapture->set(cv::CAP_PROP_POS_FRAMES, idx + 1);
+        qDebug() << "position: " << m_VideoCapture->get(cv::CAP_PROP_POS_AVI_RATIO);
+        qDebug() << "buffer size: " << m_VideoCapture->get(cv::CAP_PROP_BUFFERSIZE);
+         
     }
+    
 
     return retValue;
 }
@@ -989,7 +1017,6 @@ ito::RetVal GoPro::retrieveData(ito::DataObject* externalDataObject)
 
         m_isGrabbing = false;
     }
-
     return retValue;
 }
 
