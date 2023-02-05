@@ -17,6 +17,8 @@ Overview
 
 .. pluginsummaryextended::
     :plugin: PiezosystemJena_NV40_1
+	
+Plugins interface with the piezo actuators from **Piezosystem Jena GmbH** https://www.piezosystem.com/
 
 Initialization
 ==============

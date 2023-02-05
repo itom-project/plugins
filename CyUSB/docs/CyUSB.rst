@@ -76,9 +76,11 @@ This plugin is also used by other hardware plugins to communicate with further d
         
 Compilation
 ===========
-In order to compile CyUSB, get the Cypress Seminconductor SDK from: http://www.cypress.com/file/135301?finished=1 (e.g. CY3684Setup.exe). Install the SDK (select typical as 
-setup type to install the SDK components; you can quit installing the 3rd party softwares uVision2 and GPIF Designer). Then set the CMake variable CyAPI_INCLUDE_DIR to a
-directory similar than **C:\\Program Files\\Cypress\\USB\\CY3684_EZ-USB_FX2LP_DVK\\1.1\\Windows Applications\\library\\cpp\\inc**.
+In order to compile CyUSB, get the Cypress Seminconductor SDK is discontinued. The necessary binary file are available via the Infineon FX3 SDK,
+which can be downloaded from: https://www.infineon.com/cms/en/design-support/tools/sdk/usb-controllers-sdk/ez-usb-fx3-software-development-kit/
+
+Install the SDK. Then set the CMake variable **CyAPI_INCLUDE_DIR** or the environment **FX3_ROOT** variable to the installation directory
+(e.g. C:\Program Files (x86)\Cypress\EZ-USB FX3 SDK\1.3)
 
 Run plugin
 ==========
@@ -94,3 +96,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the Cypress CyAPI 1.3.3
 * itom setup 4.0.0: This plugin has been compiled using the Cypress CyAPI 1.3.4
 * itom setup 4.1.0: This plugin has been compiled using the Cypress CyAPI 1.3.4
+* itom setup 4.3.0: This plugin has been compiled using the Infineon FX3 SDK 1.3.4

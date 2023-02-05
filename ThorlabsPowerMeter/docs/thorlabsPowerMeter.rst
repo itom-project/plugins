@@ -14,6 +14,9 @@
 Overview
 ========
 
+ITOM Plugin to be used for interaction with the Thorlabs Power and Energy Meter Console Series.
+
+
 .. pluginsummaryextended::
     :plugin: ThorlabsPowerMeter
 
@@ -76,18 +79,18 @@ Compilation
 ===========
 
 It is possible to use the Thorlabs power meter with the legacy Thorlabs software **ThorlabsPowerMeter_1.0.2**
-(see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=PM100x). Install this software and set the
-following CMake variables:
-
-* THORLABS_POWER_METER_API_VERSION: 1.02
-* THORLABS_PM100D_VISA_DIR: <path to the install directory of Thorlabs PM100D Visa, e.g. C:/Program Files/IVI Foundation/VISA/Win64>
+(see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=PM100x).
 
 Alternatively you can use the Thorlabs Optical Power Meter Monitor Software **Thorlabs.OpticalPowerMonitor.1.1**
-(see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=OPM). Install this software and set the 
-CMake variables to the following values:
+(see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=OPM).
 
-* THORLABS_POWER_METER_API_VERSION: 1.1
-* THORLABS_PM100D_VISA_DIR: <path to the install directory of Thorlabs PM100D Visa, e.g. C:/Program Files/IVI Foundation/VISA/Win64>
+Install this software and set the CMake variable **THORLABS_PM100D_VISA_DIR** or the environment variable **NI_VISA_ROOT**
+to the install directory of Thorlabs PM100D Visa (e.g. C:/Program Files/IVI Foundation/VISA/Win64).
+
+Cmake should automatically detect the latest API Version installed and use it appropriately.
+
+The user can set legacy versions if neede by setting the Cmake variable **THORLABS_POWER_METER_API_VERSION** either to "1.0.2"
+or  "1.1.0" if needed.
 
 .. note::
     
@@ -142,4 +145,5 @@ Changelog
 * Due to the chaotic version handling of Thorlabs PowerMeter, the source code is changed such that only version 3.0.2 is no longer supported. 
 * itom 3.2.1: plugin uses the driver PM100x_Instrument_Driver in version 1.1.2317.102 
 * itom 4.0.0: plugin uses the driver PM100x_Instrument_Driver in version 2.2
-* itom 4.1.0: plugin uses the driver PM100x_Instrument_Driver in version 2.2
+* itom 4.1.0: plugin uses the driver in Optical Power Monitor in version 4.0.41
+* itom 4.3.0: plugin uses the driver in Optical Power Monitor in version 4.0.41

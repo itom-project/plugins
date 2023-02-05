@@ -98,7 +98,7 @@ In this case you have to compile LibUSB by yourself using your version of Visual
         /MS32/static --> this must contain the **libusb-1.0.lib** from {sources}/Win32/static (if 32bit build)
         /MS64/static --> this must contain the newly built **libusb-1.0.lib** from {sources}/Win64/static (if 64bit build)
     
-5. Set the CMake variable LibUSB_DIR to this new folder.
+5. Set the CMake variable LibUSB_DIR to this new folder or define a windows environment variable LibUSB_ROOT.
 
 Changelog
 =========
@@ -110,3 +110,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the libusb 1.0.22
 * itom setup 4.0.0: This plugin has been compiled using the libusb 1.0.23
 * itom setup 4.1.0: This plugin has been compiled using the libusb 1.0.24
+* itom setup 4.3.0: This plugin has been compiled using the libusb 1.0.26

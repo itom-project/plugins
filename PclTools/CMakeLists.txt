@@ -1,6 +1,5 @@
 set(target_name PclTools)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -19,19 +18,17 @@ endif()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
+find_package(ITOM_SDK REQUIRED)
+itom_find_package_qt(ON Widgets LinguistTools OpenGL)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
-
-#set(VTK_INSTALL_EXPORT_NAME 1) #avoid that vtk directly links to an absolute Qt-library, that is located somewhere on their computer configuration.
-find_package(ITOM_SDK REQUIRED)
-itom_find_package_qt(ON Widgets LinguistTools OpenGL)
-
 if(ITOM_SDK_PCL_SUPPORT)
     find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
     find_package(OpenCV COMPONENTS core REQUIRED)
-
+	
     if (NOT VTK_FOUND)
       find_package(VTK  COMPONENTS vtkCommonCore QUIET)
       if (NOT VTK_FOUND)
@@ -50,9 +47,7 @@ if(ITOM_SDK_PCL_SUPPORT)
         else()
             message(STATUS "PCL has been build without the surface_nurbs module, therefore not all filters can be build")
         endif()
-
-        message(STATUS "VTK_INC: " ${VTK_INCLUDE_DIR})
-        message(STATUS "Found VTK version: ${VTK_VERSION}")
+		
         if (VTK_VERSION VERSION_LESS "8.90.0")
           # old system
             find_package(VTK QUIET)
@@ -80,7 +75,6 @@ if(ITOM_SDK_PCL_SUPPORT)
               ViewsQt
           )
         endif()
-        message(STATUS "VTK Libraries: ${VTK_LIBRARIES}")
 
         include_directories(
             ${CMAKE_CURRENT_BINARY_DIR}
@@ -158,9 +152,9 @@ if(ITOM_SDK_PCL_SUPPORT)
         itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
         
     else(VTK_FOUND)
-        message(WARNING "${target_name} will not be build since package VTK could not be found. Indicate VTK_DIR.")
+        message(SEND_ERROR "${target_name} will not be build since package VTK could not be found. Indicate VTK_DIR.")
     endif(VTK_FOUND)
 
 else(ITOM_SDK_PCL_SUPPORT)
-    message(WARNING "${target_name} will not be build since itom has been compiled without PCL support")
+    message(SEND_ERROR "${target_name} will not be build since itom has been compiled without PCL support")
 endif(ITOM_SDK_PCL_SUPPORT)

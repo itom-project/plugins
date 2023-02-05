@@ -20,6 +20,7 @@ endif()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
@@ -28,16 +29,19 @@ if(LINUX)
     add_definitions( "--std=c++0x --std=c++11" )
 endif(LINUX)
 
-
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 
-
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
+set(FLYCAPTURE_PGRFLYCAP_DIR "" CACHE PATH "path of the FLIR Fly Capture SDK. Must contain subfolders like bin,bin64,include,lib,lib64")
+
+if(NOT FLYCAPTURE_PGRFLYCAP_DIR)
+	set(FLYCAPTURE_PGRFLYCAP_DIR $ENV{FLIR_SDK_ROOT})
+endif(NOT FLYCAPTURE_PGRFLYCAP_DIR)
+
 if(WIN32)
-    find_path( FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR FlyCapture2.h DOC "Include directory of Point Gray Research FlyCapture API")
+    find_path( FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR FlyCapture2.h PATHS ${FLYCAPTURE_PGRFLYCAP_DIR} PATH_SUFFIXES include DOC "Include directory of Point Gray Research FlyCapture API")
 else(WIN32)
     find_path( FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR FlyCapture2.h PATHS /usr/include/flycapture DOC "Include directory of Point Gray Research FlyCapture API")
 endif(WIN32)
@@ -165,9 +169,7 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${FLYCAPTURE_LIBRARY} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) 
-
-
-    
+	
     itom_configure_plugin_documentation(${target_name} pgrFlyCapture)
     
     #translation
@@ -186,6 +188,6 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         itom_post_build_copy_files_to_lib_folder(${target_name} FLYCAPTURE_LIBIOMP5MD)
     endif()
     
-else()
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
-endif()
+else(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
+endif(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)

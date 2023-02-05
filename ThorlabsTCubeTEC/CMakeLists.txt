@@ -1,12 +1,9 @@
-#here you give your project a unique name (replace ThorlabsTEC by the desired project name of your plugin)
 set(target_name ThorlabsTCubeTEC)
 
-# this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
 
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
-#this is to automatically detect the SDK subfolder of the itom build directory.
 find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     HINTS "C:/itom/build/itom/SDK"
           "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
@@ -18,16 +15,13 @@ endif()
 
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
 
-# ...which contains useful scripts for completing this file
+if(NOT THORLABS_KINESIS_DIRECTORY)
+	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+endif(NOT THORLABS_KINESIS_DIRECTORY)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# ... for example this one, found in the CMAKE_MODULE_PATH
-include(ItomBuildMacros)
-
-# The CMake policies are assumed to behave like the tested version given as argument.
-itom_init_cmake_policy(3.12)
-itom_init_plugin_library(${target_name})
 
 set(THORLABS_KINESIS_TEC_LIBNAME "Thorlabs.MotionControl.TCube.TEC")
 
@@ -43,8 +37,11 @@ endif(THORLABS_KINESIS_DIRECTORY)
 if(THORLABS_KINESIS_TEC_INCLUDE_DIR)
 
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-
     itom_find_package_qt(ON Core Widgets LinguistTools)
+
+    include(ItomBuildMacros)
+    itom_init_cmake_policy(3.12)
+    itom_init_plugin_library(${target_name})
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)

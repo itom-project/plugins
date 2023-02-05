@@ -1,6 +1,5 @@
 set(target_name ThorlabsBDCServo)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -16,13 +15,16 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
-
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
-include(ItomBuildMacros)
-itom_init_cmake_policy(3.12)
-itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
+
+if(NOT THORLABS_KINESIS_DIRECTORY)
+	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+endif(NOT THORLABS_KINESIS_DIRECTORY)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 set(THORLABS_KINESIS_BDCServo_LIBNAME "Thorlabs.MotionControl.Benchtop.DCServo")
 
@@ -33,15 +35,14 @@ if(THORLABS_KINESIS_DIRECTORY)
     endif(WIN32)
 endif(THORLABS_KINESIS_DIRECTORY)
 
-
-
 if(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)
-
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
     itom_find_package_qt(ON Widgets Xml LinguistTools)
+
+    include(ItomBuildMacros)
+    itom_init_cmake_policy(3.12)
+    itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -81,16 +82,12 @@ if(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
 
-
-
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${THORLABS_KINESIS_BDCServo_LIBRARY})
-
-
 
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
@@ -114,5 +111,5 @@ if(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
     
 else(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)
-    message(WARNING "${THORLABS_KINESIS_BDCServo_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
+    message(SEND_ERROR "${THORLABS_KINESIS_BDCServo_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
 endif(THORLABS_KINESIS_BDCServo_INCLUDE_DIR)

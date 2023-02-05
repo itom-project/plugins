@@ -20,40 +20,24 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 
 set(NITLIBRARY_SDK_DIR "" CACHE PATH "path of the NITLIBRARY SDK. Must contain subfolders like bin, bin64, include, lib, lib64")
 
-# the itom SDK needs to be detected, use the COMPONENTS keyword
-# to define which library components are needed. Possible values
-# are:
-# - dataobject for the ito::DataObject (usually required)
-# - itomCommonLib (RetVal, Param,...) (required)
-# - itomCommonQtLib (AddInInterface,...) (required)
-# - itomWidgets (further widgets) (may be used in dock widget...)
-# - pointcloud (pointCloud, point, polygonMesh...) (optional)
-# if no components are indicated, all components above are used
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-#find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
-#       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
-#       directories and libraries to link agains are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
+if(NOT NITLIBRARY_SDK_DIR)
+	set(NITLIBRARY_SDK_DIR $ENV{NIT_SDK_ROOT})
+endif(NOT NITLIBRARY_SDK_DIR)
+
 itom_find_package_qt(ON Core LinguistTools Widgets)
 
-find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include DOC "NITLibrary include directory")
+find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include /inc DOC "NITLibrary include directory")
 find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 
 if(NITLIBRARY_INCLUDE_DIR)
     message(STATUS "NITLibrary found")
-
-
-
-
-    
-            
-    
-
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
@@ -65,18 +49,12 @@ if(NITLIBRARY_INCLUDE_DIR)
         #add further include directories here
     )
     
-    
     if(BUILD_TARGET64)
-        file(GLOB NITLIBRARY_LIB_DIR "${NITLIBRARY_SDK_DIR}/lib/x64/*.lib")
+		find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
     else(BUILD_TARGET64)
-        file(GLOB NITLIBRARY_LIB_DIR "${NITLIBRARY_SDK_DIR}/lib/x86/*.lib")
+        find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x86)
     endif(BUILD_TARGET64)
-    
-    link_directories(
-        ${NITLIBRARY_LIB_DIR}
-        
-    )
-
+	
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/NITWidySWIR.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogNITWidySWIR.h
@@ -93,8 +71,6 @@ if(NITLIBRARY_INCLUDE_DIR)
         #add further source files here
     )
 
-    #Append rc file to the source files for adding information about the plugin
-    # to the properties of the DLL under Visual Studio.
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
@@ -108,16 +84,11 @@ if(NITLIBRARY_INCLUDE_DIR)
         #add absolute pathes to any *.qrc resource files here
     )
 
-
-
-    #add all (generated) header and source files to the library (these files are compiled then)
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
-    # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${NITLIBRARY_LIB_DIR} ${OPENCV240_LIB_DIR})
-
+    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${NITLIBRARY_LIB} ${OPENCV240_LIB_DIR})
 
     set_target_properties(${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:NITLibrary.dll")
 
@@ -143,5 +114,5 @@ if(NITLIBRARY_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} NITLIBRARY_DLL)
  
 else(NITLIBRARY_INCLUDE_DIR)
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build.")
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build.")
 endif(NITLIBRARY_INCLUDE_DIR)

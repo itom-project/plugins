@@ -55,7 +55,7 @@ int NTHREADS = 2;
     #endif
     for (int g = 0; g <= (1 << maxBits); g++)
     {
-    }
+	}
 */
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -260,7 +260,7 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in x-direction in mu"));
     paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 1000, "field size in y-direction in mu"));
     paramsMand->append( ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance in mu") );
-    paramsMand->append( ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation in mu") );    
+    paramsMand->append( ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation in mu") );	
     paramsMand->append( ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation in mu") );
 
     paramsOpt->append(ito::Param("makeSquare", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, "make square propagators only"));
@@ -277,7 +277,7 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
 /*static*/ ito::RetVal Holography::FresnelCalcProp(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retVal;
-    ito::DataObject *outFieldPtr = paramsMand->at(0).getVal<ito::DataObject*>(); //0, 1
+	ito::DataObject *outFieldPtr = paramsMand->at(0).getVal<ito::DataObject*>(); //0, 1
     ito::DataObject outField;
     int sizex = paramsMand->at(1).getVal<int>();
     int sizey = paramsMand->at(2).getVal<int>();

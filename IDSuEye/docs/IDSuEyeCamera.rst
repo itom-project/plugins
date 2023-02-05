@@ -99,11 +99,17 @@ An instance of this plugin has the following internal parameters:
     Index of top boundary pixel within ROI
 **y1**: {int}
     Index of bottom boundary pixel within ROI
-
-
         
 Compilation
 ===========
+
+Download the IDS Peak SDK from https://de.ids-imaging.com/ids-software-suite.html by selecting the appropriate camera.
+This can be very tricky since the IDS Software Suite is deprecated and newer models are shipped with the IDS Peak SDK
+exclusively.
+
+Software Currently supporting the IDS uEye SDK are for example: https://de.ids-imaging.com/download-details/AB02919.html#anc-software-310
+
+Set the CMAKE variable **IDS_DEVELOP_DIRECTORY** or the environment variable **ISD_UEYE_ROOT** to the installation directory (e.g. C:\Program Files\IDS\uEye\develop)
 
 With the sources of this plugin, the header and library files of the uEye SDK in the version denoted in the changelog are directly included. Hence, the plugin compiles as it is. 
 Nevertheless, you need to have the camera drivers installed on your computer that fit to the uEye SDK of the plugin. However, you can also install the full SDK in any version
@@ -141,3 +147,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the uEye SDK 4.91.0
 * itom setup 4.0.0: This plugin has been compiled using the uEye SDK 4.93.0
 * itom setup 4.1.0: This plugin has been compiled using the uEye SDK 4.93.0
+* itom setup 4.3.0: This plugin has been compiled using the uEye SDK 4.96.1
