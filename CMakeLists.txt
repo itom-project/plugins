@@ -17,6 +17,10 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+include(ItomBuildMacros)
+
 # ITOM Shipment
 option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." ON)
 
@@ -24,24 +28,28 @@ option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON."
 if(NOT BUILD_TARGET64)
 	if(WIN32)
 		option(PLUGIN_aerotechA3200 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-		if(PLUGIN_aerotechA3200)
-				add_subdirectory(AerotechA3200)
+		if(PLUGIN_aerotechA3200 OR )
+    		add_subdirectory(AerotechA3200)
 		endif(PLUGIN_aerotechA3200)
 	endif()
 endif(NOT BUILD_TARGET64)
 
 # AerotechEnsemble
 if(WIN32)
-    option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
-    if(PLUGIN_aerotechEnsemble)
+    if(BUILD_QTVERSION STREQUAL "Qt5")
+        option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
+        if(PLUGIN_aerotechEnsemble)
             add_subdirectory(AerotechEnsemble)
-    endif(PLUGIN_aerotechEnsemble)
+        endif(PLUGIN_aerotechEnsemble)
+    endif(BUILD_QTVERSION STREQUAL Qt5)
 endif()
 
 # AndorSDK3
 option(PLUGIN_andorSDK3 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_andorSDK3)
+    if(BUILD_QTVERSION STREQUAL Qt5)
         add_subdirectory(AndorSDK3)
+    endif(BUILD_QTVERSION STREQUAL Qt5)
 endif(PLUGIN_andorSDK3)
 
 # AvantesAvaSpec
@@ -54,7 +62,7 @@ endif(PLUGIN_AvantesAvaSpec)
 if(WIN32)
     option(PLUGIN_AVTVimba "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
     if(PLUGIN_AVTVimba)
-            add_subdirectory(AVTVimba)
+        add_subdirectory(AVTVimba)
     endif(PLUGIN_AVTVimba)
 endif()
 
@@ -80,7 +88,7 @@ endif(PLUGIN_HidApi)
 if(WIN32)
     option(PLUGIN_cmu1394 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
     if(PLUGIN_cmu1394)
-            add_subdirectory(cmu1394)
+        add_subdirectory(cmu1394)
     endif(PLUGIN_cmu1394)
 endif()
 
@@ -88,14 +96,14 @@ endif()
 if(WIN32)
     option(PLUGIN_CommonVisionBlox "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
     if(PLUGIN_CommonVisionBlox)
-            add_subdirectory(CommonVisionBlox)
+        add_subdirectory(CommonVisionBlox)
     endif(PLUGIN_CommonVisionBlox)
 endif()
 
 # CyUSB
 option(PLUGIN_CyUSB "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_CyUSB)
-        add_subdirectory(CyUSB)
+    add_subdirectory(CyUSB)
 endif(PLUGIN_CyUSB)
 
 # dataobjectarithmetic
@@ -122,17 +130,21 @@ if(PLUGIN_dispWindow)
     add_subdirectory(dispWindow)
 endif(PLUGIN_dispWindow)
 
-# dslrRemote - not yet
+# dslrRemote2 - not yet
 option(PLUGIN_DslrRemote2 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-if(PLUGIN_DslrRemote2)
-    add_subdirectory(DslrRemote2)
-endif(PLUGIN_DslrRemote2)
+if(BUILD_QTVERSION STREQUAL Qt5)
+    if(PLUGIN_DslrRemote2)
+        add_subdirectory(DslrRemote2)
+    endif(PLUGIN_DslrRemote2)
+endif(BUILD_QTVERSION STREQUAL Qt5)
 
 # dslrRemote - not yet
 option(PLUGIN_DslrRemote "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-if(PLUGIN_DslrRemote)
-    add_subdirectory(DslrRemote)
-endif(PLUGIN_DslrRemote)
+if(BUILD_QTVERSION STREQUAL Qt5)
+    if(PLUGIN_DslrRemote)
+        add_subdirectory(DslrRemote)
+    endif(PLUGIN_DslrRemote)
+endif(BUILD_QTVERSION STREQUAL Qt5)
 
 # DummyGrabber
 option(PLUGIN_DummyGrabber "Build with this plugin." ON)
@@ -227,7 +239,7 @@ if(PLUGIN_IDSuEye)
 endif(PLUGIN_IDSuEye)
 
 # LeicaMotorFocus
-option(PLUGIN_LeicaMotorFocus "Build with this plugin." ${ITOM_BUILD_SHIPMENT}OFF)
+option(PLUGIN_LeicaMotorFocus "Build with this plugin." OFF${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_LeicaMotorFocus)
     add_subdirectory(LeicaMotorFocus)
 endif(PLUGIN_LeicaMotorFocus)
@@ -336,26 +348,28 @@ endif(PLUGIN_PclTools)
 
 # PCOCamera
 if(WIN32)
-  option(PLUGIN_PCOCamera "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-  if(PLUGIN_PCOCamera)
-      add_subdirectory(PCOCamera)
-  endif(PLUGIN_PCOCamera)
+    option(PLUGIN_PCOCamera "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_PCOCamera)
+            add_subdirectory(PCOCamera)
+    endif(PLUGIN_PCOCamera)
 endif()
 
 # PCOSensicam
 if(WIN32)
-  option(PLUGIN_PCOSensicam "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-  if(PLUGIN_PCOSensicam)
-      add_subdirectory(PCOSensicam)
-  endif(PLUGIN_PCOSensicam)
+    if(BUILD_QTVERSION STREQUAL Qt5)
+        option(PLUGIN_PCOSensicam "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_PCOSensicam)
+            add_subdirectory(PCOSensicam)
+        endif(PLUGIN_PCOSensicam)
+    endif(BUILD_QTVERSION STREQUAL Qt5)
 endif()
 
 # PCOPixelFly
 if(WIN32)
-  option(PLUGIN_PCOPixelFly "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-  if(PLUGIN_PCOPixelFly)
-      add_subdirectory(PCOPixelFly)
-  endif(PLUGIN_PCOPixelFly)
+    option(PLUGIN_PCOPixelFly "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_PCOPixelFly)
+        add_subdirectory(PCOPixelFly)
+    endif(PLUGIN_PCOPixelFly)
 endif()
 
 # PiezosystemJena_NV40_1
@@ -522,18 +536,22 @@ endif()
 
 # ThorlabsDCxCam cameras
 if(WIN32)
-    option(PLUGIN_ThorlabsDCxCam "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-    if(PLUGIN_ThorlabsDCxCam)
-        add_subdirectory(ThorlabsDCxCam)
-    endif(PLUGIN_ThorlabsDCxCam)
+    if(BUILD_QTVERSION STREQUAL Qt5)
+        option(PLUGIN_ThorlabsDCxCam "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_ThorlabsDCxCam)
+            add_subdirectory(ThorlabsDCxCam)
+        endif(PLUGIN_ThorlabsDCxCam)
+    endif(BUILD_QTVERSION STREQUAL Qt5)
 endif()
 
 # Thorlabs Power Meter
 if(WIN32)
-    option(PLUGIN_ThorlabsPowerMeter "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-    if(PLUGIN_ThorlabsPowerMeter)
-        add_subdirectory(ThorlabsPowerMeter)
-    endif(PLUGIN_ThorlabsPowerMeter)
+    if(BUILD_QTVERSION STREQUAL Qt5)
+        option(PLUGIN_ThorlabsPowerMeter "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_ThorlabsPowerMeter)
+            add_subdirectory(ThorlabsPowerMeter)
+        endif(PLUGIN_ThorlabsPowerMeter)
+    endif(BUILD_QTVERSION STREQUAL Qt5)
 endif()
 
 # UhlRegister
@@ -550,10 +568,12 @@ endif(PLUGIN_UhlText)
 
 # USBMotion3XIII
 if(WIN32)
-    option(PLUGIN_USBMotion3XIII "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-    if(PLUGIN_USBMotion3XIII)
-        add_subdirectory(USBMotion3XIII)
-    endif(PLUGIN_USBMotion3XIII)
+    if(BUILD_QTVERSION STREQUAL Qt5)
+        option(PLUGIN_USBMotion3XIII "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_USBMotion3XIII)
+            add_subdirectory(USBMotion3XIII)
+        endif(PLUGIN_USBMotion3XIII)
+    endif(BUILD_QTVERSION STREQUAL Qt5)
 endif()
 
 # V4L2
@@ -566,10 +586,12 @@ endif(UNIX AND NOT APPLE)
 
 # Vistek
 if(WIN32)
-    option(PLUGIN_Vistek "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-    if(PLUGIN_Vistek)
-        add_subdirectory(Vistek)
-    endif(PLUGIN_Vistek)
+    if(BUILD_QTVERSION STREQUAL Qt5)
+        option(PLUGIN_Vistek "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_Vistek)
+            add_subdirectory(Vistek)
+        endif(PLUGIN_Vistek)
+    endif(BUILD_QTVERSION STREQUAL Qt5)
 endif()
 
 # VRMagic
@@ -581,10 +603,12 @@ if(WIN32)
 endif()
 
 # x3pio
-option(PLUGIN_x3pio "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-if(PLUGIN_x3pio)
-    add_subdirectory(x3pio)
-endif(PLUGIN_x3pio)
+if(BUILD_QTVERSION STREQUAL Qt5)
+    option(PLUGIN_x3pio "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+    if(PLUGIN_x3pio)
+        add_subdirectory(x3pio)
+    endif(PLUGIN_x3pio)
+endif(BUILD_QTVERSION STREQUAL Qt5)
 
 # Xeneth
 if(WIN32)

@@ -23,9 +23,6 @@ endif(NOT THORLABS_PM100D_VISA_DIR)
 set(THORLABS_POWER_METER_API_VERSION "" CACHE STRING "Expected API version: 1.0.2 stands for the legacy software 'Thorlabs Power Meter', while 1.1 stands for the current software 'Thorlabs Optical Power Meter'")
 set_property(CACHE THORLABS_POWER_METER_API_VERSION PROPERTY STRINGS 1.0.2 1.1.0)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
-
 if(THORLABS_PM100D_VISA_DIR)
     if(WIN32)
 		if(NOT THORLABS_POWER_METER_API_VERSION)
@@ -70,12 +67,15 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
         add_definitions(-DUSE_API_1_0_2)
     endif()
 
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-    itom_find_package_qt(ON Core LinguistTools Widgets)
 
     include(ItomBuildMacros)
     itom_init_cmake_policy(3.12)
     itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+    itom_find_package_qt(ON Core LinguistTools Widgets)
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)

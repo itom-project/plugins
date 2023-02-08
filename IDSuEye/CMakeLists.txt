@@ -1,13 +1,9 @@
 set(target_name IDSuEye)
 
-
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
-#################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
-#################################################################
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
@@ -21,30 +17,29 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-set(IDS_DEVELOP_DIRECTORY "" CACHE PATH "path to develop directory of IDS SDK")
-if(NOT IDS_DEVELOP_DIRECTORY)
-	set(IDS_DEVELOP_DIRECTORY $ENV{ISD_UEYE_ROOT}develop)
-endif(NOT IDS_DEVELOP_DIRECTORY)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
+
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core LinguistTools Widgets)
+
+if(NOT EXISTS ${IDS_DEVELOP_DIRECTORY})
+    if(EXISTS $ENV{IDS_UEYE_ROOT})
+        set(IDS_DEVELOP_DIRECTORY "$ENV{IDS_UEYE_ROOT}/develop" CACHE PATH "path to develop directory of IDS SDK")
+    else(EXISTS $ENV{IDS_UEYE_ROOT})
+        set(IDS_DEVELOP_DIRECTORY "IDS-UEYE_DIR-NOTFOUND" CACHE PATH "path to develop directory of IDS SDK")
+    endif(EXISTS $ENV{IDS_UEYE_ROOT})
+endif(NOT EXISTS ${IDS_DEVELOP_DIRECTORY})
 
 if(IDS_DEVELOP_DIRECTORY)
     if(WIN32)
         message(STATUS "IDS SDK is located in ${IDS_DEVELOP_DIRECTORY}")
         set(IDS_INCLUDE_DIRECTORY "${IDS_DEVELOP_DIRECTORY}/include" )
-        find_file( IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY} PATH_SUFFIXES IDS include)
-    else(WIN32)
-        find_path(IDS_INCLUDE_DIRECTORY
-        NAMES ueye.h
-        PATHS /usr/local/include/
-              /usr/include)
-        find_file(IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY})
-    endif(WIN32)
-else(IDS_DEVELOP_DIRECTORY)
-    if(WIN32)
-        message(STATUS "IDS SDK is located in ${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs")
-        set(IDS_INCLUDE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs/IDS" )
-        find_file( IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY} PATH_SUFFIXES "IDS")
+        find_file( IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY})
     else(WIN32)
         find_path(IDS_INCLUDE_DIRECTORY
         NAMES ueye.h
@@ -54,16 +49,7 @@ else(IDS_DEVELOP_DIRECTORY)
     endif(WIN32)
 endif(IDS_DEVELOP_DIRECTORY)
 
-if(IDS_HEADER_FILE)
-
-    find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-    include(ItomBuildMacros)
-    itom_init_cmake_policy(3.12)
-    itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-    # if no components are indicated, all components above are used
-    find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
-    itom_find_package_qt(ON Core LinguistTools Widgets)
-
+if(IDS_HEADER_FILE)    
     if(WIN32)
         set( DELAY_IMP_LIB "delayimp")
         if(IDS_DEVELOP_DIRECTORY)

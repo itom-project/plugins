@@ -25,11 +25,7 @@
 
 #include "common/addInGrabber.h"
 
-#if linux
-    #include "ueye.h"
-#else
-    #include "uEye.h"
-#endif
+#include <ueye.h>
 
 #include <qsharedpointer.h>
 #include <QTimerEvent>

@@ -21,12 +21,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+find_package(OpenCV COMPONENTS core imgproc REQUIRED)
+find_package(WindowsSDK QUIET)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
-find_package(OpenCV COMPONENTS core imgproc REQUIRED)
-find_package(WindowsSDK QUIET)
 
 if (WINDOWSSDK_FOUND)
     itom_find_package_qt(ON Core Widgets LinguistTools)

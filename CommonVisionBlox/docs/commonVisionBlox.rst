@@ -63,6 +63,10 @@ An instance of this plugin has the following internal parameters:
     model name
 **roi**: {int seq.}
     ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
+
+Compilation
+===========
+Set the CMAKE variable **CVB_DIR** or the environment variable **CVCB_ROOT** to the installation directory of the CommmonVisionBlox SDK (e.g. C:\Program Files\STEMMER IMAGING\Common Vision Blox)
     
 Usage
 =====

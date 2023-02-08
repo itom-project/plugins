@@ -22,9 +22,6 @@ if(NOT THORLABS_KINESIS_DIRECTORY)
 	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
 endif(NOT THORLABS_KINESIS_DIRECTORY)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
-
 set(THORLABS_KINESIS_KCUBEIM_LIBNAME "Thorlabs.MotionControl.KCube.InertialMotor")
 
 if(THORLABS_KINESIS_DIRECTORY)
@@ -36,12 +33,15 @@ endif(THORLABS_KINESIS_DIRECTORY)
 
 if(THORLABS_KINESIS_INCLUDE_DIR)
 
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-    itom_find_package_qt(ON Widgets Xml LinguistTools)
 
     include(ItomBuildMacros)
     itom_init_cmake_policy(3.12)
     itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+    itom_find_package_qt(ON Widgets Xml LinguistTools)
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}

@@ -5,15 +5,11 @@ message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
-#################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
-#################################################################
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(PCO_Camera_BUILD_API_VERSION "1.24 or newer" CACHE STRING "Expected API version")
 set_property(CACHE PCO_Camera_BUILD_API_VERSION PROPERTY STRINGS "1.24 or newer" "<1.24" "really old")
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
-#this is to automatically detect the SDK subfolder of the itom build directory.
 find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     HINTS "C:/itom/build/itom/SDK"
           "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
@@ -32,35 +28,11 @@ endif(NOT PCO_SDK_DIR)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
-
-#################################################################
-# Automatic package detection
-#   add here FIND_PACKAGE commands for searching for 3rd party
-#   libraries
-#
-#   for detecting Qt, use itom_find_package_qt instead of the
-#   native command, since itom_find_package_qt detects the Qt4 or 5
-#   version.
-#################################################################
-
-# the itom SDK needs to be detected, use the COMPONENTS keyword
-# to define which library components are needed. Possible values
-# are:
-# - dataobject for the ito::DataObject (usually required)
-# - itomCommonLib (RetVal, Param,...) (required)
-# - itomCommonQtLib (AddInInterface,...) (required)
-# - itomWidgets (further widgets) (may be used in dock widget...)
-# - pointcloud (pointCloud, point, polygonMesh...) (optional)
-# if no components are indicated, all components above are used
-find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
-
-#usage of itom_find_package_qt(automoc component1, component2, ...)
-# automoc is ON or OFF and only relevant for Qt5, usually set it to ON
-# possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
 itom_find_package_qt(ON Core LinguistTools Widgets)
 
 if(BUILD_TARGET64)
@@ -80,10 +52,6 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     else(PCO_Camera_BUILD_API_VERSION VERSION_EQUAL "really old")
         add_definitions(-DPCO_SDK_OLD)
     endif(PCO_Camera_BUILD_API_VERSION VERSION_EQUAL "1.24 or newer")
-
-    #################################################################
-    # General settings and preprocessor settings
-    #################################################################
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
@@ -150,12 +118,6 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-
-    #if you want to copy one or more files to the lib-folder of
-    # the itom build directory, use the following macro:
-    #
-    # itom_post_build_copy_files_to_lib_folder(${target}, ${listOfFiles})
-    # copy SC2_Cam.dll in itoms lib folder
     itom_post_build_copy_files_to_lib_folder(${target_name} PCO_SDK_LIBRARY)
 
 else(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)

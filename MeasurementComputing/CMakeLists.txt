@@ -18,9 +18,11 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core LinguistTools Widgets)
 
 if(BUILD_TARGET64)
    set(dll_name "cbw64.dll")
@@ -29,8 +31,6 @@ else(BUILD_TARGET64)
    set(dll_name "cbw32.dll")
    set(bit_dest "32")
 endif(BUILD_TARGET64)
-
-itom_find_package_qt(ON Core LinguistTools Widgets)
 
 find_path(MeasurementComputing_DAQ_C_SDK_DIR cbw.h PATHS "C:/Users/Public/Documents/Measurement Computing/DAQ/C" DOC "Directory of the DAQ C library, must contain the file cbw.h (e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C)")
 find_file(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" "C:/Program Files (x86)/Measurement Computing/DAQ" $ENV{MCDAQ_ROOT} DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")

@@ -19,14 +19,13 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} "${ITOM_SDK_DIR}/cmake")
 
-
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}

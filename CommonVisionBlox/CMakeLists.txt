@@ -17,28 +17,41 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-if(DEFINED ENV{CVB_ROOT})
+if(NOT EXISTS ${CVB_DIR})
+    if(EXISTS $ENV{CVB_ROOT})
+        set(CVB_DIR "$ENV{CVB_ROOT}" CACHE PATH "path to CommonVisionBlox SDK directory")
+    else(EXISTS $ENV{CVB_ROOT})
+        set(CVB_DIR "CVB_DIR-NOTFOUND" CACHE PATH "path to CommonVisionBlox SDK directory")
+    endif(EXISTS $ENV{CVB_ROOT})
+endif(NOT EXISTS ${CVB_DIR})
+
+if(EXISTS ${CVB_DIR})
+    set(CVB_INCLUDE_DIRECTORY "${CVB_DIR}/Lib/C" )
+    find_file( CVB_HEADER_FILE iCVCore.h PATHS ${CVB_INCLUDE_DIRECTORY})
+endif(EXISTS ${CVB_DIR})
+
+if(CVB_HEADER_FILE)
 
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
     find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...)
-    itom_find_package_qt(ON Core LinguistTools Widgets)
 
     include(ItomBuildMacros)
     itom_init_cmake_policy(3.12)
     itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+    itom_find_package_qt(ON Core LinguistTools Widgets)
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended) 
-        "$ENV{CVB_ROOT}\\Lib\\C"
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+        "${CVB_INCLUDE_DIRECTORY}"
     )
 
     link_directories(
         #add all linker directories
-        "$ENV{CVB_ROOT}\\Lib\\C"
+        "${CVB_INCLUDE_DIRECTORY}"
     )
 
     set(PLUGIN_HEADERS
@@ -85,6 +98,6 @@ if(DEFINED ENV{CVB_ROOT})
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-else(DEFINED ENV{CVB_ROOT})
-    message(SEND_ERROR "Environment variable CVB_ROOT for common vision blox not found. ${target_name} will not be build.")
-endif(DEFINED ENV{CVB_ROOT})
+else(CVB_HEADER_FILE)
+    message(SEND_ERROR "Cmake Variabke CVB_DIR or Environment variable CVB_ROOT for common vision blox not found. ${target_name} will not be build.")
+endif(CVB_HEADER_FILE)

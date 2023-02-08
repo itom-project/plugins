@@ -25,11 +25,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_subdirectory(libmodbus-3.1.2)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-itom_find_package_qt(ON Core LinguistTools Widgets)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core LinguistTools Widgets)
 
 if(BUILD_LIBMODBUS_SHARED)
 else(BUILD_LIBMODBUS_SHARED)

@@ -16,15 +16,15 @@ if(NOT ITOM_SDK_DIR)
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
+find_package(OpenGL)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
-# make a small Qt search to get the QT6_FOUND variable.
 itom_find_package_qt(ON Widgets)
 
 if(QT6_FOUND)
@@ -32,9 +32,6 @@ if(QT6_FOUND)
 else(QT6_FOUND)
     itom_find_package_qt(ON Widgets Xml OpenGL LinguistTools)
 endif(QT6_FOUND)
-
-find_package(OpenCV COMPONENTS core REQUIRED)
-find_package(OpenGL)
 
 if(OPENGL_FOUND)
 

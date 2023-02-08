@@ -21,7 +21,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-itom_find_package_qt(ON Core Widgets UiTools Xml LinguistTools)
 find_package(OpenCV COMPONENTS core highgui REQUIRED)
 if(OpenCV_VERSION_MAJOR GREATER 2)
     # for opencv >= 3 we need the imgcodecs module which is not present in opencv < 3 so run again
@@ -31,6 +30,7 @@ endif(OpenCV_VERSION_MAJOR GREATER 2)
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core Widgets UiTools Xml LinguistTools)
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}

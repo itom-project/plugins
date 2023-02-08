@@ -21,17 +21,14 @@ endif()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
+find_package(Ximea)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
-
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
-
-find_package(OpenCV COMPONENTS core REQUIRED)
-
-find_package(Ximea)
 
 find_path(XIMEA_APIDIR XIApi.h DOC "XIMEA Api directory (must contain the file m3Api.h)")
 

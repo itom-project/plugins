@@ -15,9 +15,6 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
-
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
 
 if(NOT THORLABS_KINESIS_DIRECTORY)
@@ -35,12 +32,15 @@ endif(THORLABS_KINESIS_DIRECTORY)
 
 if(THORLABS_KINESIS_BP_INCLUDE_DIR)
 
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-    itom_find_package_qt(ON Widgets Xml LinguistTools)
     
     include(ItomBuildMacros)
     itom_init_cmake_policy(3.12)
     itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+    itom_find_package_qt(ON Widgets Xml LinguistTools)
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}

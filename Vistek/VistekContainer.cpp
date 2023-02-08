@@ -240,7 +240,7 @@ ito::RetVal VistekContainer::checkError(const char *prependStr, SVGigE_RETURN re
             str = "";
         }
 
-        char *msg = Error_getMessage(returnCode);
+        const char *msg = Error_getMessage(returnCode);
         if (msg)
         {
             retval += ito::RetVal::format(ito::retError,returnCode, "%s: Vistek DLL error %i '%s' occurred", str, returnCode, msg);

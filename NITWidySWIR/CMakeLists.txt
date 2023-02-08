@@ -21,9 +21,12 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+find_package(OpenCV COMPONENTS core imgproc REQUIRED)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core LinguistTools Widgets)
 
 set(NITLIBRARY_SDK_DIR "" CACHE PATH "path of the NITLIBRARY SDK. Must contain subfolders like bin, bin64, include, lib, lib64")
 
@@ -31,10 +34,7 @@ if(NOT NITLIBRARY_SDK_DIR)
 	set(NITLIBRARY_SDK_DIR $ENV{NIT_SDK_ROOT})
 endif(NOT NITLIBRARY_SDK_DIR)
 
-itom_find_package_qt(ON Core LinguistTools Widgets)
-
 find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include /inc DOC "NITLibrary include directory")
-find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 
 if(NITLIBRARY_INCLUDE_DIR)
     message(STATUS "NITLibrary found")

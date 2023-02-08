@@ -1,26 +1,12 @@
-###################################################################
-###################################################################
-#    CMake Template for a plugin of itom
-#    
-#    You can use this template, use it in your plugins, modify it,
-#    copy it and distribute it without any license restrictions.
-###################################################################
-###################################################################
-
 set(target_name AVTVimba)
-
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
-#################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
-#################################################################
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
-#this is to automatically detect the SDK subfolder of the itom build directory.
 find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     HINTS "C:/itom/build/itom/SDK"
           "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
@@ -30,23 +16,31 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
 itom_find_package_qt(ON Core LinguistTools Widgets)
 
-if(NOT AVTVIMBA_INCLUDE_DIR)
-	set(AVTVIMBA_INCLUDE_DIR $ENV{AVTVIMBA_ROOT})
-endif(NOT AVTVIMBA_INCLUDE_DIR)
+if(NOT EXISTS ${AVTVIMBA_INCLUDE_DIR})
+    if(EXISTS $ENV{AVTVIMBA_ROOT})
+        set(AVTVIMBA_INCLUDE_DIR "$ENV{AVTVIMBA_ROOT}" CACHE PATH "path to AVT Vimba SDK directory")
+    else(EXISTS $ENV{AVTVIMBA_ROOT})
+        set(AVTVIMBA_INCLUDE_DIR "AVTVIMBA_INCLUDE_DIR_NOTFOUND" CACHE PATH "path to AVT Vimba SDK directory")
+    endif(EXISTS $ENV{AVTVIMBA_ROOT})
+endif(NOT EXISTS ${AVTVIMBA_INCLUDE_DIR})
 
-find_path( AVTVIMBA_INCLUDE_DIR VimbaCPP.h DOC "Include directory of VimbaCPP SDK")
+if(EXISTS ${AVTVIMBA_INCLUDE_DIR})
+    find_file( AVT_VIMBA_HEADER_FILE VimbaCPP.h PATHS ${AVTVIMBA_INCLUDE_DIR})
+endif(EXISTS ${AVTVIMBA_INCLUDE_DIR})
 
-if(AVTVIMBA_INCLUDE_DIR)
+if(AVT_VIMBA_HEADER_FILE)
+    
+    message(STATUS "Hello AVT")
+
     set(AVTVIMBA_API_DIR ${AVTVIMBA_INCLUDE_DIR}/../ CACHE PATH "Base directory of VimbaCPP SDK")
 
     include_directories(
@@ -143,6 +137,6 @@ if(AVTVIMBA_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} AVTVIMBA_BINARY_C)
     itom_post_build_copy_files_to_lib_folder(${target_name} AVTVIMBA_BINARY_CPP)
     
-else(AVTVIMBA_INCLUDE_DIR)
+else(AVT_VIMBA_HEADER_FILE)
     message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
-endif(AVTVIMBA_INCLUDE_DIR)
+endif(AVT_VIMBA_HEADER_FILE)

@@ -25,18 +25,18 @@ endif(NOT THORLABS_IVI_VISA_SDK)
 
 message(STATUS "THORLABS_IVI_VISA_SDK: " ${THORLABS_IVI_VISA_SDK})
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
-
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-itom_find_package_qt(ON Core LinguistTools Widgets)
-
-include(ItomBuildMacros)
-itom_init_cmake_policy(3.12)
-itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
 find_path(THORLABS_IVI_VISA_INCLUDE_DIR "TLCCS.h" PATHS "${THORLABS_IVI_VISA_SDK}" PATH_SUFFIXES "include")
 
 if(THORLABS_IVI_VISA_INCLUDE_DIR)
+
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+    find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+
+    include(ItomBuildMacros)
+    itom_init_cmake_policy(3.12)
+    itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+    itom_find_package_qt(ON Core LinguistTools Widgets)
     
     set(THORLABS_IVI_VISA_LIBRARIES "")
     
