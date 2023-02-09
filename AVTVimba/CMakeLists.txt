@@ -95,7 +95,6 @@ if(AVT_VIMBA_HEADER_FILE)
 
     endif(BUILD_TARGET64)
     find_library(AVTVIMBA_LIBRARY NAMES "VimbaCPP"  PATHS ${AVT_LIBDIR_HINT} NO_DEFAULT_PATH)
-
     
     if(AVTVIMBA_LIBRARY)
         message(STATUS "AVTVimba library found at ${AVTVIMBA_LIBRARY}")

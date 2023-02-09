@@ -17,7 +17,6 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
@@ -29,6 +28,8 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Core LinguistTools Widgets)
 
 if(MSVC)
+    # Qt disables the native wchar_t type, do it too to avoid linking issues
+    # well that changed in qt5 so go back to built-in type
     if(QT5_FOUND)
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t" )
     else()
@@ -36,8 +37,7 @@ if(MSVC)
     endif()
 endif()
 
-find_path(ANDOR_SDK3_DIR "atcore.h" HINTS "C:/Program Files/Andor SDK3" $ENV{ANDOR_SDK3_ROOT})
-
+find_path(ANDOR_SDK3_DIR "atcore.h" HINTS "C:/Program Files/Andor SDK3")
 if(BUILD_TARGET64)
     if(MSVC)
         FIND_LIBRARY(ANDOR_SDK3_LIBRARY "atcorem" HINTS ${ANDOR_SDK3_DIR})
@@ -63,13 +63,12 @@ if(ANDOR_SDK3_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
         #add further include directories here
         ${ANDOR_SDK3_DIR}
     )
 
     link_directories(
-        #add all linker directories
     )
 
     set(PLUGIN_HEADERS
@@ -108,7 +107,7 @@ if(ANDOR_SDK3_DIR)
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
     
     target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ANDOR_SDK3_LIBRARY})
-    
+
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
@@ -128,6 +127,6 @@ if(ANDOR_SDK3_DIR)
         itom_post_build_copy_files_to_lib_folder(${target_name} ANDOR_SDK3_BINARY3)
     endif(WIN32)
     
-else(ANDOR_SDK3_DIR)
-    message(SEND_ERROR "${target_name} directory could not be found. ${target_name} will not be build")
-endif(ANDOR_SDK3_DIR)
+else()
+    message(WARNING "${target_name} directory could not be found. ${target_name} will not be build")
+endif()

@@ -167,7 +167,7 @@ ito::RetVal ThorlabsDCxCam::init(QVector<ito::ParamBase> *paramsMand, QVector<it
     ito::RetVal retVal;
 
     HCAM camera_id = static_cast<HCAM>(paramsOpt->at(0).getVal<int>());
-    QString init_color_mode = paramsOpt->at(1).getVal<char*>();
+    QString init_color_mode = paramsOpt->at(1).getVal<const char*>();
 
     if (paramsOpt->at(2).getVal<int>() > 0)
     {
@@ -195,7 +195,7 @@ ito::RetVal ThorlabsDCxCam::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 {
                     if (pucl->uci[idx].dwCameraID == camera_id)
                     {
-                        m_params["serial_number"].setVal<char*>(pucl->uci[idx].SerNo);
+                        m_params["serial_number"].setVal<const char*>(pucl->uci[idx].SerNo);
                         id_found = true;
                         in_use = (pucl->uci[idx].dwInUse > 0);
                         break;
@@ -239,7 +239,7 @@ ito::RetVal ThorlabsDCxCam::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                     {
                         if (pucl->uci[idx].dwDeviceID == camera_id)
                         {
-                            m_params["serial_number"].setVal<char*>(pucl->uci[idx].SerNo);
+                            m_params["serial_number"].setVal<const char*>(pucl->uci[idx].SerNo);
                             break;
                         }
                     }
@@ -256,7 +256,7 @@ ito::RetVal ThorlabsDCxCam::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         //get sensor info
         retVal += loadSensorInfo();
 
-        setIdentifier(QString("%1 (%2)").arg(m_params["cam_model"].getVal<char*>()).arg(m_params["serial_number"].getVal<char*>()));
+        setIdentifier(QString("%1 (%2)").arg(m_params["cam_model"].getVal<const char*>()).arg(m_params["serial_number"].getVal<const char*>()));
 
         if (!retVal.containsError())
         {
@@ -764,7 +764,7 @@ ito::RetVal ThorlabsDCxCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
         }
         else if (key == "trigger_mode")
         {
-            QString mode = val->getVal<char*>();
+            QString mode = val->getVal<const char*>();
             INT t;
             if (mode == "software")
             {
@@ -792,7 +792,7 @@ ito::RetVal ThorlabsDCxCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
             }
             else
             {
-                retValue += ito::RetVal::format(ito::retError, 0, "unsupported or unknown trigger value '%s'", val->getVal<char*>());
+                retValue += ito::RetVal::format(ito::retError, 0, "unsupported or unknown trigger value '%s'", val->getVal<const char*>());
             }
 
             if (!retValue.containsError())
@@ -815,7 +815,7 @@ ito::RetVal ThorlabsDCxCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
         }
         else if (key == "bpp")
         {
-            if (strcmp(m_params["color_mode"].getVal<char*>(),"color")==0)
+            if (strcmp(m_params["color_mode"].getVal<const char*>(),"color")==0)
             {
                 retValue += ito::RetVal(ito::retError, 0, "bpp cannot be changed if color_mode is 'color'");
             }
@@ -865,7 +865,7 @@ ito::RetVal ThorlabsDCxCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
                 stopDevice(NULL);
             }
 
-            if (strcmp(val->getVal<char*>(), "color") == 0)
+            if (strcmp(val->getVal<const char*>(), "color") == 0)
             {
                 retValue += checkError(is_SetColorMode(m_camera, IS_CM_BGRA8_PACKED));
             }
@@ -954,7 +954,7 @@ ito::RetVal ThorlabsDCxCam::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 0)
     {
-        if (strcmp(m_params["trigger_mode"].getVal<char*>(), "software") != 0)
+        if (strcmp(m_params["trigger_mode"].getVal<const char*>(), "software") != 0)
         {
             retValue += checkError(is_CaptureVideo(m_camera, IS_DONT_WAIT), "captureVideo");
             m_captureVideoActive = true;
@@ -1670,27 +1670,27 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
         switch (trigger)
         {
         case IS_SET_TRIGGER_OFF:
-            it->setVal<char*>("off");
+            it->setVal<const char*>("off");
             break;
         case IS_SET_TRIGGER_SOFTWARE:
-            it->setVal<char*>("software");
+            it->setVal<const char*>("software");
             break;
         case IS_SET_TRIGGER_HI_LO:
-            it->setVal<char*>("hi_lo"); 
+            it->setVal<const char*>("hi_lo"); 
             break;
         case IS_SET_TRIGGER_LO_HI:
-            it->setVal<char*>("lo_hi"); 
+            it->setVal<const char*>("lo_hi"); 
             break;
         case IS_SET_TRIGGER_PRE_HI_LO:
-            it->setVal<char*>("pre_hi_lo"); 
+            it->setVal<const char*>("pre_hi_lo"); 
             break;
         case IS_SET_TRIGGER_PRE_LO_HI:
-            it->setVal<char*>("pre_lo_hi"); 
+            it->setVal<const char*>("pre_lo_hi"); 
             break;
         default:
             //trigger is in a non-supported mode, set it to software trigger
             retval += checkError(is_SetExternalTrigger(m_camera, IS_SET_TRIGGER_SOFTWARE));
-            it->setVal<char*>("software");
+            it->setVal<const char*>("software");
         }
             
     }
@@ -1752,7 +1752,7 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
             }
 
             m_colouredOutput = false;
-            m_params["color_mode"].setVal<char*>("gray");
+            m_params["color_mode"].setVal<const char*>("gray");
             m_params["color_mode"].setMeta(new ito::StringMeta(ito::StringMeta::String, "gray"), true);
         }
         else //color
@@ -1763,13 +1763,13 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
             int colorMode = is_SetColorMode(m_camera, IS_GET_COLOR_MODE);
             if (colorMode == IS_CM_MONO8)
             {
-                m_params["color_mode"].setVal<char*>("gray");
+                m_params["color_mode"].setVal<const char*>("gray");
                 m_bitspixel = 8;
                 m_colouredOutput = false;
             }
             else if (colorMode == IS_CM_BGRA8_PACKED)
             {
-                m_params["color_mode"].setVal<char*>("color");
+                m_params["color_mode"].setVal<const char*>("color");
                 m_bitspixel = 32;
                 m_colouredOutput = true;
             }
@@ -1798,109 +1798,109 @@ ito::RetVal ThorlabsDCxCam::loadSensorInfo()
 
     if (!retVal.containsError())
     {
-        m_params["cam_model"].setVal<char*>(m_sensorInfo.strSensorName);
+        m_params["cam_model"].setVal<const char*>(m_sensorInfo.strSensorName);
         QMap<QString, ito::Param>::iterator it = m_params.find("sensor_type");
 
         switch (m_sensorInfo.SensorID)
         {
-            case IS_SENSOR_C0640R13M: it->setVal<char*>("C0640R13M"); break;
-            case IS_SENSOR_C0640R13C: it->setVal<char*>("C0640R13C"); break;
-            case IS_SENSOR_C1280R23M: it->setVal<char*>("C1280R23M"); break;
-            case IS_SENSOR_C1280R23C: it->setVal<char*>("C1280R23C"); break;
-            case IS_SENSOR_C1280R12M: it->setVal<char*>("C1280R12M"); break;
-            case IS_SENSOR_C1280R12C: it->setVal<char*>("C1280R12C"); break;
-            case IS_SENSOR_C1600R12C: it->setVal<char*>("C1600R12C"); break;
-            case IS_SENSOR_C2048R12C: it->setVal<char*>("C2048R12C"); break;
-            case IS_SENSOR_C2592R12M: it->setVal<char*>("C2592R12M"); break;
-            case IS_SENSOR_C2592R12C: it->setVal<char*>("C2592R12C"); break;
-            case IS_SENSOR_C0640G12M: it->setVal<char*>("C0640G12M"); break;
-            case IS_SENSOR_C0640G12C: it->setVal<char*>("C0640G12C"); break;
-            case IS_SENSOR_C0752G13M: it->setVal<char*>("C0752G13M"); break;
-            case IS_SENSOR_C0752G13C: it->setVal<char*>("C0752G13C"); break;
-            case IS_SENSOR_C1282R13C: it->setVal<char*>("C1282R13C"); break;
-            case IS_SENSOR_C1601R13C: it->setVal<char*>("C1601R13C"); break;
-            case IS_SENSOR_C0753G13M: it->setVal<char*>("C0753G13M"); break;
-            case IS_SENSOR_C0753G13C: it->setVal<char*>("C0753G13C"); break;
-            case IS_SENSOR_C3840R12M: it->setVal<char*>("C3840R12M"); break;
-            case IS_SENSOR_C3840R12C: it->setVal<char*>("C3840R12C"); break;
-            case IS_SENSOR_C0754G13M: it->setVal<char*>("C0754G13M"); break;
-            case IS_SENSOR_C0754G13C: it->setVal<char*>("C0754G13C"); break;
-            case IS_SENSOR_C1284R13C: it->setVal<char*>("C1284R13C"); break;
-            case IS_SENSOR_C1604R13C: it->setVal<char*>("C1604R13C"); break;
-            case IS_SENSOR_C1285R12M: it->setVal<char*>("C1285R12M"); break;
-            case IS_SENSOR_C1285R12C: it->setVal<char*>("C1285R12C"); break;
-            case IS_SENSOR_C1605R12C: it->setVal<char*>("C1605R12C"); break;
-            case IS_SENSOR_C2055R12C: it->setVal<char*>("C2055R12C"); break;
-            case IS_SENSOR_C2595R12M: it->setVal<char*>("C2595R12M"); break;
-            case IS_SENSOR_C2595R12C: it->setVal<char*>("C2595R12C"); break;
-            case IS_SENSOR_C3845R12M: it->setVal<char*>("C3845R12M"); break;
-            case IS_SENSOR_C3845R12C: it->setVal<char*>("C3845R12C"); break;
-            case IS_SENSOR_C0768R12M: it->setVal<char*>("C0768R12M"); break;
-            case IS_SENSOR_C0768R12C: it->setVal<char*>("C0768R12C"); break;
-            case IS_SENSOR_C2592R14C: it->setVal<char*>("C2592R14C"); break;
-            case IS_SENSOR_C1280G12M: it->setVal<char*>("C1280G12M"); break;
-            case IS_SENSOR_C1280G12C: it->setVal<char*>("C1280G12C"); break;
-            case IS_SENSOR_C1280G12N: it->setVal<char*>("C1280G12N"); break;
-            case IS_SENSOR_C1283G12M: it->setVal<char*>("C1283G12M"); break;
-            case IS_SENSOR_C1283G12C: it->setVal<char*>("C1283G12C"); break;
-            case IS_SENSOR_C1283G12N: it->setVal<char*>("C1283G12N"); break;
-            case IS_SENSOR_C1284G12M: it->setVal<char*>("C1284G12M"); break;
-            case IS_SENSOR_C1284G12C: it->setVal<char*>("C1284G12C"); break;
-            case IS_SENSOR_C1284G12N: it->setVal<char*>("C1284G12N"); break;
-            case IS_SENSOR_C1283R12M: it->setVal<char*>("C1283R12M"); break;
-            case IS_SENSOR_C1283R12C: it->setVal<char*>("C1283R12C"); break;
-            case IS_SENSOR_C1286R12M: it->setVal<char*>("C1286R12M"); break;
-            case IS_SENSOR_C1286R12C: it->setVal<char*>("C1286R12C"); break;
-            case IS_SENSOR_C1283R12M_WO: it->setVal<char*>("C1283R12M_WO"); break;
-            case IS_SENSOR_C1283R12C_WO: it->setVal<char*>("C1283R12C_WO"); break;
-            case IS_SENSOR_C1603R12C: it->setVal<char*>("C1603R12C"); break;
-            case IS_SENSOR_C2053R12C: it->setVal<char*>("C2053R12C"); break;
-            case IS_SENSOR_C2593R12M: it->setVal<char*>("C2593R12M"); break;
-            case IS_SENSOR_C2593R12C: it->setVal<char*>("C2593R12C"); break;
-            case IS_SENSOR_C2057R12M_WO: it->setVal<char*>("C2057R12M_WO"); break;
-            case IS_SENSOR_C2053R12C_WO: it->setVal<char*>("C2053R12C_WO"); break;
-            case IS_SENSOR_C2593R12M_WO: it->setVal<char*>("C2593R12M_WO"); break;
-            case IS_SENSOR_C2593R12C_WO: it->setVal<char*>("C2593R12C_WO"); break;
-            case IS_SENSOR_C2048G23M: it->setVal<char*>("C2048G23M"); break;
-            case IS_SENSOR_C2048G23C: it->setVal<char*>("C2048G23C"); break;
-            case IS_SENSOR_C2048G23N: it->setVal<char*>("C2048G23N"); break;
-            case IS_SENSOR_C2048G11M: it->setVal<char*>("C2048G11M"); break;
-            case IS_SENSOR_C2048G11C: it->setVal<char*>("C2048G11C"); break;
-            case IS_SENSOR_C2048G11N: it->setVal<char*>("C2048G11N"); break;
-            case IS_SENSOR_C1600G12M: it->setVal<char*>("C1600G12M"); break;
-            case IS_SENSOR_C1600G12C: it->setVal<char*>("C1600G12C"); break;
-            case IS_SENSOR_C1600G12N: it->setVal<char*>("C1600G12N"); break;
-            case IS_SENSOR_C1603G12M: it->setVal<char*>("C1603G12M"); break;
-            case IS_SENSOR_C1603G12C: it->setVal<char*>("C1603G12C"); break;
-            case IS_SENSOR_C1603G12N: it->setVal<char*>("C1603G12N"); break;
-            case IS_SENSOR_C1604G12M: it->setVal<char*>("C1604G12M"); break;
-            case IS_SENSOR_C1604G12C: it->setVal<char*>("C1604G12C"); break;
-            case IS_SENSOR_C1604G12N: it->setVal<char*>("C1604G12N"); break;
-            case IS_SENSOR_C1920G11M: it->setVal<char*>("C1920G11M"); break;
-            case IS_SENSOR_C1920G11C: it->setVal<char*>("C1920G11C"); break;
-            case IS_SENSOR_C4216R12C: it->setVal<char*>("C4216R12C"); break;
-            case IS_SENSOR_D1024G13M: it->setVal<char*>("D1024G13M"); break;
-            case IS_SENSOR_D1024G13C: it->setVal<char*>("D1024G13C"); break;
-            case IS_SENSOR_D0640G13M: it->setVal<char*>("D0640G13M"); break;
-            case IS_SENSOR_D0640G13C: it->setVal<char*>("D0640G13C"); break;
-            case IS_SENSOR_D1281G12M: it->setVal<char*>("D1281G12M"); break;
-            case IS_SENSOR_D1281G12C: it->setVal<char*>("D1281G12C"); break;
-            case IS_SENSOR_D0640G12M: it->setVal<char*>("D0640G12M"); break;
-            case IS_SENSOR_D0640G12C: it->setVal<char*>("D0640G12C"); break;
-            case IS_SENSOR_D0640G14M: it->setVal<char*>("D0640G14M"); break;
-            case IS_SENSOR_D0640G14C: it->setVal<char*>("D0640G14C"); break;
-            case IS_SENSOR_D0768G12M: it->setVal<char*>("D0768G12M"); break;
-            case IS_SENSOR_D0768G12C: it->setVal<char*>("D0768G12C"); break;
-            case IS_SENSOR_D1280G12M: it->setVal<char*>("D1280G12M"); break;
-            case IS_SENSOR_D1280G12C: it->setVal<char*>("D1280G12C"); break;
-            case IS_SENSOR_D1600G12M: it->setVal<char*>("D1600G12M"); break;
-            case IS_SENSOR_D1600G12C: it->setVal<char*>("D1600G12C"); break;
-            case IS_SENSOR_D1280G13M: it->setVal<char*>("D1280G13M"); break;
-            case IS_SENSOR_D1280G13C: it->setVal<char*>("D1280G13C"); break;
-            case IS_SENSOR_D0640G13M_R2: it->setVal<char*>("D0640G13M_R2"); break;
-            case IS_SENSOR_D0640G13C_R2: it->setVal<char*>("D0640G13C_R2"); break;
+            case IS_SENSOR_C0640R13M: it->setVal<const char*>("C0640R13M"); break;
+            case IS_SENSOR_C0640R13C: it->setVal<const char*>("C0640R13C"); break;
+            case IS_SENSOR_C1280R23M: it->setVal<const char*>("C1280R23M"); break;
+            case IS_SENSOR_C1280R23C: it->setVal<const char*>("C1280R23C"); break;
+            case IS_SENSOR_C1280R12M: it->setVal<const char*>("C1280R12M"); break;
+            case IS_SENSOR_C1280R12C: it->setVal<const char*>("C1280R12C"); break;
+            case IS_SENSOR_C1600R12C: it->setVal<const char*>("C1600R12C"); break;
+            case IS_SENSOR_C2048R12C: it->setVal<const char*>("C2048R12C"); break;
+            case IS_SENSOR_C2592R12M: it->setVal<const char*>("C2592R12M"); break;
+            case IS_SENSOR_C2592R12C: it->setVal<const char*>("C2592R12C"); break;
+            case IS_SENSOR_C0640G12M: it->setVal<const char*>("C0640G12M"); break;
+            case IS_SENSOR_C0640G12C: it->setVal<const char*>("C0640G12C"); break;
+            case IS_SENSOR_C0752G13M: it->setVal<const char*>("C0752G13M"); break;
+            case IS_SENSOR_C0752G13C: it->setVal<const char*>("C0752G13C"); break;
+            case IS_SENSOR_C1282R13C: it->setVal<const char*>("C1282R13C"); break;
+            case IS_SENSOR_C1601R13C: it->setVal<const char*>("C1601R13C"); break;
+            case IS_SENSOR_C0753G13M: it->setVal<const char*>("C0753G13M"); break;
+            case IS_SENSOR_C0753G13C: it->setVal<const char*>("C0753G13C"); break;
+            case IS_SENSOR_C3840R12M: it->setVal<const char*>("C3840R12M"); break;
+            case IS_SENSOR_C3840R12C: it->setVal<const char*>("C3840R12C"); break;
+            case IS_SENSOR_C0754G13M: it->setVal<const char*>("C0754G13M"); break;
+            case IS_SENSOR_C0754G13C: it->setVal<const char*>("C0754G13C"); break;
+            case IS_SENSOR_C1284R13C: it->setVal<const char*>("C1284R13C"); break;
+            case IS_SENSOR_C1604R13C: it->setVal<const char*>("C1604R13C"); break;
+            case IS_SENSOR_C1285R12M: it->setVal<const char*>("C1285R12M"); break;
+            case IS_SENSOR_C1285R12C: it->setVal<const char*>("C1285R12C"); break;
+            case IS_SENSOR_C1605R12C: it->setVal<const char*>("C1605R12C"); break;
+            case IS_SENSOR_C2055R12C: it->setVal<const char*>("C2055R12C"); break;
+            case IS_SENSOR_C2595R12M: it->setVal<const char*>("C2595R12M"); break;
+            case IS_SENSOR_C2595R12C: it->setVal<const char*>("C2595R12C"); break;
+            case IS_SENSOR_C3845R12M: it->setVal<const char*>("C3845R12M"); break;
+            case IS_SENSOR_C3845R12C: it->setVal<const char*>("C3845R12C"); break;
+            case IS_SENSOR_C0768R12M: it->setVal<const char*>("C0768R12M"); break;
+            case IS_SENSOR_C0768R12C: it->setVal<const char*>("C0768R12C"); break;
+            case IS_SENSOR_C2592R14C: it->setVal<const char*>("C2592R14C"); break;
+            case IS_SENSOR_C1280G12M: it->setVal<const char*>("C1280G12M"); break;
+            case IS_SENSOR_C1280G12C: it->setVal<const char*>("C1280G12C"); break;
+            case IS_SENSOR_C1280G12N: it->setVal<const char*>("C1280G12N"); break;
+            case IS_SENSOR_C1283G12M: it->setVal<const char*>("C1283G12M"); break;
+            case IS_SENSOR_C1283G12C: it->setVal<const char*>("C1283G12C"); break;
+            case IS_SENSOR_C1283G12N: it->setVal<const char*>("C1283G12N"); break;
+            case IS_SENSOR_C1284G12M: it->setVal<const char*>("C1284G12M"); break;
+            case IS_SENSOR_C1284G12C: it->setVal<const char*>("C1284G12C"); break;
+            case IS_SENSOR_C1284G12N: it->setVal<const char*>("C1284G12N"); break;
+            case IS_SENSOR_C1283R12M: it->setVal<const char*>("C1283R12M"); break;
+            case IS_SENSOR_C1283R12C: it->setVal<const char*>("C1283R12C"); break;
+            case IS_SENSOR_C1286R12M: it->setVal<const char*>("C1286R12M"); break;
+            case IS_SENSOR_C1286R12C: it->setVal<const char*>("C1286R12C"); break;
+            case IS_SENSOR_C1283R12M_WO: it->setVal<const char*>("C1283R12M_WO"); break;
+            case IS_SENSOR_C1283R12C_WO: it->setVal<const char*>("C1283R12C_WO"); break;
+            case IS_SENSOR_C1603R12C: it->setVal<const char*>("C1603R12C"); break;
+            case IS_SENSOR_C2053R12C: it->setVal<const char*>("C2053R12C"); break;
+            case IS_SENSOR_C2593R12M: it->setVal<const char*>("C2593R12M"); break;
+            case IS_SENSOR_C2593R12C: it->setVal<const char*>("C2593R12C"); break;
+            case IS_SENSOR_C2057R12M_WO: it->setVal<const char*>("C2057R12M_WO"); break;
+            case IS_SENSOR_C2053R12C_WO: it->setVal<const char*>("C2053R12C_WO"); break;
+            case IS_SENSOR_C2593R12M_WO: it->setVal<const char*>("C2593R12M_WO"); break;
+            case IS_SENSOR_C2593R12C_WO: it->setVal<const char*>("C2593R12C_WO"); break;
+            case IS_SENSOR_C2048G23M: it->setVal<const char*>("C2048G23M"); break;
+            case IS_SENSOR_C2048G23C: it->setVal<const char*>("C2048G23C"); break;
+            case IS_SENSOR_C2048G23N: it->setVal<const char*>("C2048G23N"); break;
+            case IS_SENSOR_C2048G11M: it->setVal<const char*>("C2048G11M"); break;
+            case IS_SENSOR_C2048G11C: it->setVal<const char*>("C2048G11C"); break;
+            case IS_SENSOR_C2048G11N: it->setVal<const char*>("C2048G11N"); break;
+            case IS_SENSOR_C1600G12M: it->setVal<const char*>("C1600G12M"); break;
+            case IS_SENSOR_C1600G12C: it->setVal<const char*>("C1600G12C"); break;
+            case IS_SENSOR_C1600G12N: it->setVal<const char*>("C1600G12N"); break;
+            case IS_SENSOR_C1603G12M: it->setVal<const char*>("C1603G12M"); break;
+            case IS_SENSOR_C1603G12C: it->setVal<const char*>("C1603G12C"); break;
+            case IS_SENSOR_C1603G12N: it->setVal<const char*>("C1603G12N"); break;
+            case IS_SENSOR_C1604G12M: it->setVal<const char*>("C1604G12M"); break;
+            case IS_SENSOR_C1604G12C: it->setVal<const char*>("C1604G12C"); break;
+            case IS_SENSOR_C1604G12N: it->setVal<const char*>("C1604G12N"); break;
+            case IS_SENSOR_C1920G11M: it->setVal<const char*>("C1920G11M"); break;
+            case IS_SENSOR_C1920G11C: it->setVal<const char*>("C1920G11C"); break;
+            case IS_SENSOR_C4216R12C: it->setVal<const char*>("C4216R12C"); break;
+            case IS_SENSOR_D1024G13M: it->setVal<const char*>("D1024G13M"); break;
+            case IS_SENSOR_D1024G13C: it->setVal<const char*>("D1024G13C"); break;
+            case IS_SENSOR_D0640G13M: it->setVal<const char*>("D0640G13M"); break;
+            case IS_SENSOR_D0640G13C: it->setVal<const char*>("D0640G13C"); break;
+            case IS_SENSOR_D1281G12M: it->setVal<const char*>("D1281G12M"); break;
+            case IS_SENSOR_D1281G12C: it->setVal<const char*>("D1281G12C"); break;
+            case IS_SENSOR_D0640G12M: it->setVal<const char*>("D0640G12M"); break;
+            case IS_SENSOR_D0640G12C: it->setVal<const char*>("D0640G12C"); break;
+            case IS_SENSOR_D0640G14M: it->setVal<const char*>("D0640G14M"); break;
+            case IS_SENSOR_D0640G14C: it->setVal<const char*>("D0640G14C"); break;
+            case IS_SENSOR_D0768G12M: it->setVal<const char*>("D0768G12M"); break;
+            case IS_SENSOR_D0768G12C: it->setVal<const char*>("D0768G12C"); break;
+            case IS_SENSOR_D1280G12M: it->setVal<const char*>("D1280G12M"); break;
+            case IS_SENSOR_D1280G12C: it->setVal<const char*>("D1280G12C"); break;
+            case IS_SENSOR_D1600G12M: it->setVal<const char*>("D1600G12M"); break;
+            case IS_SENSOR_D1600G12C: it->setVal<const char*>("D1600G12C"); break;
+            case IS_SENSOR_D1280G13M: it->setVal<const char*>("D1280G13M"); break;
+            case IS_SENSOR_D1280G13C: it->setVal<const char*>("D1280G13C"); break;
+            case IS_SENSOR_D0640G13M_R2: it->setVal<const char*>("D0640G13M_R2"); break;
+            case IS_SENSOR_D0640G13C_R2: it->setVal<const char*>("D0640G13C_R2"); break;
 
-            default: it->setVal<char*>("unknown sensor type"); break;
+            default: it->setVal<const char*>("unknown sensor type"); break;
         }
     }
 

@@ -62,8 +62,6 @@
 
 #include <time.h>
 
-using namespace std;
-
 #include <QtCore/QtPlugin>
 #include <qvariant.h>
 #include <QtGui>
@@ -110,7 +108,7 @@ OpenGPS::String TimeStamp(void)
   OGPS_Character tzoffsign = tzoff_h<0 ? _T('-') : _T('+');
 
   // Create a string of pattern "2007-04-30T13:58:02.6+02:00"
-  wostringstream sout;
+  std::wostringstream sout;
   sout << std::setfill(_T('0')) << std::setw(4) << (lt.tm_year+1900) << _T('-') << std::setw(2) << lt.tm_mon << _T('-') << std::setw(2) << lt.tm_mday
       << _T('T') << std::setw(2) << lt.tm_hour << _T(':') << std::setw(2) << lt.tm_min << _T(':') << std::setw(2) << lt.tm_sec << _T(".0")
       << tzoffsign << std::setw(2) << tzoff_habs << _T(':') << std::setw(2) << tzoff_m;
@@ -157,10 +155,10 @@ OpenGPS::String TimeStamp(void)
     OGPS_Character tzoffsign = tzoff_h<0 ? _T('-') : _T('+');
 
     // Create a string of pattern "2007-04-30T13:58:02.6+02:00"
-    wostringstream sout;
+    std::wostringstream sout;
     sout << std::setfill(_T('0')) << std::setw(4) << (lt->tm_year+1900) << _T('-') << std::setw(2) << lt->tm_mon << _T('-') << std::setw(2) << lt->tm_mday
         << _T('T') << std::setw(2) << lt->tm_hour << _T(':') << std::setw(2) << lt->tm_min << _T(':') << std::setw(2) << lt->tm_sec << _T(".0")
-        << tzoffsign << setw(2) << tzoff_habs << _T(':') << setw(2) << tzoff_m;
+        << tzoffsign << std::setw(2) << tzoff_habs << _T(':') << std::setw(2) << tzoff_m;
 
     std::basic_string<wchar_t> s = sout.str();
     return sout.str();
@@ -170,7 +168,7 @@ OpenGPS::String TimeStamp(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 OpenGPS::String TimeStamp( ::xml_schema::date_time &dateTime)
 {
-    wostringstream sout;
+    std::wostringstream sout;
     sout << std::setfill(_T('0')) << std::setw(4) << (dateTime.year()) << _T('-') << std::setw(2) << dateTime.month() << _T('-') << std::setw(2) << dateTime.day()
         << _T('T') << std::setw(2) << dateTime.hours() << _T(':') << std::setw(2) << dateTime.minutes() << _T(':') << std::setw(2) << dateTime.seconds() << _T(".0");
     if (dateTime.zone_hours() == 0)

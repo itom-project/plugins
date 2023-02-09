@@ -37,6 +37,18 @@ endif()
 
 XSD_SCHEMA(OUTPATH ${PROJECT_SOURCE_DIR}/iso5436_2.xsd  --prologue-file ${PROJECT_SOURCE_DIR}/xsd_Licence_Header.c --generate-doxygen --generate-ostream --generate-serialization --char-type wchar_t --generate-comparison --generate-from-base-ctor --namespace-map http://www.opengps.eu/2008/ISO5436_2=OpenGPS::Schemas::ISO5436_2 --export-symbol _OPENGPS_EXPORT --cxx-suffix \"_xsd.cxx\" --hxx-suffix \"_xsd.hxx\" --output-dir ${CMAKE_CURRENT_BINARY_DIR}/opengps/cxx) #${PROJECT_SOURCE_DIR}/../../include/opengps/cxx/)
 
+# Subversion is needed to generate version.h from version.in
+find_package(Subversion)
+if(NOT SUBVERSION_FOUND)
+   find_package(TortoiseSVN REQUIRED)
+   message(STATUS "Using TortoiseSVN from:")
+   message(STATUS "   " ${TortoiseSVN_EXECUTABLE})
+   set(Subversion_SVN_EXECUTABLE ${TortoiseSVN_EXECUTABLE})
+endif(NOT SUBVERSION_FOUND)
+# Find native ZLIB package
+# find_package(ZLIB REQUIRED)
+
+
 add_definitions(-DUNICODE -D_UNICODE -DISO5436_2_LIBRARY -DBUILD_ISO5436_2_XML  -DXSD_FP_ALL_DIGITS)
 if(WIN32 AND NOT BUILD_X3P_ISO5436_SHARED)
    add_definitions(-DZLIB_WINAPI)
@@ -54,6 +66,49 @@ link_directories(
      "${CMAKE_CURRENT_BINARY_DIR}/../zlib"
      "${CMAKE_CURRENT_BINARY_DIR}/../zlib/contrib/minizip"
 )
+
+## Generate the version include file from the .in file
+#if(GENVERSION)
+#   if(WIN32)
+#      # Find subwcrev executable
+#      get_filename_component(Subversion_PATH "${Subversion_SVN_EXECUTABLE}" PATH)
+#      set(Subwcrev_EXECUTABLE "${Subversion_PATH}/subwcrev.exe" )
+#      message(STATUS Subwcrev found: ${Subwcrev_EXECUTABLE})
+#      # subwcrev $(ProjectDir) $(InputDir)/cxx/Version.in $(InputDir)/cxx/Version.h
+#      add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                          PRE_BUILD
+#                          COMMAND "${Subwcrev_EXECUTABLE}"
+#                          ARGS "${PROJECT_SOURCE_DIR}"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                          MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}"
+#                          COMMENT generating cxx/version.h )
+#   endif(WIN32)
+#   if(UNIX)
+#      # on mac and linux we need the included replacement script
+#      add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h" 
+#                          PRE_BUILD
+#                          COMMAND "${PROJECT_SOURCE_DIR}/../tools/subwcrev.sh"
+#                          ARGS "${PROJECT_SOURCE_DIR}"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                          MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.in"
+#                          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}"
+#                          COMMENT generating cxx/version.h )
+#   endif(UNIX)
+#endif(GENVERSION)
+
+## Now publish the version file to public include dir
+#add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../../include/opengps/cxx/version.h" 
+#                    PRE_BUILD
+#                    COMMAND "${CMAKE_COMMAND}" -E copy
+#                    ARGS "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                         "${CMAKE_CURRENT_SOURCE_DIR}/../../include/opengps/cxx/"
+#                    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cxx/version.h"
+#                    COMMENT publishing cxx/version.h )
+
 
 set(iso54362xml_HEADER
         ${CMAKE_CURRENT_SOURCE_DIR}/c/data_point_c.hxx 

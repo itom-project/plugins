@@ -78,10 +78,10 @@ For using this plugin, please install the PM100x_Instrument_Driver that is shipp
 Compilation
 ===========
 
-It is possible to use the Thorlabs power meter with the legacy Thorlabs software **ThorlabsPowerMeter_1.0.2**
+It is possible to use the Thorlabs power meter with the legacy Thorlabs software **ThorlabsPowerMeter_v1.0.2**
 (see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=PM100x).
 
-Alternatively you can use the Thorlabs Optical Power Meter Monitor Software **Thorlabs.OpticalPowerMonitor.1.1**
+Alternatively you can use the Thorlabs Optical Power Meter Monitor Software **Thorlabs.OpticalPowerMonitor_v1.1.0**
 (see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=OPM).
 
 Install this software and set the CMake variable **THORLABS_PM100D_VISA_DIR** or the environment variable **NI_VISA_ROOT**

@@ -1,6 +1,5 @@
 set(target_name AerotechEnsemble)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -73,8 +72,6 @@ set(PLUGIN_SOURCES
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
-
-
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

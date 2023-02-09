@@ -2,7 +2,7 @@
 itom software
 URL: http://www.uni-stuttgart.de/ito
 Copyright (C) 2018, Institut fuer Technische Optik (ITO),,
-Universität Stuttgart, Germany
+Universitï¿½t Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut für Technische
+In addition, as a special exception, the Institut fï¿½r Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -102,7 +102,6 @@ ThorlabsPowerMeterInterface::~ThorlabsPowerMeterInterface()
 {
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsPowerMeterInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -116,9 +115,6 @@ ito::RetVal ThorlabsPowerMeterInterface::closeThisInst(ito::AddInBase **addInIns
    REMOVE_PLUGININSTANCE(ThorlabsPowerMeter) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
-
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of plugin.
@@ -264,9 +260,13 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
         {
             std::cout << "Thorlabs power meter devices \n" << std::endl;
 
-            for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
+            for (ViUInt32 i = 0; i < std::min<int>((int)count, foundDevices.size()); ++i)
             {
+#if defined(USE_API_DEP_3_0_2)
+                std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
+#else
                 std::cout << deviceInfo[i].toLatin1().data() << std::endl;
+#endif
             }
 
 
@@ -310,11 +310,17 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
             //try to open device
             status = PM(init)(deviceName.toLatin1().data(), VI_OFF, VI_OFF, &m_instrument);
+#if defined(USE_API_DEP_3_0_2)
+            if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
+            {
+                retval += checkError(status);
+            }
+#else
             if (status != VI_SUCCESS)
             {
                 retval += checkError(status);
             }
-
+#endif
         }
 
         ViChar name[256];
@@ -425,7 +431,7 @@ ito::RetVal ThorlabsPowerMeter::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     
-    if (m_instrument != NULL)
+    if (m_instrument)
     {
         PM(close)(m_instrument);
         m_instrument = VI_NULL;
@@ -1178,11 +1184,11 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         {
 			if (mode == PM(POWER_REF_ON))
 			{
-				retval += m_params["measurement_mode"].setVal<char*>("relative");
+				retval += m_params["measurement_mode"].setVal<const char*>("relative");
 			}
 			else if (mode == PM(POWER_REF_OFF))
 			{
-				retval += m_params["measurement_mode"].setVal<char*>("absolute");
+				retval += m_params["measurement_mode"].setVal<const char*>("absolute");
 			}
 			else
 			{

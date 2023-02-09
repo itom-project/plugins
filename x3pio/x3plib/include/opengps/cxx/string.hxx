@@ -44,8 +44,11 @@
 # include <opengps/cxx/opengps.hxx>
 #endif
 
-#include <iostream>
+#if linux
+   #include <iostream>
+#endif
 #include <string>
+#include <sstream>
 
 #if defined(SHARED_OPENGPS_LIBRARY) || defined(BUILD_ISO5436_2_XML_DLL)
 /* Wiora: Removed this part and changed to DLL-Runtime libs. This produces no errors.

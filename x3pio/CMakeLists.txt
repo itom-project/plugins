@@ -29,8 +29,9 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 if(XERCESC_FOUND AND XSD_FOUND)
+    
     add_subdirectory(x3plib/src)
-	
+    
     find_path(ISO5436_2_PATH iso5436_2.xsd
       PATHS $ENV{OPENGPS_DIR}
       ./x3plib/src/ISO5436_2_XML
@@ -67,12 +68,54 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     add_definitions(-DISO5436_2_LIBRARY)
 
+    # see https://stackoverflow.com/questions/48882439/how-to-restore-auto-ptr-in-visual-studio-c17
+    add_definitions(-D_HAS_AUTO_PTR_ETC=1)
+
+    if(DEFINED MSVC_VERSION)
+        # Library postfix/ prefix for different vs version
+        #   1300 = VS  7.0
+        #   1400 = VS  8.0
+        #   1500 = VS  9.0
+        #   1600 = VS 10.0
+        if(MSVC_VERSION EQUAL 1300)
+            set(XSD_LIB_POSTFIX "_vc70")
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-7.1/")
+        elseif(MSVC_VERSION EQUAL 1400)
+            set(XSD_LIB_POSTFIX "_vc80")
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-8.0/")  
+        elseif(MSVC_VERSION EQUAL 1500)
+            set(XSD_LIB_POSTFIX "_vc90")
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-9.0/")  
+        elseif(MSVC_VERSION EQUAL 1600)
+            set(XSD_LIB_POSTFIX "_vc100")
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")  
+        else()
+            # since we don't knwo wether we are on windows or not, we just undefined and see what happens
+            unset(XSDLIB_PATH_POSTFIX)
+        endif()
+
+        # Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?) 
+        if(CMAKE_CL_64)
+            set(XSD_LIBPATH_POSTFIX lib64/)
+        else(CMAKE_CL_64)
+            set(XSD_LIBPATH_POSTFIX lib/)
+        endif(CMAKE_CL_64)
+        
+        set(XSD_LIBPATH_POSTFIX ${XSD_LIBPATH_POSTFIX} ${XSD_LIBPATH_VERS_POSTFIX})
+
+
+    else(DEFINED MSVC_VERSION)
+        set(XSD_LIB_PATH_POSTFIX "")
+        set(XSD_LIB_POSTFIX "")
+    endif(DEFINED MSVC_VERSION)
+
     link_directories(
          ${OpenCV_DIR}/lib
-         ${XSD_LIBRARY_DIR}
+         ${XSD_INCLUDE_DIR}/${XSD_LIBPATH_POSTFIX}
          ${CMAKE_CURRENT_BINARY_DIR}/x3plib/src/zlib/contrib/minizip
     )
-	
+
+
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/x3pio.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
@@ -89,6 +132,8 @@ if(XERCESC_FOUND AND XSD_FOUND)
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()    
+    
+    
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
@@ -108,10 +153,13 @@ if(XERCESC_FOUND AND XSD_FOUND)
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${XERCESC_LIBRARY} ${zlibname} iso5436-2-xml${iso54362LIBSUFFIX} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+
+
     
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
     
+
     # COPY SECTION
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")
@@ -119,7 +167,10 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     if(WIN32)
         set(iso54362xmlNAME iso5436-2-xml${iso54362LIBSUFFIX})
-                
+        
+        #LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/x3plib/src/zlib/contrib/minizip/$<CONFIGURATION>/${ZLIBNAME}${CMAKE_DEBUG_POSTFIX}.dll")
+        #LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
+        
         if(CMAKE_CL_64)
             set(iso54352_target "iso5436-2-xml64")
         else()
@@ -127,10 +178,11 @@ if(XERCESC_FOUND AND XSD_FOUND)
         endif(CMAKE_CL_64)
 
         LIST(APPEND COPY_SOURCES "$<TARGET_FILE:${iso54352_target}>")
-		LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-		
+        #LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/x3plib/src/ISO5436_2_XML/$<CONFIGURATION>/${iso54362xmlNAME}${CMAKE_DEBUG_POSTFIX}.dll")
+        LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
+        
         LIST(APPEND COPY_SOURCES "${XERCESC_BINARY}")
-		LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
+        LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")  
 
     endif(WIN32)
 

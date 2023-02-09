@@ -76,7 +76,7 @@ class DockWidgetAerotechEnsemble : public QWidget
         QSignalMapper *m_pSignalPosInc;
         QSignalMapper *m_pSignalPosDec;
 
-        void DockWidgetAerotechEnsemble::MoveRelative(const int &axis, const double dpos);
+//        void DockWidgetAerotechEnsemble::MoveRelative(const int &axis, const double dpos);
         void Move(const QVector<int> axis, const QVector<double> dpos, const char* func);
 
     signals:
