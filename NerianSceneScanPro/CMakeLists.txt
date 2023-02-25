@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(NERIAN_VISION_SOFTWARE_DIR "" CACHE PATH "path to the install directory of Nerian Vision Software (e.g. C:/Program Files (x86)/Nerian Vision Software 7.0.0)" )

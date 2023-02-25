@@ -1,6 +1,5 @@
 set(target_name demoAlgorithms)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -13,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -56,16 +55,12 @@ if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
 
-
-
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
 # Qt: enable all automoc, autouic and autorcc.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-
-
 
 #translation
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})

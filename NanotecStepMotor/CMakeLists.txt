@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -38,8 +38,6 @@ if(BUILD_TARGET64)
 else(BUILD_TARGET64)
     set(LIBDIR "${CMAKE_CURRENT_SOURCE_DIR}/Lib/win32")
 endif(BUILD_TARGET64)
-
-#message(FATAL_ERROR ${LIBDIR})
 
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogNanotecStepMotor.h

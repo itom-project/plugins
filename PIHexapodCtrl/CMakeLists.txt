@@ -13,7 +13,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -34,7 +34,6 @@ include_directories(
 
 link_directories(
 )
-
 
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogPIHexapodCtrl.h

@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -31,7 +31,7 @@ if(ITOM_SDK_PCL_SUPPORT)
     if (NOT VTK_FOUND)
       find_package(VTK  COMPONENTS vtkCommonCore QUIET)
       if (NOT VTK_FOUND)
-        message("Skipping ${PROJECT_NAME}: ${VTK_NOT_FOUND_MESSAGE}")
+        message(STATUS "Skipping ${PROJECT_NAME}: ${VTK_NOT_FOUND_MESSAGE}")
         return ()
       endif()
     endif()

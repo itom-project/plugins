@@ -13,7 +13,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -124,12 +124,6 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         endif()
     endif()
     
-    if(FLYCAPTURE_LIBRARY)
-        message(STATUS "FlyCapture library found at ${FLYCAPTURE_LIBRARY}")
-    else()
-        message(SEND_FATAL "FlyCapture library not found")
-    endif()
-    
     if(WIN32)
         if(MSVC_VERSION GREATER 1899) #>= MSVC 15.0
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} PATH_SUFFIXES vs2015 NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2015    
@@ -149,17 +143,11 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     
         find_file(FLYCAPTURE_LIBIOMP5MD "libiomp5md.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH)
     
-        if(FLYCAPTURE_BINARY)
-            message(STATUS "FlyCapture binary found at ${FLYCAPTURE_BINARY}")
-        else(FLYCAPTURE_BINARY)
-            message(SEND_FATAL "FlyCapture binary not found")
-        endif(FLYCAPTURE_BINARY)
-
-        if(FLYCAPTURE_LIBIOMP5MD)
-            message(STATUS "libiomp5md.dll found at ${FLYCAPTURE_LIBIOMP5MD}")
-        else(FLYCAPTURE_LIBIOMP5MD)
-            message(SEND_FATAL "libiomp5md.dll not found")
-        endif(FLYCAPTURE_LIBIOMP5MD)
+        if(FLYCAPTURE_LIBRARY AND FLYCAPTURE_LIBIOMP5MD AND FLYCAPTURE_BINARY)
+            set(FLYCAPTURE_FOUND TRUE)
+        else(FLYCAPTURE_LIBRARY AND FLYCAPTURE_LIBIOMP5MD AND FLYCAPTURE_BINARY)
+            set(FLYCAPTURE_FOUND FALSE)
+        endif(FLYCAPTURE_LIBRARY AND FLYCAPTURE_LIBIOMP5MD AND FLYCAPTURE_BINARY)
     endif()
     
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
@@ -187,6 +175,6 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         itom_post_build_copy_files_to_lib_folder(${target_name} FLYCAPTURE_LIBIOMP5MD)
     endif()
     
-else(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
+else(FLYCAPTURE_FOUND)
     message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
-endif(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
+endif(FLYCAPTURE_FOUND)

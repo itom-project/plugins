@@ -14,7 +14,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -125,8 +125,8 @@ endif()
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(WIN32 OR LIBGPHOTO_FOUND)
-    message(WARNING "LIBGPHOTO_INCLUDE_DIR directory could not be found. ${target_name} will not be build.")
+    message(SEND_ERROR "LIBGPHOTO_INCLUDE_DIR directory could not be found. ${target_name} will not be build.")
 endif()
 else(LibUSB_INCLUDE_DIRS)
-    message(WARNING "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
+    message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
 endif()

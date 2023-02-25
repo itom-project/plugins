@@ -13,7 +13,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -91,16 +91,12 @@ if(HIDAPI_REQUIREMENTS_FOUND)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
 
-
-
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
     
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${HIDAPI_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) #${LibUSB_LIBRARIES} 
-
-
         
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
@@ -116,5 +112,5 @@ if(HIDAPI_REQUIREMENTS_FOUND)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(HIDAPI_REQUIREMENTS_FOUND)
-    message(WARNING "Linux package libudev, libudev-dev missing. ${target_name} will not be build")    
+    message(SEND_ERROR "Linux package libudev, libudev-dev missing. ${target_name} will not be build")    
 endif(HIDAPI_REQUIREMENTS_FOUND)

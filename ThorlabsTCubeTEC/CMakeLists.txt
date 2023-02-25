@@ -10,7 +10,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
@@ -122,6 +122,6 @@ if(THORLABS_KINESIS_TEC_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
     
 else(THORLABS_KINESIS_TEC_INCLUDE_DIR)
-    message(WARNING "${THORLABS_KINESIS_TEC_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
+    message(SEND_ERROR "${THORLABS_KINESIS_TEC_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
 endif(THORLABS_KINESIS_TEC_INCLUDE_DIR)
 

@@ -15,7 +15,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 
@@ -48,8 +48,6 @@ if(DEFINED CMAKE_BUILD_TYPE)
 else()
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 endif()
-
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}

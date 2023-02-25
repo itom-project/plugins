@@ -1,6 +1,5 @@
 set(target_name PCOSensicam)
 
-
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 cmake_minimum_required(VERSION 3.1...3.15)
@@ -18,7 +17,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(PCO_SENSICAM_SDK_DIR "" CACHE PATH "path of the pco.sdk. Must contain subfolders like bin,bin64,include,lib,lib64")

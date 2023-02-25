@@ -15,7 +15,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -37,7 +37,6 @@ endif(NOT NITLIBRARY_SDK_DIR)
 find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include /inc DOC "NITLibrary include directory")
 
 if(NITLIBRARY_INCLUDE_DIR)
-    message(STATUS "NITLibrary found")
 
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)

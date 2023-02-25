@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 if(NOT EXISTS ${THORLABS_PM100D_VISA_DIR})
@@ -137,5 +137,5 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else()
-    message(WARNING "PM100D.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_PM100D_VISA_DIR.")
+    message(SEND_ERROR "PM100D.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_PM100D_VISA_DIR.")
 endif()

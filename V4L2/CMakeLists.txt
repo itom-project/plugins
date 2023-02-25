@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -65,10 +65,9 @@ if(MSVC)
 list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
 
-
 find_library(V4LCONVERT_LIBRARY libv4lconvert v4lconvert PATHS "/usr/lib" "/usr/lib/x86-64-linux-gnu")
 if(NOT V4LCONVERT_LIBRARY)
-    message(STATUS "Library libv4lconvert could not be found.")
+    message(SEND_ERROR "Library libv4lconvert could not be found.")
 endif()
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

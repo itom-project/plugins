@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -104,6 +104,7 @@ if(GENICAM_FOUND)
     # copy dlls in itoms lib folder
     file(GLOB dlls "${GENICAM_BINARY_DIR}/*.dll")
     itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
+    
 else(GENICAM_FOUND)
     message(SEND_ERROR "plugin ${target_name} will not be built since the GenICam library could not be found. Please properly indicate GENICAM_ROOT")
 endif(GENICAM_FOUND)

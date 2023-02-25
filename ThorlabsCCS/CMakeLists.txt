@@ -14,7 +14,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(THORLABS_IVI_VISA_SDK "" CACHE PATH "base path to the sdk of IVI Foundation, VISA (e.g. folder C:/Program Files/IVI Foundation/VISA/Win64 or C:/Program Files (x86)/IVI Foundation/VISA/WinNT, having subfolders include, lib, lib_x64...)")
@@ -22,8 +22,6 @@ set(THORLABS_IVI_VISA_SDK "" CACHE PATH "base path to the sdk of IVI Foundation,
 if(NOT THORLABS_IVI_VISA_SDK)
 	set(THORLABS_IVI_VISA_SDK $ENV{NI_VISA_ROOT})
 endif(NOT THORLABS_IVI_VISA_SDK)
-
-message(STATUS "THORLABS_IVI_VISA_SDK: " ${THORLABS_IVI_VISA_SDK})
 
 find_path(THORLABS_IVI_VISA_INCLUDE_DIR "TLCCS.h" PATHS "${THORLABS_IVI_VISA_SDK}" PATH_SUFFIXES "include")
 

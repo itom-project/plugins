@@ -23,7 +23,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 
@@ -53,7 +53,7 @@ ELSE(OPENMP_FOUND)
     message(STATUS "OpenMP not found.")
 ENDIF(OPENMP_FOUND)
 
-if (USE_CUDA)
+if(USE_CUDA)
     find_package(CUDA)
     if (CUDA_FOUND)
         enable_language(CUDA)
@@ -62,7 +62,7 @@ if (USE_CUDA)
 	    SET(CUDA_FOUND FALSE)
         MESSAGE(STATUS "Have not found Cuda Toolkit, CUDA disabled")
     endif (CUDA_FOUND)
-else (USE_CUDA)
+else(USE_CUDA)
 	SET(CUDA_FOUND FALSE)
 endif (USE_CUDA)
 

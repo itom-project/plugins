@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
@@ -49,8 +49,6 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
             ${THORLABS_KINESIS_INCLUDE_DIR}
     )
-
-    #message(FATAL_ERROR ${LIBDIR})
 
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsKCubePA.h

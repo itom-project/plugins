@@ -15,7 +15,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -32,7 +32,6 @@ itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 find_path(XIMEA_APIDIR XIApi.h DOC "XIMEA Api directory (must contain the file m3Api.h)")
 
-message(STATUS "XIMEA_APIDIR: " ${XIMEA_APIDIR})
 
 if(XIMEA_APIDIR)
 
@@ -54,8 +53,6 @@ if(XIMEA_APIDIR)
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${XIMEA_SDK_INCLUDE_DIR}
     )
-
-	message(STATUS ${XIMEA_SDK_BINARY_DIR})
 
     link_directories( ${XIMEA_SDK_BINARY_DIR} )
 

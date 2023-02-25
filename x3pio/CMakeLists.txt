@@ -13,7 +13,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -195,5 +195,5 @@ if(XERCESC_FOUND AND XSD_FOUND)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(XERCESC_FOUND AND XSD_FOUND)
-    message(WARNING "xerces or xsd could not be found. ${target_name} will not be build.")
+    message(SEND_ERROR "Xerces or xsd could not be found. ${target_name} will not be build.")
 endif(XERCESC_FOUND AND XSD_FOUND)

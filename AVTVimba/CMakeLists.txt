@@ -13,7 +13,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -38,8 +38,6 @@ if(EXISTS ${AVTVIMBA_INCLUDE_DIR})
 endif(EXISTS ${AVTVIMBA_INCLUDE_DIR})
 
 if(AVT_VIMBA_HEADER_FILE)
-    
-    message(STATUS "Hello AVT")
 
     set(AVTVIMBA_API_DIR ${AVTVIMBA_INCLUDE_DIR}/../ CACHE PATH "Base directory of VimbaCPP SDK")
 
@@ -96,23 +94,10 @@ if(AVT_VIMBA_HEADER_FILE)
     endif(BUILD_TARGET64)
     find_library(AVTVIMBA_LIBRARY NAMES "VimbaCPP"  PATHS ${AVT_LIBDIR_HINT} NO_DEFAULT_PATH)
     
-    if(AVTVIMBA_LIBRARY)
-        message(STATUS "AVTVimba library found at ${AVTVIMBA_LIBRARY}")
-    else(AVTVIMBA_LIBRARY)
-        message(FATAL "AVTVimba library not found")
-    endif(AVTVIMBA_LIBRARY)
-    
     if(WIN32)
         find_file(AVTVIMBA_BINARY_C "VimbaC.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
         find_file(AVTVIMBA_BINARY_CPP "VimbaCPP.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
     endif(WIN32)
-    
-        
-    if(AVTVIMBA_BINARY_C)
-        message(STATUS "AVTVimba binary C found at ${AVTVIMBA_BINARY_C}")
-    else(AVTVIMBA_BINARY_C)
-        message(FATAL "AVTVimba binary C not found")
-    endif(AVTVIMBA_BINARY_C)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

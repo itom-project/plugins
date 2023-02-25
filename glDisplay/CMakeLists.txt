@@ -12,7 +12,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -96,6 +96,7 @@ if(OPENGL_FOUND)
 
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    
 else(OPENGL_FOUND)
-    message(WARNING "OpenGL could not be found. ${target_name} will not be build")
+    message(SEND_ERROR "OpenGL could not be found. ${target_name} will not be build")
 endif(OPENGL_FOUND)

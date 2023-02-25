@@ -15,7 +15,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY "" CACHE PATH "path to develop directory of Thorlabs / Scientific Imaging / DCx Camera Support")
@@ -35,8 +35,6 @@ if(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY)
         endif(BUILD_TARGET64)
     endif(WIN32)
 endif(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY)
-
-message(STATUS "THORLABS_DCxCAMERA_LIBRARY: " ${THORLABS_DCxCAMERA_LIBRARY})
 
 if(THORLABS_DCxCAMERA_INCLUDE_DIR)
 

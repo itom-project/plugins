@@ -14,7 +14,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(PmdPico_ROYALE_DIR "" CACHE PATH "path to the install directory of Royale (e.g. C:/Program Files/royale/3.8.0.35) ")
@@ -70,7 +70,6 @@ set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPmdPico.cpp
     #add further source files here
 )
-
 
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
