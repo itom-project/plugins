@@ -248,7 +248,7 @@ class Spider8Funcs
         ito::RetVal hbmSetBaud(const int baud);
         ito::RetVal hbmGetBaud(int &baud);
         ito::RetVal hbmGetError(QString &err, int &errNum);
-        ito::RetVal hbmStopAcq(QStringList &channels);
+        ito::RetVal hbmStopAcq(const QStringList &channels);
         static ito::RetVal hbmGetErrStr(const int errNum, QString &errMsg);
         ito::RetVal hbmSetChConfig(Spider8Channel &channel, const int num, const int mode, const int range);
         ito::RetVal hbmCheckChModeRange(Spider8Channel &channel, const int mode, const int range, bool &check);

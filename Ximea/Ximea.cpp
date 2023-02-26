@@ -622,7 +622,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 //disable LUT
                 pxiSetParam(m_handle, XI_PRM_LUT_EN, &badpix, pSize, intType);
 
-                m_params["filter_pattern_size"].setVal<char*>("1");
+                m_params["filter_pattern_size"].setVal<const char*>("1");
             }
 
             if (!retValue.containsError())

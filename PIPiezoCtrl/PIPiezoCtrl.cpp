@@ -1692,7 +1692,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     if (answer.contains("E-662"))
     {
         m_ctrlType = E662Family;
-        m_params["ctrlType"].setVal<char*>("E662", (int)strlen("E662"));
+        m_params["ctrlType"].setVal<const char*>("E662", (int)strlen("E662"));
         
         m_AbsPosCmd = "POS";
         m_RelPosCmd = "POS:REL";
@@ -1740,7 +1740,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     else if (answer.contains("C-663"))
     {
         m_ctrlType = C663Family;
-        m_params["ctrlType"].setVal<char*>("C663", (int)strlen("C663"));
+        m_params["ctrlType"].setVal<const char*>("C663", (int)strlen("C663"));
 
         m_AbsPosCmd = "MOV 1";
         m_RelPosCmd = "MVR 1";
@@ -1787,12 +1787,12 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         if (answer.contains("E816"))
         {
-            m_params["ctrlType"].setVal<char*>("E816", (int)strlen("E816"));
+            m_params["ctrlType"].setVal<const char*>("E816", (int)strlen("E816"));
             m_params["hasOnTargetFlag"].setVal<int>(1.0);
         }
         else if (answer.contains("E625"))
         {
-            m_params["ctrlType"].setVal<char*>("E625", (int)strlen("E625"));
+            m_params["ctrlType"].setVal<const char*>("E625", (int)strlen("E625"));
             m_params["hasOnTargetFlag"].setVal<int>(1.0);
         }
 
@@ -1826,7 +1826,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     {
         m_ctrlType = E753Family;
 
-        m_params["ctrlType"].setVal<char*>("E753");
+        m_params["ctrlType"].setVal<const char*>("E753");
         m_params["hasOnTargetFlag"].setVal<int>(1.0);
 
         m_AbsPosCmd = "MOV 1";

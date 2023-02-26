@@ -33,8 +33,7 @@
 #include <qmessagebox.h>
 #include "DataObject/dataobj.h"
 #include <qvarlengtharray.h>
-#include <qregexp.h>
-#include <QRegularExpression>
+#include <qregularexpression.h>
 #include <qelapsedtimer.h>
 #include <iostream>
 #include <qlist.h>

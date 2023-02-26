@@ -59,7 +59,7 @@ class OceanOpticsSpec : public ito::AddInGrabber
         ito::RetVal buildheader(char **headout, OcHeader *headin, unsigned char* cmd, int cmd_len, char *data = nullptr, int dlen = -1, bool command = true /*command or query*/);
         ito::RetVal readWithFixedLength(unsigned char* buf, int &buf_size);
         ito::RetVal checkAnswerForError(unsigned char* buf, const unsigned char &desiredCmd, bool warningNotError = false, const char *prefix = "");
-		void dummyRead();
+        void dummyRead();
 
         ito::AddInDataIO *m_pUsb;
         bool m_isGrabbing;
@@ -74,8 +74,8 @@ class OceanOpticsSpec : public ito::AddInGrabber
         //
         ito::RetVal m_acquisitionRetVal;
         int m_numberDeadPixels; //this depends on the detector! some detectors don't have deadpixels, which are located at the start of the pixel stream. The list of detectors and numbers of dead pixels was provided by Avantes.
-		int m_numberOfCorrectionValues;
-		int m_startCorrectionIndex;
+        int m_numberOfCorrectionValues;
+        int m_startCorrectionIndex;
 
         static void idleCharDeleter(char* /*v*/) {};
         static void idleIntDeleter(int* /*v*/) {};

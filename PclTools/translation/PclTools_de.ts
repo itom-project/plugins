@@ -1108,7 +1108,7 @@
     </message>
     <message>
         <location line="+1"/>
-        <source>	is the estimated rigid transform. IMPORTANT: this matrix is also taken as the initial guess for the alignment. If there is no guess, set the matrix to identity!</source>
+        <source>    is the estimated rigid transform. IMPORTANT: this matrix is also taken as the initial guess for the alignment. If there is no guess, set the matrix to identity!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

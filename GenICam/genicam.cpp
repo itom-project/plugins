@@ -1480,7 +1480,7 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
     {
         if (producer.endsWith(".cti"))
         {
-            ctiFile = producer;
+            ctiFile.setFile(producer);
 
             if (ctiFile.exists())
             {

@@ -264,7 +264,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
         {
             std::cout << "Thorlabs power meter devices \n" << std::endl;
 
-            for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
+            for (ViUInt32 i = 0; i < std::min<int>((int)count, foundDevices.size()); ++i)
             {
 #if defined(USE_API_3_02)
                 std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
@@ -435,7 +435,7 @@ ito::RetVal ThorlabsPowerMeter::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     
-    if (m_instrument != NULL)
+    if (m_instrument)
     {
         PM(close)(m_instrument);
         m_instrument = VI_NULL;
@@ -1188,11 +1188,11 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         {
 			if (mode == PM(POWER_REF_ON))
 			{
-				retval += m_params["measurement_mode"].setVal<char*>("relative");
+				retval += m_params["measurement_mode"].setVal<const char*>("relative");
 			}
 			else if (mode == PM(POWER_REF_OFF))
 			{
-				retval += m_params["measurement_mode"].setVal<char*>("absolute");
+				retval += m_params["measurement_mode"].setVal<const char*>("absolute");
 			}
 			else
 			{

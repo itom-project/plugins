@@ -24,7 +24,14 @@
 
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 
-#include <qopenglwidget.h>
+#include <QtGlobal>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <QtOpenGLWidgets/qopenglwidget.h>
+#else
+    #include <qopenglwidget.h>
+#endif
+
 #include <qopenglfunctions.h>
 #include <qopenglbuffer.h>
 #include <qopenglvertexarrayobject.h>
@@ -38,7 +45,10 @@ class PrjWindow : public QOpenGLWidget
     Q_OBJECT
 
     public:
-        PrjWindow(const QMap<QString, ito::Param> &params, QWidget *parent = 0, Qt::WindowFlags f = 0);
+    PrjWindow(
+        const QMap<QString, ito::Param>& params,
+        QWidget* parent = 0,
+        Qt::WindowFlags f = Qt::Widget);
         ~PrjWindow();
 
         int getNumImages(void) const;

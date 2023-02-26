@@ -1010,7 +1010,8 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             else
             {
                 int idx = 0;
-                for each (auto axisNum in axis)
+                int axisNum;
+                foreach (axisNum, axis)
                 {
                     retValue += checkError(
                         KIM_MoveRelative(m_serialNo, WhatChannel(axisNum), pos[idx]),
@@ -1125,7 +1126,8 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
             //todo: force all axes to stop
-            for each (auto axis in _axis)
+            int axis;
+            foreach (axis, _axis)
             {
                 retVal += checkError(KIM_MoveStop(m_serialNo, WhatChannel(axis)), "error while interrupt movement");
                 

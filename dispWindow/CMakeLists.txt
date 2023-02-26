@@ -25,7 +25,15 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-itom_find_package_qt(ON Widgets Xml OpenGL LinguistTools)
+
+# make a small Qt search to get the QT6_FOUND variable.
+itom_find_package_qt(ON Widgets)
+
+if(QT6_FOUND)
+    itom_find_package_qt(ON OpenGLWidgets Widgets Xml OpenGL LinguistTools)
+else()
+    itom_find_package_qt(ON Widgets Xml OpenGL LinguistTools)
+endif()
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(OpenGL)
@@ -33,8 +41,8 @@ find_package(OpenGL)
 if(OPENGL_FOUND)
 
     # Qt4 requires GLEW for this plugin
-    if(NOT QT5_FOUND)
-        message(SEND_ERROR "Qt5 required, but not found.")
+    if(NOT QT5_FOUND AND NOT QT6_FOUND)
+        message(SEND_ERROR "Qt5 or Qt6 required, none found")
     endif()
 
     include_directories(

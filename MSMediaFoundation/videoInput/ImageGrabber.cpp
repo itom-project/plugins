@@ -44,14 +44,14 @@ ImageGrabber::ImageGrabber(unsigned int deviceID, QSharedPointer<DebugPrintOut> 
 //---------------------------------------------------------------------------------------
 ImageGrabber::~ImageGrabber(void)
 {
-	if (ig_pSession)
+    if (ig_pSession)
     {
-		ig_pSession->Shutdown();
+        ig_pSession->Shutdown();
     }
-					
-	//SafeRelease(&ig_pSession);
+                    
+    //SafeRelease(&ig_pSession);
 
-	//SafeRelease(&ig_pTopology);
+    //SafeRelease(&ig_pTopology);
 
     delete ig_RIFirst;
     ig_RIFirst = NULL;
@@ -67,15 +67,15 @@ HRESULT ImageGrabber::initImageGrabber(IMFMediaSource *pSource, GUID VideoFormat
     IMFActivate *pSinkActivate = NULL;
     IMFMediaType *pType = NULL;
 
-	IMFPresentationDescriptor *pPD = NULL;
+    IMFPresentationDescriptor *pPD = NULL;
     IMFStreamDescriptor *pSD = NULL;
     IMFMediaTypeHandler *pHandler = NULL;
     IMFMediaType *pCurrentType = NULL;
 
-	HRESULT hr = S_OK;
-	MediaType MT;
+    HRESULT hr = S_OK;
+    MediaType MT;
 
-	 // Clean up.
+     // Clean up.
     if (ig_pSession)
     {
         ig_pSession->Shutdown();
@@ -84,12 +84,10 @@ HRESULT ImageGrabber::initImageGrabber(IMFMediaSource *pSource, GUID VideoFormat
     SafeRelease(&ig_pSession);
     SafeRelease(&ig_pTopology);
 
-	ig_pSource = pSource;
-
-
-
-
+    ig_pSource = pSource;
     hr = pSource->CreatePresentationDescriptor(&pPD);
+    DWORD cTypes = 0;
+
     if (FAILED(hr))
     {
         goto err;
@@ -97,19 +95,21 @@ HRESULT ImageGrabber::initImageGrabber(IMFMediaSource *pSource, GUID VideoFormat
 
     BOOL fSelected;
     hr = pPD->GetStreamDescriptorByIndex(0, &fSelected, &pSD);
+
     if (FAILED(hr))
     {
         goto err;
     }
 
     hr = pSD->GetMediaTypeHandler(&pHandler);
+
     if (FAILED(hr))
     {
         goto err;
     }
 
-    DWORD cTypes = 0;
     hr = pHandler->GetMediaTypeCount(&cTypes);
+
     if (FAILED(hr))
     {
         goto err;
@@ -117,7 +117,7 @@ HRESULT ImageGrabber::initImageGrabber(IMFMediaSource *pSource, GUID VideoFormat
 
     if (cTypes > 0)
     {
-		hr = pHandler->GetCurrentMediaType(&pCurrentType);
+        hr = pHandler->GetCurrentMediaType(&pCurrentType);
 
         if (FAILED(hr))
         {
@@ -133,25 +133,25 @@ err:
     SafeRelease(&pHandler);
     SafeRelease(&pCurrentType);
 
-	unsigned int sizeRawImage = 0;
-	
-	if (VideoFormat == MFVideoFormat_RGB24)
-	{
-		sizeRawImage = MT.MF_MT_FRAME_SIZE * 3;
-	}
-	else
-	if (VideoFormat == MFVideoFormat_RGB32)
-	{
-		sizeRawImage = MT.MF_MT_FRAME_SIZE * 4;
-	}
-		
-	CHECK_HR(hr = RawImage::CreateInstance(&ig_RIFirst, sizeRawImage));
-	
-	CHECK_HR(hr = RawImage::CreateInstance(&ig_RISecond, sizeRawImage));
+    unsigned int sizeRawImage = 0;
+    
+    if (VideoFormat == MFVideoFormat_RGB24)
+    {
+        sizeRawImage = MT.MF_MT_FRAME_SIZE * 3;
+    }
+    else
+    if (VideoFormat == MFVideoFormat_RGB32)
+    {
+        sizeRawImage = MT.MF_MT_FRAME_SIZE * 4;
+    }
+        
+    CHECK_HR(hr = RawImage::CreateInstance(&ig_RIFirst, sizeRawImage));
+    
+    CHECK_HR(hr = RawImage::CreateInstance(&ig_RISecond, sizeRawImage));
 
-	ig_RIOut = ig_RISecond;
-	
-		
+    ig_RIOut = ig_RISecond;
+    
+        
     // Configure the media type that the Sample Grabber will receive.
     // Setting the major and subtype is usually enough for the topology loader
     // to resolve the topology.
@@ -169,42 +169,42 @@ err:
     // Create the Media Session.
     
     CHECK_HR(hr = MFCreateMediaSession(NULL, &ig_pSession));
-	
+    
     // Create the topology.
     CHECK_HR(hr = CreateTopology(pSource, pSinkActivate, &ig_pTopology));
-	
+    
 done:
 
-	// Clean up.
-	if (FAILED(hr))
-	{		
-		if (ig_pSession)
-		{
-			ig_pSession->Shutdown();
-		}
+    // Clean up.
+    if (FAILED(hr))
+    {        
+        if (ig_pSession)
+        {
+            ig_pSession->Shutdown();
+        }
 
-		SafeRelease(&ig_pSession);
-		SafeRelease(&ig_pTopology);
-	}
+        SafeRelease(&ig_pSession);
+        SafeRelease(&ig_pTopology);
+    }
 
     SafeRelease(&pSinkActivate);
     SafeRelease(&pType);
 
-	return hr;
+    return hr;
 }
 
 void ImageGrabber::stopGrabbing()
 {
-	if (ig_pSession)
-	{
-		HRESULT hr = ig_pSession->Stop();
-		if (hr != S_OK)
-		{
-			qDebug() << "could not stop";
-		}
+    if (ig_pSession)
+    {
+        HRESULT hr = ig_pSession->Stop();
+        if (hr != S_OK)
+        {
+            qDebug() << "could not stop";
+        }
 
-		m_stopTimer.start();
-	}
+        m_stopTimer.start();
+    }
 
 
     m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Stopping of of grabbing of images\n", ig_DeviceID);
@@ -212,83 +212,82 @@ void ImageGrabber::stopGrabbing()
 
 HRESULT ImageGrabber::startGrabbing(void)
 {
-	IMFMediaEvent *pEvent = NULL;
-	
+    IMFMediaEvent *pEvent = NULL;
+    
     PROPVARIANT var;
     PropVariantInit(&var);
 
     HRESULT hr = S_OK;
+    HRESULT hrStatus = S_OK;
+    MediaEventType met;
 
     CHECK_HR(hr = ig_pSession->SetTopology(0, ig_pTopology));
     CHECK_HR(hr = ig_pSession->Start(&GUID_NULL, &var));
 
     m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Start Grabbing of the images\n", ig_DeviceID);
 
-    HRESULT hrStatus = S_OK;
-    MediaEventType met;
-
     while (1)
     {
-		if (!ig_pSession)
-		{
-			break;
-		}
-
-        hr = ig_pSession->GetEvent(MF_EVENT_FLAG_NO_WAIT, &pEvent);
-
-		if (hr == MF_E_NO_EVENTS_AVAILABLE)
-		{
-			if (m_stopTimer.isValid() == true && m_stopTimer.elapsed() > 2000)
-			{
-				qDebug() << "MSMediaFoundation MediaSession did not sent a stop event. Stopping is forced...";
-				hr = S_OK;
-				goto done;
-			}
-
-            Sleep(100);
-			continue;
-		}
-
-		if (!SUCCEEDED(hr))
-		{
-			hr = S_OK;
-			goto done;
-		}
-
-        hr = pEvent->GetStatus(&hrStatus);
-		if (!SUCCEEDED(hr))
-		{
-			hr = S_OK;
-			goto done;
-		}
-
-        hr = pEvent->GetType(&met);
-		if (!SUCCEEDED(hr))
-		{
-			hr = S_OK;
-			
-			goto done;
-		}
-
-        if (met == MESessionEnded)
-        {			
-            m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MESessionEnded \n", ig_DeviceID);
-
-			ig_pSession->Stop();
+        if (!ig_pSession)
+        {
             break;
         }
 
-		if (met == MESessionStopped)
+        hr = ig_pSession->GetEvent(MF_EVENT_FLAG_NO_WAIT, &pEvent);
+
+        if (hr == MF_E_NO_EVENTS_AVAILABLE)
+        {
+            if (m_stopTimer.isValid() == true && m_stopTimer.elapsed() > 2000)
+            {
+                qDebug() << "MSMediaFoundation MediaSession did not sent a stop event. Stopping is forced...";
+                hr = S_OK;
+                goto done;
+            }
+
+            Sleep(100);
+            continue;
+        }
+
+        if (!SUCCEEDED(hr))
+        {
+            hr = S_OK;
+            goto done;
+        }
+
+        hr = pEvent->GetStatus(&hrStatus);
+        if (!SUCCEEDED(hr))
+        {
+            hr = S_OK;
+            goto done;
+        }
+
+        hr = pEvent->GetType(&met);
+        if (!SUCCEEDED(hr))
+        {
+            hr = S_OK;
+            
+            goto done;
+        }
+
+        if (met == MESessionEnded)
+        {            
+            m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MESessionEnded \n", ig_DeviceID);
+
+            ig_pSession->Stop();
+            break;
+        }
+
+        if (met == MESessionStopped)
         {
             m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MESessionStopped \n", ig_DeviceID);
             break;
         }
 
 
-		/*if (met == MEVideoCaptureDeviceRemoved)
+        /*if (met == MEVideoCaptureDeviceRemoved)
         {
-			m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MEVideoCaptureDeviceRemoved \n", ig_DeviceID);
-			
+            m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MEVideoCaptureDeviceRemoved \n", ig_DeviceID);
+            
             break;       
         }*/
 
@@ -296,13 +295,13 @@ HRESULT ImageGrabber::startGrabbing(void)
     }
 
     m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Finish startGrabbing \n", ig_DeviceID);
-			
+            
 done:
     SafeRelease(&pEvent);
 
-	SafeRelease(&ig_pSession);
+    SafeRelease(&ig_pSession);
 
-	SafeRelease(&ig_pTopology);
+    SafeRelease(&ig_pTopology);
 
     return hr;
 }
@@ -429,7 +428,7 @@ HRESULT ImageGrabber::CreateInstance(ImageGrabber **ppIG, unsigned int deviceID,
 
 STDMETHODIMP ImageGrabber::QueryInterface(REFIID riid, void** ppv)
 {
-	// Creation tab of shifting interfaces from start of this class
+    // Creation tab of shifting interfaces from start of this class
     static const QITAB qit[] = 
     {
 
@@ -488,24 +487,24 @@ STDMETHODIMP ImageGrabber::OnSetPresentationClock(IMFPresentationClock* pClock)
 STDMETHODIMP ImageGrabber::OnProcessSample(REFGUID guidMajorMediaType, DWORD dwSampleFlags,
     LONGLONG llSampleTime, LONGLONG llSampleDuration, const BYTE * pSampleBuffer,
     DWORD dwSampleSize)
-{	
+{    
     //qDebug() << "OnProcessSample" << ((double)llSampleTime/10000.0) << (double)llSampleDuration/10000.0 << dwSampleSize;
 
-	if (ig_RIE)
-	{
-		ig_RIFirst->fastCopy(pSampleBuffer);
+    if (ig_RIE)
+    {
+        ig_RIFirst->fastCopy(pSampleBuffer);
 
-		ig_RIOut = ig_RIFirst;
-	}
-	else
-	{
-		ig_RISecond->fastCopy(pSampleBuffer);
+        ig_RIOut = ig_RIFirst;
+    }
+    else
+    {
+        ig_RISecond->fastCopy(pSampleBuffer);
 
-		ig_RIOut = ig_RISecond;
-	}
+        ig_RIOut = ig_RISecond;
+    }
 
-	ig_RIE = !ig_RIE;
-		
+    ig_RIE = !ig_RIE;
+        
 
     return S_OK;
 }
@@ -517,5 +516,5 @@ STDMETHODIMP ImageGrabber::OnShutdown()
 
 RawImage *ImageGrabber::getRawImage()
 {
-	return ig_RIOut;
+    return ig_RIOut;
 }

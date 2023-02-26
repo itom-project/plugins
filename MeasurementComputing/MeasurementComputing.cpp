@@ -380,7 +380,7 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
         {
 			retValue += getErrStr(ret, QString::number(type));
 		}
-		it->setVal<char*>(digDevTypeIntToString(type));
+        it->setVal<char*>(digDevTypeIntToString(type).toLocal8Bit().data());
 	}
 
 	if(!retValue.containsError())
@@ -1507,156 +1507,156 @@ ito::RetVal MeasurementComputing::synchronizeSettings(int what)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-char* MeasurementComputing::rangeCodeIntToString(int rangeCodeInt)
+QString MeasurementComputing::rangeCodeIntToString(int rangeCodeInt)
 {
-	char* rangeCodeString[64];
+	QString rangeCodeString;
 
 	switch (rangeCodeInt)
 	{
-	case 20:  //BIP60VOLTS		
-		*rangeCodeString = "BIP60VOLTS";
+	case 20:  //BIP60VOLTS
+		rangeCodeString = "BIP60VOLTS";
 		break;
 	case 23: //BIP30VOLTS
-		*rangeCodeString = "BIP30VOLTS";
+		rangeCodeString = "BIP30VOLTS";
 		break;
 	case 15: //BIP20VOLTS
-		*rangeCodeString = "BIP20VOLTS";	
+		rangeCodeString = "BIP20VOLTS";	
 		break;
 	case 21: //BIP15VOLTS
-		*rangeCodeString = "BIP15VOLTS";		
+		rangeCodeString = "BIP15VOLTS";		
 		break;
 	case 1: //BIP10VOLTS
-		*rangeCodeString = "BIP10VOLTS";	
+		rangeCodeString = "BIP10VOLTS";	
 		break;
 	case 0: //BIP5VOLTS
-		*rangeCodeString = "BIP5VOLTS";		
+		rangeCodeString = "BIP5VOLTS";		
 		break;
 	case 16: //BIP4VOLTS
-		*rangeCodeString = "BIP4VOLTS";			
+		rangeCodeString = "BIP4VOLTS";			
 		break;
 	case 2: //BIP2PT5VOLTS
-		*rangeCodeString = "BIP2PT5VOLTS";		
+		rangeCodeString = "BIP2PT5VOLTS";		
 		break;
 	case 14: //BIP2VOLTS
-		*rangeCodeString = "BIP2VOLTS";		
+		rangeCodeString = "BIP2VOLTS";		
 		break;
 	case 3: //BIP1PT25VOLTS
-		*rangeCodeString = "BIP1PT25VOLTS";	
+		rangeCodeString = "BIP1PT25VOLTS";	
 		break;
 	case 4: //BIP1VOLTS
-		*rangeCodeString = "BIP1VOLTS";	
+		rangeCodeString = "BIP1VOLTS";	
 		break;
 	case 5: //BIPPT625VOLTS
-		*rangeCodeString = "BIPPT625VOLTS";		
+		rangeCodeString = "BIPPT625VOLTS";		
 		break;
 	case 6: //BIPPT5VOLTS
-		*rangeCodeString = "BIPPT5VOLTS";		
+		rangeCodeString = "BIPPT5VOLTS";		
 		break;
 	case 12: //BIPPT25VOLTS
-		*rangeCodeString = "BIPPT25VOLTS";
+		rangeCodeString = "BIPPT25VOLTS";
 		break;
 	case 13: //BIPPT2VOLTS
-		*rangeCodeString = "BIPPT2VOLTS";
+		rangeCodeString = "BIPPT2VOLTS";
 		break;
 	case 7: //BIPPT1VOLTS
-		*rangeCodeString = "BIPPT1VOLTS";
+		rangeCodeString = "BIPPT1VOLTS";
 		break;
 	case 8: //BIPPT05VOLTS
-		*rangeCodeString = "BIPPT05VOLTS";
+		rangeCodeString = "BIPPT05VOLTS";
 		break;
 	case 9: //BIPPT01VOLTS
-		*rangeCodeString = "BIPPT01VOLTS";
+		rangeCodeString = "BIPPT01VOLTS";
 		break;
 	case 10: //BIPPT005VOLTS
-		*rangeCodeString = "BIPPT005VOLTS";
+		rangeCodeString = "BIPPT005VOLTS";
 		break;
 	case 11: //BIP1PT67VOLTS
-		*rangeCodeString = "BIP1PT67VOLTS";
+		rangeCodeString = "BIP1PT67VOLTS";
 		break;
 	case 17: //BIPPT312VOLTS
-		*rangeCodeString = "BIPPT312VOLTS";
+		rangeCodeString = "BIPPT312VOLTS";
 		break;
 	case 18: //BIPPT156VOLTS
-		*rangeCodeString = "BIPPT156VOLTS";
+		rangeCodeString = "BIPPT156VOLTS";
 		break;
 	case 22: //BIPPT125VOLTS
-		*rangeCodeString = "BIPPT125VOLTS";
+		rangeCodeString = "BIPPT125VOLTS";
 		break;
 	case 19: //BIPPT078VOLTS
-		*rangeCodeString = "BIPPT078VOLTS";
+		rangeCodeString = "BIPPT078VOLTS";
 		break; 
 	case 100: //UNI10VOLTS
-		*rangeCodeString = "UNI10VOLTS";
+		rangeCodeString = "UNI10VOLTS";
 		break;
 	case 101: //UNI5VOLTS
-		*rangeCodeString = "UNI5VOLTS";
+		rangeCodeString = "UNI5VOLTS";
 		break;
 	case 114: //UNI4VOLTS
-		*rangeCodeString = "UNI4VOLTS";
+		rangeCodeString = "UNI4VOLTS";
 		break;
 	case 102: //UNI2PT5VOLTS
-		*rangeCodeString = "UNI2PT5VOLTS";
+		rangeCodeString = "UNI2PT5VOLTS";
 		break;
 	case 103: //UNI2VOLTS
-		*rangeCodeString = "UNI2VOLTS";
+		rangeCodeString = "UNI2VOLTS";
 		break;
 	case 109: //UNI1PT67VOLTS
-		*rangeCodeString = "UNI1PT67VOLTS";
+		rangeCodeString = "UNI1PT67VOLTS";
 		break;
 	case 104:  //UNI1PT25VOLTS
-		*rangeCodeString = "UNI1PT25VOLTS";
+		rangeCodeString = "UNI1PT25VOLTS";
 		break;
 	case 105: //UNI1VOLTS
-		*rangeCodeString = "UNI1VOLTS";
+		rangeCodeString = "UNI1VOLTS";
 		break;
 	case 110: //UNIPT5VOLTS
-		*rangeCodeString = "UNIPT5VOLTS";
+		rangeCodeString = "UNIPT5VOLTS";
 		break;
 	case 111: //UNIPT25VOLTS
-		*rangeCodeString = "UNIPT25VOLTS";
+		rangeCodeString = "UNIPT25VOLTS";
 		break;
 	case 112: //UNIPT2VOLTS
-		*rangeCodeString = "UNIPT2VOLTS";
+		rangeCodeString = "UNIPT2VOLTS";
 		break;
 	case 106: //UNIPT1VOLTS
-		*rangeCodeString = "UNIPT1VOLTS";
+		rangeCodeString = "UNIPT1VOLTS";
 		break;
 	case 113: //UNIPT05VOLTS
-		*rangeCodeString = "UNIPT05VOLTS";
+		rangeCodeString = "UNIPT05VOLTS";
 		break;
 	case 108: //UNIPT02VOLTS
-		*rangeCodeString = "UNIPT02VOLTS";
+		rangeCodeString = "UNIPT02VOLTS";
 		break;
 	case 107: //UNIPT01VOLTS
-		*rangeCodeString = "UNIPT01VOLTS";
+		rangeCodeString = "UNIPT01VOLTS";
 		break;
 	case 200: //MA4TO20
-		*rangeCodeString = "MA4TO20";
+		rangeCodeString = "MA4TO20";
 		break;
 	case 201:  //MA2TO10
-		*rangeCodeString = "MA2TO10";
+		rangeCodeString = "MA2TO10";
 		break;
 	case 202: //MA1TO5
-		*rangeCodeString = "MA1TO5";
+		rangeCodeString = "MA1TO5";
 		break;
 	case 203: //MAPT5TO2PT5
-		*rangeCodeString = "MAPT5TO2PT5";
+		rangeCodeString = "MAPT5TO2PT5";
 		break;
 	case 204: //MA0TO20
-		*rangeCodeString = "MA0TO20";
+		rangeCodeString = "MA0TO20";
 		break;
 	case 205: //BIPPT025AMPS
-		*rangeCodeString = "BIPPT025AMPS";
+		rangeCodeString = "BIPPT025AMPS";
 		break;
 	case 400: //BIPPT025VOLTSPERVOLT
-		*rangeCodeString = "BIPPT025VOLTSPERVOLT";
+		rangeCodeString = "BIPPT025VOLTSPERVOLT";
 		break;
 	default:
-		*rangeCodeString = "";
+		rangeCodeString = "";
 		break;
 	}
 	
-	return *rangeCodeString;
+	return rangeCodeString;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 int MeasurementComputing::rangeCodeStringToInt(char* rangeCodeString)
@@ -1888,147 +1888,147 @@ int MeasurementComputing::tempScaleStringToInt(char* tempScaleString)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-char* MeasurementComputing::tempScaleIntToString(int tempScaleInt)
+QString MeasurementComputing::tempScaleIntToString(int tempScaleInt)
 {
-	char* tempScaleString[64];
+	QString tempScaleString;
 
 	switch (tempScaleInt)
 	{
 	case 0:  //CELSIUS		
-		*tempScaleString = "CELSIUS";
+		tempScaleString = "CELSIUS";
 		break;
 	case 1:	//FAHRENHEIT
-		*tempScaleString = "FAHRENHEIT";
+		tempScaleString = "FAHRENHEIT";
 		break;
 	case 2: //KELVIN
-		*tempScaleString = "KELVIN";
+		tempScaleString = "KELVIN";
 		break;
 	case 4: //VOLTS
-		*tempScaleString = "VOLTS";
+		tempScaleString = "VOLTS";
 		break;
 	case 5: //NOSCALE
-		*tempScaleString = "NOSCALE";
+		tempScaleString = "NOSCALE";
 		break;
 	default:
-		*tempScaleString = "NOSCALE";
+		tempScaleString = "NOSCALE";
 		break;
 	}
 	
-	return *tempScaleString;
+	return tempScaleString;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-char* MeasurementComputing::digDevTypeIntToString(int digDevTypeInt)
+QString MeasurementComputing::digDevTypeIntToString(int digDevTypeInt)
 {
-	char* digDevTypeString[64];
+	QString digDevTypeString;
 
 	switch (digDevTypeInt)
 	{
 	case 1: //AUXPORT
-		*digDevTypeString = "AUXPORT";
+		digDevTypeString = "AUXPORT";
 		break;
 	case 10: //FIRSTPORTA
-		*digDevTypeString = "FIRSTPORTA";
+		digDevTypeString = "FIRSTPORTA";
 		break;
 	case 11: //FIRSTPORTB
-		*digDevTypeString = "FIRSTPORTB";
+		digDevTypeString = "FIRSTPORTB";
 		break;
 	case 12: //FIRSTPORTC
-		*digDevTypeString = "FIRSTPORTC";
+		digDevTypeString = "FIRSTPORTC";
 		break;
 	case 13: //FIRSTPORTCH
-		*digDevTypeString = "FIRSTPORTCH";
+		digDevTypeString = "FIRSTPORTCH";
 		break;
 	case 14: //SECONDPORTA
-		*digDevTypeString = "SECONDPORTA";
+		digDevTypeString = "SECONDPORTA";
 		break;
 	case 15: //SECONDPORTB
-		*digDevTypeString = "SECONDPORTB";
+		digDevTypeString = "SECONDPORTB";
 		break;
 	case 16: //SECONDPORTCL
-		*digDevTypeString = "SECONDPORTCL";
+		digDevTypeString = "SECONDPORTCL";
 		break;
 	case 17: //SECONDPORTCH
-		*digDevTypeString = "SECONDPORTCH";
+		digDevTypeString = "SECONDPORTCH";
 		break;
 	case 18: //THIRDPORTA
-		*digDevTypeString = "THIRDPORTA";
+		digDevTypeString = "THIRDPORTA";
 		break;
 	case 19: //THIRDPORTB
-		*digDevTypeString = "THIRDPORTB";
+		digDevTypeString = "THIRDPORTB";
 		break;
 	case 20: //THIRDPORTCL
-		*digDevTypeString = "THIRDPORTCL";
+		digDevTypeString = "THIRDPORTCL";
 		break;
 	case 21: //THIRDPORTCH
-		*digDevTypeString = "THIRDPORTCH";
+		digDevTypeString = "THIRDPORTCH";
 		break;
 	case 22: //FOURTHPORTA
-		*digDevTypeString = "FOURTHPORTA";
+		digDevTypeString = "FOURTHPORTA";
 		break;
 	case 23: //FOURTHPORTB
-		*digDevTypeString = "FOURTHPORTB";
+		digDevTypeString = "FOURTHPORTB";
 		break;
 	case 24: //FOURTHPORTCL
-		*digDevTypeString = "FOURTHPORTCL";
+		digDevTypeString = "FOURTHPORTCL";
 		break;
 	case 25: //FOURTHPORTCH
-		*digDevTypeString = "FOURTHPORTCH";
+		digDevTypeString = "FOURTHPORTCH";
 		break;
 	case 26: //FIFTHPORTA
-		*digDevTypeString = "FIFTHPORTA";
+		digDevTypeString = "FIFTHPORTA";
 		break;
 	case 27: //FIFTHPORTB
-		*digDevTypeString = "FIFTHPORTB";
+		digDevTypeString = "FIFTHPORTB";
 		break;
 	case 28: //FIFTHPORTCL
-		*digDevTypeString = "FIFTHPORTCL";
+		digDevTypeString = "FIFTHPORTCL";
 		break;
 	case 29: //FIFTHPORTCH
-		*digDevTypeString = "FIFTHPORTCH";
+		digDevTypeString = "FIFTHPORTCH";
 		break;
 	case 30: //SIXTHPORTA
-		*digDevTypeString = "SIXTHPORTA";
+		digDevTypeString = "SIXTHPORTA";
 		break;
 	case 31: //SIXTHPORTB
-		*digDevTypeString = "SIXTHPORTB";
+		digDevTypeString = "SIXTHPORTB";
 		break;
 	case 32: //SIXTHPORTCL
-		*digDevTypeString = "SIXTHPORTCL";
+		digDevTypeString = "SIXTHPORTCL";
 		break;
 	case 33: //SIXTHPORTCH
-		*digDevTypeString = "SIXTHPORTCH";
+		digDevTypeString = "SIXTHPORTCH";
 		break;
 	case 34: //SEVENTHPORTA
-		*digDevTypeString = "SEVENTHPORTA";
+		digDevTypeString = "SEVENTHPORTA";
 		break;
 	case 35: //SEVENTHPORTB
-		*digDevTypeString = "SEVENTHPORTB";
+		digDevTypeString = "SEVENTHPORTB";
 		break;
 	case 36: //SEVENTHPORTCL
-		*digDevTypeString = "SEVENTHPORTCL";
+		digDevTypeString = "SEVENTHPORTCL";
 		break;
 	case 37: //SEVENTHPORTCH
-		*digDevTypeString = "SEVENTHPORTCH";
+		digDevTypeString = "SEVENTHPORTCH";
 		break;
 	case 38: //EIGHTHPORTA
-		*digDevTypeString = "EIGHTHPORTA";
+		digDevTypeString = "EIGHTHPORTA";
 		break;
 	case 39: //EIGHTHPORTB
-		*digDevTypeString = "EIGHTHPORTB";
+		digDevTypeString = "EIGHTHPORTB";
 		break;
 	case 40: //EIGHTHPORTCL
-		*digDevTypeString = "EIGHTHPORTCL";
+		digDevTypeString = "EIGHTHPORTCL";
 		break;
 	case 41: //EIGHTHPORTCH
-		*digDevTypeString = "EIGHTHPORTCH";
+		digDevTypeString = "EIGHTHPORTCH";
 		break;
 	default:
-		*digDevTypeString = "FIRSTPORTA";
+		digDevTypeString = "FIRSTPORTA";
 		break;
 	}
 	
-	return *digDevTypeString;
+	return digDevTypeString;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -31,13 +31,13 @@
 #include <qstringlist.h>
 #include <qplugin.h>
 #include <QtCore/QtPlugin>
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <qwaitcondition.h>
 #include <qmutex.h>
-#include <QTime>
+#include <QElapsedTimer>
 
 #ifdef WIN32
-	#include <windows.h>
+    #include <windows.h>
 #endif
 
 #include "common/helperCommon.h"
@@ -98,9 +98,9 @@ It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).");
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
-	paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::In, "S-840-B-I-20", tr("Device name of the Superlum BroadLighter. Only S-840-B-I-20 is implemented and tested.").toLatin1().data());
-	ito::StringMeta *deviceMeta = new ito::StringMeta(ito::StringMeta::String);
-	deviceMeta->addItem("S-840-B-I-20");
+    paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::In, "S-840-B-I-20", tr("Device name of the Superlum BroadLighter. Only S-840-B-I-20 is implemented and tested.").toLatin1().data());
+    ito::StringMeta *deviceMeta = new ito::StringMeta(ito::StringMeta::String);
+    deviceMeta->addItem("S-840-B-I-20");
     paramVal.setMeta(deviceMeta, true);
     m_initParamsMand.append(paramVal);
 }
@@ -117,18 +117,18 @@ const ito::RetVal SuperlumBL::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 SuperlumBL::SuperlumBL() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandMS(0), m_dockWidget(NULL)
 {
-	ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Superlum BroadLighter", tr("Name of plugin.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Serial number of device.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 1, tr("(0) local or (1) remote mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);	
-	paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabeld, (1) optical output is enabled.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("power_mode", ito::ParamBase::Int, 0, 1, 0, tr("(0) LOW Power mode, (1) HIGH Power mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Superlum BroadLighter", tr("Name of plugin.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Serial number of device.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 1, tr("(0) local or (1) remote mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);	
+    paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabeld, (1) optical output is enabled.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("power_mode", ito::ParamBase::Int, 0, 1, 0, tr("(0) LOW Power mode, (1) HIGH Power mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     
     if (hasGuiSupport())
     {
@@ -297,182 +297,193 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     request = QByteArray("S20");
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
                     if (answer.contains("A2") && !retValue.containsError())
-					{
-						QRegExp regExp("^A2(\\d{2,2})");
-						if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-						{                        
-							if (((regExp.cap(1).toInt()) & 2) == 2)
-							{
-								outputOpt = true;//optical output enabled
-							}	
-							else 
-							{
-								outputOpt = false;//optical output disabled
-							}
-						}
-						else
-						{
-							retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
-						}
-							
-						if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 0)) //disable optical output
-						{
-							request = QByteArray("S21");
-							retValue += SendQuestionWithAnswerString(request, answer, 500);   
-							QRegExp regExp("^A2(\\d{2,2})");
-							if (regExp.indexIn(answer) >= 0 && !retValue.containsError() && (m_deviceType == S_840_B_I_20))// raises error, if 1st an 2nd try fail, but may not be neccessary for disabling.
-							{                        
-								if (((regExp.cap(1).toInt()) & 2) == 2)
-								{
-									Sleep(500);
-									retValue += SendQuestionWithAnswerString(request, answer, 500); //2nd try
-									if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-									{
-										if (((regExp.cap(1).toInt()) & 2) == 2) // still on!
-										{
-											m_params["optical_output"].setVal<int>(1);
-											retValue += ito::RetVal::format(ito::retError, 0, tr("Could not disable optical output. Answer was '%s'.").toLatin1().data(), answer.data());
-										}
-										else 
-										{
-											m_params["optical_output"].setVal<int>(0); // 2nd try worked
-										}
-									}
-								}	
-								else 
-								{
-									m_params["optical_output"].setVal<int>(0); // 1st try worked
-								}
-							}
-							else
-							{
-								retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-							}
-						}
-						else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 1)) //enable optical output
-						{
-							request = QByteArray("S21");
-							retValue += SendQuestionWithAnswerString(request, answer, 500); 
-							QRegExp regExp("^A2(\\d{2,2})");
-							if (regExp.indexIn(answer) >= 0 && !retValue.containsError()) //&& (m_deviceType == S_840_B_I_20))// raises error, if 1st an 2nd try fail.
-							{                        
-								if (((regExp.cap(1).toInt()) & 2) == 2)
-								{
-									m_params["optical_output"].setVal<int>(1); // 1st try worked
-								}	
-								else 
-								{
-									Sleep(500);
-									retValue += SendQuestionWithAnswerString(request, answer, 500); //2nd try
-									if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-									{
-										if (((regExp.cap(1).toInt()) & 2) == 2) // on!
-										{
-											m_params["optical_output"].setVal<int>(1); // 2nd try worked
-										}
-										else 
-										{
-											m_params["optical_output"].setVal<int>(0);
-											retValue += ito::RetVal::format(ito::retError, 0, tr("Could not enable optical output. Answer was '%s'.").toLatin1().data(), answer.data());
-										}
-									}
-								}
-							}
-							else
-							{
-								retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-							}    
-						}
-						else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 0)) //already disabled
-						{
+                    {
+                        QRegularExpression regExp("^A2(\\d{2,2})");
+                        QRegularExpressionMatch match = regExp.match(answer);
+                        if (match.hasMatch() && !retValue.containsError())
+                        {                        
+                            if (((match.captured(1).toInt()) & 2) == 2)
+                            {
+                                outputOpt = true;//optical output enabled
+                            }	
+                            else 
+                            {
+                                outputOpt = false;//optical output disabled
+                            }
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
+                        }
+                            
+                        if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 0)) //disable optical output
+                        {
+                            request = QByteArray("S21");
+                            retValue += SendQuestionWithAnswerString(request, answer, 500);   
+                            QRegularExpression regExp("^A2(\\d{2,2})");
+                            QRegularExpressionMatch match = regExp.match(answer);
+                            if (match.hasMatch() && !retValue.containsError() &&
+                                (m_deviceType ==
+                                 S_840_B_I_20)) // raises error, if 1st an 2nd try fail, but may not
+                                                // be neccessary for disabling.
+                            {                        
+                                if (((match.captured(1).toInt()) & 2) == 2)
+                                {
+                                    Sleep(500);
+                                    retValue += SendQuestionWithAnswerString(request, answer, 500); //2nd try
+                                    match = regExp.match(answer);
+                                    if (match.hasMatch() && !retValue.containsError())
+                                    {
+                                        if (((match.captured(1).toInt()) & 2) == 2) // still on!
+                                        {
+                                            m_params["optical_output"].setVal<int>(1);
+                                            retValue += ito::RetVal::format(ito::retError, 0, tr("Could not disable optical output. Answer was '%s'.").toLatin1().data(), answer.data());
+                                        }
+                                        else 
+                                        {
+                                            m_params["optical_output"].setVal<int>(0); // 2nd try worked
+                                        }
+                                    }
+                                }	
+                                else 
+                                {
+                                    m_params["optical_output"].setVal<int>(0); // 1st try worked
+                                }
+                            }
+                            else
+                            {
+                                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                            }
+                        }
+                        else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 1)) //enable optical output
+                        {
+                            request = QByteArray("S21");
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); 
+                            QRegularExpression regExp("^A2(\\d{2,2})");
+                            QRegularExpressionMatch match = regExp.match(answer);
+                            if (match.hasMatch() &&
+                                !retValue.containsError()) //&& (m_deviceType == S_840_B_I_20))//
+                                                           //raises error, if 1st an 2nd try fail.
+                            {                        
+                                if (((match.captured(1).toInt()) & 2) == 2)
+                                {
+                                    m_params["optical_output"].setVal<int>(1); // 1st try worked
+                                }	
+                                else 
+                                {
+                                    Sleep(500);
+                                    retValue += SendQuestionWithAnswerString(request, answer, 500); //2nd try
+                                    match = regExp.match(answer);
+                                    if (match.hasMatch() && !retValue.containsError())
+                                    {
+                                        if (((match.captured(1).toInt()) & 2) == 2) // on!
+                                        {
+                                            m_params["optical_output"].setVal<int>(1); // 2nd try worked
+                                        }
+                                        else 
+                                        {
+                                            m_params["optical_output"].setVal<int>(0);
+                                            retValue += ito::RetVal::format(ito::retError, 0, tr("Could not enable optical output. Answer was '%s'.").toLatin1().data(), answer.data());
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
+                            }    
+                        }
+                        else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 0)) //already disabled
+                        {
 
-						}
-						else if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 1)) //already enabled
-						{
+                        }
+                        else if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 1)) //already enabled
+                        {
 
-						}
-						else
-						{
-							retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
-						}
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-					}
-				}
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
+                        }
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
+                    }
+                }
 
                 //__________________________________________________________________________________________________________ Power Mode
                 else if (paramName == "power_mode")
                 {
                     request = QByteArray("S20");
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
-					QRegExp regExp("^A2(\\d{2,2})");
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{                        
-						if (((regExp.cap(1).toInt()) & 2) == 2)
-						{
-							outputOpt = true;
-						}
-						else
-						{
-							outputOpt = false;
-						}
-						if (((regExp.cap(1).toInt()) & 16) == 16)
-						{
-							powermod = true; //means high
-						}
-						else
-						{
-							powermod = false; //means low
-						}
-					}
-					else 
-					{
-						retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-					}
-					if (!powermod && (val->getVal<int>() == 1)) 
-					{
-						if (outputOpt)
-						{
-							request = QByteArray("S21");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-							Sleep(500);
-							request = QByteArray("S41");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-							Sleep(500);
-							request = QByteArray("S21");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-						}
-						else
-						{
-							request = QByteArray("S41");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-						}
-						m_params["power_mode"].setVal<int>(1);
-					}
-					if (powermod && (val->getVal<int>() == 0)) 
-					{
-						if (outputOpt)
-						{
-							request = QByteArray("S21");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-							Sleep(500);
-							request = QByteArray("S41");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-							Sleep(500);
-							request = QByteArray("S21");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-						}
-						else
-						{
-							request = QByteArray("S41");	
-							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
-						}
-						m_params["power_mode"].setVal<int>(0);
-					}			
-				}  
-			}
+                    QRegularExpression regExp("^A2(\\d{2,2})");
+                    QRegularExpressionMatch match = regExp.match(answer);
+                    if (match.hasMatch() && !retValue.containsError())
+                    {                        
+                        if (((match.captured(1).toInt()) & 2) == 2)
+                        {
+                            outputOpt = true;
+                        }
+                        else
+                        {
+                            outputOpt = false;
+                        }
+                        if (((match.captured(1).toInt()) & 16) == 16)
+                        {
+                            powermod = true; //means high
+                        }
+                        else
+                        {
+                            powermod = false; //means low
+                        }
+                    }
+                    else 
+                    {
+                        retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
+                    }
+                    if (!powermod && (val->getVal<int>() == 1)) 
+                    {
+                        if (outputOpt)
+                        {
+                            request = QByteArray("S21");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                            Sleep(500);
+                            request = QByteArray("S41");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                            Sleep(500);
+                            request = QByteArray("S21");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                        }
+                        else
+                        {
+                            request = QByteArray("S41");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                        }
+                        m_params["power_mode"].setVal<int>(1);
+                    }
+                    if (powermod && (val->getVal<int>() == 0)) 
+                    {
+                        if (outputOpt)
+                        {
+                            request = QByteArray("S21");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                            Sleep(500);
+                            request = QByteArray("S41");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                            Sleep(500);
+                            request = QByteArray("S21");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                        }
+                        else
+                        {
+                            request = QByteArray("S41");	
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
+                        }
+                        m_params["power_mode"].setVal<int>(0);
+                    }			
+                }  
+            }
             //__________________________________________________________________________________________________________
             else if (paramIt->getType() == val->getType())
             {
@@ -483,8 +494,8 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toLatin1().data());
             }
         }
-	}
-	
+    }
+    
     else
     {
         retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
@@ -510,11 +521,11 @@ ito::RetVal SuperlumBL::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     QByteArray deviceName = paramsMand->at(1).getVal<const char*>();
 
     if (deviceName == "S-840-B-I-20")
-	{
-		m_deviceType = S_840_B_I_20;
+    {
+        m_deviceType = S_840_B_I_20;
         m_identifier = QString("Broadlighter S-840-B-I-20 (%1)").arg(getID());
-	}
-	else
+    }
+    else
     {
         retval += ito::RetVal::format(ito::retError, 0, tr("Device name '%s' not supported").toLatin1().data(), deviceName.data());
     }
@@ -550,18 +561,19 @@ ito::RetVal SuperlumBL::close(ItomSharedSemaphore *waitCond)
 
     request = QByteArray("S20");
     retValue += SendQuestionWithAnswerString(request, answer, 500);  //ask, if optical output is enabled
-    QRegExp regExp("^A2(\\d{2,2})");
-	if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-	{                        
-		if (((regExp.cap(1).toInt()) & 2) == 2)
-		{
-			retValue += SendQuestionWithAnswerString("S21", answer, 500);  //disable optical output
-		}	
-	}
-	else
-	{
-		retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-	}
+    QRegularExpression regExp("^A2(\\d{2,2})");
+    QRegularExpressionMatch match = regExp.match(answer);
+    if (match.hasMatch() >= 0 && !retValue.containsError())
+    {                        
+        if (((match.captured(1).toInt()) & 2) == 2)
+        {
+            retValue += SendQuestionWithAnswerString("S21", answer, 500);  //disable optical output
+        }	
+    }
+    else
+    {
+        retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
+    }
 
     request = QByteArray("S11");
     retValue += SendQuestionWithAnswerString(request, answer, 500); //set local mode
@@ -590,7 +602,7 @@ void SuperlumBL::dockWidgetVisibilityChanged(bool visible)
             QObject::connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
                 SLOT(parametersChanged(QMap<QString, ito::Param>)));
             emit parametersChanged(m_params); //send current parameters
-		}
+        }
         else
         {
             QObject::disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
@@ -618,7 +630,7 @@ ito::RetVal SuperlumBL::SendQuestionWithAnswerString(QByteArray questionCommand,
 ito::RetVal SuperlumBL::readString(QByteArray &questionCommand, QByteArray &result, int &len, int timeoutMS)
 {
     ito::RetVal retValue = ito::retOk;
-    QTime timer;
+    QElapsedTimer timer;
     QByteArray endline;
     QByteArray answer;
     bool done = false;
@@ -687,7 +699,7 @@ ito::RetVal SuperlumBL::readString(QByteArray &questionCommand, QByteArray &resu
     
     if (!retValue.containsError() && result.contains("AE"))// general error!)
     {
-		retValue += ito::RetVal(ito::retError, 0, tr(m_params["serial_number"].getVal<char*>(), "general error!").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr(m_params["serial_number"].getVal<char*>(), "general error!").toLatin1().data());
         return retValue;
     }
     
@@ -756,8 +768,8 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
             //1-byte integer: number of channels 1..4. 
             //1-byte integer: firmware version 0..9. 
             //5-byte data: serial number of device
-			
-			//ITO Superlum BroadLighter indentification information 
+            
+            //ITO Superlum BroadLighter indentification information 
             //A0: reponse code
             //1: this integer means that the type of the instrument is 1. 
             //1: this integer means that it is a single-channel device. 
@@ -790,45 +802,46 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
     }
-	
-	//__________________________________________________________________________________________________________ check optical output, power mode and SLD error (regulary at startup of device)
-	if (!retval.containsError())
-	{
-		request = QByteArray("S20");
-		retval += SendQuestionWithAnswerString(request, answer, 500);
-		// check optical output
-		QRegExp regExp("^A2(\\d{2,2})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{                        
-			if (((regExp.cap(1).toInt()) & 2) == 2)
-			{
-				m_params["optical_output"].setVal<int>(1);
-			}	
-			else 
-			{
-				m_params["optical_output"].setVal<int>(0);
-			}
-			if (((regExp.cap(1).toInt()) & 16) == 16)
-			{	
-				m_params["power_mode"].setVal<int>(1);
-			}
-			else
-			{
-				m_params["power_mode"].setVal<int>(0);
-			}	
-			/*if (((regExp.cap(1).toInt()) & 8) == 8)
-			{	
-				m_params["sld_error"].setVal<int>(1);
-			}
-			else
-			{
-				m_params["sld_error"].setVal<int>(0);
-			}	*/
-		}
-		else 
-		{
-			retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-		}
-	} 
+    
+    //__________________________________________________________________________________________________________ check optical output, power mode and SLD error (regulary at startup of device)
+    if (!retval.containsError())
+    {
+        request = QByteArray("S20");
+        retval += SendQuestionWithAnswerString(request, answer, 500);
+        // check optical output
+        QRegularExpression regExp("^A2(\\d{2,2})");
+        QRegularExpressionMatch match = regExp.match(answer);
+        if (match.hasMatch() && !retval.containsError())
+        {                        
+            if (((match.captured(1).toInt()) & 2) == 2)
+            {
+                m_params["optical_output"].setVal<int>(1);
+            }	
+            else 
+            {
+                m_params["optical_output"].setVal<int>(0);
+            }
+            if (((match.captured(1).toInt()) & 16) == 16)
+            {	
+                m_params["power_mode"].setVal<int>(1);
+            }
+            else
+            {
+                m_params["power_mode"].setVal<int>(0);
+            }	
+            /*if (((regExp.cap(1).toInt()) & 8) == 8)
+            {	
+                m_params["sld_error"].setVal<int>(1);
+            }
+            else
+            {
+                m_params["sld_error"].setVal<int>(0);
+            }	*/
+        }
+        else 
+        {
+            retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
+        }
+    } 
     return retval;
 }

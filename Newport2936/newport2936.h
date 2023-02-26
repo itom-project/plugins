@@ -81,8 +81,8 @@ class Newport2936 : public ito::AddInGrabber
 			bAll = bWavelength | bAttenuator | bFilterType | bPowerRange | bAutoRange | bPowerOffset 
 		};
 		ito::RetVal synchronizeParams(int what = bAll);
-        ito::RetVal Newport2936::charToInt(char* str, int &val);
-        ito::RetVal Newport2936::charToDouble(char* str, double &val);
+        ito::RetVal charToInt(const char* str, int &val);
+        ito::RetVal charToDouble(const char* str, double &val);
 
         
     public slots:
@@ -108,7 +108,7 @@ class Newport2936 : public ito::AddInGrabber
         ito::RetVal zeroDevice(int channel, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal zeroDeviceTo(double val, int channel,ItomSharedSemaphore *waitCond = NULL);
 
-		ito::RetVal sendCommand(long DeviceID, char* commandBuffer);
+		ito::RetVal sendCommand(long DeviceID, const char* commandBuffer);
 		ito::RetVal readResponse(long DeviceID, char* responseBuffer, const unsigned long& length);
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
         

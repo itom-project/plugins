@@ -349,7 +349,7 @@ void DialogSpider8::on_aiApplyButton_clicked(bool checked)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSpider8::on_aiChannelCombo_currentIndexChanged(int index)
 {
-    QStringList chParams = QString(m_params["aiChParams"].getVal<char*>()).split(";", QString::SkipEmptyParts);
+    QStringList chParams = QString(m_params["aiChParams"].getVal<char*>()).split(";", Qt::SkipEmptyParts);
     if (chParams.size() > 0)
     {
         bool found = false;

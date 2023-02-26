@@ -1186,7 +1186,7 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     int gain = 0;
     dword serial = 0;
 
-    QFile paramFile = NULL;
+    QFile paramFile;
 
     retValue += PCOLoadLibrary();
 

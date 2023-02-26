@@ -148,15 +148,8 @@ Newport2936::Newport2936() : AddInGrabber(), m_isgrabbing(false), m_faileIdx(0)
 Newport2936::~Newport2936()
 {
 }
-void StringToChar(char* lpDest, std::string strSrc)
-{
-#pragma warning (disable : 4996)	// Disable unsafe parameter warning
-    strSrc.copy(lpDest, strSrc.size());
-    lpDest[strSrc.size()] = NULL;
-#pragma warning (default : 4996)	// Enable unsafe parameter warning
-}
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal Newport2936::charToInt(char* str, int &val)
+ito::RetVal Newport2936::charToInt(const char* str, int &val)
 {
     QLocale locale("C");
     bool ok = true;
@@ -168,7 +161,7 @@ ito::RetVal Newport2936::charToInt(char* str, int &val)
     return ito::retOk;
 }
 
-ito::RetVal Newport2936::charToDouble(char* str, double &val)
+ito::RetVal Newport2936::charToDouble(const char* str, double &val)
 {
     bool ok = true;
     QLocale locale("C");
@@ -667,7 +660,7 @@ ito::RetVal Newport2936::retrieveData(ito::DataObject *externalDataObject)
 
 }
 
-ito::RetVal Newport2936::sendCommand(long DeviceID, char* commandBuffer)
+ito::RetVal Newport2936::sendCommand(long DeviceID, const char* commandBuffer)
 {
 	ito::RetVal retValue(ito::retOk);
 	char szBuffer[64];
@@ -709,7 +702,7 @@ ito::RetVal Newport2936::readResponse(long DeviceID, char* responseBuffer, const
 
 				lBytesRead = i;
 
-				responseBuffer[i] = NULL;
+				responseBuffer[i] = '\0';
 				break;
 
 			}

@@ -10,9 +10,9 @@ struct IMFMediaType;
 class FormatReader
 {
 public:
-	static MediaType Read(IMFMediaType *pType);
-	~FormatReader(void);
+    static MediaType Read(IMFMediaType *pType);
+    ~FormatReader(void);
 private:
-	FormatReader(void);
+    FormatReader(void);
 };
 

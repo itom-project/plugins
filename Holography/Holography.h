@@ -65,9 +65,9 @@ class HolographyInterface : public ito::AddInInterfaceBase
 *   @brief Algorithms used for holographic systems
 *
 *   In this class the algorithms used for holographic optical systems. Currently this are basically propagation
-	algorithms (e.g. Rayleigh-Sommerfeld and Fresnel) to gain a speed up compard to a python implementation. 
-	Maybe in some (soon) future other parts will be included here as phase distribution calculations for Zernike
-	coefficients, different hologram optimization algorithms (dbs, gs, ...), ... ?
+    algorithms (e.g. Rayleigh-Sommerfeld and Fresnel) to gain a speed up compard to a python implementation. 
+    Maybe in some (soon) future other parts will be included here as phase distribution calculations for Zernike
+    coefficients, different hologram optimization algorithms (dbs, gs, ...), ... ?
 */
 class Holography : public ito::AddInAlgo
 {
@@ -95,7 +95,7 @@ class Holography : public ito::AddInAlgo
         static const QString RSDoPropDoc;
         static ito::RetVal RSDoProp(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal RSDoPropParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-		
+        
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);

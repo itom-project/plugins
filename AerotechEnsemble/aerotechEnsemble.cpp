@@ -1083,7 +1083,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
         }
     }
     
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
     QMutex waitMutex;
     QWaitCondition waitCondition;

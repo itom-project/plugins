@@ -113,67 +113,67 @@ ito::RetVal Spider8Funcs::hbmGetErrStr(const int errNum, QString &errMsg)
     switch (errNum)
     {
         case 0:
-            errMsg.sprintf(QObject::tr("ok (0)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("ok (0)").toLatin1().data());
         break;
         case 10000:
-            errMsg.sprintf(QObject::tr("reset (10000)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("reset (10000)").toLatin1().data());
         break;
         case 10001:
-            errMsg.sprintf(QObject::tr("parity error (10001)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("parity error (10001)").toLatin1().data());
         break;
         case 10002:
-            errMsg.sprintf(QObject::tr("system error (10002)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("system error (10002)").toLatin1().data());
         break;
         case 10003:
-            errMsg.sprintf(QObject::tr("unknown command (10003)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("unknown command (10003)").toLatin1().data());
         break;
         case 10004:
-            errMsg.sprintf(QObject::tr("wrong number of parameters (10004)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("wrong number of parameters (10004)").toLatin1().data());
         break;
         case 10005:
-            errMsg.sprintf(QObject::tr("wrong parameter value (10005)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("wrong parameter value (10005)").toLatin1().data());
         break;
         case 10006:
-            errMsg.sprintf(QObject::tr("error with filter frequency (10006)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("error with filter frequency (10006)").toLatin1().data());
         break;
         case 10007:
-            errMsg.sprintf(QObject::tr("amplifier error (10007)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("amplifier error (10007)").toLatin1().data());
         break;
         case 10008:
-            errMsg.sprintf(QObject::tr("command (currently) not executable (10008)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("command (currently) not executable (10008)").toLatin1().data());
         break;
         case 10009:
-            errMsg.sprintf(QObject::tr("error with OMB (10009)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("error with OMB (10009)").toLatin1().data());
         break;
         case 10010:
-            errMsg.sprintf(QObject::tr("error with channel selection (10010)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("error with channel selection (10010)").toLatin1().data());
         break;
         case 10011:
-            errMsg.sprintf(QObject::tr("error when measuring (10011)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("error when measuring (10011)").toLatin1().data());
         break;
         case 10012:
-            errMsg.sprintf(QObject::tr("error when triggering (10012)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("error when triggering (10012)").toLatin1().data());
         break;
         case 10013:
-            errMsg.sprintf(QObject::tr("error with measuring range (10013)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("error with measuring range (10013)").toLatin1().data());
         break;
         case 10014:
-            errMsg.sprintf(QObject::tr("error when taring (10014)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("error when taring (10014)").toLatin1().data());
         break;
         case 10015:
-            errMsg.sprintf(QObject::tr("master device has lost contact to slave (10015)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("master device has lost contact to slave (10015)").toLatin1().data());
         break;
         case 10020:
-            errMsg.sprintf(QObject::tr("Spider8 is in flash update-mode (10020)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("Spider8 is in flash update-mode (10020)").toLatin1().data());
         break;
         case 10021:
-            errMsg.sprintf(QObject::tr("Warning due to filter frequency (10021)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("Warning due to filter frequency (10021)").toLatin1().data());
         break;
         case 10022:
-            errMsg.sprintf(QObject::tr("Warning due to tare status (10022)").toLatin1().data());
+            errMsg.asprintf(QObject::tr("Warning due to tare status (10022)").toLatin1().data());
         break;
         default:
-            errMsg.sprintf(QObject::tr("unknown error (%d)").toLatin1().data(), errNum);
+            errMsg.asprintf(QObject::tr("unknown error (%d)").toLatin1().data(), errNum);
             retval = ito::RetVal(ito::retError, 0, QObject::tr("unknown error %1").arg(errNum).toLatin1().data());            
         break;
     }
@@ -938,7 +938,7 @@ ito::RetVal Spider8Funcs::hbmSetChConfig(Spider8Channel &channel, const int num,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal Spider8Funcs::hbmStopAcq(QStringList &channels)
+ito::RetVal Spider8Funcs::hbmStopAcq(const QStringList &channels)
 {
     ito::RetVal retval(ito::retOk);
 

@@ -35,7 +35,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QtPlugin>
 #include <qelapsedtimer.h>
 #include <qplugin.h>
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <qstring.h>
 #include <qstringlist.h>
 
@@ -363,7 +363,7 @@ ito::RetVal OphirPowermeter::init(
         if (type == "RS232") // init as RS232 powermeter type
         {
             m_connection = connectionType::RS232;
-            m_params["connection"].setVal<char*>("RS232");
+            m_params["connection"].setVal<const char*>("RS232");
 
             if ((ito::AddInDataIO*)(*paramsOpt)[0].getVal<void*>())
             {
@@ -456,19 +456,20 @@ ito::RetVal OphirPowermeter::init(
                     answerStr,
                     m_params["timeout"].getVal<int>()); // optical output check query
 
-                QRegExp reg("(\\S+)"); // matches numbers
+                QRegularExpression reg("(\\S+)"); // matches numbers
+                QRegularExpressionMatchIterator regMatchIt = reg.globalMatch(answerStr);
 
                 QStringList list = QStringList();
-                int pos = 0;
                 bool found = false;
                 QByteArray headSerial;
                 QByteArray headName;
 
-                while ((pos = reg.indexIn(answerStr, pos)) != -1)
+                while (regMatchIt.hasNext())
                 {
-                    list << reg.cap(1);
-                    pos += reg.matchedLength();
+                    QRegularExpressionMatch regMatch = regMatchIt.next();
+                    list << regMatch.captured(1);
                     found = true;
+
                 }
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
                 QStringList list2 = QString::fromStdString(answerStr.toStdString())
@@ -580,16 +581,18 @@ ito::RetVal OphirPowermeter::init(
                     answerStr,
                     m_params["timeout"].getVal<int>()); // optical output check query
 
-                QRegExp reg("(\\S+)"); // matches numbers
+                QRegularExpression reg("(\\S+)"); // matches numbers
+                QRegularExpressionMatchIterator regMatchIt = reg.globalMatch(answerStr);
 
-                QStringList list;
+                QStringList list = QStringList();
                 QByteArray foundSerialNo;
-                int pos = 0;
+                found = false;
 
-                while ((pos = reg.indexIn(answerStr, pos)) != -1)
+
+                while (regMatchIt.hasNext())
                 {
-                    list << reg.cap(1);
-                    pos += reg.matchedLength();
+                    QRegularExpressionMatch regMatch = regMatchIt.next();
+                    list << regMatch.captured(1);
                     found = true;
                 }
 
@@ -732,15 +735,17 @@ ito::RetVal OphirPowermeter::init(
                     answerStr,
                     m_params["timeout"].getVal<int>()); // optical output check query
 
-                QRegExp reg("(\\S+)"); // matches numbers
+
+                QRegularExpression reg("(\\S+)"); // matches numbers
+                QRegularExpressionMatchIterator regMatchIt = reg.globalMatch(answerStr);
 
                 QStringList list;
-                int pos = 0;
 
-                while ((pos = reg.indexIn(answerStr, pos)) != -1)
+
+                while (regMatchIt.hasNext())
                 {
-                    list << reg.cap(1);
-                    pos += reg.matchedLength();
+                    QRegularExpressionMatch regMatch = regMatchIt.next();
+                    list << regMatch.captured(1);
                 }
 
                 m_params["wavelengthSet"].setVal<char*>(list.at(0).toLatin1().data());
@@ -826,7 +831,7 @@ ito::RetVal OphirPowermeter::init(
                 request = QByteArray("$FP");
                 retval += SerialSendCommand(request); // does not return a value
 
-                m_params["measurementType"].setVal<char*>("power");
+                m_params["measurementType"].setVal<const char*>("power");
 
                 Sleep(1000); // give the device some time
 
@@ -843,7 +848,7 @@ ito::RetVal OphirPowermeter::init(
         else // connect to USB powermeter type
         {
             m_connection = connectionType::USB;
-            m_params["connection"].setVal<char*>("USB");
+            m_params["connection"].setVal<const char*>("USB");
 
             // creates instance of OphirLMMeasurement
             try
@@ -1054,7 +1059,7 @@ ito::RetVal OphirPowermeter::init(
 
 
                     m_params["wavelength"].setVal<int>(waveMin);
-                    m_params["wavelengthSet"].setVal<char*>("CONTINUOUS");
+                    m_params["wavelengthSet"].setVal<const char*>("CONTINUOUS");
                 }
                 else // discrete
                 {
@@ -1094,7 +1099,7 @@ ito::RetVal OphirPowermeter::init(
                     }
 
 
-                    m_params["wavelengthSet"].setVal<char*>("DISCRETE");
+                    m_params["wavelengthSet"].setVal<const char*>("DISCRETE");
                 }
             }
 
@@ -1115,7 +1120,7 @@ ito::RetVal OphirPowermeter::init(
                 }
                 catch (const _com_error& /*e*/)
                 {
-                    m_params["calibrationDueDate"].setVal<char*>("not available");
+                    m_params["calibrationDueDate"].setVal<const char*>("not available");
                 }
             }
 
@@ -1448,7 +1453,7 @@ ito::RetVal OphirPowermeter::setParam(
 
                     if (!retValue.containsError())
                     {
-                        it->setVal<char*>("energy");
+                        it->setVal<const char*>("energy");
 
                         m_data.setValueDescription("energy");
                     }
@@ -1460,7 +1465,7 @@ ito::RetVal OphirPowermeter::setParam(
 
                     if (!retValue.containsError())
                     {
-                        it->setVal<char*>("power");
+                        it->setVal<const char*>("power");
                         m_data.setValueDescription("power");
                     }
                 }

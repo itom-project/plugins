@@ -345,7 +345,7 @@ void DockWidgetUhl::on_checkBox_enablejoy_clicked()
 void DockWidgetUhl::waitForDoneAndCheckRetVal(ItomSharedSemaphore *waitCond)
 {
     int done = 0;
-    QTime time;
+    QElapsedTimer time;
     QMessageBox msgBox;
     time.start();
     if (m_pUhlMotor)

@@ -54,7 +54,7 @@ class DockWidgetOceanOpticsSpec : public ito::AbstractAddInDockWidget
         void on_rangeWidget_ROI_minimumValueChanged(int d);
         void on_rangeWidget_ROI_maximumValueChanged(int d);
         void on_doubleSpinBox_integration_time_valueChanged(double d);
-		//void on_comboDarkCorrection_currentIndexChanged(int d);
+        //void on_comboDarkCorrection_currentIndexChanged(int d);
 };
 
 #endif

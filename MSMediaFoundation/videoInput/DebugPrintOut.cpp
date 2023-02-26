@@ -20,11 +20,11 @@ DebugPrintOut::~DebugPrintOut(void)
 //-----------------------------------------------------------
 void DebugPrintOut::printOut(const char *format, ...)
 {
-	if (m_verbose)
-	{
-		va_list args;
+    if (m_verbose)
+    {
+        va_list args;
 
-		va_start(args, format);
+        va_start(args, format);
 
         char buffer[256];
 
@@ -32,12 +32,12 @@ void DebugPrintOut::printOut(const char *format, ...)
 
         std::cout << buffer << std::endl;
 
-		va_end (args);
-	}
+        va_end (args);
+    }
 }
 
 //-----------------------------------------------------------
 void DebugPrintOut::setVerbose(bool state)
 {
-	m_verbose = state;
+    m_verbose = state;
 }

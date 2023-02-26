@@ -25,7 +25,13 @@
 
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 
-#include <qopenglwidget.h>
+#include <QtGlobal>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <QtOpenGLWidgets/qopenglwidget.h>
+#else
+    #include <qopenglwidget.h>
+#endif
 #include <qvector.h>
 
 #include <qopenglfunctions.h> //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
@@ -49,7 +55,7 @@ class GLWindow : public QOpenGLWidget
     Q_OBJECT
 
 public:
-    GLWindow(QWidget *parent = 0, const Qt::WindowFlags f = 0);
+    GLWindow(QWidget *parent = 0, const Qt::WindowFlags f = Qt::Widget);
     ~GLWindow();
 
 protected:

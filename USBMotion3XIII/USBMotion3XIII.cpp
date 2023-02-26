@@ -23,6 +23,14 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
+#ifdef linux
+    #include <unistd.h>
+#else
+    #include <windows.h>
+#endif
+
+#include "USB3xIII_dll.h"
+
 #include "USBMotion3XIII.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
@@ -31,15 +39,9 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 #include <qmutex.h>
+#include <qelapsedtimer.h>
 #include <qwaitcondition.h>
 
-#ifdef linux
-    #include <unistd.h>
-#else
-    #include <windows.h>
-#endif
-
-#include "USB3xIII_dll.h"
 
 using namespace ito;
 
@@ -750,11 +752,11 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 
                 //if (initparamfromeep(DWTIMEOUT)) // load values from EEPROM or default values
                 //{
-				ito::RetVal retValue2 = errorCheck(initparamtodefault(DWTIMEOUT));
-				if (retValue2.containsError())
-				{
+                ito::RetVal retValue2 = errorCheck(initparamtodefault(DWTIMEOUT));
+                if (retValue2.containsError())
+                {
                     retValue += errorCheck(initparamtodefault(DWTIMEOUT));
-				}
+                }
                 //}
 
                 unsigned char mcStatus;
@@ -1170,8 +1172,7 @@ ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double
             return RetVal(retError,0, tr("coilCurrentLow is bigger than the maximal allowed value").toLatin1().data());
         }
    
-
-        driverAleat = aleat >= 100 ? 0 : (unsigned char)(aleat / 12.5);
+        driverAleat = (aleat >= 100) ? 0 : (unsigned char)(aleat / 12.5);
     }
     if (changeBitMask & 0x4) //set coilCurrentRest
     {
@@ -1317,9 +1318,9 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
     }
 
     getvmin(motor, mcStatus, driverVMin, DWTIMEOUT);
-    qDebug() << "V-Min set to " << driverVMin << " steps / sec; " << (driverVMin)/stepsPerUnit <<" °/sec or mm/sec";
+    qDebug() << "V-Min set to " << driverVMin << " steps / sec; " << (driverVMin)/stepsPerUnit <<" Â°/sec or mm/sec";
     getvmax(motor, mcStatus, driverVMax, DWTIMEOUT);
-    qDebug() << "V-Max set to " << driverVMax << " steps / sec; " << (driverVMax)/stepsPerUnit << " °/sec or mm/sec";
+    qDebug() << "V-Max set to " << driverVMax << " steps / sec; " << (driverVMax)/stepsPerUnit << " Â°/sec or mm/sec";
 
     return retValue;
 }
@@ -1874,7 +1875,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
     short v1, v2, v3;
     int x1, x2, x3;
     char motor;
-    QTime timer;
+    QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
     long delay = 100; //[ms]

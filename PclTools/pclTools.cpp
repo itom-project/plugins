@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PCLTools" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -70,7 +70,7 @@
 #include <pcl/common/pca.h>
 
 #if PCL_VERSION_COMPARE(>, 1, 7, 0) && PCL_VERSION_COMPARE(<, 1, 10, 0)
-	#include <pcl/recognition/auxiliary.h>
+    #include <pcl/recognition/auxiliary.h>
     #include <pcl/recognition/ransac_based/trimmed_icp.h>
 #elif PCL_VERSION_COMPARE(>=, 1, 10, 0) && PCL_VERSION_COMPARE(<, 1, 11, 0)
     #include <pcl/recognition/auxiliary.h>
@@ -3539,7 +3539,7 @@ ito::RetVal PclTools::pclTrimmedICPParams(QVector<ito::Param> *paramsMand, QVect
     paramsMand->append(ito::Param("pointCloudSource", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Point cloud of same type than target cloud. This cloud is registered to the target.").toLatin1().data()));
     
     paramsMand->append(ito::Param("numSourcePointsToUse", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 100, tr("gives the number of closest source points taken into account for registration. By closest source points we mean the source points closest to the target. These points are computed anew at each iteration.").toLatin1().data()));
-    paramsMand->append(ito::Param("transform", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("	is the estimated rigid transform. IMPORTANT: this matrix is also taken as the initial guess for the alignment. If there is no guess, set the matrix to identity!").toLatin1().data()));
+    paramsMand->append(ito::Param("transform", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("    is the estimated rigid transform. IMPORTANT: this matrix is also taken as the initial guess for the alignment. If there is no guess, set the matrix to identity!").toLatin1().data()));
     
     return retval;
 }
@@ -3597,7 +3597,7 @@ ito::RetVal PclTools::pclTrimmedICP(QVector<ito::ParamBase> *paramsMand, QVector
 
     return retval;
 #else
-	return ito::RetVal(ito::retError, 0, "PCL >= 1.7.0 is required for trimmed ICP");
+    return ito::RetVal(ito::retError, 0, "PCL >= 1.7.0 is required for trimmed ICP");
 #endif
 }
 

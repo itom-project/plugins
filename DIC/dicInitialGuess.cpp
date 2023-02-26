@@ -91,7 +91,7 @@ ito::RetVal doCalcInitialGuessFFTMScale(ito::DataObject *imgInRef, ito::DataObje
 
         paramsMand[0].setVal<void*>(&imgRef);
         paramsMand[1].setVal<void*>(&imgRef);
-        paramsOpt[1].setVal<char*>("no");
+        paramsOpt[1].setVal<const char*>("no");
         retval = apiFilterCall("fftw2D", &paramsMand, &paramsOpt, &paramsOut);
         if (retval.containsWarningOrError())
             return retval;
@@ -188,7 +188,7 @@ ito::RetVal doCalcInitialGuessFFT(ito::DataObject *imgInRef, ito::DataObject *im
 
     paramsMand[0].setVal<void*>(&imgRef); 
     paramsMand[1].setVal<void*>(&imgRef);
-    paramsOpt[1].setVal<char*>("no");
+    paramsOpt[1].setVal<const char*>("no");
     retval = apiFilterCall("fftw2D", &paramsMand, &paramsOpt, &paramsOut);
     if (retval.containsWarningOrError())
         return retval;

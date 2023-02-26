@@ -588,15 +588,15 @@ ito::RetVal VRMagic::synchronizeCameraSettings(int what /*= sAll */)
         {
             if (signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_SVIDEO)
             {
-                it->setVal<char*>("svideo");
+                it->setVal<const char*>("svideo");
             }
             else if (signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_COMPOSITE)
             {
-                it->setVal<char*>("composite");
+                it->setVal<const char*>("composite");
             }
             else if (signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_YC)
             {
-                it->setVal<char*>("yc");
+                it->setVal<const char*>("yc");
             }
             else
             {

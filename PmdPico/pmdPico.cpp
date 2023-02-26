@@ -309,7 +309,7 @@ ito::RetVal PmdPico::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         {
             royale::CameraManager manager;
             royale::Vector<royale::String> camlist(manager.getConnectedCameraList());
-            qDebug()<< "Detected " << camlist.size() << " camera(s)." << endl;
+            qDebug() << "Detected " << camlist.size() << " camera(s).";
             if (!camlist.empty())
             {
                 m_cameraDevice = manager.createCamera(camlist[0]).release(); //the pointer is no longer guarded by a unique ptr

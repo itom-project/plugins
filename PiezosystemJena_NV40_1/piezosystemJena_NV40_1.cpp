@@ -9,7 +9,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <qwaitcondition.h>
 #include <qelapsedtimer.h>
 
@@ -964,10 +964,11 @@ ito::RetVal PiezosystemJena_NV40_1::readString(QByteArray &result, int &len, int
 
     if (!retValue.containsError())
     {
-        QRegExp reg("^err,(\\d)$");
-        if (reg.indexIn( result ) >= 0)
+        QRegularExpression reg("^err,(\\d)$");
+        QRegularExpressionMatch match = reg.match(result);
+        if (match.hasMatch())
         {
-            switch (reg.cap(1).toInt())
+            switch (match.captured(1).toInt())
             {
             case 1:
                 retValue += ito::RetVal(ito::retError, 0, tr("unknown command").toLatin1().data());
@@ -1120,11 +1121,12 @@ ito::RetVal PiezosystemJena_NV40_1::identifyAndInitializeSystem(QString &identif
     if (!retval.containsError() || retval.errorCode() == PI_READTIMEOUT)
     {
         retval = ito::retOk;
-        QRegExp reg("^NV1CL V(.*)$");
+        QRegularExpression reg("^NV1CL V(.*)$");
+        QRegularExpressionMatch match= reg.match(answer);
 
-        if (reg.indexIn(answer) >= 0)
+        if (match.hasMatch())
         {
-            identifier = reg.cap(1);
+            identifier = match.captured(1);
         }
         else
         {

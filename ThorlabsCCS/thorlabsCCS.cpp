@@ -171,7 +171,7 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     retValue += checkError(viOpenDefaultRM(&resMgr));
     if (!retValue.containsError())
     {
-        retValue += checkError(viFindRsrc(resMgr, TLCCS_FIND_PATTERN, &findList, &count, rscStr));
+        retValue += checkError(viFindRsrc(resMgr, const_cast<char*>(TLCCS_FIND_PATTERN), &findList, &count, rscStr));
         if (retValue == ito::retOk) foundDevices.append(rscStr);
 
         for (ViUInt32 c = 1; c < count; ++c)
@@ -187,7 +187,7 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             if (deviceName == "<scan>")
             {
                 std::cout << "Thorlabs CCS devices \n------------------------\n" << std::endl;
-                for (ViUInt32 i = 0; i < std::min((int)count, foundDevices.size()); ++i)
+                for (ViUInt32 i = 0; i < std::min(static_cast<size_t>(count), static_cast<size_t>(foundDevices.size())); ++i)
                 {
                     std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
                 }

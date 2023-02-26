@@ -747,29 +747,29 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             switch (strCamType.wInterfaceType)
             {
                 case INTERFACE_FIREWIRE:
-                    m_params["interface"].setVal<char*>("firewire");
+                    m_params["interface"].setVal<const char*>("firewire");
                     break;
                 case INTERFACE_CAMERALINK:
-                    m_params["interface"].setVal<char*>("cameralink");
+                    m_params["interface"].setVal<const char*>("cameralink");
                     break;
                 case INTERFACE_USB:
-                    m_params["interface"].setVal<char*>("usb");
+                    m_params["interface"].setVal<const char*>("usb");
                     break;
                 case INTERFACE_ETHERNET:
-                    m_params["interface"].setVal<char*>("ethernet");
+                    m_params["interface"].setVal<const char*>("ethernet");
                     break;
                 case INTERFACE_SERIAL:
-                    m_params["interface"].setVal<char*>("serial");
+                    m_params["interface"].setVal<const char*>("serial");
                     break;
 #ifndef PCO_SDK_OLD
                 case INTERFACE_USB3:
-                    m_params["interface"].setVal<char*>("usb3");
+                    m_params["interface"].setVal<const char*>("usb3");
                     break;
                 case INTERFACE_CAMERALINKHS:
-                    m_params["interface"].setVal<char*>("cameralinkhs");
+                    m_params["interface"].setVal<const char*>("cameralinkhs");
                     break;
                 case INTERFACE_COAXPRESS:
-                    m_params["interface"].setVal<char*>("coaxpress");
+                    m_params["interface"].setVal<const char*>("coaxpress");
                     break;
 #endif
             }

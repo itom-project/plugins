@@ -161,7 +161,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
     ito::uint32 offset;
     bool topoNotColor = false;
     bool isHeight = false;
-	bool considerNaN = false;
+    bool considerNaN = false;
     ito::RetVal retval;
 
     if (setname.startsWith("topo"))
@@ -170,7 +170,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
         offset = offsets.height[index];
         topoNotColor = true;
         isHeight = true;
-		considerNaN = true;
+        considerNaN = true;
     }
     else if (setname.startsWith("intensity"))
     {
@@ -178,16 +178,16 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
         offset = offsets.light[index];
         topoNotColor = true;
     }
-	else if (setname.startsWith("peak"))
-	{
-		offset = offsets.color_peak;
-		topoNotColor = false;
-	}
-	else if (setname.startsWith("color"))
-	{
-		offset = offsets.color_light;
-		topoNotColor = false;
-	}
+    else if (setname.startsWith("peak"))
+    {
+        offset = offsets.color_peak;
+        topoNotColor = false;
+    }
+    else if (setname.startsWith("color"))
+    {
+        offset = offsets.color_light;
+        topoNotColor = false;
+    }
 
 
     if (offset == 0)
@@ -229,78 +229,78 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                         break;
                     }
 
-					double scale = (isHeight) ? measconds.z_length_per_digit * PICOMETRE : qPow(0.5, header.bit_depth);
+                    double scale = (isHeight) ? measconds.z_length_per_digit * PICOMETRE : qPow(0.5, header.bit_depth);
                     
-					if (datatype != ito::tInt32)
-					{
-						ito::DataObject temp(header.height, header.width, datatype);
-						char* ptr = (char*)temp.rowPtr(0, 0);
-						retval += ito::readFromDevice(&file, ptr, header.byte_size);
-						retval += temp.convertTo(dataobj, ito::tFloat64, scale, 0.0);
+                    if (datatype != ito::tInt32)
+                    {
+                        ito::DataObject temp(header.height, header.width, datatype);
+                        char* ptr = (char*)temp.rowPtr(0, 0);
+                        retval += ito::readFromDevice(&file, ptr, header.byte_size);
+                        retval += temp.convertTo(dataobj, ito::tFloat64, scale, 0.0);
 
-						if (considerNaN && datatype == ito::tUInt8)
-						{
-							const ito::uint8* source = (const ito::uint8*)temp.rowPtr(0, 0);
-							ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
+                        if (considerNaN && datatype == ito::tUInt8)
+                        {
+                            const ito::uint8* source = (const ito::uint8*)temp.rowPtr(0, 0);
+                            ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
 
-							for (size_t i = 0; i < header.height * header.width; ++i)
-							{
-								if (source[i] == 0)
-								{
-									dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
-								}
-							}
-						}
-						else if (considerNaN && datatype == ito::tUInt16)
-						{
-							const ito::uint16* source = (const ito::uint16*)temp.rowPtr(0, 0);
-							ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
+                            for (size_t i = 0; i < header.height * header.width; ++i)
+                            {
+                                if (source[i] == 0)
+                                {
+                                    dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                }
+                            }
+                        }
+                        else if (considerNaN && datatype == ito::tUInt16)
+                        {
+                            const ito::uint16* source = (const ito::uint16*)temp.rowPtr(0, 0);
+                            ito::float64* dest = (ito::float64*)dataobj.rowPtr(0, 0);
 
-							for (size_t i = 0; i < header.height * header.width; ++i)
-							{
-								if (source[i] == 0)
-								{
-									dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
-								}
-							}
-						}
-					}
-					else
-					{
-						//dataobject does not support uint32
-						ito::DataObject temp(header.height, header.width, ito::tFloat64);
-						ito::float64 *ptr = (ito::float64*)temp.rowPtr(0, 0);
-						char *buf = new char[header.byte_size];
-						retval += ito::readFromDevice(&file, buf, header.byte_size);
-						const ito::uint32 *buf_ = (const ito::uint32*)buf;
+                            for (size_t i = 0; i < header.height * header.width; ++i)
+                            {
+                                if (source[i] == 0)
+                                {
+                                    dest[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //dataobject does not support uint32
+                        ito::DataObject temp(header.height, header.width, ito::tFloat64);
+                        ito::float64 *ptr = (ito::float64*)temp.rowPtr(0, 0);
+                        char *buf = new char[header.byte_size];
+                        retval += ito::readFromDevice(&file, buf, header.byte_size);
+                        const ito::uint32 *buf_ = (const ito::uint32*)buf;
 
-						if (considerNaN)
-						{
-							for (size_t i = 0; i < header.height * header.width; ++i)
-							{
-								ptr[i] = buf_[i] == 0 ? std::numeric_limits<ito::float64>::quiet_NaN() : (ito::float64)buf_[i] * scale;
-							}
-						}
-						else
-						{
-							for (size_t i = 0; i < header.height * header.width; ++i)
-							{
-								ptr[i] = (ito::float64)buf_[i] * scale;
-							}
-						}
-						DELETE_AND_SET_NULL(buf);
-						dataobj = temp;
-					}
+                        if (considerNaN)
+                        {
+                            for (size_t i = 0; i < header.height * header.width; ++i)
+                            {
+                                ptr[i] = buf_[i] == 0 ? std::numeric_limits<ito::float64>::quiet_NaN() : (ito::float64)buf_[i] * scale;
+                            }
+                        }
+                        else
+                        {
+                            for (size_t i = 0; i < header.height * header.width; ++i)
+                            {
+                                ptr[i] = (ito::float64)buf_[i] * scale;
+                            }
+                        }
+                        DELETE_AND_SET_NULL(buf);
+                        dataobj = temp;
+                    }
 
                     dataobj.setAxisUnit(0, "m");
                     dataobj.setAxisUnit(1, "m");
                     dataobj.setAxisScale(0, measconds.y_length_per_pixel * PICOMETRE);
                     dataobj.setAxisScale(1, measconds.x_length_per_pixel * PICOMETRE);
 
-					if (isHeight)
-					{
-						dataobj.setValueUnit("m");
-					}
+                    if (isHeight)
+                    {
+                        dataobj.setValueUnit("m");
+                    }
                 }
             }
             else
@@ -324,7 +324,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                     ito::Rgba32* ptr = dataobj.rowPtr<ito::Rgba32>(0, 0);
                     char* buf = new char[header.byte_size];
                     retval += ito::readFromDevice(&file, buf, header.byte_size);
-					const char* buf_ = const_cast<char*>(buf); //running variable
+                    const char* buf_ = const_cast<char*>(buf); //running variable
 
                     if (!retval.containsError())
                     {
@@ -335,7 +335,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                             ptr->g = buf_[1];
                             ptr->b = buf_[2];
                             ++ptr;
-							buf_ += 3;
+                            buf_ += 3;
                         }
                     }
 
@@ -375,16 +375,16 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source filename").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("setname", ito::ParamBase::String | ito::ParamBase::In, "topo0", tr("name of data set to load, empty string prints a list of all available dataset names. Possible values are: topo0, topo1, ..., intensity0, intensity1, ..., peak, color").toLatin1().data());
-		ito::StringMeta *smset = new ito::StringMeta(ito::StringMeta::String);
-		smset->addItem("topo0");
-		smset->addItem("topo1");
-		smset->addItem("topo2");
-		smset->addItem("intensity0");
-		smset->addItem("intensity1");
-		smset->addItem("intensity2");
-		smset->addItem("peak");
-		smset->addItem("color");
-		param.setMeta(smset, true);
+        ito::StringMeta *smset = new ito::StringMeta(ito::StringMeta::String);
+        smset->addItem("topo0");
+        smset->addItem("topo1");
+        smset->addItem("topo2");
+        smset->addItem("intensity0");
+        smset->addItem("intensity1");
+        smset->addItem("intensity2");
+        smset->addItem("peak");
+        smset->addItem("color");
+        param.setMeta(smset, true);
         paramsOpt->append(param);
 
         param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of x and y axes. VK4 assumes to have m as default unit, this can be scaled using other values than m. Default: mm.").toLatin1().data());

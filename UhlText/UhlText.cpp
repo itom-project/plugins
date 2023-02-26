@@ -483,7 +483,7 @@ ito::RetVal UhlText::waitForDone(const int timeoutMS, const QVector<int> axis /*
     long delay = UHLDELAY; //[ms]
     bool done = false;
     bool timeout = false;
-    QTime timer;
+    QElapsedTimer timer;
     ito::RetVal retVal = ito::retOk;
     QSharedPointer<double> actPos = QSharedPointer<double>(new double);
 

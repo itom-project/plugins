@@ -1,7 +1,7 @@
 /* ********************************************************************
 Plugin "PCLTools" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+Copyright (C) 2023, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
@@ -38,5 +38,15 @@ PCL_INSTANTIATE_SampleConsensusModelCircle3D(struct pcl::PointXYZRGBNormal)
 PCL_INSTANTIATE_SampleConsensusModelCircle2D(struct pcl::PointNormal)
 PCL_INSTANTIATE_SampleConsensusModelCircle2D(struct pcl::PointXYZINormal)
 PCL_INSTANTIATE_SampleConsensusModelCircle2D(struct pcl::PointXYZRGBNormal)
+
+#endif
+
+#if PCL_VERSION_COMPARE(>=, 1, 13, 0)
+
+#include <pcl/sample_consensus/impl/sac_model_ellipse3d.hpp>
+
+PCL_INSTANTIATE_SampleConsensusModelEllipse3D(struct pcl::PointNormal)
+PCL_INSTANTIATE_SampleConsensusModelEllipse3D(struct pcl::PointXYZINormal)
+PCL_INSTANTIATE_SampleConsensusModelEllipse3D(struct pcl::PointXYZRGBNormal)
 
 #endif

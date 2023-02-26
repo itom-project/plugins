@@ -505,7 +505,8 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
             }
             catch (const std::exception& ex)
             {
-            retValue += ito::RetVal(ito::retError, 0, tr(strcat("Error while setting parameter operationMode: " , ex.what())).toLatin1().data());
+                std::string msg = "Error while setting parameter operationMode:";
+                retValue += ito::RetVal(ito::retError, 0, tr("Error while setting parameter operationMode: %1").arg(ex.what()).toLatin1().data());
             }
             syncParams(sOperationMode);
             syncParams(sImageFormat);

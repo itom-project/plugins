@@ -313,11 +313,11 @@ ito::RetVal dialogSerialIO::applyParameters()
         break;
         case 4:
 #if QT_VERSION < 0x050200
-			QByteArray var = ui.combo_endline->itemData(ui.combo_endline->currentIndex()).toByteArray();
+            QByteArray var = ui.combo_endline->itemData(ui.combo_endline->currentIndex()).toByteArray();
 #else
             QByteArray var = ui.combo_endline->currentData().toByteArray();
 #endif
-            memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
+            memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
         break;
     }
     if (strcmp(m_currentParameters["endline"].getVal<char*>(), endline) != 0)
@@ -345,11 +345,11 @@ ito::RetVal dialogSerialIO::applyParameters()
         break;
         case 4:
 #if QT_VERSION < 0x050200
-			QByteArray var = ui.combo_endlineRead->itemData(ui.combo_endlineRead->currentIndex()).toByteArray();
+            QByteArray var = ui.combo_endlineRead->itemData(ui.combo_endlineRead->currentIndex()).toByteArray();
 #else
             QByteArray var = ui.combo_endlineRead->currentData().toByteArray();
 #endif
-            memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
+            memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
         break;
     }
     if (strcmp(m_currentParameters["endlineRead"].getVal<char*>(), endline) != 0)
@@ -599,8 +599,8 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
     ret += sio->getParamList(&paramList);
     char *buf = (*paramList)["endline"].getVal<char*>(); //borrowed reference
     sprintf(endline, "%s", buf);
-	bool test = false;
-	test = strcmp(endline, "\0");
+    bool test = false;
+    test = strcmp(endline, "\0");
 
     if (ui.RBASCII->isChecked())
     {
@@ -624,37 +624,37 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
         else if (strcmp(endline, "\r\n") == 0)
         {
             qout.append("\\r\\n");
-		}
-		else if (strcmp(endline, ""))
-		{
+        }
+        else if (strcmp(endline, ""))
+        {
 
-			bool isprintable = true;
-			for (int i = 0; i < 3; ++i)
-			{
-				if ((endline[i] <= 32 || endline[i] > 126) && endline[i]!= 0)
-				{
-					if (isprintable)
-					{
-						qout.append("<font color=red>'0x");
-					}
-					qout.append(QString::number(endline[i], 16).rightJustified(2, '0'));
-					isprintable = false;
-				}
-				else
-				{
-					if (!isprintable)
-					{
-						qout.append("'</font>");
-						isprintable = true;
-					}
-					qout.append(endline[i]);
-				}
-			}
-			if (!isprintable)
-			{
-				qout.append("'</font>");
-			}
-		}
+            bool isprintable = true;
+            for (int i = 0; i < 3; ++i)
+            {
+                if ((endline[i] <= 32 || endline[i] > 126) && endline[i]!= 0)
+                {
+                    if (isprintable)
+                    {
+                        qout.append("<font color=red>'0x");
+                    }
+                    qout.append(QString::number(endline[i], 16).rightJustified(2, '0'));
+                    isprintable = false;
+                }
+                else
+                {
+                    if (!isprintable)
+                    {
+                        qout.append("'</font>");
+                        isprintable = true;
+                    }
+                    qout.append(endline[i]);
+                }
+            }
+            if (!isprintable)
+            {
+                qout.append("'</font>");
+            }
+        }
     }
     else
     {
@@ -744,8 +744,8 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
 
         tmpChar = qb.data();
     }
-	//ui.text_transfer->insertHtml(qout);
-	ui.text_transfer->append(qout);
+    //ui.text_transfer->insertHtml(qout);
+    ui.text_transfer->append(qout);
 
     //ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     //QMetaObject::invokeMethod(sio, "setVal", Q_ARG(ito::RetVal*, &ret), Q_ARG(const void*, (const void*)tmpChar), Q_ARG(ItomSharedSemaphore *, waitCond));
@@ -849,36 +849,36 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     int sendDelay = ui.spinBox_sendDelay->value();
 
     char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
-	if (endline.compare("\r") || endline.compare("\r\n") || endline.compare("\n")|| endline.compare("")) //all those are standard endline characters all other wiil be displayed as hex
-	{
-		sprintf(txt,
-			"dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%.3f)",
-			deviceName,
-			(*paramList)["port"].getVal<int>(),
-			baud,
-			endline.toLatin1().data(),
-			bits,
-			stopbits,
-			parity,
-			flow,
-			sendDelay,
-			timeout);
-	}
-	else
-	{
-		sprintf(txt,
-			"dataIO(\"%s\",%d,%d,chr(%s),%d,%d,%d,%d,%d,%.3f)",
-			deviceName,
-			(*paramList)["port"].getVal<int>(),
-			baud,
-			endline.toLatin1().data(),
-			bits,
-			stopbits,
-			parity,
-			flow,
-			sendDelay,
-			timeout);
-	}
+    if (endline.compare("\r") || endline.compare("\r\n") || endline.compare("\n")|| endline.compare("")) //all those are standard endline characters all other wiil be displayed as hex
+    {
+        sprintf(txt,
+            "dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%.3f)",
+            deviceName,
+            (*paramList)["port"].getVal<int>(),
+            baud,
+            endline.toLatin1().data(),
+            bits,
+            stopbits,
+            parity,
+            flow,
+            sendDelay,
+            timeout);
+    }
+    else
+    {
+        sprintf(txt,
+            "dataIO(\"%s\",%d,%d,chr(%s),%d,%d,%d,%d,%d,%.3f)",
+            deviceName,
+            (*paramList)["port"].getVal<int>(),
+            baud,
+            endline.toLatin1().data(),
+            bits,
+            stopbits,
+            parity,
+            flow,
+            sendDelay,
+            timeout);
+    }
     ui.lineEditCommandStr->setText(txt);
 
 //    QClipboard *clipboard = QApplication::clipboard();

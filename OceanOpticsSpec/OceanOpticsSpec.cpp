@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OceanOpticsSpec" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2020, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2020, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -162,8 +162,8 @@ OceanOpticsSpec::OceanOpticsSpec() :
     m_pUsb(NULL),
     m_isGrabbing(false),
     m_numberDeadPixels(0),
-	m_numberOfCorrectionValues(0),
-	m_startCorrectionIndex(0)
+    m_numberOfCorrectionValues(0),
+    m_startCorrectionIndex(0)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "OceanOpticsSpec", "plugin name");
     m_params.insert(paramVal.getName(), paramVal);
@@ -188,8 +188,8 @@ OceanOpticsSpec::OceanOpticsSpec() :
 
     paramVal = ito::Param("average", ito::ParamBase::Int, 1, 50000, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
     m_params.insert(paramVal.getName(), paramVal);
-	
-	/*paramVal = ito::Param("dark_correction", ito::ParamBase::Int, 0, 2, 0, tr("Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
+    
+    /*paramVal = ito::Param("dark_correction", ito::ParamBase::Int, 0, 2, 0, tr("Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
 dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. \n\
 Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software \n\
 AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): default.").toLatin1().data());
@@ -310,7 +310,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             m_params["serial_number"].setVal<char*>(sn);
         }
 
-        m_params["detector_name"].setVal<char*>("Default");
+        m_params["detector_name"].setVal<char*>(tr("Default").toLatin1().data());
         m_numberDeadPixels = -1; //none expected, but -1 for correction
 
         *(uint32*)cmd = 0x00180100;// 0x00011800; // 0x001 801 00 - get wavelength coefficient count
@@ -502,9 +502,9 @@ ito::RetVal OceanOpticsSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
                 setGrabberStarted(started);
             }
 
-			//calc minimum timeout for libusb
-			double timeout = 3.0 + m_params["average"].getVal<int>() * m_params["integration_time"].getVal<double>();
-			retValue += m_pUsb->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)), NULL);
+            //calc minimum timeout for libusb
+            double timeout = 3.0 + m_params["average"].getVal<int>() * m_params["integration_time"].getVal<double>();
+            retValue += m_pUsb->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)), NULL);
         }
         else
         {
@@ -626,7 +626,7 @@ ito::RetVal OceanOpticsSpec::startDevice(ItomSharedSemaphore *waitCond)
 ito::RetVal OceanOpticsSpec::stopDevice(ItomSharedSemaphore *waitCond)
 {
 
-	ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
     decGrabberStarted();
@@ -835,10 +835,10 @@ ito::RetVal OceanOpticsSpec::retrieveData(ito::DataObject *externalDataObject)
         {
             switch (m_data.getType())
             {
-				case ito::tUInt16:
+                case ito::tUInt16:
                     retVal += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)m_data.rowPtr(0,0), m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
                     break;
-				case ito::tFloat32:
+                case ito::tFloat32:
                     retVal += externalDataObject->copyFromData2D<ito::float32>((ito::float32*)m_data.rowPtr(0,0), m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
                     break;
                 default:
@@ -846,12 +846,12 @@ ito::RetVal OceanOpticsSpec::retrieveData(ito::DataObject *externalDataObject)
                     break;
             }
 
-			bool valid;
-			externalDataObject->setTag("timestamp", m_data.getTag("timestamp", valid));
-			if (m_data.existTag("dark"))
-			{
-				externalDataObject->setTag("dark", m_data.getTag("dark", valid));
-			}
+            bool valid;
+            externalDataObject->setTag("timestamp", m_data.getTag("timestamp", valid));
+            if (m_data.existTag("dark"))
+            {
+                externalDataObject->setTag("dark", m_data.getTag("dark", valid));
+            }
         }
 
         m_isGrabbing = false;
@@ -868,8 +868,8 @@ ito::RetVal OceanOpticsSpec::checkData(ito::DataObject *externalDataObject)
     int futureType;
 
     int bpp = m_params["bpp"].getVal<int>();
-	//int darkCorrection = m_params["dark_correction"].getVal<int>();
-	int average = m_params["average"].getVal<int>();
+    //int darkCorrection = m_params["dark_correction"].getVal<int>();
+    int average = m_params["average"].getVal<int>();
     
     if (bpp <= 16 && m_numberOfCorrectionValues == 0 && average == 1 )
     {
@@ -1060,7 +1060,7 @@ ito::RetVal OceanOpticsSpec::buildheader(char **headout, OcHeader *headin, unsig
 // sends command and reads response header until the bytes_remaining field, which indicates if there is any payload included
 ito::RetVal OceanOpticsSpec::sendCommand(unsigned char* cmd, int cmd_size, unsigned char* buf, int &buf_size, char *immediate_data/*nullptr*/, int dlen /*-1*/)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
     char *headout = nullptr;
     if (cmd_size > 0)
     {
@@ -1075,9 +1075,9 @@ ito::RetVal OceanOpticsSpec::sendCommand(unsigned char* cmd, int cmd_size, unsig
         if (sendbytes > 64) {
             std::cout << "Notice: unusual amount of data to be sent: " << sendbytes-64 << " bytes more than usual \r\n." << std::endl;
         }
-		retVal = m_pUsb->setVal((char*)headout, sendbytes, NULL);
+        retVal = m_pUsb->setVal((char*)headout, sendbytes, NULL);
 
-	}
+    }
 
     //
     //if (!retVal.containsError() && buf != NULL)
@@ -1165,13 +1165,13 @@ ito::RetVal OceanOpticsSpec::sendCommand(unsigned char* cmd, int cmd_size, unsig
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void OceanOpticsSpec::dummyRead()
 {
-	ito::RetVal retValue;
+    ito::RetVal retValue;
 
-	//dummy read to clear input buffer
-	char buf[1024];
-	QSharedPointer<int> size(new int);
-	*size = 1024;
-	QSharedPointer<char> buffer(buf, idleCharDeleter);
+    //dummy read to clear input buffer
+    char buf[1024];
+    QSharedPointer<int> size(new int);
+    *size = 1024;
+    QSharedPointer<char> buffer(buf, idleCharDeleter);
     m_pUsb->getVal(buffer, size, NULL);
 }
 

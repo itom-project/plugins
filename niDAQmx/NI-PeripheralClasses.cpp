@@ -24,7 +24,7 @@
 
 // includes
 #include <NI-PeripheralClasses.h>
-
+#include <qregularexpression.h>
 //*****************************************//
 //   NiBaseChannel Class implementations   //
 //*****************************************//
@@ -71,8 +71,9 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
 /*static*/ NiBaseChannel* NiAnalogInputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel,inConfig, MinOutputVoltage, MaxOutputVoltage)
-    QRegExp regExp(QString("^(\\w+)/(\\w+),([0-%1]),([+-]?\\d+\\.?\\d*),([+-]?\\d+\\.?\\d*)$").arg(NiAnalogInputChannel::NiTerminalConfEndValue - 1));
-    if (regExp.indexIn(configString) == -1)
+    QRegularExpression regExp(QString("^(\\w+)/(\\w+),([0-%1]),([+-]?\\d+\\.?\\d*),([+-]?\\d+\\.?\\d*)$").arg(NiAnalogInputChannel::NiTerminalConfEndValue - 1));
+    QRegularExpressionMatch match = regExp.match(configString);
+    if (!match.hasMatch())
     {
         retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel,terminalMode [0-%i],minInputVoltage,maxInputVoltage",
             configString.toLatin1().data(), NiAnalogInputChannel::NiTerminalConfEndValue - 1);
@@ -80,7 +81,7 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
     }
     else
     {
-        QString physicalName = regExp.cap(1) + "/" + regExp.cap(2);
+        QString physicalName = match.captured(1) + "/" + match.captured(2);
 
         if (physicalName.contains(":"))
         {
@@ -88,9 +89,9 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
             return NULL;
         }
 
-        int inConfig = regExp.cap(3).toInt();
-        double minInputVoltage = regExp.cap(4).toDouble();
-        double maxInputVoltage = regExp.cap(5).toDouble();
+        int inConfig = match.captured(3).toInt();
+        double minInputVoltage = match.captured(4).toDouble();
+        double maxInputVoltage = match.captured(5).toDouble();
         NiAnalogInputChannel *ai = new NiAnalogInputChannel(physicalName);
         ai->setTerminalConfig((NiAITerminalConfig)inConfig);
         ai->setMinInputLim(minInputVoltage);
@@ -182,15 +183,16 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
 /*static*/ NiBaseChannel* NiAnalogOutputChannel::fromConfigurationString(const QString &configString, ito::RetVal &retValue)
 {
     // (dev-channel,minInLim,maxInLim)
-    QRegExp regExp(QString("^(\\w+)/(\\w+),([+-]?\\d+\\.?\\d*),([+-]?\\d+\\.?\\d*)$"));
-    if (regExp.indexIn(configString) == -1)
+    QRegularExpression regExp(QString("^(\\w+)/(\\w+),([+-]?\\d+\\.?\\d*),([+-]?\\d+\\.?\\d*)$"));
+    QRegularExpressionMatch match = regExp.match(configString);
+    if (!match.hasMatch())
     {
         retValue += ito::RetVal::format(ito::retError, 0, "Errorneous analog output channel format '%s'. Required format: device/channel,minOutputVoltage,maxOutputVoltage", configString.toLatin1().data());
         return NULL;
     }
     else
     {
-        QString physicalName = regExp.cap(1) + "/" + regExp.cap(2);
+        QString physicalName = match.captured(1) + "/" + match.captured(2);
 
         if (physicalName.contains(":"))
         {
@@ -198,8 +200,8 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
             return NULL;
         }
 
-        double minOutputVoltage = regExp.cap(3).toDouble();
-        double maxOutputVoltage = regExp.cap(4).toDouble();
+        double minOutputVoltage = match.captured(3).toDouble();
+        double maxOutputVoltage = match.captured(4).toDouble();
         NiAnalogOutputChannel *ai = new NiAnalogOutputChannel(physicalName);
         ai->setMinOutputLim(minOutputVoltage);
         ai->setMaxOutputLim(maxOutputVoltage);

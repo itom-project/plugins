@@ -16,20 +16,20 @@ class VideoDevices
 public:
     VideoDevices(QSharedPointer<DebugPrintOut> debugPrintOut);
 
-	~VideoDevices(void);
+    ~VideoDevices(void);
 
-	long initDevices(IMFAttributes *pAttributes);
+    long initDevices(IMFAttributes *pAttributes);
 
-	VideoDevice *getDevice(unsigned int i);
+    VideoDevice *getDevice(unsigned int i);
 
-	size_t getCount();
-			
-	void clearDevices();
+    size_t getCount();
+            
+    void clearDevices();
 
 private:
-	
-	std::vector<VideoDevice *> m_devices;
-		
+    
+    std::vector<VideoDevice *> m_devices;
+        
     QSharedPointer<DebugPrintOut> m_debugPrintOut;
 };
 
