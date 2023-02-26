@@ -515,6 +515,7 @@ ito::RetVal DummyMultiChannelGrabber::getParameter(QSharedPointer<ito::Param> va
                                                    const QString &suffix, const QString &key, int index, bool hasIndex,
                                                    bool &ok)
 {
+    ok = false;
     return ito::retOk;
 }
 
@@ -528,9 +529,7 @@ ito::RetVal DummyMultiChannelGrabber::getParameter(QSharedPointer<ito::Param> va
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
 */
-ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator &it,
-                                                   const QString &suffix, const QString &key, int index, bool hasIndex,
-                                                   bool &ok, QStringList &pendingUpdate)
+ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok, QStringList& pendingUpdate)
 {
     ito::RetVal retValue;
     int running = 0; // Used to check if grabber was running bevor
@@ -579,7 +578,7 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
                     float factorY = (float)oldY / (float)newY;
                     int width, height, maxWidth, maxHeight, sizex, sizey, offsetx, offsety;
                     QMap<QString, ChannelContainer>::iterator i;
-                    for (i = m_channels.begin(); i != m_channels.end(); ++i)
+                    for (i = m_channels.begin(); i != m_channels.end(); ++i) //we need to adapt the roi for each channel
                     {
                         width = (i.value().m_channelParam["roi"].getVal<int *>()[1] -
                                  i.value().m_channelParam["roi"].getVal<int *>()[0]) *
@@ -606,14 +605,20 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
                                 ito::RangeMeta(0, width - 1, 4 / newX, 4 / newX, maxWidth * factorX, 4 / newX),
                                 ito::RangeMeta(0, height - 1, 4 / newY, 4 / newY, maxHeight * factorY, 4 / newY)),
                             true);
+                        if (i.key() == m_params["defaultChannel"].getVal<const char*>())
+                        {
+                            m_params["roi"].setVal<int*>(roi, 4);
+                            m_params["roi"].setMeta(
+                                new ito::RectMeta(
+                                    ito::RangeMeta(0, width - 1, 4 / newX, 4 / newX, maxWidth * factorX, 4 / newX),
+                                    ito::RangeMeta(0, height - 1, 4 / newY, 4 / newY, maxHeight * factorY, 4 / newY)),
+                                true);
+                        }
                     }
+                    pendingUpdate << "roi" << "binning"; //add roi to update list to trigger a update of sizey and sizey
                 }
             }
-            pendingUpdate << "binning"
-                          << "roi";
         }
-        retValue += checkData(); // check if image must be reallocated
-
         if (running)
         {
             retValue += startDevice(NULL);
@@ -636,6 +641,7 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
         {
             m_freerunTimer.start();
         }
+        ok = false;
     }
     if (key == "frame_time")
     {
@@ -647,15 +653,11 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
         {
             m_freerunTimer.start();
         }
+        ok = false;
     }
     else
     {
         ok = false; // set ok to false to let setParam process the parameter
-    }
-
-    if (!retValue.containsError())
-    {
-        emit parametersChanged(m_params);
     }
 
     return retValue;
