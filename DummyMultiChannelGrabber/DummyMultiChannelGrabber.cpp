@@ -880,7 +880,7 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
         (*returnMap)[it.key()] = it.value().data;
         ++it;
     }
-    emit newGrabberData(returnMap);
+    emit newData(returnMap);
     return retValue;
 }
 
