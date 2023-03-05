@@ -50,14 +50,11 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
+set(plugin_ui
+)
+
 set(PLUGIN_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicGPLFilters.cpp
-)
-
-set(PLUGIN_UI
-)
-
-set(PLUGIN_RCC
 )
 
 #Add version information to the plugIn-dll unter MSVC

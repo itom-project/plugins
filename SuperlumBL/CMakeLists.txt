@@ -1,6 +1,5 @@
 set(target_name SuperlumBL)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -26,11 +25,6 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 itom_find_package_qt(ON Core LinguistTools Widgets)
-
-    
-
-
-
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -72,20 +66,12 @@ if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
 
-
-
-
-
-
-
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_HEADERS_MOC} ${PLUGIN_UI_MOC} ${PLUGIN_RCC_MOC} ${PLUGIN_RCC} ${EXISTING_TRANSLATION_FILES})
 
 # Qt: enable all automoc, autouic and autorcc.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-
-
 
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})

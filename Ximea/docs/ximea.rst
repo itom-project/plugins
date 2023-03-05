@@ -186,8 +186,13 @@ Installation
 
 *Windows:*
 
-Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.10.0.0) and check that
-your camera runs with the internal XiViewer from XIMEA. If this is the case, the camera should also run with itom.
+Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.26.01 and check that
+your camera runs with the internal XiViewer from XIMEA. Please make sure that you also install the xiApiPython Module,
+which is needed to determine the SDK version number and binary file location.
+Alternatively you can manually set the CMAKE **XIMEA_SDK_VERSION**.
+
+To finde the SDK either set the CMAKE variable **XIMEA_APIDIR** or the evironment variable **XIMEA_SDK_ROOT**
+to the API directory (e.g. C:\XIMEA\API\xiAPI).
 
 *Linux:*
 
@@ -202,14 +207,16 @@ only support 24V, modern camera devices support both. This is written at the hou
 Changelog
 =========
 
-* itom setup 1.2.0: This plugin has been compiled using the Ximea API 4.0.0.5
-* itom setup 1.3.0: This plugin has been compiled using the Ximea API 4.0.0.5
-* itom setup 1.4.0: This plugin has been compiled using the Ximea API 4.0.0.5
-* itom setup 2.0.0: This plugin has been compiled using the Ximea API 4.4.0
-* itom setup 2.1.0: This plugin has been compiled using the Ximea API 4.4.0
-* itom setup 2.2.0: This plugin has been compiled using the Ximea API 4.10.0
-* itom setup 3.0.0: This plugin has been compiled using the Ximea API 4.10.2
-* itom setup 3.1.0: This plugin has been compiled using the Ximea API 4.10.2
-* itom setup 3.2.1: This plugin has been compiled using the Ximea API 4.16
+* itom setup 1.2.0: This plugin has been compiled using the Ximea API 4.00.00
+* itom setup 1.3.0: This plugin has been compiled using the Ximea API 4.00.00
+* itom setup 1.4.0: This plugin has been compiled using the Ximea API 4.00.00
+* itom setup 2.0.0: This plugin has been compiled using the Ximea API 4.04.00
+* itom setup 2.1.0: This plugin has been compiled using the Ximea API 4.04.00
+* itom setup 2.2.0: This plugin has been compiled using the Ximea API 4.10.00
+* itom setup 3.0.0: This plugin has been compiled using the Ximea API 4.10.02
+* itom setup 3.1.0: This plugin has been compiled using the Ximea API 4.10.02
+* itom setup 3.2.1: This plugin has been compiled using the Ximea API 4.16.00
 * itom setup 4.0.0: This plugin has been compiled using the Ximea API 4.18.04
 * itom setup 4.1.0: This plugin has been compiled using the Ximea API 4.18.04
+* itom setup 4.2.0: This plugin has been compiled using the Ximea API 4.24.03
+* itom setup 4.3.0: This plugin has been compiled using the Ximea API 4.26.01

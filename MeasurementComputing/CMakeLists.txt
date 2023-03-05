@@ -36,7 +36,7 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 itom_find_package_qt(ON Core LinguistTools Widgets)
 
 find_path(MeasurementComputing_DAQ_C_SDK_DIR cbw.h PATHS "C:/Users/Public/Documents/Measurement Computing/DAQ/C" DOC "Directory of the DAQ C library, must contain the file cbw.h (e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C)")
-find_file(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" "C:/Program Files (x86)/Measurement Computing/DAQ" DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")
+find_file(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" "C:/Program Files (x86)/Measurement Computing/DAQ" $ENV{MCDAQ_ROOT} DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")
 
 if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
     set(MeasurementComputing_LIB debug cbw${bit_dest} optimized cbw${bit_dest}  CACHE STRING "" FORCE)
@@ -108,5 +108,5 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
     itom_post_build_copy_files_to_lib_folder(${target_name} MeasurementComputing_DAQ_BINARY)
 
 else()
-    message(WARNING "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    
 endif()

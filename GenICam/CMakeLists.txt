@@ -1,6 +1,5 @@
 set(target_name GenICam)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -16,14 +15,12 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 itom_find_package_qt(ON Core Widgets LinguistTools)
@@ -108,5 +105,5 @@ if(GENICAM_FOUND)
     file(GLOB dlls "${GENICAM_BINARY_DIR}/*.dll")
     itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
 else(GENICAM_FOUND)
-    message("plugin ${target_name} will not be built since the GenICam library could not be found. Please properly indicate GENICAM_ROOT")
+    message(SEND_ERROR "plugin ${target_name} will not be built since the GenICam library could not be found. Please properly indicate GENICAM_ROOT")
 endif(GENICAM_FOUND)

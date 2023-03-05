@@ -71,12 +71,10 @@ set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON
 
 target_link_libraries(${target_name} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES})
 
-
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
 itom_configure_plugin_documentation(${target_name} piHexapodCtrl)
-
 
 # COPY SECTION
 set(COPY_SOURCES "")

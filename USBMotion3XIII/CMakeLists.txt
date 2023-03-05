@@ -1,6 +1,5 @@
 set(target_name USBMotion3XIII)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -28,7 +27,6 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 find_package(ITOM_SDK REQUIRED)
 itom_find_package_qt(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
-
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -76,11 +74,11 @@ target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_
 
 
 
-if(NOT (QT5_FOUND OR QT6_FOUND))
+if(NOT QT5_FOUND)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")
     endif()
-endif()
+endif(NOT QT5_FOUND)
 
 #translation
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})

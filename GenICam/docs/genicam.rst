@@ -130,7 +130,12 @@ Compilation
 ===========
 
 In order to compile this plugin, download the latest GenICam(TM) GenApi reference implementation from http://www.emva.org/standards-technology/genicam/genicam-downloads/.
-Unpack the corresponding archive (under Windows: Development and Runtime.zip or Release-SDK.zip) in one folder and set the CMake variable GENICAM_ROOT to this base folder.
+Download the lastest GenICam Reference Implementation (e.g. **GenICamTM GenApi reference implementation v. 3.4.0**).
+Open the Zip File and extract the **SDK** archive to a location of your licking ** (e.g. C:/Genicam/SDK).
+Open the Zip File and extract the **Release-Runtime** archive-sourcess to the same location.
+
+
+Set the CMake variable or system environment variable **GENICAM_ROOT** to this base folder.
 After re-configuring CMake the other variables (e.g. GENICAM_GCBASE_LIBRARY...) should be found automatically.
 
 GenICam License
@@ -219,6 +224,7 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using GenICam GenAPI 3.1.0
 * itom setup 4.0.0: This plugin has been compiled using GenICam GenAPI 3.2.0
 * itom setup 4.1.0: This plugin has been compiled using GenICam GenAPI 3.2.0
+* itom setup 4.3.0: This plugin has been compiled using GenICam GenAPI 3.4.0
 
 Workaround
 ==========

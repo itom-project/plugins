@@ -14,6 +14,8 @@
 Overview
 ========
 
+ITOM Plugin to be used for interaction with the K-Cube Controller for Brushed DC Servo Motors(e.g. KDC101).
+
 .. pluginsummaryextended::
     :plugin: ThorlabsKCubeDCServo
 
@@ -105,16 +107,18 @@ should properly load the controller and device with the same serial number.
 Compilation
 ===========
 
-To compile this plugin, install the Thorlabs KINESIS driver package in the same 
-bit-version than itom (32/64bit). Then set the CMake variable 
-**THORLABS_KINESIS_DIRECTORY** to the base directory of Kinesis 
-(e.g. C:/Program Files/Thorlabs/Kinesis).
-The required libraries from Kinesis will automatically be copied to the *lib* 
-folder of itom. Do not use Kinesis 1.6.0 or below for compiling this plugin.
+To compile this plugin, install the Thorlabs KINESIS from
+https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0
+driver package in the same bit-version than itom (32/64bit). 
+It has been implemented using KINESIS version 1.14.32.
+Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
+to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
+The required libraries from Kinesis will automatically be copied to the *lib* folder of itom.
 
 Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 
 Changelog
 ==========
 
-* itom setup 5.0.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
+* itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
+* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.

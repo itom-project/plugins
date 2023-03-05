@@ -111,11 +111,14 @@ The camera can be initialized with two optional parameters (**printManual, print
     +-----------------------------+------------------------------------------------------------------------------------------+
     
 Installation
-============ 
+============
 
 *Windows:*
 
 * The USB2 **NITWidySWIR** driver is installed automatically by Windows after the first connection. 
+
+If not please download the NIT SDK from https://new-imaging-technologies.com/software-log-in/#sdk
+and set the environment variable **NIT_SDK_ROOT** to the installation diretcory (e.g. C:\NIT-SDK).
 
 Compilation
 ===========
@@ -133,3 +136,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the NITLibrary 1.5
 * itom setup 4.0.0: This plugin has been compiled using the NITLibrary 1.5
 * itom setup 4.1.0: This plugin has been compiled using the NITLibrary 1.5
+* itom setup 4.3.0: This plugin has been compiled using the NITLibrary 1.5

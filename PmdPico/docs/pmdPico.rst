@@ -76,12 +76,20 @@ Additional functions (exec functions)
 Installation
 ============
 
-For using this plugin, please install the Royale software that is shipped with your PMD device. Make shure that the path to the royale.dll is added to your system path variables.
+For using this plugin, please install the Royale software that is shipped with your PMD device.
+Or got to the website and request a download link from the vendor:
+https://pmdtec.com/
+
+Make shure that the path to the royale.dll is added to your system path variables.
+
+Set the CMAKE variable **PmdPico_ROYALE_DIR** or the environment variable **PMD_ROYALE_ROOT**
+to the PMD Royale SDK installation folder (e.g. C:\Program Files\royale\3.21.1.70)
         
 Changelog
 =========
 
-* itom setup 3.1.0: plugin uses the Royale SDK in version 3.12.0.44
-* itom setup 3.2.1: plugin uses the Royale SDK in version 3.21.1.70
-* itom setup 4.0.0: plugin uses the Royale SDK in version 3.21.1.70
-* itom setup 4.1.0: plugin uses the Royale SDK in version 3.21.1.70
+* itom setup 3.1.0: plugin uses the Royale SDK in version 3.12.0
+* itom setup 3.2.1: plugin uses the Royale SDK in version 3.21.1
+* itom setup 4.0.0: plugin uses the Royale SDK in version 3.21.1
+* itom setup 4.1.0: plugin uses the Royale SDK in version 3.21.1
+* itom setup 4.3.0: plugin uses the Royale SDK in version 4.22.0

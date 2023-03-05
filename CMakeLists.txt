@@ -8,8 +8,8 @@ set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build)
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT ITOM_SDK_DIR)
     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-        HINTS "C:/itom/build/itom/SDK"
-              "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+        HINTS "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+              $ENV{ITOM_SDK_ROOT}
         DOC "path of SDK subfolder of itom root (build) directory")
 endif()
 
@@ -17,28 +17,19 @@ if(NOT ITOM_SDK_DIR)
     message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
-
-#this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
-
-if(NOT ITOM_SDK_DIR)
-    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
-
 # AerotechA3200
-if(WIN32)
-    option(PLUGIN_aerotechA3200 "Build with this plugin." OFF)
-    if(PLUGIN_aerotechA3200)
-            add_subdirectory(AerotechA3200)
-    endif(PLUGIN_aerotechA3200)
-endif()
+if(NOT BUILD_TARGET64)
+    if(WIN32)
+        option(PLUGIN_aerotechA3200 "Build with this plugin." OFF)
+        if(PLUGIN_aerotechA3200)
+                add_subdirectory(AerotechA3200)
+        endif(PLUGIN_aerotechA3200)
+    endif()
+endif(NOT BUILD_TARGET64)
 
 # AerotechEnsemble
 if(WIN32)
-    option(PLUGIN_aerotechEnsemble "Build with this plugin." OFF)
+    option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
     if(PLUGIN_aerotechEnsemble)
             add_subdirectory(AerotechEnsemble)
     endif(PLUGIN_aerotechEnsemble)
@@ -51,7 +42,7 @@ if(PLUGIN_andorSDK3)
 endif(PLUGIN_andorSDK3)
 
 # AvantesAvaSpec
-option(PLUGIN_AvantesAvaSpec "Build with this plugin." OFF)
+option(PLUGIN_AvantesAvaSpec "Build with this plugin." ON)
 if(PLUGIN_AvantesAvaSpec)
         add_subdirectory(AvantesAvaSpec)
 endif(PLUGIN_AvantesAvaSpec)
@@ -159,7 +150,7 @@ if(PLUGIN_DemoAlgorithms)
 endif(PLUGIN_DemoAlgorithms)
 
 # FFTW-Wrapper
-option(PLUGIN_FFTWFilters "Build with this plugin." ON)
+option(PLUGIN_FFTWFilters "Build with this plugin." OFF)
 if(PLUGIN_FFTWFilters)
     add_subdirectory(FFTWfilters)
 endif(PLUGIN_FFTWFilters)
@@ -251,7 +242,7 @@ if(PLUGIN_LibModbus)
 endif(PLUGIN_LibModbus)
 
 # LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." ON)
+option(PLUGIN_LIBUSB "Build with this plugin." OFF)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
 endif(PLUGIN_LIBUSB)
@@ -549,13 +540,13 @@ if(WIN32)
 endif()
 
 # UhlRegister
-option(PLUGIN_UhlRegister "Build with this plugin." OFF)
+option(PLUGIN_UhlRegister "Build with this plugin." ON)
 if(PLUGIN_UhlRegister)
     add_subdirectory(UhlRegister)
 endif(PLUGIN_UhlRegister)
 
 # UhlText
-option(PLUGIN_UhlText "Build with this plugin." OFF)
+option(PLUGIN_UhlText "Build with this plugin." ON)
 if(PLUGIN_UhlText)
     add_subdirectory(UhlText)
 endif(PLUGIN_UhlText)
@@ -593,7 +584,7 @@ if(WIN32)
 endif()
 
 # x3pio
-option(PLUGIN_x3pio "Build with this plugin." ON)
+option(PLUGIN_x3pio "Build with this plugin." OFF)
 if(PLUGIN_x3pio)
     add_subdirectory(x3pio)
 endif(PLUGIN_x3pio)

@@ -17,6 +17,10 @@ Overview
 .. pluginsummaryextended::
     :plugin: QCam
 
+Plugin to be used for interaction with the TELEDYNE QImaging Camera Series available
+at https://www.photometrics.com/support/download/qcam.
+Please note that the QCAM software is not supported with Windows 10 and higher.
+
 Initialization
 ==============
   

@@ -44,9 +44,7 @@
 # include <opengps/cxx/opengps.hxx>
 #endif
 
-#if linux
-   #include <iostream>
-#endif
+#include <iostream>
 #include <string>
 #include <sstream>
 

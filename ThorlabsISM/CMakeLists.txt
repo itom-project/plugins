@@ -1,6 +1,5 @@
 set(target_name ThorlabsISM)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -17,6 +16,10 @@ if(NOT ITOM_SDK_DIR)
 endif()
 
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
+
+if(NOT THORLABS_KINESIS_DIRECTORY)
+	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+endif(NOT THORLABS_KINESIS_DIRECTORY)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -104,5 +107,5 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
     
 else()
-    message(WARNING "${THORLABS_KINESIS_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
+    message(SEND_ERROR "${THORLABS_KINESIS_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
 endif()

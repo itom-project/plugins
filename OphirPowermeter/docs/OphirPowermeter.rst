@@ -25,6 +25,12 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: OphirPowermeter
 
+Instruction
+===========
+
+Download the Starlab SDK from Ophir: https://www.ophiropt.com/laser--measurement/de/software/starlab-for-usb.
+Set the Windows Environment Variable OPHIR_STARLAB_ROOT to the installation directory (e.g. C:\Program Files\Ophir Optronics\StarLab 3.80).
+
 Parameters
 ==========
 

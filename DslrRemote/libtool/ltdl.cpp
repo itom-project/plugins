@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <map>
 #include <assert.h>
+#include <string>
 #include "ltdl.h"
 
 const char EOS_CHAR = '\0';

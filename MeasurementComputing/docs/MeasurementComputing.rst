@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`MeasurementComputing`
 **License**:    :pluginlicense:`MeasurementComputing`
 **Platforms**:  Windows
-**Devices**:    *MeasurementComputing*
+**Devices**:    *Measurement Computing Data Acquisition Devices*
 **Author**:     :pluginauthor:`MeasurementComputing`
 =============== ========================================================================================================
  
@@ -343,8 +343,14 @@ The counter input is used by the execFunction **getCIn**. With the optional para
 Installation
 =============
 
-You have to install the MCC Daq Software, namely the tool "InstaCal and Universal Library for Windows". Then, indicate the following variables in CMake to
+You have to install the MC DAQ Software from https://www.mccdaq.com/Software-Downloads,
+namely the tool "InstaCal and Universal Library for Windows". Then, indicate the following variables in CMake to
 properly configure the build of this plugin:
+
+Cmake should detect the correct directories to access the MC DAQ Software Suite if the default installation folder
+has been chosen. If not set the evironment variale MCDAQ_ROOT to the installation folder (e.g. By C:/Program Files (x86)/Measurement Computing/DAQ). 
+
+Check if the following variables are set appropriately:
 
 * MeasurementComputing_DAQ_BINARY: e.g. C:/Program Files (x86)/Measurement Computing/DAQ/cbw64.dll (or cbw32.dll for 32bit itom)
 * MeasurementComputing_DAQ_SDK_DIR: e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C
@@ -361,3 +367,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using CBW library version 1.89
 * itom setup 4.0.0: This plugin has been compiled using CBW library version 1.89
 * itom setup 4.1.0: This plugin has been compiled using CBW library version 1.89
+* itom setup 4.3.0: This plugin has been compiled using MCC DAQ Software library version 6.73

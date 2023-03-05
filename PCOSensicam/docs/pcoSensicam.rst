@@ -72,6 +72,7 @@ Currently the following features or cameras are not supported:
 
 * sensicam double shutter or qe double shutter: the double shutter acquisition is not implemented.
 
+
 Installation
 =============
 
@@ -81,8 +82,9 @@ This driver puts the required library sen_cam.dll into the C:/Windows/System32 d
 Compilation
 ============
 
-For compiling this plugin, download the latest pco.sensicam SDK (pco Software-Development-Toolkit) from http://www.pco.de and install it on your computer. Then set the CMake
-variable *PCO_SENSICAM_SDK_DIR** to the base directory of the pco.sensicam. In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board etc. If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
+For compiling this plugin, download the latest pco.sensicam SDK (pco Software-Development-Toolkit) from https://www.pco.de/fileadmin/user_upload/pco-software/SW_SCDPSDKWIN_601_04.zip
+and install it on your computer. Then set the CMake variable *PCO_SENSICAM_SDK_DIR** or the environment path vairable **PCO_SENSICAM_ROOT** to the base directory of the pco.sensicam (e.g. C:\Program Files (x86)\Digital Camera Toolbox\Sensicam SDK).
+In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board etc. If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
 
 Changelog
 ==========
@@ -95,3 +97,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using pco.sensicam SDK V601_04
 * itom setup 4.0.0: This plugin has been compiled using pco.sensicam SDK V601_04
 * itom setup 4.1.0: This plugin has been compiled using pco.sensicam SDK V601_04
+* itom setup 4.3.0: This plugin has been compiled using pco.sensicam SDK V601_04
