@@ -134,8 +134,7 @@ Download the lastest GenICam Reference Implementation (e.g. **GenICamTM GenApi r
 Open the Zip File and extract the **SDK** archive to a location of your licking ** (e.g. C:/Genicam/SDK).
 Open the Zip File and extract the **Release-Runtime** archive-sourcess to the same location.
 
-
-Set the CMake variable or system environment variable **GENICAM_ROOT** to this base folder.
+Set the CMake variable **GenICam_Dir** or system environment variable **GENICAM_ROOT** to this base folder.
 After re-configuring CMake the other variables (e.g. GENICAM_GCBASE_LIBRARY...) should be found automatically.
 
 GenICam License

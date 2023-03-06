@@ -107,5 +107,5 @@ if(GENICAM_FOUND)
     itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
     
 else(GENICAM_FOUND)
-    message(SEND_ERROR "plugin ${target_name} will not be built since the GenICam library could not be found. Please properly indicate GENICAM_ROOT")
+    message(SEND_ERROR "plugin ${target_name} will not be built since the GenICam library could not be found. Please properly indicate the Cmake variable **GenICam_Dir** or the environment variable **GENICAM_ROOT**")
 endif(GENICAM_FOUND)
