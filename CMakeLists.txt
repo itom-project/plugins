@@ -235,7 +235,7 @@ if(PLUGIN_IDSuEye)
 endif(PLUGIN_IDSuEye)
 
 # LeicaMotorFocus
-option(PLUGIN_LeicaMotorFocus "Build with this plugin." OFF${ITOM_BUILD_SHIPMENT})
+option(PLUGIN_LeicaMotorFocus "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_LeicaMotorFocus)
     add_subdirectory(LeicaMotorFocus)
 endif(PLUGIN_LeicaMotorFocus)

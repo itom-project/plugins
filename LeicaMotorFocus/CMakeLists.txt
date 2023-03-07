@@ -35,9 +35,9 @@ include_directories(
 link_directories(
 )
 
-if(NOT QT5_FOUND)
+if(NOT QT_FOUND)
     include(${QT_USE_FILE})
-endif(NOT QT5_FOUND)
+endif(NOT QT_FOUND)
 
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLeicaMotorFocus.h
@@ -54,9 +54,11 @@ set(PLUGIN_UI
 
 if(QT5_FOUND)
     QT5_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
-else()
+elseif(QT6_FOUND)
+    QT6_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
+else(QT5_FOUND)
     message(SEND_ERROR "Currently only Qt5 is supported")
-endif()
+endif(QT5_FOUND)
 
 set(PLUGIN_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLeicaMotorFocus.cpp
