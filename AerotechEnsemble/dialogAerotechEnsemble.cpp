@@ -107,7 +107,7 @@ dialogAerotechEnsemble::dialogAerotechEnsemble(ito::AddInActuator *motor, QStrin
 */
 int dialogAerotechEnsemble::setVals(QMap<QString, ito::Param> *paramVals)
 {
-    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+    setWindowTitle(QString((*paramVals)["name"].getVal<const char*>()) + " - " + tr("Configuration Dialog"));
 
     QMap<QString, ito::Param>::const_iterator paramIt = (*paramVals).constFind("speed");    // To check if this parameter exists
     if (paramIt != ((*paramVals).constEnd()))
