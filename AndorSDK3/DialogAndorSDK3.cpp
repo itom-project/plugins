@@ -47,7 +47,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
 
     if (m_firstRun)
     {
-        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+        setWindowTitle(QString((params)["name"].getVal<const char*>()) + " - " + tr("Configuration Dialog"));
 
         if (params["full_aoi_control"].getVal<int>() > 0)
         {
@@ -157,7 +157,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
     bool updateSizeX = false;
     bool updateSizeY = false;
     
-    int *roi = params["roi"].getVal<int*>();
+    const int *roi = params["roi"].getVal<const int*>();
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
     ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
     ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
@@ -202,7 +202,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
-    QString str = params["trigger_mode"].getVal<char*>();
+    QString str = params["trigger_mode"].getVal<const char*>();
     for (int i = 0; i < ui.comboTrigger->count(); ++i)
     {
         if (ui.comboTrigger->itemText(i) == str)
@@ -212,7 +212,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
-    str = params["fan_speed"].getVal<char*>();
+    str = params["fan_speed"].getVal<const char*>();
     for (int i = 0; i < ui.comboFanSpeed->count(); ++i)
     {
         if (ui.comboFanSpeed->itemText(i) == str)
@@ -222,7 +222,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
     
-    str = params["pixel_readout_rate"].getVal<char*>();
+    str = params["pixel_readout_rate"].getVal<const char*>();
     for (int i = 0; i < ui.comboPixelReadoutRate->count(); ++i)
     {
         if (ui.comboPixelReadoutRate->itemText(i) == str)
@@ -320,7 +320,7 @@ ito::RetVal DialogSDK3::applyParameters()
 
     if (ui.comboTrigger->isEnabled())
     {
-        if (QString::compare(m_currentParameters["trigger_mode"].getVal<char*>(),ui.comboTrigger->currentText()) != 0)
+        if (QString::compare(m_currentParameters["trigger_mode"].getVal<const char*>(),ui.comboTrigger->currentText()) != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::String, ui.comboTrigger->currentText().toLatin1().data())));
         }
@@ -328,7 +328,7 @@ ito::RetVal DialogSDK3::applyParameters()
     
     if (ui.comboFanSpeed->isEnabled())
     {
-        if (QString::compare(m_currentParameters["fan_speed"].getVal<char*>(),ui.comboFanSpeed->currentText()) != 0)
+        if (QString::compare(m_currentParameters["fan_speed"].getVal<const char*>(),ui.comboFanSpeed->currentText()) != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("fan_speed", ito::ParamBase::String, ui.comboFanSpeed->currentText().toLatin1().data())));
         }
@@ -336,7 +336,7 @@ ito::RetVal DialogSDK3::applyParameters()
     
     if (ui.comboPixelReadoutRate->isEnabled())
     {
-        if (QString::compare(m_currentParameters["pixel_readout_rate"].getVal<char*>(),ui.comboPixelReadoutRate->currentText()) != 0)
+        if (QString::compare(m_currentParameters["pixel_readout_rate"].getVal<const char*>(),ui.comboPixelReadoutRate->currentText()) != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixel_readout_rate", ito::ParamBase::String, ui.comboPixelReadoutRate->currentText().toLatin1().data())));
         }

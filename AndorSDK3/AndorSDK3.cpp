@@ -1486,7 +1486,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         else
         {
-            it->setVal<char*>("[notSupported]");
+            it->setVal<const char*>("[notSupported]");
             it->setFlags(ito::ParamBase::Readonly);
             
         }
@@ -1522,7 +1522,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         else
         {
-            it->setVal<char*>("[notSupported]");
+            it->setVal<const char*>("[notSupported]");
             it->setFlags(ito::ParamBase::Readonly);
             
         }
@@ -1558,7 +1558,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         else
         {
-            it->setVal<char*>("[notSupported]");
+            it->setVal<const char*>("[notSupported]");
             it->setFlags(ito::ParamBase::Readonly);
             
         }
