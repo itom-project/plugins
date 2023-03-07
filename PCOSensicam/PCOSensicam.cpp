@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -367,7 +367,7 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if (!retVal.containsError())
     {
-        m_params["name"].setVal<char*>(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]);
+        m_params["name"].setVal<const char*>(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]);
         setIdentifier(QString("%1 (%2)").arg(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]).arg(getID()));
     }
 
@@ -1133,7 +1133,7 @@ int PCOSensicam::test_coc2(COCValues &cocValues)
         {
             if (cocValues.table.size() < 2048)
             {
-                cocValues.table.resize(2*std::max(32, cocValues.table.size()));
+                cocValues.table.resize(2*std::max(32, (int)cocValues.table.size()));
             }
             else
             {
