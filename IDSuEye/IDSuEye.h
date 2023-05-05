@@ -104,9 +104,7 @@ class IDSuEye : public ito::AddInGrabber
         bool m_colouredOutput;
         ito::RetVal m_acquisitionRetVal;
         bool m_captureVideoActive;
-#if WIN32
-		HANDLE m_seqEvent;
-#endif
+		bool m_seqEventInit;
 
     signals:
 
