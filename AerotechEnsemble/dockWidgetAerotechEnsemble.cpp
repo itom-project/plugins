@@ -58,7 +58,6 @@ DockWidgetAerotechEnsemble::DockWidgetAerotechEnsemble(QMap<QString, ito::Param>
     connect(m_pSignalPosInc, SIGNAL(mapped(const int &)), this, SLOT(posIncrementClicked(const int &)));
     connect(m_pSignalPosDec, SIGNAL(mapped(const int &)), this, SLOT(posDecrementClicked(const int &)));
 
-    char* temp = params["name"].getVal<char*>(); //borrowed reference
     ui.lblID->setText(QString::number(uniqueID));
 
     enableWidget(true);

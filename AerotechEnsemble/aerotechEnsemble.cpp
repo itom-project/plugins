@@ -348,7 +348,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
         QByteArray name(256, '\0');
         if (EnsembleInformationGetName(m_pHandle, name.size(), name.data()))
         {
-            m_params["controller"].setVal<char*>(name.data());
+            m_params["controller"].setVal<const char*>(name.data());
             m_identifier = name;
         }
 
@@ -357,7 +357,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
         if (EnsembleInformationGetCommunicationType(m_pHandle, &communicationType))
         {
             name = (communicationType == COMMUNICATIONTYPE_Ethernet)? "Ethernet" : "USB";
-            m_params["communication"].setVal<char*>(name.data());
+            m_params["communication"].setVal<const char*>(name.data());
         }
         
         //library version
@@ -365,7 +365,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
         if (EnsembleInformationGetLibraryVersion(&version))
         {
             name = QString("%1.%2.%3 (%4)").arg(version.major).arg(version.minor, 2, 10, QLatin1Char('0')).arg(version.patch, 3, 10, QLatin1Char('0')).arg(version.build).toLatin1(); //TODO 4.01.006
-            m_params["libraryVersion"].setVal<char*>(name.data());
+            m_params["libraryVersion"].setVal<const char*>(name.data());
         }
 
         if (!retValue.containsError())
