@@ -92,19 +92,19 @@ class IDSuEye : public ito::AddInGrabber
         IS_RANGE_S32 m_blacklevelRange; //range for the offset
         SENSORINFO m_sensorInfo;
 
-		QVector<INT> m_viSeqMemId;
-		QVector<char*> m_vpcSeqImgMem;
-		int m_NumberOfBuffers;
-		int m_oldNumBuf;
+        QVector<INT> m_viSeqMemId;
+        QVector<char*> m_vpcSeqImgMem;
+        int m_NumberOfBuffers;
+        int m_oldNumBuf;
 
         int m_bitspixel; //bits per pixel that needs to be allocated
         int m_imageAvailable;
-		bool m_seqAvailable;
+        bool m_seqAvailable;
         MemoryStruct m_pLockedBuf;
         bool m_colouredOutput;
         ito::RetVal m_acquisitionRetVal;
         bool m_captureVideoActive;
-		bool m_seqEventInit;
+        bool m_seqEventInit;
 
     signals:
 
