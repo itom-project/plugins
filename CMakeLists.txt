@@ -48,7 +48,7 @@ endif()
 if(BUILD_QTVERSION STREQUAL "Qt5")
     option(PLUGIN_andorSDK3 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
     if(PLUGIN_andorSDK3)
-            add_subdirectory(AndorSDK3)
+        add_subdirectory(AndorSDK3)
     endif(PLUGIN_andorSDK3)
 endif(BUILD_QTVERSION STREQUAL "Qt5")
 
@@ -134,13 +134,13 @@ endif(PLUGIN_dispWindow)
 option(PLUGIN_DslrRemote2 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_DslrRemote2)
     add_subdirectory(DslrRemote2)
-endif(BUILD_QTVERSION STREQUAL Qt5)
+endif(PLUGIN_DslrRemote2)
 
 # dslrRemote - not yet
 option(PLUGIN_DslrRemote "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-    if(PLUGIN_DslrRemote)
-        add_subdirectory(DslrRemote)
-endif(BUILD_QTVERSION STREQUAL Qt5)
+if(PLUGIN_DslrRemote)
+    add_subdirectory(DslrRemote)
+endif(PLUGIN_DslrRemote)
 
 # DummyGrabber
 option(PLUGIN_DummyGrabber "Build with this plugin." ON)
@@ -352,12 +352,12 @@ endif()
 
 # PCOSensicam
 if(WIN32)
-    if(BUILD_QTVERSION STREQUAL Qt5)
+    if(BUILD_QTVERSION STREQUAL "Qt5")
         option(PLUGIN_PCOSensicam "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
         if(PLUGIN_PCOSensicam)
             add_subdirectory(PCOSensicam)
         endif(PLUGIN_PCOSensicam)
-    endif(BUILD_QTVERSION STREQUAL Qt5)
+    endif(BUILD_QTVERSION STREQUAL "Qt5")
 endif()
 
 # PCOPixelFly

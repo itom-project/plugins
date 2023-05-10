@@ -30,7 +30,7 @@ itom_find_package_qt(ON Widgets LinguistTools OpenGL)
 
 if(ITOM_SDK_PCL_SUPPORT)	
     if (NOT VTK_FOUND)
-      find_package(VTK  COMPONENTS vtkCommonCore QUIET)
+      find_package(VTK QUIET COMPONENTS vtkCommonCore QUIET)
       if (NOT VTK_FOUND)
         message(STATUS "Skipping ${PROJECT_NAME}: ${VTK_NOT_FOUND_MESSAGE}")
         return ()
@@ -39,7 +39,7 @@ if(ITOM_SDK_PCL_SUPPORT)
 
     if(VTK_FOUND)
         
-        find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface recognition)
+        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common io kdtree search features segmentation filters surface recognition)
             
         find_file(PCL_HAS_SURFACE_NURBS "nurbs_data.h" PATHS ${PCL_INCLUDE_DIRS} PATH_SUFFIXES "pcl/surface/on_nurbs")
         if(PCL_HAS_SURFACE_NURBS)

@@ -176,6 +176,6 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         itom_post_build_copy_files_to_lib_folder(${target_name} FLYCAPTURE_LIBIOMP5MD)
     endif()
     
-else(FLYCAPTURE_FOUND)
+else(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
-endif(FLYCAPTURE_FOUND)
+endif(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)

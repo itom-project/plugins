@@ -95,6 +95,6 @@ if(LibUSB_INCLUDE_DIRS)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-else()
+else(LibUSB_INCLUDE_DIRS)
     message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
-endif()
+endif(LibUSB_INCLUDE_DIRS)

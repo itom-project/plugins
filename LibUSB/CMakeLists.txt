@@ -33,7 +33,7 @@ if(LibUSB_FOUND)
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${ITOM_SDK_INCLUDE_DIRS}
-            ${LibUSB_INCLUDE_DIRS}
+        ${LibUSB_INCLUDE_DIRS}
     )
 
     set(PLUGIN_HEADERS
