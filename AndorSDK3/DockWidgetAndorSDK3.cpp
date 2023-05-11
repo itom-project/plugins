@@ -47,17 +47,17 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
     {
         if (params.contains("camera_model"))
         {
-            ui.lblModel->setText(params["camera_model"].getVal<char*>());
+            ui.lblModel->setText(params["camera_model"].getVal<const char*>());
         }
         
         if (params.contains("camera_name"))
         {
-            ui.lblName->setText(params["camera_name"].getVal<char*>());
+            ui.lblName->setText(params["camera_name"].getVal<const char*>());
         }
 
         if (params.contains("serial_number"))
         {
-            ui.lblSerial->setText(params["serial_number"].getVal<char*>());
+            ui.lblSerial->setText(params["serial_number"].getVal<const char*>());
         }
 
         if (params.contains("bpp"))
