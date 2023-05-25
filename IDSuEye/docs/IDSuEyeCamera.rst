@@ -36,7 +36,7 @@ Support for Thorlabs cameras
 ============================
 
 This plugin can also be used to operate Thorlabs cameras of the **DCC** or **DCU** series (e.g. https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=4024 or https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=2916).
-These cameras are OEM versions from IDS. This plugin has for instance been tested with the version DCC1545M-GL.
+These cameras are OEM versions from IDS. This plugin has for instance been tested with the version DCC1545M-GL and the IDS UI-2412SE-M camera.
     
 Parameters
 ===========
