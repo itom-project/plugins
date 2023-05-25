@@ -22,7 +22,7 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 include(ItomBuildMacros)
 
 # ITOM Shipment
-option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." OFF)
+option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." ON)
 
 # AerotechA3200
 if(NOT BUILD_TARGET64)
@@ -35,14 +35,15 @@ if(NOT BUILD_TARGET64)
 endif(NOT BUILD_TARGET64)
 
 # AerotechEnsemble
-if(WIN32)    
 if(BUILD_QTVERSION STREQUAL "Qt5")
-    option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
-    if(PLUGIN_aerotechEnsemble)
-        add_subdirectory(AerotechEnsemble)
-    endif(PLUGIN_aerotechEnsemble)
+	if(WIN32)    
+		option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
+		if(PLUGIN_aerotechEnsemble)
+			add_subdirectory(AerotechEnsemble)
+		endif(PLUGIN_aerotechEnsemble)
+	endif()
 endif(BUILD_QTVERSION STREQUAL "Qt5")
-endif()
+
 
 # AndorSDK3
 if(BUILD_QTVERSION STREQUAL "Qt5")
