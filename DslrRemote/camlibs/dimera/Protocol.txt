@@ -103,4 +103,3 @@ the baud rate is set.
 71 <image number> <image number msb or zero>
 59 <image number> <image number msb or zero>
 49 <image line lsb> <image line msb> 1E 00 04 00 A0 00 <number of image lines> 01 80 00 00
-

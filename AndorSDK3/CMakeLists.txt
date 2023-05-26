@@ -64,7 +64,7 @@ if(ANDOR_SDK3_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
         #add further include directories here
         ${ANDOR_SDK3_DIR}
     )
@@ -106,7 +106,7 @@ if(ANDOR_SDK3_DIR)
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-    
+
     target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ANDOR_SDK3_LIBRARY})
 
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
@@ -127,7 +127,7 @@ if(ANDOR_SDK3_DIR)
         itom_post_build_copy_files_to_lib_folder(${target_name} ANDOR_SDK3_BINARY2)
         itom_post_build_copy_files_to_lib_folder(${target_name} ANDOR_SDK3_BINARY3)
     endif(WIN32)
-    
+
 else()
     message(SEND_ERROR "${target_name} directory could not be found. ${target_name} will not be build")
 endif()

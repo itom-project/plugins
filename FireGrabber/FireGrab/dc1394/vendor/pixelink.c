@@ -2,7 +2,7 @@
  * 1394-Based Digital Camera Control Library
  *
  * Pixelink (PxL) specific extensions for Multi-camera control.
- * 
+ *
  * Written by
  *     Aravind Sundaresan <a.sundaresan@gmail.com>
  *     James Sherman <shermanj@umd.edu>
@@ -615,4 +615,3 @@ dc1394_pxl_set_gpio_mode_param(dc1394camera_t *camera, uint32_t gpio_id,
 
     return DC1394_SUCCESS;
 }
-

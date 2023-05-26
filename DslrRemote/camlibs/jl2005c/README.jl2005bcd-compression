@@ -117,7 +117,7 @@ A few bytes of the data at the start of the PAT table are of interest. All word 
     * 0x08-0x09 -- first writeable block in camera's RAM (see "Image Header" below for block sizes)
     * 0x0a-0x0b -- first unused block after image data (where next photo taken would start)
     * 0x0c-0x0d -- word containing number of images in the camera, counting each frame within a clip as one. This many 16-byte image headers should be read from the PAT table starting at offset 0x30; any headers beyond this should be ignored.
-    * 0x0e-0x0f -- number of free blocks remaining in camera's RAM 
+    * 0x0e-0x0f -- number of free blocks remaining in camera's RAM
 
 Other bytes may be added as discovered.
 Image format
@@ -126,7 +126,7 @@ The raw image file seems to consist of the following parts:
 
     * a 16-byte image header
     * some kind of thumbnail of the actual image
-    * entropy-coded JPEG-like image data 
+    * entropy-coded JPEG-like image data
 
 These parts are described in the following paragraphs.
 Image header
@@ -137,7 +137,7 @@ Definitions, as I understand them (corrections welcome!):
 
     * Still mode - Camera takes one photo when shutter button is pressed
     * Burst mode - Camera takes a sequence (a constant small number, usually 3) of still photos when shutter button is pressed once, meant to be viewed as separate images
-    * Continuous mode - Camera continues rapidly (several fps) taking photos until told to stop (or memory is full); result is meant to be viewed as a video clip, e.g. AVI format. The camera may temporarily use a lower resolution and different compression ratio during this. 
+    * Continuous mode - Camera continues rapidly (several fps) taking photos until told to stop (or memory is full); result is meant to be viewed as a video clip, e.g. AVI format. The camera may temporarily use a lower resolution and different compression ratio during this.
 
 
 Byte(s) Meaning
@@ -155,7 +155,7 @@ Anything else: unknown
 
 The OEM driver processes 0x11 as a special case, 0x01 and 0x21 as if they were 0x01, and anything else (including 0x02) as if it were 0x00.
 0x01 Attributes: If bit 4 is set, gamma correction is enabled. All other bits are unknown, although usually some are set. Bits 2-3 and 7 are significant.
-0x02 
+0x02
 
 Bits 0-1: resolution of this photo (camera-dependent), 00 = CIF or VGA, 01 = QCIF or QVGA. If supported, 02 = SVGA, 03 = even larger than SVGA
 
@@ -192,7 +192,7 @@ From observation:
 
     * JL2005B -- no thumbnails
     * JL2005C -- some have thumbnails; if so, 96x64 pixels
-    * JL2005D -- many have thumbnails; if so, 128x120 pixels 
+    * JL2005D -- many have thumbnails; if so, 128x120 pixels
 
 Note that the aspect ratio of the thumbnails is not necessarily the same as that of the picture.
 
@@ -200,7 +200,7 @@ Pixels in the thumbnail are encoded left-to-right, top-to-bottom. Each pixel of 
 
     * bit 15-11: red
     * bit 10- 5: green
-    * bit 4 - 0: blue 
+    * bit 4 - 0: blue
 
 All of these are the most significant 5 or 6 bits for that color, with the unused low-order bits set to zero.
 Entropy coded data
@@ -215,8 +215,8 @@ The image is sub-divided as follows:
           o First the green pixels of the top half of the 16x16 pixel MCU
           o Then the green pixels of the bottom half of the 16x16 pixel MCU
           o Then the red pixels for the entire MCU
-          o Finally the blue pixels for the entire MCU 
-    * The order of the red, green and blue pixels in the Bayer pattern is as follows: RG/GB. This means the first line of a MCU starts with a red pixel, then a green pixel from the first green line from the first green block. The second line starts with a green pixel from the second green line from the first green block, then a blue pixel. 
+          o Finally the blue pixels for the entire MCU
+    * The order of the red, green and blue pixels in the Bayer pattern is as follows: RG/GB. This means the first line of a MCU starts with a red pixel, then a green pixel from the first green line from the first green block. The second line starts with a green pixel from the second green line from the first green block, then a blue pixel.
 
 With respect to the encoding:
 
@@ -226,7 +226,7 @@ With respect to the encoding:
     * The DC coefficients in the first MCU in a strip are not differential, but contain the absolute value.
     * 0xFF bytes in the entropy coded data are followed by 0x00 stuff-bytes, just like JPEG.
     * A strip is encoded as a bunch of MCUs, followed by 0xFFD9 (this is the End-Of-Image marker in JPEG) and padded with 0x00 until the next 16-byte aligned address. The start of the entropy coded stream is considered to be address 0 in this case.
-    * An image is encoded as a bunch of strips, followed by bogus data until the end of the total image data (which is a multiple of the block size, 0x80 or 0x200 bytes). 
+    * An image is encoded as a bunch of strips, followed by bogus data until the end of the total image data (which is a multiple of the block size, 0x80 or 0x200 bytes).
 
 Huffman table
 
@@ -268,7 +268,7 @@ The scale factor (in percent) is calculated from the quality value from the head
     * q = 0: scale factor = 5000
     * 0 < q <= 50: scale factor = 5000 / q
     * 50 < q <= 100: scale factor = 2 * (100 - q)
-    * q > 100: assume q = 100 
+    * q > 100: assume q = 100
 
 Scaling is done by multiplying each element of the table by the scale factor, dividing by 100 and rounding to the nearest integer value. The minimum value of an element after scaling is 1 and the maximum value is 255.
 Retrieved from "http://sourceforge.net/apps/mediawiki/gphoto/index.php?title=ImageEncodingJeilin2005CD"
@@ -291,7 +291,7 @@ Navigation
     * Help
 
 Search
- 
+
 Toolbox
 
     * What links here
@@ -307,4 +307,3 @@ Powered by MediaWiki
 
 
 © 2010 Geeknet, Inc. Terms of Use Privacy Policy
-

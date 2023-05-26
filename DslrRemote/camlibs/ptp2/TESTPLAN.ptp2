@@ -151,7 +151,7 @@ Nikon DSLR series (currently: Nikon D90)
 	--capture-preview
 		commandline tool					TODO/CHECK - First image is always plain white :(
 		gtkam							TODO/CHECK (but no image capture possible)
-		mixed with --capture-image-and-download	
+		mixed with --capture-image-and-download
 			- SDRAM mode					TODO
 			- Card mode					TODO/IGNORE (returns PTP Device Busy)
 

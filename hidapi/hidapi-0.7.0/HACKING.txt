@@ -12,4 +12,3 @@ This file is mostly for the maintainer.
 5. Test the zip file.
 6. Run the following:
 	git push origin $TAG_NAME
-

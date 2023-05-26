@@ -1,8 +1,8 @@
 /// @file EnsembleEnumNames.h
 /// \brief Contains functions to retrieve the names of various enumeration values.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_ENUM_NAMES__
 #define __Ensemble_ENUM_NAMES__
@@ -278,4 +278,3 @@ BOOL DLLENTRYDECLARATION EnsembleEnumRampModeGetValueName(RAMPMODE value, LPSTR 
 }
 #endif
 #endif // __Ensemble_ENUM_NAMES__
-

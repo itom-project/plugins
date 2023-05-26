@@ -49,7 +49,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMotor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DummyMotor.cpp

@@ -150,13 +150,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsKCubeIM is an acutator plugin to control the following integrated devices from Thorlabs: 
+        <source>ThorlabsKCubeIM is an acutator plugin to control the following integrated devices from Thorlabs:
 
-* K-Cube Controller for Piezo Inertia Stages and Actuators (e.g. KIM101) 
+* K-Cube Controller for Piezo Inertia Stages and Actuators (e.g. KIM101)
 
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.KCube.InertialMotor.
 
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
 
 This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>

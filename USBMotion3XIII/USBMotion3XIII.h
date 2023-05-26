@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -62,7 +62,7 @@ class USBMotion3XIIIInterface : public ito::AddInInterfaceBase
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class USBMotion3XIII
 */
-class USBMotion3XIII : public ito::AddInActuator 
+class USBMotion3XIII : public ito::AddInActuator
 {
     Q_OBJECT
 
@@ -86,7 +86,7 @@ class USBMotion3XIII : public ito::AddInActuator
         double getTotalStepsPerUnit(int axis); //axis = 0,1,2
 
         ito::RetVal setMicroSteps(int axis, int steps);
-        ito::RetVal setCoilCurrents(int axis, char changeBitMask, double agtat, double aleat, double v0, double threshold); 
+        ito::RetVal setCoilCurrents(int axis, char changeBitMask, double agtat, double aleat, double v0, double threshold);
         ito::RetVal setSpeed(int axis, char changeBitMask, double vmin, double vmax);
         ito::RetVal setAcceleration(int axis, double amax);
         ito::RetVal setEnabled(int axis, int value);

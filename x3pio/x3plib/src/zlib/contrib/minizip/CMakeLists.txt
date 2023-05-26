@@ -2,7 +2,7 @@ project(zlibwapi)
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
-set(LIBRARY_TYPE STATIC) 
+set(LIBRARY_TYPE STATIC)
 
 #if minizip is static, add -fPIC as compiler flag for linux
 if(UNIX)
@@ -33,40 +33,40 @@ include_directories( "${PROJECT_SOURCE_DIR}"
 if(MSVC)
     enable_language(ASM_MASM)
     add_definitions(-DASMV -DASMINF)
-    
+
     if(CMAKE_CL_64)
         add_custom_command(OUTPUT inffasx64.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffasx64.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffasx64.asm
-        COMMENT "generate inffasx64.obj") 
+        COMMENT "generate inffasx64.obj")
 
         add_custom_command(OUTPUT gvmat64.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/gvmat64.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/gvmat64.asm
-        COMMENT "generate gvmat64.obj") 
-        
+        COMMENT "generate gvmat64.obj")
+
         set(libSrcs
             #${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffasx64.asm
             #${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/gvmat64.asm
             inffasx64.obj
             gvmat64.obj
-            ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffas8664.c            
+            ${CMAKE_CURRENT_SOURCE_DIR}/../masmx64/inffas8664.c
         )
     else(CMAKE_CL_64)
         add_custom_command(OUTPUT inffas32.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/inffas32.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/inffas32.asm
-        COMMENT "generate inffas32.obj") 
+        COMMENT "generate inffas32.obj")
 
         add_custom_command(OUTPUT match686.obj
         COMMAND ${CMAKE_ASM_MASM_COMPILER} -c
             ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/match686.asm
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/match686.asm
-        COMMENT "generate match686.obj") 
-        
+        COMMENT "generate match686.obj")
+
         set(libSrcs
             #${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/inffas32.asm
             #${CMAKE_CURRENT_SOURCE_DIR}/../masmx86/match686.asm
@@ -77,9 +77,9 @@ if(MSVC)
 else(MSVC)
     #enable_language(ASM_MASM)
     message(STATUS "MINIZIP: No MSVC: therefore no assembler compilation enabled")
-endif() 
+endif()
 
-set(libSrcs 
+set(libSrcs
         ${libSrcs}
         ${CMAKE_CURRENT_SOURCE_DIR}/ioapi.c
         ${CMAKE_CURRENT_SOURCE_DIR}/unzip.c
@@ -124,9 +124,7 @@ if(DEFINED MSVC_VERSION)
 endif()
 
 
-install(TARGETS  zlibwapi 
+install(TARGETS  zlibwapi
        RUNTIME DESTINATION bin
        ARCHIVE DESTINATION iso5436-2-xml/lib
     )
-
-

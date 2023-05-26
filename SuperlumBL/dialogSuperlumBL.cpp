@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -61,7 +61,7 @@ void DialogSuperlumBL::parametersChanged(QMap<QString, ito::Param> params)
         enableDialog(true);
 		//use params (identical to m_params of the plugin)
         //__________________________________________________________________________________________________________ General Information
-        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));        
+        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
         ui.label_Device->setText(params["serial_number"].getVal<char*>());
         ui.label_COM_Port->setText(QString::number(params["comPort"].getVal<int>()));
         ui.label_device_name->setText(QString((params)["name"].getVal<char*>()));
@@ -81,7 +81,7 @@ void DialogSuperlumBL::parametersChanged(QMap<QString, ito::Param> params)
 
         //__________________________________________________________________________________________________________ Power Mode
         ui.comboBox_Power_Mode->setCurrentIndex( params["power_mode"].getVal<int>());
-        
+
         m_firstRun = false;
     }
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -32,7 +32,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    GWInstekPSP 
+  *\class    GWInstekPSP
   *\brief    This class can be used to communicate with PSP-405, PSP-603 and PSP-2010
   *
   *         This class can be used to work with PSP-405, PSP-603 and PSP-2010.
@@ -51,7 +51,7 @@
   * \warning    NA
   *
   */
-class GWInstekPSP : public ito::AddInDataIO 
+class GWInstekPSP : public ito::AddInDataIO
 {
     Q_OBJECT
 
@@ -95,7 +95,7 @@ class GWInstekPSP : public ito::AddInDataIO
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    GWInstekPSPInterface 
+  *\class    GWInstekPSPInterface
   *
   *\brief    Interface-Class for GWInstekPSPInterface-Class
   *

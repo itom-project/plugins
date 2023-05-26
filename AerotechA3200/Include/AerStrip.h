@@ -47,7 +47,7 @@ typedef struct tagAER_GSTRIP_AXIS_STD_DATAD
    DOUBLE  dOptionalData2;   // optional data slot (by default, is nothing)
    DOUBLE  dOptionalData3;   // optional data slot (by default, is nothing)
 
-   DWORD   dwMoreSpare[5];       
+   DWORD   dwMoreSpare[5];
 
 } AER_GSTRIP_AXIS_STD_DATAD;
 typedef AER_GSTRIP_AXIS_STD_DATAD  *PAER_GSTRIP_AXIS_STD_DATAD;
@@ -64,8 +64,8 @@ typedef struct tagAER_GSTRIP_AXIS_OPT_DATAD
    DOUBLE  dOptionalData6;
    DOUBLE  dOptionalData7;
    LONG  lSpare0;
-   SHORT sDataCollectRate;     // The rate this sample was taken at (2, 4, or 8 kHz) 
-   SHORT sSpare0;             
+   SHORT sDataCollectRate;     // The rate this sample was taken at (2, 4, or 8 kHz)
+   SHORT sSpare0;
    SHORT sOptionalDataCode0;
    SHORT sOptionalDataCode1;
    SHORT sOptionalDataCode2;
@@ -74,7 +74,7 @@ typedef struct tagAER_GSTRIP_AXIS_OPT_DATAD
    SHORT sOptionalDataCode5;
    SHORT sOptionalDataCode6;
    SHORT sOptionalDataCode7;
-   DWORD  dwMoreSpares[12];     
+   DWORD  dwMoreSpares[12];
 } AER_GSTRIP_AXIS_OPT_DATAD;
 typedef AER_GSTRIP_AXIS_OPT_DATAD  *PAER_GSTRIP_AXIS_OPT_DATAD;
 
@@ -135,7 +135,7 @@ AERERR_CODE AER_DLLENTRY  AerStripGlobalGetImmediate( HAERCTRL hAerCtrl, AXISMAS
                   DWORD dwParm7, PDWORD pStatus7,
                   DWORD dwParm8, PDWORD pStatus8);
 
-// For .dot net / labview support, Upload loads all data into a staticly mallocaed structure, others 
+// For .dot net / labview support, Upload loads all data into a staticly mallocaed structure, others
 // fetch data from that structure
 AERERR_CODE AER_DLLENTRY  AerStripGlobalUploadData( HAERCTRL hAerCtrl, WORD wFirst,
                                                     WORD wCount, AXISMASK mAxis );
@@ -175,34 +175,34 @@ AERERR_CODE AER_DLLENTRY AerStripGlobalIsFree( HAERCTRL hAerCtrl, PDWORD pdwIsFr
 //                  WORD wCollectType4, WORD wCollectOffset4);
 AERERR_CODE AER_DLLENTRY  AerStripGlobalClearOverflowStatus( HAERCTRL hAerCtrl);
 
-AERERR_CODE AER_DLLENTRY AerStripGlobalSetOptionalDataItem( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerStripGlobalSetOptionalDataItem( HAERCTRL hAerCtrl,
                                                             WORD wType,
                                                             WORD wNum,
                                                             WORD wOptionalDataCode,
                                                             DWORD dwAddress );
 
-AERERR_CODE AER_DLLENTRY AerStripGlobalSetOptionalDataItemAxis( HAERCTRL hAerCtrl, 
-                                                               AXISINDEX iAxis, 
+AERERR_CODE AER_DLLENTRY AerStripGlobalSetOptionalDataItemAxis( HAERCTRL hAerCtrl,
+                                                               AXISINDEX iAxis,
                                                                WORD wType,
                                                                WORD wNum,
                                                                WORD wOptionalDataCode,
                                                                DWORD dwAddress );
 
-AERERR_CODE AER_DLLENTRY AerStripGlobalSetRTDataCollectRate( HAERCTRL hAerCtrl, 
-                                                          AXISINDEX iAxis,        
+AERERR_CODE AER_DLLENTRY AerStripGlobalSetRTDataCollectRate( HAERCTRL hAerCtrl,
+                                                          AXISINDEX iAxis,
                                                           DWORD dwRate );
 
-AERERR_CODE AER_DLLENTRY AerStripGlobalSetRTDataFdbk( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerStripGlobalSetRTDataFdbk( HAERCTRL hAerCtrl,
                                                       AXISINDEX iAxis,
                                                       DWORD dwBuffer,
                                                       DWORD dwDataType );
 
-AERERR_CODE AER_DLLENTRY AerStripGlobalGetRTDataStatus(  HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerStripGlobalGetRTDataStatus(  HAERCTRL hAerCtrl,
                                                          AXISINDEX iAxis,
                                                          PDWORD pdwEnableStatus,
                                                          PDWORD pdwRate );
 
-AERERR_CODE AER_DLLENTRY  AerStripGlobalGetStartPosition( HAERCTRL hAerCtrl, AXISINDEX iAxis, 
+AERERR_CODE AER_DLLENTRY  AerStripGlobalGetStartPosition( HAERCTRL hAerCtrl, AXISINDEX iAxis,
                                                           LONG lType, PLONG plPosition);
 
 LONG AER_DLLENTRY formatOptionalDataCode(SHORT sOptionalDataCode, LONG lRawData);
@@ -211,6 +211,6 @@ LONG AER_DLLENTRY formatOptionalDataCode(SHORT sOptionalDataCode, LONG lRawData)
 }
 #endif
 
-   
+
 #endif
 // __AER_STRP_H__

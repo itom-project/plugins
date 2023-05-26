@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -45,7 +45,7 @@ DialogSMC100::DialogSMC100(ito::AddInBase *actuator) :
     m_calibStatusNames.append(tr("MZ only"));
     m_calibStatusNames.append(tr("EoR ans encoder"));
     m_calibStatusNames.append(tr("EoR only"));
-    
+
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
 };
@@ -94,7 +94,7 @@ void DialogSMC100::parametersChanged(QMap<QString, ito::Param> params)
     {
         disconnect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
         disconnect(m_pSpeedSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
-        disconnect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));   
+        disconnect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
     }
 
     // Set Spinboxes to currwent values
@@ -118,10 +118,10 @@ void DialogSMC100::parametersChanged(QMap<QString, ito::Param> params)
             ++j;
         }
     }
-        
+
     // set ui to new parameters
     ui.checkAsync->setChecked(params["async"].getVal<int>());
-    
+
     // Reconnect them for reaction on upcomming changes
     for (int i = 0; i < m_pComboBoxes.size(); ++i)
     {
@@ -140,10 +140,10 @@ ito::RetVal DialogSMC100::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
-    
+
     // This is a general option that does not need the config mode
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, ui.checkAsync->isChecked())));
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }
@@ -201,8 +201,8 @@ void DialogSMC100::on_calibrateBtn_clicked()
             calibV.append(m_calibInitialStatus[i]); // don´t care, keep old mode
         }
     }
-    
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("config_state", ito::ParamBase::IntArray, configV.size(), configV.data())));   
+
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("config_state", ito::ParamBase::IntArray, configV.size(), configV.data())));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::DoubleArray, speedV.size(), speedV.data())));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::DoubleArray, accelV.size(), accelV.data())));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("calib_mode", ito::ParamBase::IntArray, calibV.size(), calibV.data())));
@@ -261,7 +261,7 @@ void DialogSMC100::resetButtonClicked()
     // Disconnect signals of ui elements while changing their values
     disconnect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
     disconnect(m_pSpeedSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
-    disconnect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));   
+    disconnect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
 
     m_pSpeedSpin[i]->setValue(m_speedInitialStatus[i]);
     m_pAccelSpin[i]->setValue(m_accelInitialStatus[i]);
@@ -291,13 +291,13 @@ void DialogSMC100::createUiListEntry(const int i)
     layout->setContentsMargins(0, 0, 0, 0);
     frame->setLayout(layout);
     frame->setObjectName(QString::number(i));
-     
+
     // Create innner elements and set option
     QLabel *nrLabel = new QLabel(QString::number(i),frame);
     nrLabel->setMaximumWidth(25);
     nrLabel->setAlignment(Qt::AlignCenter);
 
-    QComboBox *statusCombo = new QComboBox(frame);     
+    QComboBox *statusCombo = new QComboBox(frame);
     statusCombo->setToolTip(tr("Calibration mode"));
     for (int i = 0; i < m_calibStatusNames.size(); ++i)
     {
@@ -316,7 +316,7 @@ void DialogSMC100::createUiListEntry(const int i)
     accelSpin->setMaximum(100);
     accelSpin->setMinimum(0);
     accelSpin->setSuffix(tr(" units/sec^2"));
-    
+
     QPushButton *resetButton = new QPushButton(frame);
     resetButton->setToolTip(tr("revert the changed configurations of this axis."));
     resetButton->setIcon(QIcon(":/dialogue/reset.png"));

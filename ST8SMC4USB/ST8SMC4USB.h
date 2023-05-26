@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -44,7 +44,7 @@
 #include "ximc.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class ST8SMC4USB : public ito::AddInActuator 
+class ST8SMC4USB : public ito::AddInActuator
 {
     Q_OBJECT
 
@@ -52,7 +52,7 @@ class ST8SMC4USB : public ito::AddInActuator
         ~ST8SMC4USB(){};
         ST8SMC4USB();
 
-    public:        
+    public:
         friend class ST8SMC4USBInterface;
 
         const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
@@ -80,7 +80,7 @@ class ST8SMC4USB : public ito::AddInActuator
         double stepsToUnit(const get_position_t &steps, int microSteps);
         double stepsToUnit(int fullSteps, int uSteps, int microSteps);
         void unitToSteps(double unitStep, int microSteps, int &fullSteps, int &uSteps);
-        
+
         int microStepsToMicrostepMode(const int microSteps);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
@@ -114,7 +114,7 @@ class ST8SMC4USB : public ito::AddInActuator
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond = nullptr);
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
-        
+
         //! Emits status and position if triggered. Used form the dockingwidget
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 

@@ -88,7 +88,7 @@ namespace OpenGPS
        * measurements or NULL if this axis does not need explicit point values.
        */
       virtual void SetX(PointBuffer* const value);
-      
+
       /*!
        * Sets the buffer for point measurement data of the Y component of a vector.
        * @remarks The pointer passed will become managed by this instance.
@@ -108,7 +108,7 @@ namespace OpenGPS
       /*! Gets the buffer of point measurement data of the X components
        * of all vectors for read-only access. */
       virtual const PointBuffer* GetX() const;
-      
+
       /*! Gets the buffer of point measurement data of the Y components
        * of all vectors for read-only access. */
       virtual const PointBuffer* GetY() const;
@@ -154,7 +154,7 @@ namespace OpenGPS
        * @see VectorBuffer::HasValidityBuffer
        */
       virtual PointValidityProvider* GetValidityProvider();
-      
+
       /*!
        * Gets the object representing an external point validity file. May return NULL, if point
        * validity information is not aquired through an external file but inline by the usage of
@@ -187,7 +187,7 @@ namespace OpenGPS
    private:
       /*! Buffer for measurements of the X component of all point vectors. */
       PointBuffer* m_X;
-      
+
       /*! Buffer for measurements of the Y component of all point vectors. */
       PointBuffer* m_Y;
 
@@ -198,7 +198,7 @@ namespace OpenGPS
       ValidBuffer* m_ValidBuffer;
 
       /*! Interface to retrieve/provide point validity information.  */
-      PointValidityProvider* m_ValidityProvider;      
+      PointValidityProvider* m_ValidityProvider;
    };
 }
 

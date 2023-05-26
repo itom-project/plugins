@@ -31,19 +31,19 @@ int CEXP INITBOARD(int board,HANDLE *hdriver);
 //          *hdriver gives back the filehandle
 //          of the driver for this board
 // if(!NULL) the board is initialized again
-// 
+//
 
 int CEXP CLOSEBOARD(HANDLE *hdriver);
 // close the driver
 //out:
 // *hdriver = the opened driver
-//            set to NULL  				
+//            set to NULL
 
 
 //int CEXP RESETBOARD(HANDLE hdriver);
-// reset the board 
-// do not use this function if 
-// any other action is done with the board 
+// reset the board
+// do not use this function if
+// any other action is done with the board
 
 //in:
 // hdriver = filehandle returned from INITBOARD
@@ -62,12 +62,12 @@ int CEXP GETBOARDVAL(HANDLE hdriver,int pcc_val,void *data);
 
 
 int CEXP SETMODE(HANDLE hdriver,int mode,
-			               int explevel,int exptime, 
+			               int explevel,int exptime,
 			               int hbin,int vbin,
 						   int gain,int offset,
 						   int bit_pix,int shift);
 // set the parameter for the next exposures
-// this function cannot be called if the 
+// this function cannot be called if the
 // camera is running. All parameters are checked.
 
 //in:
@@ -75,13 +75,13 @@ int CEXP SETMODE(HANDLE hdriver,int mode,
 
 // mode :
 //set mode of camera
-//       = 0x10  single asnyc shutter hardware trigger  
-//       = 0x11  single asnyc shutter software trigger  
-//       = 0x40  single auto exposure hardware trigger  
-//       = 0x41  single auto exposure software trigger  
-//only one exposure is released by a HW-trigger or 
+//       = 0x10  single asnyc shutter hardware trigger
+//       = 0x11  single asnyc shutter software trigger
+//       = 0x40  single auto exposure hardware trigger
+//       = 0x41  single auto exposure software trigger
+//only one exposure is released by a HW-trigger or
 //SW-trigger.
-//Timing: making exposure then readout CCD. After this 
+//Timing: making exposure then readout CCD. After this
 //a new trigger is accepted.
 
 
@@ -89,28 +89,28 @@ int CEXP SETMODE(HANDLE hdriver,int mode,
 //Set exposure time of camera
 //The possible exposurtime range is from 10 to 10000µs.
 
-         
+
 // explevel  :
 //Set level in % which time to stop auto exposure mode
 //The possible exposurelevel is from 0 to 255.
 //the camera must be a lightmeter version
-         
+
 
 // hbin  :
 //Set horizontal binning of the camera
 //       = 0  horizontal x1
-//       = 1  horizontal x2 
+//       = 1  horizontal x2
 
 // vbin  :
 //Set vertical binning of the camera
 //       = 0  vertical x1
-//       = 1  vertical x2 
+//       = 1  vertical x2
 
 
 // gain :
 //set gain value of camera (HW version 03)
 //       = 0  low gain
-//       = 1  high gain 
+//       = 1  high gain
 
 
 // offset  :
@@ -123,14 +123,14 @@ int CEXP SETMODE(HANDLE hdriver,int mode,
 
 //       = 12  12bits per pixel, shift =0
 //             2 bytes with the upper 4 bits
-//             set to zero are sent. Therefore 
-//             two pixel values are moved with one 
-//             PCI(32 bit) transfer. 
+//             set to zero are sent. Therefore
+//             two pixel values are moved with one
+//             PCI(32 bit) transfer.
 
 //       =  8  8bits per pixel,shift possible
 //             8 bit values are generated with a
-//             programmable barrel shifter from the 
-//             12 bit A/D values. Therefore four 
+//             programmable barrel shifter from the
+//             12 bit A/D values. Therefore four
 //             pixel are moved with one PCI transfer.
 //             This half's the pixel data per image
 //             and frees the PCI bus.
@@ -149,7 +149,7 @@ int CEXP SETMODE(HANDLE hdriver,int mode,
 //       = 5 	8 bit (D6..D0), digital gain x32
 
 int CEXP GETMODE(HANDLE hdriver,int *mode,
-			               int *explevel,int *exptime, 
+			               int *explevel,int *exptime,
 			               int *hbin,int *vbin,
 						   int *gain,int *offset,
 						   int *bit_pix,int *shift);
@@ -158,7 +158,7 @@ int CEXP GETMODE(HANDLE hdriver,int *mode,
 int CEXP GETSIZES(HANDLE hdriver,int *ccdxsize,int *ccdysize,
 			                int *actualxsize,int *actualysize,
 							int *bit_pix);
-//Return the CCD-Size and the actual size in Pixel 
+//Return the CCD-Size and the actual size in Pixel
 //in:
 // hdriver = filehandle returned from INITBOARD
 
@@ -180,13 +180,13 @@ int CEXP TRIGGER_CAMERA(HANDLE hdriver);
 
 int CEXP START_CAMERA(HANDLE hdriver);
 int CEXP STOP_CAMERA(HANDLE hdriver);
-//These commands start and stop the mode setting. 
+//These commands start and stop the mode setting.
 //All settings of variables, like binning or gain
 //etc. should be done when the camera mode is stopped
 //with STOP_CAMERA. When this command returns without
 //error then the CCD is cleared and ready for a new
-//exposure. This can be released with START_CAMERA 
-//and a trigger command. 
+//exposure. This can be released with START_CAMERA
+//and a trigger command.
 
 //in:
 // hdriver = filehandle returned from INITBOARD
@@ -194,7 +194,7 @@ int CEXP STOP_CAMERA(HANDLE hdriver);
 
 int CEXP SET_EXPOSURE(HANDLE hdriver,int time);
 //set exposure time in async mode without stopping camera
-//(updated HW necessary) 
+//(updated HW necessary)
 
 //in:
 // hdriver = filehandle returned from INITBOARD
@@ -203,13 +203,13 @@ int CEXP SET_EXPOSURE(HANDLE hdriver,int time);
 
 int CEXP READTEMPERATURE(HANDLE hdriver,int *ccd);
 //Return actual CCD-temperature
-//The range is from -55°C to +125°C  
+//The range is from -55°C to +125°C
 
 //in:
 // hdriver = filehandle returned from INITBOARD
 
 //out:
-// *ccd    = temperature in °C.  
+// *ccd    = temperature in °C.
 
 
 int CEXP WRRDORION(HANDLE hdriver,int cmnd,int *data);
@@ -237,21 +237,21 @@ int CEXP READEEPROM(HANDLE hdriver,int mode,int adr,char *data);
 // hdriver = filehandle returned from INITBOARD
 // mode    = 0 HEAD-EEPROM
 //           1 CARD-EEPROM
-// adr     = address of byte to read ( 0-255 ) 
+// adr     = address of byte to read ( 0-255 )
 
 //out:
 // *data   = Byte read
 
 
 int CEXP WRITEEEPROM(HANDLE hdriver,int mode,int adr,char data);
-//Read one byte from the Eeprom at address adr. 
+//Read one byte from the Eeprom at address adr.
 //Do not call, if camera is running
 
 //in:
 // hdriver = filehandle returned from INITBOARD
 // mode    = 0 HEAD-EEPROM
 //           1 CARD-EEPROM
-// adr     = address of byte to read ( 0-127 ) 
+// adr     = address of byte to read ( 0-127 )
 // data    = Byte to write
 
 int CEXP READVERSION(HANDLE hdriver,int typ,char *vers,int len);
@@ -262,11 +262,11 @@ int CEXP READVERSION(HANDLE hdriver,int typ,char *vers,int len);
 // len     = lenght of buffer vers
 
 //out:
-// *vers   = string  
+// *vers   = string
 
 
 int CEXP SETTIMEOUTS(HANDLE hdriver,DWORD dma, DWORD proc, DWORD head);
-//Can set timout values for cardio,dma and head  
+//Can set timout values for cardio,dma and head
 
 //in:
 // hdriver = filehandle returned from INITBOARD
@@ -283,12 +283,12 @@ int CEXP GETBUFFER_STATUS(HANDLE hdriver,int bufnr,int mode,int *stat,int len);
 //in:
 // hdriver = filehandle returned from INITBOARD
 // bufnr   = number of buffer
-// mode    = set internal to 0   
-// len     = bytes to read  
+// mode    = set internal to 0
+// len     = bytes to read
 
 //out:
 // first dword *stat   = status of buffer
-        //dmawrite               0x00000001 
+        //dmawrite               0x00000001
         //dmawrite done          0x00000002
         //queued                 0x00000004
         //canceled with stop     0x00000008
@@ -332,23 +332,23 @@ int CEXP ADD_BUFFER_TO_LIST(HANDLE hdriver,int bufnr,int size,int offset,int dat
 //transfer is started immediatly if the camera runs
 //the next buffer are stored in the list. If a transfer
 //is done and there is a buffer in the list the next tranfer
-//is started immediatly.   
+//is started immediatly.
 
 //in:
 // hdriver = filehandle returned from INITBOARD
 // bufnr   = number of buffer from ALLOCATE_BUFFER
 // size    = number of bytes to transfer
-//           for 12bit data actualxsize*actualysize*2  
-//           for 8bit data actualxsize*actualysize  
+//           for 12bit data actualxsize*actualysize*2
+//           for 8bit data actualxsize*actualysize
 //           lower values are possible
 //           greater values will timeout the dma
-//           or come back with error 
+//           or come back with error
 // offset  = offset in the buffer
 // data    = 0 not implemented yet
 
 
 int CEXP REMOVE_BUFFER_FROM_LIST(HANDLE hdriver,int bufnr);
-//Clear the buffer int the buffer queue 
+//Clear the buffer int the buffer queue
 //If a transfer is actual in progress to this buffer
 //a error is returned.
 
@@ -364,13 +364,13 @@ int CEXP ALLOCATE_BUFFER(HANDLE hdriver,int *bufnr,int *size);
 // hdriver = filehandle returned from INITBOARD
 // *size   = size of buffer in byte
 // *bufnr  = -1 for new buffer
-//           number of allocated buffer to 
+//           number of allocated buffer to
 //           reallocate with other size
 
 //out:
 // *size   = allocated size, which might be greater
 // *bufnr  = number of buffer
-//          
+//
 
 
 int CEXP FREE_BUFFER(HANDLE hdriver,int bufnr);
@@ -396,7 +396,7 @@ int CEXP SETBUFFER_EVENT(HANDLE hdriver,int bufnr,HANDLE *hPicEvent);
 
 
 int CEXP MAP_BUFFER(HANDLE hdriver,int bufnr,int size,int offset,void** linadr);
-//Map the buffer to a user address 
+//Map the buffer to a user address
 
 //in:
 // hdriver = filehandle returned from INITBOARD
@@ -409,7 +409,7 @@ int CEXP MAP_BUFFER(HANDLE hdriver,int bufnr,int size,int offset,void** linadr);
 
 
 int CEXP UNMAP_BUFFER(HANDLE hdriver,int bufnr);
-//Unmap the buffer  
+//Unmap the buffer
 //Please unmap all mapped buffers before
 //closing the filehandle
 
@@ -436,24 +436,24 @@ int CEXP CLEARBUFFER_EVENT(HANDLE hdriver,int bufnr,HANDLE *hPicEvent);
 //transfer is started immediatly if the camera runs
 //the next buffers are stored in the list. If a transfer
 //is done and there is a buffer in the list the next transfer
-//is started immediatly.   
+//is started immediatly.
 
 //in:
 // hdriver   = filehandle returned from INITBOARD
 // bufnr     = number of buffer from ALLOCATE_BUFFER
 // size      =  number of bytes to transfer
-//             for 12bit data actualxsize*actualysize*2  
-//             for 8bit data actualxsize*actualysize  
+//             for 12bit data actualxsize*actualysize*2
+//             for 8bit data actualxsize*actualysize
 //             lower values are possible
-//             greater values will timeout the dma or come back with error 
+//             greater values will timeout the dma or come back with error
 // num_entry = number of physical address entries
 // table     = buffer with pysical address entries
-//             each entry includes two DWORDS: 
-//             physical address of datablock               
-//             size of datablock               
+//             each entry includes two DWORDS:
+//             physical address of datablock
+//             size of datablock
 
 int CEXP REMOVE_ALL_BUFFERS_FROM_LIST(HANDLE hdriver);
-//Clear the whole buffer queue 
+//Clear the whole buffer queue
 //If a transfer is actual in progress to any of the buffers
 //a error is returned.
 
@@ -470,7 +470,7 @@ int WINAPI SETDRIVER_EVENT(HANDLE hdriver,int mode,HANDLE *hHeadEvent);
 //in:
 // hdriver = filehandle returned from INITBOARD
 // mode    = low word    0x0000=Headevent
-//           high word   0x0000=open and enable event 
+//           high word   0x0000=open and enable event
 //                       0x8000=disable event
 //                       0xC000=disable and close event
 
@@ -488,16 +488,16 @@ int CEXP ALLOCATE_BUFFER_EX(HANDLE hdriver,int *bufnr,int size,HANDLE *hPicEvent
 //and data-byte, which belongs to the every comand.
 //One can sent up to 16 comands. If the driver find a
 //comand in the comad table, it will catch the data_in byte
-//from the same tableposition and send this to the 
+//from the same tableposition and send this to the
 //ORION-prozessor. After the ORION has finished the comand
 //and has written back his data-byte, this byte will be stored
 //in the data_back table at the same tableposition, from where the
 //comand is read out.
 //If the comand has the value 0x00 or position 16 is reached,
-//the driver will stop sending comands   
+//the driver will stop sending comands
 //Each buffer has its own table, so you can define different comands
 //for each buffer.
-// 
+//
 
 
 int CEXP SETORIONINT(HANDLE hdriver,int bufnr, int mode,unsigned char *cmnd,int len);
@@ -508,21 +508,21 @@ int CEXP SETORIONINT(HANDLE hdriver,int bufnr, int mode,unsigned char *cmnd,int 
 // bufnr   = number of buffer
 // mode    = 1 orion data_back
 //           2 orion data_in
-//           3 orion comand          
-// cmnd    = address of buffer of comands 
+//           3 orion comand
+// cmnd    = address of buffer of comands
 //           or data to set, maximal 16 bytes
 // len     = length of buffer
 
 int CEXP GETORIONINT(HANDLE hdriver,int bufnr, int mode,unsigned char *data,int len);
-//Read len bytes from the comand or data tables for the driver internal ORION call. 
+//Read len bytes from the comand or data tables for the driver internal ORION call.
 
 //in:
 // hdriver = filehandle returned from INITBOARD
 // bufnr   = number of buffer
 // mode    = 1 orion data_back
 //           2 orion data_in
-//           3 orion comand          
-// cmnd    = address of buffer 
+//           3 orion comand
+// cmnd    = address of buffer
 // len     = length of buffer
 
 //out:
@@ -536,23 +536,23 @@ int CEXP GETORIONINT(HANDLE hdriver,int bufnr, int mode,unsigned char *data,int 
 
 int CEXP READ_TEMP(HANDLE hdriver,int *ccd_temp,int *ele_temp);
 //Return actual CCD-temperature and actual elektronic temperature
-//The range is from -55°C to +125°C  
+//The range is from -55°C to +125°C
 
 //in:
 // hdriver = filehandle returned from INITBOARD
 
 //out:
-// *ccd_temp    = temperature of CCD in °C.  
-// *ele_temp    = temperature of electronic in °C.  
+// *ccd_temp    = temperature of CCD in °C.
+// *ele_temp    = temperature of electronic in °C.
 
 
 int CEXP SET_NOMINAL_PELTIER_TEMP(HANDLE hdriver,int temp);
 //Set nominal temperature of peltier cooling
-//The range is from -10°C to +25°C  
+//The range is from -10°C to +25°C
 
 //in:
 // hdriver = filehandle returned from INITBOARD
-// temp     = nominal temperature of peltier in °C.  
+// temp     = nominal temperature of peltier in °C.
 
 int CEXP GET_NOMINAL_PELTIER_TEMP(HANDLE hdriver,int *temp);
 //Set nominal temperature of peltier cooling
@@ -561,7 +561,7 @@ int CEXP GET_NOMINAL_PELTIER_TEMP(HANDLE hdriver,int *temp);
 // hdriver = filehandle returned from INITBOARD
 
 //out:
-// *temp     = nominal temperature of peltier in °C.  
+// *temp     = nominal temperature of peltier in °C.
 
 
 int CEXP SET_STANDBY_MODE(HANDLE hdriver,int mode);
@@ -569,10 +569,10 @@ int CEXP SET_STANDBY_MODE(HANDLE hdriver,int mode);
 
 //in:
 // hdriver = filehandle returned from INITBOARD
-// mode    = Combination of the following Bit defines  off=0, on=1 
-//           Bit0:  Fan off/on   
-//           Bit1:  Peltier off/on   
-//           Bit2:  Head Elektronic off/on   
+// mode    = Combination of the following Bit defines  off=0, on=1
+//           Bit0:  Fan off/on
+//           Bit1:  Peltier off/on
+//           Bit2:  Head Elektronic off/on
 
 int CEXP GET_STANDBY_MODE(HANDLE hdriver,int *mode);
 //get standy mode for card and head
@@ -581,10 +581,10 @@ int CEXP GET_STANDBY_MODE(HANDLE hdriver,int *mode);
 // hdriver = filehandle returned from INITBOARD
 
 //out:
-// *mode    = Combination of the following Bit defines  off=0, on=1 
-//           Bit0:  Fan off/on   
-//           Bit1:  Peltier off/on   
-//           Bit2:  Head Elektronic off/on   
+// *mode    = Combination of the following Bit defines  off=0, on=1
+//           Bit0:  Fan off/on
+//           Bit1:  Peltier off/on
+//           Bit2:  Head Elektronic off/on
 
 
 //@ver1.011

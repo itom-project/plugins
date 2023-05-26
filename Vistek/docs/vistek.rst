@@ -10,7 +10,7 @@
 **Devices**:    Cameras from company Vistek
 **Author**:     :pluginauthor:`Vistek`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: Vistek
 

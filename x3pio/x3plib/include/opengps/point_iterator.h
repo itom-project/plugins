@@ -119,7 +119,7 @@ extern "C" {
 
    /*!
     * Resets the iterator to the beginning and turns this iterator instance into a forward iterator.
-    *   
+    *
     * @param iterator Operate on this iterator handle.
     */
    _OPENGPS_EXPORT void ogps_ResetNextPointIterator(OGPS_PointIteratorPtr const iterator);

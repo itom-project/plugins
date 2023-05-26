@@ -36,7 +36,7 @@ endif(NOT BUILD_TARGET64)
 
 # AerotechEnsemble
 if(BUILD_QTVERSION STREQUAL "Qt5")
-	if(WIN32)    
+	if(WIN32)
 		option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
 		if(PLUGIN_aerotechEnsemble)
 			add_subdirectory(AerotechEnsemble)
@@ -77,13 +77,13 @@ endif(PLUGIN_BasicFilters)
 option(PLUGIN_BasicGPLFilters "Build with this plugin." ON)
 if(PLUGIN_BasicGPLFilters)
     add_subdirectory(BasicGPLFilters)
-endif(PLUGIN_BasicGPLFilters) 
+endif(PLUGIN_BasicGPLFilters)
 
 # HidApi
 option(PLUGIN_HidApi "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_HidApi)
     add_subdirectory(hidapi)
-endif(PLUGIN_HidApi) 
+endif(PLUGIN_HidApi)
 
 # cmu1394
 if(WIN32)

@@ -26,7 +26,7 @@ AC_DEFUN([GPKG_CHECK_LINUX],
 	AC_REQUIRE([AC_NEED_BYTEORDER_H])
 
 	is_linux=false
-	case "$effective_target" in 
+	case "$effective_target" in
 		*linux*)
 			is_linux=true
 			;;
@@ -78,4 +78,3 @@ AC_DEFUN([GPKG_CHECK_LINUX],
 	AC_SUBST([hotplugdocdir])
 	AC_SUBST([hotplugusermapdir])
 ])
-

@@ -88,7 +88,7 @@ static uint16_t ptp_exit_send_memory_handler (PTPDataHandler *handler);
 
 void
 ptp_debug (PTPParams *params, const char *format, ...)
-{  
+{
         va_list args;
 
         va_start (args, format);
@@ -101,11 +101,11 @@ ptp_debug (PTPParams *params, const char *format, ...)
 		fflush (stderr);
 	}
         va_end (args);
-}  
+}
 
 void
 ptp_error (PTPParams *params, const char *format, ...)
-{  
+{
         va_list args;
 
         va_start (args, format);
@@ -139,7 +139,7 @@ ptp_error (PTPParams *params, const char *format, ...)
  * filled in (i.e. operation code and parameters). It's up to caller to do
  * so.
  * The flags decide thether the transaction has a data phase and what is its
- * direction (send or receive). 
+ * direction (send or receive).
  * If transaction is sending data the sendlen should contain its length in
  * bytes, otherwise it's ignored.
  * The data should contain an address of a pointer to data going to be sent
@@ -155,14 +155,14 @@ ptp_error (PTPParams *params, const char *format, ...)
  * all fields filled in.
  **/
 uint16_t
-ptp_transaction_new (PTPParams* params, PTPContainer* ptp, 
+ptp_transaction_new (PTPParams* params, PTPContainer* ptp,
 		     uint16_t flags, uint64_t sendlen,
 		     PTPDataHandler *handler
 ) {
 	int 		tries;
 	uint16_t	cmd;
 
-	if ((params==NULL) || (ptp==NULL)) 
+	if ((params==NULL) || (ptp==NULL))
 		return PTP_ERROR_BADPARAM;
 
 	cmd = ptp->Code;
@@ -395,7 +395,7 @@ ptp_exit_fd_handler (PTPDataHandler *handler)
  * i.e. it is not necessary to initialize *data or *recvlen beforehand.
  */
 uint16_t
-ptp_transaction (PTPParams* params, PTPContainer* ptp, 
+ptp_transaction (PTPParams* params, PTPContainer* ptp,
 		uint16_t flags, uint64_t sendlen,
 		unsigned char **data, unsigned int *recvlen
 ) {
@@ -600,7 +600,7 @@ parse_9301_value (PTPParams *params, const char *str, uint16_t type, PTPProperty
 		if (!sscanf(str,"%02x", &x)) {
 			ptp_debug( params, "could not parse int8 %s", str);
 			return PTP_RC_GeneralError;
-		} 
+		}
 		ptp_debug( params, "\t%d", x);
 		propval->i8 = x;
 		break;
@@ -983,7 +983,7 @@ ptp_generic_no_data (PTPParams* params, uint16_t code, unsigned int n_param, ...
 /**
  * ptp_opensession:
  * params:	PTPParams*
- * 		session			- session number 
+ * 		session			- session number
  *
  * Establishes a new session.
  *
@@ -1401,7 +1401,7 @@ ptp_getobject_to_handler (PTPParams* params, uint32_t handle, PTPDataHandler *ha
  *		handle			- Object handle
  *		fd                      - File descriptor to write() to
  *
- * Get object 'handle' from device and write the data to the 
+ * Get object 'handle' from device and write the data to the
  * given file descriptor.
  *
  * Return values: Some PTP_RC_* code.
@@ -1493,7 +1493,7 @@ ptp_getthumb (PTPParams* params, uint32_t handle, unsigned char** object, unsign
  * params:	PTPParams*
  *		handle			- object handle
  *		ofc			- object format code (optional)
- * 
+ *
  * Deletes desired objects.
  *
  * Return values: Some PTP_RC_* code.
@@ -1517,7 +1517,7 @@ ptp_deleteobject (PTPParams* params, uint32_t handle, uint32_t ofc)
  *		uint32_t* parenthandle 	- Parent ObjectHandle on responder
  * 		uint32_t* handle	- see Return values
  *		PTPObjectInfo* objectinfo- ObjectInfo that is to be sent
- * 
+ *
  * Sends ObjectInfo of file that is to be sent via SendFileObject.
  *
  * Return values: Some PTP_RC_* code.
@@ -1529,7 +1529,7 @@ ptp_deleteobject (PTPParams* params, uint32_t handle, uint32_t ofc)
  *					  for the incoming object
  **/
 uint16_t
-ptp_sendobjectinfo (PTPParams* params, uint32_t* store, 
+ptp_sendobjectinfo (PTPParams* params, uint32_t* store,
 			uint32_t* parenthandle, uint32_t* handle,
 			PTPObjectInfo* objectinfo)
 {
@@ -1544,7 +1544,7 @@ ptp_sendobjectinfo (PTPParams* params, uint32_t* store,
 	free(data);
 	*store=ptp.Param1;
 	*parenthandle=ptp.Param2;
-	*handle=ptp.Param3; 
+	*handle=ptp.Param3;
 	return ret;
 }
 
@@ -1553,7 +1553,7 @@ ptp_sendobjectinfo (PTPParams* params, uint32_t* store,
  * params:	PTPParams*
  *		char*	object		- contains the object that is to be sent
  *		uint64_t size		- object size
- *		
+ *
  * Sends object to Responder.
  *
  * Return values: Some PTP_RC_* code.
@@ -1617,7 +1617,7 @@ ptp_sendobject_fromfd (PTPParams* params, int fd, uint64_t size)
 #define PROPCACHE_TIMEOUT 5	/* seconds */
 
 uint16_t
-ptp_getdevicepropdesc (PTPParams* params, uint16_t propcode, 
+ptp_getdevicepropdesc (PTPParams* params, uint16_t propcode,
 			PTPDevicePropDesc* devicepropertydesc)
 {
 	PTPContainer	ptp;
@@ -1701,7 +1701,7 @@ ptp_setdevicepropvalue (PTPParams* params, uint16_t propcode,
  *		uint32_t* parenthandle 	- Parent ObjectHandle on responder
  * 		uint32_t* handle	- see Return values
  *		PTPObjectInfo* objectinfo- ObjectInfo that is to be sent
- * 
+ *
  * Sends ObjectInfo of file that is to be sent via SendFileObject.
  *
  * Return values: Some PTP_RC_* code.
@@ -1713,7 +1713,7 @@ ptp_setdevicepropvalue (PTPParams* params, uint16_t propcode,
  *					  for the incoming object
  **/
 uint16_t
-ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store, 
+ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store,
 			uint32_t* parenthandle, uint32_t* handle,
 			PTPObjectInfo* objectinfo)
 {
@@ -1728,7 +1728,7 @@ ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store,
 	free(data);
 	*store=ptp.Param1;
 	*parenthandle=ptp.Param2;
-	*handle=ptp.Param3; 
+	*handle=ptp.Param3;
 	return ret;
 }
 
@@ -1737,7 +1737,7 @@ ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store,
  * params:	PTPParams*
  *		char**	serial		- contains the serial number of the camera
  *		uint32_t* size		- contains the string length
- *		
+ *
  * Gets the serial number from the device. (ptp serial)
  *
  * Return values: Some PTP_RC_* code.
@@ -1749,7 +1749,7 @@ ptp_ek_getserial (PTPParams* params, unsigned char **data, unsigned int *size)
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp, PTP_OC_EK_GetSerial);
-	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size); 
+	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
 
 /**
@@ -1757,7 +1757,7 @@ ptp_ek_getserial (PTPParams* params, unsigned char **data, unsigned int *size)
  * params:	PTPParams*
  *		char*	serial		- contains the new serial number
  *		uint32_t size		- string length
- *		
+ *
  * Sets the serial number of the device. (ptp serial)
  *
  * Return values: Some PTP_RC_* code.
@@ -1769,7 +1769,7 @@ ptp_ek_setserial (PTPParams* params, unsigned char *data, unsigned int size)
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp, PTP_OC_EK_SetSerial);
-	return ptp_transaction(params, &ptp, PTP_DP_SENDDATA, size, &data, NULL); 
+	return ptp_transaction(params, &ptp, PTP_DP_SENDDATA, size, &data, NULL);
 }
 
 /* unclear what it does yet */
@@ -1779,7 +1779,7 @@ ptp_ek_9007 (PTPParams* params, unsigned char **data, unsigned int *size)
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp, 0x9007);
-	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size); 
+	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
 
 /* unclear what it does yet */
@@ -1803,7 +1803,7 @@ ptp_ek_900c (PTPParams* params, unsigned char **data, unsigned int *size)
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp, 0x900c);
-	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size); 
+	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 	/* returned data is 16bit,16bit,32bit,32bit */
 }
 
@@ -1811,7 +1811,7 @@ ptp_ek_900c (PTPParams* params, unsigned char **data, unsigned int *size)
  * ptp_ek_settext:
  * params:	PTPParams*
  *		PTPEKTextParams*	- contains the texts to display.
- *		
+ *
  * Displays the specified texts on the TFT of the camera.
  *
  * Return values: Some PTP_RC_* code.
@@ -1838,7 +1838,7 @@ ptp_ek_settext (PTPParams* params, PTPEKTextParams *text)
  * params:	PTPParams*
  *		char*	object		- contains the object that is to be sent
  *		uint32_t size		- object size
- *		
+ *
  * Sends object to Responder.
  *
  * Return values: Some PTP_RC_* code.
@@ -1858,7 +1858,7 @@ ptp_ek_sendfileobject (PTPParams* params, unsigned char* object, uint32_t size)
  * params:	PTPParams*
  *		PTPDataHandler*	handler	- contains the handler of the object that is to be sent
  *		uint32_t size		- object size
- *		
+ *
  * Sends object to Responder.
  *
  * Return values: Some PTP_RC_* code.
@@ -1889,7 +1889,7 @@ ptp_ek_sendfileobject_from_handler (PTPParams* params, PTPDataHandler*handler, u
  *		uint32_t p2 		- Not fully understood parameter
  *					  0 - returns full size
  *					  1 - returns thumbnail size (or EXIF?)
- * 
+ *
  * Gets form the responder the size of the specified object.
  *
  * Return values: Some PTP_RC_* code.
@@ -1900,11 +1900,11 @@ ptp_ek_sendfileobject_from_handler (PTPParams* params, PTPDataHandler*handler, u
  *
  **/
 uint16_t
-ptp_canon_getpartialobjectinfo (PTPParams* params, uint32_t handle, uint32_t p2, 
-			uint32_t* size, uint32_t* rp2) 
+ptp_canon_getpartialobjectinfo (PTPParams* params, uint32_t handle, uint32_t p2,
+			uint32_t* size, uint32_t* rp2)
 {
 	PTPContainer	ptp;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_GetPartialObjectInfo, handle, p2);
 	*size = *rp2 = 0;
 	CHECK_PTP_RC(ptp_transaction(params, &ptp, PTP_DP_NODATA, 0, NULL, NULL));
@@ -1965,9 +1965,9 @@ ptp_canon_get_directory (PTPParams* params,
  * ptp_canon_gettreeinfo:
  * params:	PTPParams*
  *              uint32_t *out
- * 
+ *
  * Switches the camera display to on and lets the user
- * select what to transfer. Sends a 0xc011 event when started 
+ * select what to transfer. Sends a 0xc011 event when started
  * and 0xc013 if direct transfer aborted.
  *
  * Return values: Some PTP_RC_* code.
@@ -1989,7 +1989,7 @@ ptp_canon_gettreeinfo (PTPParams* params, uint32_t *out)
  * ptp_canon_getpairinginfo:
  * params:	PTPParams*
  *              int nr
- * 
+ *
  * Get the pairing information.
  *
  * Return values: Some PTP_RC_* code.
@@ -1999,7 +1999,7 @@ uint16_t
 ptp_canon_getpairinginfo (PTPParams* params, uint32_t nr, unsigned char **data, unsigned int *size)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_GetPairingInfo, nr);
 	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
@@ -2009,7 +2009,7 @@ ptp_canon_getpairinginfo (PTPParams* params, uint32_t nr, unsigned char **data, 
  * params:	PTPParams*
  *              PTPCanon_directtransfer_entry **out
  *              unsigned int *outsize
- * 
+ *
  * Retrieves direct transfer entries specifying the images to transfer
  * from the camera (to be retrieved after 0xc011 event).
  *
@@ -2048,7 +2048,7 @@ exit:
 /**
  * ptp_canon_checkevent:
  * params:	PTPParams*
- * 
+ *
  * The camera has a FIFO stack, in which it accumulates events.
  * Partially these events are communicated also via the USB interrupt pipe
  * according to the PTP USB specification, partially not.
@@ -2056,7 +2056,7 @@ exit:
  * if the event stack is empty, or filled with an event's data otherwise.
  * The event is removed from the stack in the latter case.
  * The Remote Capture app sends this command to the camera all the time
- * of connection, filling with it the gaps between other operations. 
+ * of connection, filling with it the gaps between other operations.
  *
  * Return values: Some PTP_RC_* code.
  * Upon success : PTPUSBEventContainer* event	- is filled with the event data
@@ -2070,7 +2070,7 @@ ptp_canon_checkevent (PTPParams* params, PTPContainer* event, int* isevent)
 	PTPContainer	ptp;
 	unsigned char	*data;
 	unsigned int	size;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_CheckEvent);
 	*isevent=0;
 	CHECK_PTP_RC(ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, &data, &size));
@@ -2175,7 +2175,7 @@ store_event:
 		default: /* check if we should handle it internally too */
 			break;
 		}
-	
+
 	}
 	if (ret == PTP_ERROR_TIMEOUT) /* ok, just new events */
 		ret = PTP_RC_OK;
@@ -2234,7 +2234,7 @@ ptp_get_one_event(PTPParams *params, PTPContainer *event)
 
 /**
  * ptp_canon_eos_getevent:
- * 
+ *
  * This retrieves configuration status/updates/changes
  * on EOS cameras. It reads a datablock which has a list of variable
  * sized structures.
@@ -2352,7 +2352,7 @@ uint16_t
 ptp_canon_eos_getstorageinfo (PTPParams* params, uint32_t p1, unsigned char **data, unsigned int *size)
 {
 	PTPContainer	ptp;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_EOS_GetStorageInfo, p1);
 	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 	/* FIXME: do stuff with data */
@@ -2394,14 +2394,14 @@ exit:
 
 /**
  * ptp_canon_eos_getpartialobject:
- * 
+ *
  * This retrieves a part of an PTP object which you specify as object id.
  * The id originates from 0x9116 call.
  * After finishing it, we seem to need to call ptp_canon_eos_enddirecttransfer.
  *
  * params:	PTPParams*
  * 		oid		Object ID
- * 		offset		The offset where to start the data transfer 
+ * 		offset		The offset where to start the data transfer
  *		xsize		Size in bytes of the transfer to do
  *		data		Pointer that receives the malloc()ed memory of the transfer.
  *
@@ -2512,7 +2512,7 @@ ptp_canon_eos_setdevicepropvalue (PTPParams* params,
 /**
  * ptp_canon_getpartialobject:
  *
- * This operation is used to read from the device a data 
+ * This operation is used to read from the device a data
  * block of an object from a specified offset.
  *
  * params:	PTPParams*
@@ -2528,15 +2528,15 @@ ptp_canon_eos_setdevicepropvalue (PTPParams* params,
  *
  **/
 uint16_t
-ptp_canon_getpartialobject (PTPParams* params, uint32_t handle, 
+ptp_canon_getpartialobject (PTPParams* params, uint32_t handle,
 				uint32_t offset, uint32_t size,
-				uint32_t pos, unsigned char** block, 
+				uint32_t pos, unsigned char** block,
 				uint32_t* readnum)
 {
 	PTPContainer	ptp;
 	uint16_t	ret;
 	unsigned char	*data;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_GetPartialObjectEx, handle, offset, size, pos);
 	ret=ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, &data, NULL);
 	if (ret==PTP_RC_OK) {
@@ -2555,9 +2555,9 @@ ptp_canon_getpartialobject (PTPParams* params, uint32_t handle,
  * Of course, prior to calling this operation, one must turn the viewfinder
  * on with the CANON_ViewfinderOn command.
  * Invoking this operation many times, one can get live video from the camera!
- * 
+ *
  * params:	PTPParams*
- * 
+ *
  * Return values: Some PTP_RC_* code.
  *      char **image - the pointer to the read image
  *      unit32_t *size - the size of the image in bytes
@@ -2568,7 +2568,7 @@ ptp_canon_getviewfinderimage (PTPParams* params, unsigned char** image, uint32_t
 {
 	PTPContainer	ptp;
 	uint16_t	ret;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_GetViewfinderImage);
 	ret=ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, image, NULL);
 	if (ret==PTP_RC_OK)
@@ -2580,14 +2580,14 @@ ptp_canon_getviewfinderimage (PTPParams* params, unsigned char** image, uint32_t
  * ptp_canon_getchanges:
  *
  * This is an interesting operation, about the effect of which I am not sure.
- * This command is called every time when a device property has been changed 
+ * This command is called every time when a device property has been changed
  * with the SetDevicePropValue operation, and after some other operations.
  * This operation reads the array of Device Properties which have been changed
  * by the previous operation.
  * Probably, this operation is even required to make those changes work.
  *
  * params:	PTPParams*
- * 
+ *
  * Return values: Some PTP_RC_* code.
  *      uint16_t** props - the pointer to the array of changed properties
  *      uint32_t* propnum - the number of elements in the *props array
@@ -2598,7 +2598,7 @@ ptp_canon_getchanges (PTPParams* params, uint16_t** props, uint32_t* propnum)
 {
 	PTPContainer	ptp;
 	unsigned char	*data;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_GetChanges);
 	CHECK_PTP_RC(ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, &data, NULL));
 	*propnum=ptp_unpack_uint16_t_array(params,data,0,props);
@@ -2611,17 +2611,17 @@ ptp_canon_getchanges (PTPParams* params, uint16_t** props, uint32_t* propnum)
  *
  * This command reads a specified object's record in a device's filesystem,
  * or the records of all objects belonging to a specified folder (association).
- *  
+ *
  * params:	PTPParams*
  *      uint32_t store - StorageID,
  *      uint32_t p2 - Yet unknown (0 value works OK)
  *      uint32_t parent - Parent Object Handle
- *                      # If Parent Object Handle is 0xffffffff, 
+ *                      # If Parent Object Handle is 0xffffffff,
  *                      # the Parent Object is the top level folder.
  *      uint32_t handle - Object Handle
- *                      # If Object Handle is 0, the records of all objects 
+ *                      # If Object Handle is 0, the records of all objects
  *                      # belonging to the Parent Object are read.
- *                      # If Object Handle is not 0, only the record of this 
+ *                      # If Object Handle is not 0, only the record of this
  *                      # Object is read.
  *
  * Return values: Some PTP_RC_* code.
@@ -2630,15 +2630,15 @@ ptp_canon_getchanges (PTPParams* params, uint16_t** props, uint32_t* propnum)
  *
  **/
 uint16_t
-ptp_canon_getobjectinfo (PTPParams* params, uint32_t store, uint32_t p2, 
-			    uint32_t parent, uint32_t handle, 
+ptp_canon_getobjectinfo (PTPParams* params, uint32_t store, uint32_t p2,
+			    uint32_t parent, uint32_t handle,
 			    PTPCANONFolderEntry** entries, uint32_t* entnum)
 {
 	PTPContainer	ptp;
 	uint16_t	ret;
 	unsigned char	*data;
 	unsigned int	i;
-	
+
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_GetObjectInfoEx, store, p2, parent, handle);
 	ret=ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, &data, NULL);
 	if (ret != PTP_RC_OK)
@@ -2669,7 +2669,7 @@ exit:
  *
  * The 'A' is the VolumeLabel from GetStorageInfo,
  * my IXUS has "A" for the card and "V" for internal memory.
- *  
+ *
  * params:	PTPParams*
  *      char* name - path name
  *
@@ -2701,7 +2701,7 @@ ptp_canon_get_objecthandle_by_name (PTPParams* params, char* name, uint32_t* obj
  *
  * This command downloads the specified theme slot, including jpegs
  * and wav files.
- *  
+ *
  * params:	PTPParams*
  *      uint32_t themenr - nr of theme
  *
@@ -2717,7 +2717,7 @@ ptp_canon_get_customize_data (PTPParams* params, uint32_t themenr,
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp, PTP_OC_CANON_GetCustomizeData, themenr);
-	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size); 
+	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
 
 
@@ -2727,14 +2727,14 @@ ptp_nikon_curve_download (PTPParams* params, unsigned char **data, unsigned int 
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp, PTP_OC_NIKON_CurveDownload);
-	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size); 
+	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
 
 /**
  * ptp_sony_sdioconnect:
  *
  * This changes modes of the camera
- *  
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -2755,7 +2755,7 @@ ptp_sony_sdioconnect (PTPParams* params, uint32_t p1, uint32_t p2, uint32_t p3)
  * ptp_sony_get_vendorpropcodes:
  *
  * This command downloads the vendor specific property codes.
- *  
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -2953,9 +2953,9 @@ ptp_sony_9281 (PTPParams* params, uint32_t param1) {
  * This command gets a propertydesc.
  * If a vendor specific property desc query is available, it uses that.
  * If not, it falls back to the generic PTP getdevicepropdesc.
- *  
+ *
  * params:	PTPParams*
- *      uint16_t propcode 
+ *      uint16_t propcode
  *      PTPDevicePropDesc *dpd
  *
  * Return values: Some PTP_RC_* code.
@@ -3034,9 +3034,9 @@ ptp_generic_getdevicepropdesc (PTPParams *params, uint16_t propcode, PTPDevicePr
  * ptp_generic_setdevicepropvalue:
  *
  * This command sets a property value, device specific.
- *  
+ *
  * params:	PTPParams*
- *      uint16_t propcode 
+ *      uint16_t propcode
  *      PTPDevicePropertyValue *value
  *      uint16_t datatype
  *
@@ -3069,7 +3069,7 @@ ptp_generic_setdevicepropvalue (PTPParams* params, uint16_t propcode,
  * ptp_nikon_get_vendorpropcodes:
  *
  * This command downloads the vendor specific property codes.
- *  
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -3100,14 +3100,14 @@ ptp_nikon_getfileinfoinblock ( PTPParams* params,
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp, PTP_OC_NIKON_GetFileInfoInBlock, p1, p2, p3);
-	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size); 
+	return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
 
 /**
  * ptp_nikon_get_liveview_image:
  *
  * This command gets a LiveView image from newer Nikons DSLRs.
- *  
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -3117,7 +3117,7 @@ uint16_t
 ptp_nikon_get_liveview_image (PTPParams* params, unsigned char **data, unsigned int *size)
 {
         PTPContainer ptp;
-        
+
         PTP_CNT_INIT(ptp, PTP_OC_NIKON_GetLiveViewImg);
         return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
@@ -3126,7 +3126,7 @@ ptp_nikon_get_liveview_image (PTPParams* params, unsigned char **data, unsigned 
  * ptp_nikon_get_preview_image:
  *
  * This command gets a Preview image from newer Nikons DSLRs.
- *  
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -3154,7 +3154,7 @@ ptp_nikon_get_preview_image (PTPParams* params, unsigned char **xdata, unsigned 
  * ptp_canon_eos_get_viewfinder_image:
  *
  * This command gets a Viewfinder image from newer Nikons DSLRs.
- *  
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -3164,7 +3164,7 @@ uint16_t
 ptp_canon_eos_get_viewfinder_image (PTPParams* params, unsigned char **data, unsigned int *size)
 {
         PTPContainer ptp;
-        
+
         PTP_CNT_INIT(ptp, PTP_OC_CANON_EOS_GetViewFinderData, 0x00100000 /* from trace */);
         return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
@@ -3173,7 +3173,7 @@ uint16_t
 ptp_canon_eos_get_viewfinder_image_handler (PTPParams* params, PTPDataHandler*handler)
 {
         PTPContainer ptp;
-        
+
         PTP_CNT_INIT(ptp, PTP_OC_CANON_EOS_GetViewFinderData, 0x00100000 /* from trace */);
         return ptp_transaction_new(params, &ptp, PTP_DP_GETDATA, 0, handler);
 }
@@ -3182,7 +3182,7 @@ ptp_canon_eos_get_viewfinder_image_handler (PTPParams* params, PTPDataHandler*ha
  * ptp_nikon_check_event:
  *
  * This command checks the event queue on the Nikon.
- *  
+ *
  * params:	PTPParams*
  *      PTPUSBEventContainer **event - list of usb events.
  *	int *evtcnt - number of usb events in event structure.
@@ -3209,7 +3209,7 @@ ptp_nikon_check_event (PTPParams* params, PTPContainer** event, unsigned int* ev
  * ptp_nikon_getptpipinfo:
  *
  * This command gets the ptpip info data.
- *  
+ *
  * params:	PTPParams*
  *	unsigned char *data	- data
  *	unsigned int size	- size of returned data
@@ -3221,7 +3221,7 @@ uint16_t
 ptp_nikon_getptpipinfo (PTPParams* params, unsigned char **data, unsigned int *size)
 {
         PTPContainer ptp;
-        
+
         PTP_CNT_INIT(ptp, PTP_OC_NIKON_GetDevicePTPIPInfo);
         return ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, data, size);
 }
@@ -3230,7 +3230,7 @@ ptp_nikon_getptpipinfo (PTPParams* params, unsigned char **data, unsigned int *s
  * ptp_nikon_getwifiprofilelist:
  *
  * This command gets the wifi profile list.
- *  
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -3257,7 +3257,7 @@ ptp_nikon_getwifiprofilelist (PTPParams* params)
 	params->wifi_profiles_version = data[0];
 	params->wifi_profiles_number = data[1];
 	free(params->wifi_profiles);
-	
+
 	params->wifi_profiles = malloc(params->wifi_profiles_number*sizeof(PTPNIKONWifiProfile));
 	memset(params->wifi_profiles, 0, params->wifi_profiles_number*sizeof(PTPNIKONWifiProfile));
 
@@ -3294,7 +3294,7 @@ ptp_nikon_getwifiprofilelist (PTPParams* params)
 		pos += (len*2+1);
 		if (pos+5 >= size)
 			goto exit;
-		
+
 		n = dtoh32a(&data[pos]);
 		pos += 4;
 		if (pos+n >= size)
@@ -3331,7 +3331,7 @@ exit:
  * ptp_nikon_writewifiprofile:
  *
  * This command gets the ptpip info data.
- *  
+ *
  * params:	PTPParams*
  *	unsigned int profilenr	- profile number
  *	unsigned char *data	- data
@@ -3356,35 +3356,35 @@ ptp_nikon_writewifiprofile (PTPParams* params, PTPNIKONWifiProfile* profile)
 
 	if (!params->wifi_profiles)
 		CHECK_PTP_RC(ptp_nikon_getwifiprofilelist(params));
-	
+
 	for (i = 0; i < params->wifi_profiles_number; i++) {
 		if (!params->wifi_profiles[i].valid) {
 			profilenr = params->wifi_profiles[i].id;
 			break;
 		}
 	}
-	
+
 	if (profilenr == -1) {
 		/* No free profile! */
 		return PTP_RC_StoreFull;
 	}
-	
+
 	memset(buffer, 0, 1024);
-	
+
 	buffer[0x00] = 0x64; /* Version */
-	
+
 	/* Profile name */
 	htod32a(&buffer[0x01], 17);
 	/* 16 as third parameter, so there will always be a null-byte in the end */
 	strncpy((char*)&buffer[0x05], profile->profile_name, 16);
-	
+
 	buffer[0x16] = 0x00; /* Display order */
 	buffer[0x17] = profile->device_type;
 	buffer[0x18] = profile->icon_type;
-	
+
 	/* FIXME: Creation date: put a real date here */
 	ptp_pack_string(params, "19990909T090909", data, 0x19, &len);
-	
+
 	/* IP parameters */
 	memcpy(&buffer[0x3A],&profile->ip_address,sizeof(profile->ip_address));
 	/**((unsigned int*)&buffer[0x3A]) = profile->ip_address; *//* Do not reverse bytes */
@@ -3392,15 +3392,15 @@ ptp_nikon_writewifiprofile (PTPParams* params, PTPNIKONWifiProfile* profile)
 	memcpy(&buffer[0x3F],&profile->gateway_address,sizeof(profile->gateway_address));
 	/**((unsigned int*)&buffer[0x3F]) = profile->gateway_address; */ /* Do not reverse bytes */
 	buffer[0x43] = profile->address_mode;
-	
+
 	/* Wifi parameters */
 	buffer[0x44] = profile->access_mode;
 	buffer[0x45] = profile->wifi_channel;
-	
+
 	htod32a(&buffer[0x46], 33); /* essid */
 	 /* 32 as third parameter, so there will always be a null-byte in the end */
 	strncpy((char*)&buffer[0x4A], profile->essid, 32);
-	
+
 	buffer[0x6B] = profile->authentification;
 	buffer[0x6C] = profile->encryption;
 	htod32a(&buffer[0x6D], 64);
@@ -3409,7 +3409,7 @@ ptp_nikon_writewifiprofile (PTPParams* params, PTPNIKONWifiProfile* profile)
 	}
 	buffer[0xB1] = profile->key_nr;
 	memcpy(&buffer[0xB2], guid, 16);
-	
+
 	switch(profile->encryption) {
 	case 1: /* WEP 64bit */
 		htod16a(&buffer[0xC2], 5); /* (64-24)/8 = 5 */
@@ -3421,7 +3421,7 @@ ptp_nikon_writewifiprofile (PTPParams* params, PTPNIKONWifiProfile* profile)
 		htod16a(&buffer[0xC2], 0);
 	}
 	size = 0xC4;
-	       
+
 	PTP_CNT_INIT(ptp, PTP_OC_NIKON_SendProfileData, profilenr);
 	return ptp_transaction(params, &ptp, PTP_DP_SENDDATA, size, &data, NULL);
 }
@@ -3430,7 +3430,7 @@ ptp_nikon_writewifiprofile (PTPParams* params, PTPNIKONWifiProfile* profile)
  * ptp_mtp_getobjectpropssupported:
  *
  * This command gets the object properties possible from the device.
- *  
+ *
  * params:	PTPParams*
  *	uint ofc		- object format code
  *	unsigned int *propnum	- number of elements in returned array
@@ -3457,7 +3457,7 @@ ptp_mtp_getobjectpropssupported (PTPParams* params, uint16_t ofc,
  * ptp_mtp_getobjectpropdesc:
  *
  * This command gets the object property description.
- *  
+ *
  * params:	PTPParams*
  *	uint16_t opc	- object property code
  *	uint16_t ofc	- object format code
@@ -3484,7 +3484,7 @@ ptp_mtp_getobjectpropdesc (
  * ptp_mtp_getobjectpropvalue:
  *
  * This command gets the object properties of an object handle.
- *  
+ *
  * params:	PTPParams*
  *	uint32_t objectid	- object format code
  *	uint16_t opc		- object prop code
@@ -3501,7 +3501,7 @@ ptp_mtp_getobjectpropvalue (
 	uint16_t	ret = PTP_RC_OK;
 	unsigned char	*data;
 	unsigned int	size, offset = 0;
-        
+
         PTP_CNT_INIT(ptp, PTP_OC_MTP_GetObjectPropValue, oid, opc);
         CHECK_PTP_RC(ptp_transaction(params, &ptp, PTP_DP_GETDATA, 0, &data, &size));
         if (!ptp_unpack_DPV(params, data, &offset, size, value, datatype)) {
@@ -3516,7 +3516,7 @@ ptp_mtp_getobjectpropvalue (
  * ptp_mtp_setobjectpropvalue:
  *
  * This command gets the object properties of an object handle.
- *  
+ *
  * params:	PTPParams*
  *	uint32_t objectid	- object format code
  *	uint16_t opc		- object prop code
@@ -3634,7 +3634,7 @@ ptp_mtp_sendobjectproplist (PTPParams* params, uint32_t* store, uint32_t* parent
 	free(data);
 	*store = ptp.Param1;
 	*parenthandle = ptp.Param2;
-	*handle = ptp.Param3; 
+	*handle = ptp.Param3;
 
 	return ret;
 }
@@ -4860,7 +4860,7 @@ _value_to_num(PTPPropertyValue *data, uint16_t dt) {
 		return 0;
 	} else {
 		switch (dt) {
-		case PTP_DTC_UNDEF: 
+		case PTP_DTC_UNDEF:
 			return 0;
 		case PTP_DTC_INT8:
 			return data->i8;
@@ -4875,10 +4875,10 @@ _value_to_num(PTPPropertyValue *data, uint16_t dt) {
 		case PTP_DTC_UINT32:
 			return data->u32;
 	/*
-		PTP_DTC_INT64           
-		PTP_DTC_UINT64         
-		PTP_DTC_INT128        
-		PTP_DTC_UINT128      
+		PTP_DTC_INT64
+		PTP_DTC_UINT64
+		PTP_DTC_INT128
+		PTP_DTC_UINT128
 	*/
 		default:
 			return 0;
@@ -5505,13 +5505,13 @@ ptp_render_property_value(PTPParams* params, uint16_t dpc,
 		{0, 0, 0, NULL}
 	};
 	for (i=0; ptp_value_trans[i].dpc!=0; i++) {
-		if ((ptp_value_trans[i].dpc == dpc) && 
+		if ((ptp_value_trans[i].dpc == dpc) &&
 			(((ptp_value_trans[i].dpc & 0xf000) == 0x5000) ||
 		         (ptp_value_trans[i].vendor == params->deviceinfo.VendorExtensionID))
 		) {
 			double value = _value_to_num(&(dpd->CurrentValue), dpd->DataType);
 
-			return snprintf(out, length, 
+			return snprintf(out, length,
 				_(ptp_value_trans[i].format),
 				value * ptp_value_trans[i].coef +
 				ptp_value_trans[i].bias);
@@ -5520,7 +5520,7 @@ ptp_render_property_value(PTPParams* params, uint16_t dpc,
 
 	kval = _value_to_num(&(dpd->CurrentValue), dpd->DataType);
 	for (i=0; ptp_value_list[i].dpc!=0; i++) {
-		if ((ptp_value_list[i].dpc == dpc) && 
+		if ((ptp_value_list[i].dpc == dpc) &&
 			(((ptp_value_list[i].dpc & 0xf000) == 0x5000) ||
 		          (ptp_value_list[i].vendor == params->deviceinfo.VendorExtensionID)) &&
 		    (ptp_value_list[i].key==kval)
@@ -5683,7 +5683,7 @@ ptp_render_ofc(PTPParams* params, uint16_t ofc, int spaceleft, char *txt)
 			}
 			break;
 		case PTP_VENDOR_MICROSOFT:
-		case PTP_VENDOR_MTP:		  
+		case PTP_VENDOR_MTP:
 			for (i=0;i<sizeof(ptp_ofc_mtp_trans)/sizeof(ptp_ofc_mtp_trans[0]);i++)
 				if (ofc == ptp_ofc_mtp_trans[i].ofc)
 					return snprintf(txt, spaceleft, "%s", _(ptp_ofc_mtp_trans[i].format));
@@ -6233,18 +6233,18 @@ ptp_get_new_object_prop_entry(MTPProperties **props, int *nrofprops)
 	prop->datatype = PTP_DTC_UNDEF;
 	prop->ObjectHandle = 0x00000000U;
 	prop->propval.str = NULL;
-	
+
 	(*props) = newprops;
 	(*nrofprops)++;
 	return prop;
 }
 
-void 
+void
 ptp_destroy_object_prop(MTPProperties *prop)
 {
   if (!prop)
     return;
-  
+
   if (prop->datatype == PTP_DTC_STR && prop->propval.str != NULL)
     free(prop->propval.str);
   else if ((prop->datatype == PTP_DTC_AINT8 || prop->datatype == PTP_DTC_AINT16 ||
@@ -6255,7 +6255,7 @@ ptp_destroy_object_prop(MTPProperties *prop)
     free(prop->propval.a.v);
 }
 
-void 
+void
 ptp_destroy_object_prop_list(MTPProperties *props, int nrofprops)
 {
   int i;
@@ -6316,7 +6316,7 @@ static int _cmp_ob (const void *a, const void *b)
 
 	return oa->oid - ob->oid;
 }
-	
+
 void
 ptp_objects_sort (PTPParams *params)
 {
@@ -6424,7 +6424,7 @@ ptp_object_want (PTPParams *params, uint32_t handle, unsigned int want, PTPObjec
 #define X (PTPOBJECT_OBJECTINFO_LOADED|PTPOBJECT_STORAGEID_LOADED|PTPOBJECT_PARENTOBJECT_LOADED)
 	if ((want & X) && ((ob->flags & X) != X)) {
 		uint32_t	saveparent = 0;
-		
+
 		/* One EOS issue, where getobjecthandles(root) returns obs without root flag. */
 		if (ob->flags & PTPOBJECT_PARENTOBJECT_LOADED)
 			saveparent = ob->oi.ParentObject;
@@ -6549,7 +6549,7 @@ ptp_object_want (PTPParams *params, uint32_t handle, unsigned int want, PTPObjec
 #if 0
 		MTPProperties 	*xpl;
 		int j;
-		PTPObjectInfo	oinfo;	
+		PTPObjectInfo	oinfo;
 
 		memset (&oinfo,0,sizeof(oinfo));
 		/* hmm, not necessary ... only if we would use it */

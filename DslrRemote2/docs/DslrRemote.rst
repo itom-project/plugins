@@ -10,7 +10,7 @@
 **Devices**:    Control Digital Mirror Relex Cameras remotely via the Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`DslrRemote`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,8 +19,8 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: DslrRemote2

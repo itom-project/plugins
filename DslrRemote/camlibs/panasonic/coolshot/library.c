@@ -399,7 +399,7 @@ int coolshot_download_image( Camera *camera, CameraFile *file,
 		last_good = 0;
 	}
 
-	id = gp_context_progress_start (context, thumbnail ? 1800 : 80000, 
+	id = gp_context_progress_start (context, thumbnail ? 1800 : 80000,
 		_("Downloading image..."));
 	while( strncmp( packet + 2, "DT", 2 ) == 0 ) {
 		/* process packet */
@@ -742,5 +742,3 @@ int coolshot_build_thumbnail (char *data, int *size)
 
 	return( GP_OK );
 }
-
-

@@ -23,13 +23,12 @@ public:
     VideoDevice *getDevice(unsigned int i);
 
     size_t getCount();
-            
+
     void clearDevices();
 
 private:
-    
+
     std::vector<VideoDevice *> m_devices;
-        
+
     QSharedPointer<DebugPrintOut> m_debugPrintOut;
 };
-

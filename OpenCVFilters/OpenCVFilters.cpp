@@ -1708,7 +1708,7 @@ ito::RetVal OpenCVFilters::cvFlip(
             ito::tUInt16,
             ito::tInt32,
             ito::tFloat32,
-            ito::tFloat64, 
+            ito::tFloat64,
             ito::tRGBA32);
     }
 
@@ -3662,7 +3662,7 @@ When you want to use the cvWarpAffine method with this rotation matrix your cent
     {
         retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
         return retval;
-    }   
+    }
 
     ito::tDataType itomtype;
 
@@ -3834,7 +3834,7 @@ of the target object differ from each other depending on the algorithm parameter
         return ito::RetVal(
             ito::retError, 0, tr("The rotation matrix with the shape of %1x%2 does not correspond to the shape 2x3.").arg(dObjMat->getSize(0)).arg(dObjMat->getSize(1)).toLatin1().data());
     }
-    
+
 
     // Check if input type is allowed or not
     retval += ito::dObjHelper::verifyDataObjectType(
@@ -3885,7 +3885,7 @@ of the target object differ from each other depending on the algorithm parameter
         return retval;
     }
 
-    // border type 
+    // border type
     QString borderTypeStr = paramsOpt->at(1).getVal<char*>() ? paramsOpt->at(1).getVal<char*>() : QString();
     int borderType;
     if (QString::compare(borderTypeStr, "CONSTANT", Qt::CaseInsensitive) == 0)
@@ -3938,7 +3938,7 @@ of the target object differ from each other depending on the algorithm parameter
                 ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
             return retval;
         }
- 
+
     }
 
     ito::tDataType itomtype = ito::guessDataTypeFromCVMat(&dest, retval);

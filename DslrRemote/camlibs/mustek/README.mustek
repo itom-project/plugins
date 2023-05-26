@@ -4,7 +4,7 @@ The driver supports the rs232 and the USB interface of the
 Mustek MDC800 Digital Camera. It implements all function
 to download pictures, view their thumbnails or delete them.
 It is also possible to take photos with the library.
-In the GUI of this driver you can select some preferences 
+In the GUI of this driver you can select some preferences
 for this.
 
 On rs232 it is possible to use every supported Baudrate. The
@@ -14,7 +14,7 @@ History :
 
 10.01.2000 The Library was ported to the ne iolib. It uses also
            the USB Interfave from Johannes Erdfeld. This makes it
-			  unneccessary to have a special Kernelmodul for the 
+			  unneccessary to have a special Kernelmodul for the
 			  Mustek.
 			  In camera.h there is added a new entry, so you can select
 			  wether you want to use USB or rs232. This is needed

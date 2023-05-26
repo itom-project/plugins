@@ -5,7 +5,7 @@
 	Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -173,7 +173,7 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 
 		ui.spinSizeX->setValue(params["sizex"].getVal<int>());
 		ui.spinSizeY->setValue(params["sizey"].getVal<int>());
-        
+
 		int bin = params["binning"].getVal<int>();
 		for(int i = 0; i < ui.combo_bin->count(); ++i)
 		{
@@ -183,7 +183,7 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 				break;
 			}
 		}
-		
+
 		int bpp = params["bpp"].getVal<int>();
 		for(int i = 0; i < ui.combo_bpp->count(); ++i)
 		{
@@ -251,7 +251,7 @@ ito::RetVal DialogXimea::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
         }
     }
-   
+
 	if (ui.combo_bin->isEnabled())
 	{
 		int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();
@@ -491,7 +491,3 @@ void DialogXimea::on_comboTriggerMode_currentIndexChanged(int index)
         ui.sliderFrameBurst->setValue(1);
     }
 }
-
-
-
-

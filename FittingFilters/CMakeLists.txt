@@ -54,18 +54,18 @@ if(${LAPACKE_FOUND})
     set(PLUGIN_HEADERS ${PLUGIN_HEADERS}
         ${LAPACKE_INCLUDE_DIR}/lapacke.h
     )
-    
+
     include_directories(
         ${LAPACKE_INCLUDE_DIR}
     )
-    
+
     add_definitions(-DLAPACKE -DADD_ -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE )
 endif()
 
 set(PLUGIN_UI
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/fittingfilters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/polyfit2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/polyfitweighted2d.cpp
@@ -108,7 +108,7 @@ if(WIN32)
     endforeach(__LIB)
     endif(${LAPACKE_FOUND})
 endif(WIN32)
-    
+
 itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

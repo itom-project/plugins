@@ -70,7 +70,7 @@ fi
 
 dnl Please do not remove this:
 dnl filetype: 71ff3941-a5ae-4677-a369-d7cb01f92c81
-dnl I use this to find all the different instances of this file which 
+dnl I use this to find all the different instances of this file which
 dnl are supposed to be synchronized.
 
 dnl Local Variables:

@@ -3,7 +3,7 @@
  *
  * AVT Advanced Feature Helper Struct Definitions
  *
- * The original version of this file is distributed with the AVT FirePackage 
+ * The original version of this file is distributed with the AVT FirePackage
  * for Windows, as part of the 'FireGrab' programming examples.
  *
  * Copyright (C) 2010 Allied Vision Technologies GmbH
@@ -225,7 +225,7 @@ typedef struct __dc1394_avt_smart_feature_info_full_struct
             uint32_t                m_bTimeBase         :  1;   // BIT1
             uint32_t                m_bMaxResolution    :  1;   // BIT0
         }                           Inq1;
-    
+
         struct __tagCsrAdvInq2
         {
             uint32_t                m_bOutp_8_PWM       :  1;
@@ -256,7 +256,7 @@ typedef struct __dc1394_avt_smart_feature_info_full_struct
             uint32_t                m_bInp_2            :  1;
             uint32_t                m_bInp_1            :  1;
         }                           Inq2;
-    
+
         struct __tagCsrAdvInq3
         {
             uint32_t                m_bInpDebounce_8    :  1;
@@ -283,7 +283,7 @@ typedef struct __dc1394_avt_smart_feature_info_full_struct
             uint32_t                m_bMaxIsoSize       :  1;
             uint32_t                m_bCameraStatus     :  1;
         }                           Inq3;
-    
+
         struct __tagCsrAdvInq4
         {
             uint32_t                                    : 27;
@@ -732,7 +732,7 @@ typedef struct __dc1394_avt_csradv_defect_pixel_correction_struct
     struct __tagCsrAdvDefectPixelCorrectionCtrlElems
     {
         uint32_t                m_nThreshold    :  7;    //!< threshold for DP correction
-        uint32_t                m_nMean         :  7;      //!< calculated mean value 
+        uint32_t                m_nMean         :  7;      //!< calculated mean value
         uint32_t                                :  7;
         uint32_t                m_bZeroDPData   :  1;    //!< zero DP data
         uint32_t                m_bMemLoad      :  1;    //!< load DP data from storage
@@ -762,7 +762,7 @@ typedef struct __dc1394_avt_csradv_defect_pixel_correction_struct
         uint32_t                m_nMinThreshold  :  7;   //!< min value for threshold
         uint32_t                                 :  3;
         uint32_t                m_bPresence      :  1;   //!< presence of this feature
-    }                              m_Info;      
+    }                              m_Info;
 } dc1394_avt_csradv_defect_pixel_correction_t;
 
 // ---------------------------------------------------------------------------
@@ -1069,7 +1069,7 @@ typedef struct __dc1394_avt_csradv_sis_struct
             uint32_t                                :  9;
             uint32_t                m_bOnOff        :  1;   //! SIS on/off
             uint32_t                                :  5;
-            uint32_t                m_bPresence     :  1;   //!< Presence of this feature           
+            uint32_t                m_bPresence     :  1;   //!< Presence of this feature
         }                           m;
         uint32_t                    m_nAll;
     }                               m_Ctrl;

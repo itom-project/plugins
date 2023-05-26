@@ -1,4 +1,4 @@
-set(target_name QuantumComposer) 
+set(target_name QuantumComposer)
 
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
@@ -41,7 +41,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogQuantumComposer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetQuantumComposer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-    ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h 
+    ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
 set(PLUGIN_SOURCES
@@ -60,10 +60,10 @@ set(PLUGIN_UI
 set(PLUGIN_RCC
 )
 
-add_library(${target_name} SHARED 
-    ${PLUGIN_SOURCES} 
-    ${PLUGIN_HEADERS} 
-    ${PLUGIN_UI} 
+add_library(${target_name} SHARED
+    ${PLUGIN_SOURCES}
+    ${PLUGIN_HEADERS}
+    ${PLUGIN_UI}
     ${PLUGIN_RCC}
     )
 
@@ -73,8 +73,8 @@ target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VI
 
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 itom_library_translation(
-    QM_FILES 
-    TARGET ${target_name} 
+    QM_FILES
+    TARGET ${target_name}
     FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
     )
 

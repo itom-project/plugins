@@ -85,10 +85,10 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     )
 
     #add all (generated) header and source files to the library (these files are compiled then)
-    add_library(${target_name} SHARED 
-        ${PLUGIN_SOURCES} 
-        ${PLUGIN_HEADERS} 
-        ${PLUGIN_UI} 
+    add_library(${target_name} SHARED
+        ${PLUGIN_SOURCES}
+        ${PLUGIN_HEADERS}
+        ${PLUGIN_UI}
         ${PLUGIN_RCC}
         )
 
@@ -100,8 +100,8 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
 
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
     itom_library_translation(
-        QM_FILES 
-        TARGET ${target_name} 
+        QM_FILES
+        TARGET ${target_name}
         FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
         )
 
@@ -116,15 +116,14 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-    set(BINARY_FILES 
+    set(BINARY_FILES
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.FilterFlipper.dll"
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.DeviceManager.dll"
         "${THORLABS_KINESIS_DIRECTORY}/ftd2xx.dll"
         )
-    
+
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
-    
+
 else(THORLABS_KINESIS_FF_INCLUDE_DIR)
     message(SEND_ERROR "${THORLABS_KINESIS_FF_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
 endif(THORLABS_KINESIS_FF_INCLUDE_DIR)
-

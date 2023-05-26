@@ -3,7 +3,7 @@
 //
 //--------------------------------------------------------------------------;
 /////////////////////////////////////////////////////////////////////////////
-// definitions for dynamic link to Pixel_Fly drivers 
+// definitions for dynamic link to Pixel_Fly drivers
 // by MB, created with Visual C++ 6.0
 /////////////////////////////////////////////////////////////////////////////
 //for dynamic linking of DLL pccam.dll
@@ -24,11 +24,11 @@ int getpcocnvfunc(void);
                       int *actxsize, int *actysize,
                       int *bit_pix);
   int (*setmode)(HANDLE hdriver,int mode,
-			               int explevel,int exptime, 
+			               int explevel,int exptime,
 			               int hbin,int vbin,
 						   int gain,int offset,
 						   int bit_pix,int shift);
-  int (*start_camera)(HANDLE hdriver); 
+  int (*start_camera)(HANDLE hdriver);
   int (*stop_camera)(HANDLE hdriver);
   int (*trigger_camera)(HANDLE hdriver);
 

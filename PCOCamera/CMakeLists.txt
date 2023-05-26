@@ -58,7 +58,7 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended)
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets #include this subfolder if you use any widgets from itomWidgets
         #add further include directories here
         ${PCO_SDK_INCLUDE_DIR}
@@ -112,7 +112,7 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
     itom_configure_plugin_documentation(${target_name} pcoCamera)
-	
+
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")
 
@@ -123,5 +123,5 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} PCO_SDK_LIBRARY)
 
 else(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
-    message(SEND_ERROR "PCO_SDK_DIR directory is not given or no valid pco.sdk directory. ${target_name} will not be build.")    
+    message(SEND_ERROR "PCO_SDK_DIR directory is not given or no valid pco.sdk directory. ${target_name} will not be build.")
 endif(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)

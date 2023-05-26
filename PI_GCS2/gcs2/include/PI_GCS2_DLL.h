@@ -4,12 +4,12 @@
 // All rights reserved.
 //
 
-///////////////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////////////
 // Program: PI_G-Control DLL
 //
 // Developer: JKa
-//  
-// File: PI_GCS_DLL.h : 
+//
+// File: PI_GCS_DLL.h :
 /////////////////////////////////////////////////////////////////////////////
 
 //#include <windows.h>
@@ -382,7 +382,7 @@ BOOL PI_FUNC_DECL PI_IsGeneratorRunning(int ID, const int* piWaveGeneratorIds, B
 BOOL PI_FUNC_DECL PI_qTWG(int ID, int* piWaveGenerators);
 BOOL PI_FUNC_DECL PI_WAV_SIN_P(int ID, int iWaveTableId, int iOffsetOfFirstPointInWaveTable, int iNumberOfPoints, int iAddAppendWave, int iCenterPointOfWave, double dAmplitudeOfWave, double dOffsetOfWave, int iSegmentLength);
 BOOL PI_FUNC_DECL PI_WAV_LIN(int ID, int iWaveTableId, int iOffsetOfFirstPointInWaveTable, int iNumberOfPoints, int iAddAppendWave, int iNumberOfSpeedUpDownPointsInWave, double dAmplitudeOfWave, double dOffsetOfWave, int iSegmentLength);
-BOOL PI_FUNC_DECL PI_WAV_NOISE(int ID, int iWaveTableId, int iAddAppendWave, double dAmplitudeOfWave, double dOffsetOfWave,int iSegmentLength);   
+BOOL PI_FUNC_DECL PI_WAV_NOISE(int ID, int iWaveTableId, int iAddAppendWave, double dAmplitudeOfWave, double dOffsetOfWave,int iSegmentLength);
 BOOL PI_FUNC_DECL PI_WAV_RAMP(int ID, int iWaveTableId, int iOffsetOfFirstPointInWaveTable, int iNumberOfPoints, int iAddAppendWave, int iCenterPointOfWave, int iNumberOfSpeedUpDownPointsInWave, double dAmplitudeOfWave, double dOffsetOfWave, int iSegmentLength);
 BOOL PI_FUNC_DECL PI_WAV_PNT(int ID, int iWaveTableId, int iOffsetOfFirstPointInWaveTable, int iNumberOfPoints, int iAddAppendWave, const double* pdWavePoints);
 BOOL PI_FUNC_DECL PI_qWAV(int ID, const int* piWaveTableIdsArray, const int* piParamereIdsArray, double* pdValueArray, int iArraySize);

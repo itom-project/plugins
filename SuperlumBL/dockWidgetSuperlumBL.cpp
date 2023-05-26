@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -28,12 +28,12 @@
 #include <qmetaobject.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO) :  
-    AbstractAddInDockWidget(dataIO),  
-    m_inEditing(false),  
+DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO) :
+    AbstractAddInDockWidget(dataIO),
+    m_inEditing(false),
     m_firstRun(true)
 {
-     ui.setupUi(this); 
+     ui.setupUi(this);
 
      identifierChanged(QString::number(uniqueID));
 
@@ -68,7 +68,7 @@ DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO)
 
         //__________________________________________________________________________________________________________ Power Mode
         ui.comboBox_Power_Mode->setCurrentIndex( params["power_mode"].getVal<int>());
-       
+
         m_firstRun = false;
     }
 
@@ -110,7 +110,7 @@ DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO)
             }
         }
 
-   
+
         m_inEditing = false;
     }
 
@@ -120,10 +120,10 @@ DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO)
 void DockWidgetSuperlumBL::on_btn_Optical_Output_clicked(bool checked)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;        
+    {
+        m_inEditing = true;
         if ( checked )
-        {            
+        {
             QSharedPointer<ito::ParamBase> p(new ito::ParamBase("optical_output",ito::ParamBase::Int,1));
             setPluginParameter(p, msgLevelWarningAndError);
         }
@@ -140,10 +140,10 @@ void DockWidgetSuperlumBL::on_btn_Optical_Output_clicked(bool checked)
 void DockWidgetSuperlumBL::on_comboBox_Remote_activated(int combo)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;        
+    {
+        m_inEditing = true;
         if ( combo == 1 )
-        {            
+        {
             QSharedPointer<ito::ParamBase> p(new ito::ParamBase("local",ito::ParamBase::Int,1));
             setPluginParameter(p, msgLevelWarningAndError);
         }
@@ -160,10 +160,10 @@ void DockWidgetSuperlumBL::on_comboBox_Remote_activated(int combo)
 void DockWidgetSuperlumBL::on_comboBox_Power_Mode_activated(int combo)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;        
+    {
+        m_inEditing = true;
         if ( combo == 1 )
-        {            
+        {
             QSharedPointer<ito::ParamBase> p(new ito::ParamBase("power_mode",ito::ParamBase::Int,1));
             setPluginParameter(p, msgLevelWarningAndError);
         }

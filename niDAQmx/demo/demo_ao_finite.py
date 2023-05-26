@@ -79,17 +79,17 @@ plugin.setParam("samplesPerChannel", 400)
 
 for i in range(0, 2):
     plugin.setVal(a)
-    
+
     t = time.time()
     print(f"run {i+1}/2 ", end='')
-    
+
     # check if already finished...
     while(plugin.getParam("taskStarted") > 0):
         print(".", end='')
         time.sleep(0.2)
-    
+
     print("done in %.2f s" % (time.time() - t))
-    
+
     # a finite task with more than one sample per channel
     # is automatically stopped at the end. It is not
     # necessary to call stop() again.
@@ -100,7 +100,7 @@ for i in range(0, 2):
 #    Sending 1 sample per channel is an unbuffer operation. A hardware start
 #    trigger is therefore not possible.
 
-# the setVal command will now block until all 
+# the setVal command will now block until all
 # 'samplesPerChannel' values have been written
 plugin.setParam("setValWaitForFinish", 1)
 plugin.setParam("startTriggerMode", "off")

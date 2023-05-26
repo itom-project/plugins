@@ -123,18 +123,18 @@ msgstr "Tämä laite ei tue ’%s’-toimintoa"
 msgid "The port has not yet been initialized"
 msgstr "Porttia ei ole vielä alustettu"
 
-#  low ja high ovat mikropiirin tai sarjaportin nastojen binaaritiloja. 
-#  Mikropiireissä low on looginen nolla (maan potentiaali) ja high on 
-#  looginen ykkönen (esimerkiksi +5V). Sarjaporteissa looginen ykkönen 
+#  low ja high ovat mikropiirin tai sarjaportin nastojen binaaritiloja.
+#  Mikropiireissä low on looginen nolla (maan potentiaali) ja high on
+#  looginen ykkönen (esimerkiksi +5V). Sarjaporteissa looginen ykkönen
 #  on yleensä -5...-12V ja looginen nolla +5...+12 V, mutta Gphotossa
 #  näytetään noudattavan mikropiirilogiikkaa.
 #: libgphoto2_port/gphoto2-port.c:682
 msgid "low"
 msgstr "looginen nolla"
 
-#  low ja high ovat mikropiirin tai sarjaportin nastojen binaaritiloja. 
-#  Mikropiireissä low on looginen nolla (maan potentiaali) ja high on 
-#  looginen ykkönen (esimerkiksi +5V). Sarjaporteissa looginen ykkönen 
+#  low ja high ovat mikropiirin tai sarjaportin nastojen binaaritiloja.
+#  Mikropiireissä low on looginen nolla (maan potentiaali) ja high on
+#  looginen ykkönen (esimerkiksi +5V). Sarjaporteissa looginen ykkönen
 #  on yleensä -5...-12V ja looginen nolla +5...+12 V, mutta Gphotossa
 #  näytetään noudattavan mikropiirilogiikkaa.
 #: libgphoto2_port/gphoto2-port.c:683
@@ -392,12 +392,12 @@ msgstr "USB-massatallennuksen raaka-SCSI"
 msgid "Could not send scsi command to: '%s' (%m)."
 msgstr "Scsi-komennon lähettäminen kohteeseen: ’%s’ (%m) epäonnistui."
 
-#  Tässä tulostetaan jokainen tiedostonimi, jonka funktio 
+#  Tässä tulostetaan jokainen tiedostonimi, jonka funktio
 #  foreach_func kutsuu.
 #~ msgid "Called for filename '%s'."
 #~ msgstr "Kutsuttu tiedostonimellä ’%s’."
 
-#  Tämä virheilmoitus seuraa, jos edellisen lataus edellisen kohdan 
+#  Tämä virheilmoitus seuraa, jos edellisen lataus edellisen kohdan
 #  tiedostonimellä epäonnistuu.
 #~ msgid "Could not load '%s': '%s'."
 #~ msgstr "Lataus tiedostonimellä ’%s’ epäonnistui: ’%s’."
@@ -435,7 +435,7 @@ msgstr "Scsi-komennon lähettäminen kohteeseen: ’%s’ (%m) epäonnistui."
 #~ msgstr[0] "%i tavallinen portti saatavilla."
 #~ msgstr[1] "%i tavallista porttia saatavilla."
 
-#  Etsitään luettelon portit ja kerrotaan, kuinka monta polkuun täsmäävää 
+#  Etsitään luettelon portit ja kerrotaan, kuinka monta polkuun täsmäävää
 #  porttia löytyy.
 #~ msgid "Looking for path '%s' (%i entry available)..."
 #~ msgid_plural "Looking for path '%s' (%i entries available)..."

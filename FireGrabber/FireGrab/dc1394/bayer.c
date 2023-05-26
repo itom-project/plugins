@@ -2079,7 +2079,7 @@ Adapt_buffer_bayer(dc1394video_frame_t *in, dc1394video_frame_t *out, dc1394baye
     }
 
     // the destination color coding is ALWAYS RGB. Set this.
-    if ( (in->color_coding==DC1394_COLOR_CODING_RAW16) || 
+    if ( (in->color_coding==DC1394_COLOR_CODING_RAW16) ||
 	 (in->color_coding==DC1394_COLOR_CODING_MONO16) )
         out->color_coding=DC1394_COLOR_CODING_RGB16;
     else
@@ -2091,7 +2091,7 @@ Adapt_buffer_bayer(dc1394video_frame_t *in, dc1394video_frame_t *out, dc1394baye
     // The output is never YUV, hence nothing to do about YUV byte order
 
     // bit depth is conserved for 16 bit and set to 8bit for 8bit:
-    if ( (in->color_coding==DC1394_COLOR_CODING_RAW16) || 
+    if ( (in->color_coding==DC1394_COLOR_CODING_RAW16) ||
 	 (in->color_coding==DC1394_COLOR_CODING_MONO16)  ||
      (in->color_coding==DC1394_COLOR_CODING_AVT_RAW12) ||
      (in->color_coding==DC1394_COLOR_CODING_AVT_MONO12) )
@@ -2141,10 +2141,10 @@ Adapt_buffer_bayer(dc1394video_frame_t *in, dc1394video_frame_t *out, dc1394baye
 
     out->little_endian=0; // not used before 1.32 is out.
     out->data_in_padding=0; // not used before 1.32 is out.
-    
+
     if(out->image)
         return DC1394_SUCCESS;
-        
+
     return DC1394_MEMORY_ALLOCATION_FAILURE;
 }
 
@@ -2157,10 +2157,10 @@ dc1394_debayer_frames(dc1394video_frame_t *in, dc1394video_frame_t *out, dc1394b
     switch (in->color_coding) {
     case DC1394_COLOR_CODING_RAW8:
     case DC1394_COLOR_CODING_MONO8:
-        
+
         if(DC1394_SUCCESS != Adapt_buffer_bayer(in,out,method))
             return DC1394_MEMORY_ALLOCATION_FAILURE;
-            
+
         switch (method) {
         case DC1394_BAYER_METHOD_NEAREST:
             return dc1394_bayer_NearestNeighbor(in->image, out->image, in->size[0], in->size[1], in->color_filter);
@@ -2191,10 +2191,10 @@ dc1394_debayer_frames(dc1394video_frame_t *in, dc1394video_frame_t *out, dc1394b
         break;
     case DC1394_COLOR_CODING_MONO16:
     case DC1394_COLOR_CODING_RAW16:
-    
+
         if(DC1394_SUCCESS != Adapt_buffer_bayer(in,out,method))
             return DC1394_MEMORY_ALLOCATION_FAILURE;
-            
+
         int bits;
         if(in->camera && DC1394_AVT_VENDOR_ID==in->camera->vendor_id)
             bits = 16;

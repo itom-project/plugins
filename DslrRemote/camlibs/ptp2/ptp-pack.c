@@ -176,7 +176,7 @@ static inline int
 ucs2strlen(uint16_t const * const unicstr)
 {
 	int length = 0;
-	
+
 	/* Unicode strings are terminated with 2 * 0x00 */
 	for(length = 0; unicstr[length] != 0x0000U; length ++);
 	return length;
@@ -222,7 +222,7 @@ ptp_pack_string(PTPParams *params, char *string, unsigned char* data, uint16_t o
 		*len=0;
 		return;
 	}
-	
+
 	/* number of characters including terminating 0 (PTP standard confirmed) */
 	htod8a(&data[offset],packedlen+1);
 	memcpy(&data[offset+1], &ucs2str[0], packedlen * sizeof(ucs2str[0]));
@@ -238,15 +238,15 @@ ptp_get_packed_stringcopy(PTPParams *params, char *string, uint32_t *packed_size
 	uint8_t packed[PTP_MAXSTRLEN*2+3], len;
 	size_t plen;
 	unsigned char *retcopy = NULL;
-  
+
 	if (string == NULL)
 	  ptp_pack_string(params, "", (unsigned char*) packed, 0, &len);
 	else
 	  ptp_pack_string(params, string, (unsigned char*) packed, 0, &len);
-  
+
 	/* returned length is in characters, then one byte for string length */
 	plen = len*2 + 1;
-	
+
 	retcopy = malloc(plen);
 	if (!retcopy) {
 		*packed_size = 0;
@@ -325,11 +325,11 @@ ptp_unpack_DI (PTPParams *params, unsigned char* data, PTPDeviceInfo *di, unsign
 		dtoh32a(&data[PTP_di_VendorExtensionID]);
 	di->VendorExtensionVersion =
 		dtoh16a(&data[PTP_di_VendorExtensionVersion]);
-	di->VendorExtensionDesc = 
+	di->VendorExtensionDesc =
 		ptp_unpack_string(params, data,
-		PTP_di_VendorExtensionDesc, &len); 
+		PTP_di_VendorExtensionDesc, &len);
 	totallen=len*2+1;
-	di->FunctionalMode = 
+	di->FunctionalMode =
 		dtoh16a(&data[PTP_di_FunctionalMode+totallen]);
 	di->OperationsSupported_len = ptp_unpack_uint16_t_array(params, data,
 		PTP_di_OperationsSupported+totallen,
@@ -419,7 +419,7 @@ ptp_free_EOS_DI (PTPCanonEOSDeviceInfo *di)
 	free (di->DevicePropertiesSupported);
 	free (di->unk);
 }
-	
+
 /* ObjectHandles array pack/unpack */
 
 #define PTP_oh				 0
@@ -432,7 +432,7 @@ ptp_unpack_OH (PTPParams *params, unsigned char* data, PTPObjectHandles *oh, uns
 	} else {
 		oh->n = 0;
 		oh->Handler = NULL;
-	} 
+	}
 }
 
 /* StoreIDs array pack/unpack */
@@ -537,7 +537,7 @@ ptp_pack_OI (PTPParams *params, PTPObjectInfo *oi, unsigned char** oidataptr)
 	htod16a(&oidata[PTP_oi_AssociationType],oi->AssociationType);
 	htod32a(&oidata[PTP_oi_AssociationDesc],oi->AssociationDesc);
 	htod32a(&oidata[PTP_oi_SequenceNumber],oi->SequenceNumber);
-	
+
 	ptp_pack_string(params, oi->Filename, oidata, PTP_oi_filenamelen, &filenamelen);
 /*
 	filenamelen=(uint8_t)strlen(oi->Filename);
@@ -652,7 +652,7 @@ ptp_unpack_OI (PTPParams *params, unsigned char* data, PTPObjectInfo *oi, unsign
 
 	capture_date = ptp_unpack_string(params, data,
 		PTP_oi_filenamelen+filenamelen*2+1, &capturedatelen);
-	/* subset of ISO 8601, without '.s' tenths of second and 
+	/* subset of ISO 8601, without '.s' tenths of second and
 	 * time zone
 	 */
 	oi->CaptureDate = ptp_unpack_PTPTIME(capture_date);
@@ -987,7 +987,7 @@ duplicate_DevicePropDesc(const PTPDevicePropDesc *src, PTPDevicePropDesc *dst) {
 	dst->DevicePropertyCode	= src->DevicePropertyCode;
 	dst->DataType		= src->DataType;
 	dst->GetSet		= src->GetSet;
-	
+
 	duplicate_PropertyValue (&src->FactoryDefaultValue, &dst->FactoryDefaultValue, src->DataType);
 	duplicate_PropertyValue (&src->CurrentValue, &dst->CurrentValue, src->DataType);
 
@@ -1261,7 +1261,7 @@ _compare_func(const void* x, const void *y) {
 
 static inline int
 ptp_unpack_OPL (PTPParams *params, unsigned char* data, MTPProperties **pprops, unsigned int len)
-{ 
+{
 	uint32_t prop_count = dtoh32a(data);
 	MTPProperties *props = NULL;
 	unsigned int offset = 0, i;
@@ -1592,7 +1592,7 @@ ptp_unpack_EOS_FocusInfoEx (PTPParams* params, unsigned char** data )
 	char	*str, *p;
 
 	/* every focuspoint gets 4 (16 bit number and a x) and a ,*/
-	/* inital things around lets say 100 chars at most. 
+	/* inital things around lets say 100 chars at most.
 	 * FIXME: check selected when we decode it */
 	maxlen = focus_points_in_use*6*4 + focus_points_in_use + 100;
 	if (halfsize != size-4) {
@@ -1804,7 +1804,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 				break;
 			}
 			dpd = &params->canon_props[j].dpd;
-			/* 1 - uint16 ? 
+			/* 1 - uint16 ?
 			 * 3 - uint16
 			 * 7 - string?
 			 */
@@ -2165,7 +2165,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 				i++;
 				curoff += 2;
 			}
-			
+
 			if (mask & CANON_EOS_OLC_SHUTTERSPEED) {
 				/* 6 bytes: 01 01 98 10 00 60 */
 				/* this seesm to be the shutter speed record */
@@ -2205,7 +2205,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 			if (mask & 0x0010) {
 				/* mask 0x0010: 4 bytes, 04 00 00 00 observed */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN;
-				ce[i].u.info = malloc(strlen("OLCInfo event 0x0010 content 01234567")+1); 
+				ce[i].u.info = malloc(strlen("OLCInfo event 0x0010 content 01234567")+1);
 				sprintf(ce[i].u.info,"OLCInfo event 0x0010 content %02x%02x%02x%02x",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2218,7 +2218,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 			if (mask & 0x0020) {
 				/* mask 0x0020: 6 bytes, 00 00 00 00 00 00 observed */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN;
-				ce[i].u.info = malloc(strlen("OLCInfo event 0x0020 content 0123456789ab")+1); 
+				ce[i].u.info = malloc(strlen("OLCInfo event 0x0020 content 0123456789ab")+1);
 				sprintf(ce[i].u.info,"OLCInfo event 0x0020 content %02x%02x%02x%02x%02x%02x",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2235,7 +2235,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 				/* mask 0x0040: 7 bytes, 01 01 00 00 00 00 00 observed */
 				/* exposure indicator */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN;
-				ce[i].u.info = malloc(strlen("OLCInfo exposure indicator 012345678901234567890123456789abcd")+1); 
+				ce[i].u.info = malloc(strlen("OLCInfo exposure indicator 012345678901234567890123456789abcd")+1);
 				sprintf(ce[i].u.info,"OLCInfo exposure indicator %d,%d,%d.%d (%02x%02x%02x%02x)",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2251,7 +2251,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 			if (mask & 0x0080) {
 				/* mask 0x0080: 4 bytes, 00 00 00 00 observed */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN;
-				ce[i].u.info = malloc(strlen("OLCInfo event 0x0080 content 01234567")+1); 
+				ce[i].u.info = malloc(strlen("OLCInfo event 0x0080 content 01234567")+1);
 				sprintf(ce[i].u.info,"OLCInfo event 0x0080 content %02x%02x%02x%02x",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2264,7 +2264,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 			if (mask & 0x0100) {
 				/* mask 0x0100: 6 bytes, 00 00 00 00 00 00 (before focus) and 00 00 00 00 01 00 (on focus) observed */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_FOCUSINFO;
-				ce[i].u.info = malloc(strlen("0123456789ab")+1); 
+				ce[i].u.info = malloc(strlen("0123456789ab")+1);
 				sprintf(ce[i].u.info,"%02x%02x%02x%02x%02x%02x",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2279,7 +2279,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 			if (mask & 0x0200) {
 				/* mask 0x0200: 7 bytes, 00 00 00 00 00 00 00 observed */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_FOCUSMASK;
-				ce[i].u.info = malloc(strlen("0123456789abcd0123456789abcdef")+1); 
+				ce[i].u.info = malloc(strlen("0123456789abcd0123456789abcdef")+1);
 				sprintf(ce[i].u.info,"%02x%02x%02x%02x%02x%02x%02x",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2295,7 +2295,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 			if (mask & 0x0400) {
 				/* mask 0x0400: 7 bytes, 00 00 00 00 00 00 00 observed */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN;
-				ce[i].u.info = malloc(strlen("OLCInfo event 0x0400 content 0123456789abcd")+1); 
+				ce[i].u.info = malloc(strlen("OLCInfo event 0x0400 content 0123456789abcd")+1);
 				sprintf(ce[i].u.info,"OLCInfo event 0x0400 content %02x%02x%02x%02x%02x%02x%02x",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2312,7 +2312,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 				/* mask 0x0800: 8 bytes, 00 00 00 00 00 00 00 00 and 19 01 00 00 00 00 00 00 and others observed */
 				/*   might be mask of focus points selected */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN;
-				ce[i].u.info = malloc(strlen("OLCInfo event 0x0800 content 0123456789abcdef")+1); 
+				ce[i].u.info = malloc(strlen("OLCInfo event 0x0800 content 0123456789abcdef")+1);
 				sprintf(ce[i].u.info,"OLCInfo event 0x0800 content %02x%02x%02x%02x%02x%02x%02x%02x",
 					curdata[curoff],
 					curdata[curoff+1],
@@ -2329,7 +2329,7 @@ ptp_unpack_CANON_changes (PTPParams *params, unsigned char* data, int datasize, 
 			if (mask & 0x1000) {
 				/* mask 0x1000: 1 byte, 00 observed */
 				ce[i].type = PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN;
-				ce[i].u.info = malloc(strlen("OLCInfo event 0x1000 content 01")+1); 
+				ce[i].u.info = malloc(strlen("OLCInfo event 0x1000 content 01")+1);
 				sprintf(ce[i].u.info,"OLCInfo event 0x1000 content %02x",
 					curdata[curoff]
 				);
@@ -2436,7 +2436,7 @@ ptp_unpack_Nikon_EC (PTPParams *params, unsigned char* data, unsigned int len, P
 		return;
 
 	*ec = malloc(sizeof(PTPContainer)*(*cnt));
-	
+
 	for (i=0;i<*cnt;i++) {
 		memset(&(*ec)[i],0,sizeof(PTPContainer));
 		(*ec)[i].Code	= dtoh16a(&data[PTP_nikon_ec_Code+PTP_nikon_ec_Size*i]);
@@ -2476,7 +2476,7 @@ ptp_pack_EK_text(PTPParams *params, PTPEKTextParams *text, unsigned char **data)
 
 	ptp_pack_string(params, text->title, curdata, 0, &retlen); curdata+=2*retlen+1;htod16a(curdata,0);curdata+=2;
 	htod16a(curdata,0x10);curdata+=2;
-	
+
 	for (i=0;i<5;i++) {
 		ptp_pack_string(params, text->line[i], curdata, 0, &retlen); curdata+=2*retlen+1;htod16a(curdata,0);curdata+=2;
 		htod16a(curdata,0x10);curdata+=2;

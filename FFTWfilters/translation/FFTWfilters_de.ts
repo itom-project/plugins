@@ -258,7 +258,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>This plugin provides wrappers for Fourier Transforms using the FFTW-library. These are for instance: 
+        <source>This plugin provides wrappers for Fourier Transforms using the FFTW-library. These are for instance:
 - 1D FFT (over an arbitrary axis)
 - 1D inverse FFT (over an arbitrary axis)
 - 2D FFT (over the last two axes)
@@ -276,7 +276,7 @@ To build this plugin you will need the libs from the fftw.</source>
     </message>
     <message>
         <location line="+568"/>
-        <source>Perform fftshift as known from Python, Matlab and so on, i.e. make the 
+        <source>Perform fftshift as known from Python, Matlab and so on, i.e. make the
 zero order of diffraction appear in the center.
 
 The shift is implemented along the x and y or one of both axes within each plane (inplace) by using the axis parameter.
@@ -285,7 +285,7 @@ The axisIndex parameter is used the shift a &gt;2D dataObject in the 0 axis.</so
     </message>
     <message>
         <location line="+150"/>
-        <source>Perform ifftshift as known from Python, Matlab and so on, i.e. move the 
+        <source>Perform ifftshift as known from Python, Matlab and so on, i.e. move the
 zero order of diffraction back to the corner to run the inverse fft correctly.
 
 The shift is implemented along the x and y or one of both axes within each plane (inplace) by using the axis parameter.
@@ -294,117 +294,117 @@ The axisIndex parameter is used the shift a &gt;2D dataObject in the 0 axis.</so
     </message>
     <message>
         <location line="+377"/>
-        <source>Compute the one-dimensional discrete Fourier Transform. 
+        <source>Compute the one-dimensional discrete Fourier Transform.
 
-This method computes the one-dimensional n-point discrete Fourier Transform (DFT) with the efficient 
-Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform 
-is executed over a desired axis. 
+This method computes the one-dimensional n-point discrete Fourier Transform (DFT) with the efficient
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform
+is executed over a desired axis.
 
-This method applies the forward transform, use &apos;ifft&apos; for the inverse transform. The method works both 
-inplace as well as out-of-place. The output is a complex64 object of the same size than the input object 
-if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the 
-input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, 
-a new dataObject is always put into the destination object. 
+This method applies the forward transform, use &apos;ifft&apos; for the inverse transform. The method works both
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary,
+a new dataObject is always put into the destination object.
 
-Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: 
+Meta and axes information are copied to the output object. Only properties of the chosen axis are changed:
 
-* offset: 0.0 
-* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here 
-* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos; 
+* offset: 0.0
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here
+* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos;
 
-Per default, no value scaling is applied to the result. However, the optional parameter &apos;norm&apos; influences this. 
-If &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n). 
+Per default, no value scaling is applied to the result. However, the optional parameter &apos;norm&apos; influences this.
+If &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n).
 
-The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional 
-parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several 
-implementations on your machine in order to find out the fastest algorithm for the given type of object. This will 
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional
+parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will
 take some time but might speed-up calculations of huge objects.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>Compute the inverse one-dimensional discrete Fourier Transform. 
+        <source>Compute the inverse one-dimensional discrete Fourier Transform.
 
-This method computes the inverse one-dimensional n-point discrete Fourier Transform (DFT) with the efficient 
-Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform 
-is executed over a desired axis. 
+This method computes the inverse one-dimensional n-point discrete Fourier Transform (DFT) with the efficient
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform
+is executed over a desired axis.
 
-This method applies the inverse transform, use &apos;fft&apos; for the forward transform. The method works both 
-inplace as well as out-of-place. The output is a complex64 object of the same size than the input object 
-if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the 
-input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, 
-a new dataObject is always put into the destination object. 
+This method applies the inverse transform, use &apos;fft&apos; for the forward transform. The method works both
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary,
+a new dataObject is always put into the destination object.
 
-Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: 
+Meta and axes information are copied to the output object. Only properties of the chosen axis are changed:
 
-* offset: 0.0 
-* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here 
-* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos; 
+* offset: 0.0
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here
+* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos;
 
-Per default, the values are scaled by (1/n). However, the optional parameter &apos;norm&apos; influences this. 
-If &apos;norm&apos; is set to &apos;no&apos;, no scaling is applied, if &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n). 
+Per default, the values are scaled by (1/n). However, the optional parameter &apos;norm&apos; influences this.
+If &apos;norm&apos; is set to &apos;no&apos;, no scaling is applied, if &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n).
 
-The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional 
-parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several 
-implementations on your machine in order to find out the fastest algorithm for the given type of object. This will 
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional
+parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will
 take some time but might speed-up calculations of huge objects.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+40"/>
-        <source>Compute the two-dimensional discrete Fourier Transform. 
+        <source>Compute the two-dimensional discrete Fourier Transform.
 
-This method computes the two-dimensional n-point discrete Fourier Transform (DFT) with the efficient 
-Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform 
-is executed over the last two axes, denoted as planes. 
+This method computes the two-dimensional n-point discrete Fourier Transform (DFT) with the efficient
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform
+is executed over the last two axes, denoted as planes.
 
-This method applies the forward transform, use &apos;ifft2D&apos; for the inverse transform. The method works both 
-inplace as well as out-of-place. The output is a complex64 object of the same size than the input object 
-if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the 
-input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, 
-a new dataObject is always put into the destination object. 
+This method applies the forward transform, use &apos;ifft2D&apos; for the inverse transform. The method works both
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary,
+a new dataObject is always put into the destination object.
 
-Meta and axes information are copied to the output object. Only properties of the last two axes are changed: 
+Meta and axes information are copied to the output object. Only properties of the last two axes are changed:
 
-* offset: 0.0 
-* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here 
-* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos; 
+* offset: 0.0
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here
+* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos;
 
-Per default, no value scaling is applied to the result. However, the optional parameter &apos;norm&apos; influences this. 
-If &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n). 
+Per default, no value scaling is applied to the result. However, the optional parameter &apos;norm&apos; influences this.
+If &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n).
 
-The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional 
-parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several 
-implementations on your machine in order to find out the fastest algorithm for the given type of object. This will 
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional
+parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will
 take some time but might speed-up calculations of huge objects.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>Compute the inverse two-dimensional discrete Fourier Transform. 
+        <source>Compute the inverse two-dimensional discrete Fourier Transform.
 
-This method computes the inverse two-dimensional n-point discrete Fourier Transform (DFT) with the efficient 
-Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform 
-is executed over the last two axes, denoted as planes. 
+This method computes the inverse two-dimensional n-point discrete Fourier Transform (DFT) with the efficient
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform
+is executed over the last two axes, denoted as planes.
 
-This method applies the inverse transform, use &apos;fft2D&apos; for the forward transform. The method works both 
-inplace as well as out-of-place. The output is a complex64 object of the same size than the input object 
-if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the 
-input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, 
-a new dataObject is always put into the destination object. 
+This method applies the inverse transform, use &apos;fft2D&apos; for the forward transform. The method works both
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary,
+a new dataObject is always put into the destination object.
 
-Meta and axes information are copied to the output object. Only properties of the last two axes are changed: 
+Meta and axes information are copied to the output object. Only properties of the last two axes are changed:
 
-* offset: 0.0 
-* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here 
-* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos; 
+* offset: 0.0
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here
+* unit: inverse of previous-unit, e.g. &apos;1/previous-unit&apos;
 
-Per default, the values are scaled by (1/n). However, the optional parameter &apos;norm&apos; influences this. 
-If &apos;norm&apos; is set to &apos;no&apos;, no scaling is applied, if &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n). 
+Per default, the values are scaled by (1/n). However, the optional parameter &apos;norm&apos; influences this.
+If &apos;norm&apos; is set to &apos;no&apos;, no scaling is applied, if &apos;norm&apos; is set to &apos;ortho&apos;, the values are scaled by 1/sqrt(n).
 
-The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional 
-parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several 
-implementations on your machine in order to find out the fastest algorithm for the given type of object. This will 
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional
+parameter &apos;plan_flag&apos;. While Estimate selects a default algorithm, Measure will process some test runs with several
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will
 take some time but might speed-up calculations of huge objects.</source>
         <translation type="unfinished"></translation>
     </message>

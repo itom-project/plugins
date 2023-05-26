@@ -10,13 +10,13 @@ import __main__
 class DIC():
     imageObj1 = dataObject()
     imageObj2 = dataObject()
-    
+
     def __init__(self):
         pass
-        
+
     def init(self):
         pass
-    
+
     def loadImage(self, filename):
         if filename[-3] == "nef":
             try:
@@ -30,7 +30,7 @@ class DIC():
             except:
                 print("error loading image")
         loadImage = resObj
-        
+
     def rigidBodyMovement(self):
         #fftObj1 = fft.fft2(self.imageObj1)
         #fftObj2 = fft.fft2(self.imageObj2)
@@ -39,16 +39,16 @@ class DIC():
         maxPos = np.argmax(ccr)
         offsetX = maxPos % sx
         offsetY = (maxPos - offsetX) / sx
-        
+
         if (offsetX > sx / 2):
             offsetX = offsetX - sx
         if (offsetY > sy / 2):
             offsetY = offsetY - sy
-        
+
         return (offsetX, offsetY)
-    
+
 if __name__ == "__main__":
-    try: 
+    try:
         myDIC = DIC()
         myDIC.init()
     except:

@@ -10,7 +10,7 @@
 **Devices**:    PCO Cameras supported by the pco.sdk
 **Author**:     :pluginauthor:`PCOCamera`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,9 +21,9 @@ The camera is always operated in a software trigger mode with a standard image s
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: PCOCamera
 
@@ -64,12 +64,12 @@ parameters can be changed using *setParam*.
 **gain**: {double}, read-only
     not available
 **offset**: {double}, read-only
-    not available 
+    not available
 
 Most parameters not only have a minimum and maximum value but also a step size.
 
 .. note::
-    
+
     Please consider that the parameters defining the region of interest may change if the binning is changed, since an increased binning value decreases the available image size.
 
 Compilation

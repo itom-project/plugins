@@ -30,7 +30,7 @@ if(NIDAQMX_FOUND)
 	include_directories(
 		${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
 		${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-		${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+		${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
 		${NIDAQMX_INCLUDE_DIR}
 		#add further include directories here
 	)
@@ -75,7 +75,7 @@ if(NIDAQMX_FOUND)
 
 	#add all (generated) header and source files to the library (these files are compiled then)
 	add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-     
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
@@ -84,7 +84,7 @@ if(NIDAQMX_FOUND)
 	#translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
     # the target-name differs from the plugin name of this plugin!
 	itom_configure_plugin_documentation(${target_name} niDAQmx "NI-DAQmx")
 
@@ -97,5 +97,5 @@ if(NIDAQMX_FOUND)
 	itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(NIDAQMX_FOUND)
-    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
 endif(NIDAQMX_FOUND)

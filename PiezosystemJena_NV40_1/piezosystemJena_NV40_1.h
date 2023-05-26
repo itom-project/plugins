@@ -15,9 +15,9 @@ class DockWidgetPiezosystemJena_NV40_1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    PiezosystemJena_NV40_1 
+  *\class    PiezosystemJena_NV40_1
   */
-class PiezosystemJena_NV40_1 : public ito::AddInActuator 
+class PiezosystemJena_NV40_1 : public ito::AddInActuator
 {
     Q_OBJECT
 
@@ -50,9 +50,9 @@ class PiezosystemJena_NV40_1 : public ito::AddInActuator
         ito::RetVal setPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
-        
+
     public slots:
-        
+
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -81,7 +81,7 @@ class PiezosystemJena_NV40_1 : public ito::AddInActuator
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        
+
         //! Emits status and position if triggered. Used form the dockingwidget
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 
@@ -91,7 +91,7 @@ class PiezosystemJena_NV40_1 : public ito::AddInActuator
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    PiezosystemJena_NV40_1Interface 
+  *\class    PiezosystemJena_NV40_1Interface
   *
   *\brief    Interface-Class for PiezosystemJena_NV40_1-Class
   *

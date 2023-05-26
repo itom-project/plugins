@@ -5,7 +5,7 @@
     Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -73,7 +73,7 @@ void DialogPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params)
 #endif
 
         ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
-        
+
         ui.combo_bpp->clear();
         int count = 0;
         for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i += bppMeta->getStepSize())
@@ -87,7 +87,7 @@ void DialogPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params)
 
     bool updateSizeX = false;
     bool updateSizeY = false;
-    
+
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int *roi = params["roi"].getVal<int*>();
     qDebug() << roi[0] << roi[1] << roi[2] << roi[3];
@@ -126,10 +126,10 @@ void DialogPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params)
 
     dval = params["offset"].getVal<double>();
     ui.sliderOffset->setValue(dval*100.0);
-    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));             
+    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
 
     ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
-    
+
     for (int i = 0; i < ui.combo_bpp->count(); ++i)
     {
         if (ui.combo_bpp->itemData(i, 32).toInt() == params["bpp"].getVal<int>())
@@ -258,7 +258,7 @@ ito::RetVal DialogPGRFlyCapture::applyParameters()
         QVariant qvar = ui.combo_bpp->currentIndex();
         bool ok;
         int bppNew = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex(), 32).toInt(&ok);
-        
+
         if(ok && (bppNew > 0) && (m_currentParameters["bpp"].getVal<int>() !=  bppNew))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bppNew)));
@@ -325,7 +325,7 @@ void DialogPGRFlyCapture::on_rangeX01_valuesChanged(int minValue, int maxValue)
     {
         max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
     }
-    
+
     max_ = qBound<int>(0, max_, maxWidth-1);
 
     if (min_ != minValue || max_ != maxValue)
@@ -366,7 +366,7 @@ void DialogPGRFlyCapture::on_rangeY01_valuesChanged(int minValue, int maxValue)
     {
         max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
     }
-    
+
     max_ = qBound<int>(0, max_, maxHeight - 1);
 
     if (min_ != minValue || max_ != maxValue)

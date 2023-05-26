@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -13,7 +13,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    ThorlabsFFInterface 
+  *\class    ThorlabsFFInterface
   *
   *\brief    Interface-Class for ThorlabsFF-Class
   *
@@ -51,17 +51,17 @@ class ThorlabsFF : public ito::AddInDataIO
         ~ThorlabsFF();
         //! Constructor
         ThorlabsFF();
-        
+
     public:
         friend class ThorlabsFFInterface;
- 
+
     private:
         static QList<QByteArray> openedDevices;
         bool m_opened;
         char m_serialNo[16];
 
         ito::RetVal checkError(short value, const char *message);
-        
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);

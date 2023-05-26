@@ -49,7 +49,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPIPiezoCtrl.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogPIPiezoCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPIPiezoCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PIPiezoCtrl.cpp

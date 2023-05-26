@@ -10,7 +10,7 @@
 **Devices**:    One axis motor controllers of type Thorlabs Integrated Stepper Motors, e.g. K10CR1 Rotation Stage
 **Author**:     :pluginauthor:`ThorlabsISM`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,9 +21,9 @@ ITOM Plugin to be used for interaction with the Thorlabs Integrated Stepper Moto
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: ThorlabsISM
 
@@ -75,7 +75,7 @@ Compilation
 
 To compile this plugin, install the Thorlabs KINESIS from
 https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0
-driver package in the same bit-version than itom (32/64bit). 
+driver package in the same bit-version than itom (32/64bit).
 It has been implemented using KINESIS version 1.14.32.
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
 to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).

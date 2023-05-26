@@ -44,7 +44,7 @@ ito::RetVal DIC::DICSplineCoeffsParams(QVector<ito::Param> *paramsMand, QVector<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal doCalcSplineCoeffs(const _Tp *inpPts, const int numPt, const int colWise, 
+template<typename _Tp> ito::RetVal doCalcSplineCoeffs(const _Tp *inpPts, const int numPt, const int colWise,
     const int stp, const double xMin, const double xMax, Eigen::VectorXd &xVec, Eigen::VectorXd &yVec)
 {
     ito::RetVal retval(ito::retOk);
@@ -282,7 +282,7 @@ ito::RetVal DIC::DICSplineVals(QVector<ito::ParamBase> *paramsMand, QVector<ito:
         npts = inPts->getSize(1);
         stp = inPts->getStep(1);
     }
-    
+
     if (withDer)
         outPts->zeros(npts, 2, ito::tFloat64);
     else

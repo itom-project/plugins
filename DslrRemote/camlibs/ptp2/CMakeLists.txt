@@ -73,7 +73,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ptp-private.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/chdk.c
     ${CMAKE_CURRENT_SOURCE_DIR}/config.c
     ${CMAKE_CURRENT_SOURCE_DIR}/library.c
@@ -97,7 +97,7 @@ set(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_p
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
-target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
+target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
     ${LTDLLIB}
     ${REGEXLIB}
     ${LIBGPHOTO2}

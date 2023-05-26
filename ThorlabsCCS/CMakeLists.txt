@@ -36,9 +36,9 @@ if(THORLABS_IVI_VISA_INCLUDE_DIR)
     itom_init_cmake_policy(3.12)
     itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
     itom_find_package_qt(ON Core LinguistTools Widgets)
-    
+
     set(THORLABS_IVI_VISA_LIBRARIES "")
-    
+
     if(MSVC)
         if(BUILD_TARGET64)
             FIND_LIBRARY(THORLABS_IVI_VISA_LIB1 visa64 PATHS ${THORLABS_IVI_VISA_SDK} PATH_SUFFIXES Lib_x64/msc)
@@ -47,13 +47,13 @@ if(THORLABS_IVI_VISA_INCLUDE_DIR)
             FIND_LIBRARY(THORLABS_IVI_VISA_LIB1 visa32 PATHS ${THORLABS_IVI_VISA_SDK} PATH_SUFFIXES lib/msc)
             FIND_LIBRARY(THORLABS_IVI_VISA_LIB2 TLCCS_32 PATHS ${THORLABS_IVI_VISA_SDK} PATH_SUFFIXES lib/msc)
         endif(BUILD_TARGET64)
-        
+
         set(THORLABS_IVI_VISA_LIBRARIES
             ${THORLABS_IVI_VISA_LIB1}
             ${THORLABS_IVI_VISA_LIB2}
         )
     endif()
-    
+
 endif(THORLABS_IVI_VISA_INCLUDE_DIR)
 
 if(THORLABS_IVI_VISA_LIBRARIES)
@@ -119,8 +119,7 @@ if(THORLABS_IVI_VISA_LIBRARIES)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+
 else(THORLABS_IVI_VISA_LIBRARIES)
     message(SEND_ERROR "THORLABS_IVI_VISA_SDK directory could not be found. ${target_name} will not be build")
 endif(THORLABS_IVI_VISA_LIBRARIES)
-

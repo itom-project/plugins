@@ -32,7 +32,7 @@ class DockWidgetPiezosystemJena_NV40_1 : public ito::AbstractAddInDockWidget
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
-        
+
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
         void targetChanged(QVector<double> targetPositions);
 

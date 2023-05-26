@@ -5,7 +5,7 @@
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -333,7 +333,7 @@ ito::RetVal ThorlabsDCxCam::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             retVal += checkError(is_SetRopEffect(m_camera, IS_SET_ROP_MIRROR_UPDOWN, 0, 0));
             retVal += checkError(is_SetRopEffect(m_camera, IS_SET_ROP_MIRROR_LEFTRIGHT, 0, 0));
             retVal += setMeanFrameRate();
-                    
+
             retVal += synchronizeCameraSettings();
         }
 
@@ -410,7 +410,7 @@ ito::RetVal ThorlabsDCxCam::close(ItomSharedSemaphore *waitCond)
     {
         retValue += checkError(is_ExitCamera(m_camera));
         m_camera = IS_INVALID_HCAM;
-    }    
+    }
 
     if (waitCond)
     {
@@ -869,7 +869,7 @@ ito::RetVal ThorlabsDCxCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
             {
                 retValue += checkError(is_SetColorMode(m_camera, IS_CM_BGRA8_PACKED));
             }
-            else 
+            else
             {
                 switch (m_params["bpp"].getVal<int>())
                 {
@@ -903,7 +903,7 @@ ito::RetVal ThorlabsDCxCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
             retValue += synchronizeCameraSettings(sExposure | sFrameTime);
         }
         else
-        { 
+        {
             //e.g. timeout
             it->copyValueFrom(val.data());
         }
@@ -1228,12 +1228,12 @@ ito::RetVal ThorlabsDCxCam::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1275,7 +1275,7 @@ ito::RetVal ThorlabsDCxCam::retrieveData(ito::DataObject *externalDataObject)
 
 
     if (!retVal.containsError())
-    {      
+    {
         if (externalDataObject)
         {
             switch (m_data.getType())
@@ -1448,7 +1448,7 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
             {
                 is_Exposure(m_camera, IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE, (void*)dVal3, sizeof(dVal3));
                 it->setMeta(new ito::DoubleMeta(dVal3[0] * 1.0e-3, dVal3[1] * 1.0e-3, dVal3[2] * 1.0e-3), true);
-            }            
+            }
 
             //check if long exposure time is available and if so verify if it is enabled. if so change the range of exposure time
             it2 = m_params.find("long_integration_time_enabled");
@@ -1551,7 +1551,7 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
             roi[3] = size.s32Y;
             ito::RangeMeta widthMeta(offsetMin.s32X, offset.s32X + sizeMax.s32X - 1, offsetInc.s32X, sizeMin.s32X, offset.s32X + sizeMax.s32X, sizeInc.s32X);
             ito::RangeMeta heightMeta(offsetMin.s32Y, offset.s32Y + sizeMax.s32Y - 1, offsetInc.s32Y, sizeMin.s32Y, offset.s32Y + sizeMax.s32Y, sizeInc.s32Y);
-            it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);          
+            it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
         }
         else
         {
@@ -1613,7 +1613,7 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
         if (!retTemp.containsError())
         {
             it->setFlags((capabilities & IS_BLACKLEVEL_CAP_SET_OFFSET) ? 0 : ito::ParamBase::Readonly);
-            
+
             retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_OFFSET_RANGE, (void*)&m_blacklevelRange, sizeof(m_blacklevelRange)));
             retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_OFFSET, (void*)&val2, sizeof(val2)));
 
@@ -1647,7 +1647,7 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
                 {
                     int v = val2 == IS_AUTO_BLACKLEVEL_ON ? 1 : 0;
                     it->setVal<int>( v );
-                    it->setMeta(new ito::IntMeta(v,v), true);                    
+                    it->setMeta(new ito::IntMeta(v,v), true);
                 }
             }
         }
@@ -1676,23 +1676,23 @@ ito::RetVal ThorlabsDCxCam::synchronizeCameraSettings(int what /*= sAll*/)
             it->setVal<const char*>("software");
             break;
         case IS_SET_TRIGGER_HI_LO:
-            it->setVal<const char*>("hi_lo"); 
+            it->setVal<const char*>("hi_lo");
             break;
         case IS_SET_TRIGGER_LO_HI:
-            it->setVal<const char*>("lo_hi"); 
+            it->setVal<const char*>("lo_hi");
             break;
         case IS_SET_TRIGGER_PRE_HI_LO:
-            it->setVal<const char*>("pre_hi_lo"); 
+            it->setVal<const char*>("pre_hi_lo");
             break;
         case IS_SET_TRIGGER_PRE_LO_HI:
-            it->setVal<const char*>("pre_lo_hi"); 
+            it->setVal<const char*>("pre_lo_hi");
             break;
         default:
             //trigger is in a non-supported mode, set it to software trigger
             retval += checkError(is_SetExternalTrigger(m_camera, IS_SET_TRIGGER_SOFTWARE));
             it->setVal<const char*>("software");
         }
-            
+
     }
 
     if (what & sBppAndColorMode)
@@ -1936,7 +1936,7 @@ ito::RetVal ThorlabsDCxCam::checkData(ito::DataObject *externalDataObject)
     {
         futureType = ito::tInt32;
     }
-    else 
+    else
     {
         futureType = ito::tFloat64;
     }
@@ -1957,7 +1957,7 @@ ito::RetVal ThorlabsDCxCam::checkData(ito::DataObject *externalDataObject)
         }
         else if (externalDataObject->calcNumMats () != 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.").toLatin1().data());
         }
         else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {

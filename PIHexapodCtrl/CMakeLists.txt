@@ -49,7 +49,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPIHexapodCtrl.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogPIHexapodCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPIHexapodCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PIHexapodCtrl.cpp

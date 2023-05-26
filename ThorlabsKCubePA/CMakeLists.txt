@@ -63,7 +63,7 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsKCubePA.ui
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsKCubePA.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsKCubePA.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsKCubePA.cpp
@@ -79,7 +79,7 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
@@ -97,16 +97,16 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
-    set(BINARY_FILES 
+
+    set(BINARY_FILES
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.KCube.PositionAligner.dll"
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.TCube.Quad.dll"
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.DeviceManager.dll"
         "${THORLABS_KINESIS_DIRECTORY}/ftd2xx.dll"
         )
-    
+
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
-    
+
 else(THORLABS_KINESIS_INCLUDE_DIR)
     message(SEND_ERROR "${THORLABS_KINESIS_KCUBE_PA_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
 endif(THORLABS_KINESIS_INCLUDE_DIR)

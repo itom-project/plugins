@@ -620,4 +620,3 @@ int camera_init (Camera *camera, GPContext *context) {
 	/* Set up the filesystem */
 	return gp_filesystem_set_funcs (camera->fs, &fsfuncs, camera);
 }
-

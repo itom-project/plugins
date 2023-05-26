@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,7 +23,7 @@
 /* *\file DummyMotor.cpp
 * \brief In this file the functions for the classes of the DummyMotor and its Interface are defined
 *
-*    The Dummymotor is a virtual device to test positining function and to give developers a template for the implementation of actuators and their GUI 
+*    The Dummymotor is a virtual device to test positining function and to give developers a template for the implementation of actuators and their GUI
 *    This functions are based on the DummyMotor.cpp which was implemented into the ITO M and ITO M++ measurement programm at ITO, university stuttgart.
 *
 *\sa DummyMotorInterface, DummyMotor, DummyMotor.h
@@ -104,8 +104,8 @@ expired.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr(GITVERSION);       
-    
+    m_aboutThis = tr(GITVERSION);
+
     ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 1, new ito::IntMeta(1,6), tr("Number of axis for this motor").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
@@ -243,7 +243,7 @@ DummyMotor::DummyMotor() :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DummyMotor::~DummyMotor() //!< Destructor        
+DummyMotor::~DummyMotor() //!< Destructor
 {
 }
 
@@ -257,10 +257,10 @@ ito::RetVal DummyMotor::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
     int index;
     QString suffix;
     QMap<QString,ito::Param>::iterator it;
-        
+
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
-        
+
     if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
@@ -273,7 +273,7 @@ ito::RetVal DummyMotor::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
         *val = it.value();
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -292,15 +292,15 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
     int index;
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
-        
+
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
-        
+
     if (isMotorMoving()) //this if-case is for actuators only.
     {
         retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
     }
-        
+
     if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
@@ -314,9 +314,9 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         // meta structure.
         retValue += apiValidateParam(*it, *val, false, true);
     }
-        
+
     if (!retValue.containsError())
-    { 
+    {
         if (key == "async")
         {
             //check the new value and if ok, assign it to the internal parameter
@@ -355,13 +355,13 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             }
         }
     }
-        
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -423,7 +423,7 @@ ito::RetVal DummyMotor::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     }
 
     if (!retValue.containsWarningOrError())
-    {    
+    {
         emit parametersChanged(m_params);
     }
 
@@ -468,17 +468,17 @@ ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<
                 retValue = ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toLatin1().data());
             }
             else
-            {               
+            {
                 if (val) std::cout << "\nAxis: " << axis << " on position " << m_currentPos[axis] << " at Stage:" << m_params["name"].getVal<char*>() << "\n";
                 else    std::cout << "\nAxis: " << axis << " on position " << m_currentPos[axis] << "\n";
             }
         }
     }
     else if (funcName == "changeGrating")
-    {    
+    {
         if (!retValue.containsError())
         {
-            
+
         }
     }
     else if (funcName == "jog")
@@ -790,7 +790,7 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
             }
 
             //calc time
-            double cur_speed = m_params["speed"].getVal<double>(); //mm/s 
+            double cur_speed = m_params["speed"].getVal<double>(); //mm/s
             if (cur_speed==0) cur_speed = 0.01;
             double durationMS = (m_distance / cur_speed) * 1000;
 
@@ -820,7 +820,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    
+
     if (isMotorMoving())
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toLatin1().data());
@@ -909,7 +909,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotor::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
@@ -925,7 +925,7 @@ ito::RetVal DummyMotor::requestStatusAndPosition(bool sendCurrentPos, bool sendT
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DummyMotor::dockWidgetVisibilityChanged(bool visible)
 {
     if (qobject_cast<QApplication*>(QCoreApplication::instance()) && getDockWidget())
@@ -945,7 +945,7 @@ void DummyMotor::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
 {
     ito::RetVal retVal(ito::retOk);
@@ -960,7 +960,7 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
     {
         for (int i = 0; i < m_numaxis; i++) _axis.append(i);
     }
-    
+
     QElapsedTimer timer;
     timer.start();
     QMutex waitMutex;

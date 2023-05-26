@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -35,7 +35,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    GenICamClass 
+  *\class    GenICamClass
   */
 
 
@@ -61,7 +61,7 @@ class GenICamClass : public ito::AddInGrabber
         friend class GenTLDevice; //to access parameterChangedTimerFired
         friend class GenTLFramegrabber; //to access parameterChangedTimerFiredFramegrabber
 
-        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
@@ -122,7 +122,7 @@ class GenICamClass : public ito::AddInGrabber
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    GenICamInterface 
+  *\class    GenICamInterface
   *
   *\brief    Interface-Class for GenICamClass-Class
   *

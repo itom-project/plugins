@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -138,8 +138,8 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsOpt.clear();
 
     ito::Param param("fileFilter", ito::ParamBase::String, "tif", QObject::tr("File-Type, e.g. 'tif', 'png'").toLatin1().data());
@@ -432,7 +432,7 @@ ito::RetVal FileGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                    !paramIt.key().compare("y0") ||
                    !paramIt.key().compare("y1"))
                 {
-                    
+
                     static_cast<ito::IntMeta*>(m_params["x0"].getMeta())->setMax( m_params["x1"].getVal<int>() );
                     static_cast<ito::IntMeta*>(m_params["y0"].getMeta())->setMax( m_params["y1"].getVal<int>() );
 
@@ -517,12 +517,12 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         filter = "*.tif";
     }
-   
+
     if (exObj != NULL && nrPreLoading >= 0)   // Check if an external object provided and if so, set the interal image stack to this external data object
     {
         if (exObj->getDims() != 3 && !retVal.containsError())
         {
-            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object must be 3 dimensional").toLatin1().data());  
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object must be 3 dimensional").toLatin1().data());
         }
         else
         {
@@ -549,10 +549,10 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 else bppFilter = 30;
                 break;
             default:
-                retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object type must be UInt8, UInt16 or Int32").toLatin1().data()); 
+                retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object type must be UInt8, UInt16 or Int32").toLatin1().data());
             }
         }
-        if (!retVal.containsError()) 
+        if (!retVal.containsError())
         {
             if (exObj->getSize(0) <= nrPreLoading || nrPreLoading == 0) //if 0: auto, also take reference to the full data object stack
             {
@@ -575,18 +575,18 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         }
     }
     else if (m_searchFolder.exists() && m_searchFolder.isReadable()) // Else scan the seachfolder and check if there is anything readable
-    { 
+    {
         QStringList filterList(filter);
         m_fileList = m_searchFolder.entryList(filterList, QDir::Files, QDir::Name);
-        
+
         if (m_fileList.isEmpty())
         {
-            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not contain any matching files").arg( m_searchFolder.absolutePath() ).toLatin1().data());  
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not contain any matching files").arg( m_searchFolder.absolutePath() ).toLatin1().data());
         }
     }
     else    // No search path and no object so this operation failed!
     {
-        retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not exist or is not readable").arg( m_searchFolder.absolutePath() ).toLatin1().data());    
+        retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not exist or is not readable").arg( m_searchFolder.absolutePath() ).toLatin1().data());
     }
 
     if (exObj == NULL && !retVal.containsError())    // If we have an external object we are finished. In other cases we have to scan the folder and do some magic stuff with it.
@@ -599,7 +599,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         int openCVLoadingFlags = cv::IMREAD_UNCHANGED;
 #else
         int openCVLoadingFlags = CV_LOAD_IMAGE_UNCHANGED;
-#endif        
+#endif
 
         for(i = 0; i < m_fileList.size(); i++)
         {
@@ -607,7 +607,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), cv::IMREAD_UNCHANGED);
 #else
             loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), CV_LOAD_IMAGE_UNCHANGED);
-#endif            
+#endif
 
             if (loadedMat.data != NULL && bppFilter == 0) // Loading okay and no bppFilter
             {
@@ -622,7 +622,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_GRAYSCALE;
 #else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_GRAYSCALE;
-#endif                    
+#endif
                 }
                 else if (loadedMat.type() == CV_16U)
                 {
@@ -631,7 +631,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_GRAYSCALE | cv::IMREAD_ANYDEPTH;
 #else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH;
-#endif                    
+#endif
                 }
                 else if (loadedMat.type() == CV_8UC3)
                 {
@@ -640,7 +640,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_COLOR;
 #else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_COLOR;
-#endif                    
+#endif
                 }
                 else if (loadedMat.type() == CV_8UC4)
                 {
@@ -649,7 +649,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     if (nrPreLoading == 0) openCVLoadingFlags = cv::IMREAD_ANYCOLOR;
 #else
                     if (nrPreLoading == 0) openCVLoadingFlags = CV_LOAD_IMAGE_ANYCOLOR;
-#endif                      
+#endif
                 }
 
                 i++;
@@ -785,7 +785,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 }
                 else
                 {
-                    retVal += ito::RetVal(ito::retError, 0, QObject::tr("Image loading failed").toLatin1().data()); 
+                    retVal += ito::RetVal(ito::retError, 0, QObject::tr("Image loading failed").toLatin1().data());
                 }
 
             }
@@ -804,17 +804,17 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         }
         else
         {
-            retVal += ito::RetVal(ito::retError, 0, QObject::tr("No suitable images found").toLatin1().data());    
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("No suitable images found").toLatin1().data());
         }
     }
 
     if (m_preloadedObject.getDims() == 3)
     {
-        m_fromStack = true;    
+        m_fromStack = true;
     }
     else
     {
-        m_fromStack = false;    
+        m_fromStack = false;
     }
 
     m_params["bpp"].setVal<int>(bppFilter);
@@ -839,7 +839,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (waitCond)
     {
         waitCond->returnValue = retVal;
-        waitCond->release(); 
+        waitCond->release();
     }
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -1050,12 +1050,12 @@ ito::RetVal FileGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1140,10 +1140,10 @@ template<typename _Tp> inline ito::RetVal FileGrabber::transferDataFromStack(con
     {
         if (copyExternal)
         {
-            
+
             retValue += externalDataObject->copyFromData2D<_Tp>((_Tp*)cbuf, maxxsize, maxysize);
         }
-        if (!copyExternal || hasListeners) 
+        if (!copyExternal || hasListeners)
         {
             m_data = ito::DataObject(2, sizes, m_preloadedObject.getType(), (cv::Mat*)(m_preloadedObject.get_mdata()[current_image]), 1);
         }
@@ -1155,7 +1155,7 @@ template<typename _Tp> inline ito::RetVal FileGrabber::transferDataFromStack(con
         {
             retValue += externalDataObject->copyFromData2D<_Tp>((_Tp*)cbuf+lsrcstrpos, maxxsize, maxysize);
         }
-        if (!copyExternal || hasListeners) 
+        if (!copyExternal || hasListeners)
         {
             retValue += m_data.copyFromData2D<_Tp>((_Tp*)cbuf+lsrcstrpos, maxxsize, maxysize);
         }
@@ -1196,7 +1196,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
     //if (grabberStartedCount() <= 0 || this->m_isgrabbing != true)
     if (ret)
     {
-      
+
     }
     else
     {
@@ -1229,7 +1229,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
             loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toLatin1().data(), cv::IMREAD_GRAYSCALE | cv::IMREAD_ANYDEPTH);
 #else
             loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toLatin1().data(), CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH);
-#endif            
+#endif
             long lsrcstrpos = 0;
             int maxxsize = (int)m_params["sizex"].getMax();
             int maxysize = (int)m_params["sizey"].getMax();
@@ -1253,7 +1253,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                     {
                         retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize);
                     }
-                    if (!copyExternal || hasListeners) 
+                    if (!copyExternal || hasListeners)
                     {
                         m_data = ito::DataObject(2, sizes, ito::tUInt8, &loadedMat, 1);
                     }
@@ -1265,7 +1265,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                     {
                         retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, maxysize);
                     }
-                    if (!copyExternal || hasListeners) 
+                    if (!copyExternal || hasListeners)
                     {
                         retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, maxysize);
                     }
@@ -1283,7 +1283,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                     }
                 }
             }
-            else if (loadedMat.type() == CV_16U) 
+            else if (loadedMat.type() == CV_16U)
             {
                 m_params["bpp"].setVal<int>(16);
                 ito::uint16 *cbuf = (ito::uint16*)loadedMat.ptr();
@@ -1294,7 +1294,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                     {
                         retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize);
                     }
-                    if (!copyExternal || hasListeners) 
+                    if (!copyExternal || hasListeners)
                     {
                         m_data = ito::DataObject(2, sizes, ito::tUInt16, &loadedMat, 1);
                     }
@@ -1306,7 +1306,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                     {
                         retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, maxysize);
                     }
-                    if (!copyExternal || hasListeners) 
+                    if (!copyExternal || hasListeners)
                     {
                         retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, maxysize);
                     }
@@ -1322,7 +1322,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                     {
                         retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, sizes[1], sizes[0]);
                     }
-                }            
+                }
             }/*
             else if (loadedMat.type() == CV_8UC3)
             {
@@ -1370,7 +1370,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                     }
                 }
             }*/
-            else 
+            else
             {
                 retValue += ito::RetVal(ito::retError, 1002, tr("Unsupported image data type.").toLatin1().data());
             }
@@ -1387,4 +1387,3 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
 
     return retValue;
 }
-

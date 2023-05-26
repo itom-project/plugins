@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -16,7 +16,7 @@
 #include <visa.h>
 #include "TLCCS.h"
 
-#if defined(linux) || defined(__APPLE__) 
+#if defined(linux) || defined(__APPLE__)
     //#include <unistd.h>
 #else
     #include <windows.h>
@@ -24,7 +24,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MyGrabberInterface 
+  *\class    MyGrabberInterface
   *
   *\brief    Interface-Class for MyGrabber-Class
   *
@@ -62,11 +62,11 @@ class ThorlabsCCS : public ito::AddInGrabber
         ~ThorlabsCCS();
         //! Constructor
         ThorlabsCCS();
-        
+
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 
         virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
-        
+
     public:
         friend class ThorlabsCCSInterface;
         const ito::RetVal showConfDialog(void);
@@ -95,7 +95,7 @@ class ThorlabsCCS : public ito::AddInGrabber
 
             return checkError(s);
         }
-        
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
@@ -116,7 +116,7 @@ class ThorlabsCCS : public ito::AddInGrabber
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        
+
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 

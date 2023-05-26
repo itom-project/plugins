@@ -29,7 +29,7 @@
 
 	* canon.c, canon.h, README.canon: Added some more configuration
 	  options.
- 
+
 2008-03-30  Marcus Meissner  <marcus@jet.franken.de>
 
 	* canon.c: SL_THUMB_CR2 should be as large as the CR2 image,
@@ -112,7 +112,7 @@
 
 	* library.c: Mark up strings for translation.
 	  Compare against translated string.
-	
+
 	  Mark up configuration widgets with symbolic names to
 	  avoid spaces or translated strings in commandline modes.
 
@@ -167,7 +167,7 @@
 	* canon.[ch], usb.[ch]: Adds support for downloading "secondary
 	images" -- the JPEGs created when the capture resolution is set to
 	the "RAW + JPEG" modes -- for the Canon EOS 5D camera.
-	
+
 	* canon.[ch], library.c: Adds remote control over "release
 	parameters" -- shutter speed, ISO speed, aperture, resolution,
 	autofocus mode -- for the Canon EOS 5D camera. It might work with
@@ -188,10 +188,10 @@
 	canon_usb_dialogue_full(), which returns the full camera response
 	packet, needed by canon_usb_long_dialogue() (and also by
 	canon_int_get_release_params(), later in this patch series).
-	
+
 	* canon.c: Add the USB ID for the EOS 5D in PC connection mode.
-	
-	* canon.[ch]:  
+
+	* canon.[ch]:
 	* library.c: gphoto2's Canon driver currently supports two capture
 	modes: canon_int_capture_preview(), which captures a thumbnail to
 	the host computer; and canon_int_capture_image(), which captures a
@@ -218,7 +218,7 @@
 	CANON_USB_CONTROL_EXIT commands with functions, and set a flag in
 	the host computer's camera state when the camera is in remote
 	release control.
- 
+
 	* usb.c: canon_int_usb_poll_interrupt_pipe() can return a negative
 	  result to indicate an error.  But canon_usb_capture_dialogue()
 	  only checks whether the result was equal to 0 to test for an
@@ -380,7 +380,7 @@
 	Moved IXUS v from class 0 to class 1.
 
 2005-01-16  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* canon.c: Added PowerShot SD200.
 
 2005-01-15  Stephen Westin
@@ -405,7 +405,7 @@
 2004-12-16  Stephen H. Westin <westin@graphics.cornell.edu>
 
 	* urb-interpret: Added some interpretation of interrupt read packets.
-	 
+
 	* urb-interpret: Updated to interpret output from SniffUSB v1.8, making it
 	  incompatible with (some) older versions. To interpret output of older versions,
 	  use an older version of urb-interpret.
@@ -432,7 +432,7 @@
 	* canon.[ch]: Added PowerShot A85 as reported.
 
 2004-08-22  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* canon.c,usb.c,library.c: Fixed various gp_log / GP_DEBUG problems.
 
 2004-08-12  Hubert Figuiere  <hfiguiere@teaser.fr>
@@ -455,18 +455,18 @@
 	http://www.gphoto.org/patches/?id=963229
 
 2004-05-09  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* canon.[ch]: Added IXUS 500 as reported.
 
 2004-03-07  Marcus Meissner  <marcus@jet.franken.de>
 
 	* canon.c: We check for consecutive 0s, so check for !*temp_ch.
-	
+
 2004-02-03  Hans Ulrich Niedermann  <gp@n-dimensional.de>
 
 	* serial.c, usb.c: Use largest file size limit
 	* canon.c, canon.h: Note improper use of file size limits
-	
+
 2004-01-31  Marcus Meissner <marcus@jet.franken.de>
 
 	* canon.c, canon.h: Richard Simpson <richard@huskydog.org.uk>
@@ -500,12 +500,12 @@
 
 2003-09-20  Hans Ulrich Niedermann  <gp@n-dimensional.de>
 
-	* canon.c, canon.h, usb.c: Added support for 
-          EOS 300D/Digital Rebel/KISS Digital, thanks to Johan Herland 
+	* canon.c, canon.h, usb.c: Added support for
+          EOS 300D/Digital Rebel/KISS Digital, thanks to Johan Herland
           and T.V.
 
 2003-05-19 Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* canon.c, canon.h: Added 4 patches with support
 	  for the A300, S400, A60 and A70. (Might not be 100%
 	  correct in specifying subtypes and capture ability.)
@@ -514,7 +514,7 @@
 	  with 1 USB id according to traces sent. Strange.
 
 2003-05-06 Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* library.c,canon.c: 2 bug fixes for audio files from
 	  Ben Low <ben@bdlow.net>.
 
@@ -559,7 +559,7 @@
 	* Implemented canon_capture_preview(); it was a no-op.
 
 2003-02-27  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* library.c: We support EXIF download.
 
 2003-02-27 Stephen H. Westin <westin@graphics.cornell.edu>
@@ -700,11 +700,11 @@
 	* library.c: only report EXPERIMENTAL on USB cams
 	* Makefile.am: removed EXPERIMENTAL_ CFLAGS stuff
 	* README: Added note about new CANON_EXPERIMENTAL_ stuff
-	
+
 2002-07-29  Hans Ulrich Niedermann  <gp@n-dimensional.de>
 
 	* canon.[ch]: support for PowerShot A100, A200
-	
+
 2002-07-29  Lutz Müller <lutz@users.sourceforge.net>
 
 	* canon.h: Make CVS compile again by adding CANON_PS_A100 to the
@@ -737,9 +737,9 @@
 
 2002-03-29  Hans Ulrich Niedermann  <gp@n-dimensional.de>
 
-	* library.c: merged in USB upload patch by Matthias Kramm 
+	* library.c: merged in USB upload patch by Matthias Kramm
 	                 (using #ifdef EXPERIMENTAL_UPLOAD)
-                     mark driver as experimental when compiled 
+                     mark driver as experimental when compiled
 	                 with any of the EXPERIMENTAL_ flags
 	* canon.h: merged in USB upload patch by Matthias Kramm
 	           properly use EXPERIMENTAL_CAPTURE for int capturing;
@@ -842,12 +842,12 @@
 2002-01-12  Hans Ulrich Niedermann <gp@n-dimensional.de>
 
 	* README: New readme for new driver
-	
+
 2002-01-11  Hans Ulrich Niedermann <gp@n-dimensional.de>
 
 	* *.[ch]: checked in rewritten driver which uses GPFilesystem
 		  directly (from the hun branch)
-	
+
 2002-01-08  Dan Fandrich <dan@coneharvesters.com>
 
 	* Makefile.am: Removed redundant CFLAGS and LDFLAGS lines
@@ -977,7 +977,7 @@
 	  using USB.
 
 2001-12-04  Fredrik <fredrik@krixor.xy.org>
-	
+
 	* canon.c: Improved debug output in canon_int_get_time().
 
 	* canon.c, canon.h, serial.c, serial.h, usb.c, usb.h:
@@ -1053,7 +1053,7 @@
 	* canon.c: added support for PowerShot S40
 	* canon.h: added support for PowerShot S40
 	* library.c: added support for PowerShot S40
-	
+
 2001-11-27  Hans Ulrich Niedermann <gp@n-dimensional.de>
 
 	* ChangeLog: created new file

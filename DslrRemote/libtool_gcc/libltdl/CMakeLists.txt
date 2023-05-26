@@ -68,7 +68,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ltdl.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
 #    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/dld_link.c #linux?
 #    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/dlopen.c #linux? or we can use dlfcn
 #    ${CMAKE_CURRENT_SOURCE_DIR}/loaders/dyld.c #OS-X

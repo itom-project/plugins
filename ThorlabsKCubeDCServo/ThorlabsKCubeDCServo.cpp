@@ -4,7 +4,7 @@
     Copyright (C) 2020, TRUMPF Laser- und Systemtechnik GmbH
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -77,7 +77,7 @@ ito::RetVal ThorlabsKCubeDCServoInterface::closeThisInst(ito::AddInBase **addInI
 }
 
 //-------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 ThorlabsKCubeDCServoInterface::ThorlabsKCubeDCServoInterface()
@@ -102,17 +102,17 @@ This plugin has been tested with the motorized translation stage MTS25-Z8.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("connectToKinesisSimulator", ito::ParamBase::Int, 0, 1, 0, tr("If 1, a connection to the running Kinesis Simulator is established before starting to search for devices.").toLatin1().data()));
 }
 
 
 //-------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). 
-    The plugin is initialized (e.g. by a Python call) with mandatory or optional 
-    parameters (m_initParamsMand and m_initParamsOpt) by 
+/*! \detail defines the name and sets the plugins parameters (m_parans).
+    The plugin is initialized (e.g. by a Python call) with mandatory or optional
+    parameters (m_initParamsMand and m_initParamsOpt) by
     ThorlabsKCubeDCServo::init. The widged window is created at this position.
 */
 ThorlabsKCubeDCServo::ThorlabsKCubeDCServo() :
@@ -143,7 +143,7 @@ ThorlabsKCubeDCServo::ThorlabsKCubeDCServo() :
     m_currentStatus.fill(0, 1);
     m_targetPos.fill(0.0, 1);
     m_originPositions.fill(0.0, 1);
-    
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -152,7 +152,7 @@ ThorlabsKCubeDCServo::ThorlabsKCubeDCServo() :
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<const char*>()), features, areas, dockWidget);
     }
-    
+
     memset(m_serialNo, '\0', sizeof(m_serialNo));
 }
 
@@ -198,7 +198,7 @@ ito::RetVal ThorlabsKCubeDCServo::init(QVector<ito::ParamBase> *paramsMand, QVec
         {
             // check for devices of type KCube DC Servo (27) only
             retval += checkError(
-                TLI_GetDeviceListByTypeExt(existingSerialNumbers.data(), existingSerialNumbers.size(), 27), 
+                TLI_GetDeviceListByTypeExt(existingSerialNumbers.data(), existingSerialNumbers.size(), 27),
                 "get device list"
             );
         }
@@ -228,7 +228,7 @@ ito::RetVal ThorlabsKCubeDCServo::init(QVector<ito::ParamBase> *paramsMand, QVec
                     break;
                 }
             }
-            
+
             if (!found)
             {
                 retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found");
@@ -321,10 +321,10 @@ ito::RetVal ThorlabsKCubeDCServo::init(QVector<ito::ParamBase> *paramsMand, QVec
     }
 
     if (!retval.containsError())
-    {        
+    {
         // get the device parameter here
         bool deviceCanLockFrontPanel = CC_CanDeviceLockFrontPanel(m_serialNo) ? 1 : 0;
-        
+
         if (deviceCanLockFrontPanel)
         {
             m_params["lockFrontPanel"].setVal<int>(CC_GetFrontPanelLocked(m_serialNo) ? 1 : 0);
@@ -381,7 +381,7 @@ ito::RetVal ThorlabsKCubeDCServo::init(QVector<ito::ParamBase> *paramsMand, QVec
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -442,7 +442,7 @@ ito::RetVal ThorlabsKCubeDCServo::close(ItomSharedSemaphore *waitCond)
 
 //-------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -484,7 +484,7 @@ ito::RetVal ThorlabsKCubeDCServo::getParam(QSharedPointer<ito::Param> val, ItomS
 
 //-------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsISM::SMCSwitchType is executed.
 
@@ -718,7 +718,7 @@ ito::RetVal ThorlabsKCubeDCServo::setOrigin(const int axis, ItomSharedSemaphore 
 ito::RetVal ThorlabsKCubeDCServo::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    
+
     QSharedPointer<double> originPos(new double);
     double previous = m_originPositions[0];
     m_originPositions[0] = 0.0;
@@ -814,9 +814,9 @@ ito::RetVal ThorlabsKCubeDCServo::getPos(const QVector<int> axis, QSharedPointer
         {
             QSharedPointer<double> pos_(new double);
             retValue += getPos(axis[naxis], pos_, nullptr);
-            (*pos)[naxis] = *pos_;         
+            (*pos)[naxis] = *pos_;
         }
-    }    
+    }
 
     sendStatusUpdate(false);
 
@@ -989,7 +989,7 @@ ito::RetVal ThorlabsKCubeDCServo::setPosRel(QVector<int> axis, QVector<double> p
             }
             else
             {
-                m_targetPos[i] = m_currentPos[i] + pos[cntPos]; //todo: set the absolute target position to the desired value in mm or degree 
+                m_targetPos[i] = m_currentPos[i] + pos[cntPos]; //todo: set the absolute target position to the desired value in mm or degree
             }
             cntPos++;
         }
@@ -1080,7 +1080,7 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const int axi
     return retVal;
 }
 
-//------------------------------------------------------------------------------------- 
+//-------------------------------------------------------------------------------------
 //! method must be overwritten from ito::AddInActuator
 /*!
 WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is indicated) have stopped or a timeout or user interruption
@@ -1193,7 +1193,7 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
         {
             sendStatusUpdate();
             Sleep(20);
-        }        
+        }
 
     }
 
@@ -1211,7 +1211,7 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
     return retVal;
 }
 
-//------------------------------------------------------------------------------------- 
+//-------------------------------------------------------------------------------------
 void ThorlabsKCubeDCServo::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1240,7 +1240,7 @@ void ThorlabsKCubeDCServo::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//------------------------------------------------------------------------------------- 
+//-------------------------------------------------------------------------------------
 ito::RetVal ThorlabsKCubeDCServo::checkError(short value, const char* message)
 {
     if (value == 0)

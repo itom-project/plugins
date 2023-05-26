@@ -367,7 +367,7 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libminizip.la: $(libminizip_la_OBJECTS) $(libminizip_la_DEPENDENCIES) $(EXTRA_libminizip_la_DEPENDENCIES) 
+libminizip.la: $(libminizip_la_OBJECTS) $(libminizip_la_DEPENDENCIES) $(EXTRA_libminizip_la_DEPENDENCIES)
 	$(libminizip_la_LINK) -rpath $(libdir) $(libminizip_la_OBJECTS) $(libminizip_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -415,10 +415,10 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-miniunzip$(EXEEXT): $(miniunzip_OBJECTS) $(miniunzip_DEPENDENCIES) $(EXTRA_miniunzip_DEPENDENCIES) 
+miniunzip$(EXEEXT): $(miniunzip_OBJECTS) $(miniunzip_DEPENDENCIES) $(EXTRA_miniunzip_DEPENDENCIES)
 	@rm -f miniunzip$(EXEEXT)
 	$(LINK) $(miniunzip_OBJECTS) $(miniunzip_LDADD) $(LIBS)
-minizip$(EXEEXT): $(minizip_OBJECTS) $(minizip_DEPENDENCIES) $(EXTRA_minizip_DEPENDENCIES) 
+minizip$(EXEEXT): $(minizip_OBJECTS) $(minizip_DEPENDENCIES) $(EXTRA_minizip_DEPENDENCIES)
 	@rm -f minizip$(EXEEXT)
 	$(LINK) $(minizip_OBJECTS) $(minizip_LDADD) $(LIBS)
 

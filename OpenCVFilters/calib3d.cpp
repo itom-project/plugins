@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -300,7 +300,7 @@ The function draws individual chessboard corners detected either as red circles 
         {
             retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
-        
+
     }
 
     delete corners;
@@ -354,7 +354,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
     ito::DataObject *corners = apiCreateFromNamedDataObject(rawCorners, 2, ito::tFloat32, "corners", limits, &retval);
 
     cv::Size winSize = itomcv::getCVSizeFromParam(paramsMand->at(2), true, &retval);
-    
+
     cv::Size zeroZone = itomcv::getCVSizeFromParam(paramsOpt->at(0), true, &retval);
 
     cv::TermCriteria criteria = itomcv::getCVTermCriteriaFromParam(paramsOpt->at(1), paramsOpt->at(2), &retval);
@@ -439,7 +439,7 @@ before using it in the way that for each view, the last rows are cut where eithe
     paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0,maxFlag), description.toLatin1().data()));
     paramsOpt->append(ito::Param("maxCounts", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 30, tr("if > 0, maximum number of counts, 0: unlimited number of counts allowed [default: 30]").toLatin1().data()));
     paramsOpt->append(ito::Param("epsilonAccuracy", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::epsilon(), tr("if > 0.0, desired accuracy at which the iterative algorithm stops, 0.0: no epsilon criteria [default: DBL_EPSILON]").toLatin1().data()));
-    
+
     paramsOut->append(ito::Param("reprojectionError", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, std::numeric_limits<double>::max(), 0.0, tr("resulting re-projection error").toLatin1().data()));
 
     return retval;
@@ -453,7 +453,7 @@ before using it in the way that for each view, the last rows are cut where eithe
     //mand-param 0: objectPoints
     int sizeLimits[] = {1,std::numeric_limits<int>::max(),0,std::numeric_limits<int>::max(),3,3};
     const ito::DataObject *objectPoints = apiCreateFromNamedDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), 3, ito::tFloat32, "objectPoints", sizeLimits, &retval);
-    
+
     //mand-param 1: imagePoints
     sizeLimits[4]=sizeLimits[5]=2;
     if (objectPoints)
@@ -461,7 +461,7 @@ before using it in the way that for each view, the last rows are cut where eithe
         sizeLimits[0] = sizeLimits[1] = objectPoints->getSize(0);
     }
     const ito::DataObject *imagePoints = apiCreateFromNamedDataObject(paramsMand->at(1).getVal<ito::DataObject*>(), 3, ito::tFloat32, "imagePoints", sizeLimits, &retval);
-    
+
     //mand-param 2: imageSize
     cv::Size imageSize = itomcv::getCVSizeFromParam(paramsMand->at(2), false, &retval);
 
@@ -476,7 +476,7 @@ before using it in the way that for each view, the last rows are cut where eithe
     const ito::DataObject *distCoeffs = apiCreateFromNamedDataObject(paramsMand->at(4).getVal<ito::DataObject*>(), 2, ito::tFloat64, "distCoeffs", sizeLimits3, &retvalTemp);
 
     //mand-param 5+6 are out only and will be written later
-    
+
     //opt-param 0: flags
     int flags = paramsOpt->at(0).getVal<int>();
 
@@ -554,7 +554,7 @@ before using it in the way that for each view, the last rows are cut where eithe
             //mand-param 5: rvecs (out only)
             *((*paramsMand)[5].getVal<ito::DataObject*>()) = ito::DataObject(3, rvecs.size(), ito::tFloat64);
             ito::float64 *rvecsdata = (ito::float64*)((*paramsMand)[5].getVal<ito::DataObject*>()->rowPtr(0,0));
-            
+
             int s = rvecs.size();
             int sizes[] = {3,s};
 
@@ -689,10 +689,10 @@ Those pixels in the destination image, for which there is no correspondent pixel
 /*static*/ ito::RetVal OpenCVFilters::cvUndistort(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    
+
     ito::DataObject cameraMatrix = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(), "cameraMatrix", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     ito::DataObject distCoeffs = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<const ito::DataObject*>(), "distCoeffs", ito::Range(1,1), ito::Range(4,8), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    
+
     ito::DataObject newCameraMatrix = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(0).getVal<const ito::DataObject*>(), "newCameraMatrix", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : cameraMatrix;
 
     ito::DataObject *destination = paramsMand->at(1).getVal<ito::DataObject*>();
@@ -708,7 +708,7 @@ Those pixels in the destination image, for which there is no correspondent pixel
     {
         retval += ito::RetVal(ito::retError, 0, tr("source data object must be two dimensional").toLatin1().data());
     }
-        
+
     if (!retval.containsError())
     {
         const cv::Mat *src = sourceSqueezed.getCvPlaneMat(0);
@@ -777,7 +777,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
     if (!retval.containsError())
     {
         cv::Mat dst;
-        
+
         try
         {
             cv::Mat src_ = src.getCvPlaneMat(0)->reshape(2,0); //rows remain unchanged, 2 cols become 2 channels.
@@ -833,7 +833,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 
     paramsOpt->append(ito::Param("R", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Rectification transformation in the object space (3x3 matrix). If not given, the identity transformation is used.").toLatin1().data()));
     paramsOpt->append(ito::Param("newCameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("New camera matrix A'. If not given, the camera matrix is used.").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -843,7 +843,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
     ito::RetVal retval;
     ito::DataObject cameraMatrix = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(), "cameraMatrix", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     ito::DataObject distCoeffs = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<const ito::DataObject*>(), "distCoeffs", ito::Range(1,1), ito::Range(4,8), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    
+
     cv::Size size = itomcv::getCVSizeFromParam((*paramsMand)[2], false, &retval);
 
     if (paramsMand->at(3).getVal<void*>() == NULL || paramsMand->at(4).getVal<void*>() == NULL)
@@ -855,11 +855,11 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
         ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : ito::DataObject();
 
     ito::DataObject cameraMatrixNew = (paramsOpt->at(1).getVal<void*>()) ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(1).getVal<const ito::DataObject*>(), "cameraMatrixNew", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : cameraMatrix;
-    
+
     if (!retval.containsError())
     {
         cv::Mat map1, map2;
-        
+
         try
         {
             if (R.getDims() > 0)
@@ -929,7 +929,7 @@ indices in a table of interpolation coefficients.");
     description += QString("BORDER_DEFAULT (%1)\n").arg(cv::BORDER_DEFAULT);
     description += QString("BORDER_ISOLATED (%1)").arg(cv::BORDER_ISOLATED);
     paramsOpt->append(ito::Param("borderMode", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_CONSTANT, cv::BORDER_ISOLATED, cv::BORDER_CONSTANT, description.toLatin1().data()));
-    
+
     paramsOpt->append(ito::Param("borderValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("value used in case of a constant border. By default, it is 0").toLatin1().data()));
 
     return retval;
@@ -957,7 +957,7 @@ indices in a table of interpolation coefficients.");
     if (!retval.containsError())
     {
         cv::Mat dst;
-        
+
         try
         {
             cv::remap(*(src.getCvPlaneMat(0)), dst, *(map1.getCvPlaneMat(0)), *(map2.getCvPlaneMat(0)), interpolation, borderType, borderValue);
@@ -1008,7 +1008,7 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
     description += QString(", CV_RANSAC (%1)").arg(cv::RANSAC);
     description += QString(", CV_LMEDS (%1)").arg(cv::LMEDS);
     paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::LMEDS, 0, description.toLatin1().data()));
-    
+
     paramsOpt->append(ito::Param("ransacReprojThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, tr("maximum allowed reprojection error to treat a point pair as an inlier (used for RANSAC only)").toLatin1().data()));
 
     return retval;
@@ -1032,7 +1032,7 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
     if (!retval.containsError())
     {
         cv::Mat homography;
-        
+
         try
         {
             homography = cv::findHomography(src.getContinuousCvPlaneMat(0), dst.getContinuousCvPlaneMat(0), method, ransacReprojThreshold);
@@ -1246,7 +1246,7 @@ ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand
     if (!retval.containsError())
     {
         cv::Mat dst;
-        
+
         try
         {
             cv::warpPerspective(*(src.getCvPlaneMat(0)), dst, *(M.getCvPlaneMat(0)), cv::Size(), interpolation);
@@ -1371,7 +1371,7 @@ ito::RetVal OpenCVFilters::cvProjectPoints(QVector<ito::ParamBase> *paramsMand, 
 //    ito::RetVal retval;
 //    ito::DataObject cameraMatrix1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "cameraMatrix1", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
 //    ito::DataObject cameraMatrix2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<const ito::DataObject*>(), "cameraMatrix2", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
-//    
+//
 //    ito::DataObject distCoeffs1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(), "distCoeffs1", ito::Range(1,1), ito::Range(4,8), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
 //    ito::DataObject distCoeffs2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<const ito::DataObject*>(), "distCoeffs2", ito::Range(1,1), ito::Range(4,8), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
 //

@@ -41,7 +41,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesAvaSpec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.cpp

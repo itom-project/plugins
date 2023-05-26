@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -71,13 +71,13 @@ The setVal and getVal functions will write and read on the output or on the feat
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);  
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("vendor_id", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0, tr("The vendor id of the device to connect to (0 will return a list of all devices if 'print_info_about_all_devices' is 1).").toLatin1().data());
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("product_id", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0, tr("The product id of the device to connect to (0 will return a list of all devices if 'print_info_about_all_devices' is 1).").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    
+
     paramVal = ito::Param("serial_number", ito::ParamBase::String, "", tr("Optional serial number of device that should be opened.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("print_info_about_all_devices", ito::ParamBase::Int, 0, 1, 0, tr("If true, all information about connected devices is print to the console.").toLatin1().data());
@@ -287,7 +287,7 @@ ito::RetVal ItomHidApi::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
     if (!retValue.containsError())
     {
         //put your switch-case.. for getting the right value here
-        
+
         //finally, save the desired value in the argument val (this is a shared pointer!)
         //if the requested parameter name has an index, e.g. roi[0], then the sub-value of the
         //array is split and returned using the api-function apiGetParam
@@ -430,14 +430,14 @@ ito::RetVal ItomHidApi::getVal(QSharedPointer<char> data, QSharedPointer<int> le
         numread = hid_read(m_pDevice, (unsigned char*)data.data(), *length);
     }
 
-    if (numread < 0) 
+    if (numread < 0)
     {
         QString err = QString::fromWCharArray(hid_error(m_pDevice));
         retval += ito::RetVal::format(ito::retError, 0, "error reading from HID device: %s", err.toLatin1().data());
         numread = 0;
     }
 
-    *length = numread; 
+    *length = numread;
 
     if (m_debugMode)
     {
@@ -465,7 +465,7 @@ ito::RetVal ItomHidApi::setVal(const char *data, const int datalength, ItomShare
     {
         emit serialLog(QByteArray(data, datalength), '>');
     }
-    
+
     int res;
     if (m_params["use_feature_report_not_output"].getVal<int>())
     {

@@ -41,7 +41,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/OceanOpticsSpec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogOceanOpticsSpec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetOceanOpticsSpec.cpp

@@ -36,7 +36,7 @@ itom_find_package_qt(ON Core Widgets LinguistTools)
 if(NERIAN_VISION_SOFTWARE_DIR)
 
     find_path(NERIAN_VISION_INCLUDE_DIR "imagetransfer.h" PATHS ${NERIAN_VISION_SOFTWARE_DIR}/visiontransfer/include ${NERIAN_VISION_SOFTWARE_DIR}/cpp/include PATH_SUFFIXES "visiontransfer" DOC "path to the folder containing all headers")
-	
+
     if(BUILD_TARGET64)
 		find_library(NERIAN_VISION_LIB_DEBUG visiontransfer visiontransfer-debug HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES /visiontransfer/lib64/Debug /cpp/lib64/Debug)
 		find_library(NERIAN_VISION_LIB_RELEASE visiontransfer HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES visiontransfer/lib64/Release cpp/lib64/Release)
@@ -48,7 +48,7 @@ if(NERIAN_VISION_SOFTWARE_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
         ${NERIAN_VISION_INCLUDE_DIR}/..
     )
 

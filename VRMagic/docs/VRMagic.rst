@@ -10,7 +10,7 @@
 **Devices**:    USB Cameras from company *VRMagic* (tested with framegrabber VRmAVC-2)
 **Author**:     :pluginauthor:`VRMagic`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,12 +19,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: VRMagic
-        
+
 Parameters
 ============
 
@@ -69,7 +69,7 @@ Parameters
 
 **vendor_ID**: {int}, read-only
     Vendor ID of device (vid).
-    
+
 
 Installation
 =============
@@ -82,9 +82,9 @@ at the same folder than the regular installation (e.g. C:\Program Files (x86)\Co
 
 The library should be fined via the CMAKE default settings, if not please set the CMake variable
 **VRMagic_INCLUDE_DIR** or the environment variable **VRMAGIC_ROOT**
-to the directory that contains the header files of the SDK. 
+to the directory that contains the header files of the SDK.
 
-    
+
 Changelog
 ==========
 

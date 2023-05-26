@@ -10,7 +10,7 @@
 **Devices**:    AVT Cameras driven by Vimba interface
 **Author**:     :pluginauthor:`AVTVimba`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -20,12 +20,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: AVTVimba
-        
+
 Parameters
 ===========
 
@@ -88,7 +88,7 @@ Known issues
 ==============
 
 Some cameras raise a timeout error when acquiring images. If so, try to set the parameter 'trigger_mode' to 0 (off)::
-    
+
     cam.setParam("trigger_mode", 0)
 
 Changelog

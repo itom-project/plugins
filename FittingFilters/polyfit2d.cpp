@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -87,7 +87,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
 
     int fillNaNValues = static_cast<int>( (*paramsOpt)[0].getVal<int>() );
 
-    retval = ito::dObjHelper::verify2DDataObject(dObjImages, "sourceImage", gradY + 1, std::numeric_limits<short>::max(), 
+    retval = ito::dObjHelper::verify2DDataObject(dObjImages, "sourceImage", gradY + 1, std::numeric_limits<short>::max(),
                                                                             gradX + 1, std::numeric_limits<short>::max(),
                                                                             8,
                                                                             tUInt8 , tInt8 , tUInt16 , tInt16 , tUInt32 , tInt32 , tFloat32 , tFloat64);
@@ -97,7 +97,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
         if (dObjImages != NULL && dObjImages->getDims() == 3)
         {
             retval = ito::dObjHelper::verify3DDataObject(dObjImages, "sourceImage", 1, 1,
-                                                                                    gradY + 1, std::numeric_limits<short>::max(), 
+                                                                                    gradY + 1, std::numeric_limits<short>::max(),
                                                                                     gradX + 1, std::numeric_limits<short>::max(),
                                                                                     8,
                                                                                     tUInt8 , tInt8 , tUInt16 , tInt16 , tUInt32 , tInt32 , tFloat32 , tFloat64);
@@ -124,7 +124,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     {
         inputImage = *plane;
     }
-    
+
     cv::Mat outputImage = cv::Mat(plane->rows, plane->cols, CV_64FC1);
 
     int  *x,*y;
@@ -150,13 +150,13 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     retval += polyfit(x, y, &inputImage, &outputImage, gradX, gradY, xsize, ysize, &Sigma, &koeff, fillNaNValues > 0);
 
     *dObjDst = ito::DataObject(dObjImages->getDims(), dObjImages->getSize(), ito::tFloat64, &outputImage, 1);
-    
+
     dObjImages->copyAxisTagsTo(*dObjDst);
     dObjImages->copyTagMapTo(*dObjDst);
 
         // Add Protokoll
 //    char prot[81] = {0};
-//    _snprintf(prot, 80, "2D polynomical fit with order x = %i and y = %i", gradX, gradY);           
+//    _snprintf(prot, 80, "2D polynomical fit with order x = %i and y = %i", gradX, gradY);
 //    dObjDst->addToProtocol(std::string(prot));
     QString msg;
     msg = tr("2D polynomical fit with order x = %1 and y = %2").arg(gradX).arg(gradY);
@@ -215,7 +215,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 //           double *Sigma, struct Koeffizienten *koeff)
 {
     RetVal retValue(retOk);
-    int   i, j, n, m;            // Zaehlvariable 
+    int   i, j, n, m;            // Zaehlvariable
     int maxGrad;             // Maximal vorkommender Grad
 
     double   tx, ty,           // x, y Parameter
@@ -223,7 +223,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     z;             // berechnete Z-Koordinate
     float64 buf;
     double    *Sum=NULL,            // Zwischen- Koeffizienten
-    *NormX=NULL,        // Nenner der Koeffizienten 
+    *NormX=NULL,        // Nenner der Koeffizienten
     *NormY=NULL,
     *Werte=NULL,        // Pn-Koeffizienten
     *ZeilenSumme=NULL;    // Zaehler der Koeffizienten
@@ -243,16 +243,16 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     {
         return retValue += ito::RetVal(retError, 3, tr("3:  polynomial order in x and/or y too big, aborted").toLatin1().data());
     }
-  
+
     maxGrad = gradX < gradY ? gradY : gradX;
 
-    // Uebergabe der Grade und Anzahlen an koeff ------------------------------ 
+    // Uebergabe der Grade und Anzahlen an koeff ------------------------------
     koeff->gradX=gradX;
     koeff->gradY=gradY;
     koeff->sizeX=sizeX;
     koeff->sizeY=sizeY;
 
-    // Initialisierung der Rekursionskoeffizienten -------------------------- 
+    // Initialisierung der Rekursionskoeffizienten --------------------------
     koeff->alphaX = NULL;
     koeff->alphaY = NULL;
     koeff->betaX = NULL;
@@ -269,20 +269,20 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     koeff->betaY= (double *)calloc(koeff->gradY+1, sizeof(double));
     koeff->gammaX= (double *)calloc(koeff->gradX+1, sizeof(double));
     koeff->gammaY= (double *)calloc(koeff->gradY+1, sizeof(double));
-    
+
     if (koeff->alphaY == NULL || koeff->alphaX == NULL || koeff->betaX == NULL || koeff->betaY == NULL || koeff->gammaX == NULL || koeff->gammaY == NULL)
     {
         retValue += ito::RetVal(retError, 5, tr("5:  error allocating memory for recursion coefficients").toLatin1().data());
         goto Error;
     }
 
-    // Berechnung der Rekursionskoeffizienten -------------------------------- 
+    // Berechnung der Rekursionskoeffizienten --------------------------------
     retValue += calcKoeff(koeff->sizeX, koeff->gradX, koeff->alphaX, koeff->betaX, koeff->gammaX);
     if (retValue.containsError())
     {
         goto Error;
     }
-  
+
     retValue += calcKoeff(koeff->sizeY, koeff->gradY, koeff->alphaY, koeff->betaY, koeff->gammaY);
     if (retValue.containsError())
     {
@@ -302,31 +302,31 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         goto Error;
     }
 
-    // Berechnung der Schrittweiten ------------------------------------------ 
+    // Berechnung der Schrittweiten ------------------------------------------
     dx = 1;
     dy = 1;
 
-    // Berechnung der NormX mit der Funktion OrthPolAuswerten ---------------- 
+    // Berechnung der NormX mit der Funktion OrthPolAuswerten ----------------
     for (n=0; n < koeff->sizeX; n++)
     {
-        if (n == 0) 
+        if (n == 0)
         {
             tx=0;
         }
-        else 
+        else
         {
             tx=(x[n]-x[0])/dx;
         }
-        
+
         OrthPolAuswerten(koeff->sizeX, koeff->gradX, tx, Werte, koeff->alphaX, koeff->betaX, koeff->gammaX);
-     
+
         for (i=0 ; i <= koeff->gradX ; i++)
         {
             NormX[i]+=Werte[i]*Werte[i];
         }
     }
 
-    // Berechnen von NormX und der Zeilensumme  ------------------------------ 
+    // Berechnen von NormX und der Zeilensumme  ------------------------------
     ZeilenSumme=(double *)calloc(koeff->gradX+1, sizeof(double));
     if (ZeilenSumme == NULL)
     {
@@ -336,24 +336,24 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
     for (m=0 ; m < koeff->sizeY ; m++)
     {
-        // Initialisierung der Zeilensumme ------------------------------------ 
+        // Initialisierung der Zeilensumme ------------------------------------
         memset(ZeilenSumme, 0, (koeff->gradX+1) * sizeof(double));
         lineBuf = dblData->ptr< double >(m);
 
-        // Berechnung der Zeilensumme  ---------------------------------------- 
+        // Berechnung der Zeilensumme  ----------------------------------------
         for (n= 0 ; n < koeff->sizeX ; n++)
         {
-            if (n == 0) 
+            if (n == 0)
             {
                 tx=0;
             }
-            else 
+            else
             {
                 tx=(x[n]-x[0]); /*/dx;*/ //dx=1
             }
 
             OrthPolAuswerten(koeff->sizeX, koeff->gradX, tx, Werte, koeff->alphaX, koeff->betaX, koeff->gammaX);
-            
+
             buf = lineBuf[n];
             //nicht so tolle version (verfaelscht das ergebnis durch addition von 0.0 bei nan-werten - kommentar marc gronle, interpolation waere besser, aber aufwand)
             if (qIsFinite(buf))
@@ -373,11 +373,11 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         }
 
         // Berechnung von NormY  ----------------------------------------------
-        if (m == 0) 
+        if (m == 0)
         {
             ty=0;
         }
-        else 
+        else
         {
             ty=(y[m]-y[0]); /*/dy;*/ //dy=1
         }
@@ -408,7 +408,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         }
     }
 
-    // Uebergabe der Koeffizienten an die Structure 
+    // Uebergabe der Koeffizienten an die Structure
     for (i=0 ; i <= koeff->gradX ; i++)
     {
         for (j=0 ; j <= koeff->gradY ; j++)
@@ -417,7 +417,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         }
     }
 
-    // Berechnung der Summe der Fehlerqudrate -------------------------------- 
+    // Berechnung der Summe der Fehlerqudrate --------------------------------
     *sigma=0.0;
 
     if (fillNaNValues)
@@ -435,7 +435,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
                 z=Fitwerte(tx, ty, koeff);
 
                 buf = lineBuf[n];
-            
+
                 if ( qIsFinite(buf))
                 {
                     lineBufOutput[n] = z;
@@ -464,7 +464,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
                 z=Fitwerte(tx, ty, koeff);
 
                 buf = lineBuf[n];
-            
+
                 if ( qIsFinite(buf))
                 {
                     lineBufOutput[n] = z;
@@ -519,7 +519,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
 
     for ( i=0 ; i<=PolyGrad ; i++)  // laeuft von 0 bis Grad +1
     {
-        *(P + i*(PolyGrad+1) )=1;      // P[i][0] = 1 
+        *(P + i*(PolyGrad+1) )=1;      // P[i][0] = 1
         for (j=1; j<=PolyGrad; j++)
         {
             // P[i][j] = -P[i][j-1]/j*(i-j+1)*(i+j)/j/(anzahl-j);
@@ -539,7 +539,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
             *(S + i*(PolyGrad+1) + j) = 0;
         }
     }
-    
+
     for (i=2; i<=PolyGrad; i++)
     {
         *(S + i*(PolyGrad+1) + 1) = -(i-1)* *(S + (i-1)*(PolyGrad+1) +1); // Rekursionsformel
@@ -559,7 +559,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
      n
     ************************************************/
 
-    // Matrixmultiplikation 
+    // Matrixmultiplikation
     for (i=0; i<=PolyGrad; i++)
     {
         for (j=0; j<=i; j++)
@@ -570,10 +570,10 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
             }
         }
     }
-    
+
     free(P); P=NULL;
     free(S); S=NULL;
-   
+
     /*************************************************
      Berechnung der Koeffizienten fuer die Rekursion. Dass so eine Rekursion
      existiert, ist klar, es genuegt alpha, beta und gamma so zu bestimmen, dass
@@ -634,7 +634,7 @@ double FittingFilters::Fitwerte(double tx, double ty, struct Koeffizienten *koef
     // ----------------- Allgemeine Initialisierungen -----------------------
     Px=(double *)calloc(koeff->gradX+1, sizeof(double));
     Py=(double *)calloc(koeff->gradY+1, sizeof(double));
-      
+
     // ---------------- Berechnung der P-Koeffizienten -----------------------
     OrthPolAuswerten(koeff->sizeX, koeff->gradX, tx, Px, koeff->alphaX, koeff->betaX, koeff->gammaX);
     OrthPolAuswerten(koeff->sizeY, koeff->gradY, ty, Py, koeff->alphaY, koeff->betaY, koeff->gammaY);

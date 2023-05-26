@@ -15,7 +15,7 @@ AC_PROG_LIBTOOL
 # 4. If any interfaces have been added since the last public release,
 #    then increment age.
 # 5. If any interfaces have been removed since the last public release,
-#    then set age to 0. 
+#    then set age to 0.
 
 LIBPTP2_VERSION_CURRENT=2
 LIBPTP2_VERSION_REVISION=5
@@ -117,7 +117,7 @@ AC_ARG_WITH([libusbdir],
 		CFLAGS="$CFLAGS_save"
 		LDFLAGS="$LDFLAGS_save"
 	fi
-	
+
 	LUSBMAJOR=${LIBUSB_VER%%.*}
 	LIBUSB_VER=${LIBUSB_VER#${LUSBMAJOR}.}
 	LUSBMINOR=${LIBUSB_VER%.*}
@@ -152,7 +152,7 @@ AC_ARG_WITH([libusbdir],
 		fi
 	else
 		AC_ERROR([
-*** You need the 0 line of libusb which is at least 0.1.8. 
+*** You need the 0 line of libusb which is at least 0.1.8.
 *** Higher versions might not be compatible! Download and istall
 *** libusb version 0.X.X from http://sourceforge.net/projects/libusb/ or
 *** use --disable-ptpcam option to build without ptpcam tool.
@@ -168,7 +168,7 @@ dnl Create a stdint.h-like file containing size-specific integer definitions
 dnl that will always be available
 AC_NEED_STDINT_H(src/libptp-stdint.h)
 
-AC_CONFIG_FILES([ 
+AC_CONFIG_FILES([
 Makefile
 src/Makefile
 ])

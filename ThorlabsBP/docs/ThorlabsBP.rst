@@ -10,20 +10,20 @@
 **Devices**:    One or multi-axis piezo controllers of type Thorlabs Benchtop Piezo
 **Author**:     :pluginauthor:`ThorlabsBP`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: ThorlabsBP
-	
+
 ITOM Plugin to be used for interaction with the Thorlabs Benchtop Piezo Driver Series.
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: ThorlabsBP
 
@@ -64,12 +64,12 @@ parameters can be changed using *setParam*.
     Timeout for positioning in seconds.
 **zeroed**: {seq. of int}, read-only
     If 0, the axis is not zeroed. 1: zeroed. If the axis is not zeroed, it is possible that position values at the edge of the valid range can not be reached.
-    
+
 .. note::
-    
+
     the 'maximumTravelRange' can only be determined if the corresponding axis is in closed loop mode. The closed loop mode can only be set for axis with
     a position feedback.
-    
+
 Many parameters are sequences. The length of the sequence must always correspond to the number of axes, such that the first value in the sequence determines
 the parameter for the first connected axis, the second is responsible for the 2nd axis...
 
@@ -86,9 +86,9 @@ Target position
 The controller itself does not provide information if the set-point position has been reached. Therefore, this decision is taken dependent on the control mode
 of each axis in the following way:
 
-* Closed loop: The target position is considered to be reached if the difference of the current and the desired target position is below 50nm AND the difference between two 
+* Closed loop: The target position is considered to be reached if the difference of the current and the desired target position is below 50nm AND the difference between two
     current position values (registered with a delay of approximately 120ms) is below 10nm.
-* Open loop: The target position is considered to be reached if the difference of the current and the desired target voltage is below 0.05V AND the difference between two 
+* Open loop: The target position is considered to be reached if the difference of the current and the desired target voltage is below 0.05V AND the difference between two
     current voltage values (registered with a delay of approximately 120ms) is below 0.01V.
 
 Compilation
@@ -96,7 +96,7 @@ Compilation
 
 To compile this plugin, install the Thorlabs KINESIS from
 https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0
-driver package in the same bit-version than itom (32/64bit). 
+driver package in the same bit-version than itom (32/64bit).
 It has been implemented using KINESIS version 1.14.32.
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
 to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).

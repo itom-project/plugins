@@ -5,7 +5,7 @@
     Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -67,7 +67,7 @@ IDSuEye::IDSuEye() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("frame_rate", ito::ParamBase::Double, 0.0, 10000.0, 0.5, tr("frame rate in fps (will affect the allowed range of the integration_time, this frame_rate is only considered if trigger_mode == 'off'.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Gain (normalized value 0..1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain_rgb", ito::ParamBase::DoubleArray, NULL, tr("RGB-gain values (normalized value 0..1)").toLatin1().data());
@@ -274,11 +274,11 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             //crosscheck if intented color mode lies in range of supported bit depths of the sensor if get_supported_sensor_bid_depths is supported
             UINT bitDepths = 0;
             is_DeviceFeature(m_camera, IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_SENSOR_BIT_DEPTHS, (void*)&bitDepths, sizeof(bitDepths));
-            
+
             int minBpp = 100;
             int maxBpp = 0;
             int maxMonochrome = IS_CM_MONO8;
-            
+
             int test = bitDepths & IS_SENSOR_BIT_DEPTH_8_BIT;
 
             if (is_SetColorMode(m_camera, IS_CM_MONO8) == IS_SUCCESS && (bitDepths & IS_SENSOR_BIT_DEPTH_8_BIT || bitDepths==0))
@@ -433,7 +433,7 @@ ito::RetVal IDSuEye::close(ItomSharedSemaphore *waitCond)
     {
         retValue += checkError(is_ExitCamera(m_camera));
         m_camera = IS_INVALID_HIDS;
-    }    
+    }
 
     if (waitCond)
     {
@@ -909,7 +909,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             {
                 retValue += checkError(is_SetColorMode(m_camera, IS_CM_BGRA8_PACKED));
             }
-            else 
+            else
             {
                 switch (m_params["bpp"].getVal<int>())
                 {
@@ -946,7 +946,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             m_params["num_buffer"].setVal<int>(m_NumberOfBuffers);
         }
         else
-        { 
+        {
             //e.g. timeout
             it->copyValueFrom(val.data());
         }
@@ -1230,12 +1230,12 @@ ito::RetVal IDSuEye::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1277,7 +1277,7 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
 
 
     if (!retVal.containsError())
-    {      
+    {
         if (m_NumberOfBuffers == 1)
         {
             if (externalDataObject)
@@ -1411,7 +1411,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
     UINT uintVal3[3];
     double dVal;
     double dVal3[3];
-    
+
     ito::RetVal retval, rettemp;
     QMap<QString, ito::Param>::iterator it;
 
@@ -1426,7 +1426,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
 
         //if ((nRet == IS_SUCCESS) && (nNumberOfSupportedPixelClocks > 0))
         //{
-        //    is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_LIST, (void*)nPixelClockList, nNumberOfSupportedPixelClocks * sizeof(UINT));    
+        //    is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_LIST, (void*)nPixelClockList, nNumberOfSupportedPixelClocks * sizeof(UINT));
         //}
 
         rettemp = checkError(is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)uintVal3, sizeof(uintVal3)), "pixelClock");
@@ -1496,7 +1496,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             {
                 is_Exposure(m_camera, IS_EXPOSURE_CMD_GET_FINE_INCREMENT_RANGE, (void*)dVal3, sizeof(dVal3));
                 it->setMeta(new ito::DoubleMeta(dVal3[0] * 1.0e-3, dVal3[1] * 1.0e-3, dVal3[2] * 1.0e-3), true);
-            }            
+            }
 
             //check if long exposure time is available and if so verify if it is enabled. if so change the range of exposure time
             it2 = m_params.find("long_integration_time_enabled");
@@ -1625,7 +1625,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             ito::RangeMeta widthMeta(offsetMin.s32X, size.s32X + offsetMax.s32X - 1, offsetInc.s32X, sizeMin.s32X, size.s32X + offsetMax.s32X, sizeInc.s32X);
             ito::RangeMeta heightMeta(offsetMin.s32Y, size.s32Y + offsetMax.s32Y - 1, offsetInc.s32Y, sizeMin.s32Y, size.s32Y + offsetMax.s32Y, sizeInc.s32Y);
             it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
-#endif            
+#endif
         }
         else
         {
@@ -1696,7 +1696,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
         if (!retTemp.containsError())
         {
             it->setFlags((capabilities & IS_BLACKLEVEL_CAP_SET_OFFSET) ? 0 : ito::ParamBase::Readonly);
-            
+
             retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_OFFSET_RANGE, (void*)&m_blacklevelRange, sizeof(m_blacklevelRange)));
             retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_OFFSET, (void*)&val2, sizeof(val2)));
 
@@ -1733,7 +1733,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
                 {
                     int v = val2 == IS_AUTO_BLACKLEVEL_ON ? 1 : 0;
                     it->setVal<int>( v );
-                    it->setMeta(new ito::IntMeta(v,v), true);                    
+                    it->setMeta(new ito::IntMeta(v,v), true);
                 }
             }
         }
@@ -1765,23 +1765,23 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             it->setVal<const char*>("software");
             break;
         case IS_SET_TRIGGER_HI_LO:
-            it->setVal<const char*>("hi_lo"); 
+            it->setVal<const char*>("hi_lo");
             break;
         case IS_SET_TRIGGER_LO_HI:
-            it->setVal<const char*>("lo_hi"); 
+            it->setVal<const char*>("lo_hi");
             break;
         case IS_SET_TRIGGER_PRE_HI_LO:
-            it->setVal<const char*>("pre_hi_lo"); 
+            it->setVal<const char*>("pre_hi_lo");
             break;
         case IS_SET_TRIGGER_PRE_LO_HI:
-            it->setVal<const char*>("pre_lo_hi"); 
+            it->setVal<const char*>("pre_lo_hi");
             break;
         default:
             //trigger is in a non-supported mode, set it to software trigger
             retval += checkError(is_SetExternalTrigger(m_camera, IS_SET_TRIGGER_SOFTWARE));
             it->setVal<const char*>("software");
         }
-            
+
     }
 
     if (what & sBppAndColorMode)
@@ -1918,33 +1918,33 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI141X_C: it->setVal<const char*>("UI141X_C, VGA rolling shutter, color"); break;
             case IS_SENSOR_UI144X_M: it->setVal<const char*>("UI144X_M, SXGA rolling shutter, monochrome"); break;
             case IS_SENSOR_UI144X_C: it->setVal<const char*>("UI144X_C, SXGA rolling shutter, SXGA color"); break;
-            
+
             case IS_SENSOR_UI154X_M: it->setVal<const char*>("UI154X_M, SXGA rolling shutter, monochrome"); break;
             case IS_SENSOR_UI154X_C: it->setVal<const char*>("UI154X_C, SXGA rolling shutter, color"); break;
             case IS_SENSOR_UI145X_C: it->setVal<const char*>("UI145X_C, UXGA rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI146X_C: it->setVal<const char*>("UI146X_C, QXGA rolling shutter, color"); break;
             case IS_SENSOR_UI148X_M: it->setVal<const char*>("UI148X_M, 5MP rolling shutter, monochrome"); break;
             case IS_SENSOR_UI148X_C: it->setVal<const char*>("UI148X_C, 5MP rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI121X_M: it->setVal<const char*>("UI121X_M, VGA global shutter, monochrome"); break;
             case IS_SENSOR_UI121X_C: it->setVal<const char*>("UI121X_C, VGA global shutter, VGA color"); break;
             case IS_SENSOR_UI122X_M: it->setVal<const char*>("UI122X_M, WVGA global shutter, monochrome"); break;
             case IS_SENSOR_UI122X_C: it->setVal<const char*>("UI122X_C, WVGA global shutter, color"); break;
-            
+
             case IS_SENSOR_UI164X_C: it->setVal<const char*>("UI164X_C, SXGA rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI155X_C: it->setVal<const char*>("UI155X_C, UXGA rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI1223_M: it->setVal<const char*>("UI1223_M, WVGA global shutter, monochrome"); break;
             case IS_SENSOR_UI1223_C: it->setVal<const char*>("UI1223_C, WVGA global shutter, color"); break;
-            
+
             case IS_SENSOR_UI149X_M: it->setVal<const char*>("UI149X_M, 10MP rolling shutter, monochrome"); break;
             case IS_SENSOR_UI149X_C: it->setVal<const char*>("UI149X_C, 10MP rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI1225_M: it->setVal<const char*>("UI1225_M, WVGA global shutter, monochrome, LE model"); break;
             case IS_SENSOR_UI1225_C: it->setVal<const char*>("UI1225_C, WVGA global shutter, color, LE model"); break;
-            
+
             case IS_SENSOR_UI1645_C: it->setVal<const char*>("UI1645_C, SXGA rolling shutter, color, LE model"); break;
             case IS_SENSOR_UI1555_C: it->setVal<const char*>("UI1555_C, UXGA rolling shutter, color, LE model"); break;
             case IS_SENSOR_UI1545_M: it->setVal<const char*>("UI1545_M, SXGA rolling shutter, monochrome, LE model"); break;
@@ -1955,10 +1955,10 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI1485_C: it->setVal<const char*>("UI1485_C, 5MP rolling shutter, color, LE model"); break;
             case IS_SENSOR_UI1495_M: it->setVal<const char*>("UI1495_M, 10MP rolling shutter, monochrome, LE model"); break;
             case IS_SENSOR_UI1495_C: it->setVal<const char*>("UI1495_C, 10MP rolling shutter, color, LE model"); break;
-            
+
             case IS_SENSOR_UI112X_M: it->setVal<const char*>("UI112X_M, 0768x576, HDR sensor, monochrome"); break;
             case IS_SENSOR_UI112X_C: it->setVal<const char*>("UI112X_C, 0768x576, HDR sensor, color"); break;
-            
+
             case IS_SENSOR_UI1008_M: it->setVal<const char*>("UI1008_M"); break;
             case IS_SENSOR_UI1008_C: it->setVal<const char*>("UI1008_C"); break;
 
@@ -1969,7 +1969,7 @@ ito::RetVal IDSuEye::loadSensorInfo()
 
             case IS_SENSOR_UI1005_M: it->setVal<const char*>("UI1005_M"); break;
             case IS_SENSOR_UI1005_C: it->setVal<const char*>("UI1005_C"); break;
-           
+
 #if defined IS_SENSOR_UI1007_M //SDK >= 4.95
             case IS_SENSOR_UI1007_M: it->setVal<const char*>("5MP rolling shutter, color"); break;
             case IS_SENSOR_UI1007_C: it->setVal<const char*>("5MP rolling shutter, color"); break;
@@ -1978,21 +1978,21 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI1240_M: it->setVal<const char*>("UI1240_M, SXGA global shutter, monochrome"); break;
             case IS_SENSOR_UI1240_C: it->setVal<const char*>("UI1240_C, SXGA global shutter, color"); break;
             case IS_SENSOR_UI1240_NIR: it->setVal<const char*>("UI1240_NIR, SXGA global shutter, NIR"); break;
-            
+
             case IS_SENSOR_UI1240LE_M: it->setVal<const char*>("UI1240LE_M, SXGA global shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1240LE_C: it->setVal<const char*>("UI1240LE_C, SXGA global shutter, color, single board"); break;
             case IS_SENSOR_UI1240LE_NIR: it->setVal<const char*>("UI1240LE_NIR, SXGA global shutter, NIR, single board"); break;
-            
+
             case IS_SENSOR_UI1240ML_M: it->setVal<const char*>("UI1240ML_M, SXGA global shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1240ML_C: it->setVal<const char*>("UI1240ML_C, SXGA global shutter, color, single board"); break;
             case IS_SENSOR_UI1240ML_NIR: it->setVal<const char*>("UI1240ML_NIR, SXGA global shutter, NIR, single board"); break;
-            
+
             case IS_SENSOR_UI1243_M_SMI: it->setVal<const char*>("UI1243_M_SMI"); break;
             case IS_SENSOR_UI1243_C_SMI: it->setVal<const char*>("UI1243_C_SMI"); break;
-            
+
             case IS_SENSOR_UI1543_M: it->setVal<const char*>("UI1543_M, SXGA rolling shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1543_C: it->setVal<const char*>("UI1543_C, SXGA rolling shutter, color, single board"); break;
-            
+
             case IS_SENSOR_UI1544_M: it->setVal<const char*>("UI1544_M, SXGA rolling shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1544_C: it->setVal<const char*>("UI1544_C, SXGA rolling shutter, color, single board"); break;
             case IS_SENSOR_UI1543_M_WO: it->setVal<const char*>("UI1543_M_WO, SXGA rolling shutter, monochrome, single board"); break;
@@ -2003,39 +2003,39 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI1483_C: it->setVal<const char*>("UI1483_C, QSXG rolling shutter, color, single board"); break;
             case IS_SENSOR_UI1493_M: it->setVal<const char*>("UI1493_M, 10Mp rolling shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1493_C: it->setVal<const char*>("UI1493_C, 10MP rolling shutter, color, single board"); break;
-            
+
             case IS_SENSOR_UI1463_M_WO: it->setVal<const char*>("UI1463_M_WO, QXGA rolling shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1463_C_WO: it->setVal<const char*>("UI1463_C_WO, QXGA rolling shutter, color, single board"); break;
-            
+
             case IS_SENSOR_UI1553_C_WN: it->setVal<const char*>("UI1553_C_WN, UXGA rolling shutter, color, single board"); break;
             case IS_SENSOR_UI1483_M_WO: it->setVal<const char*>("UI1483_M_WO, QSXGA rolling shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1483_C_WO: it->setVal<const char*>("UI1483_C_WO, QSXGA rolling shutter, color, single board"); break;
-            
+
             case IS_SENSOR_UI1580_M: it->setVal<const char*>("UI1580_M, 5MP rolling shutter, monochrome"); break;
             case IS_SENSOR_UI1580_C: it->setVal<const char*>("UI1580_C, 5MP rolling shutter, color"); break;
             case IS_SENSOR_UI1580LE_M: it->setVal<const char*>("UI1580LE_M, 5MP rolling shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1580LE_C: it->setVal<const char*>("UI1580LE_C, 5MP rolling shutter, color, single board"); break;
-            
+
             case IS_SENSOR_UI1360M: it->setVal<const char*>("UI1360M, 2.2MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1360C: it->setVal<const char*>("UI1360C, 2.2MP global shutter, color"); break;
             case IS_SENSOR_UI1360NIR: it->setVal<const char*>("UI1360NIR, 2.2MP global shutter, NIR"); break;
-            
+
             case IS_SENSOR_UI1370M: it->setVal<const char*>("UI1370M, 4.2MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1370C: it->setVal<const char*>("UI1370C, 4.2MP global shutter, color"); break;
             case IS_SENSOR_UI1370NIR: it->setVal<const char*>("UI1370NIR, 4.2MP global shutter, NIR"); break;
-            
+
             case IS_SENSOR_UI1250_M: it->setVal<const char*>("UI1250_M, 2MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1250_C: it->setVal<const char*>("UI1250_C, 2MP global shutter, color"); break;
             case IS_SENSOR_UI1250_NIR: it->setVal<const char*>("UI1250_NIR, 2MP global shutter, NIR"); break;
-            
+
             case IS_SENSOR_UI1250LE_M: it->setVal<const char*>("UI1250LE_M, 2MP global shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1250LE_C: it->setVal<const char*>("UI1250LE_C, 2MP global shutter, color, single board"); break;
             case IS_SENSOR_UI1250LE_NIR: it->setVal<const char*>("UI1250LE_NIR, 2MP global shutter, NIR, single board"); break;
-            
+
             case IS_SENSOR_UI1250ML_M: it->setVal<const char*>("UI1250ML_M, 2MP global shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1250ML_C: it->setVal<const char*>("UI1250ML_C, 2MP global shutter, color, single board"); break;
             case IS_SENSOR_UI1250ML_NIR: it->setVal<const char*>(", 2MP global shutter, NIR, single board"); break;
-            
+
             case IS_SENSOR_UI1493_M_AR: it->setVal<const char*>("UI1493_M_AR"); break;
             case IS_SENSOR_UI1493_C_AR: it->setVal<const char*>("UI1493_C_AR"); break;
 
@@ -2045,26 +2045,26 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI1013XC: it->setVal<const char*>("UI1013XC, 13MP, color"); break;
 #endif
 
-#if defined IS_SENSOR_UI1140M  //>= SDK 4.80         
+#if defined IS_SENSOR_UI1140M  //>= SDK 4.80
             case IS_SENSOR_UI1140M: it->setVal<const char*>("UI1140M, 1.3MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1140C: it->setVal<const char*>("UI1140C, 1.3MP global shutter, color"); break;
             case IS_SENSOR_UI1140NIR: it->setVal<const char*>("UI1140NIR, 1.3MP global shutter, NIR"); break;
-            
+
             case IS_SENSOR_UI1590M: it->setVal<const char*>("UI1590M, 18MP rolling shutter, monochrome"); break;
             case IS_SENSOR_UI1590C: it->setVal<const char*>("UI1590C, 18MP rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI1260_M: it->setVal<const char*>("UI1260_M, 2.3MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1260_C: it->setVal<const char*>("UI1260_C, 2.3MP global shutter, color"); break;
-            
+
             case IS_SENSOR_UI1130_M: it->setVal<const char*>("UI1130_M, SVGA global shutter, monochrome"); break;
             case IS_SENSOR_UI1130_C: it->setVal<const char*>("UI1130_C, SVGA global shutter, color"); break;
-            
+
             case IS_SENSOR_UI1160_M: it->setVal<const char*>("UI1160_M, 2.3MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1160_C: it->setVal<const char*>("UI1160_C, 2.3MP global shutter, color"); break;
-            
+
             case IS_SENSOR_UI1180_M: it->setVal<const char*>("UI1180_M, 5.3MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1180_C: it->setVal<const char*>("UI1180_C, 5.3MP global shutter, color"); break;
-            
+
             case IS_SENSOR_UI1080_M: it->setVal<const char*>("UI1080_M, 5MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1080_C: it->setVal<const char*>("UI1080_C, 5MP global shutter, color"); break;
 #endif
@@ -2072,19 +2072,19 @@ ito::RetVal IDSuEye::loadSensorInfo()
 #if defined IS_SENSOR_UI1280_M //>= SDK 4.81
             case IS_SENSOR_UI1280_M: it->setVal<const char*>("UI1280_M, 5MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1280_C: it->setVal<const char*>("UI1280_C, 5MP global shutter, color"); break;
-            
+
             case IS_SENSOR_UI1860_M: it->setVal<const char*>("UI1860_M, 2MP rolling shutter, monochrome"); break;
             case IS_SENSOR_UI1860_C: it->setVal<const char*>("UI1860_C, 2MP rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI1880_M: it->setVal<const char*>("UI1880_M, 6MP rolling shutter, monochrome"); break;
             case IS_SENSOR_UI1880_C: it->setVal<const char*>("UI1880_C, 6MP rolling shutter, color"); break;
-            
+
             case IS_SENSOR_UI1270_M: it->setVal<const char*>("UI1270_M, 3.2MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1270_C: it->setVal<const char*>("UI1270_C, 3.2MP global shutter, color"); break;
-            
+
             case IS_SENSOR_UI1070_M: it->setVal<const char*>("UI1070_M, 3.2MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1070_C: it->setVal<const char*>("UI1070_C, 3.2MP global shutter, color"); break;
-            
+
             case IS_SENSOR_UI1130LE_M: it->setVal<const char*>("UI1130LE_M, SVGA global shutter, monochrome"); break;
             case IS_SENSOR_UI1130LE_C: it->setVal<const char*>("UI1130LE_C, SVGA global shutter, color"); break;
 #endif
@@ -2178,7 +2178,7 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
     {
         futureType = ito::tInt32;
     }
-    else 
+    else
     {
         futureType = ito::tFloat64;
     }
@@ -2202,7 +2202,7 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
 
     }
     else
-    {    
+    {
         int dims = externalDataObject->getDims();
         if (m_NumberOfBuffers == 1)
         {
@@ -2294,7 +2294,7 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
         m_oldNumBuf = m_NumberOfBuffers;
 
     }
-    
+
 
     return retval;
 }

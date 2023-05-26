@@ -48,7 +48,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyGrabber.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DummyGrabber.cpp
@@ -85,6 +85,6 @@ set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 
 itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+
 itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

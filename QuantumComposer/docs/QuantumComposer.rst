@@ -10,7 +10,7 @@
 **Devices**:    Some words about supported devices
 **Author**:     :pluginauthor:`QuantumComposer`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: QuantumComposer
 
@@ -34,184 +34,184 @@ These parameters are available and can be used to configure the **QuantumCompose
 **amplitudesList**: Sequence[float]
     List of amplitude levels to set to the channels listed in the parameter
     channelIndexList. List must have the same length as the parameter channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [2:0.01:20], Default: [-1000, -1000,
     -1000, -1000, -1000, -1000, -1000, -1000]*
 **burstCounter**: int
     Number of pulses to generate in the burst mode.
-    
+
     *Value range: [1, 9999999], Default: 4*
 **channelBurstCounterList**: Sequence[int]
     List of burst counter values for the given channels (1 - 9999999). List must have the
     same length as the parameter channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [1, 9999999], Default: [1, 2, 3, 4, 5, 6,
     7, 8]*
 **channelGateLogicList**: Sequence[str]
     List of channel gate logic level (LOW, HIGH).
-    
+
     *Allowed number of values: 1 - 8, Value rules: Match: ["LOW", "HIGH"], Default: [LOW,
     HIGH]*
 **channelGateModeList**: Sequence[str]
     List of channel gate modes (DIS = disable, PULS = pulse inhibit, OUTP = output inhibit).
-    
+
     *Allowed number of values: 1 - 8, Value rules: Match: ["DIS", "PULS", "OUTP"], Default:
     [DIS, PULS, OUTP]*
 **channelModesList**: Sequence[str]
     List of channel modes which are set to the output for the given channels (NORM = normal,
     SING = single shot, BURS = burst, DCYC = duty cycle).
-    
+
     *Allowed number of values: 1 - 8, Value rules: Match: ["NORM", "SING", "BURS", "DCYC"],
     Default: [NORM, SING, BURS, DCYC]*
 **channelOffCounterList**: Sequence[int]
     List of pulse counter values to inhibit during the OFF cycle of the duty cycle mode for
     the given channels (1 - 9999999). List must have the same length as the parameter
     channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [1, 9999999], Default: [1, 2, 3, 4, 5, 6,
     7, 8]*
 **channelPulseCounterList**: Sequence[int]
     List of pulse counter values to generate during the ON cycle of the duty cycle mode for
     the given channels (1 - 9999999). List must have the same length as the parameter
     channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [1, 9999999], Default: [1, 2, 3, 4, 5, 6,
     7, 8]*
 **channelPulseWaitCounterList**: Sequence[int]
     List of pulse counter values to wait until enabling output of the duty cycle mode for
     the given channels (0 - 9999999). List must have the same length as the parameter
     channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [0, 9999999], Default: [1, 2, 3, 4, 5, 6,
     7, 8]*
 **counterCounts**: int, read-only
     Number of counts.
-    
+
     *Value range: [0, inf], Default: 4*
 **counterState**: int
     Enables (1), disables(0) the counter function.
-    
+
     *Value range: [0, 1], Default: 0*
 **delaysList**: Sequence[float]
     List of delays to set to the channels listed in the parameter channelIndexList. List
     must have the same length as the parameter channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [-1000, 1000], Default: [-1000, -1000,
     -1000, -1000, -1000, -1000, -1000, -1000]*
 **gateLevel**: float
     Gate threshold in units of V with a range of 0.20V to 15.0V.
-    
+
     *Value range: [0.2:0.01:15], Default: 2.5*
 **gateLogic**: str
     Gate logic level (LOW, HIGH).
-    
+
     *Match: ["LOW", "HIGH"], Default: "LOW"*
 **gateMode**: str
     Global gate mode of the system output. (DIS: diabled, PULS: pulse inhibit, OUTP: output
     inhibit, CHAN: channel).cycle).
-    
+
     *Match: ["DIS", "PULS", "OUTP", "CHAN"], Default: "DIS"*
 **icLock**: str
     Source for the internal rate generator. System clock or external source ranging from
     10MHz to 100MHz (SYS, EXT10, EXT20, EXT25, EXT40, EXT50, EXT80, EXT100).
-    
+
     *Match: ["SYS", "EXT10", "EXT20", "EXT25", "EXT40", "EXT50", "EXT80", "EXT100"], Default:
     "SYS"*
 **manufacturer**: str, read-only
     Manufacturer identification.
-    
+
     *Match: "Device parameter", Default: "QC"*
 **mode**: str
     Mode of the system output. (NORM: normal, SING: single shot, BURS: burst, DCYC: duty
     cycle).
-    
+
     *Match: ["NORM", "SING", "BURS", "DCYC"], Default: "NORM"*
 **model**: str, read-only
     Model identification.
-    
+
     *Match: "Device parameter", Default: "9528"*
 **muxsList**: Sequence[int]
     List of timers which are enabled as output for the given channel. List must have the
     same length as the parameter channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [0, 255], Default: [1, 2, 3, 4, 5, 6, 7,
     8]*
 **name**: str, read-only
     Plugin name.
-    
+
     *Match: "General", Default: "QuantumComposer"*
 **ocLock**: str
     External clock output. T0 pulse or 50% duty cycle TTL output from 10MHz to 100MHz (T0,
     10, 11, 12, 14, 16, 20, 25, 33, 50, 100).
-    
+
     *Match: ["T0", "10", "11", "12", "14", "16", "20", "25", "33", "50", "100"], Default:
     "T0"*
 **offCounter**: int
     Number of pulses to inhibit output during the off cycle of the Duty Cycle mode.
-    
+
     *Value range: [1, 9999999], Default: 2*
 **outputModesList**: Sequence[str]
     List of output modes which are set to the output for the given channels (TTL = TTL/CMOS,
     ADJ = adjustable).
-    
+
     *Allowed number of values: 1 - 8, Value rules: Match: ["TTL", "ADJ"], Default: [TTL, ADJ]*
 **period**: float
     T0 period in units of seconds (100ns - 5000s).
-    
+
     *Value range: [6e-08:1e-08:5000], Default: 0.0001*
 **polaritiesList**: Sequence[str]
     List of polarities which are set to the output for the given channels (NORM = normal,
     COMP = complement, INV = inverted).
-    
+
     *Allowed number of values: 1 - 8, Value rules: Match: ["NORM", "COMP", "INV"], Default:
     [NORM, COMP, INV]*
 **pulseCounter**: int
     Number of pulses to inhibit output during the off cycle of the Duty Cycle mode.
-    
+
     *Value range: [1, 9999999], Default: 3*
 **requestTimeout**: int
     Request timeout in ms for the SerialIO interface.
-    
+
     *Value range: [0, inf], Default: 500*
 **serialNumber**: str, read-only
     Serial number.
-    
+
     *Match: "Device parameter", Default: "06312"*
 **state**: int
     Enables (1), disables (0) the output for all channels. Command is the same as pressing
     the RUN/STOP button.
-    
+
     *Value range: [0, 1], Default: 1*
 **statesList**: Sequence[int]
     List of states to enalbe/disable channels listed in the parameter channelIndexList. List
     must have the same length as the parameter channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [0, 1], Default: [0, 0, 1, 1, 1, 1, 1, 1]*
 **syncsList**: Sequence[int]
     List of channels to sync with the channels listed in the parameter channelIndexList.
     List must have the same length as the parameter channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [1, 8], Default: [1, 2, 3, 4, 5, 6, 7, 8]*
 **triggerEdge**: str
     Trigger edge to use as the trigger signal (RIS: rising, FALL: falling).
-    
+
     *Match: ["RIS", "FALL"], Default: "RIS"*
 **triggerLevel**: float
     Trigger threshold in units of V with a range of 0.20V to 15.0V.
-    
+
     *Value range: [0.2:0.01:15], Default: 2.5*
 **triggerMode**: str
     Trigger mode (DIS: disabled, TRIG: triggered, enabled).
-    
+
     *Match: ["DIS", "TRIG"], Default: "DIS"*
 **version**: str, read-only
     Version number.
-    
+
     *Match: "Device parameter", Default: "2.4.3-2.0.11"*
 **widthsList**: Sequence[float]
     List of widths to set to the channels listed in the parameter channelIndexList. List
     must have the same length as the parameter channelIndexList.
-    
+
     *Allowed number of values: 1 - 8, Value range: [2e-09, 1000], Default: [2e-09, 2e-09,
     2e-09, 2e-09, 2e-09, 2e-09, 2e-09, 2e-09]*
 
@@ -363,7 +363,7 @@ The plugin execFunctions are:
 Exemplary usage from Python
 =======================================
 
-In the following examples, it is shown how to use this Plugin. 
+In the following examples, it is shown how to use this Plugin.
 
 .. code-block:: python
 
@@ -372,9 +372,9 @@ In the following examples, it is shown how to use this Plugin.
     serial = dataIO("SerialIO", 5, 38400, "\r\n")  # first create a "SerialIO" instance
     qc = dataIO("QuantumComposer", serial, "USB")  # give it the "QuantumComposer" plugin
 
-The system parameter are set/get by the default ``setParam`` and ``getParam`` methods. 
+The system parameter are set/get by the default ``setParam`` and ``getParam`` methods.
 
-.. code-block:: python 
+.. code-block:: python
 
     # set
     qc.setParam("mode", "BURS")
@@ -396,11 +396,11 @@ The system parameter are set/get by the default ``setParam`` and ``getParam`` me
 
     # get
     qc.getParam("mode")
-    # ... 
+    # ...
 
-The channel specific parameter are set by the ``exec`` method of the plugin. 
-For each parameter you must give the method a list of ``channels`` you want to change 
-and a list of values of same list length. 
+The channel specific parameter are set by the ``exec`` method of the plugin.
+For each parameter you must give the method a list of ``channels`` you want to change
+and a list of values of same list length.
 
 .. code-block:: python
 
@@ -420,10 +420,8 @@ and a list of values of same list length.
     qc.exec("setChannelGatesModes", [1,2, 3], ["DIS", "PULS", "OUTP"])
     qc.exec("setChannelGatesLogicLevel", [1,2, 3], ["LOW", "HIGH", "LOW"])
 
-The channel specific parameter are get by the ``getParam`` method, too. 
+The channel specific parameter are get by the ``getParam`` method, too.
 
 
 Changelog
 ==========
-
-

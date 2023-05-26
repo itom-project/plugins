@@ -15,7 +15,7 @@
 //  Pittsburgh, PA
 //
 //	Copyright 5/2000
-// 
+//
 //	Iwan Ulrich
 //	Robotics Institute
 //	Carnegie Mellon University
@@ -23,12 +23,12 @@
 //
 //  This file is part of the CMU 1394 Digital Camera Driver
 //
-//  The CMU 1394 Digital Camera Driver is free software; you can redistribute 
-//  it and/or modify it under the terms of the GNU Lesser General Public License 
+//  The CMU 1394 Digital Camera Driver is free software; you can redistribute
+//  it and/or modify it under the terms of the GNU Lesser General Public License
 //  as published by the Free Software Foundation; either version 2.1 of the License,
 //  or (at your option) any later version.
 //
-//  The CMU 1394 Digital Camera Driver is distributed in the hope that it will 
+//  The CMU 1394 Digital Camera Driver is distributed in the hope that it will
 //  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
@@ -87,10 +87,10 @@
  * \ingroup camerr
  */
 #define	CAM_ERROR_UNSUPPORTED -10
-/**\brief The camera is not properly initialized.  
- * 
- * After selecting a camera with SelectCamera(), it is necessary to make a successful call to 
- * InitCamera() before proceeding.  
+/**\brief The camera is not properly initialized.
+ *
+ * After selecting a camera with SelectCamera(), it is necessary to make a successful call to
+ * InitCamera() before proceeding.
  * \ingroup camerr
  */
 #define	CAM_ERROR_NOT_INITIALIZED -11
@@ -118,7 +118,7 @@
  */
 #define	CAM_ERROR_FRAME_TIMEOUT	-16
 
-/**\brief Whether StartImageAcquisitionEx()	should automatically start the camera stream 
+/**\brief Whether StartImageAcquisitionEx()	should automatically start the camera stream
  * \ingroup	acqflags
  */
 #define	ACQ_START_VIDEO_STREAM 0x01
@@ -143,17 +143,17 @@
  * \ingroup	camcore
  *
  * This	class encapsulates all the functionality necessary to interface	to an IIDC
- * compliant 1394 digital camera.  To interface	to multiple	cameras, you must instantiate 
+ * compliant 1394 digital camera.  To interface	to multiple	cameras, you must instantiate
  * multiple	instances of this class.
  */
-class CAMAPI C1394Camera  
+class CAMAPI C1394Camera
 {
 public:
 	// constructor
 	C1394Camera();
 	// destructor
 	~C1394Camera();
-	
+
 	// Selection/Control
 	int	RefreshCameraList();
 	int	InitCamera(BOOL	reset=FALSE);
@@ -176,45 +176,45 @@ public:
 	bool Has1394b();
 	bool Status1394b();
 	int	 Set1394b(BOOL on);
-	
+
 	// Store/Retrieve Settings from	camera EEPROM
 	int	MemGetNumChannels();
 	int	MemGetCurrentChannel();
 	int	MemLoadChannel(int channel);
 	int	MemSaveChannel(int channel);
-	
+
 	// Store/Retrieve Settings from	system Registry
 	int	RegLoadSettings(const char *pname);
 	int	RegSaveSettings(const char *pname);
-	
+
 	// Raw register	I/O
 	int	WriteQuadlet(unsigned long address,	unsigned long data);
 	int	ReadQuadlet(unsigned long address, unsigned	long *pData);
-	
+
 	// Video format/mode/rate
 	BOOL HasVideoFormat(unsigned long format);
 	int	SetVideoFormat(unsigned	long format);
 	int	GetVideoFormat();
-	
+
 	BOOL HasVideoMode(unsigned long	format,	unsigned long mode);
 	int	SetVideoMode(unsigned long mode);
 	int	GetVideoMode();
-	
+
 	BOOL HasVideoFrameRate(unsigned	long format, unsigned long mode, unsigned long rate);
 	int	SetVideoFrameRate(unsigned long	rate);
 	int	GetVideoFrameRate();
-	
+
 	void GetVideoFrameDimensions(unsigned long *pWidth,	unsigned long *pHeight);
 	void GetVideoDataDepth(unsigned short *depth);
 	bool StatusVideoErrors(BOOL Refresh);
-	
+
 	void UpdateParameters(BOOL UpdateOnly = FALSE);
 
 	// Image Capture (1394CamCap.cpp)
 	int	StartImageCapture();
 	int	CaptureImage();
 	int	StopImageCapture();
-	
+
 	// Image Acquisition (1394CamAcq.cpp)
 	int	StartImageAcquisition();
 	int	StartImageAcquisitionEx(int	nBuffers, int FrameTimeout,	int	Flags);
@@ -224,7 +224,7 @@ public:
 	bool IsAcquiring();
 	unsigned char *GetRawData(unsigned long	*pLength);
 	HANDLE GetFrameEvent();
-	
+
 	// Video Stream	Control
 	int	StartVideoStream();
 	int	StopVideoStream();
@@ -232,17 +232,17 @@ public:
 	int	OneShot();
 	bool HasMultiShot();
 	int	MultiShot(unsigned short count);
-	
+
 	// Color Format	Conversion (1394CamRGB.cpp)
-	
+
 	// convert data	to standard: RGB, upper-left corner
 	// based on	video format/mode
 	int	getRGB(unsigned	char *pBitmap, unsigned	long length);
-	
+
 	// same	as getRGB, except data is returned in the
 	// bottom-up, BGR format the MS	calls a	DIB
 	int	getDIB(unsigned	char *pBitmap, unsigned	long length);
-	
+
 	// individual RGB converters
 	int	YtoRGB(unsigned	char *pBitmap, unsigned	long length);
 	int	Y16toRGB(unsigned char *pBitmap, unsigned long length);
@@ -250,7 +250,7 @@ public:
 	int	YUV422toRGB(unsigned char* pBitmap,	unsigned long length);
 	int	YUV444toRGB(unsigned char* pBitmap,	unsigned long length);
 	int	RGB16toRGB(unsigned	char *pBitmap, unsigned	long length);
-	
+
 	// Basic Features Interface
 	void RefreshControlRegisters(BOOL bForceAll = FALSE);
 	bool HasFeature(CAMERA_FEATURE fID);
@@ -261,7 +261,7 @@ public:
 
 	// Optional Functions
 	bool HasOptionalFeatures();
-	
+
 	// PIO Interface
 	bool HasPIO();
 	unsigned long GetPIOControlOffset();
@@ -300,7 +300,7 @@ private:
 	BOOL InquireVideoModes();
 	BOOL InquireVideoRates();
 	bool CheckVideoSettings();
-	
+
 	// static inquiry registers
 	ULONG m_InqBasicFunc;
 	ULONG m_InqFeatureHi;
@@ -309,21 +309,21 @@ private:
 	ULONG m_InqVideoFormats;
 	ULONG m_InqVideoModes[8];
 	ULONG m_InqVideoRates[8][8];
-	
+
 	// status	registers
 	ULONG m_StatusPowerControl;
 	ULONG m_StatusVideoError;
 	ULONG m_StatusVideoDepth;
 	ULONG m_StatusFeatureErrorHi;
 	ULONG m_StatusFeatureErrorLo;
-	
+
 	// optional feature offsets
 	ULONG m_AdvFuncOffset;
 	ULONG m_PIOFuncOffset;
 	ULONG m_SIOFuncOffset;
 	ULONG m_StrobeFuncOffset;
 	ULONG m_StrobeRootCaps;
-	
+
 	// pertaining to video format/mode/rate
 	int	m_videoFrameRate;
 	int	m_videoMode;
@@ -334,37 +334,37 @@ private:
 	int	m_width;
 	int	m_height;
 	COLOR_CODE m_colorCode;
-	
+
 	// which camera	are	we using
 	int	m_node;
 	char* m_pName;
-	
+
 	// utility members
 	bool m_linkChecked;
 	bool m_cameraInitialized;
 	char m_nameModel[256];
 	char m_nameVendor[256];
 	LARGE_INTEGER m_UniqueID;
-	
+
 	// camera data grabbed from	the	driver
 	CAMERA_SPECIFICATION m_spec;
-	
+
 	// buffer management
 	PACQUISITION_BUFFER	m_pFirstBuffer;
 	PACQUISITION_BUFFER	m_pLastBuffer;
 	PACQUISITION_BUFFER	m_pCurrentBuffer;
-	
+
 	// acquisition vars
 	int	m_AcquisitionTimeout;
 	int	m_AcquisitionFlags;
 	int	m_AcquisitionBuffers;
-	
+
 	// persistent handles
 	HANDLE	 m_hDeviceAcquisition;
 	HDEVINFO m_hDevInfo;
 	DWORD    m_dwDevCount;
 	char m_DevicePath[512];
-	
+
 	// controls
 	C1394CameraControl        *m_pControls[FEATURE_NUM_FEATURES];
 	C1394CameraControlTrigger *m_pControlTrigger;
@@ -387,7 +387,7 @@ CameraControlDialog(
 
 long
 CAMAPI
-CameraControlSizeDialog(HWND hWndParent, 
+CameraControlSizeDialog(HWND hWndParent,
 						C1394Camera	*pCamera);
 
 LPCSTR CAMAPI CameraErrorString(int camerror);

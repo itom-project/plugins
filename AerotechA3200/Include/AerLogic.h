@@ -18,7 +18,7 @@ BOOL AER_DLLENTRY AerNLogicResourceIsRunning( HAERCTRL hAerCtrl );
 AERERR_CODE AER_DLLENTRY AerNLogicGetCycleTime( HAERCTRL hAerCtrl, PDWORD pdwCycleTime );
 AERERR_CODE AER_DLLENTRY AerNLogicSetCycleTime( HAERCTRL hAerCtrl, DWORD dwCycleTime );
 
-AERERR_CODE AER_DLLENTRY AerNLogicGetLastError( HAERCTRL hAerCtrl, PDWORD pdwError, 
+AERERR_CODE AER_DLLENTRY AerNLogicGetLastError( HAERCTRL hAerCtrl, PDWORD pdwError,
                                                 LPSTR pszString, PDWORD pdwErrorStamp);
 
 #ifdef __cplusplus    /* Needed to prevent Name mangling of function prototypes */

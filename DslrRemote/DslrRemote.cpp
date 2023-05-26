@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -131,8 +131,8 @@ This plugin can also be used as template for other grabber.");
     m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr(GITVERSION);      
-    
+    m_aboutThis = tr(GITVERSION);
+
     m_initParamsMand.clear();
 
     ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(4, 4096, 4), tr("Width of virtual sensor chip").toLatin1().data());
@@ -168,7 +168,7 @@ void DslrRemote::error_func(GPContext *context, const char *format, va_list args
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
-void DslrRemote::message_func(GPContext *context, const char *format, va_list args, void *data) 
+void DslrRemote::message_func(GPContext *context, const char *format, va_list args, void *data)
 {
     qDebug() << "Warning\n";
 //    vfprintf(stdout, format, args);
@@ -293,7 +293,7 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
         "memory card's contents (remove card from camera to speed up).\n");
 */
     int ret = gp_camera_init(m_camera, m_context);
-    if (ret < GP_OK) 
+    if (ret < GP_OK)
     {
         fprintf(stderr, "No camera auto detected.\n");
         gp_camera_free(m_camera);
@@ -782,12 +782,12 @@ ito::RetVal DslrRemote::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())

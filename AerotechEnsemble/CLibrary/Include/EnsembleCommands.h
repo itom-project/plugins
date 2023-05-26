@@ -1,8 +1,8 @@
 /// \file EnsembleCommands.h
 /// \brief Contains the functions to execute AeroBasic commands.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_COMMANDS_H__
 #define __Ensemble_COMMANDS_H__
@@ -36,7 +36,7 @@ BOOL DLLENTRYDECLARATION EnsembleCommandExecute(EnsembleHandle handle, LPCSTR co
 ///
 /// The motion on the given axes will be aborted.  This command does use
 /// tasks and therefore will be executed asynchronously with regard to other commands.
-/// This is an asynchronous call.  When this function returns the abort will be started, 
+/// This is an asynchronous call.  When this function returns the abort will be started,
 /// but it will not be finished.
 ///
 /// \param[in] handle The handle to the Ensemble

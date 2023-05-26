@@ -38,7 +38,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogNerianSceneScanPro : public ito::AbstractAddInConfigDialog 
+class DialogNerianSceneScanPro : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
@@ -47,7 +47,7 @@ class DialogNerianSceneScanPro : public ito::AbstractAddInConfigDialog
         ~DialogNerianSceneScanPro() {};
 
         ito::RetVal applyParameters();
-        
+
 
     private:
         void enableDialog(bool enabled);

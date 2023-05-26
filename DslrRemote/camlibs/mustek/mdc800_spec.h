@@ -19,7 +19,7 @@
 /*
  * Definition of Commands and usefull structs.
  */
- 
+
 #ifndef DEFINE_MDC800_SPEC_H
 #define DEFINE_MDC800_SPEC_H
 

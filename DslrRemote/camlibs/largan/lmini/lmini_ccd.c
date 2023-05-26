@@ -343,4 +343,3 @@ static void fetchstr(int shift_bit, int val_flag, int flag)
 	count++;
 	}
 }
-

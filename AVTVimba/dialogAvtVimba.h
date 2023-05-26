@@ -40,7 +40,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogAvtVimba : public ito::AbstractAddInConfigDialog 
+class DialogAvtVimba : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 

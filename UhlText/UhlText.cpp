@@ -1034,8 +1034,8 @@ ito::RetVal UhlText::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 axis << 0 << 1;
                 QVector<double> vel;
                 vel << 0.0 << 0.5;
-                
-                
+
+
                 startJoyStickMovement(axis, vel);*/
 /*
                 memset(buf, 0, 50);
@@ -1075,7 +1075,7 @@ ito::RetVal UhlText::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     sprintf(buf, "!accel");
                     for (int i = 0; i < m_numAxis; i++)
                     {
-                        char buf2[20] = "";                    
+                        char buf2[20] = "";
                         sprintf(buf2, " %f", (float)m_accel);
                         strcat(buf, buf2);
 //                        sprintf(buf, "%s %f", buf, (float)m_accel);    // check value !!!
@@ -1319,13 +1319,13 @@ QSharedPointer<double> tempdpos(new double);
         if (retval.containsError() || paramSerial->getVal<int>() < 1)
         {
             retval.appendRetMessage(tr(" during port number read out").toLatin1().data());
-            m_identifier = QString("Failed(%1)").arg(getID()); 
+            m_identifier = QString("Failed(%1)").arg(getID());
             return retval;
         }
         else
         {
             m_params["comPort"].setVal<int>(paramSerial->getVal<int>());
-            m_identifier = QString("Uhl@Com%1").arg(m_params["comPort"].getVal<int>()); 
+            m_identifier = QString("Uhl@Com%1").arg(m_params["comPort"].getVal<int>());
         }
     }
 
@@ -1508,7 +1508,7 @@ QSharedPointer<double> tempdpos(new double);
     sprintf(buf, "!joydir");
     for (n = 0; n < m_numAxis; n++)
     {
-        char buf2[20] = "";                    
+        char buf2[20] = "";
         sprintf(buf2, " %i", m_inverse[n]);
         strcat(buf, buf2);
 //        sprintf(buf, "%s %i", buf, m_inverse[n]);  // Axisdirections of joystick
@@ -1662,7 +1662,7 @@ QSharedPointer<double> tempdpos(new double);
             smallest_accel = accel; // Warning accel is m/s^2, itom uses mm/s^2, transformed before writen back
         }
     }
-    
+
     m_params["speed"].setMeta(new ito::DoubleMeta((double)(0.01 * smallest_pitch) , (double)(40.0 * biggest_pitch)), true);
     //m_params.find("speed").value().setMax((double)(40.0 * biggest_pitch));
     //m_params.find("speed").value().setMin((double)(0.01 * smallest_pitch));
@@ -1685,7 +1685,7 @@ QSharedPointer<double> tempdpos(new double);
         {
             char buf2[20] = "";
             sprintf(buf2, " %i", (int)savePos[n]);
-            strcat(buf, buf2);        
+            strcat(buf, buf2);
 //            sprintf(buf, "%s %i", buf, (int)savePos[n]);
         }
 
@@ -1917,7 +1917,7 @@ ito::RetVal UhlText::calib(const QVector<int> axis, ItomSharedSemaphore *waitCon
 ////                    sprintf(maskbufcal, "%s %i", maskbufcal, (m_inverse[axis_cnt] > 0 ? 1 : 0) && enable[axis_cnt]);
 //                    buf2[0] = 0;
 //                    sprintf(buf2, " %i", (m_inverse[axis_cnt] > 0 ? 0 : 1) && enable[axis_cnt]);
-//                    strcat(maskbufrevcal, buf2);                    
+//                    strcat(maskbufrevcal, buf2);
 ////                    sprintf(maskbufrevcal, "%s %i", maskbufrevcal, (m_inverse[axis_cnt] > 0 ? 0 : 1) && enable[axis_cnt]);
 //                    if (m_inverse[axis[axis_cnt]] > 0)
 //                    {
@@ -2081,7 +2081,7 @@ ito::RetVal UhlText::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Axis not exist").toLatin1().data());
     }
-    sendStatusUpdate(false);    
+    sendStatusUpdate(false);
 
     if (waitCond)
     {
@@ -2257,7 +2257,7 @@ const ito::RetVal UhlText::UhlSetPos(QVector<int> axis, QVector<double> pos, con
             dpos[0] = pos[0] * m_scale;
             char buf2[20] = "";
             sprintf(buf2, " %c %f.1", m_nameAxis[axis[0]], dpos[0] * m_inverse[axis.value(0)]);
-            strcat(buf, buf2);            
+            strcat(buf, buf2);
 //            sprintf(buf, "%s %c %f.1", buf, m_nameAxis[axis[0]], dpos[0] * m_inverse[axis.value(0)]);
         }
         else if (axis.size() == m_numAxis)  // All attached axis is still easy
@@ -2287,7 +2287,7 @@ const ito::RetVal UhlText::UhlSetPos(QVector<int> axis, QVector<double> pos, con
                 dpos[axis[axis_cnt]] = pos[axis[axis_cnt]] * m_scale;
                 char buf2[20] = "";
                 sprintf(buf2, " %f.1", dpos[axis_cnt] * m_inverse[axis.value(axis_cnt)]);
-                strcat(buf, buf2);                    
+                strcat(buf, buf2);
 //                sprintf(buf, "%s %f.1", buf, dpos[axis_cnt] * m_inverse[axis.value(axis_cnt)]);
             }
         }
@@ -2319,7 +2319,7 @@ const ito::RetVal UhlText::UhlSetPos(QVector<int> axis, QVector<double> pos, con
                 }
                 char buf2[20] = "";
                 sprintf(buf2, " %f.1", dpos[axis_cnt] * m_inverse[axis_cnt]);
-                strcat(buf, buf2);                
+                strcat(buf, buf2);
 //                sprintf(buf, "%s %f.1", buf, dpos[axis_cnt] * m_inverse[axis_cnt]);
             }
         }
@@ -2469,7 +2469,7 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
         m_jogDir[0] = vel[0] < 0.0 ? false : true;
         m_jogDir[1] = vel[1] < 0.0 ? false : true;
         if (qAbs(vel[1]) < 0.001 && qAbs(vel[0]) < 0.001)
-        { 
+        {
             buf[0] = 'a';
             m_pSer->setVal(buf, 1);
 
@@ -2486,7 +2486,7 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
                 (void)UhlJoystickOn();
             }
             m_jogging[0] = 0;
-            m_jogging[1] = 0; 
+            m_jogging[1] = 0;
             m_jogTimer.stop();
             return ito::retOk;
         }
@@ -2502,7 +2502,7 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
         {
             m_jogging[0] = 1;
             m_jogging[1] = 0;
-         
+
             iVel0 = vel[0] * timing + 0.5;
 
             while (iVel0 < 1 && timing < 300)
@@ -2510,20 +2510,20 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
                 timing++;
                 iVel0 = vel[0] * timing + 0.5;
             }
-            
+
         }
         else if (abs(vel[0]) < 0.001) // just y
         {
             m_jogging[0] = 0;
             m_jogging[1] = 1;
-         
+
             iVel1 = vel[1] * timing + 0.5;
 
             while (iVel1 < 1 && timing < 300)
             {
                 timing++;
                 iVel1 = vel[1] * timing + 0.5;
-            }       
+            }
         }
         else
         {
@@ -2549,12 +2549,12 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
                 }
             }
             m_jogging[0] = 1;
-            m_jogging[1] = 1; 
+            m_jogging[1] = 1;
         }
         */
 
         if (qAbs(vel[1]) < 0.001)    // just x
-        {        
+        {
             m_jogging[0] = vel[0] * timing + 0.5;
             m_jogging[1] = 0;
 
@@ -2608,7 +2608,7 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
 
         m_jogTimer.setInterval(timing);
 
-        //sprintf(buf, "!tvrf %i %i", iVel0, iVel1); 
+        //sprintf(buf, "!tvrf %i %i", iVel0, iVel1);
         //m_pSer->setVal(buf, strlen(buf));
         /*
         if (timing  > 0)
@@ -2617,14 +2617,14 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
         }
         else
         {
-        
+
         }
         */
         if (!m_jogTimer.isActive())
         {
             m_jogTimer.start();
         }
-        
+
     }
     else
     {
@@ -2636,7 +2636,7 @@ ito::RetVal UhlText::startJoyStickMovement(QVector<int> axis, QVector<double> ve
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void UhlText::triggerJogIncrement()
-{ 
+{
     char buf[30];
     memset(buf, 0, 30);
 
@@ -2650,18 +2650,18 @@ void UhlText::triggerJogIncrement()
     char buf[3] = {0, 0, 0};
     for (int i = 0; i < m_numAxis; i++)
     {
-        
+
         if (m_jogging[i])
         {
-            
-            buf[0] = m_jogDir ? 'p' : 'n'; 
+
+            buf[0] = m_jogDir ? 'p' : 'n';
             buf[1] = m_nameAxis[i];
             for (int t = 0; t < m_jogging[i]; t++)
             {
                 m_pSer->setVal(buf, 2);
             }
 
-            
+
 
         }
     }*/

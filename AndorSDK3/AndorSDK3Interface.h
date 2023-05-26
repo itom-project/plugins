@@ -4,7 +4,7 @@
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -51,5 +51,3 @@ class AndorSDK3Interface : public ito::AddInInterfaceBase
 };
 
 #endif // #if !defined(ANDORSDK3INTERFACE_H)
-
-

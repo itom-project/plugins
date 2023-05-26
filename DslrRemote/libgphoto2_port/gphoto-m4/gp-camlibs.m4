@@ -61,8 +61,8 @@ AC_MSG_WARN([
 #          enabled a camlib that does *not* work, and overrides the camlib
 #          that does work. Consequently,
 #          YOUR CAMERA MAY NOT WORK!
-# 
-# Many cameras of several brands are supported by a camlib with a 
+#
+# Many cameras of several brands are supported by a camlib with a
 # name different from the name of the camera brand or model. If you
 # are unsure, please
 #   * enable at least the "ptp2" camlib
@@ -134,7 +134,7 @@ else
 			fi
 		done
 		if $found; then :; else
-			AC_MSG_ERROR([Unknown camlib $camlib!])		
+			AC_MSG_ERROR([Unknown camlib $camlib!])
 		fi
 	done
         if test "x$BUILD_THESE_CAMLIBS_BASE" = "xcanon" ; then
@@ -150,7 +150,7 @@ else
 	IFS="$IFS_save"
 	AC_MSG_RESULT([$camlibs])
 	GP_CAMLIBS_WARNING
-	AC_DEFINE_UNQUOTED([INCOMPLETE_CAMLIB_SET], ["$BUILD_THESE_CAMLIBS_BASE"], 
+	AC_DEFINE_UNQUOTED([INCOMPLETE_CAMLIB_SET], ["$BUILD_THESE_CAMLIBS_BASE"],
                            [Whether the set of camlibs built is incomplete])
 fi
 BUILD_THESE_CAMLIBS=""

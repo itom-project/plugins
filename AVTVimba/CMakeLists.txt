@@ -46,7 +46,7 @@ if(AVT_VIMBA_HEADER_FILE)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
         ${AVTVIMBA_INCLUDE_DIR}/../..
         #add further include directories here
     )
@@ -84,7 +84,7 @@ if(AVT_VIMBA_HEADER_FILE)
     set(PLUGIN_RCC
         #add absolute pathes to any *.qrc resource files here
     )
-    
+
     if(BUILD_TARGET64)
         set(AVT_LIBDIR_HINT "${AVTVIMBA_API_DIR}/lib/win64")
         set(AVT_BINDIR_HINT "${AVTVIMBA_API_DIR}/bin/win64")
@@ -95,7 +95,7 @@ if(AVT_VIMBA_HEADER_FILE)
 
     endif(BUILD_TARGET64)
     find_library(AVTVIMBA_LIBRARY NAMES "VimbaCPP"  PATHS ${AVT_LIBDIR_HINT} NO_DEFAULT_PATH)
-    
+
     if(WIN32)
         find_file(AVTVIMBA_BINARY_C "VimbaC.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
         find_file(AVTVIMBA_BINARY_CPP "VimbaCPP.dll"  PATHS ${AVT_BINDIR_HINT} NO_DEFAULT_PATH)
@@ -104,9 +104,9 @@ if(AVT_VIMBA_HEADER_FILE)
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-    
+
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${AVTVIMBA_LIBRARY})
-    
+
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
@@ -122,7 +122,7 @@ if(AVT_VIMBA_HEADER_FILE)
 
     itom_post_build_copy_files_to_lib_folder(${target_name} AVTVIMBA_BINARY_C)
     itom_post_build_copy_files_to_lib_folder(${target_name} AVTVIMBA_BINARY_CPP)
-    
+
 else(AVT_VIMBA_HEADER_FILE)
-    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
 endif(AVT_VIMBA_HEADER_FILE)

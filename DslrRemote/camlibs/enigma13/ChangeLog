@@ -7,5 +7,3 @@
 
 	* enigma13.c (enigma13_flash_delete_all): Fix build for gcc 2.9
 	(bug #1055868)
-	
-

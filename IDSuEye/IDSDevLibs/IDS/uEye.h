@@ -5836,4 +5836,3 @@ IDSEXP is_CaptureConfiguration(HIDS hCam, UINT nCommand, void* pParam, UINT cbSi
 #pragma pack(pop)
 
 #endif  // #ifndef __IDS_HEADER__
-

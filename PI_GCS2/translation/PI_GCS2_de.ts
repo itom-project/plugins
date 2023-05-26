@@ -594,19 +594,19 @@
     </message>
     <message>
         <location line="+18"/>
-        <source>PI actuators following the GCS2 command set (e.g. E753) 
-This plugin is developped for single axis controllers following the GCS2 commandset. 
+        <source>PI actuators following the GCS2 command set (e.g. E753)
+This plugin is developped for single axis controllers following the GCS2 commandset.
 
-Tested with E753 and C663, don&apos;t work with E-662 and E-665! 
+Tested with E753 and C663, don&apos;t work with E-662 and E-665!
 
-For the initialization you can connect to the device (if possible) via a USB port, a serial port 
-or a TCP/IP connection. Depending on the connection you should use the initialization parameters 
-in the following way: 
-* RS232: give the COM-port number (number only in Windows, COM-port name in Linux) as deviceName and indicate a valid baudrate as optional parameter. 
-* TCP/IP: give the full name of the device as deviceName or let deviceName empty in order to print out a list of all detected devices (the device name is one full line of the output! 
-* USB: similar to TCP/IP 
+For the initialization you can connect to the device (if possible) via a USB port, a serial port
+or a TCP/IP connection. Depending on the connection you should use the initialization parameters
+in the following way:
+* RS232: give the COM-port number (number only in Windows, COM-port name in Linux) as deviceName and indicate a valid baudrate as optional parameter.
+* TCP/IP: give the full name of the device as deviceName or let deviceName empty in order to print out a list of all detected devices (the device name is one full line of the output!
+* USB: similar to TCP/IP
 
-Please note that you only need to indicate a baudrate for RS232 connections, in the other cases, 
+Please note that you only need to indicate a baudrate for RS232 connections, in the other cases,
 the default baudrate 0 forces the controller to connect with a default baudrate which is recommended for TCP/IP or USB connections.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -267,6 +267,3 @@ ito::RetVal DialogFireGrabber::applyParameters()
 
 	return retValue;
 }
-
-
-

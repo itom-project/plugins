@@ -2,7 +2,7 @@
  * 1394-Based Digital Camera Control Library
  *
  * Allied Vision Technologies (AVT) specific extensions
- * 
+ *
  * Written by Pierre MOOS <pierre.moos@gmail.com>
  *
  * Copyright (C) 2005 Inria Sophia-Antipolis
@@ -184,7 +184,7 @@ dc1394_avt_get_version(dc1394camera_t *camera,
 /************************************************************************/
 /* Adjust Frames                                                        */
 /************************************************************************/
-dc1394error_t 
+dc1394error_t
 dc1394_avt_adjust_frames(uint32_t Camera_ID, dc1394video_frame_t *frame)
 {
     /* do nothing when frame is captured by a non-AVT camera */
@@ -199,7 +199,7 @@ dc1394_avt_adjust_frames(uint32_t Camera_ID, dc1394video_frame_t *frame)
 	default:
 		return DC1394_SUCCESS;
 	}
-	
+
     switch( Camera_ID )
     {
         case DC1394_AVT_CAMERA_ID_DF145C:
@@ -359,8 +359,8 @@ dc1394error_t dc1394_avt_get_smart_feature_inquiry(dc1394camera_t *camera,
     memset ( smart_feature_full, 0, size );
     smart_feature_full->Size = size;
 
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_ADV_INQ_1, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_ADV_INQ_1,
                                              (uint32_t*) &smart_feature_full->Internal.Inq1,
                                              4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced features INQ");
@@ -369,7 +369,7 @@ dc1394error_t dc1394_avt_get_smart_feature_inquiry(dc1394camera_t *camera,
     smart_feature_full->TimeBase           = (smart_feature_full->Internal.Inq1.m_bTimeBase != 0) ? DC1394_TRUE : DC1394_FALSE;
     smart_feature_full->ExtdShutter        = (smart_feature_full->Internal.Inq1.m_bExtdShutter != 0) ? DC1394_TRUE : DC1394_FALSE;
     smart_feature_full->TestImage          = (smart_feature_full->Internal.Inq1.m_bTestImage != 0) ? DC1394_TRUE : DC1394_FALSE;
-    smart_feature_full->FrameCounter       = (smart_feature_full->Internal.Inq1.m_bFrmCounter2 != 0 || 
+    smart_feature_full->FrameCounter       = (smart_feature_full->Internal.Inq1.m_bFrmCounter2 != 0 ||
                                               smart_feature_full->Internal.Inq1.m_bFrameInfo != 0) ? DC1394_TRUE : DC1394_FALSE;
     smart_feature_full->Sequences          = (smart_feature_full->Internal.Inq1.m_bSequences != 0) ? DC1394_TRUE : DC1394_FALSE;
     smart_feature_full->VersionInfo        = (smart_feature_full->Internal.Inq1.m_bVersionInfo != 0) ? DC1394_TRUE : DC1394_FALSE;
@@ -453,11 +453,11 @@ dc1394error_t dc1394_avt_get_smart_feature_inquiry(dc1394camera_t *camera,
     {
         dc1394error_t err;
         dc1394_avt_csradv_autofnc_aoi_t sAFAOI;
-    
+
         /* get register */
         err=dc1394_get_adv_control_registers(camera,REG_CAMERA_AVT_AUTOFNC_AOI, (uint32_t*) &sAFAOI, 1);
         DC1394_ERR_RTN(err,"Could not get AVT autofunction AOI Register");
-    
+
         if( DC1394_SUCCESS == err && 0 != sAFAOI.m_Ctrl.m_bPresence )
         {
             smart_feature_full->AutoFunctionAOI = DC1394_TRUE;
@@ -467,8 +467,8 @@ dc1394error_t dc1394_avt_get_smart_feature_inquiry(dc1394camera_t *camera,
     if(smart_feature_full->SWFeatureControl==DC1394_TRUE)
     {
         dc1394_avt_csradv_swfeature_t sSWFeature;
-        err = dc1394_get_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_SWFEATURE, 
+        err = dc1394_get_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_SWFEATURE,
                                                  (uint32_t*) &sSWFeature,
                                                  sizeof(dc1394_avt_csradv_swfeature_t)/4 );
         smart_feature_full->LedBlanking = ( err==DC1394_SUCCESS && sSWFeature.m.m_bBlankLED_Inq!=0 )? DC1394_TRUE : DC1394_FALSE;
@@ -482,8 +482,8 @@ dc1394error_t dc1394_avt_get_smart_feature_inquiry(dc1394camera_t *camera,
     {
         dc1394_avt_csradv_max_isosize_t sMaxIso;
 
-        err = dc1394_get_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_MAX_ISO_SIZE, 
+        err = dc1394_get_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_MAX_ISO_SIZE,
                                                  (uint32_t*) &sMaxIso,
                                                  sizeof(dc1394_avt_csradv_max_isosize_t)/4 );
         smart_feature_full->MaxIsoSize_S400 = ( err==DC1394_SUCCESS && sMaxIso.m_S400.m.m_bPresence!=0 )? DC1394_TRUE : DC1394_FALSE;
@@ -699,7 +699,7 @@ dc1394_avt_get_shading(dc1394camera_t *camera,
 dc1394error_t dc1394_avt_get_shading_correction(dc1394camera_t *camera,
                                                 dc1394switch_t *on_off,
                                                 dc1394bool_t *build_err,
-                                                dc1394switch_t *show, 
+                                                dc1394switch_t *show,
                                                 uint32_t *frame_nb,
                                                 uint32_t *mem_channel,
                                                 uint32_t *mem_channel_err)
@@ -709,8 +709,8 @@ dc1394error_t dc1394_avt_get_shading_correction(dc1394camera_t *camera,
 
     /* Retrieve shading registers */
     err=dc1394_get_adv_control_registers( camera,
-                                          REG_CAMERA_AVT_SHDG_CTRL, 
-                                          (uint32_t*) &sShading, 
+                                          REG_CAMERA_AVT_SHDG_CTRL,
+                                          (uint32_t*) &sShading,
                                           sizeof(dc1394_avt_csradv_shading_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT shading control reg");
 
@@ -738,8 +738,8 @@ dc1394_avt_set_shading(dc1394camera_t *camera,
 
     /* Retrieve current shading properties */
     err=dc1394_get_adv_control_registers( camera,
-                                          REG_CAMERA_AVT_SHDG_CTRL, 
-                                          (uint32_t*) &sShading, 
+                                          REG_CAMERA_AVT_SHDG_CTRL,
+                                          (uint32_t*) &sShading,
                                           1 );
     DC1394_ERR_RTN(err,"Could not get AVT shading control reg");
 
@@ -764,8 +764,8 @@ dc1394_avt_set_shading(dc1394camera_t *camera,
     {
         usleep(500000);
         err=dc1394_get_adv_control_registers( camera,
-                                              REG_CAMERA_AVT_SHDG_CTRL, 
-                                              (uint32_t*) &sShading, 
+                                              REG_CAMERA_AVT_SHDG_CTRL,
+                                              (uint32_t*) &sShading,
                                               1 );
         DC1394_ERR_RTN(err,"Could not get AVT shading control reg");
     } while( sShading.m_Ctrl.m_bBusy != 0 );
@@ -778,9 +778,9 @@ dc1394_avt_set_shading(dc1394camera_t *camera,
 /* Set shading correction feature                                       */
 /************************************************************************/
 dc1394error_t dc1394_avt_set_shading_correction(dc1394camera_t *camera,
-                                                dc1394switch_t on_off, 
+                                                dc1394switch_t on_off,
                                                 dc1394switch_t compute,
-                                                dc1394switch_t show, 
+                                                dc1394switch_t show,
                                                 uint32_t frame_nb,
                                                 uint32_t mem_channel,
                                                 dc1394switch_t mem_clear,
@@ -792,8 +792,8 @@ dc1394error_t dc1394_avt_set_shading_correction(dc1394camera_t *camera,
 
     /* Retrieve shading registers */
     err=dc1394_get_adv_control_registers( camera,
-                                          REG_CAMERA_AVT_SHDG_CTRL, 
-                                          (uint32_t*) &sShading, 
+                                          REG_CAMERA_AVT_SHDG_CTRL,
+                                          (uint32_t*) &sShading,
                                           sizeof(dc1394_avt_csradv_shading_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT shading control reg");
 
@@ -808,8 +808,8 @@ dc1394error_t dc1394_avt_set_shading_correction(dc1394camera_t *camera,
 
     /* write back register */
     err=dc1394_set_adv_control_registers( camera,
-                                          REG_CAMERA_AVT_SHDG_CTRL, 
-                                          (uint32_t*) &sShading, 
+                                          REG_CAMERA_AVT_SHDG_CTRL,
+                                          (uint32_t*) &sShading,
                                           1 );
     DC1394_ERR_RTN(err,"Could not get AVT shading control reg");
 
@@ -818,8 +818,8 @@ dc1394error_t dc1394_avt_set_shading_correction(dc1394camera_t *camera,
     {
         usleep(500000);
         err=dc1394_get_adv_control_registers( camera,
-                                              REG_CAMERA_AVT_SHDG_CTRL, 
-                                              (uint32_t*) &sShading, 
+                                              REG_CAMERA_AVT_SHDG_CTRL,
+                                              (uint32_t*) &sShading,
                                               sizeof(dc1394_avt_csradv_shading_t)/4 );
         DC1394_ERR_RTN(err,"Could not get AVT shading control reg");
     } while (sShading.m_Ctrl.m_bBusy!=0);
@@ -922,8 +922,8 @@ dc1394error_t dc1394_avt_get_shading_correction_info(dc1394camera_t *camera,
 
     /* Retrieve shading registers */
     err=dc1394_get_adv_control_registers( camera,
-                                          REG_CAMERA_AVT_SHDG_CTRL, 
-                                          (uint32_t*) &sShading, 
+                                          REG_CAMERA_AVT_SHDG_CTRL,
+                                          (uint32_t*) &sShading,
                                           sizeof(dc1394_avt_csradv_shading_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT shading control reg");
 
@@ -1326,8 +1326,8 @@ dc1394error_t dc1394_avt_get_dsnu_correction(dc1394camera_t *camera,
     dc1394_avt_csradv_dsnucorrection_t sDSNU;
 
     /* Retrieve dsnu config */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DSNU_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DSNU_CONTROL,
                                              (uint32_t*) &sDSNU,
                                              sizeof(dc1394_avt_csradv_dsnucorrection_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT DSNU control");
@@ -1383,7 +1383,7 @@ dc1394_avt_set_dsnu(dc1394camera_t *camera,
 /* Set DSNU correction                                                  */
 /************************************************************************/
 dc1394error_t dc1394_avt_set_dsnu_correction(dc1394camera_t *camera,
-                                             dc1394switch_t on_off, 
+                                             dc1394switch_t on_off,
                                              dc1394switch_t compute_image,
                                              uint32_t       frame_nb,
                                              dc1394switch_t show_image,
@@ -1394,8 +1394,8 @@ dc1394error_t dc1394_avt_set_dsnu_correction(dc1394camera_t *camera,
     dc1394_avt_csradv_dsnucorrection_t sDSNU;
 
     /* Retrieve dsnu register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DSNU_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DSNU_CONTROL,
                                              (uint32_t*) &sDSNU,
                                              sizeof(dc1394_avt_csradv_dsnucorrection_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT DSNU control");
@@ -1409,8 +1409,8 @@ dc1394error_t dc1394_avt_set_dsnu_correction(dc1394camera_t *camera,
 
     /* Write back dsnu register */
     err = dc1394_set_adv_control_registers ( camera,
-                                             REG_CAMERA_AVT_DSNU_CONTROL, 
-                                             (uint32_t*) &sDSNU, 
+                                             REG_CAMERA_AVT_DSNU_CONTROL,
+                                             (uint32_t*) &sDSNU,
                                              sizeof(dc1394_avt_csradv_dsnucorrection_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT DSNU control");
 
@@ -1418,8 +1418,8 @@ dc1394error_t dc1394_avt_set_dsnu_correction(dc1394camera_t *camera,
     int cont=1;
     while (cont) {
         usleep(50000);
-        err = dc1394_get_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_DSNU_CONTROL, 
+        err = dc1394_get_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_DSNU_CONTROL,
                                                  (uint32_t*) &sDSNU,
                                                  sizeof(dc1394_avt_csradv_dsnucorrection_t)/4 );
         DC1394_ERR_RTN(err,"Could not get AVT DSNU control");
@@ -1463,8 +1463,8 @@ dc1394error_t dc1394_avt_get_blemish_correction(dc1394camera_t *camera,
     dc1394_avt_csradv_blemishcorrection_t sBlemish;
 
     /* Retrieve dsnu config */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_BLEMISH_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_BLEMISH_CONTROL,
                                              (uint32_t*) &sBlemish,
                                              sizeof(dc1394_avt_csradv_blemishcorrection_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT blemish control");
@@ -1520,7 +1520,7 @@ dc1394_avt_set_blemish(dc1394camera_t *camera,
 /* Set blemish pixel correction                                         */
 /************************************************************************/
 dc1394error_t dc1394_avt_set_blemish_correction(dc1394camera_t *camera,
-                                                dc1394switch_t on_off, 
+                                                dc1394switch_t on_off,
                                                 dc1394switch_t compute_image,
                                                 uint32_t       frame_nb,
                                                 dc1394switch_t show_image,
@@ -1531,8 +1531,8 @@ dc1394error_t dc1394_avt_set_blemish_correction(dc1394camera_t *camera,
     dc1394_avt_csradv_blemishcorrection_t sBlemish;
 
     /* Retrieve dsnu register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_BLEMISH_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_BLEMISH_CONTROL,
                                              (uint32_t*) &sBlemish,
                                              sizeof(dc1394_avt_csradv_blemishcorrection_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT blemish control");
@@ -1546,8 +1546,8 @@ dc1394error_t dc1394_avt_set_blemish_correction(dc1394camera_t *camera,
 
     /* Write back dsnu register */
     err = dc1394_set_adv_control_registers ( camera,
-                                             REG_CAMERA_AVT_BLEMISH_CONTROL, 
-                                             (uint32_t*) &sBlemish, 
+                                             REG_CAMERA_AVT_BLEMISH_CONTROL,
+                                             (uint32_t*) &sBlemish,
                                              sizeof(dc1394_avt_csradv_blemishcorrection_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT blemish control");
 
@@ -1555,8 +1555,8 @@ dc1394error_t dc1394_avt_set_blemish_correction(dc1394camera_t *camera,
     int cont=1;
     while (cont) {
         usleep(50000);
-        err = dc1394_get_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_BLEMISH_CONTROL, 
+        err = dc1394_get_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_BLEMISH_CONTROL,
                                                  (uint32_t*) &sBlemish,
                                                  sizeof(dc1394_avt_csradv_blemishcorrection_t)/4 );
         DC1394_ERR_RTN(err,"Could not get AVT blemish control");
@@ -1675,7 +1675,7 @@ dc1394_avt_set_io(dc1394camera_t *camera,uint32_t IO,
 /* Get PWM IO Info                                                      */
 /************************************************************************/
 dc1394error_t dc1394_avt_get_io_pwmout_info(dc1394camera_t *camera,
-                                            uint32_t       pwm_output_pin, 
+                                            uint32_t       pwm_output_pin,
                                             uint32_t       *min_period)
 {
     dc1394error_t err;
@@ -1711,7 +1711,7 @@ dc1394error_t dc1394_avt_get_io_pwmout_info(dc1394camera_t *camera,
 /* Get PWM IO                                                           */
 /************************************************************************/
 dc1394error_t dc1394_avt_get_io_pwmout(dc1394camera_t *camera,
-                                       uint32_t       pwm_output_pin, 
+                                       uint32_t       pwm_output_pin,
                                        uint32_t       *period,
                                        uint32_t       *pulse_width)
 {
@@ -1735,9 +1735,9 @@ dc1394error_t dc1394_avt_get_io_pwmout(dc1394camera_t *camera,
     }
 
     /* get register */
-    err=dc1394_get_adv_control_registers(camera, 
-                                         pwm_output_pin, 
-                                         (uint32_t*) &sPWM, 
+    err=dc1394_get_adv_control_registers(camera,
+                                         pwm_output_pin,
+                                         (uint32_t*) &sPWM,
                                          sizeof(dc1394_avt_csradv_io_outp_pwmx_t)/4);
     DC1394_ERR_RTN(err,"Could not get AVT PWM Output register");
 
@@ -1752,7 +1752,7 @@ dc1394error_t dc1394_avt_get_io_pwmout(dc1394camera_t *camera,
 /* Set PWM IO                                                           */
 /************************************************************************/
 dc1394error_t dc1394_avt_set_io_pwmout(dc1394camera_t *camera,
-                                       uint32_t       pwm_output_pin, 
+                                       uint32_t       pwm_output_pin,
                                        uint32_t       period,
                                        uint32_t       pulse_width)
 {
@@ -1776,9 +1776,9 @@ dc1394error_t dc1394_avt_set_io_pwmout(dc1394camera_t *camera,
     }
 
     /* get register */
-    err=dc1394_get_adv_control_registers(camera, 
-                                         pwm_output_pin, 
-                                         (uint32_t*) &sPWM, 
+    err=dc1394_get_adv_control_registers(camera,
+                                         pwm_output_pin,
+                                         (uint32_t*) &sPWM,
                                          sizeof(dc1394_avt_csradv_io_outp_pwmx_t)/4);
     DC1394_ERR_RTN(err,"Could not get AVT PWM Output register");
 
@@ -1788,8 +1788,8 @@ dc1394error_t dc1394_avt_set_io_pwmout(dc1394camera_t *camera,
 
     /* write back register */
     err = dc1394_set_adv_control_registers ( camera,
-                                             pwm_output_pin, 
-                                             (uint32_t*) &sPWM, 
+                                             pwm_output_pin,
+                                             (uint32_t*) &sPWM,
                                              sizeof(dc1394_avt_csradv_io_outp_pwmx_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT PWM Output register");
 
@@ -1824,9 +1824,9 @@ dc1394error_t dc1394_avt_get_io_inp_debounce_info(dc1394camera_t *camera,
     }
 
     /* get registers */
-    err=dc1394_get_adv_control_registers(camera, 
-                                         debounce_inp_pin, 
-                                         (uint32_t*) &sDebounce, 
+    err=dc1394_get_adv_control_registers(camera,
+                                         debounce_inp_pin,
+                                         (uint32_t*) &sDebounce,
                                          sizeof(dc1394_avt_csradv_io_inp_debounce_x)/4);
     DC1394_ERR_RTN(err,"Could not get AVT Input Debounce register");
 
@@ -1864,9 +1864,9 @@ dc1394error_t dc1394_avt_get_io_inp_debounce(dc1394camera_t *camera,
     }
 
     /* get registers */
-    err=dc1394_get_adv_control_registers(camera, 
-                                         debounce_inp_pin, 
-                                         (uint32_t*) &sDebounce, 
+    err=dc1394_get_adv_control_registers(camera,
+                                         debounce_inp_pin,
+                                         (uint32_t*) &sDebounce,
                                          sizeof(dc1394_avt_csradv_io_inp_debounce_x)/4);
     DC1394_ERR_RTN(err,"Could not get AVT Input Debounce register");
 
@@ -1903,9 +1903,9 @@ dc1394error_t dc1394_avt_set_io_inp_debounce(dc1394camera_t *camera,
     }
 
     /* get registers */
-    err=dc1394_get_adv_control_registers(camera, 
-                                         debounce_inp_pin, 
-                                         (uint32_t*) &sDebounce, 
+    err=dc1394_get_adv_control_registers(camera,
+                                         debounce_inp_pin,
+                                         (uint32_t*) &sDebounce,
                                          sizeof(dc1394_avt_csradv_io_inp_debounce_x)/4);
     DC1394_ERR_RTN(err,"Could not get AVT Input Debounce register");
 
@@ -1913,9 +1913,9 @@ dc1394error_t dc1394_avt_set_io_inp_debounce(dc1394camera_t *camera,
     sDebounce.m_Ctrl.m.m_nDebTime = debounce_time;
 
     /* write back registers */
-    err=dc1394_set_adv_control_registers(camera, 
-                                         debounce_inp_pin, 
-                                         (uint32_t*) &sDebounce, 
+    err=dc1394_set_adv_control_registers(camera,
+                                         debounce_inp_pin,
+                                         (uint32_t*) &sDebounce,
                                          sizeof(dc1394_avt_csradv_io_inp_debounce_x)/4);
     DC1394_ERR_RTN(err,"Could not set AVT Input Debounce register");
 
@@ -2073,8 +2073,8 @@ dc1394_avt_get_lut_info(dc1394camera_t *camera, uint32_t *NumOfLuts, uint32_t *M
 /************************************************************************/
 /* Get Extd. LUT info                                                   */
 /************************************************************************/
-dc1394error_t dc1394_avt_get_lut_extd_info(dc1394camera_t *camera, 
-                                           uint32_t       *NumOfLuts, 
+dc1394error_t dc1394_avt_get_lut_extd_info(dc1394camera_t *camera,
+                                           uint32_t       *NumOfLuts,
                                            uint32_t       *MaxValue,
                                            uint32_t       *NumOfValues,
                                            uint32_t       *MaxLutSize)
@@ -2083,8 +2083,8 @@ dc1394error_t dc1394_avt_get_lut_extd_info(dc1394camera_t *camera,
 
     /* get register */
     dc1394_avt_csradv_lut_ctrl_t sLut;
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_LUT_CTRL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_LUT_CTRL,
                                              (uint32_t*) &sLut,
                                              sizeof(dc1394_avt_csradv_lut_ctrl_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature LUT");
@@ -2118,7 +2118,7 @@ dc1394error_t dc1394_avt_get_lut_extd_info(dc1394camera_t *camera,
 /* Get Autofunction AOI Info                                            */
 /************************************************************************/
 dc1394error_t dc1394_avt_get_autofunc_aoi_info(dc1394camera_t *camera,
-                                               uint32_t       *unit_x, 
+                                               uint32_t       *unit_x,
                                                uint32_t       *unit_y)
 {
     dc1394error_t err;
@@ -2181,7 +2181,7 @@ dc1394_avt_get_aoi(dc1394camera_t *camera,
 dc1394error_t dc1394_avt_get_autofunc_aoi(dc1394camera_t *camera,
                                           dc1394switch_t *on_off,
                                           dc1394switch_t *show_area,
-                                          uint32_t       *left, 
+                                          uint32_t       *left,
                                           uint32_t       *top,
                                           uint32_t       *width,
                                           uint32_t       *height)
@@ -2191,8 +2191,8 @@ dc1394error_t dc1394_avt_get_autofunc_aoi(dc1394camera_t *camera,
 
     /* get register */
     err=dc1394_get_adv_control_registers(camera,
-                                         REG_CAMERA_AVT_AUTOFNC_AOI, 
-                                         (uint32_t*) &sAFAOI, 
+                                         REG_CAMERA_AVT_AUTOFNC_AOI,
+                                         (uint32_t*) &sAFAOI,
                                          sizeof(dc1394_avt_csradv_autofnc_aoi_t)/4);
     DC1394_ERR_RTN(err,"Could not get AVT autofunction AOI Registers");
 
@@ -2243,7 +2243,7 @@ dc1394_avt_set_aoi(dc1394camera_t *camera,
 dc1394error_t dc1394_avt_set_autofunc_aoi(dc1394camera_t *camera,
                                           dc1394switch_t on_off,
                                           dc1394switch_t show_area,
-                                          uint32_t       left, 
+                                          uint32_t       left,
                                           uint32_t       top,
                                           uint32_t       width,
                                           uint32_t       height)
@@ -2253,8 +2253,8 @@ dc1394error_t dc1394_avt_set_autofunc_aoi(dc1394camera_t *camera,
 
     /* get registers */
     err=dc1394_get_adv_control_registers(camera,
-                                         REG_CAMERA_AVT_AUTOFNC_AOI, 
-                                         (uint32_t*) &sAFAOI, 
+                                         REG_CAMERA_AVT_AUTOFNC_AOI,
+                                         (uint32_t*) &sAFAOI,
                                          sizeof(dc1394_avt_csradv_autofnc_aoi_t)/4);
     DC1394_ERR_RTN(err,"Could not get AVT Autofunction AOI Registers");
 
@@ -2268,8 +2268,8 @@ dc1394error_t dc1394_avt_set_autofunc_aoi(dc1394camera_t *camera,
 
     /* write back registers */
     err = dc1394_set_adv_control_registers ( camera,
-                                             REG_CAMERA_AVT_AUTOFNC_AOI, 
-                                             (uint32_t*) &sAFAOI, 
+                                             REG_CAMERA_AVT_AUTOFNC_AOI,
+                                             (uint32_t*) &sAFAOI,
                                              sizeof(dc1394_avt_csradv_autofnc_aoi_t)/4);
     DC1394_ERR_RTN(err,"Could not set AVT Autofunction AOI Registers");
 
@@ -2281,7 +2281,7 @@ dc1394error_t dc1394_avt_set_autofunc_aoi(dc1394camera_t *camera,
 /* Get supported test_images                                            */
 /************************************************************************/
 dc1394error_t
-dc1394_avt_get_test_images_info(dc1394camera_t *camera, 
+dc1394_avt_get_test_images_info(dc1394camera_t *camera,
                                 dc1394bool_t   *TestImage1,
                                 dc1394bool_t   *TestImage2,
                                 dc1394bool_t   *TestImage3,
@@ -2402,8 +2402,8 @@ dc1394_avt_get_frame_counter(dc1394camera_t *camera, const dc1394_avt_smart_feat
 
     /* get register */
     dc1394_avt_csradv_frameinfo_t sFrameInfo;
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             offset, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             offset,
                                              (uint32_t*) &sFrameInfo,
                                              sizeof(dc1394_avt_csradv_frameinfo_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature FrameInfo");
@@ -2434,7 +2434,7 @@ dc1394_avt_reset_frame_info(dc1394camera_t *camera)
 /* Reset frame counter                                                  */
 /************************************************************************/
 dc1394error_t
-dc1394_avt_reset_frame_counter(dc1394camera_t                           *camera, 
+dc1394_avt_reset_frame_counter(dc1394camera_t                           *camera,
                                const dc1394_avt_smart_feature_info_t    *feature_info)
 {
     if(SIZE_AVT_SMART_FEATURE_STRUCT_V1>feature_info->Size)
@@ -2459,8 +2459,8 @@ dc1394_avt_reset_frame_counter(dc1394camera_t                           *camera,
 
     /* get register */
     dc1394_avt_csradv_frameinfo_t sFrameInfo;
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             offset, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             offset,
                                              (uint32_t*) &sFrameInfo,
                                              1 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature FrameInfo");
@@ -2470,8 +2470,8 @@ dc1394_avt_reset_frame_counter(dc1394camera_t                           *camera,
 
     /* write register */
     err = dc1394_set_adv_control_registers ( camera,
-                                             offset, 
-                                             (uint32_t*) &sFrameInfo, 
+                                             offset,
+                                             (uint32_t*) &sFrameInfo,
                                              1 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature FrameInfo");
 
@@ -2489,8 +2489,8 @@ dc1394_avt_get_trigger_counter(dc1394camera_t *camera, uint32_t *triggercounter)
 
     /* get register */
     dc1394_avt_csradv_frameinfo_t sTriggerInfo;
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_TRGCOUNTER_NEW, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_TRGCOUNTER_NEW,
                                              (uint32_t*) &sTriggerInfo,
                                              sizeof(dc1394_avt_csradv_frameinfo_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature TriggerCounter");
@@ -2512,8 +2512,8 @@ dc1394_avt_reset_trigger_counter(dc1394camera_t *camera)
 
     /* get register */
     dc1394_avt_csradv_frameinfo_t sTriggerInfo;
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_TRGCOUNTER_NEW, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_TRGCOUNTER_NEW,
                                              (uint32_t*) &sTriggerInfo,
                                              1 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature TriggerCounter");
@@ -2523,8 +2523,8 @@ dc1394_avt_reset_trigger_counter(dc1394camera_t *camera)
 
     /* write register */
     err = dc1394_set_adv_control_registers ( camera,
-                                             REG_CAMERA_AVT_TRGCOUNTER_NEW, 
-                                             (uint32_t*) &sTriggerInfo, 
+                                             REG_CAMERA_AVT_TRGCOUNTER_NEW,
+                                             (uint32_t*) &sTriggerInfo,
                                              1 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature TriggerCounter");
 
@@ -3048,9 +3048,9 @@ dc1394error_t dc1394_avt_set_hsnr(dc1394camera_t *camera, dc1394bool_t on_off, u
 /************************************************************************/
 /* Get SIS                                                              */
 /************************************************************************/
-dc1394error_t dc1394_avt_get_sis(dc1394camera_t                        *camera, 
-                                 const dc1394_avt_smart_feature_info_t *feature_info, 
-                                 dc1394switch_t                        *on_off, 
+dc1394error_t dc1394_avt_get_sis(dc1394camera_t                        *camera,
+                                 const dc1394_avt_smart_feature_info_t *feature_info,
+                                 dc1394switch_t                        *on_off,
                                  int16_t                               *linePos,
                                  uint32_t                              *userVal)
 {
@@ -3085,8 +3085,8 @@ dc1394error_t dc1394_avt_get_sis(dc1394camera_t                        *camera,
         case REG_CAMERA_AVT_TIMESTAMP_NEW:
             {
                 dc1394_avt_csradv_imagestamp_t sImageStamp;
-                err = dc1394_get_adv_control_registers ( camera, 
-                                                         offset, 
+                err = dc1394_get_adv_control_registers ( camera,
+                                                         offset,
                                                          (uint32_t*) &sImageStamp,
                                                          sizeof(dc1394_avt_csradv_imagestamp_t)/4 );
                 DC1394_ERR_RTN(err,"Could not get AVT advanced feature TimeStamp/SIS");
@@ -3099,8 +3099,8 @@ dc1394error_t dc1394_avt_get_sis(dc1394camera_t                        *camera,
         default:
             {
                 dc1394_avt_csradv_sis_t sSIS;
-                err = dc1394_get_adv_control_registers ( camera, 
-                                                         offset, 
+                err = dc1394_get_adv_control_registers ( camera,
+                                                         offset,
                                                          (uint32_t*) &sSIS,
                                                          sizeof(dc1394_avt_csradv_sis_t)/4 );
                 DC1394_ERR_RTN(err,"Could not get AVT advanced feature TimeStamp/SIS");
@@ -3121,9 +3121,9 @@ dc1394error_t dc1394_avt_get_sis(dc1394camera_t                        *camera,
 /************************************************************************/
 /* Set SIS                                                              */
 /************************************************************************/
-dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera, 
-                                 const dc1394_avt_smart_feature_info_t  *feature_info, 
-                                 dc1394switch_t                         on_off, 
+dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
+                                 const dc1394_avt_smart_feature_info_t  *feature_info,
+                                 dc1394switch_t                         on_off,
                                  int16_t                                linePos,
                                  uint32_t                               userVal)
 {
@@ -3157,8 +3157,8 @@ dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
         case REG_CAMERA_AVT_TIMESTAMP_NEW:
             {
                 dc1394_avt_csradv_imagestamp_t sImageStamp;
-                err = dc1394_get_adv_control_registers ( camera, 
-                                                         offset, 
+                err = dc1394_get_adv_control_registers ( camera,
+                                                         offset,
                                                          (uint32_t*) &sImageStamp,
                                                          sizeof(dc1394_avt_csradv_imagestamp_t)/4 );
                 DC1394_ERR_RTN(err,"Could not get AVT advanced feature TimeStamp/SIS");
@@ -3167,8 +3167,8 @@ dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
                 sImageStamp.m_Ctrl.m.m_nLinePos = (uint32_t) linePos;
 
                 err = dc1394_set_adv_control_registers ( camera,
-                                                         offset, 
-                                                         (uint32_t*) &sImageStamp, 
+                                                         offset,
+                                                         (uint32_t*) &sImageStamp,
                                                          sizeof(dc1394_avt_csradv_imagestamp_t)/4 );
                 DC1394_ERR_RTN(err,"Could not set AVT advanced feature TimeStamp/SIS");
 
@@ -3178,8 +3178,8 @@ dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
         default:
             {
                 dc1394_avt_csradv_sis_t sSIS;
-                err = dc1394_get_adv_control_registers ( camera, 
-                                                         offset, 
+                err = dc1394_get_adv_control_registers ( camera,
+                                                         offset,
                                                          (uint32_t*) &sSIS,
                                                          sizeof(dc1394_avt_csradv_sis_t)/4 );
                 DC1394_ERR_RTN(err,"Could not get AVT advanced feature TimeStamp/SIS");
@@ -3189,8 +3189,8 @@ dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
                 sSIS.m_nUserVal = userVal;
 
                 err = dc1394_set_adv_control_registers ( camera,
-                                                         offset, 
-                                                         (uint32_t*) &sSIS, 
+                                                         offset,
+                                                         (uint32_t*) &sSIS,
                                                          sizeof(dc1394_avt_csradv_sis_t)/4 );
                 DC1394_ERR_RTN(err,"Could not set AVT advanced feature TimeStamp/SIS");
 
@@ -3204,7 +3204,7 @@ dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
 /************************************************************************/
 /* Get SIS data inquiry                                                 */
 /************************************************************************/
-dc1394error_t dc1394_avt_get_sis_data_inquiry(const dc1394_avt_smart_feature_info_t *feature_info, 
+dc1394error_t dc1394_avt_get_sis_data_inquiry(const dc1394_avt_smart_feature_info_t *feature_info,
                                               dc1394_avt_sis_data                   *sis_data_inquiry )
 {
     if(SIZE_AVT_SMART_FEATURE_STRUCT_V1>feature_info->Size)
@@ -3282,7 +3282,7 @@ dc1394error_t dc1394_avt_get_sis_data(const dc1394_avt_smart_feature_info_t *fea
     dc1394_avt_smart_feature_info_full_t* smart_feature_full = (dc1394_avt_smart_feature_info_full_t*) feature_info;
 
     int sisline = (int) MIN( linePos, linePos + (int16_t) frame->size[1] );
-    
+
     uint32_t bitsPerPixel;
     err = dc1394_get_color_coding_bit_size( frame->color_coding, &bitsPerPixel );
     DC1394_ERR_RTN(err,"Could not get color coding bit size");
@@ -3327,8 +3327,8 @@ dc1394error_t dc1394_avt_get_max_iso_size(dc1394camera_t *camera,
     dc1394_avt_csradv_max_isosize_t sMaxIso;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_MAX_ISO_SIZE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_MAX_ISO_SIZE,
                                              (uint32_t*) &sMaxIso,
                                              sizeof(dc1394_avt_csradv_max_isosize_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Max Iso Size");
@@ -3373,8 +3373,8 @@ dc1394error_t dc1394_avt_set_max_iso_size(dc1394camera_t *camera,
     dc1394_avt_csradv_max_isosize_t sMaxIso;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_MAX_ISO_SIZE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_MAX_ISO_SIZE,
                                              (uint32_t*) &sMaxIso,
                                              sizeof(dc1394_avt_csradv_max_isosize_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Max Iso Size");
@@ -3407,8 +3407,8 @@ dc1394error_t dc1394_avt_set_max_iso_size(dc1394camera_t *camera,
     }
 
     /* write back register */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_MAX_ISO_SIZE, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_MAX_ISO_SIZE,
                                              (uint32_t*) &sMaxIso,
                                              sizeof(dc1394_avt_csradv_max_isosize_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature Max Iso Size");
@@ -3427,8 +3427,8 @@ dc1394error_t dc1394_avt_get_param_upd_timing(dc1394camera_t *camera,
     dc1394_avt_csradv_paramupd_timing_t sParamUpdTiming;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_PARAMUPD_MODE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_PARAMUPD_MODE,
                                              (uint32_t*) &sParamUpdTiming,
                                              sizeof(dc1394_avt_csradv_paramupd_timing_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Parameter Update Timing");
@@ -3450,8 +3450,8 @@ dc1394error_t dc1394_avt_set_param_upd_timing(dc1394camera_t *camera,
     dc1394_avt_csradv_paramupd_timing_t sParamUpdTiming;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_PARAMUPD_MODE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_PARAMUPD_MODE,
                                              (uint32_t*) &sParamUpdTiming,
                                              sizeof(dc1394_avt_csradv_paramupd_timing_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Parameter Update Timing");
@@ -3460,8 +3460,8 @@ dc1394error_t dc1394_avt_set_param_upd_timing(dc1394camera_t *camera,
     sParamUpdTiming.m.m_nFpgaUpdMode = update_timing_mode;
 
     /* write back register */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_PARAMUPD_MODE, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_PARAMUPD_MODE,
                                              (uint32_t*) &sParamUpdTiming,
                                              sizeof(dc1394_avt_csradv_paramupd_timing_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature Parameter Update Timing");
@@ -3480,8 +3480,8 @@ dc1394error_t dc1394_avt_get_low_smear(dc1394camera_t *camera,
     dc1394_avt_csradv_low_smear_t sLowSmear;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_LOW_SMEAR, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_LOW_SMEAR,
                                              (uint32_t*) &sLowSmear,
                                              sizeof(dc1394_avt_csradv_low_smear_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Low Smear");
@@ -3503,8 +3503,8 @@ dc1394error_t dc1394_avt_set_low_smear(dc1394camera_t *camera,
     dc1394_avt_csradv_low_smear_t sLowSmear;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_LOW_SMEAR, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_LOW_SMEAR,
                                              (uint32_t*) &sLowSmear,
                                              sizeof(dc1394_avt_csradv_low_smear_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Low Smear");
@@ -3513,8 +3513,8 @@ dc1394error_t dc1394_avt_set_low_smear(dc1394camera_t *camera,
     sLowSmear.m_Ctrl.m_bOnOff = (on_off==DC1394_ON)? 1 : 0;
 
     /* write back register */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_LOW_SMEAR, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_LOW_SMEAR,
                                              (uint32_t*) &sLowSmear,
                                              sizeof(dc1394_avt_csradv_low_smear_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature Low Smear");
@@ -3533,8 +3533,8 @@ dc1394error_t dc1394_avt_get_low_noise_binning(dc1394camera_t *camera,
     dc1394_avt_csradv_global_res_rel_shutter_t sLowNoiseBinning; // global res rel shutter has same reg layout
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_LOW_NOISE_BINNING, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_LOW_NOISE_BINNING,
                                              (uint32_t*) &sLowNoiseBinning,
                                              sizeof(dc1394_avt_csradv_global_res_rel_shutter_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Low Noise Binning");
@@ -3556,8 +3556,8 @@ dc1394error_t dc1394_avt_set_low_noise_binning(dc1394camera_t *camera,
     dc1394_avt_csradv_global_res_rel_shutter_t sLowNoiseBinning; // global res rel shutter has same reg layout
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_LOW_NOISE_BINNING, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_LOW_NOISE_BINNING,
                                              (uint32_t*) &sLowNoiseBinning,
                                              sizeof(dc1394_avt_csradv_global_res_rel_shutter_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Low Noise Binning");
@@ -3566,8 +3566,8 @@ dc1394error_t dc1394_avt_set_low_noise_binning(dc1394camera_t *camera,
     sLowNoiseBinning.m_Ctrl.m_bOnOff = (on_off==DC1394_ON)? 1 : 0;
 
     /* write back register */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_LOW_NOISE_BINNING, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_LOW_NOISE_BINNING,
                                              (uint32_t*) &sLowNoiseBinning,
                                              sizeof(dc1394_avt_csradv_global_res_rel_shutter_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature Low Noise Binning");
@@ -3586,8 +3586,8 @@ dc1394error_t dc1394_avt_get_global_res_rel_shutter(dc1394camera_t *camera,
     dc1394_avt_csradv_global_res_rel_shutter_t sGlobalRRShutter;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_GLOBAL_RESET_RELEASE_SHUTTER, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_GLOBAL_RESET_RELEASE_SHUTTER,
                                              (uint32_t*) &sGlobalRRShutter,
                                              sizeof(dc1394_avt_csradv_global_res_rel_shutter_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Global Reset Release Shutter");
@@ -3609,8 +3609,8 @@ dc1394error_t dc1394_avt_set_global_res_rel_shutter(dc1394camera_t *camera,
     dc1394_avt_csradv_global_res_rel_shutter_t sGlobalRRShutter;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_GLOBAL_RESET_RELEASE_SHUTTER, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_GLOBAL_RESET_RELEASE_SHUTTER,
                                              (uint32_t*) &sGlobalRRShutter,
                                              sizeof(dc1394_avt_csradv_global_res_rel_shutter_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Global Reset Release Shutter");
@@ -3619,8 +3619,8 @@ dc1394error_t dc1394_avt_set_global_res_rel_shutter(dc1394camera_t *camera,
     sGlobalRRShutter.m_Ctrl.m_bOnOff = (on_off==DC1394_ON)? 1 : 0;
 
     /* write back register */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_GLOBAL_RESET_RELEASE_SHUTTER, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_GLOBAL_RESET_RELEASE_SHUTTER,
                                              (uint32_t*) &sGlobalRRShutter,
                                              sizeof(dc1394_avt_csradv_global_res_rel_shutter_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature Global Reset Release Shutter");
@@ -3641,8 +3641,8 @@ dc1394error_t dc1394_avt_get_user_profile(dc1394camera_t *camera,
     dc1394_avt_csradv_userprofile_t sProfile;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_USER_PROFILE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_USER_PROFILE,
                                              (uint32_t*) &sProfile,
                                              sizeof(dc1394_avt_csradv_userprofile_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature User Profile");
@@ -3669,8 +3669,8 @@ dc1394error_t dc1394_avt_set_user_profile(dc1394camera_t *camera,
     dc1394_avt_csradv_userprofile_t sProfile;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_USER_PROFILE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_USER_PROFILE,
                                              (uint32_t*) &sProfile,
                                              sizeof(dc1394_avt_csradv_userprofile_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature User Profile");
@@ -3682,8 +3682,8 @@ dc1394error_t dc1394_avt_set_user_profile(dc1394camera_t *camera,
     sProfile.m.m_bMemSave = (save_profile==DC1394_ON)? 1 : 0;
 
     /* write back register */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_USER_PROFILE, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_USER_PROFILE,
                                              (uint32_t*) &sProfile,
                                              sizeof(dc1394_avt_csradv_userprofile_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature User Profile");
@@ -3692,8 +3692,8 @@ dc1394error_t dc1394_avt_set_user_profile(dc1394camera_t *camera,
     do
     {
         usleep( 50000 );
-        err = dc1394_get_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_USER_PROFILE, 
+        err = dc1394_get_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_USER_PROFILE,
                                                  (uint32_t*) &sProfile,
                                                  sizeof(dc1394_avt_csradv_userprofile_t)/4 );
         DC1394_ERR_RTN(err,"Could not get AVT advanced feature User Profile");
@@ -3713,8 +3713,8 @@ dc1394error_t dc1394_avt_get_led(dc1394camera_t *camera,
     dc1394_avt_csradv_swfeature_t sSWFeature;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_SWFEATURE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_SWFEATURE,
                                              (uint32_t*) &sSWFeature,
                                              sizeof(dc1394_avt_csradv_swfeature_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature SW Feature");
@@ -3736,8 +3736,8 @@ dc1394error_t dc1394_avt_set_led(dc1394camera_t *camera,
     dc1394_avt_csradv_swfeature_t sSWFeature;
 
     /* get register */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_SWFEATURE, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_SWFEATURE,
                                              (uint32_t*) &sSWFeature,
                                              sizeof(dc1394_avt_csradv_swfeature_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature SW Feature");
@@ -3746,8 +3746,8 @@ dc1394error_t dc1394_avt_set_led(dc1394camera_t *camera,
     sSWFeature.m.m_bBlankLED = (on_off==DC1394_ON)? 0 : 1; // value is inverted! enable led <> disable led
 
     /* write back register */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_SWFEATURE, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_SWFEATURE,
                                              (uint32_t*) &sSWFeature,
                                              sizeof(dc1394_avt_csradv_swfeature_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature SW Feature");
@@ -3768,8 +3768,8 @@ dc1394error_t dc1394_avt_get_dpc_info(dc1394camera_t *camera,
     dc1394_avt_csradv_defect_pixel_correction_t sDPC;
 
     /* get registers */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DPC_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DPC_CONTROL,
                                              (uint32_t*) &sDPC,
                                              sizeof(dc1394_avt_csradv_defect_pixel_correction_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Defect Pixel Correction");
@@ -3795,8 +3795,8 @@ dc1394error_t dc1394_avt_get_dpc(dc1394camera_t *camera,
     dc1394_avt_csradv_defect_pixel_correction_t sDPC;
 
     /* get registers */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DPC_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DPC_CONTROL,
                                              (uint32_t*) &sDPC,
                                              sizeof(dc1394_avt_csradv_defect_pixel_correction_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Defect Pixel Correction");
@@ -3826,8 +3826,8 @@ dc1394error_t dc1394_avt_set_dpc(dc1394camera_t *camera,
     dc1394_avt_csradv_defect_pixel_correction_t sDPC;
 
     /* get registers */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DPC_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DPC_CONTROL,
                                              (uint32_t*) &sDPC,
                                              sizeof(dc1394_avt_csradv_defect_pixel_correction_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Defect Pixel Correction");
@@ -3841,8 +3841,8 @@ dc1394error_t dc1394_avt_set_dpc(dc1394camera_t *camera,
     sDPC.m_Ctrl.m_nThreshold = threshold;
 
     /* write back registers */
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DPC_CONTROL, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DPC_CONTROL,
                                              (uint32_t*) &sDPC,
                                              sizeof(dc1394_avt_csradv_defect_pixel_correction_t)/4 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature Defect Pixel Correction");
@@ -3851,8 +3851,8 @@ dc1394error_t dc1394_avt_set_dpc(dc1394camera_t *camera,
     do
     {
         usleep(50000);
-        err = dc1394_get_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_DPC_CONTROL, 
+        err = dc1394_get_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_DPC_CONTROL,
                                                  (uint32_t*) &sDPC,
                                                  1 );
         DC1394_ERR_RTN(err,"Could not get AVT advanced feature Defect Pixel Correction");
@@ -3874,8 +3874,8 @@ dc1394error_t dc1394_avt_read_dpc_data(dc1394camera_t                *camera,
     dc1394_avt_csradv_defect_pixel_correction_t sDPC;
 
     /* get registers */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DPC_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DPC_CONTROL,
                                              (uint32_t*) &sDPC.m_Ctrl,
                                              sizeof(dc1394_avt_csradv_defect_pixel_correction_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Defect Pixel Correction");
@@ -3894,8 +3894,8 @@ dc1394error_t dc1394_avt_read_dpc_data(dc1394camera_t                *camera,
         sDPC.m_Mem.m_bEnaMemRD = 1;
         sDPC.m_Mem.m_bEnaMemWR = 0;
         sDPC.m_Mem.m_nAddrOffset = 0;
-        err = dc1394_set_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_DPC_CONTROL+4, 
+        err = dc1394_set_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_DPC_CONTROL+4,
                                                  (uint32_t*) &sDPC.m_Mem,
                                                  1 );
         DC1394_ERR_RTN(err,"Could not set AVT advanced feature Defect Pixel Correction - Mem Control");
@@ -3907,8 +3907,8 @@ dc1394error_t dc1394_avt_read_dpc_data(dc1394camera_t                *camera,
         sDPC.m_Mem.m_bEnaMemRD = 0;
         sDPC.m_Mem.m_bEnaMemWR = 0;
         sDPC.m_Mem.m_nAddrOffset = 0;
-        err = dc1394_set_adv_control_registers ( camera, 
-                                                 REG_CAMERA_AVT_DPC_CONTROL+4, 
+        err = dc1394_set_adv_control_registers ( camera,
+                                                 REG_CAMERA_AVT_DPC_CONTROL+4,
                                                  (uint32_t*) &sDPC.m_Mem,
                                                  1 );
         DC1394_ERR_RTN(err,"Could not set AVT advanced feature Defect Pixel Correction - Mem Control");
@@ -3929,8 +3929,8 @@ dc1394error_t dc1394_avt_write_dpc_data(dc1394camera_t                *camera,
     dc1394_avt_csradv_defect_pixel_correction_t sDPC;
 
     /* get registers */
-    err = dc1394_get_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DPC_CONTROL, 
+    err = dc1394_get_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DPC_CONTROL,
                                              (uint32_t*) &sDPC.m_Ctrl,
                                              sizeof(dc1394_avt_csradv_defect_pixel_correction_t)/4 );
     DC1394_ERR_RTN(err,"Could not get AVT advanced feature Defect Pixel Correction");
@@ -3943,8 +3943,8 @@ dc1394error_t dc1394_avt_write_dpc_data(dc1394camera_t                *camera,
     sDPC.m_Mem.m_bEnaMemRD = 0;
     sDPC.m_Mem.m_bEnaMemWR = 1;
     sDPC.m_Mem.m_nAddrOffset = 0;
-    err = dc1394_set_adv_control_registers ( camera, 
-                                             REG_CAMERA_AVT_DPC_CONTROL+4, 
+    err = dc1394_set_adv_control_registers ( camera,
+                                             REG_CAMERA_AVT_DPC_CONTROL+4,
                                              (uint32_t*) &sDPC.m_Mem,
                                              1 );
     DC1394_ERR_RTN(err,"Could not set AVT advanced feature Defect Pixel Correction - Mem Control");

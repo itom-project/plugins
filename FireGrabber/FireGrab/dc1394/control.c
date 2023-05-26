@@ -2191,5 +2191,3 @@ dc1394_camera_free(dc1394camera_t *camera)
     free (camera->model);
     free (camera);
 }
-
-

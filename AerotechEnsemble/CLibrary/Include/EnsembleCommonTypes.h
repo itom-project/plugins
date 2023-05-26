@@ -1,8 +1,8 @@
 /// \file EnsembleCommonTypes.h
 /// \brief Contains some common types that are used throughout the library.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_COMMONTYPES_H__
 #define __Ensemble_COMMONTYPES_H__
@@ -84,7 +84,7 @@ inline AXISMASK operator|(const AXISMASK &a, const AXISMASK &b) {
 
 /// \brief Define for specifying that the function is to be exported.
 ///
-/// This is necessary to mark functions as exported from this library 
+/// This is necessary to mark functions as exported from this library
 /// and allow other libraries and applications to call them.
 ///
 /// Most users can safely ignore this.
@@ -102,7 +102,7 @@ inline AXISMASK operator|(const AXISMASK &a, const AXISMASK &b) {
 #elif _MSC_VER >= 1300
 	#define DEPRECATED(reason) __declspec(deprecated)
 #else
-	#define DEPRECATED(reason) 
+	#define DEPRECATED(reason)
 #endif
 
 #endif // __ENSEMBLE_COMMONTYPES_H__

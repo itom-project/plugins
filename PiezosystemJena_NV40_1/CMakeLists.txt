@@ -44,7 +44,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPiezosystemJena_NV40_1.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogPiezosystemJena_NV40_1.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPiezosystemJena_NV40_1.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/piezosystemJena_NV40_1.cpp

@@ -75,10 +75,10 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-portability.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-result.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-version.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../config.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/../config.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-info-list.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-log.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-result.c
@@ -95,7 +95,7 @@ set(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Co
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
-target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
+target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
     ${LTDLLIB}
     ${REGEXLIB})
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,7 +24,7 @@
 * \brief In this file the functions of the modal dialog for the AerotechA3200 are specified
 *
 *    This file defines the functions of the dialogAerotechA3200-Class defined in the file "dialogAerotechA3200.h"
-* 
+*
 *\sa dialogAerotechA3200, AerotechA3200
 *\author Christof Pruss, Simon Chen
 *\date   Apr2014
@@ -158,7 +158,7 @@ void dialogAerotechA3200::on_pushButtonCalib_clicked()
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int i = 0;
     QVector<int> axis;
-    
+
     for (i = 0; i < m_numaxis; i++)
     {
         if (m_pDialogEnabled[i]->isChecked())
@@ -183,6 +183,6 @@ void dialogAerotechA3200::on_pushButtonCalib_clicked()
 
     ui.cancelButton->setEnabled(true);
     ui.okButton->setEnabled(true);
-    
+
 
 }

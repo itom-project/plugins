@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -37,18 +37,18 @@
     #define LAPACKE_FCT_NAME(SUFFIX) LAPACKE_d ## SUFFIX
 #else
     typedef ito::float32 MATTYPE;
-    #define TYPEID ito::tFloat32 
+    #define TYPEID ito::tFloat32
     #define CVTYPEID CV_32FC1
     #define LAPACKE_FCT_NAME(SUFFIX) LAPACKE_s ## SUFFIX
 #endif
 
-#define CVMATREF_2DREAL(mat,m,n)  *( (MATTYPE*)(mat->data + mat->step[0]*(m) + mat->step[1]*(n)) ) 
+#define CVMATREF_2DREAL(mat,m,n)  *( (MATTYPE*)(mat->data + mat->step[0]*(m) + mat->step[1]*(n)) )
 
 #if defined LAPACKE
     #include "lapacke.h"
-    
+
     #define DEF_REALMAT(NAME) MATTYPE *NAME = NULL; int NAME ## __rows;
-    #define ALLOC_REALMAT(NAME, ROWS, COLS) NAME = new (std::nothrow) MATTYPE[(ROWS)*(COLS)]; NAME ## __rows = (ROWS);   
+    #define ALLOC_REALMAT(NAME, ROWS, COLS) NAME = new (std::nothrow) MATTYPE[(ROWS)*(COLS)]; NAME ## __rows = (ROWS);
     #define DELETE_REALMAT(NAME) delete[] NAME; NAME = NULL;
     #define REALMAT_REF(MAT,M,N)  MAT[(N) * MAT ##__rows + (M)]
 #else
@@ -211,7 +211,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                             nrOfPoints++;
                             break;
                         }
-                    } 
+                    }
                 }
             }
 
@@ -233,7 +233,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
     {
         delete weightsFloat;
     }
-    
+
     return retval;
 }
 
@@ -310,7 +310,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
     {
         delete weightsFloat;
     }
-    
+
     return retval;
 }
 
@@ -339,7 +339,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
     // b = max(n,m)
     //
     // vcols = (a+1)*(b+1) - a(a+1)/2 = (a+1)(1+b-a/2) = (a+1)(2+2b-a)/2 (in order to avoid rounding problems)
-    // 
+    //
 
     //Construct weighted Vandermonde matrix.
     //now X,Y,Z,W have the same type and size [nrOfPoints,1]
@@ -358,7 +358,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
     else
     {
         ALLOC_REALMAT(V, nrOfPoints, vcols) //cv::Mat V(nrOfPoints, vcols, CV_32FC1);
-        ALLOC_REALMAT(Vals, nrOfPoints, 1)  //cv::Mat Vals(nrOfPoints, 1, CV_32FC1); 
+        ALLOC_REALMAT(Vals, nrOfPoints, 1)  //cv::Mat Vals(nrOfPoints, 1, CV_32FC1);
 
         if (V == NULL)
         {
@@ -434,7 +434,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
             }
         }
 
-            
+
 
         //std::cout << "vandermonde aufbau: "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
         //timer = cv::getTickCount();
@@ -453,7 +453,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
             for(; it != it_end; ++it)
             {
                 coefficients.push_back( *it );
-            }            
+            }
         }
         catch(cv::Exception exc)
         {
@@ -516,7 +516,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
                     }
 
                     //printFortranMatrix("R", R, lmn, ln);
-                        
+
 
                     //now build orthonormal matrix q from V
 
@@ -549,7 +549,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
                             //_Tp *Q = new _Tp[lmn * lm]; //lm x lmn
                             //memcpy(Q,V, sizeof(_Tp) * lmn * lm);
                             //printFortranMatrix("Q", Q, lm, lmn);
-                                
+
 
                             //now solve equation R*x = Q.T * Vals for x
 
@@ -603,7 +603,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
                             }
                             delete[] B;
                             B = NULL;
-                        } 
+                        }
                     }
 
                     delete[] R;
@@ -658,7 +658,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
     ito::RetVal retval;
 
     typedef MATTYPE _Tp;
-    
+
     if (dataZ->getDims() == 0)
     {
         return retval;
@@ -690,7 +690,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
         // b = max(n,m)
         //
         // vcols = (a+1)*(b+1) - a(a+1)/2 = (a+1)(1+b-a/2) = (a+1)(2+2b-a)/2 (in order to avoid rounding problems)
-        // 
+        //
 
         //Construct weighted Vandermonde matrix.
         //now X,Y,Z,W have the same type and size [nrOfPoints,1]
@@ -711,7 +711,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
 
             _Tp offsets[] = { (_Tp)dataZ->getAxisOffset(0), (_Tp)dataZ->getAxisOffset(1) };
             _Tp scales[] = { (_Tp)dataZ->getAxisScale(0), (_Tp)dataZ->getAxisScale(1) };
-        
+
             _Tp *x = new _Tp[result_->cols];
             _Tp *y = new _Tp[result_->rows];
 
@@ -743,7 +743,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
             {
                 Vrow = new cv::Mat(result_->cols, lp, CV_64FC1);
                 P = cv::Mat(lp, 1, CV_64FC1);
-            }     
+            }
 
             cv::MatIterator_<_Tp> it = P.begin<_Tp>(), it_end = P.end<_Tp>();
             int i = 0;
@@ -841,7 +841,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
     ito::Range ySize(dataXFloat.getSize(0), dataXFloat.getSize(0));
     ito::Range xSize(dataXFloat.getSize(1), dataXFloat.getSize(1));
     ito::DataObject dataYFloat = ito::dObjHelper::squeezeConvertCheck2DDataObject(dataY, "dataY", ySize, xSize, retval, TYPEID, 0);
-    
+
     if (coefficients.size() <= 0)
     {
         retval += ito::RetVal(ito::retError,0,"you must indicate at least 1 coefficient");
@@ -870,7 +870,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
         // b = max(n,m)
         //
         // vcols = (a+1)*(b+1) - a(a+1)/2 = (a+1)(1+b-a/2) = (a+1)(2+2b-a)/2 (in order to avoid rounding problems)
-        // 
+        //
 
         //Construct weighted Vandermonde matrix.
         //now X,Y,Z,W have the same type and size [nrOfPoints,1]
@@ -904,7 +904,7 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
             {
                 Vrow = new cv::Mat(total, lp, CV_64FC1);
                 P = cv::Mat(lp, 1, CV_64FC1);
-            }     
+            }
 
             cv::MatIterator_<_Tp> it = P.begin<_Tp>(), it_end = P.end<_Tp>();
             int i = 0;

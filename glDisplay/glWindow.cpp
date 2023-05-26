@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -41,10 +41,10 @@
 
 //CAREFUL: With NVIDIA drivers >~ 347.xx, no command at all may stay before the #version directive (even no line break or spaces).
 //         else, it will lead to the C0204 error (version directive must be first statement and must not be repeated)
-    
+
 //! fragment and vertex shaders for gl v2 and gl v3
 //! the fragment shader multiplies input vertices with the transformation matrix MVP, the
-//! fragment shader calculates the texture pixel (and color) for each pixel. In addition a 
+//! fragment shader calculates the texture pixel (and color) for each pixel. In addition a
 //! gamma correction can be applied using a simple lookup vektor (lutarr)
 const char *VERTEX_SHADER = "#version 130\n\
 \
@@ -153,7 +153,7 @@ void GLWindow::initializeGL()
     m_vao = new QOpenGLVertexArrayObject(this);
     m_vao->create();
     m_vao->bind();
-    
+
     if (shaderProgram.link() == false)
     {
         QString log = shaderProgram.log();
@@ -172,7 +172,7 @@ void GLWindow::initializeGL()
         templut[col][1] = col / 255.0;
         templut[col][2] = col / 255.0;
     }
-    
+
     m_vertices <<  QVector3D(-1, -1, 0) << QVector3D(1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, 1, 0);
     m_textureCoordinates << QVector2D(0,1) << QVector2D(1,1) << QVector2D(0,0) << QVector2D(1,0);
 
@@ -225,7 +225,7 @@ void GLWindow::initializeGL()
         retval += ito::RetVal::format(ito::retError, 0, "error binding shader program in initializeGL: %s", log.toLatin1().data());
     }
 
-    
+
 
     if (!retval.containsError())
     {
@@ -233,7 +233,7 @@ void GLWindow::initializeGL()
     }
 
     m_glErrors += retval;
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ ito::RetVal GLWindow::shutdown(ItomSharedSemaphore *waitCond /*= nullptr*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void GLWindow::resizeGL(int width, int height)
 {
-    if (height == 0) 
+    if (height == 0)
     {
         height = 1;
     }
@@ -288,7 +288,7 @@ void GLWindow::paintGL()
         //glActiveTexture(GL_TEXTURE0); //https://bugreports.qt-project.org/browse/QTBUG-27408
         m_glf->glBindTexture(GL_TEXTURE_2D, item.texture);
         m_glErrors += checkGLError();
-        
+
         if (item.textureWrapS == 0)
         {
             m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //scaled in reality, set by texture coordinates
@@ -342,10 +342,10 @@ void GLWindow::paintGL()
         m_glErrors += checkGLError();
 
         m_glf->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
+
         shaderProgram.disableAttributeArray("vertex");
         shaderProgram.disableAttributeArray("textureCoordinate");
-        
+
         m_glf->glBindTexture(GL_TEXTURE_2D, 0);
         m_glErrors += checkGLError(); //opengl error is normal!
 
@@ -490,7 +490,7 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
 
             m_glf->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
             this->checkGLError();
-            
+
             qDebug() << glIsTexture(item.texture);
             m_glf->glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -600,7 +600,7 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
                     retval += ito::RetVal(ito::retWarning, 0, "invalid value of tag 'wrapT'");
                 }
             }
-        
+
             if (firstTextureIndex == -1) //add texture(s)
             {
                 m_textures.append(item);
@@ -633,7 +633,7 @@ ito::RetVal GLWindow::grabFramebuffer(const QString &filename, ItomSharedSemapho
     ito::RetVal retval;
     QFileInfo finfo(filename);
     QDir filepath(finfo.canonicalPath());
-    
+
     if (filepath.exists() == false)
     {
         retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.canonicalPath().toLatin1().data());
@@ -716,7 +716,7 @@ ito::RetVal GLWindow::checkGLError()
             break;
         default:
             retval += ito::RetVal(ito::retError, ret, "an unknown opengl error occurred");
-            break;             
+            break;
     }
 
     qDebug() << "OpenGL Error: " << ret << " - " << retval.errorMessage();

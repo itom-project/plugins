@@ -39,10 +39,10 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qplugin.h>
 #include <qmessagebox.h>
 #include <iostream>
-#include <QElapsedTimer> 
+#include <QElapsedTimer>
 
 #include "dockWidgetThorlabsPowerMeter.h"
-#if defined(USE_API_1_0_2) 
+#if defined(USE_API_1_0_2)
     #include <PM100D.h>
 #define PM(name) PM100D_##name
 #else
@@ -84,7 +84,7 @@ Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directo
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_aboutThis = QObject::tr(GITVERSION);
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
@@ -96,7 +96,7 @@ Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directo
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
 /*!
-    
+
 */
 ThorlabsPowerMeterInterface::~ThorlabsPowerMeterInterface()
 {
@@ -145,7 +145,7 @@ ito::RetVal ThorlabsPowerMeterInterface::closeThisInst(ito::AddInBase **addInIns
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("dark_offset", ito::ParamBase::Double | ito::ParamBase::Readonly, NULL, tr("dark offset, read-out from the device [unit unknown]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    
+
 
     paramVal = ito::Param("line_frequency", ito::ParamBase::Int | ito::ParamBase::In, 50 , new ito::IntMeta(50, 60, 10), tr(" line frequency of 50Hz or 60Hz. -1 if not supported by device.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -418,7 +418,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -430,7 +430,7 @@ ito::RetVal ThorlabsPowerMeter::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     if (m_instrument)
     {
         PM(close)(m_instrument);
@@ -442,7 +442,7 @@ ito::RetVal ThorlabsPowerMeter::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -640,7 +640,7 @@ ito::RetVal ThorlabsPowerMeter::startDevice(ItomSharedSemaphore *waitCond)
 
     return retval;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsPowerMeter::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -654,7 +654,7 @@ ito::RetVal ThorlabsPowerMeter::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return retval;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsPowerMeter::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -683,7 +683,7 @@ ito::RetVal ThorlabsPowerMeter::acquire(const int trigger, ItomSharedSemaphore *
         m_data.setValueUnit("W");
     }
 
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -782,16 +782,16 @@ ito::RetVal ThorlabsPowerMeter::checkData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
 /*!
-    This method returns a reference to the recently acquired data. Therefore this data size must fit to the data structure of the 
+    This method returns a reference to the recently acquired data. Therefore this data size must fit to the data structure of the
     DataObject.
-    
+
     This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, copyVal
 */
 ito::RetVal ThorlabsPowerMeter::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -823,8 +823,8 @@ ito::RetVal ThorlabsPowerMeter::getVal(void *vpdObj, ItomSharedSemaphore *waitCo
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
+    This method copies the recently grabbed camera frame to the given DataObject.
+
     The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
     interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
     an image stack is possible then)
@@ -832,7 +832,7 @@ ito::RetVal ThorlabsPowerMeter::getVal(void *vpdObj, ItomSharedSemaphore *waitCo
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, getVal
 */
 ito::RetVal ThorlabsPowerMeter::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -858,7 +858,7 @@ ito::RetVal ThorlabsPowerMeter::copyVal(void *vpdObj, ItomSharedSemaphore *waitC
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -878,7 +878,7 @@ void ThorlabsPowerMeter::dockWidgetVisibilityChanged(bool visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             connect(this, SIGNAL(visibilityChanged(bool)), widget, SLOT(manageTimer(bool)));
-            
+
 
             emit visibilityChanged(visible);
             emit parametersChanged(m_params);
@@ -908,7 +908,7 @@ ito::RetVal ThorlabsPowerMeter::checkError(ViStatus err)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! method called to aqcuire and get a image
 /*!
-    This method is invoked from the dock widget to get a value in the autograbbing mode. 
+    This method is invoked from the dock widget to get a value in the autograbbing mode.
     \param [in,out] QSharedPointer to return the measured value.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError if the occurred any error .
@@ -950,17 +950,17 @@ ito::RetVal ThorlabsPowerMeter::acquireAutograbbing(QSharedPointer<double> value
     If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
     of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
     m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
+
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
     all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
+
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
-    
+
     Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
     has a configuration dialog.
-    
+
     \sa hasConfDialog
 */
 const ito::RetVal ThorlabsPowerMeter::showConfDialog(void)
@@ -1028,9 +1028,9 @@ ito::RetVal ThorlabsPowerMeter::checkFunctionCompatibility(bool* compatibility)
     //QString str = "PM100A";   //For testing purposes
 
     if (!QString::compare(str, "PM100A", Qt::CaseInsensitive) ||
-        !QString::compare(str, "PM100D", Qt::CaseInsensitive) || 
-        !QString::compare(str, "PM100USB", Qt::CaseInsensitive) || 
-        !QString::compare(str, "PM200", Qt::CaseInsensitive) || 
+        !QString::compare(str, "PM100D", Qt::CaseInsensitive) ||
+        !QString::compare(str, "PM100USB", Qt::CaseInsensitive) ||
+        !QString::compare(str, "PM200", Qt::CaseInsensitive) ||
         !QString::compare(str, "PM400", Qt::CaseInsensitive))
     {
         *compatibility = true;
@@ -1049,7 +1049,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
     bool compatible = false;
 
     if (what & bWavelength)
-    {        
+    {
         ViReal64 wavelength;
         ViReal64 min;
         ViReal64 max;
@@ -1057,14 +1057,14 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM(getWavelength)(m_instrument, PM(ATTR_SET_VAL), &wavelength));
         retval += checkError(PM(getWavelength)(m_instrument, PM(ATTR_MIN_VAL), &min));
         retval += checkError(PM(getWavelength)(m_instrument, PM(ATTR_MAX_VAL), &max));
-        
+
         if (!retval.containsError())
         {
             retval += m_params["wavelength"].setVal<double>(wavelength);
             m_params["wavelength"].setMeta(new ito::DoubleMeta(min, max, 0.0), true);
         }
     }
-	
+
 
 
     if (what & bAttenuation)
@@ -1095,7 +1095,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
             m_params["attenuation"].setMeta(new ito::DoubleMeta(minAttenuation, maxAttenuation, 0.0), true);
         }
     }
-	
+
 
 
     if (what & bDarkOffset)
@@ -1108,7 +1108,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
             retval += m_params["dark_offset"].setVal<double>(dark);
         }
     }
-	
+
 
 
     if (what & bLineFrequency)
@@ -1132,7 +1132,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
             retval += m_params["line_frequency"].setVal<int>(frequency);
         }
     }
-	
+
 
 
     if (what & bPowerRange)
@@ -1215,7 +1215,7 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
     }
 
 
-	
+
     if (what & bBandwidth)
     {
         retval = checkFunctionCompatibility(&compatible);   //Check compatibility to Sensors PM100A, PM100D, PM100USB, PM200 and PM400
@@ -1230,13 +1230,13 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
             bandwidth = -1;
             m_params["bandwidth"].setFlags(ito::ParamBase::Readonly);
         }
-        
+
         if (!retval.containsError())
         {
                retval += m_params["bandwidth"].setVal<ito::int32>(bandwidth);
         }
 
     }
-    
+
     return retval;
 }

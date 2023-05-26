@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -62,9 +62,9 @@ int doCalcCoord(cell *thisCell, cv::Mat *coeffs, ito::DataObject *pts)
                 {
 //                    ito::float64 dx = (cx - ncols / 2) / (ncols / 2.0), dx2 = dx * dx * 0.5;
                     ito::float64 dx = (cx - ncols / 2), dx2 = dx * dx * 0.5;
-                    ptsPtr[(cy * ncols + cx) * 2] = cx + thisCell->x0 + cptr[0] + cptr[2] * dx 
+                    ptsPtr[(cy * ncols + cx) * 2] = cx + thisCell->x0 + cptr[0] + cptr[2] * dx
                         + cptr[4] * dy + cptr[6] * dx2 + cptr[8] * dy2 + cptr[10] * dx * dy;
-                    ptsPtr[(cy * ncols + cx) * 2 + 1] = cy + thisCell->y0 + cptr[1] + cptr[3] * dx 
+                    ptsPtr[(cy * ncols + cx) * 2 + 1] = cy + thisCell->y0 + cptr[1] + cptr[3] * dx
                         + cptr[5] * dy + cptr[7] * dx2 + cptr[9] * dy2 + cptr[11] * dx * dy;
                 }
             }
@@ -244,13 +244,13 @@ int doCalcJacobian(ito::DataObject *imgInRef, ito::DataObject *imgInDef, ito::Da
     for (int nPos = 0; nPos < positions.getSize(0); nPos++)
     {
         ito::DataObject jacobian;
-        int startx = positions.at<ito::float64>(nPos, 0) - positions.at<ito::float64>(nPos, 2) / 2 < 0 ? 
+        int startx = positions.at<ito::float64>(nPos, 0) - positions.at<ito::float64>(nPos, 2) / 2 < 0 ?
             0 : positions.at<ito::float64>(nPos, 0) - positions.at<ito::float64>(nPos, 2) / 2;
         int endx = positions.at<ito::float64>(nPos, 0) + positions.at<ito::float64>(nPos, 2) / 2 + 1 >= inFieldRef.getSize(1) - 1 ?
             inFieldRef.getSize(1) - 1 : positions.at<ito::float64>(nPos, 0) + positions.at<ito::float64>(nPos, 2) / 2 + 1;
-        int starty = positions.at<ito::float64>(nPos, 1) - positions.at<ito::float64>(nPos, 3) / 2 < 0 ? 
+        int starty = positions.at<ito::float64>(nPos, 1) - positions.at<ito::float64>(nPos, 3) / 2 < 0 ?
             0 : positions.at<ito::float64>(nPos, 1) - positions.at<ito::float64>(nPos, 3) / 2;
-        int endy = positions.at<ito::float64>(nPos, 1) + positions.at<ito::float64>(nPos, 3) / 2 + 1 >= inFieldRef.getSize(0) - 1? 
+        int endy = positions.at<ito::float64>(nPos, 1) + positions.at<ito::float64>(nPos, 3) / 2 + 1 >= inFieldRef.getSize(0) - 1?
             inFieldRef.getSize(0) - 1 : positions.at<ito::float64>(nPos, 1) + positions.at<ito::float64>(nPos, 3) / 2 + 1;
         cell thisCell(positions.at<ito::float64>(nPos, 0), positions.at<ito::float64>(nPos, 1), startx, endx, starty, endy);
 
@@ -324,7 +324,7 @@ int doCalcJacobian(ito::DataObject *imgInRef, ito::DataObject *imgInDef, ito::Da
             if (Hesse.at<ito::float32>(ni, ni) > mu)
                 mu = Hesse.at<ito::float32>(ni, ni);
         }
-        
+
         cv::Mat dCoeff = cv::Mat::zeros(12, 1, CV_32F);
         ito::DataObject imat;
         cv::Mat disCoeffNew;
@@ -339,7 +339,7 @@ int doCalcJacobian(ito::DataObject *imgInRef, ito::DataObject *imgInDef, ito::Da
             // maybe revise calculation method used for matrix inversion
             cv::Mat HesseInv = ((cv::Mat*)Hesse.get_mdata()[0])->inv(cv::DECOMP_CHOLESKY);
             dCoeff = HesseInv * (*(cv::Mat*)Gradient.get_mdata()[0]) * -1.0;
-            
+
             if ((*cv::sum(cv::abs(dCoeff)).val) < threshold)
             {
                 convergence = 1;

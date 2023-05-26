@@ -370,12 +370,12 @@
     </message>
     <message>
         <location line="+12"/>
-        <source>The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000. 
-This plugin has been tested with the cameras PCO.1200s, PCO.1300, PCO.2000 and PCO.edge USB3. 
+        <source>The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000.
+This plugin has been tested with the cameras PCO.1200s, PCO.1300, PCO.2000 and PCO.edge USB3.
 
-For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. 
-The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). 
-Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board. 
+For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk.
+The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)).
+Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.
 
 For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.</source>
         <translation type="unfinished"></translation>

@@ -9,7 +9,7 @@
 **Platforms**:  Windows, Linux
 **Author**:     :pluginauthor:`x3pio`
 =============== ========================================================================================================
-  
+
 Overview
 ========
 
@@ -21,7 +21,7 @@ is licensed under the LGPL license and uses further libraries. For more informat
 of the library itself see www.opengps.eu.
 
 For loading a x3p file, this plugin only supports the feature types SUR (surface) and PRF (profile), where profile
-is always loaded in a 1xN data object. The x- and y- axis of loaded x3p files must always be incremental, no absolute x- 
+is always loaded in a 1xN data object. The x- and y- axis of loaded x3p files must always be incremental, no absolute x-
 or y-axes are supported.
 
 Data objects that should be stored in a x3p file are always stored as feature type SUR, such that 1xN or Mx1 data objects
@@ -46,18 +46,18 @@ These filters are defined in the plugin:
 
 Filters
 ==============
-        
+
 Detailed overview about all defined filters:
-    
+
 .. pluginfilterlist::
     :plugin: x3pio
-    
+
 Compilation
 ===============
 
 This plugin requires the 3rd party libary CodeSynthesis XSD 3.3.0. which can be downloaded from:
 https://www.codesynthesis.com/products/xsd/
-Other versions are not officially supported by the underlying x3p library (see www.opengps.eu), but XSD 4.0 also works (with the bugfix mentioned below). 
+Other versions are not officially supported by the underlying x3p library (see www.opengps.eu), but XSD 4.0 also works (with the bugfix mentioned below).
 Please install CodeSynthesis XSD 3.3.0 or CodeSynthesis XSD 4.0.0 and indicate XSD_ROOT environment variable
 to the base directory of CodeSynthesis (e.g. C:\Program Files (x86)\CodeSynthesis XSD 4.0).
 All necessary system path information should then automatically be found.
@@ -85,15 +85,15 @@ Bugfix for CodeSynthesis XSD 4.0.0
 If you get a compiler error telling that DOMDocument is an ambigious symbol (conflict with Windows SDK), then you need to change two lines in xsd/cxx/tree/serialization.txx:
 
 .. code-block:: c++
-    
+
     //old
     DOMDocument& doc (*e.getOwnerDocument ());
     const DOMElement& se (x.dom_content ().get ());
-    
+
     //replace by new:
     xercesc::DOMDocument& doc (*e.getOwnerDocument ());
     const xercesc::DOMElement& se (x.dom_content ().get ());
-    
+
 The maintainer from XSD promised in a forum that this bug will be fixed in the 4.1 release.
 
 Changelog

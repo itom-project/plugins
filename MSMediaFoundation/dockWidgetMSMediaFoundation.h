@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -60,7 +60,7 @@ class DockWidgetMSMediaFoundation : public ito::AbstractAddInDockWidget
         void on_cB_Contrast_toggled(bool checked);
         void on_cB_Gain_toggled(bool checked);
         void on_cB_Saturation_toggled(bool checked);
-        void on_cB_Sharpness_toggled(bool checked);   
+        void on_cB_Sharpness_toggled(bool checked);
         void on_cB_IntegrationTime_toggled(bool checked);
 };
 

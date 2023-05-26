@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -142,7 +142,7 @@ is closed again.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);     
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
     paramVal.setMeta( new ito::HWMeta("SerialIO"), true );
@@ -169,7 +169,7 @@ const ito::RetVal LeicaMotorFocus::showConfDialog(void)
     QMetaObject::invokeMethod(this, "sendParameterRequest");
 
     confDialog->exec(); //wait until done
-    disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));  
+    disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
     delete confDialog;
 
     return ito::retOk;
@@ -198,7 +198,7 @@ const ito::RetVal LeicaMotorFocus::LMFReadString(char *buf, const int bufsize, i
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal LeicaMotorFocus::LMFWriteCmd(int id, int cmd)
-{    
+{
     ito::RetVal retval = ito::retOk;
     char query[20];
     memset(&query, 0, 20*sizeof(char));
@@ -212,7 +212,7 @@ const ito::RetVal LeicaMotorFocus::LMFWriteCmd(int id, int cmd)
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal LeicaMotorFocus::LMFWriteCmdArg(int id, int cmd, long arg)
-{    
+{
     ito::RetVal retval = ito::retOk;
     char query[20];
     memset(&query, 0, 20*sizeof(char));
@@ -270,7 +270,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
         return retval;
     }
     /* check if response fits query */
-    
+
     if (!copy)
     {
         return ito::retError;
@@ -283,7 +283,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     {
         got_cmd = atol(ptr);
     }
-    if (id != got_id || cmd != got_cmd) 
+    if (id != got_id || cmd != got_cmd)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Answer \"%1\" to command '%2 %3' does not match query").arg(answer).arg(id).arg(cmd).replace('\r', "\\r").replace('\n', "\\n").toLatin1().data());
         free(copy);
@@ -292,7 +292,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
 
     ptr = strtok(NULL, " ");
     free(copy);
-    if (!ptr) 
+    if (!ptr)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Malformed answer '%1'").arg(answer).toLatin1().data());
         return retval;
@@ -386,7 +386,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
                 done = true;
             }
         }
-        
+
         setAlive();
 
         if (counter == 10) //actualize position every 10. round
@@ -486,7 +486,7 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "LeicaMotorFocus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     m_scale = 1e3; // Leica is Programmes in mu m, this evil Programm sent in mm
 
     paramVal = ito::Param("speed", ito::ParamBase::Double, FULLSPEED/1000, FULLSPEED, FULLSPEED, tr("Speed in m/s (Default=Maximum: 23,33 mm/s)").toLatin1().data());
@@ -555,7 +555,7 @@ ito::RetVal LeicaMotorFocus::getParam(QSharedPointer<ito::Param> val, ItomShared
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -649,7 +649,7 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
         emit parametersChanged(m_params);
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -659,7 +659,7 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore *waitCond)
-{   
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     long speed;
@@ -753,15 +753,15 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
     else
     {
         retval += LMFStatus(status);
-        sendStatusUpdate(true);    
+        sendStatusUpdate(true);
 
         setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-        sendStatusUpdate(true);    
-    
+        sendStatusUpdate(true);
+
         long oldspeed;
         QSharedPointer<double> oldPos(new double);
         QSharedPointer<double> endSwitchPos(new double);
-    
+
         /* Referenz goes up (!) */
         /* temporarily set speed to maximum */
         retval += LMFQueryL(70, GET_VELOCITY, &oldspeed);
@@ -824,7 +824,7 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
         retval += setPosRel(0, *oldPos - *endSwitchPos ,NULL);
 
         retval += LMFStatus(status);
-        sendStatusUpdate(true);    
+        sendStatusUpdate(true);
     }
 
     if (waitCond)
@@ -994,7 +994,7 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
     else
     {
         setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-        sendStatusUpdate(false);    
+        sendStatusUpdate(false);
 
         if (absrelflag == MOVE_RELATIVE)
         {
@@ -1006,7 +1006,7 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
         }
 
         sendTargetUpdate();
-    
+
         retValue += LMFDummyRead();
 
         if (dpos_temp < 0)
@@ -1050,7 +1050,7 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
                 *sharedpos << 0;
             }
             retval+=getPos(axis,sharedpos,0);
-            emit SentPositionChanged(axis,*sharedpos);    
+            emit SentPositionChanged(axis,*sharedpos);
         }*/
     }
 
@@ -1064,13 +1064,13 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     double target_pos = pos;
-    
+
     if (axis!=0)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
@@ -1088,7 +1088,7 @@ ito::RetVal LeicaMotorFocus::setPosAbs(const int axis, const double pos, ItomSha
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     if (axis.size() == 1)
@@ -1108,7 +1108,7 @@ ito::RetVal LeicaMotorFocus::setPosAbs(const QVector<int> axis, QVector<double> 
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1128,11 +1128,11 @@ ito::RetVal LeicaMotorFocus::setPosRel(const int axis, const double pos, ItomSha
     {
         retval = LMFSetPos(QVector<int>(1, axis), target_pos, MOVE_RELATIVE, waitCond);
     }
-    
+
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     if (axis.size() == 1)
@@ -1153,7 +1153,7 @@ ito::RetVal LeicaMotorFocus::setPosRel(const QVector<int> axis, QVector<double> 
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
@@ -1173,7 +1173,7 @@ ito::RetVal LeicaMotorFocus::requestStatusAndPosition(bool sendCurrentPos, bool 
         {
             m_targetPos[0] = *sharedpos;
         }
-        
+
         sendStatusUpdate(false);
     }
     else
@@ -1189,7 +1189,7 @@ ito::RetVal LeicaMotorFocus::requestStatusAndPosition(bool sendCurrentPos, bool 
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void LeicaMotorFocus::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1207,4 +1207,3 @@ void LeicaMotorFocus::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
-

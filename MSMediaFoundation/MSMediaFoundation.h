@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -38,7 +38,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MSMediaFoundation 
+  *\class    MSMediaFoundation
 
   */
 class MSMediaFoundation : public ito::AddInGrabber
@@ -137,7 +137,7 @@ class MSMediaFoundation : public ito::AddInGrabber
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MSMediaFoundationInterface 
+  *\class    MSMediaFoundationInterface
   *
   *\brief    Interface-Class for MSMediaFoundation-Class
   *

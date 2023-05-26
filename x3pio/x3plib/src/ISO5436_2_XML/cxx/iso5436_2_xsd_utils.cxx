@@ -41,7 +41,7 @@ std::basic_ostream<char>& operator<<(std::basic_ostream<char>& os, const xml_sch
    os << std::setfill('0') << std::setw(4) << datetime.year() << '-' << std::setw(2) << datetime.month()
       << '-' << std::setw(2) << datetime.day() << 'T' << std::setw(2) << datetime.hours()
       << ':' << std::setw(2) << datetime.minutes() << ':' << std::setw(2) << datetime.seconds();
-   
+
    if(datetime.zone_present())
    {
       int offset_h = datetime.zone_hours();

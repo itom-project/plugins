@@ -173,7 +173,7 @@ extern "C" {
    /*!
     * Sets the value of a three-dimensional data point vector at a given surface position.
     *
-    * Manipulates the point vector data stored in an ISO5436-2 X3P file directly.    
+    * Manipulates the point vector data stored in an ISO5436-2 X3P file directly.
     *
     * @remarks The data types of the values stored in the given vector parameter must correspond
     * with the data types specified in the ISO5436-2 XML document within the axes definition area.

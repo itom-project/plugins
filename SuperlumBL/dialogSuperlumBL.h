@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -40,7 +40,7 @@ namespace ito
     class AddInDataIO; //forward declaration
 }
 
-class DialogSuperlumBL : public ito::AbstractAddInConfigDialog 
+class DialogSuperlumBL : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
@@ -54,7 +54,7 @@ class DialogSuperlumBL : public ito::AbstractAddInConfigDialog
         void enableDialog(bool enabled);
         bool m_firstRun;
         bool m_inEditing;
-        Ui::DialogSuperlumBL ui; 
+        Ui::DialogSuperlumBL ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

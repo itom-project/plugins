@@ -49,7 +49,7 @@ typedef unsigned int   dword;    /* 32-bit */
 #define WIDEPIXEL  8
 
 
-//@ver1.007 
+//@ver1.007
 //defines for vbin setting
 #define VBIN_1X 0
 #define VBIN_2X 1
@@ -69,12 +69,12 @@ typedef unsigned int   dword;    /* 32-bit */
 //@ver1.008 Standby function modes
 #define FAN     0x01
 #define PELTIER 0x02
-#define HEADELE 0x04  
+#define HEADELE 0x04
 
 
 //defines for struct BOARDVAL
 //ptr is the pointer to the buffer, which keeps the structure BOARDVAL
-#define PCC_BOARDTYP(ptr) (*((dword *)ptr+0)&0x0FF0)  
+#define PCC_BOARDTYP(ptr) (*((dword *)ptr+0)&0x0FF0)
 #define PCC_BOARDNR(ptr)  (*((dword *)ptr+0)&0x0F)
 
 //@ver1.007
@@ -82,24 +82,24 @@ typedef unsigned int   dword;    /* 32-bit */
 #define PCC_BOARDINIT(ptr)    ((*((dword *)ptr+0)&0x10000000) ? 1 : 0)
 
 //check if board supports these options
-#define PCC_BOARD_420L(ptr)   ((*((dword *)ptr+0)&0x00001000) ? 1 : 0)  
-#define PCC_BOARD_SVGA(ptr)   ((*((dword *)ptr+0)&0x00002000) ? 1 : 0)  
-#define PCC_BOARD_HVGA(ptr)   ((*((dword *)ptr+0)&0x00004000) ? 1 : 0)  
-#define PCC_BOARD_IR(ptr)     ((*((dword *)ptr+0)&0x00008000) ? 1 : 0)  
-#define PCC_BOARD_DOUBLE(ptr) ((*((dword *)ptr+0)&0x00010000) ? 1 : 0)  
-#define PCC_BOARD_EXP(ptr)    ((*((dword *)ptr+0)&0x00020000) ? 1 : 0)  
+#define PCC_BOARD_420L(ptr)   ((*((dword *)ptr+0)&0x00001000) ? 1 : 0)
+#define PCC_BOARD_SVGA(ptr)   ((*((dword *)ptr+0)&0x00002000) ? 1 : 0)
+#define PCC_BOARD_HVGA(ptr)   ((*((dword *)ptr+0)&0x00004000) ? 1 : 0)
+#define PCC_BOARD_IR(ptr)     ((*((dword *)ptr+0)&0x00008000) ? 1 : 0)
+#define PCC_BOARD_DOUBLE(ptr) ((*((dword *)ptr+0)&0x00010000) ? 1 : 0)
+#define PCC_BOARD_EXP(ptr)    ((*((dword *)ptr+0)&0x00020000) ? 1 : 0)
 //@ver1.008
-#define PCC_BOARD_VGA2(ptr)   ((*((dword *)ptr+0)&0x00040000) ? 1 : 0)  
-#define PCC_BOARD_QE(ptr)     ((*((dword *)ptr+0)&0x00080000) ? 1 : 0)  
-#define PCC_BOARD_SMALL(ptr)  ((*((dword *)ptr+0)&0x00100000) ? 1 : 0)  
-#define PCC_BOARD_5US(ptr)    ((*((dword *)ptr+0)&0x00200000) ? 1 : 0)  
+#define PCC_BOARD_VGA2(ptr)   ((*((dword *)ptr+0)&0x00040000) ? 1 : 0)
+#define PCC_BOARD_QE(ptr)     ((*((dword *)ptr+0)&0x00080000) ? 1 : 0)
+#define PCC_BOARD_SMALL(ptr)  ((*((dword *)ptr+0)&0x00100000) ? 1 : 0)
+#define PCC_BOARD_5US(ptr)    ((*((dword *)ptr+0)&0x00200000) ? 1 : 0)
 
 //camera status
 #define PCC_CAMSTAT(ptr)  (*((dword *)ptr+1))
 #define PCC_CAM_RUN(ptr)  (*((dword *)ptr+1)&0x01)
 #define PCC_NO_HEAD(ptr) ((*((dword *)ptr+1)>>27)&0x01)
 
-//actual ccdsize 
+//actual ccdsize
 #define PCC_CCDXSIZE(ptr)  *((dword *)ptr+2)
 #define PCC_CCDYSIZE(ptr)  *((dword *)ptr+3)
 
@@ -118,24 +118,24 @@ typedef unsigned int   dword;    /* 32-bit */
 //exposure time of last image
 #define PCC_LASTEXP(ptr)   *((dword *)ptr+11)
 
-//@ver1.007 
-#define PCC_CCDTYPE(ptr)   *((dword *)ptr+17) 
-#define PCC_LINETIME(ptr)   *((dword *)ptr+18) 
+//@ver1.007
+#define PCC_CCDTYPE(ptr)   *((dword *)ptr+17)
+#define PCC_LINETIME(ptr)   *((dword *)ptr+18)
 
 
 //check if sytem (board + head) supports these options
-#define PCC_DOUBLE(ptr)   (*((dword *)ptr+12)&0x01) 
-#define PCC_PRISMA(ptr)  ((*((dword *)ptr+12)>>8)&0x0FF) 
-#define PCC_COLOR(ptr)    (*((dword *)ptr+17)&0x01)  //@ver1.008 
+#define PCC_DOUBLE(ptr)   (*((dword *)ptr+12)&0x01)
+#define PCC_PRISMA(ptr)  ((*((dword *)ptr+12)>>8)&0x0FF)
+#define PCC_COLOR(ptr)    (*((dword *)ptr+17)&0x01)  //@ver1.008
 
 //@ver1.007
-//check for installed CCD 
-#define PCC_CCDVGA(ptr)  (((*((dword *)ptr+17)&~0x0F)==0x00) ? 1 : 0) 
-#define PCC_CCDSVGA(ptr) (((*((dword *)ptr+17)&~0x0F)==0x10) ? 1 : 0)  
-#define PCC_CCDHVGA(ptr) (((*((dword *)ptr+17)&~0x0F)==0x20) ? 1 : 0)   
-#define PCC_CCDIR(ptr)   (((*((dword *)ptr+17)&~0x0F)==0x30) ? 1 : 0)   
+//check for installed CCD
+#define PCC_CCDVGA(ptr)  (((*((dword *)ptr+17)&~0x0F)==0x00) ? 1 : 0)
+#define PCC_CCDSVGA(ptr) (((*((dword *)ptr+17)&~0x0F)==0x10) ? 1 : 0)
+#define PCC_CCDHVGA(ptr) (((*((dword *)ptr+17)&~0x0F)==0x20) ? 1 : 0)
+#define PCC_CCDIR(ptr)   (((*((dword *)ptr+17)&~0x0F)==0x30) ? 1 : 0)
 
-//handle opencount 
+//handle opencount
 #define PCC_DEVOPENCOUNT(ptr) *((dword *)ptr+20)
 
 //check if buffer is in DMA or waiting for start of DMA
@@ -147,42 +147,42 @@ typedef unsigned int   dword;    /* 32-bit */
 
 //defines for struct DEVBUF
 //ptr is the pointer to the buffer, which keeps the structure DEVBUF
-//buffer DMA is running or setup 
-#define PCC_BUF_STAT_WRITE(ptr)        (*((dword *)ptr+0)&0x01) 
+//buffer DMA is running or setup
+#define PCC_BUF_STAT_WRITE(ptr)        (*((dword *)ptr+0)&0x01)
 //buffer DMA is done
-#define PCC_BUF_STAT_WRITE_DONE(ptr)  ((*((dword *)ptr+0)>>1)&0x01) 
+#define PCC_BUF_STAT_WRITE_DONE(ptr)  ((*((dword *)ptr+0)>>1)&0x01)
 //buffer is in list
-#define PCC_BUF_STAT_QUEUED(ptr)      ((*((dword *)ptr+0)>>2)&0x01) 
+#define PCC_BUF_STAT_QUEUED(ptr)      ((*((dword *)ptr+0)>>2)&0x01)
 
 //buffer was cancelled, during DMA
-#define PCC_BUF_STAT_CANCELLED(ptr)   ((*((dword *)ptr+0)>>3)&0x01) 
+#define PCC_BUF_STAT_CANCELLED(ptr)   ((*((dword *)ptr+0)>>3)&0x01)
 //buffer has event enabled
-#define PCC_BUF_STAT_SELECT(ptr)      ((*((dword *)ptr+0)>>4)&0x01) 
+#define PCC_BUF_STAT_SELECT(ptr)      ((*((dword *)ptr+0)>>4)&0x01)
 //buffer event is done
 #define PCC_BUF_STAT_SELECT_DONE(ptr) ((*((dword *)ptr+0)>>5)&0x01)
 
-//buffer removed from list with sw-comand 
+//buffer removed from list with sw-comand
 #define PCC_BUF_STAT_REMOVED(ptr)     ((*((dword *)ptr+0)>>8)&0x01)
 
-//buffer errorflags 
-#define PCC_BUF_STAT_ERROR(ptr)       ((*((dword *)ptr+0)>>12)&0x0F) 
-#define PCC_BUF_STAT_BURST_ERROR(ptr) ((*((dword *)ptr+0)>>12)&0x01) 
-#define PCC_BUF_STAT_SIZE_ERROR(ptr)  ((*((dword *)ptr+0)>>13)&0x01) 
-#define PCC_BUF_STAT_PCI_ERROR(ptr)   ((*((dword *)ptr+0)>>14)&0x01) 
-#define PCC_BUF_STAT_TIMEOUT_ERROR(ptr) ((*((dword *)ptr+0)>>15)&0x01) 
- 
-//buffer errorflags 
-#define PCC_BUF_OPENCOUNT(ptr) ((*((dword *)ptr+0)>>16)&0xFF) 
-#define PCC_BUF_MAPCOUNT(ptr)   (*((dword *)ptr+14)>>16) 
+//buffer errorflags
+#define PCC_BUF_STAT_ERROR(ptr)       ((*((dword *)ptr+0)>>12)&0x0F)
+#define PCC_BUF_STAT_BURST_ERROR(ptr) ((*((dword *)ptr+0)>>12)&0x01)
+#define PCC_BUF_STAT_SIZE_ERROR(ptr)  ((*((dword *)ptr+0)>>13)&0x01)
+#define PCC_BUF_STAT_PCI_ERROR(ptr)   ((*((dword *)ptr+0)>>14)&0x01)
+#define PCC_BUF_STAT_TIMEOUT_ERROR(ptr) ((*((dword *)ptr+0)>>15)&0x01)
+
+//buffer errorflags
+#define PCC_BUF_OPENCOUNT(ptr) ((*((dword *)ptr+0)>>16)&0xFF)
+#define PCC_BUF_MAPCOUNT(ptr)   (*((dword *)ptr+14)>>16)
 
 //exposure time of last done image
-#define PCC_BUF_EXPTIME(ptr)      *((dword *)ptr+1) 
+#define PCC_BUF_EXPTIME(ptr)      *((dword *)ptr+1)
 
-#define PCC_BUF_ACT_OFFSET(ptr)   *((dword *)ptr+17) 
-#define PCC_BUF_ACT_SIZE(ptr)     *((dword *)ptr+18) 
-#define PCC_BUF_ACT_TRANSFER(ptr) *((dword *)ptr+19) 
+#define PCC_BUF_ACT_OFFSET(ptr)   *((dword *)ptr+17)
+#define PCC_BUF_ACT_SIZE(ptr)     *((dword *)ptr+18)
+#define PCC_BUF_ACT_TRANSFER(ptr) *((dword *)ptr+19)
 
-#define PCC_BUF_TOTAL_SIZE(ptr)    (*((dword *)ptr+21) * *((dword *)ptr+22)) 
+#define PCC_BUF_TOTAL_SIZE(ptr)    (*((dword *)ptr+21) * *((dword *)ptr+22))
 
 
 //defines for SETDRIVEREVENT mode
@@ -202,5 +202,3 @@ typedef unsigned int   dword;    /* 32-bit */
 #define WRITE_EEPROM_SIZE 128
 
 #endif /* PCCAMDEF_H */
-
-

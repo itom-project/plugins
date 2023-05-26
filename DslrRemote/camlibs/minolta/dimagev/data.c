@@ -84,7 +84,7 @@ int dimagev_get_camera_data(dimagev_t *dimagev) {
 		free(p);
 		return GP_ERROR_IO;
 	}
-		
+
 	if ( gp_port_read(dimagev->dev, (char*)&char_buffer, 1) < GP_OK ) {
 		GP_DEBUG( "dimagev_get_camera_data::no response from camera");
 		free(p);
@@ -166,7 +166,7 @@ int dimagev_send_data(dimagev_t *dimagev) {
 		free(export_data);
 		return GP_ERROR_IO;
 	}
-		
+
 	free(p);
 
 	switch ( char_buffer ) {
@@ -201,7 +201,7 @@ int dimagev_send_data(dimagev_t *dimagev) {
 	}
 
 	free(p);
-		
+
 	if ( gp_port_read(dimagev->dev, (char*)&char_buffer, 1) < GP_OK ) {
 		GP_DEBUG( "dimagev_send_data::no response from camera");
 		return GP_ERROR_IO;
@@ -227,7 +227,7 @@ int dimagev_send_data(dimagev_t *dimagev) {
 		GP_DEBUG( "dimagev_send_data::unable to send EOT");
 		return GP_ERROR_IO;
 	}
-		
+
 	if ( gp_port_read(dimagev->dev, (char*)&char_buffer, 1) < GP_OK ) {
 		GP_DEBUG( "dimagev_send_data::no response from camera");
 		return GP_ERROR_IO;

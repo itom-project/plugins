@@ -49,7 +49,7 @@ DialogAvtVimba::DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum/*
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
-{ 
+{
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -76,7 +76,7 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         ui.rangeY01->setMaximum(im->getMax());
         ui.rangeY01->setMaximumValue(im->getMax());
 #endif
-        
+
         ui.groupGigE->setVisible( QString("GigE") == params["interface"].getVal<char*>());
         //window()->resize(window()->size());
 
@@ -110,7 +110,7 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         }
 
         m_firstRun = false;
-        
+
         //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
         enableDialog(true);
     }
@@ -297,7 +297,7 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         ui.spinPacketSize->setMaximum(it->getMax());
         ui.spinPacketSize->setValue(it->getVal<int>());
     }
-    
+
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
 }

@@ -147,7 +147,7 @@ static int jamcam_mmc_card_file_count (Camera *camera) {
 
 				jamcam_set_int_at_pos( buf, 4, position );
 				jamcam_write_packet( camera, buf, 8 );
-			
+
 				jamcam_read_packet( camera, reply, 16 );
 			}
 			break;
@@ -263,7 +263,7 @@ int jamcam_file_count (Camera *camera) {
 
 				jamcam_set_int_at_pos( buf, 4, position );
 				jamcam_write_packet( camera, buf, 8 );
-			
+
 				jamcam_read_packet( camera, reply, 16 );
 			}
 
@@ -378,7 +378,7 @@ static int jamcam_fetch_memory( Camera *camera, CameraFile *file,
 
 				break;
 		}
-				
+
 		bytes_left -= bytes_to_read;
 		bytes_read += bytes_to_read;
 
@@ -425,7 +425,7 @@ int jamcam_request_image( Camera *camera, CameraFile *file,
 			0x0000,
 			NULL, 0 );
 	}
-	
+
 	result = jamcam_fetch_memory( camera, file, tmp_buf, position,
 		jamcam_files[number].data_incr, context );
 
@@ -700,4 +700,3 @@ static int jamcam_query_mmc_card (Camera *camera)
 	}
 	return (GP_ERROR_TIMEOUT);
 }
-

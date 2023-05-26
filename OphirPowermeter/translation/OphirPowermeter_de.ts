@@ -194,8 +194,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. 
-It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. 
+        <source>The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir.
+It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter.
 
 Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.For the USB type it is necessary to install the COM object which comes with StarLab form Ophir.Download page: https://www.ophiropt.com/laser--measurement/software/com-object</source>
         <translation type="unfinished"></translation>

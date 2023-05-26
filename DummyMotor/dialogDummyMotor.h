@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -35,7 +35,7 @@
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
-#include "ui_dialogDummyMotor.h" 
+#include "ui_dialogDummyMotor.h"
 
 namespace ito
 {
@@ -51,7 +51,7 @@ namespace ito
 *
 *\sa DummyMotor
 */
-class DialogDummyMotor : public ito::AbstractAddInConfigDialog 
+class DialogDummyMotor : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 

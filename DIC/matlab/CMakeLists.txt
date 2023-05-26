@@ -23,7 +23,7 @@ SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librar
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-find_package(OpenCV COMPONENTS core imgproc REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
+find_package(OpenCV COMPONENTS core imgproc REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
 
 #try to enable OpenMP (e.g. not available with VS Express)
 find_package(OpenMP QUIET)
@@ -109,7 +109,7 @@ INCLUDE_DIRECTORIES(
 #    set(CUDA_SEPARABLE_COMPILATION ON)
 #    set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 #    set(CUDA_VERBOSE_BUILD ON)
-#    #set(CUDA_HOST_COMPILER clang++) 
+#    #set(CUDA_HOST_COMPILER clang++)
 #endif (CUDA_FOUND)
 
 #################################################################
@@ -177,7 +177,7 @@ set(plugin_RCC
 # Group files in their original folder structure (MSVC only)
 # If you have some header and source files in a specific
 # subfolder, you can even have this subfolder in your
-# IDE (mainly Visual Studio supports this). Then call 
+# IDE (mainly Visual Studio supports this). Then call
 # ADD_SOURCE_GROUP(directoryName) for each subdirectory.
 #
 # HINT: This command does nothing for IDE different than MSVC.
@@ -186,7 +186,7 @@ set(plugin_RCC
 
 #################################################################
 # Compile and link the plugin library
-# 
+#
 #################################################################
 
 #add all (generated) header and source files to the library (these files are compiled then)

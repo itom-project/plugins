@@ -133,7 +133,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
                 key = curLine.mid(2);
                 if (currentSection != key)
                 {
-                
+
 
                     currentSection = key;
                     if (key.contains("Ciao image list"))
@@ -182,7 +182,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
                     col += 1;
                 } while (isspace(*col));//go to first value
                 startValue = col - curLine.constData();
-                while (*col != '\r' && !isspace(*col) )//search where the value ends 
+                while (*col != '\r' && !isspace(*col) )//search where the value ends
                 {
                     col += 1;
                 }
@@ -240,7 +240,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
             it = headerParts["File list\r\n"].constFind("Version");
             if (it != headerParts["File list\r\n"].constEnd())
             {
-                if (strtol(it->data(), NULL, 16) >= 0x09200000)//if true we are assuming that we have 32bit data 
+                if (strtol(it->data(), NULL, 16) >= 0x09200000)//if true we are assuming that we have 32bit data
                 {
                     bpp = 4;
                 }
@@ -278,7 +278,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
                 }
                 unit = byteScale.mid(end + 2, ptr - byteScale.constData() - end - 2);
 
-                    
+
             }
             else
             {
@@ -291,8 +291,8 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
                 {
                     val = iter.first;
 
-                    
-                        
+
+
                         if (val == "Scanner list\r\n" || val == "Microscope list\r\n" || val == "Equipment list\r\n" || val == "File list\r\n" || val == "Controller list\r\n")
                         {
                             continue;
@@ -314,7 +314,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
                         {
                             ++ciaoImageCount;
                         }
-                    
+
 
                 }
                 if (!retval.containsError())
@@ -324,7 +324,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
 
             }
         }
-        
+
     }
     return retval;
 }
@@ -415,10 +415,10 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 
 
 
-    
+
     QList<QByteArray> keyList(map->keys());
     if (!keyList.contains(QByteArray("Samps/line")) || !keyList.contains(QByteArray("Number of lines")) || !keyList.contains(QByteArray("Aspect ratio")) || !keyList.contains(QByteArray("Scan size")) || !keyList.contains("Data offset") || !keyList.contains("Data length") || !keyList.contains("@2:Z scale") )
-    {    //version = 4.2 
+    {    //version = 4.2
         old = true;
         if (!keyList.contains(QByteArray("Samps/line")) || !keyList.contains(QByteArray("Number of lines")) || !keyList.contains(QByteArray("Aspect ratio")) || !keyList.contains(QByteArray("Scan size")) || !keyList.contains("Data offset") || !keyList.contains("Data length") || !keyList.contains("Z scale"))
         {
@@ -458,7 +458,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
             }
             while (isspace(*end))
                 end++;
-            if (sscanf(end, "%4s", un) != 1) 
+            if (sscanf(end, "%4s", un) != 1)
             {
                 retval += ito::RetVal(ito::retError, 0, "Cannot parse `Scan size' field.");
 
@@ -500,7 +500,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
                         retval += ito::RetVal(ito::retError, 0, "Cannot convert 'Z scale'.");
                     }
                 }
-                
+
                 //Try if the size fits to data
                 if (!sizeOK && size == bpp*x*y)
                 {
@@ -562,7 +562,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
                     {
                         fieldY = 1.0;
                     }
-                    //todo z scaling 
+                    //todo z scaling
                     switch (bpp)
                     {
                     case 4:
@@ -599,7 +599,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
 
 
         }
-    
+
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -337,10 +337,10 @@
     </message>
     <message>
         <location line="+9"/>
-        <source>The PCOSensicam is a plugin to access PCO sensicam, dicam pro and hsfc pro cameras. 
+        <source>The PCOSensicam is a plugin to access PCO sensicam, dicam pro and hsfc pro cameras.
 
-For compiling this plugin, set the CMake variable **PCO_SENSICAM_SDK_DIR** to the base directory of the pco.sensicam.sdk. 
-The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). 
+For compiling this plugin, set the CMake variable **PCO_SENSICAM_SDK_DIR** to the base directory of the pco.sensicam.sdk.
+The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)).
 Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.</source>
         <translation type="unfinished"></translation>
     </message>

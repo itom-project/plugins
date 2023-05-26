@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -27,7 +27,7 @@ extern int NTHREADS;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
-*\class    Spider8Interface 
+*\class    Spider8Interface
 *
 *\brief    Interface-Class for Spider8-Class
 *
@@ -124,7 +124,7 @@ class Spider8 : public ito::AddInDataIO
     protected:
         ~Spider8();
         Spider8();
-        
+
     public:
         friend class Spider8Interface;
         const ito::RetVal showConfDialog(void);
@@ -163,7 +163,7 @@ class Spider8 : public ito::AddInDataIO
     private:
         ito::RetVal checkData(ito::DataObject *externalDataObject, int channels, int samples);
 
-        bool m_isgrabbing; //!< Check if acquire was executed 
+        bool m_isgrabbing; //!< Check if acquire was executed
         ito::AddInDataIO *m_pSer;
 
         // These three bools are set true by the acquire method to indicate what kind of data is
@@ -172,7 +172,7 @@ class Spider8 : public ito::AddInDataIO
         bool m_dInIsAcquired;
 
         bool m_dOutIsAcquired;
-        
+
         ito::DataObject m_data;
         Spider8Funcs *m_pSpider;
         int m_baud;
@@ -181,11 +181,11 @@ class Spider8 : public ito::AddInDataIO
         // Read-functions
         ito::RetVal readAnalog(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         ito::RetVal readDigital(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-        
+
         // Write-functions
         //ito::RetVal writeAnalog(const ito::DataObject *externalDataObject = NULL);
         ito::RetVal writeDigital(const int channel, ito::DataObject *externalDataObject = NULL);
-        
+
     public slots:
         //!< Get ADC-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
@@ -204,11 +204,11 @@ class Spider8 : public ito::AddInDataIO
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         //!< Wait for acquired picture, copy the Values to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        //!< 
+        //!<
         ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
-        //!< 
+        //!<
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        
+
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
@@ -277,7 +277,7 @@ class Spider8Funcs
                     doPtr[ns + nc * numSamples] = dInPtr[ns + nc] > 32767 ? (dInPtr[ns + nc] - 65536) * scales[nc] : dInPtr[ns + nc] * scales[nc];
                 }
             }
-            
+
             return retValue;
         }
         inline int getLastIdx() const { return m_lastIdxRead; }

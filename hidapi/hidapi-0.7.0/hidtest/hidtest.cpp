@@ -7,7 +7,7 @@
  8/22/2009
 
  Copyright 2009, All Rights Reserved.
- 
+
  This contents of this file may be used by anyone
  for any reason without any conditions and may be
  used as a starting point for your own applications
@@ -42,9 +42,9 @@ int main(int argc, char* argv[])
 #endif
 
 	struct hid_device_info *devs, *cur_dev;
-	
+
 	devs = hid_enumerate(0x0, 0x0);
-	cur_dev = devs;	
+	cur_dev = devs;
 	while (cur_dev) {
 		printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
 		printf("\n");
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 	memset(buf,0x00,sizeof(buf));
 	buf[0] = 0x01;
 	buf[1] = 0x81;
-	
+
 
 	// Open the device using the VID, PID,
 	// and optionally the Serial number.
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 
 	// Set the hid_read() function to be non-blocking.
 	hid_set_nonblocking(handle, 1);
-	
+
 	// Try to read from the device. There shoud be no
 	// data here, but execution should not block.
 	res = hid_read(handle, buf, 17);
@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 		printf("Unable to write()\n");
 		printf("Error: %ls\n", hid_error(handle));
 	}
-	
+
 
 	// Request state (cmd 0x81). The first byte is the report number (0x1).
 	buf[0] = 0x1;

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -29,7 +29,7 @@
 #include "dockWidgetLeicaMotorFocus.h"
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    LeicaMotorFocus 
+  *\class    LeicaMotorFocus
   *\brief    class to use a motorized Leica MZ12 or MZ12.5 as an ITOM-Addin. Child of AddIn - Library (DLL) - Interface
   *
   *         This class can be used to work with a motorized Leica MZ12(.5). The motor has only one axis (z) with the axis number 0.
@@ -122,7 +122,7 @@ class LeicaMotorFocus : public ito::AddInActuator
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    LeicaMotorFocusInterface 
+  *\class    LeicaMotorFocusInterface
   *
   *\brief    Interface-Class for LeicaMotorFocusInterface-Class
   *
@@ -148,7 +148,7 @@ class LeicaMotorFocusInterface : public ito::AddInInterfaceBase
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
-        
+
     signals:
 
     public slots:

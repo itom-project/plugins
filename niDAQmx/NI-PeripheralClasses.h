@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -34,7 +34,7 @@
 
 #if defined(__linux__) || defined(__APPLE__)
     #ifndef _NI_int64_DEFINED_
-    #define _NI_int64_DEFINED_   
+    #define _NI_int64_DEFINED_
         typedef int64_t      int64;
     #endif
 #endif
@@ -49,16 +49,16 @@ class NiBaseChannel
 {
     // enums
     public:
-        enum NiChannelIoType 
+        enum NiChannelIoType
         {
-            ChIoOutput = 0, 
-            ChIoInput = 1 
+            ChIoOutput = 0,
+            ChIoInput = 1
         };
 
-        enum NiChannelType 
+        enum NiChannelType
         {
-            ChTypeAnalog = 0, 
-            ChTypeDigital = 1, 
+            ChTypeAnalog = 0,
+            ChTypeDigital = 1,
             ChTypeCounter = 2
         };
 
@@ -83,20 +83,20 @@ class NiBaseChannel
 class NiAnalogInputChannel : public NiBaseChannel
 {
     public:
-        
-        enum NiAITerminalConfig 
+
+        enum NiAITerminalConfig
         {
-            NiTerminalConfDefault = 0, 
-            NiTerminalConfDifferential = 1, 
-            NiTerminalConfRSE = 2, 
-            NiTerminalConfNRSE = 3, 
+            NiTerminalConfDefault = 0,
+            NiTerminalConfDifferential = 1,
+            NiTerminalConfRSE = 2,
+            NiTerminalConfNRSE = 3,
             NiTerminalConfPseudoDiff = 4,
             NiTerminalConfEndValue = 5 //never used, but this number is always the end of the enumeration in order to check for valid input.
         };
 
         NiAnalogInputChannel(const QString &physicalName);
         ~NiAnalogInputChannel();
-        
+
         static NiBaseChannel* fromConfigurationString(const QString &configString, ito::RetVal &retValue);
 
         double getMaxInputLim() { return m_maxInputLim; }
@@ -123,18 +123,18 @@ class NiAnalogInputChannel : public NiBaseChannel
 class NiAnalogOutputChannel : public NiBaseChannel
 {
     public:
-        enum NiAnalogOutputMode 
+        enum NiAnalogOutputMode
         {
-            NiAnOutModeVoltageDC = 0, 
+            NiAnOutModeVoltageDC = 0,
             NiAnOutModeSinewaveGen = 1
         };
 
-        enum NiAnalogOutputTransferMechanism 
+        enum NiAnalogOutputTransferMechanism
         {
-            niAnOutTransMechDMA = 0, 
-            niAnOutTransMechInterrupts = 1, 
-            niAnOutTransMechProgrammedIO = 2, 
-            niAnOutTransMechUSBBulk = 3, 
+            niAnOutTransMechDMA = 0,
+            niAnOutTransMechInterrupts = 1,
+            niAnOutTransMechProgrammedIO = 2,
+            niAnOutTransMechUSBBulk = 3,
             niAnOutTransMechDefault = 4
         };
 
@@ -192,5 +192,3 @@ class NiDigitalOutputChannel : public NiBaseChannel
 
 
 #endif //#define NI-PeriphralClasses_h
-
-

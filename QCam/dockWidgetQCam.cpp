@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,7 +24,7 @@
 
  DockWidgetQCam::DockWidgetQCam()
  {
-    ui.setupUi(this); 
+    ui.setupUi(this);
  }
 
  void DockWidgetQCam::valuesChanged(QMap<QString, ito::Param> params)
@@ -49,7 +49,7 @@ void DockWidgetQCam::on_doubleSpinBoxGain_editingFinished()
     double gain = ui.doubleSpinBoxGain->value();
 
     ui.horizontalSliderGain->setValue((int)(ui.doubleSpinBoxGain->value()*100+0.5));
-    
+
     QMap<QString, ito::ParamBase> paramsVals;
     ito::ParamBase param("gain", ito::ParamBase::Double, gain);
     paramsVals.insert(param.getName(), param);

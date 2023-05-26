@@ -49,7 +49,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogVistek.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetVistek.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/VistekGigESDK/SVGigE.cpp

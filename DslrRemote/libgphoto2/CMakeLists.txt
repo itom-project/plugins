@@ -64,7 +64,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/jpeg.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ahd_bayer.c
     ${CMAKE_CURRENT_SOURCE_DIR}/bayer.c
     ${CMAKE_CURRENT_SOURCE_DIR}/exif.c
@@ -90,8 +90,8 @@ endif()
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
-target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
-    ../libgphoto2_port/$(Configuration)/libgphoto2_port 
+target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
+    ../libgphoto2_port/$(Configuration)/libgphoto2_port
     ../libtool/$(Configuration)/libltdl
     ../regex/$(Configuration)/regex)
 

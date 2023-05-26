@@ -19,13 +19,13 @@ Parameter::Parameter()
     CurrentValue = 0;
 
     Min = 0;
-    
+
     Max = 0;
-    
+
     Step = 0;
-    
-    Default = 0; 
-    
+
+    Default = 0;
+
     Flag = 0;
 
     Available = false;
@@ -55,52 +55,52 @@ void MediaType::Clear()
     height = 0;
 
     width = 0;
-            
+
     MF_MT_YUV_MATRIX = 0;
-    
+
     MF_MT_VIDEO_LIGHTING = 0;
-    
+
     MF_MT_DEFAULT_STRIDE = 0;
-    
+
     MF_MT_VIDEO_CHROMA_SITING = 0;
-        
+
     MF_MT_FIXED_SIZE_SAMPLES = 0;
-    
+
     MF_MT_VIDEO_NOMINAL_RANGE = 0;
-    
+
     MF_MT_FRAME_RATE = 0;
 
     MF_MT_FRAME_RATE_low = 0;
-    
+
     MF_MT_PIXEL_ASPECT_RATIO = 0;
-        
+
     MF_MT_PIXEL_ASPECT_RATIO_low = 0;
-    
+
     MF_MT_ALL_SAMPLES_INDEPENDENT = 0;
-    
+
     MF_MT_FRAME_RATE_RANGE_MIN = 0;
 
     MF_MT_FRAME_RATE_RANGE_MIN_low = 0;
-    
+
     MF_MT_SAMPLE_SIZE = 0;
-    
+
     MF_MT_VIDEO_PRIMARIES = 0;
-    
+
     MF_MT_INTERLACE_MODE = 0;
-    
+
     MF_MT_FRAME_RATE_RANGE_MAX = 0;
 
     MF_MT_FRAME_RATE_RANGE_MAX_low = 0;
-                
+
     memset(&MF_MT_MAJOR_TYPE, 0, sizeof(GUID));
-        
+
     memset(&MF_MT_AM_FORMAT_TYPE, 0, sizeof(GUID));
-            
+
     memset(&MF_MT_SUBTYPE, 0, sizeof(GUID));
 }
 
 //--------------------------------------------------------------------------------
-VideoInput::VideoInput(QSharedPointer<DebugPrintOut> debugPrintOut): 
+VideoInput::VideoInput(QSharedPointer<DebugPrintOut> debugPrintOut):
     m_accessToDevices(false),
     m_debugPrintOut(debugPrintOut)
 {
@@ -111,7 +111,7 @@ VideoInput::VideoInput(QSharedPointer<DebugPrintOut> debugPrintOut):
     m_debugPrintOut->printOut("\n***** VideoInput LIBRARY - 2013 (Author: Evgeny Pereguda) *****\n\n");
 
     updateListOfDevices();
-    
+
     if (!m_accessToDevices)
     {
         m_debugPrintOut->printOut("INITIALIZATION: Ther is not any suitable video device\n");
@@ -141,7 +141,7 @@ IMFMediaSource *VideoInput::getMediaSource(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             IMFMediaSource *out = VD->getMediaSource();
@@ -168,7 +168,7 @@ bool VideoInput::setupDevice(unsigned int deviceID, unsigned int id)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             bool out = VD->setupDevice(id);
@@ -195,7 +195,7 @@ bool VideoInput::setupDevice(unsigned int deviceID, unsigned int w, unsigned int
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             bool out = VD->setupDevice(w, h, idealFramerate);
@@ -222,7 +222,7 @@ MediaType VideoInput::getFormat(unsigned int deviceID, unsigned int id)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->getFormat(id);
@@ -242,7 +242,7 @@ bool VideoInput::isDeviceSetup(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->isDeviceSetup();
@@ -262,7 +262,7 @@ bool VideoInput::isDeviceMediaSource(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->isDeviceMediaSource();
@@ -282,7 +282,7 @@ bool VideoInput::isDeviceRawDataSource(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->isDeviceRawDataSource();
@@ -298,7 +298,7 @@ bool VideoInput::isDeviceRawDataSource(unsigned int deviceID)
 
 //--------------------------------------------------------------------------------
 bool VideoInput::isFrameNew(unsigned int deviceID)
-{    
+{
     if (m_accessToDevices)
     {
         if (!isDeviceSetup(deviceID))
@@ -308,7 +308,7 @@ bool VideoInput::isFrameNew(unsigned int deviceID)
         }
 
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->isFrameNew();
@@ -328,7 +328,7 @@ size_t VideoInput::getCountFormats(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->getCountFormats();
@@ -387,7 +387,7 @@ CamParameters VideoInput::getParameters(unsigned int deviceID)
     {
         m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
     }
-    
+
     return out;
 }
 
@@ -415,7 +415,7 @@ unsigned int VideoInput::getWidth(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->getWidth();
@@ -435,7 +435,7 @@ unsigned int VideoInput::getHeight(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->getHeight();
@@ -462,7 +462,7 @@ const wchar_t *VideoInput::getNameVideoDevice(unsigned int deviceID)
     if (m_accessToDevices)
     {
         VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
         if (VD)
         {
             return VD->getName();
@@ -502,7 +502,7 @@ unsigned int VideoInput::listDevices(bool silent)
 
         for(size_t i = 0; i < out; i++)
         {
-            if (!silent) 
+            if (!silent)
             {
                 m_debugPrintOut->printOut("SETUP: %i) %s \n", i, getNameVideoDevice(i));
             }
@@ -510,7 +510,7 @@ unsigned int VideoInput::listDevices(bool silent)
 
         if (!silent)
         {
-            m_debugPrintOut->printOut("SETUP: %i Device(s) found\n\n", out); 
+            m_debugPrintOut->printOut("SETUP: %i Device(s) found\n\n", out);
         }
 
 
@@ -532,7 +532,7 @@ bool VideoInput::isDevicesAcceable()
 //--------------------------------------------------------------------------------
 void VideoInput::setVerbose(bool state)
 {
-    return m_debugPrintOut->setVerbose(state);    
+    return m_debugPrintOut->setVerbose(state);
 }
 
 //--------------------------------------------------------------------------------
@@ -543,7 +543,7 @@ void VideoInput::setEmergencyStopEvent(unsigned int deviceID, void *userData, vo
         if (func)
         {
             VideoDevice * VD = m_videoDevices->getDevice(deviceID);
-        
+
             if (VD)
             {
                 VD->setEmergencyStopEvent(userData, func);
@@ -568,16 +568,16 @@ bool VideoInput::getPixels(unsigned int deviceID, unsigned char * dstBuffer, boo
         if (isDeviceRawDataSource(deviceID))
         {
             RawImage *RIOut = m_videoDevices->getDevice(deviceID)->getRawImageOut();
-    
+
             if (RIOut)
             {
                 unsigned int height    = m_videoDevices->getDevice(deviceID)->getHeight();
-                unsigned int width    = m_videoDevices->getDevice(deviceID)->getWidth(); 
+                unsigned int width    = m_videoDevices->getDevice(deviceID)->getWidth();
 
                 unsigned int size = bytes * width * height;
 
                 if (size == RIOut->getSize())
-                {                                        
+                {
                     processPixels(RIOut->getpPixels(), dstBuffer, width, height, bytes, flipRedAndBlue, flipImage);
 
                     success = true;
@@ -590,21 +590,21 @@ bool VideoInput::getPixels(unsigned int deviceID, unsigned char * dstBuffer, boo
             else
             {
                 m_debugPrintOut->printOut("ERROR: GetPixels() - Unable to grab frame for device %i\n", deviceID);
-            }                
+            }
         }
     }
     else
     {
         m_debugPrintOut->printOut("VideoDevice(s): There is not any suitable video device\n");
     }
-        
+
     return success;
 }
 
 //--------------------------------------------------------------------------------
 void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigned int width, unsigned int height, unsigned int bpp, bool bRGB, bool bFlip)
 {
-    
+
     unsigned int widthInBytes = width * bpp;
 
     unsigned int numBytes = widthInBytes * height;
@@ -612,10 +612,10 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
     unsigned int numInts = numBytes >> 2;
 
     unsigned int widthInInts = widthInBytes >> 2;
-    
+
     if (!bRGB)
     {
-        
+
         int x = 0;
         int y = 0;
 
@@ -623,7 +623,7 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
         int* dstInt = NULL;
         int* srcInt = NULL;
 #endif
-    
+
         if (bFlip)
         {
             for (unsigned int y = 0; y < height; ++y)
@@ -632,9 +632,9 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
     memcpy(dst + (y * widthInBytes), src + ( (height -y -1) * widthInBytes), widthInBytes);
 #else
                 dstInt = (int *)(dst + (y * widthInBytes));
-                
+
                 srcInt = (int *)(src + ( (height -y -1) * widthInBytes));
-                
+
                 _asm
                 {
                     mov ESI, srcInt
@@ -649,10 +649,10 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
                 }
 #endif
             }
-                                    
+
         }
         else
-        {        
+        {
 #if _WIN64
     memcpy(dst, src, numBytes);
 #else
@@ -675,11 +675,11 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
     {
         if (bFlip)
         {
-            
+
             int x = 0;
             int y = (height - 1) * widthInBytes;
             src += y;
-            
+
             for (unsigned int i = 0; i < numBytes; i+=3)
             {
                 if (x >= width)
@@ -687,36 +687,35 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
                     x = 0;
                     src -= widthInBytes*2;
                 }
-                
+
                 *dst = *(src+2);
                 dst++;
-                
+
                 *dst = *(src+1);
-                dst++; 
-                
+                dst++;
+
                 *dst = *src;
-                dst++; 
-                
-                src+=3;    
-                x++;        
+                dst++;
+
+                src+=3;
+                x++;
             }
         }
         else
-        {                        
+        {
             for(unsigned int i = 0; i < numBytes; i += 3)
             {
                 *dst = *(src+2);
                 dst++;
-                
+
                 *dst = *(src+1);
-                dst++; 
-                
+                dst++;
+
                 *dst = *src;
-                dst++; 
-                
-                src+=3;            
+                dst++;
+
+                src+=3;
             }
         }
     }
 }
-

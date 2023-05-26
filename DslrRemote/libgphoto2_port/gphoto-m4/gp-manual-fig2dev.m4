@@ -24,7 +24,7 @@ if $have_fig2dev; then
 Landscape
 Center
 Inches
-Letter  
+Letter
 100.00
 Single
 -2

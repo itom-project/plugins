@@ -16,7 +16,7 @@
  *  Pittsburgh, PA
  *
  *	Copyright 5/2000
- * 
+ *
  *	Iwan Ulrich
  *	Robotics Institute
  *	Carnegie Mellon University
@@ -24,12 +24,12 @@
  *
  *  This file is part of the CMU 1394 Digital Camera Driver
  *
- *  The CMU 1394 Digital Camera Driver is free software; you can redistribute 
- *  it and/or modify it under the terms of the GNU Lesser General Public License 
+ *  The CMU 1394 Digital Camera Driver is free software; you can redistribute
+ *  it and/or modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1 of the License,
  *  or (at your option) any later version.
  *
- *  The CMU 1394 Digital Camera Driver is distributed in the hope that it will 
+ *  The CMU 1394 Digital Camera Driver is distributed in the hope that it will
  *  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Lesser General Public License for more details.
@@ -243,7 +243,7 @@ t1394IsochSetupStream(
 DWORD
 CAMAPI
 t1394IsochTearDownStream(
-	PSTR szDeviceName 
+	PSTR szDeviceName
 	);
 
 DWORD
@@ -350,7 +350,7 @@ WriteRegister(
 	PUCHAR bytes
 	);
 
-DWORD 
+DWORD
 CAMAPI
 WriteRegisterUL(
 	PSTR szDeviceName,
@@ -384,8 +384,8 @@ GetUniqueID(
 
 DWORD
 CAMAPI
-GetCameraSpecification( 
-	PSTR szDeviceName, 
+GetCameraSpecification(
+	PSTR szDeviceName,
 	PCAMERA_SPECIFICATION pSpec
 	);
 
@@ -398,13 +398,13 @@ GetCmdrState(
 DWORD
 CAMAPI
 ResetCmdrState(
-	PSTR szDeviceName 
+	PSTR szDeviceName
 	);
 
 DWORD
 CAMAPI
 SetCmdrTraceLevel(
-	PSTR szDeviceName, 
+	PSTR szDeviceName,
 	DWORD nlevel
 	);
 
@@ -474,13 +474,13 @@ OpenDevice(
     BOOL    bOverLapped
     );
 
-LONG 
+LONG
 CAMAPI
 SpeedFlagToIndex(ULONG fulFlags);
 
 // debug.c
 
-void 
+void
 CAMAPI
 SetDllTraceLevel(int nlevel);
 

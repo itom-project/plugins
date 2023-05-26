@@ -6,11 +6,11 @@
 **Summary**:    :pluginsummary:`CyUSB`
 **Type**:       :plugintype:`CyUSB`
 **License**:    :pluginlicense:`CyUSB`
-**Platforms**:  Windows 
+**Platforms**:  Windows
 **Devices**:    Any generic USB devices
 **Author**:     :pluginauthor:`CyUSB`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,12 +19,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: CyUSB
-        
+
 Parameters
 ===========
 
@@ -42,7 +42,7 @@ An instance of this plugin has the following internal parameters:
     maximum number of detected devices
 **timeout**: {float}
     Timeout for reading commands in [s].
-    
+
 Usage
 ======
 
@@ -56,24 +56,24 @@ Therefore, the initialization only contains the parameter 'endpoint', such that 
 the endpoints using the specific parameters.
 
 Again, if you set *printInfoAboutAllDevices* to 1 at initialization, the available endpoints are also print to the console for the selected device. If the list can not resolve further
-information for your selected device, this device can not be used by this generic plugin. 
+information for your selected device, this device can not be used by this generic plugin.
 
 Once the USB-device is opened and the endpoints are configured, you can send and read data in the same way than via a serial connection (see help for plugin **SerialIO**).::
 
     #send values:
     myCommand = bytearray(128)
     usbDevice.setVal(myCommand)
-    
+
     #read values:
     deviceAnswer = bytearray(128) #buffer
     usbDevice.getVal(deviceAnswer)
     print(deviceAnswer) #number of characters read
-    
+
 The command **getVal** only reads the number of characters that arrived at the current endpoint at the moment of its call. Analyze the return value and probably call **getVal**
 again if you expect more characters to arrive. This is also the same behaviour than for serial connections.
 
 This plugin is also used by other hardware plugins to communicate with further devices.
-        
+
 Compilation
 ===========
 In order to compile CyUSB, get the Cypress Seminconductor SDK is discontinued. The necessary binary file are available via the Infineon FX3 SDK,

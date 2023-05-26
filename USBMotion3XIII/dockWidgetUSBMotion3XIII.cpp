@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,7 +24,7 @@
 * \brief In this file the functions of the non modal dialog for the USBMotion3XIII are specified
 *
 *    This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetUSBMotion3XIII.h"
-* 
+*
 */
 
 #include "dockWidgetUSBMotion3XIII.h"
@@ -37,10 +37,10 @@
 *
 *\sa DummyMotor
 */
-DockWidgetUSBMotion3XIII::DockWidgetUSBMotion3XIII(ito::AddInActuator *actuator) : 
+DockWidgetUSBMotion3XIII::DockWidgetUSBMotion3XIII(ito::AddInActuator *actuator) :
     ito::AbstractAddInDockWidget(actuator)
 {
-    ui.setupUi(this); 
+    ui.setupUi(this);
 
     m_axisEnabled[0] = false;
     m_axisEnabled[1] = false;

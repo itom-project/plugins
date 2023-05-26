@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -21,11 +21,11 @@
 *********************************************************************** */
 
 /*! \file BasicFilters.h
-   \brief   This is the main file for the M++Filter libary, which contains the interface definition. 
-   
+   \brief   This is the main file for the M++Filter libary, which contains the interface definition.
+
    The algorithms in this dll are mostly copied from the filter.h and filter.cpp. The filters are grouped in different sub .cpp-files.
 
-   \author ITO 
+   \author ITO
    \date 12.2011
    */
 
@@ -89,7 +89,7 @@ class BasicFilters : public ito::AddInAlgo
 
     public:
         friend class BasicFiltersInterface;
-        
+
         enum tFilterType
         {
             tGenericLowPass,
@@ -99,7 +99,7 @@ class BasicFilters : public ito::AddInAlgo
 
         // Defined in BasicFilters.cpp
         static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                     /**< Get the standard IO-Parameters for filters with two objects */
-                  
+
         // Defined in BasicSpecialFilters.cpp
         static const QString replaceInfAndNaNDoc;
         static const QString flaten3Dto2DDoc;
@@ -114,12 +114,12 @@ class BasicFilters : public ito::AddInAlgo
 
         static ito::RetVal replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal replaceInfAndNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-        
+
         static ito::RetVal flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Combine 3 dataObjects by highest contrast of modulation maps */
         static ito::RetVal swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);    /** Simply swap current byte order */
 
         static ito::RetVal calcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                      /**< Get the standard IO-Parameters histogramm-filter */
-        static ito::RetVal calcHistFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);/**< This function calucaltes a histogramm for every cvMat int the input dataObject  */        
+        static ito::RetVal calcHistFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);/**< This function calucaltes a histogramm for every cvMat int the input dataObject  */
 
         static ito::RetVal clipValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/);
         static ito::RetVal clipValueFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
@@ -129,10 +129,10 @@ class BasicFilters : public ito::AddInAlgo
 
         static ito::RetVal mergeColorPlanesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal mergeColorPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);        /**< Combine 3 object planes to a single uint32 object*/
-        
+
         static ito::RetVal calcMeanOverZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-        static ito::RetVal calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);        /**< Combine 3 object planes to a single uint32 object*/        
-        
+        static ito::RetVal calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);        /**< Combine 3 object planes to a single uint32 object*/
+
         static ito::RetVal calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);       /**< Interpolate 1D-slice from 2D-Object */
         static ito::RetVal calcObjSliceParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                /**< Get the IO-parameters to interpolate 1D-slice from 2D-Object */
 
@@ -150,7 +150,7 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericLowHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, bool lowHigh);
         static ito::RetVal genericMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericLowPassFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
-        
+
         static ito::RetVal genericSobelOptParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal genericSobelOptFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericKernelFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
@@ -167,8 +167,8 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal spikeMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal spikeMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal spikeCompFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-        
-        // Filter 
+
+        // Filter
         static ito::RetVal fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal fillGeometricParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
@@ -214,7 +214,7 @@ To test the different filters, a python based testsuit will be implemented.
 template<typename _Tp> class GenericFilterEngine
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
-    // the easiest way is using the this-> syntax    
+    // the easiest way is using the this-> syntax
     public:
         GenericFilterEngine() : m_pInpObj(NULL), m_pOutObj(NULL), m_pInLines(NULL), m_pOutLine(NULL), m_pInvalidMap(NULL),
             m_bufsize(0), m_kernelSizeX(0), m_kernelSizeY(0), m_x0(0), m_y0(0), m_dx(0), m_dy(0), m_AnchorX(0), m_AnchorY(0), m_initialized(false) {}
@@ -230,7 +230,7 @@ template<typename _Tp> class GenericFilterEngine
         _Tp *  m_pOutLine;               //< output buffer
         ito::int8 **m_pInvalidMap;       //< invalid map
         ito::int32 m_bufsize;
-        ito::int16 m_kernelSizeX, m_kernelSizeY;   //< Horizontal / vertical Size of kernel (x) 
+        ito::int16 m_kernelSizeX, m_kernelSizeY;   //< Horizontal / vertical Size of kernel (x)
         ito::int32 m_x0, m_y0;           //< first point in x / y of filter region
         ito::int32 m_dx, m_dy;           //< Size of filter region
         ito::int32 m_AnchorX, m_AnchorY; //< Position of the data output in respect to the kernel (anchor)
@@ -242,7 +242,7 @@ template<typename _Tp> class GenericFilterEngine
 template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
-    // the easiest way is using the this-> syntax    
+    // the easiest way is using the this-> syntax
     private:
         #if (USEOMP)
         _Tp **kbuf;
@@ -251,17 +251,17 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
         #endif
 
     public:
-        explicit LowValueFilter(const ito::DataObject *in, 
-            ito::DataObject *out, 
-            ito::int32 roiX0, 
-            ito::int32 roiY0, 
-            ito::int32 roiXSize, 
-            ito::int32 roiYSize, 
-            ito::int16 kernelSizeX, 
+        explicit LowValueFilter(const ito::DataObject *in,
+            ito::DataObject *out,
+            ito::int32 roiX0,
+            ito::int32 roiY0,
+            ito::int32 roiXSize,
+            ito::int32 roiYSize,
+            ito::int16 kernelSizeX,
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
             ito::int32 anchorPosY);
-        
+
         ~LowValueFilter();
 
         void filterFunc();
@@ -272,7 +272,7 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
 template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
-    // the easiest way is using the this-> syntax    
+    // the easiest way is using the this-> syntax
     private:
         #if (USEOMP)
         _Tp **kbuf;
@@ -281,13 +281,13 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
         #endif
 
     public:
-        explicit HighValueFilter(const ito::DataObject *in, 
-            ito::DataObject *out, 
-            ito::int32 roiX0, 
-            ito::int32 roiY0, 
-            ito::int32 roiXSize, 
-            ito::int32 roiYSize, 
-            ito::int16 kernelSizeX, 
+        explicit HighValueFilter(const ito::DataObject *in,
+            ito::DataObject *out,
+            ito::int32 roiX0,
+            ito::int32 roiY0,
+            ito::int32 roiXSize,
+            ito::int32 roiYSize,
+            ito::int16 kernelSizeX,
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
             ito::int32 anchorPosY);
@@ -302,7 +302,7 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
 template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
-    // the easiest way is using the this-> syntax    
+    // the easiest way is using the this-> syntax
     private:
         #if (USEOMP)
         _Tp **kbuf;
@@ -313,13 +313,13 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
         #endif
 
     public:
-        explicit MedianFilter(const ito::DataObject *in, 
-            ito::DataObject *out, 
-            ito::int32 roiX0, 
-            ito::int32 roiY0, 
-            ito::int32 roiXSize, 
-            ito::int32 roiYSize, 
-            ito::int16 kernelSizeX, 
+        explicit MedianFilter(const ito::DataObject *in,
+            ito::DataObject *out,
+            ito::int32 roiX0,
+            ito::int32 roiY0,
+            ito::int32 roiXSize,
+            ito::int32 roiYSize,
+            ito::int16 kernelSizeX,
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
             ito::int32 anchorPosY);
@@ -334,7 +334,7 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
 template<typename _Tp> class SobelOptFilter : public GenericFilterEngine<_Tp>
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
-    // the easiest way is using the this-> syntax    
+    // the easiest way is using the this-> syntax
 private:
     ito::uint8 m_gradDir;
 
@@ -357,20 +357,20 @@ public:
 template<typename _Tp> class LowPassFilter : public GenericFilterEngine<_Tp>
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
-    // the easiest way is using the this-> syntax    
+    // the easiest way is using the this-> syntax
     private:
         ito::float64 *m_colwiseSumBuffer;
         bool m_isFilled;
         ito::float64 m_divisor;
 
     public:
-        explicit LowPassFilter(const ito::DataObject *in, 
-            ito::DataObject *out, 
-            ito::int32 roiX0, 
-            ito::int32 roiY0, 
-            ito::int32 roiXSize, 
-            ito::int32 roiYSize, 
-            ito::int16 kernelSizeX, 
+        explicit LowPassFilter(const ito::DataObject *in,
+            ito::DataObject *out,
+            ito::int32 roiX0,
+            ito::int32 roiY0,
+            ito::int32 roiXSize,
+            ito::int32 roiYSize,
+            ito::int16 kernelSizeX,
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
             ito::int32 anchorPosY);
@@ -385,7 +385,7 @@ template<typename _Tp> class LowPassFilter : public GenericFilterEngine<_Tp>
 template<typename _Tp> class GaussianFilter : public GenericFilterEngine<_Tp>
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
-    // the easiest way is using the this-> syntax    
+    // the easiest way is using the this-> syntax
     private:
         ito::float64 *m_pRowKernel;
         ito::float64 *m_pColKernel;
@@ -393,26 +393,26 @@ template<typename _Tp> class GaussianFilter : public GenericFilterEngine<_Tp>
         bool m_isFilled;
 
     public:
-        explicit GaussianFilter(const ito::DataObject *in, 
-                                ito::DataObject *out, 
-                                ito::int32 roiX0, 
-                                ito::int32 roiY0, 
-                                ito::int32 roiXSize, 
-                                ito::int32 roiYSize, 
-                                ito::float64 sigmaSizeX, 
+        explicit GaussianFilter(const ito::DataObject *in,
+                                ito::DataObject *out,
+                                ito::int32 roiX0,
+                                ito::int32 roiY0,
+                                ito::int32 roiXSize,
+                                ito::int32 roiYSize,
+                                ito::float64 sigmaSizeX,
                                 ito::float64 epsilonSizeX,
-                                ito::float64 sigmaSizeY, 
+                                ito::float64 sigmaSizeY,
                                 ito::float64 epsilonSizeY);
 
-        explicit GaussianFilter(const ito::DataObject *in, 
-                                ito::DataObject *out, 
-                                ito::int32 roiX0, 
-                                ito::int32 roiY0, 
-                                ito::int32 roiXSize, 
+        explicit GaussianFilter(const ito::DataObject *in,
+                                ito::DataObject *out,
+                                ito::int32 roiX0,
+                                ito::int32 roiY0,
+                                ito::int32 roiXSize,
                                 ito::int32 roiYSize,
                                 ito::int32 kernelSizeX,
                                 ito::int32 kernelSizeY,
-                                ito::float64 sigmaSizeX, 
+                                ito::float64 sigmaSizeX,
                                 ito::float64 sigmaSizeY);
 
         ~GaussianFilter();

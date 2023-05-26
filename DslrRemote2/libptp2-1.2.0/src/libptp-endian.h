@@ -7,7 +7,7 @@
 /* ntohl and relatives live here */
 #ifdef WIN32
 #include <Winsock2.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #else
 #include <arpa/inet.h>
 #include <byteswap.h>

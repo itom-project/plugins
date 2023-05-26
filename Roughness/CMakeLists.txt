@@ -50,7 +50,7 @@ set(PLUGIN_RCC
     #add absolute pathes to any *.qrc resource files here
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/roughness.cpp
 )
 

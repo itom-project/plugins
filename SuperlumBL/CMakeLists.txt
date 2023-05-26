@@ -48,7 +48,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetSuperlumBL.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogSuperlumBL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetSuperlumBL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SuperlumBL.cpp

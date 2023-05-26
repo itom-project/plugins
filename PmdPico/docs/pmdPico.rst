@@ -10,7 +10,7 @@
 **Devices**:    pico flexx, pico maxx, pico monster
 **Author**:     :pluginauthor:`PmdPico`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
 **acquisition_mode**: {int}
     Indicates which data should be recorded. 0: depth data, 1: gray value, 2: confidence of depth, 3: all
 **auto_exposure**: {int}
@@ -84,7 +84,7 @@ Make shure that the path to the royale.dll is added to your system path variable
 
 Set the CMAKE variable **PmdPico_ROYALE_DIR** or the environment variable **PMD_ROYALE_ROOT**
 to the PMD Royale SDK installation folder (e.g. C:\Program Files\royale\3.21.1.70)
-        
+
 Changelog
 =========
 

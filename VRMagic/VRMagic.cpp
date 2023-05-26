@@ -4,7 +4,7 @@
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -65,8 +65,8 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);     
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsMand.clear();
 
     ito::Param param("device_num", ito::ParamBase::Int, 0, 5, 0, tr("Device number.").toLatin1().data());
@@ -81,7 +81,7 @@ VRMagicInterface::~VRMagicInterface()
 {
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
-        
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ const ito::RetVal VRMagic::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-VRMagic::VRMagic() : 
+VRMagic::VRMagic() :
     AddInGrabber(),
     m_handle(NULL),
     m_acqRetVal(ito::retOk),
@@ -122,7 +122,7 @@ VRMagic::VRMagic() :
     paramVal = ito::Param("contrast", ito::ParamBase::Int, 0, 255, 128, tr("Contrast of camera / framegrabber (0 to 255)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("saturation", ito::ParamBase::Int, 0, 255, 128, tr("Saturation of camera / framegrabber (0 to 255)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);  
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 1, tr("Width of ROI (number of columns).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 1, tr("Height of ROI (number of rows).").toLatin1().data());
@@ -136,7 +136,7 @@ VRMagic::VRMagic() :
     sm.addItem(tr("yc").toLatin1().data());
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -160,13 +160,13 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    VRmDWORD device_num = paramsOpt->at(0).getVal<int>(); // first parameter is device number 
+    VRmDWORD device_num = paramsOpt->at(0).getVal<int>(); // first parameter is device number
     VRmDWORD port_num = paramsOpt->at(1).getVal<int>(); // second paramtert is port number of device
 
     if (!retValue.containsError())
     {
         VRmDWORD device_list_size=0;
-                
+
         retValue += checkError(VRmUsbCamUpdateDeviceKeyList(), tr("Update the device key list").toLatin1().data());
         if (!retValue.containsError())
         {
@@ -187,7 +187,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         {
             retValue += checkError(VRmUsbCamGetDeviceKeyListEntry(device_num, &m_device_key), tr("Get device key of chosen device").toLatin1().data());
         }
-                
+
         if (!retValue.containsError() && !m_device_key->m_busy)
         {
             // read device information
@@ -211,7 +211,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             {
                 m_params["group_ID"].setVal<int>((int)group_id);
             }
-            
+
             VRmSTRING serial_string;
             retValue += checkError(VRmUsbCamGetSerialString(m_device_key, &serial_string), tr("Get serial string").toLatin1().data());
             if (!retValue.containsError())
@@ -224,12 +224,12 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 
             VRmDWORD pl_size;
             if (!retValue.containsError())
-            {                
+            {
                 retValue += checkError(VRmUsbCamGetSensorPortListSize(m_handle, &pl_size), tr("Get sensor port list size").toLatin1().data());
             }
-            
+
             if (!retValue.containsError())
-            {    
+            {
                 retValue += checkError(VRmUsbCamGetSensorPortListEntry(m_handle, port_num, &m_port), tr("Open port of sensor").toLatin1().data());
             }
 
@@ -243,7 +243,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             {
                 m_imagesAreInterlaced = true; //two images need to be transferred from the camera to obtain one real image.
             }
-            
+
             VRmDWORD pixeldepth;
             if (!retValue.containsError())
             {
@@ -260,7 +260,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             {
                 m_params["format"].setVal<char*>((char*)formatstring);
             }
-    
+
             /*VRmDWORD fl_size;
             if (!retValue.containsError())
             {
@@ -271,8 +271,8 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
                 {
                     retValue += checkError(VRmUsbCamGetTargetFormatListEntryEx2(m_handle, m_port, idx, &fl_format), "Get formats of 1st port");
                 }
-            }*/            
-            
+            }*/
+
             VRmSizeI size;
             if (!retValue.containsError())
             {
@@ -285,7 +285,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         {
             retValue += ito::RetVal(ito::retError, 0, tr("Camera already in use by another program or no device detected.").toLatin1().data());
         }
-         
+
         if (!retValue.containsError())
         {
             setIdentifier(m_params["serial_number"].getVal<char*>());
@@ -394,7 +394,7 @@ ito::RetVal VRMagic::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
     {
             *val = it.value();
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -443,13 +443,13 @@ ito::RetVal VRMagic::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
     if (!retValue.containsError())
     {
-        if (grabberStartedCount()) 
+        if (grabberStartedCount())
         {
             running = grabberStartedCount();
             setGrabberStarted(1);
             retValue += this->stopDevice(0);
         }
-        
+
         if (QString::compare(key, "brightness", Qt::CaseInsensitive) == 0)
         {
             int brightness = val->getVal<int>();
@@ -471,19 +471,19 @@ ito::RetVal VRMagic::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             int contrast = val->getVal<int>();
             retValue += checkError(VRmUsbCamSetPropertyValueI(m_handle, VRM_PROPID_CAM_CONTRAST_I , &contrast), tr("Set contrast").toLatin1().data());
             retValue += synchronizeCameraSettings(sContrast);
-        } 
+        }
 
         else if (QString::compare(key, "saturation", Qt::CaseInsensitive) == 0)
         {
             int saturation = val->getVal<int>();
             retValue += checkError(VRmUsbCamSetPropertyValueI(m_handle, VRM_PROPID_CAM_SATURATION_I , &saturation), tr("Set saturation").toLatin1().data());
             retValue += synchronizeCameraSettings(sSaturation);
-        } 
+        }
 
         else if (QString::compare(key, "signal_source", Qt::CaseInsensitive) == 0)
         {
             char* signalsource = val->getVal<char*>();
-            
+
             if (QString::compare(signalsource, "svideo", Qt::CaseInsensitive) == 0)
             {
                 VRmPropId setsource = VRM_PROPID_CAM_SIGNAL_SOURCE_SVIDEO;
@@ -502,9 +502,9 @@ ito::RetVal VRMagic::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             else
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("Unknown signal source. Choose from: svideo, composite, yc.").toLatin1().data());
-            }            
+            }
             retValue += synchronizeCameraSettings(sSignalSource);
-        }        
+        }
         else
         {
             it->copyValueFrom(&(*val));
@@ -566,7 +566,7 @@ ito::RetVal VRMagic::synchronizeCameraSettings(int what /*= sAll */)
         int contrast;
         retValue += checkError(VRmUsbCamGetPropertyValueI(m_handle, VRM_PROPID_CAM_CONTRAST_I, &contrast), tr("Get contrast").toLatin1().data());
 
-        it->setVal<int>(contrast); 
+        it->setVal<int>(contrast);
     }
 
     if (what & sSaturation)
@@ -575,7 +575,7 @@ ito::RetVal VRMagic::synchronizeCameraSettings(int what /*= sAll */)
         int saturation;
         retValue += checkError(VRmUsbCamGetPropertyValueI(m_handle, VRM_PROPID_CAM_SATURATION_I, &saturation), tr("Get saturation").toLatin1().data());
 
-        it->setVal<int>(saturation); 
+        it->setVal<int>(saturation);
     }
 
     if (what & sSignalSource)
@@ -666,8 +666,8 @@ ito::RetVal VRMagic::stopDevice(ItomSharedSemaphore *waitCond)
 ito::RetVal VRMagic::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);    
-    
+    ito::RetVal retValue(ito::retOk);
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -700,7 +700,7 @@ ito::RetVal VRMagic::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
             switch (image_format.m_color_format)
             {
-            
+
             case VRM_GRAY_10:
             case VRM_GRAY_16:
                 elem_size = 2; //both 10 and 16 bit pixels are stored in 2 bytes
@@ -764,7 +764,7 @@ ito::RetVal VRMagic::retrieveData(ito::DataObject *externalDataObject)
     else
     {
         retValue += m_acqRetVal;
-        m_acqRetVal = ito::retOk;      
+        m_acqRetVal = ito::retOk;
     }
 
     if (!retValue.containsError())
@@ -843,12 +843,12 @@ ito::RetVal VRMagic::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())

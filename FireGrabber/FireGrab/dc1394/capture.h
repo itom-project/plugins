@@ -80,7 +80,7 @@ int dc1394_capture_get_fileno (dc1394camera_t * camera);
 
 /**
  * Captures a video frame. The returned struct contains the image buffer, among others. This image buffer SHALL NOT be freed, as it represents an area
- * in the memory that belongs to the system. 
+ * in the memory that belongs to the system.
  */
 dc1394error_t dc1394_capture_dequeue(dc1394camera_t * camera, dc1394capture_policy_t policy, dc1394video_frame_t **frame);
 

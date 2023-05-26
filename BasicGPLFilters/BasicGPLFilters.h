@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public Licence as published by
     the Free Software Foundation; either version 3 of the Licence, or (at
@@ -27,9 +27,9 @@
 
 
 /*! \file BasicGPLFilters.h
-   \brief   This is the main header file for BasicGPLFilters libary, which contains the interface declarations. 
+   \brief   This is the main header file for BasicGPLFilters libary, which contains the interface declarations.
 
-   \author trwip 
+   \author trwip
    \date 04.2014
 */
 
@@ -73,7 +73,7 @@ typedef struct
   ito::int32   elems[256]; /*! Number of pixels that fall into each luma bucket */
   PixelsList   origs[256]; /*! Original pixels stored as PixelList */
   ito::int32   xmin;       /*! first pixel coordinate in x for source rect*/
-  ito::int32   ymin;       /*! first pixel coordinate in y for source rect*/ 
+  ito::int32   ymin;       /*! first pixel coordinate in y for source rect*/
   ito::int32   xmax;       /*! last pixel coordinate in x for source rect*/
   ito::int32   ymax;       /*! last pixel coordinate in y for source rect*/
 } DespeckleHistogram;
@@ -134,7 +134,7 @@ class BasicGPLFilters : public ito::AddInAlgo
 
     public:
         friend class BasicGPLFiltersInterface;
-         
+
         static const char* despeckle_adapted;
 
         static ito::RetVal despeckleAdapted(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
@@ -161,7 +161,7 @@ class BasicGPLFilters : public ito::AddInAlgo
         static inline void histogram_remove (DespeckleHistogram &hist, const ito::uint8 &val)
         {
             hist.elems[val]--;
-            
+
             // Delete the element from the original value list
             hist.origs[val].count--;
             hist.origs[val].start++;
@@ -182,7 +182,7 @@ class BasicGPLFilters : public ito::AddInAlgo
 
         static inline const ito::uint8 * histogram_get_median (ito::int32 count, DespeckleHistogram &hist, const ito::uint8 * defVal)
         {
-            
+
             ito::int32 i;
             ito::int32 sum = 0;
 
@@ -198,7 +198,7 @@ class BasicGPLFilters : public ito::AddInAlgo
             {
                 i++;
             }
-            
+
             // Get a random element from the right bucket
             const ito::int32 pos = hist.origs[i].start + rand() % hist.origs[i].count;
 
@@ -208,12 +208,12 @@ class BasicGPLFilters : public ito::AddInAlgo
 
         template<typename _Type> static inline void add_vals (
             DespeckleSettings &settings,
-            DespeckleHistogram &hist, 
-            const ito::uint8 *src, 
-            const ito::int32 &width, 
-            const ito::int32 &xmin, 
-            const ito::int32 &ymin, 
-            const ito::int32 &xmax, 
+            DespeckleHistogram &hist,
+            const ito::uint8 *src,
+            const ito::int32 &width,
+            const ito::int32 &xmin,
+            const ito::int32 &ymin,
+            const ito::int32 &xmax,
             const ito::int32 &ymax)
         {
             ito::int32 x;
@@ -249,12 +249,12 @@ class BasicGPLFilters : public ito::AddInAlgo
 
         template<typename _Type>  static inline void del_vals (
             DespeckleSettings &settings,
-            DespeckleHistogram &hist, 
-            const ito::uint8 *src, 
-            const ito::int32 &width, 
-            const ito::int32 &xmin, 
-            const ito::int32 &ymin, 
-            const ito::int32 &xmax, 
+            DespeckleHistogram &hist,
+            const ito::uint8 *src,
+            const ito::int32 &width,
+            const ito::int32 &xmin,
+            const ito::int32 &ymin,
+            const ito::int32 &xmax,
             const ito::int32 &ymax)
         {
             ito::int32 x;
@@ -291,12 +291,12 @@ class BasicGPLFilters : public ito::AddInAlgo
 
         template<typename _Tp> static inline void update_histogram (
             DespeckleSettings &settings,
-            DespeckleHistogram &hist, 
-            const ito::uint8 *src, 
-            const ito::int32 &width, 
-            const ito::int32 &xmin, 
-            const ito::int32 &ymin, 
-            const ito::int32 &xmax, 
+            DespeckleHistogram &hist,
+            const ito::uint8 *src,
+            const ito::int32 &width,
+            const ito::int32 &xmin,
+            const ito::int32 &ymin,
+            const ito::int32 &xmax,
             const ito::int32 &ymax)
         {
             /* assuming that radious of the box can change no more than one

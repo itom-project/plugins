@@ -14,6 +14,5 @@ public:
 
 private:
     bool m_verbose;
-        
-};
 
+};

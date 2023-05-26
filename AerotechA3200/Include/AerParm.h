@@ -52,19 +52,19 @@ AERERR_CODE AER_DLLENTRY AerParmVerifyDefaultFile( HAERCTRL hAerCtrl,
                                                    LPCTSTR pszFile,
                                                    PDWORD pdwParmDef );
 
-AERERR_CODE AER_DLLENTRY AerParmReadValue( LPCTSTR pszFile, DWORD dwParmType, DWORD dwIndex, 
+AERERR_CODE AER_DLLENTRY AerParmReadValue( LPCTSTR pszFile, DWORD dwParmType, DWORD dwIndex,
                                            LPCTSTR pszName, PDOUBLE pdValue, PDOUBLE pdDefValue );
-AERERR_CODE AER_DLLENTRY AerParmReadValueString( LPCTSTR pszFile, DWORD dwParmType, DWORD dwIndex, 
+AERERR_CODE AER_DLLENTRY AerParmReadValueString( LPCTSTR pszFile, DWORD dwParmType, DWORD dwIndex,
                                                  LPCTSTR pszName, LPTSTR pszValue, LPCTSTR pszDefValue );
 
-AERERR_CODE AER_DLLENTRY AerParmWriteValue( LPCTSTR pszFile, DWORD dwParmType, DWORD dwIndex, 
+AERERR_CODE AER_DLLENTRY AerParmWriteValue( LPCTSTR pszFile, DWORD dwParmType, DWORD dwIndex,
                                             LPCTSTR pszName, DOUBLE dValue );
 AERERR_CODE AER_DLLENTRY AerParmWriteValueString( LPCTSTR pszFile, DWORD dwParmType, DWORD dwIndex,
                                                   LPCTSTR pszName, LPCTSTR pszValue );
 
 AERERR_CODE AER_DLLENTRY AerParmGetCount( DWORD dwParmType, PDWORD pdwCount );
 AERERR_CODE AER_DLLENTRY AerParmGetInfo( DWORD dwParmType, DWORD dwParm, PAER_PARM_INFO pInfo );
-AERERR_CODE AER_DLLENTRY AerParmGetInfoEx( DWORD dwParmType, DWORD dwParm, LPTSTR pszName, PDOUBLE pdMin, 
+AERERR_CODE AER_DLLENTRY AerParmGetInfoEx( DWORD dwParmType, DWORD dwParm, LPTSTR pszName, PDOUBLE pdMin,
                                            PDOUBLE pdMax, PDWORD pdwAttr, PDWORD pdwDisplayAttr,
                                            PDOUBLE pdDefault, PDWORD pdwDisplaySubGroup);
 
@@ -98,7 +98,7 @@ AERERR_CODE AER_DLLENTRY AerParmGetConstantFromName(DWORD dwParmType, LPCTSTR ps
 //AERERR_CODE AER_DLLENTRY AerParmUnBuildOutputNumber(DOUBLE dBuiltIONumber, PDWORD pdwIOType, PDWORD pdwDriveNumber, PDWORD pdwIOAddress);
 
 //
-// For reading parms from INI files, the quick way.             
+// For reading parms from INI files, the quick way.
 typedef struct tagAER_PARM_SECTION
 {
    LPTSTR pszTextStrt;
@@ -129,7 +129,7 @@ BOOL  AerAxisIsValidUnitsName(LPCTSTR pszUnitString);
 
 #ifdef __cplusplus
 }
-#endif 
+#endif
 
 #endif
 // __AER_PARM_H__

@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -47,7 +47,7 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
     m_cameraHandle(devHandle),
     m_deviceID(deviceID),
     m_identifier(identifier),
-    
+
     m_errorEvent(GENTL_INVALID_HANDLE)
 {
     if (!retval.containsError())
@@ -74,7 +74,7 @@ GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHand
 //----------------------------------------------------------------------------------------------------------------------------------
 GenTLDevice::~GenTLDevice()
 {
-    
+
 }
 
 
@@ -105,7 +105,7 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
         size_t pSize;
         QByteArray streamIdToOpen = "";
 
-        
+
 
         if (!retval.containsError())
         {
@@ -200,7 +200,7 @@ int GenTLDevice::getPayloadSize() const
 /*virtual*/ void GenTLDevice::callbackParameterChanged_(INode *pNode)
 {
     CValuePtr ptrValue = pNode;
-    
+
     if (m_verbose >= VERBOSE_DEBUG)
     {
         try
@@ -246,7 +246,7 @@ int GenTLDevice::getPayloadSize() const
 void GenTLDevice::resyncAllParameters()
 {
     QHash<INode*, GCType*>::const_iterator i = m_paramMapping2.constBegin();
-    while (i != m_paramMapping2.constEnd()) 
+    while (i != m_paramMapping2.constEnd())
     {
         try
         {
@@ -264,5 +264,3 @@ void GenTLDevice::resyncAllParameters()
         QMetaObject::invokeMethod(m_pCallbackParameterChangedReceiver, "parameterChangedTimerFired");
     }
 }
-
-

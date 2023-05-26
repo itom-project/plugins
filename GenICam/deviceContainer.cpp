@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -208,7 +208,7 @@ ito::RetVal GenTLSystem::init(const QString &filename)
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("cti file '%1' does not export all necessary methods of the GenTL standard.").arg(filename).toLatin1().constData());
             }
 
-            
+
         }
     }
 
@@ -218,7 +218,7 @@ ito::RetVal GenTLSystem::init(const QString &filename)
 
         if (retval.containsError())
         {
-            GCCloseLib(); 
+            GCCloseLib();
         }
         else
         {
@@ -231,7 +231,7 @@ ito::RetVal GenTLSystem::init(const QString &filename)
         m_lib->unload();
         m_initialized = false;
     }
-    
+
 
     return retval;
 }
@@ -268,7 +268,7 @@ ito::RetVal GenTLSystem::openSystem()
 //----------------------------------------------------------------------------------------------------------------------------------
 QByteArray GenTLSystem::getStringInfo(GenTL::TL_INFO_CMD_LIST cmd, ito::RetVal &retval) const
 {
-    
+
     if (!m_initialized || !GCGetInfo)
     {
         retval += ito::RetVal(ito::retError, 0, "System not initialized or method GCGetInfo in transport layer not available.");
@@ -437,7 +437,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
 
             if (!retval.containsError())
             {
-                
+
 
                 GenTLInterface *gtli = new GenTLInterface(m_lib, ifHandle, interfaceIDToOpen, m_verbose, retval);
                 if (!retval.containsError())
@@ -469,7 +469,7 @@ QSharedPointer<GenTLInterface> GenTLSystem::getInterface(const QByteArray &inter
         }
         else
         {
-            //try to open the interface without 
+            //try to open the interface without
             retval += ito::RetVal(ito::retError,0,"no interface found");
         }
     }
@@ -665,7 +665,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             GenTL::GC_ERROR err = IFOpenDevice(m_handle, sDeviceID, deviceAccess, &devHandle);
             if (err == GenTL::GC_ERR_ACCESS_DENIED)
             {
-                
+
                 switch (deviceAccess)
                 {
                 case GenTL::DEVICE_ACCESS_EXCLUSIVE:
@@ -689,7 +689,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             {
                 retval += checkGCError(err, "Opening device");
             }
-            
+
 
             if (!retval.containsError())
             {

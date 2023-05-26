@@ -284,4 +284,3 @@ tinyjpeg_idct_float (struct component *compptr, uint8_t *output_buf, int stride)
     outptr += stride;
   }
 }
-

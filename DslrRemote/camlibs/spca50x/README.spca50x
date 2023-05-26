@@ -67,7 +67,7 @@ Rupert Levene <r.levene@lancaster.ac.uk> helped debug the merged camlib.
 Norbert Möndjen <Norbert.Moendjen@t-online.de> found out that the pencams
 don't react well to the reset command.
 Walt Boring <waboring@3gstech.com> helped debug the above reset problem.
-John Feuerstein <bizkit@baze.de> helped figuring out and testing the 
+John Feuerstein <bizkit@baze.de> helped figuring out and testing the
 workaround for Pencams without flash.
 
 Thanks to John Maushammer <gphoto2@maushammer.com> for adding support for the

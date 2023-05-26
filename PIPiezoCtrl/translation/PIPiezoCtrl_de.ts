@@ -609,9 +609,9 @@
         <location line="+13"/>
         <source>The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.Different PI-Piezo Controller (E-816, E-621, E-625, E-665, E-662 or C-663) are implemented.
 
-It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization. 
+It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.
 
-WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding PI controller. Therefore don&apos;t mix stages and controllers but only use the original, calibrated combination. 
+WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding PI controller. Therefore don&apos;t mix stages and controllers but only use the original, calibrated combination.
 
 WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum avaiable position.In the case of a higher maximum position, set the plugin parameter &quot;posLimitHigh&quot;. </source>
         <translation type="unfinished"></translation>

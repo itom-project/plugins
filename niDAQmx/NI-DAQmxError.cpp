@@ -37,8 +37,8 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
         DAQmxGetErrorString(error, buffer, buffer_size);
         buffer[buffer_size] = '\0';
 
-        
-	
+
+
 	    if (!DAQmxFailed(error))
 	    {
 	        if (prefix != "")

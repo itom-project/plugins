@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -22,8 +22,8 @@
 
 /*! \file BasicFilters.cpp
    \brief   This file contains the itomflters class and interface definitions.
-   
-   \author ITO 
+
+   \author ITO
    \date 12.2011
 */
 
@@ -69,7 +69,7 @@ This plugin does not have any unusual dependencies.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);       
+    m_aboutThis = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,11 +98,11 @@ ito::RetVal BasicFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 BasicFilters::BasicFilters() : AddInAlgo()
-{   
+{
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-BasicFilters::~BasicFilters() 
+BasicFilters::~BasicFilters()
 {
     FilterDef *filter;
     foreach(filter, m_filterList)

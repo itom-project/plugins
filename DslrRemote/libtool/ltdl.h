@@ -5,7 +5,7 @@
 #define DECLTYPE extern __declspec(dllexport)
 #else
 #define DECLTYPE extern __declspec(dllimport)
-    //    #define DECLTYPE 
+    //    #define DECLTYPE
 #endif
 
 #ifdef __cplusplus
@@ -14,7 +14,7 @@ extern "C" {
 
 #define lt_ptr void *
 
-    typedef	struct lt__handle *lt_dlhandle;	// A loaded module. 
+    typedef	struct lt__handle *lt_dlhandle;	// A loaded module.
     typedef void *	lt_module;
 
     /* // original struct
@@ -46,13 +46,13 @@ extern "C" {
     struct lt__handle {
         lt_dlhandle           next;
         const void *   		vtable;		// dlopening interface
-        lt_dlinfo				info;		// user visible fields 
-        int					depcount;	// number of dependencies 
-        lt_dlhandle *			deplibs;	// dependencies 
-        lt_module				module;		// system module handle 
-        void *				system;		// system specific data 
-        void *				interface_data;	// per caller associated data 
-        int					flags;		// various boolean stats 
+        lt_dlinfo				info;		// user visible fields
+        int					depcount;	// number of dependencies
+        lt_dlhandle *			deplibs;	// dependencies
+        lt_module				module;		// system module handle
+        void *				system;		// system specific data
+        void *				interface_data;	// per caller associated data
+        int					flags;		// various boolean stats
         /*  lt__handle() : next(NULL), vtable(NULL), depcount(0),
               deplibs(NULL), module(NULL), system(NULL), interface_data(NULL), flags(0) {} */
     };

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -22,7 +22,7 @@
 
 /**\file aerotechA3200.h
 * \brief In this file the class of the non modal dialog for the AerotechA3200 are specified
-* 
+*
 */
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
@@ -96,4 +96,3 @@ class DockWidgetAerotechA3200 : public QWidget
         void posIncrementClicked(const int &index);  //!< If the Botton is clicked a MoveRelative()-Signal is emitted
         void posDecrementClicked(const int &index);  //!< If the Botton is clicked a MoveRelative()-Signal is emitted
 };
-

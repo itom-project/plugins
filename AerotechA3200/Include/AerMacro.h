@@ -26,7 +26,7 @@
    // Exception handling macros
    //  (_TRY and _CATCHOREXCEPT work equally in C and C++)
    */
-   #ifdef __cplusplus         
+   #ifdef __cplusplus
       #define _TRY      try
       #define _CATCHOREXCEPT  catch(...)
    #else
@@ -91,7 +91,7 @@ typedef void*  HCOMPILER;
 // Define for Syncronization objects
 #define AER_WAIT_INFINITE 0xFFFFFFFF
 // C# END
-                                                              
+
 /////// Simple abbreviations ///////////////////////////////////////
 #define SNULL (LPTSTR)NULL
 
@@ -114,20 +114,20 @@ typedef void*  HCOMPILER;
 #define FPUTS( lpsBuffer, fp )           fputs( lpsBuffer, fp )
 #define FGETC( fp )                      fgetc( fp )
 #define FTELL( fp )                      ftell( fp )
-#define FSEEK( fp, lOffset, nOrig )      fseek( fp, lOffset, nOrig ) 
+#define FSEEK( fp, lOffset, nOrig )      fseek( fp, lOffset, nOrig )
 #define FWRITE( lpsBuf, size, num, fp )  fwrite( (LPSTR) lpsBuf, size, num, fp )
 #define FREAD( lpsBuf, size, num, fp )   fread( (LPSTR) lpsBuf, size, num, fp )
 #define FCLOSE( fp )                     fclose( fp )
 #define FEOF( fp )                       feof( fp )
 
 // Character operations  (include ctype.h)
-#define ISUPPER( wChar )                 (BOOL)isupper( wChar ) 
+#define ISUPPER( wChar )                 (BOOL)isupper( wChar )
 #define ISSPACE( wChar )                 (BOOL)isspace( wChar )
-#define ISALPHA( wChar )                 (BOOL)isalpha( wChar ) 
-#define ISDIGIT( wChar )                 (BOOL)isdigit( wChar ) 
-#define ISCNTRL( wChar )                 (BOOL)iscntrl( wChar ) 
-#define ISGRAPH( wChar )                 (BOOL)isgraph( wChar ) 
-#define ISPRINT( wChar )                 (BOOL)isprint( wChar ) 
+#define ISALPHA( wChar )                 (BOOL)isalpha( wChar )
+#define ISDIGIT( wChar )                 (BOOL)isdigit( wChar )
+#define ISCNTRL( wChar )                 (BOOL)iscntrl( wChar )
+#define ISGRAPH( wChar )                 (BOOL)isgraph( wChar )
+#define ISPRINT( wChar )                 (BOOL)isprint( wChar )
 
 // But compiler "proper" ignores '[\x20\t\b\x7F\x1A\x0B\x0C]+'   ???
 #define ISWHITESPACE( wChar )            (BOOL)((wChar == ' ') || (wChar == '\t'))
@@ -188,10 +188,10 @@ typedef void*  HCOMPILER;
 }
 //
 //
-// SAFE va_start/va_sprintf/va_end dissection of variable argument lists (it really works) to use: 
-//   MUST declare : va_list vargs; and include <stdarg.h>. New last argument 
+// SAFE va_start/va_sprintf/va_end dissection of variable argument lists (it really works) to use:
+//   MUST declare : va_list vargs; and include <stdarg.h>. New last argument
 //  (lastarg) is what you would pass to va_start.
-// Biggest SAFETY problem with vsprintf is: with vsprintf is that if there are more substitution "%" thingees 
+// Biggest SAFETY problem with vsprintf is: with vsprintf is that if there are more substitution "%" thingees
 // then provided arguments, it gets an access vio, thus the TRY/CATCH is needed. There seems to be no
 // way to count the number of arguments passed to avoid the access vio.
 //

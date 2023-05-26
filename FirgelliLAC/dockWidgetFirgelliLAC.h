@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -47,7 +47,7 @@ class DockWidgetFirgelliLAC : public ito::AbstractAddInDockWidget
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier) { ui.lblID->setText(identifier); };
-        
+
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
         void targetChanged(QVector<double> targetPositions);
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -66,7 +66,7 @@ QCamInterface::QCamInterface() : AddInInterfaceBase()
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr(GITVERSION); 
+    m_aboutThis         = tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -80,18 +80,18 @@ QCamInterface::~QCamInterface()
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QCam::QCam() :  
+QCam::QCam() :
     AddInGrabber(),
     m_frameCallbackRetVal(ito::retOk),
     m_frameCallbackFrameIdx(-1),
     m_waitingForAcquire(false)
-{   
+{
     // make sure the structs are filled with 0 so we can check for allocated memory later
     for (int nf = 0; nf < NUMBERBUFFERS; nf++)
     {
         memset((void*)&m_frames[nf], 0, sizeof(QCam_Frame));
     }
-    
+
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "QCam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -153,7 +153,7 @@ QCam::~QCam()
 ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    
+
     ito::RetVal retValue(ito::retOk);
     QCam_CamListItem  camList[10];
     unsigned long camListLen = 10;
@@ -178,7 +178,7 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
                 {
                     ++i;
                 }
-        
+
                 if (i < 10)
                 {
                     retValue += errorCheck(QCam_OpenCamera(camList[i].cameraId, &m_camHandle));
@@ -205,7 +205,7 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
         unsigned long cameraType;
         QCam_GetInfo(m_camHandle, qinfCameraType,  &cameraType);
         m_identifier = QString("type: %1").arg(cameraType);
-        
+
         //initialize the setting structure
         m_camSettings.size = sizeof(m_camSettings);
 
@@ -242,7 +242,7 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
         QCam_GetInfo(m_camHandle, qinfImageSize, &size);
         QCam_GetInfo(m_camHandle, qinfImageHeight, &height);
         QCam_GetInfo(m_camHandle, qinfImageWidth, &width);
-                
+
         QCam_GetParam64(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_time);
         QCam_GetParam64Max(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMax);
         QCam_GetParam64Min(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMin);
@@ -286,11 +286,11 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 
         //ask camera for gain, intensity...
         unsigned long gainMin, gainMax, gain;
-        
+
         QCam_GetParamMax(&m_camSettings, qprmNormalizedGain, &gainMax);
         QCam_GetParamMin(&m_camSettings, qprmNormalizedGain, &gainMin);
         QCam_GetParam(&m_camSettings, qprmNormalizedGain, &gain);
-        
+
 
         //transform normalized gain into 0-1-gain
         double gainDbl = (double)(gain - gainMin) / (double)(gainMax - gainMin);
@@ -301,13 +301,13 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
         //finally send the new settings to the camera
         retValue += errorCheck(QCam_SendSettingsToCam(m_camHandle,&m_camSettings));
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-        
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
@@ -317,9 +317,9 @@ ito::RetVal QCam::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     if (m_timerID > 0)
-    { 
+    {
         killTimer(m_timerID);
         m_timerID=0;
     }
@@ -330,7 +330,7 @@ ito::RetVal QCam::close(ItomSharedSemaphore *waitCond)
         setGrabberStarted(1); //force the counter to 0, such that stopDevice drops it to 0 and really stops the device!
         retValue += stopDevice(NULL);
     }
-    
+
     if (m_camHandle)
     {
         retValue += errorCheck(QCam_SetStreaming(m_camHandle, false));
@@ -342,13 +342,13 @@ ito::RetVal QCam::close(ItomSharedSemaphore *waitCond)
     {
         QCam_ReleaseDriver();
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -370,7 +370,7 @@ ito::RetVal QCam::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *
     int index;
     QString suffix;
     QMap<QString,ito::Param>::iterator it;
-    
+
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
@@ -447,7 +447,7 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
 
             //calculate normalized-gain from 0-1-gain
             gain = gainMin + gain * (gainMax - gainMin);
-            
+
             retValue += errorCheck(QCam_SetParam(&m_camSettings, qprmNormalizedGain, gain));
 
             if (!retValue.containsError())
@@ -462,7 +462,7 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
             double integration_time = val->getVal<double>();
             QCam_GetParam64Min(&m_camSettings, qprm64Exposure, (unsigned long long *)&expMax);
             QCam_GetParam64Max(&m_camSettings, qprm64Exposure, (unsigned long long *)&expMin);
-            
+
             retValue += errorCheck(QCam_SetParam64(&m_camSettings, qprm64Exposure, uint64(integration_time*1000000000)));
 
             if (!retValue.containsError())
@@ -489,7 +489,7 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
                 }
 
                 if (!retValue.containsError())
-                { 
+                {
                     // stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
                     // if it was running live, restart that also
                     needToReallocate = true;
@@ -741,7 +741,7 @@ ito::RetVal QCam::startDevice(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QCam::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -764,7 +764,7 @@ ito::RetVal QCam::stopDevice(ItomSharedSemaphore *waitCond)
             m_frames[i].pBuffer = NULL;
         }
     }
-    
+
     if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("camera has already stopped").toLatin1().data());
@@ -779,7 +779,7 @@ ito::RetVal QCam::stopDevice(ItomSharedSemaphore *waitCond)
 
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QCam::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -803,7 +803,7 @@ ito::RetVal QCam::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
 
     return retValue;
@@ -859,8 +859,8 @@ ito::RetVal QCam::retrieveData(ito::DataObject *externalDataObject)
 
     QCam_Frame *currentFrame = &(m_frames[m_frameCallbackFrameIdx]);
 
-    int width = m_params["sizex"].getVal<int>(); 
-    int height = m_params["sizey"].getVal<int>(); 
+    int width = m_params["sizex"].getVal<int>();
+    int height = m_params["sizey"].getVal<int>();
     int bpp = m_params["bpp"].getVal<int>();
 
     //check whether the data in currentFrame correspond to width and height
@@ -937,7 +937,7 @@ ito::RetVal QCam::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -959,12 +959,12 @@ ito::RetVal QCam::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -972,7 +972,7 @@ ito::RetVal QCam::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -989,7 +989,7 @@ ito::RetVal QCam::requeueFrame()
         QCam_QueueFrame(m_camHandle, &(m_frames[m_frameCallbackFrameIdx]), qCamFrameCallback, qcCallbackDone, this, m_frameCallbackFrameIdx);
     }
 
-    m_frameCallbackFrameIdx = -1; 
+    m_frameCallbackFrameIdx = -1;
     m_frameCallbackRetVal = ito::retOk;
 
     return ito::retOk;
@@ -1001,9 +1001,9 @@ ito::RetVal QCam::requeueFrame()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void QCam::updateParameters(QMap<QString, ito::ParamBase> params)
-{ 
+{
     foreach(const ito::ParamBase &param1, params)
-    {    
+    {
         setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
     }
 }
@@ -1038,7 +1038,7 @@ ito::RetVal QCam::errorCheck(QCam_Err errcode)
     case qerrDriverAlreadyLoaded:
         retval += ito::RetVal(ito::retError, 7, tr("The driver has already been loaded").toLatin1().data());
         break;
-    case qerrDriverNotLoaded: 
+    case qerrDriverNotLoaded:
         retval += ito::RetVal(ito::retError, 8, tr("The driver has not been loaded.").toLatin1().data());
         break;
     case qerrInvalidHandle:
@@ -1098,7 +1098,7 @@ ito::RetVal QCam::errorCheck(QCam_Err errcode)
     case qerrFirewireOverflow:
         retval += ito::RetVal(ito::retError, 27, tr("The host has more data than it can process, restart streaming.").toLatin1().data());
         break;
-    case qerrUnplugged: 
+    case qerrUnplugged:
         retval += ito::RetVal(ito::retError, 28, tr("The camera has been unplugged or turned off").toLatin1().data());
         break;
     case qerrAccessDenied:

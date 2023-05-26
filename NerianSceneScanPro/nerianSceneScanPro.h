@@ -40,7 +40,7 @@ namespace visiontransfer
 }
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    NerianSceneScanProInterface 
+  *\class    NerianSceneScanProInterface
   *
   *\brief    Interface-Class for NerianSceneScanPro-Class
   *
@@ -78,14 +78,14 @@ class NerianSceneScanPro : public ito::AddInGrabber
         ~NerianSceneScanPro();
         //! Constructor
         NerianSceneScanPro();
-        
+
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-        
+
     public:
         friend class NerianSceneScanProInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
-        
+
         //char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
 
     private:
@@ -125,7 +125,7 @@ class NerianSceneScanPro : public ito::AddInGrabber
         visiontransfer::SceneScanParameters *m_pParamsObj;
         visiontransfer::ImageTransfer* m_pImageTransferObj;
         visiontransfer::ImagePair* m_pImagePair;
-        
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
@@ -146,7 +146,7 @@ class NerianSceneScanPro : public ito::AddInGrabber
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        
+
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 

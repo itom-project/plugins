@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -82,7 +82,7 @@ class GLDisplay : public ito::AddInDataIO //, public DummyGrabberInterface
         ito::RetVal close(ItomSharedSemaphore *waitConde = nullptr);
 
         void numberOfImagesChanged(int numImg, int numGray, int numCos);
-        
+
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = nullptr);
 
     private slots:

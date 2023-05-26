@@ -8,7 +8,7 @@ clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *.args *-unused.txt
 
 maintainer-clean-local: clean
-	rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt 
+	rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 
 if ENABLE_GTK_DOC
 

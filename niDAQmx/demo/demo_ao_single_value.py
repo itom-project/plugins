@@ -55,15 +55,15 @@ a = dataObject.randN([3,1],'float64')
 
 
 for i in range(0, 2):
-    
+
     t = time.time()
     print(f"run {i+1}/2 ... ", end='')
-    
+
     for i in range(0, 100):
         plugin.setVal(a)
-    
+
     print("done in %.2f s" % (time.time() - t))
-    
+
     # a finite task with more than one sample per channel
     # is automatically stopped at the end. It is not
     # necessary to call stop() again.

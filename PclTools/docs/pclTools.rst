@@ -9,7 +9,7 @@
 **Platforms**:  Windows, Linux
 **Author**:     :pluginauthor:`PclTools`
 =============== ========================================================================================================
-  
+
 Overview
 ========
 
@@ -24,9 +24,9 @@ These filters are defined in the plugin:
 
 Filters
 ==============
-        
+
 Detailed overview about all defined filters:
-    
+
 .. pluginfilterlist::
     :plugin: PclTools
 

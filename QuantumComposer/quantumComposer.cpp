@@ -43,7 +43,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 QuantumComposerInterface::QuantumComposerInterface()
 {
-    m_type = ito::typeDataIO | ito::typeRawIO; 
+    m_type = ito::typeDataIO | ito::typeRawIO;
 
     setObjectName("QuantumComposer");
 
@@ -1036,7 +1036,7 @@ ito::RetVal QuantumComposer::init(
     }
 
     setInitialized(true); // init method has been finished (independent on retval)
-    
+
     return retValue;
 }
 
@@ -1482,7 +1482,7 @@ ito::RetVal QuantumComposer::setParam(
 
     if (!retValue.containsError())
     {
-        emit parametersChanged(m_params); 
+        emit parametersChanged(m_params);
     }
 
     if (waitCond)
@@ -1549,7 +1549,7 @@ ito::RetVal QuantumComposer::ReadString(QByteArray& result, int& len, int timeou
     {
         len = 0;
         timer.start();
-        _sleep(m_delayAfterSendCommandMS); 
+        _sleep(m_delayAfterSendCommandMS);
 
         while (!done && !retValue.containsError())
         {

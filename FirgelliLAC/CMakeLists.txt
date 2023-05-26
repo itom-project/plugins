@@ -47,7 +47,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFirgelliLAC.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogFirgelliLAC.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFirgelliLAC.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/FirgelliLAC.cpp

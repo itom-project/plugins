@@ -24,4 +24,3 @@
 int QVycctoppm(const unsigned char *ycc, long int yccSize, int width, int height, int ratew, unsigned char **ppm, long int *ppmSize);
 
 #endif
-

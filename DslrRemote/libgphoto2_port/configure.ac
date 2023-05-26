@@ -29,17 +29,17 @@ dnl   * libtool.info chapter "Updating library version information"
 dnl ---------------------------------------------------------------------------
 dnl Versioning:
 dnl  - AGE (Micro):      Increment if any interfaces have been added; set to 0
-dnl		         if any interfaces have been removed. Removal has 
+dnl		         if any interfaces have been removed. Removal has
 dnl                      precedence over adding, so set to 0 if both happened.
 dnl                      It denotes upward compatibility.
-dnl  - REVISION (Minor): Increment any time the source changes; set to 
+dnl  - REVISION (Minor): Increment any time the source changes; set to
 dnl			 0 if you incremented CURRENT.
 dnl  - CURRENT (Major):  Increment if the interface has changes. AGE is always
 dnl                      *changed* at the same time.
 dnl
 dnl  To summarize. Any interface *change* increment CURRENT. If that interface
-dnl  change does not break upward compatibility (ie it is an addition), 
-dnl  increment AGE, Otherwise AGE is reset to 0. If CURRENT has changed, 
+dnl  change does not break upward compatibility (ie it is an addition),
+dnl  increment AGE, Otherwise AGE is reset to 0. If CURRENT has changed,
 dnl  REVISION is set to 0, otherwise REVISION is incremented.
 dnl ---------------------------------------------------------------------------
 dnl A:R:C=6:1:6 libgphoto2_port-0.6.1 libgphoto2-2.2.1
@@ -156,8 +156,8 @@ AC_CHECK_HEADERS(stdlib.h unistd.h stdio.h fcntl.h errno.h sys/time.h	\
 	fcntl.h sgtty.h sys/ioctl.h sys/time.h termio.h unistd.h	\
 	endian.h byteswap.h asm/io.h mntent.h sys/mntent.h sys/mnttab.h \
 	scsi/sg.h limits.h sys/file.h)
-	
-dnl FIXME: Provide regex.h with the corresponding object code for 
+
+dnl FIXME: Provide regex.h with the corresponding object code for
 dnl        platforms which do not have it, e.g. Windows.
 AC_CHECK_HEADER([regex.h],
                 [AC_DEFINE([HAVE_REGEX],1,[whether we have regex.h])],[])

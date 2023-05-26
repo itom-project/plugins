@@ -7,12 +7,12 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -164,13 +164,13 @@ static struct {
 	{PTP_DPC_NIKON_NonCPULensDataMaximumAperture, N_("NIKON Non CPU Lens Data Maximum Aperture")},
 	{PTP_DPC_NIKON_CSMMenuBankSelect, N_("NIKON CSM Menu Bank Select")},
 	{PTP_DPC_NIKON_MenuBankNameA,	N_("NIKON Menu Bank Name A")},
-	{PTP_DPC_NIKON_MenuBankNameB,	N_("NIKON Menu Bank Name B")},	
+	{PTP_DPC_NIKON_MenuBankNameB,	N_("NIKON Menu Bank Name B")},
 	{PTP_DPC_NIKON_MenuBankNameC,	N_("NIKON Menu Bank Name C")},
 	{PTP_DPC_NIKON_MenuBankNameD,	N_("NIKON Menu Bank Name D")},
 	{PTP_DPC_NIKON_A1AFCModePriority, N_("NIKON (A1) AFC Mode Priority")},
 	{PTP_DPC_NIKON_A2AFSModePriority, N_("NIKON (A2) AFS Mode Priority")},
 	{PTP_DPC_NIKON_A3GroupDynamicAF, N_("NIKON (A3) Group Dynamic AF")},
-	{PTP_DPC_NIKON_A4AFActivation,	N_("NIKON (A4) AF Activation")},	
+	{PTP_DPC_NIKON_A4AFActivation,	N_("NIKON (A4) AF Activation")},
 	{PTP_DPC_NIKON_A5FocusAreaIllumManualFocus, N_("NIKON (A5) Focus Area Illum Manual Focus")},
 	{PTP_DPC_NIKON_FocusAreaIllumContinuous, N_("NIKON Focus Area Illum Continuous")},
 	{PTP_DPC_NIKON_FocusAreaIllumWhenSelected, N_("NIKON Focus Area Illum When Selected")},
@@ -185,13 +185,13 @@ static struct {
 	{PTP_DPC_NIKON_AELockMode,	N_("NIKON AE Lock Mode")},
 	{PTP_DPC_NIKON_AELAFLMode,	N_("NIKON AE-L/AF-L Mode")},
 	{PTP_DPC_NIKON_MeterOff, N_("NIKON Meter-Off")},
-	{PTP_DPC_NIKON_SelfTimer,	N_("NIKON Self Timer")},	
+	{PTP_DPC_NIKON_SelfTimer,	N_("NIKON Self Timer")},
 	{PTP_DPC_NIKON_MonitorOff,	N_("NIKON Monitor Off")},
 	{PTP_DPC_NIKON_D1ShootingSpeed, N_("NIKON (D1) Shooting Speed")},
 	{PTP_DPC_NIKON_ExposureTime, N_("NIKON Exposure Time")},
 	{PTP_DPC_NIKON_ACPower, N_("NIKON AC Power")},
 	{PTP_DPC_NIKON_D2MaximumShots, N_("NIKON (D2) Maximum Shots")},
-	{PTP_DPC_NIKON_D3ExpDelayMode,	N_("NIKON (D3) ExpDelayMode")},	
+	{PTP_DPC_NIKON_D3ExpDelayMode,	N_("NIKON (D3) ExpDelayMode")},
 	{PTP_DPC_NIKON_LongExposureNoiseReduction, N_("NIKON Long Exposure Noise Reduction")},
 	{PTP_DPC_NIKON_FileNumberSequence, N_("NIKON File Number Sequence")},
 	{PTP_DPC_NIKON_D6ControlPanelFinderRearControl, N_("NIKON (D6) Control Panel Finder Rear Control")},
@@ -209,7 +209,7 @@ static struct {
 	{PTP_DPC_NIKON_F1CenterButtonShootingMode, N_("NIKON (F1) Center Button Shooting Mode")},
 	{PTP_DPC_NIKON_CenterButtonPlaybackMode, N_("NIKON Center Button Playback Mode")},
 	{PTP_DPC_NIKON_F2Multiselector, N_("NIKON (F2) Multiselector")},
-	{PTP_DPC_NIKON_F3PhotoInfoPlayback, N_("NIKON (F3) PhotoInfoPlayback")},	
+	{PTP_DPC_NIKON_F3PhotoInfoPlayback, N_("NIKON (F3) PhotoInfoPlayback")},
 	{PTP_DPC_NIKON_F4AssignFuncButton, N_("NIKON (F4) Assign Function Button")},
 	{PTP_DPC_NIKON_F5CustomizeCommDials, N_("NIKON (F5) Customize Comm Dials")},
 	{PTP_DPC_NIKON_ReverseCommandDial, N_("NIKON Reverse Command Dials")},
@@ -294,7 +294,7 @@ ptp_prop_getname(PTPParams* params, uint16_t dpc)
 				if (ptp_device_properties_NIKON[i].dpc==dpc)
 					return (ptp_device_properties_NIKON[i].txt);
 			break;
-	
+
 
 		}
 	return NULL;
@@ -355,7 +355,7 @@ ptp_prop_getdescscale10000(PTPParams* params, PTPDevicePropDesc *dpd, char* strv
 	}
 
 	//RETPROPDESC(pd);
-	for (i=0; prop_units[i].dpc!=0; i++)	{ 
+	for (i=0; prop_units[i].dpc!=0; i++)	{
 		if (prop_units[i].dpc==dpd->DevicePropertyCode) {
 			n=snprintf(strvalret,SVALLEN,"%.4f%s",floatvalue,prop_units[i].units);
 			SVALRET(strvalret);
@@ -389,7 +389,7 @@ ptp_prop_getdescscale1000(PTPParams* params, PTPDevicePropDesc *dpd, char* strva
 
 	switch (params->deviceinfo.VendorExtensionID) {
 	case PTP_VENDOR_NIKON:
-		for (i=0; prop_units_NIKON[i].dpc!=0; i++)	{ 
+		for (i=0; prop_units_NIKON[i].dpc!=0; i++)	{
 			if (prop_units_NIKON[i].dpc==dpd->DevicePropertyCode){
 				n=snprintf(strvalret,SVALLEN,"%.*f%s",
 					prop_units_NIKON[i].prec,floatvalue,
@@ -401,7 +401,7 @@ ptp_prop_getdescscale1000(PTPParams* params, PTPDevicePropDesc *dpd, char* strva
 
 	}
 
-	for (i=0; prop_units[i].dpc!=0; i++)	{ 
+	for (i=0; prop_units[i].dpc!=0; i++)	{
 		if (prop_units[i].dpc==dpd->DevicePropertyCode) {
 			n=snprintf(strvalret,SVALLEN,"%.*f%s",
 				prop_units[i].prec,floatvalue,
@@ -442,7 +442,7 @@ ptp_prop_getdescscale100(PTPParams* params, PTPDevicePropDesc *dpd, char* strval
 
 	switch (params->deviceinfo.VendorExtensionID) {
 	case PTP_VENDOR_NIKON:
-		for (i=0; prop_units_NIKON[i].dpc!=0; i++)	{ 
+		for (i=0; prop_units_NIKON[i].dpc!=0; i++)	{
 			if (prop_units_NIKON[i].dpc==dpd->DevicePropertyCode){
 				n=snprintf(strvalret,SVALLEN,"%.*f%s",
 					prop_units_NIKON[i].prec,floatvalue,
@@ -453,7 +453,7 @@ ptp_prop_getdescscale100(PTPParams* params, PTPDevicePropDesc *dpd, char* strval
 			break;
 	}
 
-	for (i=0; prop_units[i].dpc!=0; i++)	{ 
+	for (i=0; prop_units[i].dpc!=0; i++)	{
 		if (prop_units[i].dpc==dpd->DevicePropertyCode) {
 			n=snprintf(strvalret,SVALLEN,"%.*f%s",
 				prop_units[i].prec,floatvalue,
@@ -827,7 +827,7 @@ ptp_prop_getdesc(PTPParams* params, PTPDevicePropDesc *dpd, void *val)
 	const char *strval;
 	/* Get Device Property value as string */
 	strval=ptp_prop_tostr(params, dpd, val);
-	
+
 	return ptp_prop_getdescbystring(params, dpd, strval);
 }
 
@@ -899,4 +899,3 @@ ptp_prop_getvalbyname(PTPParams* params, char* name, uint16_t dpc)
 
 	return NULL;
 }
-

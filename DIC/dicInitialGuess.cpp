@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -186,7 +186,7 @@ ito::RetVal doCalcInitialGuessFFT(ito::DataObject *imgInRef, ito::DataObject *im
     imgInRef->copyTo(imgRef);
 //    retval += normalizeInt(imgDef, imgDef);
 
-    paramsMand[0].setVal<void*>(&imgRef); 
+    paramsMand[0].setVal<void*>(&imgRef);
     paramsMand[1].setVal<void*>(&imgRef);
     paramsOpt[1].setVal<const char*>("no");
     retval = apiFilterCall("fftw2D", &paramsMand, &paramsOpt, &paramsOut);

@@ -27,19 +27,19 @@
  *   http://www.opengps.eu/                                                *
  ***************************************************************************/
 
-/*! @addtogroup C 
+/*! @addtogroup C
    @{ */
 
 
 /*! @file
  * Include file generated from "Version.in" containing the current version
- * 
+ *
  * @author Georg Wiora
  */
- 
+
 #ifndef _OPENGPS_VERSION_H
 #define _OPENGPS_VERSION_H
- 
+
 /// Major program version. This is increased manually in the release process
 #define _OPENGPS_VERSION 0
 /// Minor program revision. This is increased manually in the release process
@@ -58,7 +58,7 @@
 /// Warning message "Warning! Contains locally modified code!" or empty.
 #define _OPENGPS_CLEAN_BUILD "Warning! Contains locally modified code!"
 /// Warning message "Warning! Contains mixed revisions!" or empty
-#define _OPENGPS_CLEAN_REVISION 
+#define _OPENGPS_CLEAN_REVISION
 
 /// 0 if locally modified sources exist, 1 otherwise
 #define _OPENGPS_CLEAN_BUILD_FLAG 0

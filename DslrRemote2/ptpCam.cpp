@@ -25,8 +25,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qobject.h>
 #ifdef WIN32
 #include <iostream>
-#include <sys/utime.h>  
-#include <time.h>  
+#include <sys/utime.h>
+#include <time.h>
 #else
 #include <unistd.h>
 #include <sys/mman.h>
@@ -60,7 +60,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define USB_CLASS_PTP		6
 #endif
 
-// USB control message data phase direction 
+// USB control message data phase direction
 #ifndef USB_DP_HTD
 #define USB_DP_HTD		(0x00 << 7)	// host to device
 #endif
@@ -76,18 +76,18 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define USB_REQ_GET_DEVICE_STATUS	0x67
 #endif
 
-// USB Feature selector HALT 
+// USB Feature selector HALT
 #ifndef USB_FEATURE_HALT
 #define USB_FEATURE_HALT	0x00
 #endif
 
-// OUR APPLICATION USB URB (2MB) ;) 
+// OUR APPLICATION USB URB (2MB) ;)
 #define PTPCAM_USB_URB		2097152
 
 #define USB_TIMEOUT		5000
 #define USB_CAPTURE_TIMEOUT	20000
 
-// the other one, it sucks definitely ;) 
+// the other one, it sucks definitely ;)
 //int ptpcam_usb_timeout = USB_TIMEOUT;
 
 int PtpCam::m_verbose = 0;
@@ -176,11 +176,11 @@ short PtpCam::ptp_check_int(unsigned char *bytes, unsigned int size, void *data)
         result = libusb_bulk_transfer(ptp_usb->handle, ptp_usb->inep, bytes, size, (int*)&size, m_ptpcam_usb_timeout);
     if (m_verbose > 2) fprintf(stderr, "USB_BULK_READ returned %i, size=%i\n", result, size);
 
-    if (result >= 0) 
+    if (result >= 0)
     {
         return result;
     }
-    else 
+    else
     {
         if (m_verbose) perror("ptp_check_int");
             return result;
@@ -230,7 +230,7 @@ ito::RetVal PtpCam::init_ptp_usb(PTPParams* params, PTP_USB* ptp_usb, struct lib
 
     if (!libusb_open(dev, &device_handle))
     {
-        if (!device_handle) 
+        if (!device_handle)
         {
             return ito::RetVal(ito::retError, 0, QObject::tr("usb_open()").toLatin1().data());
         }
@@ -249,7 +249,7 @@ ito::RetVal PtpCam::init_ptp_usb(PTPParams* params, PTP_USB* ptp_usb, struct lib
         uint8_t cfg = config->bConfigurationValue;
         libusb_free_config_descriptor(config);
 
-        if (libusb_detach_kernel_driver(device_handle, iface) != 0) 
+        if (libusb_detach_kernel_driver(device_handle, iface) != 0)
         {
             //retval += ito::RetVal(ito::retWarning, 0, QObject::tr("could not detach kernel driver").toLatin1().data());
         }
@@ -297,7 +297,7 @@ ito::RetVal PtpCam::clear_stall(PTP_USB* ptp_usb)
         perror("inep: usb_get_endpoint_status()");
     }
     // and clear the HALT condition if happend
-    else if (status) 
+    else if (status)
     {
         // printf("Resetting input pipe!\n");
         retval = usb_clear_stall_feature(ptp_usb, ptp_usb->inep);
@@ -318,7 +318,7 @@ ito::RetVal PtpCam::clear_stall(PTP_USB* ptp_usb)
         perror("outep: usb_get_endpoint_status()");
     }
     // and clear the HALT condition if happend
-    else if (status) 
+    else if (status)
     {
         //printf("Resetting output pipe!\n");
         retval += usb_clear_stall_feature(ptp_usb, ptp_usb->outep);
@@ -358,7 +358,7 @@ ito::RetVal PtpCam::close_usb(PTP_USB* ptp_usb, struct libusb_device* dev)
 //        dev->config->interface->altsetting->bInterfaceNumber);
 //    retval += usb_reset(ptp_usb->handle);
 //    retval += usb_close(ptp_usb->handle);
-    
+
     return retval;
 }
 
@@ -385,7 +385,7 @@ struct libusb_device* PtpCam::find_device(int portnum, short force)
     libusb_device **devlist = NULL, *dev = NULL;
     int devcnt, i = 0;
 
-    retval += init_usb(&devlist, devcnt); 
+    retval += init_usb(&devlist, devcnt);
     if (retval.containsError())
         goto end;
 
@@ -442,9 +442,9 @@ ito::RetVal PtpCam::find_endpoints(struct libusb_device *dev, int* inep, int* ou
     ep = config->interface->altsetting->endpoint;
     n = config->interface->altsetting->bNumEndpoints;
 
-    for (i = 0; i<n; i++) 
+    for (i = 0; i<n; i++)
     {
-        if (ep[i].bmAttributes == LIBUSB_TRANSFER_TYPE_BULK)	
+        if (ep[i].bmAttributes == LIBUSB_TRANSFER_TYPE_BULK)
         {
             if ((ep[i].bEndpointAddress&LIBUSB_ENDPOINT_IN) ==
                 LIBUSB_ENDPOINT_IN)
@@ -493,7 +493,7 @@ ito::RetVal PtpCam::open_camera(int portnum, short force, PTP_USB *ptp_usb, PTPP
 #endif
 
     *dev = find_device(portnum, force);
-    if (*dev == NULL) 
+    if (*dev == NULL)
     {
         fprintf(stderr, "could not find any device matching given bus/dev numbers");
         return ito::RetVal(ito::retError, 0, QObject::tr("could not find any device matching given bus/dev numbers").toLatin1().data());
@@ -502,7 +502,7 @@ ito::RetVal PtpCam::open_camera(int portnum, short force, PTP_USB *ptp_usb, PTPP
     retval += find_endpoints(*dev, &ptp_usb->inep, &ptp_usb->outep, &ptp_usb->intep);
 
     retval += init_ptp_usb(params, ptp_usb, *dev);
-    if (ptp_opensession(params, 1) != PTP_RC_OK) 
+    if (ptp_opensession(params, 1) != PTP_RC_OK)
     {
         fprintf(stderr, "ERROR: Could not open session!");
         retval += close_usb(ptp_usb, *dev);
@@ -588,7 +588,7 @@ ito::RetVal PtpCam::list_devices(short force, QMap<int, QString> &deviceList)
                         // CC(ptp_getdeviceinfo(&params, &deviceinfo),
                         // "Could not get device info!\n");
 
-                        //                    deviceList.append(QString("%1/%2\t0x%3/0x%4\t%5").arg(bus->dirname, dev->filename, 
+                        //                    deviceList.append(QString("%1/%2\t0x%3/0x%4\t%5").arg(bus->dirname, dev->filename,
                         //                        dev->discriptor.idVendor, dev->descriptor.idProduct, deviceinfo.Model);
                         if (ptp_getdeviceinfo(&params, &deviceinfo) == PTP_RC_OK)
                         {
@@ -711,7 +711,7 @@ ito::RetVal PtpCam::capture_image(int portnum, short force)
     /*
     // wait for event is currently not working
     ret = ptp_usb_event_wait(&params, &event);
-    if (ret != PTP_RC_OK) 
+    if (ret != PTP_RC_OK)
         goto err;
 
     if (m_verbose)
@@ -720,14 +720,14 @@ ito::RetVal PtpCam::capture_image(int portnum, short force)
 #else
         stdout << printf("Event received %08x, ret=%x\n", event.Code, ret);
 #endif
-    if (event.Code == PTP_EC_CaptureComplete) 
+    if (event.Code == PTP_EC_CaptureComplete)
     {
         perror("Camera reported 'capture completed' but the object information is missing.\n");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Camera reported 'capture completed' but the object information is missing.").toLatin1().data());
         goto out;
     }
 
-    while (event.Code == PTP_EC_ObjectAdded) 
+    while (event.Code == PTP_EC_ObjectAdded)
     {
         // printf("Object added 0x%08lx\n", (long unsigned)event.Param1);
         if (ptp_usb_event_wait(&params, &event) != PTP_RC_OK)
@@ -739,7 +739,7 @@ ito::RetVal PtpCam::capture_image(int portnum, short force)
 #else
             stdout << printf("Event received %08x, ret=%x\n", event.Code, ret);
 #endif
-        if (event.Code == PTP_EC_CaptureComplete) 
+        if (event.Code == PTP_EC_CaptureComplete)
         {
             // printf("Capture completed successfully!\n");
             goto out;
@@ -798,7 +798,7 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
     // printf("Camera: %s\n", params.deviceinfo.Model);
 
     // local loop
-    while (n > 0) 
+    while (n > 0)
     {
         // capture
         time(&start_time);
@@ -812,20 +812,20 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
         if (m_verbose)
             std::cout << printf("Event received %08x, ret=%x\n", event.Code, ret);
         if (ret != PTP_RC_OK) goto err;
-        if (event.Code == PTP_EC_CaptureComplete) 
+        if (event.Code == PTP_EC_CaptureComplete)
         {
             // printf("CANNOT DOWNLOAD: got 'capture completed' but the object information is missing.\n");
             retval += ito::RetVal(ito::retError, 0, QObject::tr("CANNOT DOWNLOAD: got 'capture completed' but the object information is missing.").toLatin1().data());
             goto out;
         }
 
-        while (event.Code == PTP_EC_ObjectAdded) 
+        while (event.Code == PTP_EC_ObjectAdded)
         {
             // printf("Object added 0x%08lx\n", (long unsigned)event.Param1);
             handle = event.Param1;
             if (ptp_usb_event_wait(&params, &event) != PTP_RC_OK)
                 goto err;
-            if (m_verbose) 
+            if (m_verbose)
                 std::cout << printf("Event received %08x, ret=%x\n", event.Code, ret);
             if (event.Code == PTP_EC_CaptureComplete)
                 goto download;
@@ -833,7 +833,7 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
 
     download:
         memset(&oi, 0, sizeof(PTPObjectInfo));
-        if (m_verbose) 
+        if (m_verbose)
             std::cout << printf("Downloading: 0x%08lx\n", (long unsigned)handle);
 
         if ((ret = ptp_getobjectinfo(&params, handle, &oi)) != PTP_RC_OK)
@@ -852,13 +852,13 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
         filename = (oi.Filename);
 #ifdef WIN32
         fh = CreateFileA(filename, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (!fh) 
+        if (!fh)
 #else
         file = open(filename, (overwrite == 1 ? 0 : O_EXCL) | O_RDWR | O_CREAT | O_TRUNC, S_IRWXU | S_IRGRP);
         if (file == -1)
 #endif
         {
-            if (errno == EEXIST) 
+            if (errno == EEXIST)
             {
                 std::cout << printf("Skipping file: \"%s\", file exists!\n", filename);
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("Skipping file: \"%s\", file exists!").arg(filename).toLatin1().data());
@@ -874,7 +874,7 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
         lseek(file, oi.ObjectCompressedSize - 1, SEEK_SET);
         ret = write(file, "", 1);
 #endif
-        if (ret == -1) 
+        if (ret == -1)
         {
             perror("write");
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Error writing file!").toLatin1().data());
@@ -894,7 +894,7 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
 #else
         image = (char*)mmap(0, oi.ObjectCompressedSize, PROT_READ | PROT_WRITE, MAP_SHARED,
             file, 0);
-        if (image == MAP_FAILED) 
+        if (image == MAP_FAILED)
         {
             perror("mmap");
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Error mmap!").toLatin1().data());
@@ -914,14 +914,14 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
         munmap(image, oi.ObjectCompressedSize);
         close(file);
 #endif
-        if (ret != PTP_RC_OK) 
+        if (ret != PTP_RC_OK)
         {
             printf("error!\n");
             ptp_perror(&params, ret);
-            if (ret == PTP_ERROR_IO) 
+            if (ret == PTP_ERROR_IO)
                 retval += clear_stall(&ptp_usb);
         }
-        else 
+        else
         {
             // and delete from camera!
             // printf("is done...\nDeleting from camera.\n");
@@ -932,7 +932,7 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
         }
     out:
         rest_time = interval - (time(NULL) - start_time);
-        if (rest_time>0 && n>0) 
+        if (rest_time>0 && n>0)
         {
             // printf("Sleeping for remaining %u seconds.\n", rest_time);
 #ifdef WIN32
@@ -974,7 +974,7 @@ ito::RetVal PtpCam::nikon_initiate_dc(int portnum, short force)
         goto out;
     }
 
-    if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture)) 
+    if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture))
     {
         // printf("Sorry, your camera dows not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera does not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
@@ -983,11 +983,11 @@ ito::RetVal PtpCam::nikon_initiate_dc(int portnum, short force)
 
     // perform direct capture
     result = ptp_nikon_directcapture(&params, 0xffffffff);
-    if (result != PTP_RC_OK) 
+    if (result != PTP_RC_OK)
     {
         ptp_perror(&params, result);
         // fprintf(stderr, "ERROR: Could not capture.\n");
-        if (result != PTP_RC_StoreFull) 
+        if (result != PTP_RC_StoreFull)
         {
             retval += close_camera(&ptp_usb, &params, m_pdev);
             m_pdev = NULL;
@@ -1025,7 +1025,7 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
 
     // printf("Camera: %s\n", params.deviceinfo.Model);
 
-    if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) == PTP_RC_OK) 
+    if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) == PTP_RC_OK)
     {
         if (filename == NULL) filename = oi.Filename;
         save_object(&params, 0xffff0001, filename, oi, overwrite);
@@ -1041,7 +1041,7 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
         goto out;
     }
 
-    if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture)) 
+    if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture))
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera dows not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
         // printf("Sorry, your camera dows not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
@@ -1071,19 +1071,19 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
 
     // perform direct capture
     result = ptp_nikon_directcapture(&params, 0xffffffff);
-    if (result != PTP_RC_OK) 
+    if (result != PTP_RC_OK)
     {
         ptp_perror(&params, result);
         // fprintf(stderr, "ERROR: Could not capture.\n");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("ERROR: Could not capture.").toLatin1().data());
-        if (result != PTP_RC_StoreFull) 
+        if (result != PTP_RC_StoreFull)
         {
             retval += close_camera(&ptp_usb, &params, m_pdev);
             m_pdev = NULL;
             return retval;
         }
     }
-//    if (BurstNumber>1) 
+//    if (BurstNumber>1)
 //        printf("Capturing %i frames in burst.\n", BurstNumber);
 
     // sleep in case of exposure longer than 1/100
@@ -1093,36 +1093,36 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
     Sleep(ExposureTime + 500);
     //}
 
-    while (BurstNumber>0) 
+    while (BurstNumber>0)
     {
 
-#if 0	    
+#if 0
         // Is this really needed???
         ptp_nikon_keepalive(&params);
 #endif
 
         result = ptp_nikon_checkevent(&params, &events, &nevent);
-        if (result != PTP_RC_OK) 
+        if (result != PTP_RC_OK)
         {
             fprintf(stderr, "Error checking Nikon events\n");
             ptp_perror(&params, result);
             goto out;
         }
-        for (i = 0; i<nevent; i++) 
+        for (i = 0; i<nevent; i++)
         {
             ptp_nikon_keepalive(&params);
             void *prop;
-            if (events[i].code == PTP_EC_DevicePropChanged) 
+            if (events[i].code == PTP_EC_DevicePropChanged)
             {
                 // printf("Checking: %s\n", ptp_prop_getname(&params, events[i].param1));
                 ptp_getdevicepropvalue(&params, events[i].param1, &prop, PTP_DTC_UINT64);
             }
 
             // printf("Event [%i] = 0x%04x,\t param: %08x\n", i, events[i].code, events[i].param1);
-            if (events[i].code == PTP_EC_NIKON_CaptureOverflow) 
+            if (events[i].code == PTP_EC_NIKON_CaptureOverflow)
             {
                 // printf("Ram cache overflow? Shooting to fast!\n");
-                if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) != PTP_RC_OK) 
+                if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) != PTP_RC_OK)
                 {
                     // fprintf(stderr, "Could not get object info\n");
                     ptp_perror(&params, result);
@@ -1138,7 +1138,7 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
             else
                 if (events[i].code == PTP_EC_NIKON_ObjectReady)
                 {
-                    if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) != PTP_RC_OK) 
+                    if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) != PTP_RC_OK)
                     {
                         //fprintf(stderr, "Could not get object info\n");
                         ptp_perror(&params, result);
@@ -1183,7 +1183,7 @@ ito::RetVal PtpCam::nikon_direct_capture2(int portnum, short force, char* filena
 
     retval += init_ptp_usb(&params, &ptp_usb, m_pdev);
 
-    if (ptp_opensession(&params, 1) != PTP_RC_OK) 
+    if (ptp_opensession(&params, 1) != PTP_RC_OK)
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("ERROR: Could not open session!").toLatin1().data());
         //fprintf(stderr, "ERROR: Could not open session!\n");
@@ -1200,12 +1200,12 @@ ito::RetVal PtpCam::nikon_direct_capture2(int portnum, short force, char* filena
 
     // perform direct capture
     result = ptp_nikon_directcapture(&params, 0xffffffff);
-    if (result != PTP_RC_OK) 
+    if (result != PTP_RC_OK)
     {
         ptp_perror(&params, result);
         // fprintf(stderr, "ERROR: Could not capture.\n");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("ERROR: Could not capture.").toLatin1().data());
-        if (result != PTP_RC_StoreFull) 
+        if (result != PTP_RC_StoreFull)
         {
             retval += close_camera(&ptp_usb, &params, m_pdev);
             m_pdev = NULL;
@@ -1223,7 +1223,7 @@ ito::RetVal PtpCam::nikon_direct_capture2(int portnum, short force, char* filena
     //usleep(300 * 1000);
     Sleep(300);
 
-    if (ptp_opensession(&params, 1) != PTP_RC_OK) 
+    if (ptp_opensession(&params, 1) != PTP_RC_OK)
     {
         // fprintf(stderr, "ERROR: Could not open session!\n");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("ERROR: Could not open session!").toLatin1().data());
@@ -1232,12 +1232,12 @@ ito::RetVal PtpCam::nikon_direct_capture2(int portnum, short force, char* filena
         return retval;
     }
 loop:
-    if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) == PTP_RC_OK) 
+    if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) == PTP_RC_OK)
     {
         if (filename == NULL) filename = oi.Filename;
         retval += save_object(&params, 0xffff0001, filename, oi, overwrite);
     }
-    else 
+    else
     {
         ptp_nikon_keepalive(&params);
         goto loop;
@@ -1277,7 +1277,7 @@ loop:
         goto out;
     }
 
-    if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture)) 
+    if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture))
     {
         // printf("Sorry, your camera dows not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera dows not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
@@ -1289,7 +1289,7 @@ loop:
     result = ptp_getdevicepropdesc(&params, PTP_DPC_ExposureTime, &dpd);
     if (result == PTP_RC_OK) ExposureTime = (*(int32_t*)(dpd.CurrentValue)) / 10;
 
-    // obtain burst number 
+    // obtain burst number
     memset(&dpd, 0, sizeof(dpd));
     result = ptp_getdevicepropdesc(&params, PTP_DPC_BurstNumber, &dpd);
     if (result == PTP_RC_OK) BurstNumber = *(uint16_t*)(dpd.CurrentValue);
@@ -1297,7 +1297,7 @@ loop:
 //    if (BurstNumber > 1) printf("Capturing %i frames in burst.\n", BurstNumber);
 #if 0
     /* sleep in case of exposure longer than 1/100 */
-    if (ExposureTime > 10) 
+    if (ExposureTime > 10)
     {
         // printf("sleeping %i miliseconds\n", ExposureTime);
         //usleep(ExposureTime * 1000);
@@ -1305,20 +1305,20 @@ loop:
     }
 #endif
 
-    while (num>0) 
+    while (num>0)
     {
-        // perform direct capture 
+        // perform direct capture
         result = ptp_nikon_directcapture(&params, 0xffffffff);
-        if (result != PTP_RC_OK) 
+        if (result != PTP_RC_OK)
         {
-            if (result == PTP_ERROR_IO) 
+            if (result == PTP_ERROR_IO)
             {
                 retval += close_camera(&ptp_usb, &params, dev);
                 return retval;
             }
         }
 
-#if 0	    
+#if 0
         // Is this really needed???
         ptp_nikon_keepalive(&params);
 #endif
@@ -1330,13 +1330,13 @@ loop:
         result = ptp_nikon_checkevent(&params, &events, &nevent);
         if (result != PTP_RC_OK) goto out;
 
-        for (i = 0; i<nevent; i++) 
+        for (i = 0; i<nevent; i++)
         {
             // printf("Event [%i] = 0x%04x,\t param: %08x\n", i, events[i].code, events[i].param1);
             if (events[i].code == PTP_EC_NIKON_ObjectReady)
             {
                 num--;
-                if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) != PTP_RC_OK) 
+                if ((result = ptp_getobjectinfo(&params, 0xffff0001, &oi)) != PTP_RC_OK)
                 {
                     // fprintf(stderr, "Could not get object info\n");
                     retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not get object info").toLatin1().data());
@@ -1346,7 +1346,7 @@ loop:
                 if (filename == NULL) filename = oi.Filename;
                 retval += save_object(&params, 0xffff0001, filename, oi, overwrite);
             }
-            if (events[i].code == PTP_EC_NIKON_CaptureOverflow) 
+            if (events[i].code == PTP_EC_NIKON_CaptureOverflow)
             {
                 // printf("Ram cache overflow, capture terminated\n");
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("Ram cache overflow, capture terminated").toLatin1().data());
@@ -1461,7 +1461,7 @@ ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileL
     // CR(ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000,
     //    &params.handles), "Could not get object handles\n");
     // printf("Handler:           Size: \tCaptured:      \tname:\n");
-    for (i = 0; i < params.handles.n; i++) 
+    for (i = 0; i < params.handles.n; i++)
     {
         parentHandle->setAlive();
         // CR(ptp_getobjectinfo(&params, params.handles.Handler[i],
@@ -1472,7 +1472,7 @@ ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileL
             continue;
         tm = gmtime(&oi.CaptureDate);
         fileList.append(QString("0x%1 %2 %3/%4/%5 %6:%7 %8;").arg(QString::number(params.handles.Handler[i]),
-            QString::number(oi.ObjectCompressedSize), QString::number(tm->tm_year + 1900), 
+            QString::number(oi.ObjectCompressedSize), QString::number(tm->tm_year + 1900),
             QString::number(tm->tm_mon + 1), QString::number(tm->tm_mday),
             QString::number(tm->tm_hour), QString::number(tm->tm_min), QString(oi.Filename)));
 //        printf("0x%08lx: %12u\t%4i-%02i-%02i %02i:%02i\t%s\n",
@@ -1485,7 +1485,7 @@ ito::RetVal PtpCam::list_files(int portnum, short force, QVector<QString> &fileL
     // printf("\n");
     retval += close_camera(&ptp_usb, &params, m_pdev);
     m_pdev = NULL;
-    
+
     return retval;
 }
 
@@ -1538,7 +1538,7 @@ ito::RetVal PtpCam::delete_all_files(int portnum, short force)
     // CR(ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000,
     //    &params.handles), "Could not get object handles\n");
 
-    for (i = 0; i < params.handles.n; i++) 
+    for (i = 0; i < params.handles.n; i++)
     {
         handle = params.handles.Handler[i];
         if ((ret = ptp_getobjectinfo(&params, handle, &oi)) != PTP_RC_OK)
@@ -1586,7 +1586,7 @@ ito::RetVal PtpCam::save_object(PTPParams *params, uint32_t handle, char* filena
     if (file == -1)
 #endif
     {
-        if (errno == EEXIST) 
+        if (errno == EEXIST)
         {
             // printf("Skipping file: \"%s\", file exists!\n", filename);
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Skipping file: \"%1\", file exists!").arg(filename).toLatin1().data());
@@ -1603,7 +1603,7 @@ ito::RetVal PtpCam::save_object(PTPParams *params, uint32_t handle, char* filena
     lseek(file, oi.ObjectCompressedSize - 1, SEEK_SET);
     ret = write(file, "", 1);
 #endif
-    if (ret == -1) 
+    if (ret == -1)
     {
         perror("write");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("write").toLatin1().data());
@@ -1641,7 +1641,7 @@ ito::RetVal PtpCam::save_object(PTPParams *params, uint32_t handle, char* filena
     CloseHandle(fh);
 #else
     munmap(image, oi.ObjectCompressedSize);
-    if (close(file) == -1) 
+    if (close(file) == -1)
     {
         perror("close");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("close").toLatin1().data());
@@ -1651,14 +1651,14 @@ ito::RetVal PtpCam::save_object(PTPParams *params, uint32_t handle, char* filena
     timebuf.actime = oi.ModificationDate;
     timebuf.modtime = oi.CaptureDate;
     utime(filename, &timebuf);
-    if (ret != PTP_RC_OK) 
+    if (ret != PTP_RC_OK)
     {
         // printf("error!\n");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("error").toLatin1().data());
         ptp_perror(params, ret);
         if (ret == PTP_ERROR_IO) clear_stall((PTP_USB *)(params->data));
     }
-    else 
+    else
     {
         // printf("is done.\n");
     }
@@ -1678,7 +1678,7 @@ ito::RetVal PtpCam::get_save_object(PTPParams *params, uint32_t handle, char* fi
     if (m_verbose)
         std::cout << printf("Handle: 0x%08lx\n", (long unsigned)handle);
 
-    if ((ret = ptp_getobjectinfo(params, handle, &oi)) != PTP_RC_OK) 
+    if ((ret = ptp_getobjectinfo(params, handle, &oi)) != PTP_RC_OK)
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Could not get object info").toLatin1().data());
         // fprintf(stderr, "Could not get object info\n");
@@ -1787,7 +1787,7 @@ ito::RetVal PtpCam::get_all_files(int portnum, short force, int overwrite)
 //    CR(ptp_getobjecthandles(&params, 0xffffffff, 0x000000, 0x000000,
 //        &params.handles), "Could not get object handles\n");
 
-    for (i = 0; i<params.handles.n; i++) 
+    for (i = 0; i<params.handles.n; i++)
     {
         retval += get_save_object(&params, params.handles.Handler[i], NULL,
             overwrite);
@@ -1799,7 +1799,7 @@ ito::RetVal PtpCam::get_all_files(int portnum, short force, int overwrite)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PtpCam::send_generic_request(int portnum, uint16_t reqCode, uint32_t *reqParams, uint32_t direction, 
+ito::RetVal PtpCam::send_generic_request(int portnum, uint16_t reqCode, uint32_t *reqParams, uint32_t direction,
     char *data_file)
 {
     ito::RetVal retval;
@@ -1808,10 +1808,10 @@ ito::RetVal PtpCam::send_generic_request(int portnum, uint16_t reqCode, uint32_t
     char *data = NULL;
     long fsize = 0;
 
-    if (direction == PTP_DP_SENDDATA) 
-    { 
+    if (direction == PTP_DP_SENDDATA)
+    {
         // read data from file
-        if (strncmp(data_file, "0x", 2) == 0) 
+        if (strncmp(data_file, "0x", 2) == 0)
         {
             uint len = strlen(data_file);
             char num[3];
@@ -1819,15 +1819,15 @@ ito::RetVal PtpCam::send_generic_request(int portnum, uint16_t reqCode, uint32_t
             data = (char*)calloc(1, len / 2);
 
             num[2] = 0;
-            for (i = 2; i < len; i += 2) 
+            for (i = 2; i < len; i += 2)
             {
                 num[1] = data_file[i];
-                if (i < len - 1) 
+                if (i < len - 1)
                 {
                     num[0] = data_file[i];
                     num[1] = data_file[i + 1];
                 }
-                else 
+                else
                 {
                     num[0] = data_file[i];
                     num[1] = 0;
@@ -1836,32 +1836,32 @@ ito::RetVal PtpCam::send_generic_request(int portnum, uint16_t reqCode, uint32_t
                 ++fsize;
             }
         }
-        else 
+        else
         {
 
             FILE *f = fopen(data_file, "r");
-            if (f) 
+            if (f)
             {
                 fseek(f, 0, SEEK_END);
                 fsize = ftell(f);
                 fseek(f, 0, SEEK_SET);
                 data = (char*)calloc(1, fsize + 1);
-                if (fread(data, 1, fsize, f) != fsize) 
+                if (fread(data, 1, fsize, f) != fsize)
                 {
                     // fprintf(stderr, "PTP: ERROR: can't read data to send from file '%s'\n", data_file);
                     retval += ito::RetVal(ito::retError, 0, QObject::tr("PTP: ERROR: can't read data to send from file '%s'").arg(data_file).toLatin1().data());
                     free(data);
                     return retval;
                 }
-                else 
+                else
                 {
                     // printf("--- data to send ---\n");
                     // display_hexdump(data, fsize);
                     // printf("--------------------\n");
                 }
             }
-            else 
-            { 
+            else
+            {
                 // error no data to send
                 // fprintf(stderr, "PTP: ERROR: file not found '%s'\n", data_file);
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("PTP: ERROR: can't read data to send from file '%s'").arg(data_file).toLatin1().data());
@@ -1880,29 +1880,29 @@ ito::RetVal PtpCam::send_generic_request(int portnum, uint16_t reqCode, uint32_t
 //    printf("Sending generic request: reqCode=0x%04x, params=[0x%08x,0x%08x,0x%08x,0x%08x,0x%08x]\n",
 //        (uint)reqCode, reqParams[0], reqParams[1], reqParams[2], reqParams[3], reqParams[4]);
     uint16_t result = ptp_sendgenericrequest(&params, reqCode, reqParams, &data, direction, fsize);
-    if ((result) != PTP_RC_OK) 
+    if ((result) != PTP_RC_OK)
     {
         ptp_perror(&params, result);
         if (result > 0x2000)
             retval += ito::RetVal(ito::retError, 0, QObject::tr("PTP: ERROR: response 0x%1").arg(QString::number(result)).toLatin1().data());
 //            fprintf(stderr, "PTP: ERROR: response 0x%04x\n", result);
     }
-    else 
+    else
     {
-        if (data != NULL && direction == PTP_DP_GETDATA) 
+        if (data != NULL && direction == PTP_DP_GETDATA)
         {
             // display_hexdump(data, malloc_usable_size((void*)data));
             free(data);
         }
         // printf("PTP: response OK\n");
     }
-    if (data != NULL && direction == PTP_DP_SENDDATA) 
+    if (data != NULL && direction == PTP_DP_SENDDATA)
     {
         free(data);
     }
     retval += close_camera(&ptp_usb, &params, m_pdev);
     m_pdev = NULL;
-    
+
     return retval;
 }
 
@@ -2035,7 +2035,7 @@ ito::RetVal PtpCam::set_property(PTPParams* params, uint16_t property, const cha
     ito::RetVal retval;
     void* val = NULL;
 
-    switch (datatype) 
+    switch (datatype)
     {
         case PTP_DTC_INT8:
             val = malloc(sizeof(int8_t));
@@ -2086,7 +2086,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
 
     memset(&dpd, 0, sizeof(dpd));
     result = ptp_getdevicepropdesc(params, property, &dpd);
-    if (result != PTP_RC_OK&&!force) 
+    if (result != PTP_RC_OK&&!force)
     {
         ptp_perror(params, result);
         retval += ito::RetVal(ito::retError, 0, QObject::tr("ERROR: Could not get device property description! Try to reset the camera.").toLatin1().data());
@@ -2099,12 +2099,12 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
     propdesc = ptp_prop_getdesc(params, &dpd, NULL);
     propname = ptp_prop_getname(params, property);
 
-    if (*value == NULL) 
-    { 
+    if (*value == NULL)
+    {
         *value = (char*)calloc(1024, sizeof(unsigned char));
         // property GET
-        if (!m_verbose) 
-        { 
+        if (!m_verbose)
+        {
             switch (dpd.DataType)
             {
                 case PTP_DTC_INT8:
@@ -2150,8 +2150,8 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
 */
             // printf("\n");
         }
-        else 
-        { 
+        else
+        {
 /*
             // verbose output
             printf("%s: [0x%04x, ", propname == NULL ? "UNKNOWN" : propname,
@@ -2182,7 +2182,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
                 printf(" [%s]", propdesc);
             printf("\n");
 
-            switch (dpd.FormFlag) 
+            switch (dpd.FormFlag)
             {
                 case PTP_DPFF_Enumeration:
                 {
@@ -2215,7 +2215,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
 */
         }
     }
-    else 
+    else
     {
         uint16_t r;
         propdesc = ptp_prop_getdesc(params, &dpd, NULL);
@@ -2234,7 +2234,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
 */
         propdesc = ptp_prop_getdescbystring(params, &dpd, *value);
         /*
-        if (propdesc==NULL) 
+        if (propdesc==NULL)
         {
             fprintf(stderr, "ERROR: Unable to set property to unidentified value: '%s'\n",
             value);
@@ -2288,7 +2288,7 @@ ito::RetVal PtpCam::getset_propertybyname(int portnum, char* property, char** va
     // else
     //    printf("\n");
 
-    if (property == NULL) 
+    if (property == NULL)
     {
         // fprintf(stderr, "ERROR: no such property\n");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("ERROR: no such property").toLatin1().data());
@@ -2304,14 +2304,14 @@ ito::RetVal PtpCam::getset_propertybyname(int portnum, char* property, char** va
 #ifdef WIN32
     while ((p = strchr(property, '-')) != NULL)
 #else
-    while ((p = index(property, '-')) != NULL) 
+    while ((p = index(property, '-')) != NULL)
 #endif
     {
         *p = ' ';
     }
 
     dpc = ptp_prop_getcodebyname(&params, property);
-    if (dpc == 0) 
+    if (dpc == 0)
     {
         // fprintf(stderr, "ERROR: Could not find property '%s'\n",
         //    property);
@@ -2333,9 +2333,9 @@ ito::RetVal PtpCam::getset_propertybyname(int portnum, char* property, char** va
     if (value != NULL)
     {
 #ifdef WIN32
-        while ((p = strchr(*value, '-')) != NULL) 
+        while ((p = strchr(*value, '-')) != NULL)
 #else
-        while ((p = index(*value, '-')) != NULL) 
+        while ((p = index(*value, '-')) != NULL)
 #endif
         {
             *p = ' ';
@@ -2436,7 +2436,7 @@ ito::RetVal PtpCam::getset_property_value(int portnum, uint16_t property, char**
     //result =ptp_getdevicepropvalue (&params, property, &prop, PTP_DTC_UINT8);
     ret = ptp_getdevicepropvalue(&params, ptp.Code, (void**)&property, PTP_DTC_UINT8);
 
-    if (ret != PTP_RC_OK) 
+    if (ret != PTP_RC_OK)
     {
         ptp_perror(&params, ret);
         // fprintf(stderr, "ERROR: "
@@ -2449,7 +2449,7 @@ ito::RetVal PtpCam::getset_property_value(int portnum, uint16_t property, char**
 
     retval += close_camera(&ptp_usb, &params, m_pdev);
     m_pdev = NULL;
-    
+
     return retval;
 }
 
@@ -2479,7 +2479,7 @@ ito::RetVal PtpCam::show_all_properties(int portnum, short force, int unknown, Q
     // else
     //    printf("\n");
 
-    for (i = 0; i<params.deviceinfo.DevicePropertiesSupported_len; i++) 
+    for (i = 0; i<params.deviceinfo.DevicePropertiesSupported_len; i++)
     {
         propname = ptp_prop_getname(&params,
             params.deviceinfo.DevicePropertiesSupported[i]);
@@ -2497,7 +2497,7 @@ ito::RetVal PtpCam::show_all_properties(int portnum, short force, int unknown, Q
         //    "Try to reset the camera.\n");
         propdesc = ptp_prop_getdesc(&params, &dpd, NULL);
 
-        if (m_verbose) 
+        if (m_verbose)
         {
             // printf("(%s", propname == NULL ? "UNKNOWN" : propname);
             // if (propdesc != NULL)
@@ -2525,7 +2525,7 @@ int PtpCam::usb_get_endpoint_status(PTP_USB* ptp_usb, int ep, uint16_t* status)
 //    return (usb_control_msg(ptp_usb->handle,
 //        USB_DP_DTH | USB_RECIP_ENDPOINT, USB_REQ_GET_STATUS,
 //        USB_FEATURE_HALT, ep, (char *)status, 2, 3000));
-    return (libusb_control_transfer(ptp_usb->handle, USB_DP_DTH | LIBUSB_RECIPIENT_ENDPOINT 
+    return (libusb_control_transfer(ptp_usb->handle, USB_DP_DTH | LIBUSB_RECIPIENT_ENDPOINT
         | LIBUSB_REQUEST_GET_STATUS,
         USB_FEATURE_HALT, ep, 0, (unsigned char*)status, 2, 3000));
 }
@@ -2601,7 +2601,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_get_endpoint_status()").toLatin1().data());
 
     // and clear the HALT condition if happend
-    if (status) 
+    if (status)
     {
         // printf("Resetting input pipe!\n");
         ret = usb_clear_stall_feature(&ptp_usb, ptp_usb.inep);
@@ -2617,7 +2617,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_get_endpoint_status()").toLatin1().data());
 
     // and clear the HALT condition if happend
-    if (status) 
+    if (status)
     {
         // printf("Resetting output pipe!\n");
         ret = usb_clear_stall_feature(&ptp_usb, ptp_usb.outep);
@@ -2632,9 +2632,9 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
     //if (ret<0)perror("usb_get_endpoint_status()");
     if (ret < 0)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_get_endpoint_status()").toLatin1().data());
-    
+
     // and clear the HALT condition if happend
-    if (status) 
+    if (status)
     {
         // printf("Resetting interrupt pipe!\n");
         ret = usb_clear_stall_feature(&ptp_usb, ptp_usb.intep);
@@ -2648,7 +2648,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
     if (ret<0)
         // perror("usb_ptp_get_device_status()");
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_ptp_get_device_status()").toLatin1().data());
-    else	
+    else
     {
         if (devstatus[1] == PTP_RC_OK)
             printf("Device status OK\n");
@@ -2661,7 +2661,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
     // if (ret<0)perror("usb_ptp_device_reset()");
     if (ret < 0)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_ptp_device_reset()").toLatin1().data());
-    // get device status (devices likes that regardless of its result) 
+    // get device status (devices likes that regardless of its result)
     usb_ptp_get_device_status(&ptp_usb, devstatus);
 
     retval += close_usb(&ptp_usb, m_pdev);
@@ -2729,7 +2729,7 @@ void ptphack()
 }
 */
 
-// main program 
+// main program
 /*
 int
 main(int argc, char ** argv)
@@ -2787,7 +2787,7 @@ main(int argc, char ** argv)
         { 0, 0, 0, 0 }
     };
 
-    // register signal handlers 
+    // register signal handlers
     signal(SIGINT, ptpcam_siginthandler);
 
     while (1) {
@@ -2795,7 +2795,7 @@ main(int argc, char ** argv)
         if (opt == -1) break;
 
         switch (opt) {
-            // set parameters 
+            // set parameters
         case 0:
             if (!(strcmp("val", loptions[option_index].name)))
                 value = strdup(optarg);
@@ -2849,7 +2849,7 @@ main(int argc, char ** argv)
                 verbose = 1;
             // printf("VERBOSE LEVEL  = %i\n",verbose);
             break;
-            // actions 
+            // actions
         case 'h':
             help();
             break;

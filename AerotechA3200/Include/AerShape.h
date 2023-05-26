@@ -14,8 +14,6 @@ AERERR_CODE AER_DLLENTRY AerShaperTest( HAERCTRL hAerCtrl );
 
 #ifdef __cplusplus
 }
-#endif 
-
 #endif
 
-
+#endif

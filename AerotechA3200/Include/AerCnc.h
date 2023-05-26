@@ -28,7 +28,7 @@ AERERR_CODE AER_DLLENTRY AerSysProgramGetNumber( HAERCTRL hAerCtrl, PAER_PROG_HA
 
 AERERR_CODE AER_DLLENTRY AerSysProgramLoadLine( HAERCTRL hAerCtrl, DWORD dwProg, PCODE_PACKET pCode );
 AERERR_CODE AER_DLLENTRY AerSysProgramLoadLineArray( HAERCTRL hAerCtrl, DWORD dwProg, DWORD dwNLines, PCODE_PACKET pCode );
-                                              
+
 AERERR_CODE AER_DLLENTRY AerSysProgramLoadLabel( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle, PAER_PROG_LABEL_INFO pLabelInfo );
 
 // dwOn_Off = AER_BP_ON (true), AER_BP_OFF (false), AER_BP_TOGGLE (-1)
@@ -38,7 +38,7 @@ AERERR_CODE AER_DLLENTRY AerSysProgramGetBreakPoint( HAERCTRL hAerCtrl, PAER_PRO
                                                   DWORD dwLineUser, PBOOL pbOn );
 AERERR_CODE AER_DLLENTRY AerSysProgramSetFlags( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle, DWORD dwFlags);
 AERERR_CODE AER_DLLENTRY AerSysProgramGetFlags( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle, PDWORD dwFlags);
-AERERR_CODE AER_DLLENTRY AerSysProgramGetHandlePlus( HAERCTRL hAerCtrl, DWORD dwNum, 
+AERERR_CODE AER_DLLENTRY AerSysProgramGetHandlePlus( HAERCTRL hAerCtrl, DWORD dwNum,
                                                      PAER_PROG_HANDLE pHandle, PAER_PROG_STATUS pStatus);
 
 
@@ -91,9 +91,9 @@ BOOL IsValidPtrNoParmOffsetType(DWORD dwType);
 BOOL IsValidPtrParmOffsetType(DWORD vstoragetype);
 BOOL IsValidPtrParmOffsetTypeAxis(DWORD vstoragetype);
 BOOL IsValidPtrParmOffsetTypeTask(DWORD vstoragetype);
-BOOL IsValidPtrCallStackParm(DWORD vstoragetype);    
-BOOL IsValidPtrAptVar(DWORD vstoragetype);          
-BOOL IsValidPtrProg(DWORD vstoragetype);          
+BOOL IsValidPtrCallStackParm(DWORD vstoragetype);
+BOOL IsValidPtrAptVar(DWORD vstoragetype);
+BOOL IsValidPtrProg(DWORD vstoragetype);
 BOOL IsValidPtrNumericVarType(DWORD vstoragetype);
 BOOL IsValidPtrAssignable(DWORD vstoragetype);
 BOOL IsValidPtrIndexVar(DWORD dwType);

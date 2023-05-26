@@ -493,12 +493,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Warning occured while starting read task. 
+        <source>Warning occured while starting read task.
  Code: %i</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error occured while starting read task. 
+        <source>Error occured while starting read task.
  Code: %i</source>
         <translation type="unfinished"></translation>
     </message>

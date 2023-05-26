@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -114,7 +114,7 @@
 
             // Set random seed so derived indices are the same each time the filter runs
             std::srand (seed_);
-        
+
             float one_over_N = 0.0;
             int top = N - sample_; //N are the remaining number of elements, n the remaining number of wanted samples
             unsigned index = 0;
@@ -243,6 +243,6 @@
       }
   };
 
-  
+
 
 #endif  //#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_CORRECTED_H_

@@ -10,7 +10,7 @@
 **Devices**:    Plugin to control a KCube Position Aligner control unit for PSD devices
 **Author**:     :pluginauthor:`ThorlabsKCubePA`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,9 +21,9 @@ ITOM Plugin to be used for interaction with the KCube Position Aligner control u
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: ThorlabsKCubePA
 
@@ -47,7 +47,7 @@ Usage example
 The following example continuously acquires the X/Y position differences of two PSDs, plots them in an endless monitor and logs the position in a csv log file:
 
 .. code-block:: python
-    
+
     import time
     import gc
 
@@ -84,7 +84,7 @@ The following example continuously acquires the X/Y position differences of two 
     #open logfile
     with open("log.csv", "wt") as fp:
         fp.write("timestamp;psd1_x;psd1_y;psd2_x;psd2_y\n")
-        
+
         counter = 0
         try:
             while True:
@@ -92,14 +92,14 @@ The following example continuously acquires the X/Y position differences of two 
                 psd2.acquire()
                 psd1.getVal(buf1)
                 psd2.getVal(buf2)
-                
+
                 logtext = "%.5f;%.4f;%.4f;%.4f;%.4f\n" % (time.time(), buf1[0,0], buf1[1,0], buf2[0,0], buf2[1,0])
                 fp.write(logtext)
-                
+
                 if counter % 50 == 0:
                     fp.flush() #flush the file from time to time
                 counter += 1
-                
+
                 #update plot
                 data[:,0:buffer-1] = data[:,1:buffer]
                 data[0:2,buffer-1] = buf1
@@ -108,20 +108,20 @@ The following example continuously acquires the X/Y position differences of two 
                 time.sleep(delay)
         except KeyboardInterrupt:
             print("quit the acquisition")
-            
+
     psd1.stopDevice()
     psd2.stopDevice()
     del psd1
     del psd2
-            
-        
+
+
 
 Compilation
 ===========
 
 To compile this plugin, install the Thorlabs KINESIS from
 https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0
-driver package in the same bit-version than itom (32/64bit). 
+driver package in the same bit-version than itom (32/64bit).
 It has been implemented using KINESIS version 1.14.32.
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
 to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -109,7 +109,7 @@ ito::RetVal FirgelliLACInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 FirgelliLACInterface::FirgelliLACInterface()
@@ -133,8 +133,8 @@ and cannot be changed (due to the driver of the controller board).");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsMand.append(ito::Param("spoolMax", ito::ParamBase::Double, 20.0, new ito::DoubleMeta(0.0,100000.0), tr("Maximum length of spool (mm) [default 20.0 mm]").toLatin1().data()));
 
     m_initParamsOpt.append(ito::Param("deviceNum", ito::ParamBase::Int, -1, 127, -1, tr("The current number of this specific device, if there are more than one devices connected. (0 = first device)").toLatin1().data()));
@@ -172,7 +172,7 @@ ito::RetVal FirgelliLACInterface::loadDLL()
         MPUSBGetConfigurationDescriptor = (DWORD(*)(HANDLE, UCHAR, PVOID, DWORD, PDWORD)) mLib.resolve("_MPUSBGetConfigurationDescriptor");
         MPUSBGetStringDescriptor = (DWORD(*)(HANDLE, UCHAR, USHORT, PVOID, DWORD, PDWORD)) mLib.resolve("_MPUSBGetStringDescriptor");
         MPUSBSetConfiguration = (DWORD(*)(HANDLE, USHORT)) mLib.resolve("_MPUSBSetConfiguration");
-        
+
         //check (some) for success:
         if (!(MPUSBGetDLLVersion))
         {
@@ -202,10 +202,10 @@ ito::RetVal FirgelliLACInterface::unloadDLL()
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class FirgelliLACInterface with the name FirgelliLACInterface as plugin for the Qt-System (see Qt-DOC)
 
-        
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-//! 
+//!
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
     creates new instance of dialogFirgelliLAC, calls the method setVals of dialogFirgelliLAC, starts the execution loop and if the dialog
@@ -273,7 +273,7 @@ ito::RetVal FirgelliLAC::LACRead(BYTE &retCommand, int &retAnswer)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the FirgelliLAC::init. The widged window is created at this position.
 */
 ito::RetVal FirgelliLAC::LACCheckError(ito::RetVal retval)
@@ -282,7 +282,7 @@ ito::RetVal FirgelliLAC::LACCheckError(ito::RetVal retval)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the FirgelliLAC::init. The widged window is created at this position.
 */
 FirgelliLAC::FirgelliLAC() :
@@ -334,7 +334,7 @@ FirgelliLAC::FirgelliLAC() :
     \return retOk
 */
 ito::RetVal FirgelliLAC::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, ItomSharedSemaphore *waitCond)
-{   
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     bool deviceOpen = false;
@@ -397,13 +397,13 @@ ito::RetVal FirgelliLAC::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         retval += m_params["deviceID"].setVal<const char*>("FirgelliLAC");  // ToDo!
         retval += m_params["speed"].setVal<double>(50.0);
         retval += m_params["accuracy"].setVal<double>(98.0);
-        
+
         retval += LACWrite(SET_SPEED, qRound(1023 * m_params["speed"].getVal<double>() / 100.0), true);
         retval += LACWrite(SET_ACCURACY, 1024 - qRound(1023 * m_params["accuracy"].getVal<double>() / 100.0), true);
 
         retval += LACSetPos(0.0, false);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -454,7 +454,7 @@ ito::RetVal FirgelliLAC::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -496,7 +496,7 @@ ito::RetVal FirgelliLAC::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, FirgelliLAC::SMCSwitchType is executed.
 
@@ -658,7 +658,7 @@ ito::RetVal FirgelliLAC::getPos(const int axis, QSharedPointer<double> pos, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
+/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -693,7 +693,7 @@ ito::RetVal FirgelliLAC::getPos(const QVector<int> axis, QSharedPointer<QVector<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls FirgelliLAC::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -731,7 +731,7 @@ ito::RetVal FirgelliLAC::setPosAbs(const QVector<int> axis, QVector<double> pos,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls FirgelliLAC::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -788,7 +788,7 @@ ito::RetVal FirgelliLAC::requestStatusAndPosition(bool sendCurrentPos, bool send
     {
         retval += getPos(0, sharedpos, 0);
         m_currentPos[0] = *sharedpos;
-        
+
         sendStatusUpdate(false);
     }
     else
@@ -840,7 +840,7 @@ ito::RetVal FirgelliLAC::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
+/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -885,7 +885,7 @@ ito::RetVal FirgelliLAC::LACSetPos(const double posMM, bool relNotAbs, ItomShare
             retval += LACWrite(SET_POSITION, m_targetSteps);
         }
     }
-        
+
     if (!retval.containsError())
     {
         // release semaphore immediately
@@ -895,8 +895,8 @@ ito::RetVal FirgelliLAC::LACSetPos(const double posMM, bool relNotAbs, ItomShare
             waitCond->release();
             released = true;
         }
-        
-        retval += waitForDone(-1, QVector<int>(1, 0)); 
+
+        retval += waitForDone(-1, QVector<int>(1, 0));
         // Wait till movement is done and the release the semaphore
         if (!m_async && waitCond && !released)
         {
@@ -938,7 +938,7 @@ ito::RetVal FirgelliLAC::waitForDone(const int timeoutMS, const QVector<int> axi
     int sameStep = 0;
 
     while (!done && !retval.containsWarningOrError())
-    {   
+    {
         retval += LACRead(cmd, answer);
 
         if (!retval.containsError())
@@ -1008,7 +1008,7 @@ ito::RetVal FirgelliLAC::waitForDone(const int timeoutMS, const QVector<int> axi
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void FirgelliLAC::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1029,4 +1029,3 @@ void FirgelliLAC::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
-

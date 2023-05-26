@@ -4,7 +4,7 @@
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -101,7 +101,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
                 ui.comboTrigger->addItem(sm->getString(i));
             }
         }
-        
+
         it = params.find("fan_speed");
         sm = static_cast<ito::StringMeta*>(it->getMeta());
         ui.comboFanSpeed->clear();
@@ -117,7 +117,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
                 ui.comboFanSpeed->addItem(sm->getString(i));
             }
         }
-        
+
         it = params.find("pixel_readout_rate");
         sm = static_cast<ito::StringMeta*>(it->getMeta());
         ui.comboPixelReadoutRate->clear();
@@ -156,7 +156,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
 
     bool updateSizeX = false;
     bool updateSizeY = false;
-    
+
     const int *roi = params["roi"].getVal<const int*>();
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
     ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
@@ -180,7 +180,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
 
     double dval = params["gain"].getVal<double>();
     ui.sliderGain->setValue(dval);
-    ui.sliderGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));             
+    ui.sliderGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
 
     int bpp = params["bpp"].getVal<int>();
     for (int i = 0; i < ui.comboBpp->count(); ++i)
@@ -221,7 +221,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
             break;
         }
     }
-    
+
     str = params["pixel_readout_rate"].getVal<const char*>();
     for (int i = 0; i < ui.comboPixelReadoutRate->count(); ++i)
     {
@@ -303,7 +303,7 @@ ito::RetVal DialogSDK3::applyParameters()
     if (ui.comboBpp->isEnabled())
     {
         int bpp = ui.comboBpp->itemData(ui.comboBpp->currentIndex()).toInt();
-        
+
         if (m_currentParameters["bpp"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
@@ -325,7 +325,7 @@ ito::RetVal DialogSDK3::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::String, ui.comboTrigger->currentText().toLatin1().data())));
         }
     }
-    
+
     if (ui.comboFanSpeed->isEnabled())
     {
         if (QString::compare(m_currentParameters["fan_speed"].getVal<const char*>(),ui.comboFanSpeed->currentText()) != 0)
@@ -333,7 +333,7 @@ ito::RetVal DialogSDK3::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("fan_speed", ito::ParamBase::String, ui.comboFanSpeed->currentText().toLatin1().data())));
         }
     }
-    
+
     if (ui.comboPixelReadoutRate->isEnabled())
     {
         if (QString::compare(m_currentParameters["pixel_readout_rate"].getVal<const char*>(),ui.comboPixelReadoutRate->currentText()) != 0)

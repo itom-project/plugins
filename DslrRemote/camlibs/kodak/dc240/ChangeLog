@@ -20,15 +20,15 @@
 
 2002-02-21  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* library.c: removed COMM0 and other strange code and replaced them 
+	* library.c: removed COMM0 and other strange code and replaced them
 	with the new DC240_SC_* codes.
 	(dc240_load_status_data_to_table): fixed a signedess issue
-	
+
 
 2002-02-21  Peter Fales	<psfales@lucent.com>
 
 	* library.c (dc240_packet_read): handle COMM0 error packet
-	(dc240_packet_exchange): handle a GP_ERROR_NOT_SUPPORTED returned by 
+	(dc240_packet_exchange): handle a GP_ERROR_NOT_SUPPORTED returned by
 	dc240_packet_read
 	Fix bug #499404
 
@@ -43,9 +43,9 @@
 
 2001-12-26  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* library.c (dc240_set_speed): fixed a memory leak in case of 
+	* library.c (dc240_set_speed): fixed a memory leak in case of
 	error, fixed spurious warning caused by API change.
-	* dc240.c (camera_abilities): memset to 0 the ability struct. 
+	* dc240.c (camera_abilities): memset to 0 the ability struct.
 	See bug 496471. (camera_summary): implemented memory card status
 	* library.[ch]: use _byteorder.h inside the driver.
 	Better error codes.
@@ -58,13 +58,13 @@
 
 2001-12-20  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* library.c (dc240_load_status_data_to_table, dc240_get_status): 
-	changed fdata from char * to unsigned char * 
+	* library.c (dc240_load_status_data_to_table, dc240_get_status):
+	changed fdata from char * to unsigned char *
 
 2001-12-19  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* library.h: 
-	* library.c: 
+	* library.h:
+	* library.c:
 	* dc240.c (camera_summary): Implemented summary.
 
 2001-12-06  Hubert Figuiere  <hfiguiere@teaser.fr>

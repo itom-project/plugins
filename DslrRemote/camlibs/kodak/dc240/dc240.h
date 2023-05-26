@@ -25,4 +25,3 @@
 #define RETRIES         8
 
 #define HPBS            1024*1
-

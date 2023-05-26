@@ -10,7 +10,7 @@
 **Devices**:    Motor-Controller STANDA 8SMC4-USB-B8-1
 **Author**:     :pluginauthor:`Standa8SMC4USB`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,9 +21,9 @@ The plugin implements the controller 8SMC4-USB from STANDA.
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: Standa8SMC4USB
 

@@ -2,13 +2,13 @@
 #define __AERCDEF_H__
 //
 // NOTE: NPAQ has 4 analog inputs, first two show up axis 1's analog ins, second two show up as axis 2's analog ins
-#define ANALOGS_IN_EACH_DRIVE    2  // (16 bit) in, 
+#define ANALOGS_IN_EACH_DRIVE    2  // (16 bit) in,
 #define ANALOGS_OUT_EACH_DRIVE  10  // (16 bit) out
 
 #define DIG_IN_BITS_EACH_DRIVE_ONBOARD  16  // 12 on for NDriveHP RevA (last 2 are "user interrupt" or "high speed") (8 on Rev- NDriveHP, (no high speeds) 16 on NServo
 #define DIG_OUT_BITS_EACH_DRIVE_ONBOARD 16  // 8 on Rev- NDriveHP, 12 on RevA NDriveHP, 14 on Rev- NPaq, 16 on NServo
 #define DIG_IN_BITS_EACH_DRIVE  32     // NDriveCP has an extra 8in 8out on the expansio I/O board
-#define DIG_OUT_BITS_EACH_DRIVE 32  
+#define DIG_OUT_BITS_EACH_DRIVE 32
 
 // C#   CLASS=MinimumMaximum      REGION=EthernetIO
 #define ETHER_BIN_EACH_DRIVE 256    // for both in and out
@@ -38,7 +38,7 @@
 #define COMMAND_SET_PARM                   2
 #define COMMAND_SET_OUTPUT_DIG             3  /* no get, digital outputs always come back in status */
 #define COMMAND_SET_OUTPUT_ANA             4  /* no get, analog  outputs always come back in status */
-#define COMMAND_BRAKE_CONTROL              5   
+#define COMMAND_BRAKE_CONTROL              5
 #define COMMAND_AMP_CONTROL                6
 #define COMMAND_SET_CMD_POS                7
 #define COMMAND_MOVE_TO_LIMIT              8
@@ -77,10 +77,10 @@
 #define COMMAND_DATA_ACQ                  41  /* data acquisation  */
 #define COMMAND_THROW_TASK_FAULT          42  /* SMC requests drive throw a task fault */
 #define COMMAND_END_PARAMETER_DOWNLOAD    43  /* all parameters downloaded from PC */
-#define COMMAND_WRITE_DSP_MEM             44  
-#define COMMAND_ERASE_FLASH_PARAMS        45  
-#define COMMAND_LOOP_TRANSMISSION         46  
-#define COMMAND_PROBE_SETUP               47 
+#define COMMAND_WRITE_DSP_MEM             44
+#define COMMAND_ERASE_FLASH_PARAMS        45
+#define COMMAND_LOOP_TRANSMISSION         46
+#define COMMAND_PROBE_SETUP               47
 #define COMMAND_PROBE_GET_POSITION        48
 #define COMMAND_WRITE_FLASH               49
 #define COMMAND_SET_RTD_COLLECT           50
@@ -89,8 +89,8 @@
 #define COMMAND_RELAY_CONTROL               53
 #define COMMAND_SET_OUTPUT_ANA_MULTIPLE   54  /* no get, analog  outputs always come back in status */
 #define COMMAND_SET_OUTBIT_ETHER_MULTIPLE 55  /* no get, digital outputs always come back in status */
-#define COMMAND_RESET_MXH_CAL_COUNTER     56 
-#define COMMAND_STREAM_SETUP              57 
+#define COMMAND_RESET_MXH_CAL_COUNTER     56
+#define COMMAND_STREAM_SETUP              57
 #define COMMAND_CALIBRATE_ANALOGS         58
 #define COMMAND_THROW_SAFEZONE_FAULT      59
 #define COMMAND_DIGITAL_LOOP_TRANS        60
@@ -115,8 +115,8 @@
 #define COMMAND_LOAD_ICMD_CORRECTION      79
 #define COMMAND_NPAQ_LASER_AUTOTRACK      80
 #define COMMAND_CHANGE_DUAL_LOOP_STATE    81
-#define COMMAND_ARRAY_READ_FAST           82    
-#define COMMAND_INPOS_OUTPUT_SET          83    
+#define COMMAND_ARRAY_READ_FAST           82
+#define COMMAND_INPOS_OUTPUT_SET          83
 #define COMMAND_EXT_CLOCK_FREQ_SET        84
 #define COMMAND_DATA_COLLECT_TRIG         85
 #define COMMAND_RESET_LOOP_TIMERS         86
@@ -175,14 +175,14 @@
 #define PSOO_SUBCODE_PULSE2         8   // Normal Pulse2 Firing
 #define PSOO_SUBCODE_WINDOW_EVENT2  9   // Window masks pulse2 events
 
-#define PSOO_SUBCODE_ANALOG_OUTPUT   1 
-#define PSOO_SUBCODE_ANALOG_TRIGGER  2 
-#define PSOO_SUBCODE_ANALOG_ARRAY    3 
-#define PSOO_SUBCODE_ANALOG_OFF      4 
+#define PSOO_SUBCODE_ANALOG_OUTPUT   1
+#define PSOO_SUBCODE_ANALOG_TRIGGER  2
+#define PSOO_SUBCODE_ANALOG_ARRAY    3
+#define PSOO_SUBCODE_ANALOG_OFF      4
 #define PSOO_SUBCODE_ANALOG_ON       5
 
 /* PSO OUTPUT edge codes */
-#define PSOO_EDGECODE_NONE          0   // No Pulse Output  (default) 
+#define PSOO_EDGECODE_NONE          0   // No Pulse Output  (default)
 #define PSOO_EDGECODE_EXIT          1   // Pulse Output Triggers on exit from Window
 #define PSOO_EDGECODE_ENTER         2   // Pulse Output Triggers on enter into Window
 #define PSOO_EDGECODE_BOTH          3   // Pulse Output Triggers on both enter into and exit from Window
@@ -207,9 +207,9 @@
    Drive fault definitions
   (see U3200\SoftwareOnly\Specifications\Command Interface.doc)
    NOTE: CHANGES HERE MUST BE REFLECTED IN:
-         INCLUDE\AerDrFlt.H 
-         INI\AERPARAM.PGM 
-         A32SYS\A32SYS.ODL 
+         INCLUDE\AerDrFlt.H
+         INI\AERPARAM.PGM
+         A32SYS\A32SYS.ODL
 ***********************************************************************/
 // C#   CLASS=Fault      REGION=Drive Fault Masks
 #define MDRV_FAULT_POSERR       0x00000001
@@ -268,8 +268,8 @@
      (axis status is internal to controller, not on drive, as opposed to drive status)
    NOTE: CHANGES HERE MUST BE REFLECTED IN:
          FIRMWARE\SHAREMEM\ASWPARM.C   (albGetProgErrorMsg())
-         INI\AERPARAM.PGM 
-         A32SYS\A32SYS.ODL 
+         INI\AERPARAM.PGM
+         A32SYS\A32SYS.ODL
 ***********************************************************************/
 // C#   CLASS=Status      REGION=Drive Status Masks
 #define MDRV_STATUS_DRIVE                 0x00000001
@@ -326,7 +326,7 @@
 #define BDRV_STATUS_FLASH_PROGRAM         0x16
 #define BDRV_STATUS_PROGRAMMING_MXH       0x17
 #define BDRV_STATUS_BADDRIVECOMMAND       0x18
-#define BDRV_STATUS_INPOSITION            0x19  
+#define BDRV_STATUS_INPOSITION            0x19
 #define BDRV_STATUS_MOVEACTIVE            0x1A
 #define BDRV_STATUS_ACCELPHASE            0x1B
 #define BDRV_STATUS_DECELPHASE            0x1C
@@ -373,31 +373,31 @@
 ***********************************************************************/
 //
 // NOTE: these codes are to be differentiated from the OPTIONAL_DATA_CODEL_* constants,
-// only in that the OPTIONAL_FEEDBACK_* constant are a different numbering scheme than the SMC 
-// Userinterface used OPTIONAL_DATA_CODEL_* constants. In theory there should be a one-to-one correspondence 
-// between the two sets. 
+// only in that the OPTIONAL_FEEDBACK_* constant are a different numbering scheme than the SMC
+// Userinterface used OPTIONAL_DATA_CODEL_* constants. In theory there should be a one-to-one correspondence
+// between the two sets.
 //
 #define OPTIONAL_FEEDBACK_CODE_NONE               0
 #define OPTIONAL_FEEDBACK_CODE_POSCMD_1MSEC       1
 #define OPTIONAL_FEEDBACK_CODE_POSFBK_1MSEC       2
-#define OPTIONAL_FEEDBACK_CODE_ID                 3 
-#define OPTIONAL_FEEDBACK_CODE_IQ                 4 
-#define OPTIONAL_FEEDBACK_CODE_CURRENT_FBK        5 
+#define OPTIONAL_FEEDBACK_CODE_ID                 3
+#define OPTIONAL_FEEDBACK_CODE_IQ                 4
+#define OPTIONAL_FEEDBACK_CODE_CURRENT_FBK        5
 #define OPTIONAL_FEEDBACK_CODE_MXH_SIN_COS        6
-#define OPTIONAL_FEEDBACK_CODE_AD                 7 
-#define OPTIONAL_FEEDBACK_CODE_LT_BEFORE          8  
+#define OPTIONAL_FEEDBACK_CODE_AD                 7
+#define OPTIONAL_FEEDBACK_CODE_LT_BEFORE          8
 #define OPTIONAL_FEEDBACK_CODE_LT_AFTER           9
 #define OPTIONAL_FEEDBACK_CODE_ZHEIGHT_DIFF       10
 #define OPTIONAL_FEEDBACK_CODE_ZHEIGHT_SUM        11
 #define OPTIONAL_FEEDBACK_CODE_ZHEIGHT            12
 #define OPTIONAL_FEEDBACK_CODE_ZHEIGHT_LPF        13
-#define OPTIONAL_FEEDBACK_CODE_TEST               14 
+#define OPTIONAL_FEEDBACK_CODE_TEST               14
 #define OPTIONAL_FEEDBACK_CODE_DIGITALIO          15   // Not implemented
 #define OPTIONAL_FEEDBACK_CODE_DSPMEM             16
 #define OPTIONAL_FEEDBACK_CODE_DSPMEM64           17
 #define OPTIONAL_FEEDBACK_CODE_PSO_STATUS         18
 #define OPTIONAL_FEEDBACK_CODE_TIMER              19
-#define OPTIONAL_FEEDBACK_CODE_MAX                20 
+#define OPTIONAL_FEEDBACK_CODE_MAX                20
 
 /***********************************************************************
 
@@ -408,14 +408,14 @@
 
 // C#   CLASS=Drive      REGION=HardwareType
 #define DRIVE_HARDWARE_TYPE_INVALID          0x0000
-#define DRIVE_HARDWARE_REPEATER              0x0001      // not a real drivetype - reserved for telling frontend 
-#define DRIVE_HARDWARE_THIRDPARTY            0x0002      // not a real drivetype - reserved for telling frontend 
-#define DRIVE_HARDWARE_PC                    0x0003      // not a real drivetype - reserved for telling frontend 
-#define DRIVE_HARDWARE_NDRIVEHL_REV_A        0x0004      // reserved for telling frontend 
+#define DRIVE_HARDWARE_REPEATER              0x0001      // not a real drivetype - reserved for telling frontend
+#define DRIVE_HARDWARE_THIRDPARTY            0x0002      // not a real drivetype - reserved for telling frontend
+#define DRIVE_HARDWARE_PC                    0x0003      // not a real drivetype - reserved for telling frontend
+#define DRIVE_HARDWARE_NDRIVEHL_REV_A        0x0004      // reserved for telling frontend
 
 #define DRIVE_HARDWARE_TYPE_NDRIVEHP_REV_DASH  0x8001
 #define DRIVE_HARDWARE_TYPE_NPAQ_REV_DASH      0x8002
-#define DRIVE_HARDWARE_TYPE_NDRIVEHP_REV_A     0x8003     // NdriveHL also 
+#define DRIVE_HARDWARE_TYPE_NDRIVEHP_REV_A     0x8003     // NdriveHL also
 #define DRIVE_HARDWARE_TYPE_NDRIVECP_REV_DASH  0x8004
 #define DRIVE_HARDWARE_TYPE_NSERVO2_REV_DASH   0x8005
 #define DRIVE_HARDWARE_TYPE_NSERVO4_REV_DASH   0x8006
@@ -426,11 +426,11 @@
 #define DRIVE_HARDWARE_TYPE_USER_001           0x800B
 #define DRIVE_HARDWARE_TYPE_USER_002           0x800C
 #define DRIVE_HARDWARE_TYPE_USER_003           0x800D      // always treated as a repeater
-#define DRIVE_HARDWARE_TYPE_NDRIVEMP_REV_DASH  0x800E      
+#define DRIVE_HARDWARE_TYPE_NDRIVEMP_REV_DASH  0x800E
 #define DRIVE_HARDWARE_TYPE_NSTEP1_REV_DASH    0x800F
-#define DRIVE_HARDWARE_TYPE_NSTEP2_REV_DASH    0x8010      
-#define DRIVE_HARDWARE_TYPE_NSTEP3_REV_DASH    0x8011      
-#define DRIVE_HARDWARE_TYPE_NSTEP4_REV_DASH    0x8012      
+#define DRIVE_HARDWARE_TYPE_NSTEP2_REV_DASH    0x8010
+#define DRIVE_HARDWARE_TYPE_NSTEP3_REV_DASH    0x8011
+#define DRIVE_HARDWARE_TYPE_NSTEP4_REV_DASH    0x8012
 #define DRIVE_HARDWARE_TYPE_NDRIVECL           0x8013
 #define DRIVE_HARDWARE_TYPE_NDRIVECP_REV_B     0x8014
 #define DRIVE_HARDWARE_TYPE_NDRIVEHP_REV_B     0x8015
@@ -444,7 +444,7 @@
 // C# END
 
 //
-// NdriveHP/NdriveHL related Asyncronous FireWire Command Defines                            
+// NdriveHP/NdriveHL related Asyncronous FireWire Command Defines
 //
 #define NDRVCMD_NO_COMMAND      0
 #define NDRVCMD_LOAD_P_SPACE    1
@@ -459,7 +459,7 @@
 
 
 //
-// NDriveHP FLASH memory locations for FPGA Version and Firmware Version 
+// NDriveHP FLASH memory locations for FPGA Version and Firmware Version
 //
 
 #define NDRVFLASH_LOC_FPGA_VERSION  0x5d0001
@@ -468,11 +468,11 @@
 
 //
 // Defines for Asyncronous FireWire Commands
-// NOTE: Shared by NPaq, NServo, NdriveCP, NStep and NdriveMP. 
+// NOTE: Shared by NPaq, NServo, NdriveCP, NStep and NdriveMP.
 //       Each drive should ignore the commands it does not support.
 //       All except ASYNCFWCMD_NO_COMMAND are one dword data xmits (tCode=0)
 //
-// Added By Emrah Diril (05/12/2005) 
+// Added By Emrah Diril (05/12/2005)
 //
 #define ASYNCFWCMD_NO_COMMAND         0            // not a NULL command. Meaning of this depends on context of what drive is doing
 #define ASYNCFWCMD_UPLOAD             1
@@ -481,16 +481,14 @@
 #define ASYNCFWCMD_BOOTCODEVERSION    6
 #define ASYNCFWCMD_BOARDREVISION      7
 #define ASYNCFWCMD_FPGAVERSION        8
-#define ASYNCFWCMD_STARTING_AXIS      9          
+#define ASYNCFWCMD_STARTING_AXIS      9
 #define ASYNCFWCMD_FEATURES          10
 #define ASYNCFWCMD_FIRMWAREVERSION   11
-#define ASYNCFWCMD_CPLDVERSION       12          
+#define ASYNCFWCMD_CPLDVERSION       12
 #define ASYNCFWCMD_FWBASEADDX_FLASH  13
-#define ASYNCFWCMD_RELEASE_BE_MASTER 14            
+#define ASYNCFWCMD_RELEASE_BE_MASTER 14
 
 
 #define NSERVO_MAX_PORTS 6
 
 #endif
-
-

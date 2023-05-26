@@ -13,7 +13,7 @@
 |
 | Description:	Header file for the QCam API
 |
-| Notes:		This interface is not reentrant.  
+| Notes:		This interface is not reentrant.
 |				See "QCam API.pdf" for more details.
 |
 |=======*/
@@ -31,7 +31,7 @@
         #define QCAMAPI		__stdcall
         #define UNSIGNED64	unsigned __int64
 		#define	uint32_t	unsigned long
-		#define	uint16_t	unsigned short		 
+		#define	uint16_t	unsigned short
 		#define	uint8_t		unsigned char
     #else
         #define QCAMAPI
@@ -94,11 +94,11 @@ extern "C" {
 
         qcCameraGo21            = 24,       // USB CMOS camera
 
-        qcCameraRoleraEMC2      = 25,       
+        qcCameraRoleraEMC2      = 25,
 
-        qcCameraRetigaEXL       = 26,       
+        qcCameraRetigaEXL       = 26,
 
-        qcCameraRoleraXRL       = 27,       
+        qcCameraRoleraXRL       = 27,
 
         qcCameraRetigaSRVL      = 28,
 
@@ -243,7 +243,7 @@ extern "C" {
         qcCcdKAI04022CMgN   = 90,
 
         qcCcd_last          = 91,
-        qcCcdX              = 255   // Reserved 
+        qcCcdX              = 255   // Reserved
     }
     QCam_qcCcd;
 
@@ -393,7 +393,7 @@ extern "C" {
 // CCD Clearing Mode
     typedef enum
     {
-        qcPreFrameClearing      = 0,    // Default mode, clear CCD before next exposure starts 
+        qcPreFrameClearing      = 0,    // Default mode, clear CCD before next exposure starts
         qcNonClearing           = 1     // Do not clear CCD before next exposure starts
     }
     QCam_qcCCDClearingModes;
@@ -425,7 +425,7 @@ extern "C" {
 // the processor used.
 // x86/x64 = Little Endian
 // PowerPC = Big Endian
-// More information can be found at http://en.wikipedia.org/wiki/Endianness 
+// More information can be found at http://en.wikipedia.org/wiki/Endianness
 //
 // Note: - On color CCDs, 1x1 binning requires a bayer format (ex: qfmtBayer8)
 //       - On color CCDs, binning higher than 1x1 requires a mono format (ex: qfmtMono8)
@@ -453,7 +453,7 @@ extern "C" {
 
 // Camera Parameters - Unsigned 32 bit
 //
-// For use with QCam_GetParam, 
+// For use with QCam_GetParam,
 //				QCam_GetParamMin
 //				QCam_GetParamMax
 //				QCam_SetParam
@@ -473,7 +473,7 @@ extern "C" {
 //       qprm64NormIntensGain
 //
 // Note: Some parameters may not be supported on each camera.  Please check with QCam_IsParamSupported.
-//       
+//
     typedef enum
     {
         qprmGain                        = 0,    // Deprecated
@@ -508,19 +508,19 @@ extern "C" {
         qprmPostProcessGainGreen        = 29,   // Post processing green gain
         qprmPostProcessGainBlue         = 30,   // Post processing blue gain
         qprmPostProcessBayerAlgorithm   = 31,   // Post processing bayer algorithm to use (see QCam_qcBayerInterp in QCamImgfnc.h)
-        qprmPostProcessImageFormat      = 32,   // Post processing image format	
+        qprmPostProcessImageFormat      = 32,   // Post processing image format
         qprmFan                         = 33,   // Fan speed (see QCam_qcFanSpeed)
         qprmBlackoutMode                = 34,   // Blackout mode, 1 turns all lights off, 0 turns them back on
         qprmHighSensitivityMode         = 35,   // High sensitivity mode, 1 turns high sensitivity mode on, 0 turns it off
         qprmReadoutPort                 = 36,   // The readout port (see QCam_qcReadoutPort)
-        qprmEMGain                      = 37,   // EM (Electron Multiplication) Gain 
+        qprmEMGain                      = 37,   // EM (Electron Multiplication) Gain
         qprmOpenDelay                   = 38,   // Open delay for the shutter.  Range is 0-419.43ms.  Must be smaller than expose time - 10us.  (micro units)
         qprmCloseDelay                  = 39,   // Close delay for the shutter.  Range is 0-419.43ms.  Must be smaller than expose time - 10us.  (micro units)
         qprmCCDClearingMode             = 40,   // CCD clearing mode (see QCam_qcCCDClearingModes)
         qprmOverSample                  = 41,   // set the oversample mode, only available on qcCameraGo21
-        qprmReserved5                   = 42,   
-        qprmReserved6                   = 43,   
-        qprmReserved7                   = 44,   
+        qprmReserved5                   = 42,
+        qprmReserved6                   = 43,
+        qprmReserved7                   = 44,
         qprmReserved4                   = 45,   // QImaging OEM reserved parameter
         qprmReserved8                   = 46,   // QImaging OEM reserved parameter
         qprmEasyEmMode                  = 47,
@@ -537,7 +537,7 @@ extern "C" {
 
 // Camera Parameters - Signed 32 bit
 //
-// For use with QCam_GetParamS32, 
+// For use with QCam_GetParamS32,
 //				QCam_GetParamS32Min
 //				QCam_GetParamS32Max
 //				QCam_SetParamS32
@@ -559,7 +559,7 @@ extern "C" {
 
 // Camera Parameters - Unsigned 64 bit
 //
-// For use with QCam_GetParam64, 
+// For use with QCam_GetParam64,
 //				QCam_GetParam64Min
 //				QCam_GetParam64Max
 //				QCam_SetParam64
@@ -621,10 +621,10 @@ extern "C" {
         qinfEMGain                  = 34,   // 1 if EM gain is supported, 0 if not
         qinfOpenDelay               = 35,   // 1 if shutter open delay controls are available, 0 if not
         qinfCloseDelay              = 36,   // 1 if shutter close delay controls are available, 0 if not
-        qinfColorWheelSupported     = 37,   // 1 if color wheel is supported, 0 if not	
-        qinfReserved2               = 38,   
-        qinfReserved3               = 39,   
-        qinfReserved4               = 40,   
+        qinfColorWheelSupported     = 37,   // 1 if color wheel is supported, 0 if not
+        qinfReserved2               = 38,
+        qinfReserved3               = 39,
+        qinfReserved4               = 40,
         qinfReserved5               = 41,
         qinfEasyEmModeSupported     = 42,   // 1 if camera supports Easy EM mode
         qinfLockedGainModeSupported = 43,
@@ -638,7 +638,7 @@ extern "C" {
 //
     typedef enum
     {
-        qerrSuccess             = 0,        
+        qerrSuccess             = 0,
         qerrNotSupported        = 1,    // Function is not supported for this device
         qerrInvalidValue        = 2,    // A parameter used was invalid
         qerrBadSettings         = 3,    // The QCam_Settings structure is corrupted
@@ -683,27 +683,27 @@ extern "C" {
 
 	typedef struct _TAG_CAM_SETTINGS_ID_GUID_STRUCT_
 	{
-		
-		
-		uint32_t f1; 
-		uint16_t f2; 
-		uint16_t f3; 
+
+
+		uint32_t f1;
+		uint16_t f2;
+		uint16_t f3;
 		uint8_t  f4[8];
 	}QCam_settings_id, *pQCam_settings_id;
 
-	// QCam_Settings is obsolete. Use QCam_SettingsEx in conjunction with QCam_CreateCameraSettingsStruct, 
+	// QCam_Settings is obsolete. Use QCam_SettingsEx in conjunction with QCam_CreateCameraSettingsStruct,
 	// QCam_Err QCam_InitializeCameraSettings and QCam_ReleaseCameraSettings
     typedef struct
     {
-        unsigned long size;                     
+        unsigned long size;
         unsigned long _private_data[ 64 ];
     }
     QCam_Settings;
 
-	typedef struct	
+	typedef struct
     {
         unsigned long		size;                   // Filled by the initialization routine
-		QCam_settings_id	_pSettingsID;			// pointer to the camera settings ID			
+		QCam_settings_id	_pSettingsID;			// pointer to the camera settings ID
         unsigned long		*_private_data;			// Pointer to a camera settings array
     }
     QCam_SettingsEx, *pQCam_SettingsEx;
@@ -766,16 +766,16 @@ extern "C" {
 
 /*
  *  QCam_LoadDriver()
- * 
+ *
  *  Discussion:
  *    Initializes QCam.  This call must be made before using any other QCam functions.
- * 
+ *
  *  Parameters:
  *    None
- * 
+ *
  *	Remarks:
  *	  None
- * 
+ *
  *  Result:
  *    QCam_Err code
  */
@@ -787,16 +787,16 @@ extern "C" {
 
 /*
  *  QCam_ReleaseDriver()
- *  
+ *
  *  Discussion:
  *    Shutdown QCam.
- *  
+ *
  *  Parameters:
  *    None
- *	
+ *
  *	Remarks:
  *	  None
- *  
+ *
  *  Result:
  *    None
  */
@@ -808,16 +808,16 @@ extern "C" {
 
 /*
  *  QCam_LibVersion()
- *  
+ *
  *  Discussion:
  *    Returns the version of QCam.
- *  
+ *
  *  Parameters:
  *	(OUT)	verMajor - Major version
  *	(OUT)	verMinor - Minor version
  *	(OUT)	verBuild - Build version
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The version number uses the following scheme: verMajor.verMinor.verBuild
  *    (ex: 2.0.10)
  *
@@ -834,15 +834,15 @@ extern "C" {
 
 /*
  *  QCam_Version()
- *  
+ *
  *  Discussion:
  *    Returns the version of QCam.
- *  
+ *
  *  Parameters:
  *	(OUT)	verMajor - Major version
  *	(OUT)	verMinor - Minor version
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The version number uses the following scheme: verMajor.verMinor
  *    (ex: 2.0)
  *	  Note: To find out more detailed information, please use QCam_LibVersion
@@ -859,17 +859,17 @@ extern "C" {
 
 /*
  *  QCam_ListCameras()
- *  
+ *
  *  Discussion:
  *    Retrieve a list of connected cameras.
- *  
+ *
  *  Parameters:
  *	(IN)	pList - User allocated array to fill in
  *	(OUT)	pList - Filled in with the list of connected cameras
  *	(IN)	pNumberInList - Length of the array
  *	(OUT)	pNumberInList - Number of cameras found
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  On return, pNumberInList may contain a number that is bigger than the array size.
  *
  *  Result:
@@ -877,22 +877,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_ListCameras
     (
-    QCam_CamListItem*   pList,              
-    unsigned long*      pNumberInList       
+    QCam_CamListItem*   pList,
+    unsigned long*      pNumberInList
     );
 
 
 /*
  *  QCam_OpenCamera()
- *  
+ *
  *  Discussion:
  *    Open a connection to the camera.
- *  
+ *
  *  Parameters:
  *	(IN)	cameraId - The id of the camera to open
  *	(OUT)	handle - Camera handle to use with functions that require a QCam_Handle
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The camera id is from the cameraId field of the QCam_CamListItem structure.
  *
  *  Result:
@@ -900,21 +900,21 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_OpenCamera
     (
-    unsigned long       cameraId,           
-    QCam_Handle*        pHandle             
+    unsigned long       cameraId,
+    QCam_Handle*        pHandle
     );
 
 
 /*
  *  QCam_CloseCamera()
- *  
+ *
  *  Discussion:
  *    Closes the connection to a camera.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Camera handle
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  None
  *
  *  Result:
@@ -922,22 +922,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_CloseCamera
     (
-    QCam_Handle         handle              
+    QCam_Handle         handle
     );
 
 
 /*
  *  QCam_RegisterUnpluggedCallback()
- *  
+ *
  *  Discussion:
  *    Register a callback to be called if the camera is surprisingly removed
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN)	callback - The callback to use
  *	(IN)	userPtr - Pointer that will be passed in to the callback when it is called
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Callback may not be null.
  *
  *  Result:
@@ -945,25 +945,25 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_RegisterUnpluggedCallback
     (
-    QCam_Handle         handle,         
-    QCam_AsyncCallback  callback,           
-    void*               usrPtr              
+    QCam_Handle         handle,
+    QCam_AsyncCallback  callback,
+    void*               usrPtr
     );
 
 
 /*
  *  QCam_GetSerialString()
- *  
+ *
  *  Discussion:
  *    Returns the serial number of the camera.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN)	string - String buffer to use
  *  (OUT)	string - The serial number
  *	(IN)	size - Size of the string buffer
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  This function is supported on cameras produced after Mar 1, 2004.
  *
  *  Result:
@@ -971,26 +971,26 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetSerialString
     (
-    QCam_Handle         handle,             
-    char*               string,             
-    unsigned long       size                
+    QCam_Handle         handle,
+    char*               string,
+    unsigned long       size
     );
 
 
 /*
  *  QCam_GetCameraModelString()
- *  
+ *
  *  Discussion:
  *    Returns the model of the camera as a string.
  *    Example: "Retiga SRV"
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN)	string - String buffer to use
  *  (OUT)	string - The camera model as a string
  *	(IN)	size - Size of the string buffer
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Will return "Unknown" if the camera requires a newer version of the driver.
  *
  *  Result:
@@ -998,24 +998,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetCameraModelString
     (
-    QCam_Handle         handle,             
-    char*               string,             
-    unsigned long       size                
+    QCam_Handle         handle,
+    char*               string,
+    unsigned long       size
     );
 
 
 /*
  *  QCam_GetInfo()
- *  
+ *
  *  Discussion:
  *    Returns information about the camera based on the parameter used.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN)	infoKey - Get information about this parameter
  *  (OUT)	pValue - Value of the information
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  None
  *
  *  Result:
@@ -1023,28 +1023,28 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetInfo
     (
-    QCam_Handle         handle,             
-    QCam_Info           infoKey,            
-    unsigned long*      pValue              
+    QCam_Handle         handle,
+    QCam_Info           infoKey,
+    unsigned long*      pValue
     );
 
 /*
  *  QCam_CreateCameraSettingsStruct()
- * 
+ *
  *  Discussion:
  *    Returns an allocated QCam_Settings structure
- * 
+ *
  *  Parameters:
  *  (IN/OUT)	pSettings - pointer to an unallocated opaque settings structure
- * 
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The QCam_SettingsEx struct is an opaque structure.  Access the structure
- *    with QCam_GetParam() and QCam_SetParam() series of functions.  The 		
- *    QCam_SettingsEx struct can be saved or restored from a file, and is 		
+ *    with QCam_GetParam() and QCam_SetParam() series of functions.  The
+ *    QCam_SettingsEx struct can be saved or restored from a file, and is
  *    forward and backward compatible with QCam versions 2.0.9 and beyond.
- * 
- * 
- * 
+ *
+ *
+ *
  *  Result:
  *    QCam_Err code
  */
@@ -1055,23 +1055,23 @@ extern "C" {
 
 /*
  *  QCam_InitializeCameraSettings()
- * 
+ *
  *  Discussion:
- *    Returns a QCam_SettingsEx structure initalized with the camera default 	
+ *    Returns a QCam_SettingsEx structure initalized with the camera default
  *    settings
- * 
+ *
  *  Parameters:
- *  (IN/OUT)	pSettings - pointer to a previously allocated opaque settings 		
+ *  (IN/OUT)	pSettings - pointer to a previously allocated opaque settings
  *  structure.
- * 
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The QCam_SettingsEx struct is an opaque structure.  Access the structure
- *    with QCam_GetParam() and QCam_SetParam() series of functions.  The 		
- *    QCam_SettingsEx struct can be saved or restored from a file, and is 		
+ *    with QCam_GetParam() and QCam_SetParam() series of functions.  The
+ *    QCam_SettingsEx struct can be saved or restored from a file, and is
  *    forward and backward compatible with QCam versions 2.0.9 and beyond.
- * 
- * 
- * 
+ *
+ *
+ *
  *  Result:
  *    QCam_Err code
  */
@@ -1085,23 +1085,23 @@ extern "C" {
 
 /*
  *  QCam_ReleaseCameraSettings()
- * 
+ *
  *  Discussion:
- *    Releases a QCam_SetingsEx struct previously initialzed with 				
+ *    Releases a QCam_SetingsEx struct previously initialzed with
  *    QCam_CreateCameraSettingsStruct.
- * 
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN/OUT)	pSettings - pointer to opaque settings structure
- * 
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The QCam_SettingsEx struct is an opaque structure.  Access the structure
- *    with QCam_GetParam() and QCam_SetParam() series of functions.  The 		
- *    QCam_SettingsEx struct can be saved or restored from a file, and is 		
+ *    with QCam_GetParam() and QCam_SetParam() series of functions.  The
+ *    QCam_SettingsEx struct can be saved or restored from a file, and is
  *    forward and backward compatible with QCam versions 2.0.9 and beyond.
- * 
- * 
- * 
+ *
+ *
+ *
  *  Result:
  *    QCam_Err code
  */
@@ -1111,17 +1111,17 @@ extern "C" {
     );
 /*
  *  QCam_ReadDefaultSettings()
- *  
+ *
  *  Discussion:
  *    Returns the default camera settings.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (OUT)	pSettings - Opaque settings structure
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The QCam_Settings struct is an opaque structure.  Access the structure
- *    with QCam_GetParam() and QCam_SetParam() series of functions.  The QCam_Settings struct 
+ *    with QCam_GetParam() and QCam_SetParam() series of functions.  The QCam_Settings struct
  *    can be saved or restored from a file, and is forward and backward compatible
  *    with different QCam versions.
  *
@@ -1133,22 +1133,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_ReadDefaultSettings
     (
-    QCam_Handle         handle,             
+    QCam_Handle         handle,
     QCam_Settings*      pSettings
     );
 
 
 /*
  *  QCam_ReadSettingsFromCam()
- *  
+ *
  *  Discussion:
  *    Returns the camera settings.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (OUT)	pSettings - Opaque settings structure
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  This function differs from QCam_ReadDefaultSettings() because this
  *
  *    returns the settings that are in the camera, and not the default ones.
@@ -1158,22 +1158,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_ReadSettingsFromCam
     (
-    QCam_Handle         handle,         
+    QCam_Handle         handle,
     QCam_Settings*      pSettings
     );
 
 
 /*
  *  QCam_SendSettingsToCam()
- *  
+ *
  *  Discussion:
  *    Send the settings to the camera.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN)	pSettings - Opaque settings structure
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Sets the camera based on the info in the settings structure.
  *
  *  Result:
@@ -1188,16 +1188,16 @@ extern "C" {
 
 /*
  *  QCam_PreflightSettings()
- *  
+ *
  *  Discussion:
  *    Changes your settings struct just as with QCam_SendSettingsToCam(),
  *    without sending anything to the camera.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN)	pSettings - Opaque settings structure
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  None.
  *
  *  Result:
@@ -1205,22 +1205,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_PreflightSettings
     (
-    QCam_Handle         handle,             
-    QCam_Settings*      pSettings           
+    QCam_Handle         handle,
+    QCam_Settings*      pSettings
     );
 
 
 /*
  *  QCam_TranslateSettings()
- *  
+ *
  *  Discussion:
  *    Translates a settings structure so another camera can use it.
- *  
+ *
  *  Parameters:
  *	(IN)	handle - Handle to the camera
  *  (IN)	pSettings - Opaque settings structure
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Deprecated.  No longer used.
  *
  *  Result:
@@ -1228,23 +1228,23 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_TranslateSettings
     (
-    QCam_Handle         handle,             
-    QCam_Settings*      pSettings                                                   
+    QCam_Handle         handle,
+    QCam_Settings*      pSettings
     );
 
 
 /*
  *  QCam_GetParam()
- *  
+ *
  *  Discussion:
  *    Returns the value of a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns an unsigned 32 bit value from a QCam_Param parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1254,24 +1254,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParam
     (
-    QCam_Settings const* pSettings,         
-    QCam_Param          paramKey,           
-    unsigned long*      pValue              
+    QCam_Settings const* pSettings,
+    QCam_Param          paramKey,
+    unsigned long*      pValue
     );
 
 
 /*
  *  QCam_GetParamS32()
- *  
+ *
  *  Discussion:
  *    Returns the value of a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns a signed 32 bit value from a QCam_ParamS32 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1281,24 +1281,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamS32
     (
-    QCam_Settings const* pSettings,         
-    QCam_ParamS32       paramKey,           
-    signed long*        pValue              
+    QCam_Settings const* pSettings,
+    QCam_ParamS32       paramKey,
+    signed long*        pValue
     );
 
 
 /*
  *  QCam_GetParam64()
- *  
+ *
  *  Discussion:
  *    Returns the value of a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns an unsigned 64 bit value from a QCam_Param64 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1308,24 +1308,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParam64
     (
-    QCam_Settings const* pSettings,         
-    QCam_Param64        paramKey,           
-    UNSIGNED64*         pValue              
+    QCam_Settings const* pSettings,
+    QCam_Param64        paramKey,
+    UNSIGNED64*         pValue
     );
 
 
 /*
  *  QCam_SetParam()
- *  
+ *
  *  Discussion:
  *    Sets the value of a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to use
  *  (IN)	paramKey - The parameter to set
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Sets an unsigned 32 bit value for the QCam_Param parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1337,24 +1337,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_SetParam
     (
-    QCam_Settings*      pSettings,          
-    QCam_Param          paramKey,           
-    unsigned long       value               
+    QCam_Settings*      pSettings,
+    QCam_Param          paramKey,
+    unsigned long       value
     );
 
 
 /*
  *  QCam_SetParamS32()
- *  
+ *
  *  Discussion:
  *    Sets the value of a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to use
  *  (IN)	paramKey - The parameter to set
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Sets a signed 32 bit value for the QCam_ParamS32 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1366,24 +1366,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_SetParamS32
     (
-    QCam_Settings*      pSettings,          
-    QCam_ParamS32       paramKey,           
-    signed long         value               
+    QCam_Settings*      pSettings,
+    QCam_ParamS32       paramKey,
+    signed long         value
     );
 
 
 /*
  *  QCam_SetParam64()
- *  
+ *
  *  Discussion:
  *    Sets the value of a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to use
  *  (IN)	paramKey - The parameter to set
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Sets an unsigned 64 bit value for the QCam_Param64 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1395,24 +1395,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_SetParam64
     (
-    QCam_Settings*      pSettings,          
-    QCam_Param64        paramKey,           
-    UNSIGNED64          value               
+    QCam_Settings*      pSettings,
+    QCam_Param64        paramKey,
+    UNSIGNED64          value
     );
 
 
 /*
  *  QCam_GetParamMin()
- *  
+ *
  *  Discussion:
  *    Returns the minimum value for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the mimimum of an unsigned 32 bit value from a QCam_Param parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1422,24 +1422,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamMin
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param              paramKey,       
-    unsigned long*          pValue          
+    QCam_Settings const*    pSettings,
+    QCam_Param              paramKey,
+    unsigned long*          pValue
     );
 
 
 /*
  *  QCam_GetParamS32Min()
- *  
+ *
  *  Discussion:
  *    Returns the minimum value for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the mimimum of a signed 32 bit value from a QCam_ParamS32 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1449,24 +1449,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamS32Min
     (
-    QCam_Settings const*    pSettings,      
-    QCam_ParamS32           paramKey,       
-    signed long*            pValue      
+    QCam_Settings const*    pSettings,
+    QCam_ParamS32           paramKey,
+    signed long*            pValue
     );
 
 
 /*
  *  QCam_GetParam64Min()
- *  
+ *
  *  Discussion:
  *    Returns the minimum value for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the mimimum of an unsigned 64 bit value from a QCam_Param64 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1476,24 +1476,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParam64Min
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param64            paramKey,       
-    UNSIGNED64*             pValue          
+    QCam_Settings const*    pSettings,
+    QCam_Param64            paramKey,
+    UNSIGNED64*             pValue
     );
 
 
 /*
  *  QCam_GetParamMax()
- *  
+ *
  *  Discussion:
  *    Returns the maximum value for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the maximum of an unsigned 32 bit value from a QCam_Param parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1503,24 +1503,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamMax
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param              paramKey,       
-    unsigned long*          pValue          
+    QCam_Settings const*    pSettings,
+    QCam_Param              paramKey,
+    unsigned long*          pValue
     );
 
 
 /*
  *  QCam_GetParamS32Max()
- *  
+ *
  *  Discussion:
  *    Returns the maximum value for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the maximum of a signed 32 bit value from a QCam_ParamS32 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1530,24 +1530,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamS32Max
     (
-    QCam_Settings const*    pSettings,      
-    QCam_ParamS32           paramKey,       
-    signed long*            pValue          
+    QCam_Settings const*    pSettings,
+    QCam_ParamS32           paramKey,
+    signed long*            pValue
     );
 
 
 /*
  *  QCam_GetParam64Max()
- *  
+ *
  *  Discussion:
  *    Returns the maximum value for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pValue - The parameter value
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the maximum of an unsigned 64 bit value from a QCam_Param64 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1557,26 +1557,26 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParam64Max
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param64            paramKey,       
-    UNSIGNED64*             pValue          
+    QCam_Settings const*    pSettings,
+    QCam_Param64            paramKey,
+    UNSIGNED64*             pValue
     );
 
 
 /*
  *  QCam_GetParamSparseTable()
- *  
+ *
  *  Discussion:
  *    Returns a sparse table for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the sparse table from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pSparseTable - The returned sparse table
  *  (IN)	uSize - The size of the sparse table
  *  (OUT)	uSize - Number of entries
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the sprase table with unsigned 32 bit values from a QCam_Param parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1586,27 +1586,27 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamSparseTable
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param              paramKey,       
-    unsigned long*          pSparseTable,   
-    int*                    uSize           
+    QCam_Settings const*    pSettings,
+    QCam_Param              paramKey,
+    unsigned long*          pSparseTable,
+    int*                    uSize
     );
 
 
 /*
  *  QCam_GetParamSparseTableS32()
- *  
+ *
  *  Discussion:
  *    Returns a sparse table for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the sparse table from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pSparseTable - The returned sparse table
  *  (IN)	uSize - The size of the sparse table
  *  (OUT)	uSize - Number of entries
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the sprase table with signed 32 bit values from a QCam_ParamS32 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1616,27 +1616,27 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamSparseTableS32
     (
-    QCam_Settings const*    pSettings,      
-    QCam_ParamS32           paramKey,       
-    signed long*            pSparseTable,   
-    int*                    uSize           
+    QCam_Settings const*    pSettings,
+    QCam_ParamS32           paramKey,
+    signed long*            pSparseTable,
+    int*                    uSize
     );
 
 
 /*
  *  QCam_GetParamSparseTable64()
- *  
+ *
  *  Discussion:
  *    Returns a sparse table for a parameter.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the sparse table from
  *  (IN)	paramKey - The parameter to look up
  *  (OUT)	pSparseTable - The returned sparse table
  *  (IN)	uSize - The size of the sparse table
  *  (OUT)	uSize - Number of entries
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  Returns the sprase table with unsigned 64 bit values from a QCam_Param64 parameter.
  *
  *    The settings structure must have been initialized prior to calling this function.
@@ -1646,24 +1646,24 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GetParamSparseTable64
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param64            paramKey,       
-    UNSIGNED64*             pSparseTable,   
-    int*                    uSize       
+    QCam_Settings const*    pSettings,
+    QCam_Param64            paramKey,
+    UNSIGNED64*             pSparseTable,
+    int*                    uSize
     );
 
 
 /*
  *  QCam_IsSparseTable()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is a sparse table, and qerrNotSupported otherwise.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_Param parameters.
  *
  *  Result:
@@ -1671,22 +1671,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsSparseTable
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param              paramKey    
+    QCam_Settings const*    pSettings,
+    QCam_Param              paramKey
     );
 
 
 /*
  *  QCam_IsSparseTableS32()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is a sparse table, and qerrNotSupported otherwise.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_ParamS32 parameters.
  *
  *  Result:
@@ -1694,22 +1694,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsSparseTableS32
     (
-    QCam_Settings const*    pSettings,      
-    QCam_ParamS32           paramKey        
+    QCam_Settings const*    pSettings,
+    QCam_ParamS32           paramKey
     );
 
 
 /*
  *  QCam_IsSparseTable64()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is a sparse table, and qerrNotSupported otherwise.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_Param64 parameters.
  *
  *  Result:
@@ -1717,22 +1717,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsSparseTable64
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param64            paramKey        
+    QCam_Settings const*    pSettings,
+    QCam_Param64            paramKey
     );
 
 
 /*
  *  QCam_IsRangeTable()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is a range table, and qerrNotSupported otherwise.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_Param parameters.
  *
  *  Result:
@@ -1740,22 +1740,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsRangeTable
     (
-    QCam_Settings const*    pSettings,      
-    QCam_Param              paramKey        
+    QCam_Settings const*    pSettings,
+    QCam_Param              paramKey
     );
 
 
 /*
  *  QCam_IsRangeTableS32()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is a range table, and qerrNotSupported otherwise.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_ParamS32 parameters.
  *
  *  Result:
@@ -1763,22 +1763,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsRangeTableS32
     (
-    QCam_Settings const*    pSettings,      
-    QCam_ParamS32           paramKey        
+    QCam_Settings const*    pSettings,
+    QCam_ParamS32           paramKey
     );
 
 
 /*
  *  QCam_IsRangeTable64()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is a range table, and qerrNotSupported otherwise.
- *  
+ *
  *  Parameters:
  *  (IN)	pSettings - Opaque settings structure to retreive the value from
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_Param64 parameters.
  *
  *  Result:
@@ -1786,22 +1786,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsRangeTable64
     (
-    QCam_Settings const*    pSettings,  
+    QCam_Settings const*    pSettings,
     QCam_Param64            paramKey
     );
 
 
 /*
  *  QCam_IsParamSupported()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is supported on a particular camera, and qerrNotSupported if not.
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera to check it with
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_Param parameters.
  *
  *  Result:
@@ -1809,22 +1809,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsParamSupported
     (
-    QCam_Handle         handle,             
-    QCam_Param          paramKey            
+    QCam_Handle         handle,
+    QCam_Param          paramKey
     );
 
 
 /*
  *  QCam_IsParamS32Supported()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is supported on a particular camera, and qerrNotSupported if not.
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera to check it with
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_ParamS32 parameters.
  *
  *  Result:
@@ -1832,22 +1832,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsParamS32Supported
     (
-    QCam_Handle         handle,             
-    QCam_ParamS32       paramKey            
+    QCam_Handle         handle,
+    QCam_ParamS32       paramKey
     );
 
 
 /*
  *  QCam_IsParam64Supported()
- *  
+ *
  *  Discussion:
  *    Returns qerrSuccess if the parameter is supported on a particular camera, and qerrNotSupported if not.
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera to check it with
  *  (IN)	paramKey - The parameter to check
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  For use with QCam_Param64 parameters.
  *
  *  Result:
@@ -1855,22 +1855,22 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_IsParam64Supported
     (
-    QCam_Handle         handle,             
-    QCam_Param64        paramKey        
+    QCam_Handle         handle,
+    QCam_Param64        paramKey
     );
 
 
 /*
  *  QCam_SetStreaming()
- *  
+ *
  *  Discussion:
  *    Enable / disable streaming of images
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera
  *  (IN)	enable - 0 to disable, 1 to enable
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  None
  *
  *  Result:
@@ -1878,21 +1878,21 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_SetStreaming
     (
-    QCam_Handle         handle,             
-    unsigned long       enable              
+    QCam_Handle         handle,
+    unsigned long       enable
     );
 
 
 /*
  *  QCam_Trigger()
- *  
+ *
  *  Discussion:
  *    Trigger the start of an exposure
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  This call is designed to work with cameras manufactured after March 1, 2004.
  *
  *  Result:
@@ -1900,21 +1900,21 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_Trigger
     (
-    QCam_Handle         handle              
+    QCam_Handle         handle
     );
 
 
 /*
  *  QCam_Abort()
- *  
+ *
  *  Discussion:
  *    Stop all frames and settings that have been queued up.
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera
- *	
- *	Remarks: 
- *	  This call will remove all elements from the internal queue. 
+ *
+ *	Remarks:
+ *	  This call will remove all elements from the internal queue.
  *
  *    Any frames or settings that have been queued up with
  *    QCam_QueueFrame() or QCam_QueueSettings() will not fire
@@ -1925,21 +1925,21 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_Abort
     (
-    QCam_Handle         handle              
+    QCam_Handle         handle
     );
 
 
 /*
  *  QCam_GrabFrame()
- *  
+ *
  *  Discussion:
  *    Synchronously capture one frame.
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera
  *  (OUT)	pFrame - Captured frame
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The buffer for the frame must be allocated by the user before
  *    calling this function.
  *
@@ -1953,17 +1953,17 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_GrabFrame
     (
-    QCam_Handle         handle,             
-    QCam_Frame*         pFrame          
+    QCam_Handle         handle,
+    QCam_Frame*         pFrame
     );
 
 
 /*
  *  QCam_QueueFrame()
- *  
+ *
  *  Discussion:
  *    Asynchronously capture one frame.
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera
  *  (IN)	pFrame - Frame to use
@@ -1971,8 +1971,8 @@ extern "C" {
  *  (IN)	cbFlags - Specifies when callback should be fired.
  *  (IN)	userPtr - User specified pointer that gets passed into the callback
  *  (IN)	userData - User specified data that gets passed into the callback
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *    The callback will be called one the frame has been captured.
  *
  *	  The buffer for the frame must be allocated by the user before
@@ -1986,21 +1986,21 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_QueueFrame
     (
-    QCam_Handle         handle,             
-    QCam_Frame*         pFrame,             
-    QCam_AsyncCallback  callback,           
-    unsigned long       cbFlags,            
-    void*               userPtr,            
-    unsigned long       userData            
+    QCam_Handle         handle,
+    QCam_Frame*         pFrame,
+    QCam_AsyncCallback  callback,
+    unsigned long       cbFlags,
+    void*               userPtr,
+    unsigned long       userData
     );
 
 
 /*
  *  QCam_QueueSettings()
- *  
+ *
  *  Discussion:
  *    Queue up a settings change.
- *  
+ *
  *  Parameters:
  *  (IN)	handle - Handle to the camera
  *  (IN)	pFrame - Settings structure to send
@@ -2008,8 +2008,8 @@ extern "C" {
  *  (IN)	cbFlags - Specifies when callback should be fired.
  *  (IN)	userPtr - User specified pointer that gets passed into the callback
  *  (IN)	userData - User specified data that gets passed into the callback
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *    The callback will be called when the settings have been
  *    sent to the camera.
  *
@@ -2023,29 +2023,29 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_QueueSettings
     (
-    QCam_Handle         handle,             
-    QCam_Settings*      pSettings,          
-    QCam_AsyncCallback  callback,       
-    unsigned long       cbFlags,            
-    void*               userPtr,        
-    unsigned long       userData            
+    QCam_Handle         handle,
+    QCam_Settings*      pSettings,
+    QCam_AsyncCallback  callback,
+    unsigned long       cbFlags,
+    void*               userPtr,
+    unsigned long       userData
     );
 
 
 /*
  *  QCam_AutoExpose()
- *  
+ *
  *  Discussion:
  *    Run auto expose algorithm.
- *  
+ *
  *  Parameters:
  *  (IN)	pOpaque - Opaque settings structure to use
  *  (IN)	xOrig - The upper left hand x coordinate of the ROI used
- *  (IN)	yOrig - The upper left hand y coordinate of the ROI used 
+ *  (IN)	yOrig - The upper left hand y coordinate of the ROI used
  *  (IN)	width - The width of the ROI used
  *  (IN)	height - The height of the ROI used
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The algorithm will attempt to capture up to six frames
  *    to set the exposure.
  *
@@ -2064,18 +2064,18 @@ extern "C" {
 
 /*
  *  QCam_WhiteBalance()
- *  
+ *
  *  Discussion:
  *    Run auto white balance algorithm.
- *  
+ *
  *  Parameters:
  *  (IN)	pOpaque - Opaque settings structure to use
  *  (IN)	xOrig - The upper left hand x coordinate of the ROI used
- *  (IN)	yOrig - The upper left hand y coordinate of the ROI used 
+ *  (IN)	yOrig - The upper left hand y coordinate of the ROI used
  *  (IN)	width - The width of the ROI used
  *  (IN)	height - The height of the ROI used
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  The algorithm will attempt to capture up to six frames for the algorithm.
  *
  *  Result:
@@ -2093,17 +2093,17 @@ extern "C" {
 
 /*
  *  QCam_PostProcessSingleFrame()
- *  
+ *
  *  Discussion:
  *    Post process a single frame.
- *  
+ *
  *  Parameters:
  *  (IN)	inHandle - Camera handle
  *  (IN)	inSettings - The settings structure to use
  *  (IN)	inFrame - The original un-processed frame
  *  (OUT)	outFrame - The post processed frame
- *	
- *	Remarks: 
+ *
+ *	Remarks:
  *	  qprmPostProcessImageFormat and qprmPostProcessBayerAlgorithm must
  *    be set before using this function.
  *
@@ -2112,8 +2112,8 @@ extern "C" {
  */
     extern QCam_Err QCAMAPI QCam_PostProcessSingleFrame
     (
-    QCam_Handle         inHandle, 
-    QCam_Settings       *inSettings, 
+    QCam_Handle         inHandle,
+    QCam_Settings       *inSettings,
     QCam_Frame          *inFrame,
     QCam_Frame          *outFrame
     );

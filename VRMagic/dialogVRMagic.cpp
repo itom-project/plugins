@@ -4,7 +4,7 @@
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -118,7 +118,7 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_brightness->setMaximum(brightness->getMax());
 		ui.sliderWidget_brightness->setValue(params["brightness"].getVal<int>());
 		ui.sliderWidget_brightness->setEnabled(!(params["brightness"].getFlags() & ito::ParamBase::Readonly));
-		
+
 		ito::IntMeta *contrast = static_cast<ito::IntMeta*>(params["contrast"].getMeta());
 		ui.sliderWidget_contrast->setMinimum(contrast->getMin());
 		ui.sliderWidget_contrast->setMaximum(contrast->getMax());
@@ -147,7 +147,7 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 
 		ui.spinSizeX->setValue(params["sizex"].getVal<int>());
 		ui.spinSizeY->setValue(params["sizey"].getVal<int>());
-        
+
 		int bin = params["binning"].getVal<int>();
 		for (int i = 0; i < ui.combo_bin->count(); ++i)
 		{
@@ -157,7 +157,7 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 				break;
 			}
 		}
-		
+
 		int bpp = params["bpp"].getVal<int>();
 		for (int i = 0; i < ui.combo_bpp->count(); ++i)
 		{
@@ -225,7 +225,7 @@ ito::RetVal DialogVRMagic::applyParameters()
  //           values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
  //       }
  //   }
- //  
+ //
 	//if (ui.combo_bin->isEnabled())
 	//{
 	//	int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();
@@ -433,7 +433,3 @@ void DialogVRMagic::on_comboTriggerMode_currentIndexChanged(int index)
         ui.sliderFrameBurst->setValue(1);
     }*/
 }
-
-
-
-

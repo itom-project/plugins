@@ -107,7 +107,7 @@ AERERR_CODE AER_DLLENTRY AerAuxTableGetMode( HAERCTRL hAerCtrl, AXISINDEX iAxis,
 
 #ifdef __cplusplus
 }
-#endif 
-   
+#endif
+
 #endif
 // __AER_AUX_H__

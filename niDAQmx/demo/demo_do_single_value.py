@@ -3,7 +3,7 @@
 """Finite digital output task for software triggered single value output.
 
 Demo script for writing exactly one digital value
-per channel per setVal() command 
+per channel per setVal() command
 with a National Instruments DAQ device.
 
 To test this script, the NI MAX (Measurement & Automation
@@ -94,7 +94,7 @@ t = time.time()
 for i in range(0, 500):
     # start the finite task
     plugin.setVal(a)
-    
+
     # single value write task is always automatically stopped
     # after setVal.
 

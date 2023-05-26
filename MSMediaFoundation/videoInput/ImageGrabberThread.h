@@ -38,11 +38,11 @@ protected:
     virtual void run();
 
 private:
-    
+
     ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut);
 
     uintptr_t m_igtHandle;
-    
+
     unsigned int m_igtThreadIdArray;
 
     ImageGrabber *m_pIgtImageGrabber;
@@ -58,4 +58,3 @@ private:
     QSharedPointer<DebugPrintOut> m_debugPrintOut;
 
 };
-

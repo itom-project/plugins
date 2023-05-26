@@ -62,10 +62,10 @@ else(BUILD_TARGET64)
         #${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/aerotechA3200.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp    
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp
     )
 
     #Add version information to the plugIn-dll unter MSVC
@@ -74,10 +74,10 @@ else(BUILD_TARGET64)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-    
+
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${LIB_NAME})
 
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -87,10 +87,10 @@ else(BUILD_TARGET64)
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
     #documentation
     itom_configure_plugin_documentation(${target_name} aerotechA3200)
-    
+
     # COPY SECTION
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")

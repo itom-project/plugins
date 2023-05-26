@@ -94,7 +94,7 @@ You may run \"make\" and \"make install\" now."
 dnl
 dnl Please do not remove this:
 dnl filetype: de774af3-dc3b-4b1d-b6f2-4aca35d3da16
-dnl I use this to find all the different instances of this file which 
+dnl I use this to find all the different instances of this file which
 dnl are supposed to be synchronized.
 dnl
 dnl Local Variables:

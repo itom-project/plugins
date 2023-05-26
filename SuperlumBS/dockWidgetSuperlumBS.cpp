@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -28,12 +28,12 @@
 #include <qmetaobject.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuator) :  
-    AbstractAddInDockWidget(actuator),  
-    m_inEditing(false),  
+DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuator) :
+    AbstractAddInDockWidget(actuator),
+    m_inEditing(false),
     m_firstRun(true)
 {
-     ui.setupUi(this); 
+     ui.setupUi(this);
 
      identifierChanged(QString::number(uniqueID));
 
@@ -62,9 +62,9 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
             enableWidget(false);
         }
 
-        //__________________________________________________________________________________________________________ Tab MANual           
+        //__________________________________________________________________________________________________________ Tab MANual
         ui.label_MAN_Start_Wavelength->setText(QString::number(params["wavelength"].getMax()) + " nm");
-        ui.label_MAN_Stop_Wavelength->setText(QString::number(params["wavelength"].getMin()) + " nm");       
+        ui.label_MAN_Stop_Wavelength->setText(QString::number(params["wavelength"].getMin()) + " nm");
 
         ui.doubleSpinBox_MAN_Wavelength->setMaximum(params["wavelength"].getMax());
         ui.doubleSpinBox_MAN_Wavelength->setMinimum(params["wavelength"].getMin());
@@ -96,7 +96,7 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
         ui.doubleSpinBox_EXT_Start_Wavelength->setMaximum(params["modification_start_wavelength"].getMax());
         ui.doubleSpinBox_EXT_Start_Wavelength->setValue(params["modification_start_wavelength"].getVal<double>());
 
-        //__________________________________________________________________________________________________________ Tab MODulation        
+        //__________________________________________________________________________________________________________ Tab MODulation
         ui.label_MOD_Start_Wavelength->setText(QString::number(params["wavelength"].getMax()) + " nm");
         ui.label_MOD_Stop_Wavelength->setText(QString::number(params["wavelength"].getMin()) + " nm");
 
@@ -107,10 +107,10 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
         ui.doubleSpinBox_MOD_Wavelength2->setMaximum(params["wavelength_second"].getMax());
         ui.doubleSpinBox_MOD_Wavelength2->setMinimum(params["wavelength_second"].getMin());
         ui.doubleSpinBox_MOD_Wavelength2->setValue(params["wavelength_second"].getVal<double>());
-       
+
         //ui.comboBox_MOD_frequency->setObjectName(QString::fromUtf8("modulation_frequency"));
 
-        //__________________________________________________________________________________________________________ Booster settings 
+        //__________________________________________________________________________________________________________ Booster settings
         if (params["operation_booster"].getVal<int>() == -1) //booster is not installed
         {
             ui.label_Booster_Enable->setStyleSheet("QLabel { color : grey }");
@@ -155,7 +155,7 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
             ui.label_Booster_Limit->setStyleSheet("QLabel { color : grey }");
             ui.label_Booster_Limit->setText("Limit");
         }
-        
+
         //__________________________________________________________________________________________________________ Master Key
         if (params["master_key"].getVal<int>() == 0)
         {
@@ -168,7 +168,7 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
             ui.label_Master_Key->setText("Master Key is I");
         }
 
-        //__________________________________________________________________________________________________________ Remote Interlock 
+        //__________________________________________________________________________________________________________ Remote Interlock
         if (params["remote_interlock"].getVal<int>() == 1)
         {
             ui.label_Interlock_Alarm->setStyleSheet("QLabel { background-color : green; color : grey }");
@@ -236,7 +236,7 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
             case 10000:
                 ui.comboBox_MOD_frequency->setCurrentIndex( 12 );
                 break;
-            
+
 
         }
 
@@ -245,7 +245,7 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
 
         //__________________________________________________________________________________________________________ Tab of Mode
         ui.tabWidget_Operation_Mode->setCurrentIndex( params["operation_mode"].getVal<int>() - 1 );
-        
+
         m_firstRun = false;
     }
 
@@ -312,13 +312,13 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
             ui.doubleSpinBox_AUTO_Start_Wavelength->setValue(params["modification_start_wavelength"].getVal<double>());
         }
 
-        //__________________________________________________________________________________________________________ wavelength_first    
+        //__________________________________________________________________________________________________________ wavelength_first
         if (params.contains("wavelength_first"))
         {
             ui.doubleSpinBox_MOD_Wavelength1->setValue(params["wavelength_first"].getVal<double>());
         }
 
-        //__________________________________________________________________________________________________________ wavelength_second    
+        //__________________________________________________________________________________________________________ wavelength_second
         if (params.contains("wavelength_second"))
         {
             ui.doubleSpinBox_MOD_Wavelength2->setValue(params["wavelength_second"].getVal<double>());
@@ -363,7 +363,7 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
             }
         }
 
-        //__________________________________________________________________________________________________________ Booster settings 
+        //__________________________________________________________________________________________________________ Booster settings
         if (params.contains("operation_booster"))
         {
             if (params["operation_booster"].getVal<int>() == -1) //booster is not installed
@@ -468,10 +468,10 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
 void DockWidgetSuperlumBS::on_btn_Optical_Output_clicked(bool checked)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;        
+    {
+        m_inEditing = true;
         if ( checked )
-        {            
+        {
             QSharedPointer<ito::ParamBase> p(new ito::ParamBase("optical_output",ito::ParamBase::Int,1));
             setPluginParameter(p, msgLevelWarningAndError);
         }
@@ -488,10 +488,10 @@ void DockWidgetSuperlumBS::on_btn_Optical_Output_clicked(bool checked)
 void DockWidgetSuperlumBS::on_comboBox_Remote_activated(int combo)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;        
+    {
+        m_inEditing = true;
         if ( combo == 1 )
-        {            
+        {
             QSharedPointer<ito::ParamBase> p(new ito::ParamBase("local",ito::ParamBase::Int,1));
             setPluginParameter(p, msgLevelWarningAndError);
         }
@@ -508,10 +508,10 @@ void DockWidgetSuperlumBS::on_comboBox_Remote_activated(int combo)
 void DockWidgetSuperlumBS::on_comboBox_Power_Mode_activated(int combo)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;        
+    {
+        m_inEditing = true;
         if ( combo == 1 )
-        {            
+        {
             QSharedPointer<ito::ParamBase> p(new ito::ParamBase("power_mode",ito::ParamBase::Int,1));
             setPluginParameter(p, msgLevelWarningAndError);
         }
@@ -529,10 +529,10 @@ void DockWidgetSuperlumBS::on_tabWidget_Operation_Mode_currentChanged(int combo)
 {
     combo = combo + 1; //combo 1 has index 0
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;        
-        if ( combo == 1 )//MAN Mode        
-        {            
+    {
+        m_inEditing = true;
+        if ( combo == 1 )//MAN Mode
+        {
             QSharedPointer<ito::ParamBase> p(new ito::ParamBase("operation_mode",ito::ParamBase::Int,1));
             setPluginParameter(p, msgLevelWarningAndError);
         }
@@ -559,9 +559,9 @@ void DockWidgetSuperlumBS::on_tabWidget_Operation_Mode_currentChanged(int combo)
 void DockWidgetSuperlumBS::on_doubleSpinBox_MAN_Wavelength_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("wavelength",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -573,9 +573,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_MAN_Wavelength_valueChanged(double v
 void DockWidgetSuperlumBS::on_doubleSpinBox_AUTO_Speed_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("sweep_speed",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -587,9 +587,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_AUTO_Speed_valueChanged(double value
 void DockWidgetSuperlumBS::on_doubleSpinBox_AUTO_Stop_Wavelength_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("modification_end_wavelength",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -601,9 +601,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_AUTO_Stop_Wavelength_valueChanged(do
 void DockWidgetSuperlumBS::on_doubleSpinBox_AUTO_Start_Wavelength_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("modification_start_wavelength",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -615,9 +615,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_AUTO_Start_Wavelength_valueChanged(d
 void DockWidgetSuperlumBS::on_doubleSpinBox_EXT_Speed_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("sweep_speed",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -629,9 +629,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_EXT_Speed_valueChanged(double value)
 void DockWidgetSuperlumBS::on_doubleSpinBox_EXT_Stop_Wavelength_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("modification_end_wavelength",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -643,9 +643,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_EXT_Stop_Wavelength_valueChanged(dou
 void DockWidgetSuperlumBS::on_doubleSpinBox_EXT_Start_Wavelength_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("modification_start_wavelength",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -657,9 +657,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_EXT_Start_Wavelength_valueChanged(do
 void DockWidgetSuperlumBS::on_doubleSpinBox_MOD_Wavelength1_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("wavelength_first",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -671,9 +671,9 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_MOD_Wavelength1_valueChanged(double 
 void DockWidgetSuperlumBS::on_doubleSpinBox_MOD_Wavelength2_valueChanged(double value)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
+    {
         m_inEditing = true;
-            
+
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("wavelength_second",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
 
@@ -685,8 +685,8 @@ void DockWidgetSuperlumBS::on_doubleSpinBox_MOD_Wavelength2_valueChanged(double 
 void DockWidgetSuperlumBS::on_comboBox_MOD_frequency_activated(int combo)
 {
     if (!m_inEditing) //only send the value to the plugin if not inEditing mode
-    {        
-        m_inEditing = true;    
+    {
+        m_inEditing = true;
 
         double value = ui.comboBox_MOD_frequency->currentText().remove(ui.comboBox_MOD_frequency->currentText().length()-3, 3).toDouble();
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("modulation_frequency",ito::ParamBase::Double,value));

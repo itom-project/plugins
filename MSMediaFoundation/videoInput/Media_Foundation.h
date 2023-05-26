@@ -18,11 +18,10 @@ public:
 
     bool buildListOfDevices(QSharedPointer<VideoDevices> videoDevices);
 
-private: 
-        
-    
+private:
+
+
 
     QSharedPointer<DebugPrintOut> m_debugPrintOut;
 
 };
-

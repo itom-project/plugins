@@ -339,7 +339,7 @@ unit-test.h: stamp-h2
 stamp-h2: $(srcdir)/unit-test.h.in $(top_builddir)/config.status
 	@rm -f stamp-h2
 	cd $(top_builddir) && $(SHELL) ./config.status tests/unit-test.h
-$(srcdir)/unit-test.h.in:  $(am__configure_deps) 
+$(srcdir)/unit-test.h.in:  $(am__configure_deps)
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h2
 	touch $@
@@ -355,28 +355,28 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-bandwidth-client$(EXEEXT): $(bandwidth_client_OBJECTS) $(bandwidth_client_DEPENDENCIES) $(EXTRA_bandwidth_client_DEPENDENCIES) 
+bandwidth-client$(EXEEXT): $(bandwidth_client_OBJECTS) $(bandwidth_client_DEPENDENCIES) $(EXTRA_bandwidth_client_DEPENDENCIES)
 	@rm -f bandwidth-client$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(bandwidth_client_OBJECTS) $(bandwidth_client_LDADD) $(LIBS)
-bandwidth-server-many-up$(EXEEXT): $(bandwidth_server_many_up_OBJECTS) $(bandwidth_server_many_up_DEPENDENCIES) $(EXTRA_bandwidth_server_many_up_DEPENDENCIES) 
+bandwidth-server-many-up$(EXEEXT): $(bandwidth_server_many_up_OBJECTS) $(bandwidth_server_many_up_DEPENDENCIES) $(EXTRA_bandwidth_server_many_up_DEPENDENCIES)
 	@rm -f bandwidth-server-many-up$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(bandwidth_server_many_up_OBJECTS) $(bandwidth_server_many_up_LDADD) $(LIBS)
-bandwidth-server-one$(EXEEXT): $(bandwidth_server_one_OBJECTS) $(bandwidth_server_one_DEPENDENCIES) $(EXTRA_bandwidth_server_one_DEPENDENCIES) 
+bandwidth-server-one$(EXEEXT): $(bandwidth_server_one_OBJECTS) $(bandwidth_server_one_DEPENDENCIES) $(EXTRA_bandwidth_server_one_DEPENDENCIES)
 	@rm -f bandwidth-server-one$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(bandwidth_server_one_OBJECTS) $(bandwidth_server_one_LDADD) $(LIBS)
-random-test-client$(EXEEXT): $(random_test_client_OBJECTS) $(random_test_client_DEPENDENCIES) $(EXTRA_random_test_client_DEPENDENCIES) 
+random-test-client$(EXEEXT): $(random_test_client_OBJECTS) $(random_test_client_DEPENDENCIES) $(EXTRA_random_test_client_DEPENDENCIES)
 	@rm -f random-test-client$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(random_test_client_OBJECTS) $(random_test_client_LDADD) $(LIBS)
-random-test-server$(EXEEXT): $(random_test_server_OBJECTS) $(random_test_server_DEPENDENCIES) $(EXTRA_random_test_server_DEPENDENCIES) 
+random-test-server$(EXEEXT): $(random_test_server_OBJECTS) $(random_test_server_DEPENDENCIES) $(EXTRA_random_test_server_DEPENDENCIES)
 	@rm -f random-test-server$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(random_test_server_OBJECTS) $(random_test_server_LDADD) $(LIBS)
-unit-test-client$(EXEEXT): $(unit_test_client_OBJECTS) $(unit_test_client_DEPENDENCIES) $(EXTRA_unit_test_client_DEPENDENCIES) 
+unit-test-client$(EXEEXT): $(unit_test_client_OBJECTS) $(unit_test_client_DEPENDENCIES) $(EXTRA_unit_test_client_DEPENDENCIES)
 	@rm -f unit-test-client$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(unit_test_client_OBJECTS) $(unit_test_client_LDADD) $(LIBS)
-unit-test-server$(EXEEXT): $(unit_test_server_OBJECTS) $(unit_test_server_DEPENDENCIES) $(EXTRA_unit_test_server_DEPENDENCIES) 
+unit-test-server$(EXEEXT): $(unit_test_server_OBJECTS) $(unit_test_server_DEPENDENCIES) $(EXTRA_unit_test_server_DEPENDENCIES)
 	@rm -f unit-test-server$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(unit_test_server_OBJECTS) $(unit_test_server_LDADD) $(LIBS)
-version$(EXEEXT): $(version_OBJECTS) $(version_DEPENDENCIES) $(EXTRA_version_DEPENDENCIES) 
+version$(EXEEXT): $(version_OBJECTS) $(version_DEPENDENCIES) $(EXTRA_version_DEPENDENCIES)
 	@rm -f version$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(version_OBJECTS) $(version_LDADD) $(LIBS)
 

@@ -43,7 +43,7 @@ function copydeps {
 			isOptLocal=1
 			echo "bundling $i because it's in /opt/local."
 		fi
-		
+
 		# Bundle the library
 		if [ $isOptLocal -ne 0 ] || [ $bundle_this_lib -ne 0 ]; then
 
@@ -53,15 +53,15 @@ function copydeps {
 			else
 				cp $i $EXEPATH
 			fi
-			
-			
+
+
 			# echo "$BASE_OF_EXE depends on $BASE"
-			
+
 			# Fix the paths using install_name_tool and then
 			# call this function recursively for each dependency
-			# of this library. 
+			# of this library.
 			if [ $BASE_OF_EXE != $BASE ]; then
-			
+
 				# Fix the paths
 				install_name_tool -id @executable_path/$BASE $EXEPATH/$BASE
 				install_name_tool -change $i @executable_path/$BASE $EXEPATH/$BASE_OF_EXE
@@ -77,4 +77,3 @@ function copydeps {
 rm $EXEPATH/*
 cp $EXE_NAME $EXEPATH
 copydeps $EXEPATH/$EXE_NAME
-

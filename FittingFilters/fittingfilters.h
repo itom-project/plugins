@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -121,7 +121,7 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        
+
 
 #if (CV_MAJOR_VERSION >= 3)
         static const QString fillInvalidAreasDoc;
@@ -158,12 +158,12 @@ class FittingFilters : public ito::AddInAlgo
         template<typename _Tp> static ito::RetVal subtractPlaneTemplate(cv::Mat *inputMatrix, cv::Mat *destMatrix, double A, double B, double C);
         template<typename _Tp> static ito::RetVal lsqFitPlane(const cv::Mat *mat, double &A, double &B, double &C);
         template<typename _Tp> static ito::RetVal lmedsFitPlane(const cv::Mat *mat, double &A, double &B, double &C, const double &valid_probability, const double &alarm_rate);
-        template<typename _Tp> static ito::RetVal getRandomValidMinimalSampleSet(const cv::Mat *mat, cv::RNG &rng, int numSamples, int *rows, int *cols, int maxIter = 1000); 
+        template<typename _Tp> static ito::RetVal getRandomValidMinimalSampleSet(const cv::Mat *mat, cv::RNG &rng, int numSamples, int *rows, int *cols, int maxIter = 1000);
 
         static ito::RetVal calcPolyfitWeighted2DRegularGrid(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double reduceFactor = -1.0, const ito::DataObject *weights = NULL);
         static ito::RetVal calcPolyfitWeighted2DSinglePoints(const ito::DataObject *dataX, const ito::DataObject *dataY, const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, const ito::DataObject *weights = NULL);
         template<typename _Tp> static ito::RetVal calcPolyfitWeighted2D(const _Tp *X, const _Tp *Y, const _Tp *Z, const _Tp *W, int orderX, int orderY, int nrOfPoints, std::vector<double> &coefficients);
-        
+
         static ito::RetVal calcPolyval2DRegularGrid(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
         static ito::RetVal calcPolyval2DSinglePoints(const ito::DataObject *dataX, const ito::DataObject *dataY, ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
 
@@ -171,10 +171,10 @@ class FittingFilters : public ito::AddInAlgo
 
         template<typename _Tp> static void polyval1d_subtract_basic(_Tp *output, size_t length, const VecDoub &coeffs, size_t output_step = 1);
         template<typename _Tp> static void polyfit1d_basic(const _Tp *input, size_t length, VecDoub &indices_storage, VecDoub &value_storage, VecDoub &weight_storage, FitSVDSimple *fit_func, VecDoub &coeffs, size_t input_step = 1);
-        
+
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal close(ItomSharedSemaphore *waitCond);      
+        ito::RetVal close(ItomSharedSemaphore *waitCond);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

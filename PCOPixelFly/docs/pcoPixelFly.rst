@@ -10,7 +10,7 @@
 **Devices**:    PCO Pixelfly qet cameras with frame grabber board
 **Author**:     :pluginauthor:`PCOPixelFly`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: PCOPixelFly
 

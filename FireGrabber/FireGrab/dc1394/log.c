@@ -134,4 +134,3 @@ void dc1394_log_debug(const char *format,...)
         system_debuglog_handler(DC1394_LOG_DEBUG, string, debuglog_data);
     }
 }
-

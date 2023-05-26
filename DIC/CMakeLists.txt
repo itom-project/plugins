@@ -1,7 +1,7 @@
 ###################################################################
 ###################################################################
 #    CMake Template for a plugin of itom
-#    
+#
 #    You can use this template, use it in your plugins, modify it,
 #    copy it and distribute it without any license restrictions.
 ###################################################################
@@ -32,7 +32,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-find_package(OpenCV COMPONENTS core imgproc REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
+find_package(OpenCV COMPONENTS core imgproc REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
 find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
 
 include(ItomBuildMacros)
@@ -97,11 +97,11 @@ ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 INCLUDE_DIRECTORIES(
     ${QT_QTCORE_INCLUDE_DIR}
-    ${EIGEN_INCLUDE_DIR}  
+    ${EIGEN_INCLUDE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
 	${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
 	${OpenCV_DIR}/include       #include directory of OpenCV
-	${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+	${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
 	${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
 	#add further include directories here
 )
@@ -156,7 +156,7 @@ set(PLUGIN_RCC
 )
 
 
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
+file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

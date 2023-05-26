@@ -62,7 +62,7 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.ui
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/MeasurementComputing.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.cpp
     )
@@ -77,10 +77,10 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-    
+
     if(MSVC)
         #delayload cbw32.dll or cbw64.dll
         set_target_properties (${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:cbw${bit_dest}.dll")
@@ -106,5 +106,5 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
     itom_post_build_copy_files_to_lib_folder(${target_name} MeasurementComputing_DAQ_BINARY)
 
 else()
-    message(SEND_ERROR "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")
 endif()

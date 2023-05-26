@@ -12,5 +12,5 @@ Bugs:
 - image quality is lower than it could be due to suboptimal Bayer CCD
 conversion routine
 - some serial port speed settings don't work
-- figure out how to tell if a valid image is in RAM and only put temp.ppm 
+- figure out how to tell if a valid image is in RAM and only put temp.ppm
 into the file list then

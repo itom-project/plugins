@@ -124,7 +124,7 @@ Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for i
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
 Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.");
-    
+
     m_initParamsMand.clear();
 
     ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(4, 4096, 4), tr("Width of virtual sensor chip").toLatin1().data());
@@ -161,7 +161,7 @@ void DslrRemote::error_func(GPContext *context, const char *format, va_list args
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
-void DslrRemote::message_func(GPContext *context, const char *format, va_list args, void *data) 
+void DslrRemote::message_func(GPContext *context, const char *format, va_list args, void *data)
 {
     qDebug() << "Warning\n";
 //    vfprintf(stdout, format, args);
@@ -302,7 +302,7 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     {
         retVal += ito::RetVal(ito::retError, 0, "camera list is empty");
         goto end;
-    } 
+    }
 
     bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
     m_params["bpp"].setVal<int>(bpp);
@@ -431,7 +431,7 @@ ito::RetVal DslrRemote::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
     {
         //first check parameters that influence the size or data type of m_data
         if (key == "prop")
-        {            
+        {
             if (suffix == "")
             {
                 QVector<QString> properties;
@@ -836,12 +836,12 @@ ito::RetVal DslrRemote::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())

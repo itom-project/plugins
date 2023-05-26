@@ -10,7 +10,7 @@
 **Devices**:    PCO Cameras supported by the pco.sensicam SDK
 **Author**:     :pluginauthor:`PCOSensicam`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -22,9 +22,9 @@ for the next image acquisition, finally started by a rising or falling edge of t
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: PCOSensicam
 
@@ -57,14 +57,14 @@ parameters can be changed using *setParam*.
 **gain**: {double}, read-only
     not available
 **offset**: {double}, read-only
-    not available 
+    not available
 
 Most parameters not only have a minimum and maximum value but also a step size.
 
 .. note::
-    
+
     Please consider that the parameters defining the region of interest may change if the binning is changed, since an increased binning value decreases the available image size.
-    
+
 Non supported features or cameras
 ==================================
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -25,7 +25,7 @@
 
 /**\file aerotechEnsemble.h
 * \brief In this file the class of the non modal dialog for the AerotechEnsemble are specified
-* 
+*
 */
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"

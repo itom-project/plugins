@@ -235,7 +235,7 @@ PGRFlyCapture::PGRFlyCapture() :
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
     pMand << ito::Param("source", ito::ParamBase::In | ito::ParamBase::Int,
-        0, 0xFF, 0, tr("the GPIO pin to be edited").toLatin1().data()); //TODO check how many pins there are 
+        0, 0xFF, 0, tr("the GPIO pin to be edited").toLatin1().data()); //TODO check how many pins there are
     pOpt << ito::Param("onOff", ito::ParamBase::In | ito::ParamBase::Int, 0, 1, 1,
         tr("ON or OFF this function; 0: OFF, 1 : ON").toLatin1().data());
     pOpt << ito::Param("polarity", ito::ParamBase::In | ito::ParamBase::Int, 0, 1, 0,
@@ -251,7 +251,7 @@ PGRFlyCapture::PGRFlyCapture() :
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
     pMand << ito::Param("source", ito::ParamBase::In | ito::ParamBase::Int,
-        0, 0xFF, 0, tr("the GPO pin to get the mode from").toLatin1().data()); //TODO check how many pins there are 
+        0, 0xFF, 0, tr("the GPO pin to get the mode from").toLatin1().data()); //TODO check how many pins there are
     pOut << ito::Param("onOff", ito::ParamBase::Out | ito::ParamBase::Int, 0, 1, 1,
         tr("ON or OFF this function; 0: OFF, 1 : ON").toLatin1().data());
     pOut << ito::Param("polarity", ito::ParamBase::Out | ito::ParamBase::Int, 0, 1, 0,
@@ -1781,7 +1781,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
             if (pTriggerInfo.softwareTriggerSupported)
             {
-                //m_params["trigger_mode"].setMax(3); 
+                //m_params["trigger_mode"].setMax(3);
                 static_cast<ito::IntMeta*>(m_params["trigger_mode"].getMeta())->setMax(3);
             }
             else

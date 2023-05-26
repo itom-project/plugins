@@ -1,8 +1,8 @@
 /// \file EnsembleAeroBasicCommands.h
 /// \brief Contains immediate commands
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_AEROBASIC_COMMANDS_H__
 #define __Ensemble_AEROBASIC_COMMANDS_H__
@@ -2166,4 +2166,3 @@ BOOL DLLENTRYDECLARATION EnsembleAcknowledgeAll(EnsembleHandle handle);
 #endif
 
 #endif // __Ensemble_AEROBASIC_COMMANDS_H__
-

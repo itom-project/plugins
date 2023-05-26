@@ -8,7 +8,7 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetPiezosystemJena_NV40_1::DockWidgetPiezosystemJena_NV40_1(ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator), m_closedLoop(true), m_remote(true)
 {
-    ui.setupUi(this); 
+    ui.setupUi(this);
 
     enableWidget(true);
 }
@@ -142,4 +142,3 @@ void DockWidgetPiezosystemJena_NV40_1::identifierChanged(const QString &identifi
 {
     ui.lblID->setText(identifier);
 }
-

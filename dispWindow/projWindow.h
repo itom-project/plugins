@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -73,7 +73,7 @@ class PrjWindow : public QOpenGLWidget
             idleState = paramsValid | cosIsInit | grayIsInit,
             initFail = 128
         };
-    
+
     protected:
 
     private:
@@ -98,7 +98,7 @@ class PrjWindow : public QOpenGLWidget
         QVector<unsigned char> m_lut;
         QOpenGLFunctions *m_glf;
         QOpenGLVertexArrayObject *m_vao;
-        
+
         void paintGL();
         void initializeGL();
         void resizeGL(int width, int height);
@@ -111,7 +111,7 @@ class PrjWindow : public QOpenGLWidget
         GLint UniformLut;
         GLint UniformGamma;
         GLint UniformColor;
-        
+
         // Init Function
         ito::RetVal cosineInit();
         ito::RetVal graycodeInit();

@@ -11,7 +11,7 @@
 	now used (instead of using the hardcoded "dsc%05d.jpg").
 
 2003-02-27  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* camera.c: We support EXIF download.
 
 2002-07-18  Raymond Penners  <raymond@dotsphinx.com>
@@ -26,4 +26,3 @@
 
 	* *.[ch]: Made driver GPContext aware (i.e., operations can now be
 	  cancelled), and added support for EXIF information.
-

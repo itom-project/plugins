@@ -56,5 +56,3 @@ static int dc210_test_command(Camera * camera, unsigned char cmdbyte, unsigned c
 #endif
 
 #endif /* _DC210_LIBRARY_H_ */
-
-

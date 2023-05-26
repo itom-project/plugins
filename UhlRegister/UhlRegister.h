@@ -56,7 +56,7 @@ class UhlRegister : public ito::AddInActuator //, public DummyGrabberInterface
         const ito::RetVal DummyRead(void);
         const ito::RetVal UhlReadString(char buf[], const int bufsize);
         const ito::RetVal UhlReadRegL(const unsigned char reg, long *plval);
-        const ito::RetVal UhlWriteReg(const unsigned char reg); 
+        const ito::RetVal UhlWriteReg(const unsigned char reg);
         const ito::RetVal UhlWriteRegB(const unsigned char reg, const unsigned char ch);
         const ito::RetVal UhlWriteRegL(const unsigned char reg, const long lval);
         const ito::RetVal UhlStatus(void);
@@ -70,13 +70,13 @@ class UhlRegister : public ito::AddInActuator //, public DummyGrabberInterface
 
     signals:
 
-        //void parametersChanged(QMap<QString, ito::Param> params);    
+        //void parametersChanged(QMap<QString, ito::Param> params);
 //        void PositioningStatusChanged(bool Running);
 //        void SentStatusChanged(int Status);
 //        void SentPositionChanged(QVector<int> axis,QVector<double> pos);
 
     public slots:
-        
+
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);    //* returns parameter of m_params with key name.*/
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);    //* sets parameter of m_params with key name.*/
 

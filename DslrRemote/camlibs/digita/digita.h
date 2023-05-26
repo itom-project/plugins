@@ -166,4 +166,3 @@ int digita_serial_open(CameraPrivateLibrary *dev, Camera *camera);
 int digita_usb_open(CameraPrivateLibrary *dev, Camera *camera);
 
 #endif
-

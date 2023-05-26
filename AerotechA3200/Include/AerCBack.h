@@ -45,11 +45,11 @@ AERERR_CODE AER_DLLENTRY AerTaskCallBackValueGetString( HAERCTRL hAerCtrl, PCALL
                                                         DWORD dwArg,
                                                         LPTSTR pszValue,
                                                         DWORD dwMaxBytes );
-AERERR_CODE AER_DLLENTRY AerTaskCallBackValueGetStringEx(HAERCTRL hAerCtrl, 
-                                                         PCALLBACK_VALUE pValue, 
-                                                         LPTSTR pszStr, 
-                                                         DWORD dwFirstArg, 
-                                                         DWORD dwLastArg, 
+AERERR_CODE AER_DLLENTRY AerTaskCallBackValueGetStringEx(HAERCTRL hAerCtrl,
+                                                         PCALLBACK_VALUE pValue,
+                                                         LPTSTR pszStr,
+                                                         DWORD dwFirstArg,
+                                                         DWORD dwLastArg,
                                                          PDWORD pdwNextArg );
 AERERR_CODE AER_DLLENTRY AerTaskCallBackValueSetString( HAERCTRL hAerCtrl,
                                                         PCALLBACK_VALUE pValue,
@@ -61,7 +61,7 @@ AERERR_CODE AER_DLLENTRY AerTaskCallBackValueMakeString( HAERCTRL hAerCtrl, PCAL
                                                          DWORD dwBigStringLength,
                                                          DWORD dwFlags );
 
-AERERR_CODE AER_DLLENTRY aerTaskGetBlobDataPointers(CALLBACK_DATA *pBlobs, DWORD dwBlobIndex, CALLBACK_BLOB ** ppBlobHeader, 
+AERERR_CODE AER_DLLENTRY aerTaskGetBlobDataPointers(CALLBACK_DATA *pBlobs, DWORD dwBlobIndex, CALLBACK_BLOB ** ppBlobHeader,
                                                     BYTE** pBlobContainer);
 AERERR_CODE AER_DLLENTRY aerTaskGetBlobValuePointers(CALLBACK_VALUE* pBlobs, DWORD dwBlobIndex, CALLBACK_BLOB** ppBlobHeader,
                                                      BYTE** pBlobContainer);
@@ -95,4 +95,3 @@ AERERR_CODE AER_DLLENTRY AerRespTaskFaultDestroy(HAERCTRL hAerCtrl, TASKINDEX iT
 #endif
 
 #endif
-

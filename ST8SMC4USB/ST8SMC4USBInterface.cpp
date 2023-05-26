@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -52,7 +52,7 @@ ito::RetVal ST8SMC4USBInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 ST8SMC4USBInterface::ST8SMC4USBInterface()
@@ -78,8 +78,8 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsMand.append(ito::Param("unitsPerStep", ito::ParamBase::Double, 0.01, new ito::DoubleMeta(0.0,100000.0), tr("units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator").toLatin1().data()));
     m_initParamsMand.append(ito::Param("unit", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis, 0: degree (default), 1: mm").toLatin1().data()));
 

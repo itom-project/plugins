@@ -46,7 +46,7 @@ imaging cameras.
 At the current stage you may use ptpcam tool boundled with libptp2 to perform
 some basic operations like downloading photos or setting camera properties.
 For other operations and GUI you might consider using libgphoto2
-(which contains forked version of libptp2 code), gphoto2 and gtkam; 
+(which contains forked version of libptp2 code), gphoto2 and gtkam;
 see http://www.gphoto.org.
 
 
@@ -73,7 +73,7 @@ implementing PTP in their cameras:
 Note that for some HP, Nikon, Canon, Sony and possibly other cameras
 you have to switch them to PTP mode as in most cases the camera is dual mode:
 PTP and USB Mass Storage or PTP and native.
-For some cameras it even changes the Product ID number, so don't panic 
+For some cameras it even changes the Product ID number, so don't panic
 just switch the mode.
 Don't ask me how to do it. Refer to camera documentation.
 
@@ -381,7 +381,7 @@ according to PTP specification.
 0x5003 : Image Size
 	 DataType: String
 	 Forms: Enum, Range
-	 "This property describes the height and width of the image that will 
+	 "This property describes the height and width of the image that will
 	 be captured in pixels supported by the device." The string is of the
 	 format "WxH" where the W represents the width and the H represents
 	 the height represented as unsigned integers.
@@ -550,14 +550,14 @@ according to PTP specification.
 	 optional tenth of second past the second. The string can be
 	 optionally appended with Z to indicate UTC, or +/-hhmm to indicate
 	 that time is relative to a time zone.
-	 
+
 0x5012 : Pre-Capture Delay
 	 DataType: UINT32
 	 Forms: Enum, Range
 	 Value of this property represents the amount of time delay that
 	 should be inserted between the capture trigger and the initiation
 	 of the data capture. This value shall be interpreted as
-	 milliseconds. 
+	 milliseconds.
 	 It has nothing to do with the "0x5019 : Burst Interval" and the
 	 "0x501b : Timelapse Interval"!
 
@@ -787,7 +787,7 @@ A couple of random camera abilities:
 0.509050 PTP/library.c(2): Device info:
 0.509067 PTP/library.c(2): Manufacturer: Canon Inc.
 0.509072 PTP/library.c(2):   model: Canon DIGITAL IXUS II
-0.509077 PTP/library.c(2):   device version: 
+0.509077 PTP/library.c(2):   device version:
 0.509082 PTP/library.c(2): Vendor extension description: (null)
 0.509091 PTP/library.c(2): Supported operations:
 0.509096 PTP/library.c(2):   0x1001
@@ -838,4 +838,3 @@ A couple of random camera abilities:
 0.509311 PTP/library.c(2):   0x901f
 0.509316 PTP/library.c(2):   0x9020
 0.509320 PTP/library.c(2):   0x9021
-

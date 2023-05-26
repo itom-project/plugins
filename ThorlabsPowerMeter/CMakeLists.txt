@@ -34,7 +34,7 @@ if(THORLABS_PM100D_VISA_DIR)
         else(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.1.0")
             find_path( THORLABS_PM100D_VISA_INCLUDE_DIR NAMES "PM100D.h" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "Include")
         endif(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.1.0")
-        
+
         if(BUILD_TARGET64)
             if(THORLABS_POWER_METER_API_VERSION VERSION_EQUAL "1.1.0")
                 find_library (THORLABS_TLPM_VISA_LIBRARY "TLPM_64" PATHS ${THORLABS_PM100D_VISA_DIR} PATH_SUFFIXES "Lib_x64/msc")
@@ -74,7 +74,7 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
         ${THORLABS_PM100D_VISA_INCLUDE_DIR}
         #add further include directories here
     )
@@ -114,7 +114,7 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
 
     #add all (generated) header and source files to the library (these files are compiled then)
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 

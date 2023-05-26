@@ -52,7 +52,7 @@ if(OPENGL_FOUND)
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogGLDisplay.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGLDisplay.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/glDisplay.cpp
@@ -70,11 +70,11 @@ if(OPENGL_FOUND)
     #Add version information to the plugIn-dll unter MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif()    
+    endif()
 
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
@@ -97,7 +97,7 @@ if(OPENGL_FOUND)
 
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+
 else(OPENGL_FOUND)
     message(SEND_ERROR "OpenGL could not be found. ${target_name} will not be build")
 endif(OPENGL_FOUND)

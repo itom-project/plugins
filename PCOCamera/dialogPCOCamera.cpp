@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -51,10 +51,10 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        
+
 
         ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
-        
+
         ui.combo_bpp->clear();
         int count = 0;
         for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i += bppMeta->getStepSize())
@@ -104,7 +104,7 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
 
 
         ui.comboPixelrate->clear();
-        
+
         for (int i = 0; i < 4; ++i)
         {
             if (m_camInfo.dwPixelRateDESC[i] != 0)
@@ -140,10 +140,10 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
 
     dval = params["offset"].getVal<double>();
     ui.sliderOffset->setValue(dval*100.0);
-    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));             
+    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
 
     ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
-    
+
     for (int i = 0; i < ui.combo_bpp->count(); ++i)
     {
         if (ui.combo_bpp->itemData(i, 32).toInt() == params["bpp"].getVal<int>())
@@ -241,7 +241,7 @@ ito::RetVal DialogPCOCamera::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, y1)));
         }
     }
-#endif 
+#endif
 
     if(ui.sliderGain->isEnabled())
     {
@@ -275,7 +275,7 @@ ito::RetVal DialogPCOCamera::applyParameters()
         QVariant qvar = ui.combo_bpp->currentIndex();
         bool ok;
         int bppNew = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex(), 32).toInt(&ok);
-        
+
         if(ok && (bppNew > 0) && (m_currentParameters["bpp"].getVal<int>() !=  bppNew))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bppNew)));
@@ -355,4 +355,3 @@ void DialogPCOCamera::on_btnFullROI_clicked()
         ui.rangeY01->setValues(0, m_currentParameters["sizey"].getMax());
     }
 }
-

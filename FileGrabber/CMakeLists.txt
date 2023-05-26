@@ -53,7 +53,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFileGrabber.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogFileGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFileGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/FileGrabber.cpp

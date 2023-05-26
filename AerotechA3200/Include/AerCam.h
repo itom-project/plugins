@@ -48,21 +48,21 @@ AERERR_CODE AER_DLLENTRY  AerCamTableFree (HAERCTRL hAerCtrl, DWORD dwTable);
 
 AERERR_CODE AER_DLLENTRY  AerCamTableCalcCoeff (HAERCTRL hAerCtrl, DWORD dwTable);
 
-AERERR_CODE AER_DLLENTRY  AerCamTableSetUnits (HAERCTRL hAerCtrl, DWORD dwTable, 
+AERERR_CODE AER_DLLENTRY  AerCamTableSetUnits (HAERCTRL hAerCtrl, DWORD dwTable,
                                                DWORD  dwMasterPosUnitType, DWORD dwSlavePosUnitType);
-AERERR_CODE AER_DLLENTRY  AerCamTableGetUnits (HAERCTRL hAerCtrl, DWORD dwTable, 
+AERERR_CODE AER_DLLENTRY  AerCamTableGetUnits (HAERCTRL hAerCtrl, DWORD dwTable,
                                                PDWORD pdwMasterPosUnitType, PDWORD pdwSlavePosUnitType);
 
-AERERR_CODE AER_DLLENTRY  AerCamTableSetPoint (HAERCTRL hAerCtrl, DWORD dwTable, LONG lPoint, 
+AERERR_CODE AER_DLLENTRY  AerCamTableSetPoint (HAERCTRL hAerCtrl, DWORD dwTable, LONG lPoint,
                                                DOUBLE dMasterPos, DOUBLE dSlavePos, DWORD dwType );
-AERERR_CODE AER_DLLENTRY  AerCamTableGetPoint (HAERCTRL hAerCtrl, DWORD wTable, LONG lPoint, 
-                                               PDOUBLE pdMasterPos, PDOUBLE pdSlavePos, 
-                                               PDOUBLE pdCoeffA, PDOUBLE pdCoeffB, 
+AERERR_CODE AER_DLLENTRY  AerCamTableGetPoint (HAERCTRL hAerCtrl, DWORD wTable, LONG lPoint,
+                                               PDOUBLE pdMasterPos, PDOUBLE pdSlavePos,
+                                               PDOUBLE pdCoeffA, PDOUBLE pdCoeffB,
                                                PDOUBLE pdCoeffC, PDOUBLE pdCoeffD,
                                                PDWORD pdwType );
 
 AERERR_CODE AER_DLLENTRY  AerCamTableSetMultPoints( HAERCTRL hAerCtrl, DWORD dwTable,
-                                                    DWORD dwStart, DWORD dwCount, 
+                                                    DWORD dwStart, DWORD dwCount,
                                                     PAER_CAM_SETPOINT pPoint );
 AERERR_CODE AER_DLLENTRY  AerCamTableGetMultPoints( HAERCTRL hAerCtrl, DWORD dwTable,
                                                     DWORD dwStart, DWORD dwCount,
@@ -87,9 +87,9 @@ AERERR_CODE AER_DLLENTRY AerCamTableFileDownload (HAERCTRL hAerCtrl, DWORD dwTab
 
 AERERR_CODE AER_DLLENTRY  AerCamTableCheck (HAERCTRL hAerCtrl, DWORD dwTable, AXISINDEX iMaster, AXISINDEX iSlave);
 
-AERERR_CODE AER_DLLENTRY  AerCamTableSetMasterConfig (HAERCTRL hAerCtrl, AXISINDEX iSlaveAxis, 
+AERERR_CODE AER_DLLENTRY  AerCamTableSetMasterConfig (HAERCTRL hAerCtrl, AXISINDEX iSlaveAxis,
                                                       AXISINDEX iMasterAxis, DWORD dwCommandType);
-AERERR_CODE AER_DLLENTRY  AerCamTableGetMasterConfig (HAERCTRL hAerCtrl, AXISINDEX iSlaveAxis, 
+AERERR_CODE AER_DLLENTRY  AerCamTableGetMasterConfig (HAERCTRL hAerCtrl, AXISINDEX iSlaveAxis,
                                                       PAXISINDEX piMasterAxis, PDWORD pdwCommandType);
 AERERR_CODE AER_DLLENTRY  AerCamSetFirstPointLineNumber (HAERCTRL hAerCtrl, DWORD dwTable, ULONG ulLineNumberInFile);
 
@@ -117,4 +117,3 @@ AERERR_CODE AER_DLLENTRY  AerCamSetFirstPointLineNumber (HAERCTRL hAerCtrl, DWOR
 
 #endif
 // __AER_SYNC_H__
-

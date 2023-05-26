@@ -28,7 +28,7 @@ endif(NOT THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY)
 if(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY)
     if(WIN32)
         find_path( THORLABS_DCxCAMERA_INCLUDE_DIR uc480.h PATHS ${THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY} PATH_SUFFIXES Include)
-        
+
         if(BUILD_TARGET64)
             find_file( THORLABS_DCxCAMERA_LIBRARY uc480_64.lib PATHS ${THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY} PATH_SUFFIXES Lib)
         else(BUILD_TARGET64)
@@ -52,7 +52,7 @@ if(THORLABS_DCxCAMERA_INCLUDE_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended)
         #add further include directories here
         ${Tools_SOURCE_DIR}
         ${THORLABS_DCxCAMERA_INCLUDE_DIR}

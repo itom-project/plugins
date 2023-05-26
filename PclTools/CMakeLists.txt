@@ -28,7 +28,7 @@ itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 itom_find_package_qt(ON Widgets LinguistTools OpenGL)
 
-if(ITOM_SDK_PCL_SUPPORT)	
+if(ITOM_SDK_PCL_SUPPORT)
     if (NOT VTK_FOUND)
       find_package(VTK QUIET COMPONENTS vtkCommonCore QUIET)
       if (NOT VTK_FOUND)
@@ -38,16 +38,16 @@ if(ITOM_SDK_PCL_SUPPORT)
     endif()
 
     if(VTK_FOUND)
-        
+
         find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common io kdtree search features segmentation filters surface recognition)
-            
+
         find_file(PCL_HAS_SURFACE_NURBS "nurbs_data.h" PATHS ${PCL_INCLUDE_DIRS} PATH_SUFFIXES "pcl/surface/on_nurbs")
         if(PCL_HAS_SURFACE_NURBS)
             add_definitions(-DPCLHASSURFACENURBS -D_PCLHASSURFACENURBS)
         else()
             message(STATUS "PCL has been build without the surface_nurbs module, therefore not all filters can be build")
         endif()
-		
+
         if (VTK_VERSION VERSION_LESS "8.90.0")
           # old system
             find_package(VTK QUIET)
@@ -70,7 +70,7 @@ if(ITOM_SDK_PCL_SUPPORT)
               IOXML
               IOXMLParser
               GUISupportQt
-              GUISupportQtSQL          
+              GUISupportQtSQL
               RenderingQt
               ViewsQt
           )
@@ -100,11 +100,11 @@ if(ITOM_SDK_PCL_SUPPORT)
 
         set(PLUGIN_UI
         )
-        
+
         set(PLUGIN_RCC
         )
 
-        set(PLUGIN_SOURCES 
+        set(PLUGIN_SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/pclTools.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/implIncludes.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFit.cpp
@@ -125,14 +125,14 @@ if(ITOM_SDK_PCL_SUPPORT)
         if(MSVC)
             list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
         endif()
-        
+
         if(MSVC)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
         endif()
-        
+
 
         add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-        
+
         # Qt: enable all automoc, autouic and autorcc.
         set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
@@ -150,7 +150,7 @@ if(ITOM_SDK_PCL_SUPPORT)
         itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
         itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
         itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-        
+
     else(VTK_FOUND)
         message(SEND_ERROR "${target_name} will not be build since package VTK could not be found. Indicate VTK_DIR.")
     endif(VTK_FOUND)

@@ -4,7 +4,7 @@
 
 2008-05-29   Theodore Kilgore <kilgota@auburn.edu>
 	* library.c: raw files now each have the corresponding catalog entry
-		     added as a 16-byte footer. 
+		     added as a 16-byte footer.
 
 2008-05-27   Theodore Kilgore <kilgota@auburn.edu>
 	* library.c: gp_bayer_decode() -> gp_ahd_decode().
@@ -15,7 +15,7 @@
 2007-06-24   Theodore Kilgore <kilgota@auburn.edu>
 	* library.c:
 	* sq905.c:
-	* sq905.h: fixed compile warnings about signedness. 
+	* sq905.h: fixed compile warnings about signedness.
 
 2007-05-10   Marcus Meissner <marcus@jet.franken.de>
 
@@ -23,10 +23,10 @@
 
 2007-03-09   Theodore Kilgore <kilgota@auburn.edu>
 
-	* library.c: Decompression support re-done. 
-	* postprocess.c: Decompression support re-done. 	
-	* sq905.c: Decompression support re-done. 
-	* sq905.h: Decompression support re-done. 
+	* library.c: Decompression support re-done.
+	* postprocess.c: Decompression support re-done.
+	* sq905.c: Decompression support re-done.
+	* sq905.h: Decompression support re-done.
 
 
 2006-01-03  Hubert Figuiere  <hub@figuiere.net>
@@ -41,13 +41,13 @@
 2005-05-18   Theodore Kilgore <kilgota@auburn.edu>
 
 	* library.c: Several improvements for SQ_MODEL_POCK_CAM
-	* postprocess.c: Several improvements for SQ_MODEL_POCK_CAM	
-	* sq905.c: Several improvements for SQ_MODEL_POCK_CAM, thanks to 
+	* postprocess.c: Several improvements for SQ_MODEL_POCK_CAM
+	* sq905.c: Several improvements for SQ_MODEL_POCK_CAM, thanks to
 	Julius Schwartzenberg <julius@zgod.cjb.net> for exhaustive testing!
 
 2005-05-18   Theodore Kilgore <kilgota@auburn.edu>
 
-	* library.c: bug in compressed photo routine fixed, found by 
+	* library.c: bug in compressed photo routine fixed, found by
 	Cedric Cellier.
 
 2005-04-17   Theodore Kilgore <kilgota@auburn.edu>
@@ -57,24 +57,24 @@
 2005-04-16   Theodore Kilgore <kilgota@auburn.edu>
 
 	* library.c: fix sq_decompress() to handle Magpix B350
-	* postprocess.c: fix sq_decompress() to handle Magpix B350	
+	* postprocess.c: fix sq_decompress() to handle Magpix B350
 	* sq905.h: fix sq_decompress() to handle Magpix B350
-	* sq905.h: fix sq_decompress() to handle Magpix B350	
+	* sq905.h: fix sq_decompress() to handle Magpix B350
 
 2005-04-12   Theodore Kilgore <kilgota@auburn.edu>
 
-	* postprocess.c: small oops repaired in sq_decompress()	
+	* postprocess.c: small oops repaired in sq_decompress()
 
 2005-04-03   Theodore Kilgore <kilgota@auburn.edu>
 
 	* library.c: improvements for compressed mode
-	* postprocess.c: improvements for compressed mode	
+	* postprocess.c: improvements for compressed mode
 	* sq905.h: improvements for compressed mode
 
 2005-01-17   Theodore Kilgore <kilgota@auburn.edu>
 
 	* library.c: added Shark SDC-513 and SDC-519
-	* postprocess.c: Code cleanup	
+	* postprocess.c: Code cleanup
 
 2004-12-15   Theodore Kilgore <kilgota@auburn.edu>
 
@@ -82,7 +82,7 @@
 	(get_file_func): Conditionnalize pre-processing
 
 2004-11-11 Theodore Kilgore <kilgota@auburn.edu>
-	
+
 	* postprocess.c: bugfix for release.
 
 2004-11-11 Theodore Kilgore <kilgota@auburn.edu>
@@ -97,34 +97,34 @@
 2004-08-25 Theodore Kilgore <kilgota@auburn.edu>
 
 	* README.913C: Description of Argus DC-1730 0x2770:0x913c camera.
-	
+
 	* library.c: Argus DC-1730 0x2770:0x913c added.
-	
+
 	* sq905.c: data type corrected in sq_access_reg ( )
-	
-	* sq905.h: In sq_access_reg ( ) the "index" is an int. Oops. 
+
+	* sq905.h: In sq_access_reg ( ) the "index" is an int. Oops.
 
 2004-06-29 Theodore Kilgore <kilgota@auburn.edu>
 
-	* sq905.c: Major rewrite. Credit to Cedric Cellier 
+	* sq905.c: Major rewrite. Credit to Cedric Cellier
 		<rixed@happyleptic.org> for several improvements, in particular
 		sq_rewind ( ), which permits random access to photos on camera.
-	
-	* sq905.h: needed changes declared.
-	
-	* postprocess.c: Anything special done to a photo after download 
-		goes here, especially things which are experimental or 
-		still not complete. 
-	
-	* library.c: Big changes. Video clips and capture-preview supported;
-		delete-all-photos supported for those SQ cameras which will 
-		do it; thumbnails supported for GUI compatibility. 
-		
-	* README: Updated to describe new capabilities of camlib. 
 
-	* TODO: list of things which still need work. 
-	
-	* Makefile.am: postprocess.c added as source file.		
+	* sq905.h: needed changes declared.
+
+	* postprocess.c: Anything special done to a photo after download
+		goes here, especially things which are experimental or
+		still not complete.
+
+	* library.c: Big changes. Video clips and capture-preview supported;
+		delete-all-photos supported for those SQ cameras which will
+		do it; thumbnails supported for GUI compatibility.
+
+	* README: Updated to describe new capabilities of camlib.
+
+	* TODO: list of things which still need work.
+
+	* Makefile.am: postprocess.c added as source file.
 
 2003-11-21 Theodore Kilgore <kilgota@auburn.edu>
 
@@ -133,15 +133,15 @@
 2003-11-21 Theodore Kilgore <kilgota@auburn.edu>
 
 	* sq905.c: The following changes are introduced:
-		-- In sq_init the initialization sequence is not repeated; 
-		experience has shown this to be unnecessary. 
-		-- In accordance with general policy, individual credits for 
-		reporting model ID numbers are placed here. Credit to 
+		-- In sq_init the initialization sequence is not repeated;
+		experience has shown this to be unnecessary.
+		-- In accordance with general policy, individual credits for
+		reporting model ID numbers are placed here. Credit to
 		Fabien Devaux <fab@gnux.org> for the ID of SQ_MODEL_PRECISION.
 
 2003-10-30  Lutz Mueller <lutz@users.sourceforge.net>
 
-	* sq905.c: Give credit to individual people (here 
+	* sq905.c: Give credit to individual people (here
 	  Paulo Tribolet Abreu <paulotex@gmx.net> who reported a special
 	  model) in the ChangeLog, not all over the code to keep the code
 	  readable.
@@ -153,7 +153,7 @@
 
 2003-10-29  Lutz Mueller <lutz@users.sourceforge.net>
 
-	* library.c: Substitute memcpy by for (...) { (...) } on 
+	* library.c: Substitute memcpy by for (...) { (...) } on
 	  request of Theodore Kilgore <kilgota@banach.math.auburn.edu>.
 
 2003-10-29  Lutz Mueller <lutz@users.sourceforge.net>
@@ -193,7 +193,7 @@
 
 2003-07-30  Lutz Mueller <lutz@users.sourceforge.net>
 
-	* library.c: Move some variables around to make non-gcc-compilers 
+	* library.c: Move some variables around to make non-gcc-compilers
 	happy.
 
 2003-07-15  Lutz Mueller <lutz@users.sourceforge.net>

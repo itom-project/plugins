@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -89,7 +89,7 @@ http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Wi
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);     
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 255, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -263,7 +263,7 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gammaAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled gamma (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-   
+
     /*paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -282,10 +282,10 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     m_params.insert(paramVal.getName(), paramVal);
 
     DockWidgetMSMediaFoundation *dw = new DockWidgetMSMediaFoundation(this);
-    
+
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -350,7 +350,7 @@ ito::RetVal MSMediaFoundation::checkCameraAbilities()
     m_params["bpp"].setMeta(new ito::IntMeta(8, m_imgBpp), true);
     m_params["bpp"].setVal<int>(m_imgBpp);
 
-    if (m_imgBpp < 8 || m_imgBpp > 32) 
+    if (m_imgBpp < 8 || m_imgBpp > 32)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("unknown bpp").toLatin1().data());
     }
@@ -546,7 +546,7 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
         emit parametersChanged(m_params);
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -669,14 +669,14 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     }
 
     if (!retValue.containsError())
-    {        
+    {
         retValue += checkData();
 
         emit parametersChanged(m_params);
 
-        
+
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -696,7 +696,7 @@ ito::RetVal MSMediaFoundation::checkInitState()
 
         //acquire test image to wait for the MediaFoundation threads to be initialized and the first image callback arrived
         int loopy = 3000/50; //max 3 seconds
-        while (loopy > 0) 
+        while (loopy > 0)
         {
             if (m_videoInput->isFrameNew(m_deviceID))
             {
@@ -956,9 +956,9 @@ ito::RetVal MSMediaFoundation::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     if (m_timerID > 0)
-    { 
+    {
         killTimer(m_timerID);
         m_timerID=0;
     }
@@ -972,7 +972,7 @@ ito::RetVal MSMediaFoundation::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -981,9 +981,9 @@ ito::RetVal MSMediaFoundation::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = checkInitState();
-    
+
     incGrabberStarted();
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -992,7 +992,7 @@ ito::RetVal MSMediaFoundation::startDevice(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MSMediaFoundation::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1015,7 +1015,7 @@ ito::RetVal MSMediaFoundation::stopDevice(ItomSharedSemaphore *waitCond)
 
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -1040,7 +1040,7 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
 
     if (!retValue.containsError())
@@ -1051,7 +1051,7 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
         {
             if (m_videoInput->isFrameNew(m_deviceID))
             {
-                m_videoInput->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, m_flipImage); 
+                m_videoInput->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, m_flipImage);
                 break;
             }
 
@@ -1123,7 +1123,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 retValue += ito::RetVal(ito::retError, 0, tr("Error: desired bpp must be 8 or 16 bit.").toLatin1().data());
             }
             else
-            {   
+            {
                 //step 1. check ROI
                 if (resizeRequired == false)
                 {
@@ -1142,7 +1142,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                     cv::cvtColor(tempImage, tempImage, cv::COLOR_BGR2GRAY, 0); //camera provides BGR images in OpenCV
 #else
                     cv::cvtColor(tempImage, tempImage, CV_BGR2GRAY, 0); //camera provides BGR images in OpenCV
-#endif                     
+#endif
                 }
 
                 //step 3: create m_data (if not yet available)
@@ -1176,7 +1176,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                         }
                     }
                 }
-                     
+
                 if (!retValue.containsError())
                 {
                     if (tempImage.channels() == 1)
@@ -1194,7 +1194,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                     {
                         cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
                         int fromTo[] = {0, 0, 1, 1, 2, 2}; //{0,2,1,1,2,0}; //implicit BGR (camera) -> BGR (dataObject style) conversion
-                        
+
                         cv::mixChannels(&tempImage, 1, out, 1, fromTo, 3);
 
                         if (externalDataObject && hasListeners)
@@ -1285,7 +1285,7 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toLatin1().data());            
+        return ito::RetVal(ito::retError, 0, tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toLatin1().data());
     }
 
     if (futureType == ito::tRGBA32 && (m_alphaChannel.cols != futureWidth || m_alphaChannel.rows != futureHeight))
@@ -1302,7 +1302,7 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
     {
         if (m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
         {
-            m_data = ito::DataObject(futureHeight,futureWidth,futureType);  
+            m_data = ito::DataObject(futureHeight,futureWidth,futureType);
 
             if (futureType == ito::tRGBA32)
             {
@@ -1321,7 +1321,7 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
         }
         else if (externalDataObject->calcNumMats () != 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or an uninitialized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or an uninitialized image.").toLatin1().data());
         }
         else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
@@ -1358,7 +1358,7 @@ ito::RetVal MSMediaFoundation::getVal(void *vpdObj, ItomSharedSemaphore *waitCon
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1370,7 +1370,7 @@ ito::RetVal MSMediaFoundation::getVal(void *vpdObj, ItomSharedSemaphore *waitCon
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -1401,7 +1401,7 @@ ito::RetVal MSMediaFoundation::copyVal(void *vpdObj, ItomSharedSemaphore *waitCo
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();

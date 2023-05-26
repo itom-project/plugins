@@ -1,6 +1,6 @@
 2004-10-28  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* agfa_cl20.c (get_file_func): Fix build for gcc 2.95 
+	* agfa_cl20.c (get_file_func): Fix build for gcc 2.95
 	(bug #1055868)
 
 2004-03-16 Dennis Noordsij
@@ -10,11 +10,11 @@
 	- fix USB download size
 
 2003-05-12  Marcus Meissner <meissner@suse.de>
-	
+
 	* agfa-cl20.c: Made it compile without warnings.
 
 2003-05-12  Marcus Meissner <meissner@suse.de>
-        
+
 	* Makefile.am, README, STATUS, *.txt, agfa-cl20.c:
 		Imported from http://cl20.poeml.de
 

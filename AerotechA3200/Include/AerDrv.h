@@ -9,7 +9,7 @@
 #define __AERDRV_H__
 
 /*
- Lib Error data structure  (returned by AerDrvGetLastCmdErr()) 
+ Lib Error data structure  (returned by AerDrvGetLastCmdErr())
 */
 typedef struct tagAER_LASTCMD_INFO
 {  // Used for holding library errors/lastCommand
@@ -95,7 +95,7 @@ typedef AER_LASTCMD_INFO *PAER_LASTCMD_INFO;
 //#define U600PCI_OFFSET_IO_BASE   0x10
 //#define U600PCI_OFFSET_BASE0     0x14     // ATWindow1
 //#define U600PCI_OFFSET_BASE1     0x18     // ATWindow2
-//#define U600PCI_OFFSET_BPARAM    0x3C     
+//#define U600PCI_OFFSET_BPARAM    0x3C
 //#define U600PCI_OFFSET_MAP0      0x40     // Address Mapping
 //#define U600PCI_LB_IO_BASE       0x6E
 //#define U600PCI_OFFSET_SYSTEM    0x78     // System/Reset register
@@ -107,10 +107,10 @@ typedef AER_LASTCMD_INFO *PAER_LASTCMD_INFO;
 //                                          //     U600PCI_SYSTEM_OFFSET
 //                                          // if LOCK bit (bit 14) is set
 //#define U600PCI_SYSTEM_RST_OUT   0x8000   // SYSTEM REGISTER - Reset
-//#define U600PCI_SYSTEM_LOCK      0x4000   // 
-//#define U600PCI_SYSTEM_SPROM_EN  0x2000   // 
-//#define U600PCI_SYSTEM_SCL       0x1000   // 
-//#define U600PCI_SYSTEM_SDA_OUT   0x0800   // 
+//#define U600PCI_SYSTEM_LOCK      0x4000   //
+//#define U600PCI_SYSTEM_SPROM_EN  0x2000   //
+//#define U600PCI_SYSTEM_SCL       0x1000   //
+//#define U600PCI_SYSTEM_SDA_OUT   0x0800   //
 //
 //#define U600PCI_SYSTEM_DEFAULT      (0xF800) // RST_OUT, LOCK, SPROM_EN, SCL, SDA_OUT
 //#define U600PCI_CMD_STAT_DEFAULT    (0x7)
@@ -131,7 +131,7 @@ typedef AER_LASTCMD_INFO *PAER_LASTCMD_INFO;
 //#define ATWIN_NUM_2 2
 //#define ATWIN_NUM_3 3
 //
-//// AT Window 
+//// AT Window
 //#define ATWIN_D800  0xD8000000
 //#define ATWIN_DC00  0xDC000000
 //#define ATWIN_CC00  0xCC000000
@@ -354,7 +354,7 @@ AERERR_CODE AER_DLLENTRY AerDrvClearLastCmdErr( HAERCTRL hAerCtrl );
 
 AERERR_CODE AER_DLLENTRY AerDrvSetResetOnTimeOut( HAERCTRL hAerCtrl, BOOL bReset );
 AERERR_CODE AER_DLLENTRY AerDrvGetResetOnTimeOut( HAERCTRL hAerCtrl, PBOOL pbReset );
-   
+
 //AERERR_CODE AER_DLLENTRY aerDrvOpen( HAERCTRL hAerCtrl, PAER_UNIDEX_INFO pUnidex,
 //                                     PDWORD pdwIndex );
 //AERERR_CODE AER_DLLENTRY aerDrvClose( HAERCTRL hAerCtrl );
@@ -408,7 +408,7 @@ AERERR_CODE AER_DLLENTRY aerDrvGetVersion( HAERCTRL hAerCtrl, PAER_DRV_VERSION p
 #define AER_STATUS_SHARED_MEM_MAX         10
 
 // dwdThreadNum constants when using AerDrvGetSharedStatusWord()/AerDrvSetSharedStatusWord()
-#define AER_STATUS_SHARED_ETHERNET1                        0x0  //used for remote server client 
+#define AER_STATUS_SHARED_ETHERNET1                        0x0  //used for remote server client
 #define AER_STATUS_SHARED_ETHERNET2                        0x1  //used for remote server server
 #define AER_STATUS_SHARED_TASK                             0x2  // 0x2 - 0x2+MAX_TASKS
 
@@ -430,10 +430,10 @@ typedef DLL_SHARE_SINGLE *PDLL_SHARE_SINGLE;
 typedef struct tagDLL_SHARE
 {
    int	            InstanceCount;	     //number of dll instances.
-   int               OpenCount; 
+   int               OpenCount;
    int               g_OpenErrCode;      //global error code
-   int               LastUsedCallBackPort; 
-   int               CallBackPorts[16];  //Instancecount 1 gets starting callback port, 
+   int               LastUsedCallBackPort;
+   int               CallBackPorts[16];  //Instancecount 1 gets starting callback port,
                                          //next instance gets starting callback port+1 etc
    DLL_SHARE_SINGLE  Data[AER_STATUS_SHARED_MEM_MAX];
 }  DLL_SHARE;

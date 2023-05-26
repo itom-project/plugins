@@ -8,4 +8,3 @@ template <class T> void SafeRelease(T **ppT)
         *ppT = NULL;
     }
 }
-

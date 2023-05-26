@@ -50,7 +50,7 @@ if(IDS_DEVELOP_DIRECTORY)
     endif(WIN32)
 endif(IDS_DEVELOP_DIRECTORY)
 
-if(IDS_HEADER_FILE)    
+if(IDS_HEADER_FILE)
     if(WIN32)
         set( DELAY_IMP_LIB "delayimp")
         if(IDS_DEVELOP_DIRECTORY)
@@ -94,7 +94,7 @@ if(IDS_HEADER_FILE)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
         #add further include directories here
         ${Tools_SOURCE_DIR}
         ${IDS_INCLUDE_DIRECTORY}

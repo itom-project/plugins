@@ -10,7 +10,7 @@
 **Devices**:    Axes from company Aerotech that can be driven using the Aerotech Ensemble interface
 **Author**:     :pluginauthor:`AerotechEnsemble`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,27 +19,27 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: AerotechEnsemble
-        
+
 Parameters
 ===========
 
 An instance of this plugin has the following internal parameters:
 
-**name**: {str}, read-only 
+**name**: {str}, read-only
     AerotechEnsemble
 **controller**: {str}, read-only
     name of the connected controller
 **communication**: {str}, read-only
-    type of the communication (USB, Ethernet) 
+    type of the communication (USB, Ethernet)
 **libraryVersion**: {str}, read-only
-    Version of the Ensemble C library   
+    Version of the Ensemble C library
 **async**: {int}
-    asynchronous move (1), synchronous (0) [default]    
+    asynchronous move (1), synchronous (0) [default]
 **numAxis**: {int}, read-only
     number of connected axes
 **speed**: {float seq.}

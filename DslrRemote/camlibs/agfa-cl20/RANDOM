@@ -3,7 +3,7 @@ Just some random ramblings :-)
 
 -------------------
 
-Why does the damn windows software poll the camera so often? 
+Why does the damn windows software poll the camera so often?
 Answer: Because of the stupid "print" button on the camera!
 It does not use an interrupt or anything, but you have to send:
 
@@ -14,7 +14,7 @@ If *data now contains "0", nothing happend.
 If *data is now "8", the user is PRESSING the button.
 
 Notice I say "PRESSING" :-) it has no memory, if you miss the moment the
-user presses the button, you do not see it! 
+user presses the button, you do not see it!
 
 -------------------
 
@@ -45,11 +45,11 @@ used when using the CL20 as a webcam (in streaming mode).
 
 Camera has 1 configuration, which is set as 1 (so do not start counting at 0!)
 Camera has 2 interfaces, "dmesg" should show you all info you could ever need
-, and it shows interface 1 (which is 0) only has Iso endpoints, whereas 
+, and it shows interface 1 (which is 0) only has Iso endpoints, whereas
 interface 2 (which is 1) has a bulk endpoint. Iso's are used for streaming
 video, and bulk is used for downloading picture data. It should be possible
 (the latest Agfa windows driver claims this) to use interface 1 and 2 at
-the same time, i.e. downloading pictures while also streaming video. 
+the same time, i.e. downloading pictures while also streaming video.
 #TODO verify this, it was late when I read it, could be wrong :-)
 
 -------------------

@@ -39,7 +39,7 @@ SET_PHOTO_NO_DISPLAY_MODE	= 0x8c,
 	Argument: 1 uint8
 
 DO_CALIBRATION			= 0x8d,
-	
+
 	GET_CALIBRATION_PARAM		= 0x8e,
 SET_SHOOT_AUTO			= 0x90,
 	Arguments: 1 uint8
@@ -87,7 +87,7 @@ SET_INTERNAL_SHOOT_PARAM	= 0xa6,
 	 uint16, uint16, uint16, uint16, uint32, uint32, uint32, uint32, uint32, uint32)
 
 	reads data
-	
+
 SET_SHOOT_PARAM			= 0xa7,
 	SET_REVIEW_MODE			= 0xa8,
 	SET_DISPLAY_PICTURE_NO		= 0xa9,
@@ -97,7 +97,7 @@ SET_SHOOT_PARAM			= 0xa7,
 
 TAKE_PHOTO 			= 0xb0,
 	Either no arguments (stores photo on camera)?
-	
+
 
 	DELETE_PHOTO			= 0xb1,
 
@@ -146,7 +146,7 @@ DOWNLOAD_FILE_BY_NAME		= 0xbd,
 
 GET_CAMERA_CURINFO		= 0xc1,
 	No arguments.
-	
+
 	Returns lots of data.
 
 	00: 15 byte of date string	-> 0
@@ -174,14 +174,14 @@ GET_CAMERA_CURINFO		= 0xc1,
 
 GET_ALBUM_INFO			= 0xc6,
 	Sends 1 argument (16bit), fixed 0x384
-	
+
 	Returns album info blob.
 		0x20 byte string albumname
 		32bit int number of pictures.
 
 GET_CAMERA_READY		= 0xce,
 	Argument: 1 uint32
-	
+
 GET_INTERNAL_SHOOT_PARAM	= 0xcf,
 	No arguments.
 

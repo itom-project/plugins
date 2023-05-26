@@ -1,4 +1,4 @@
-Smal Ultrapocket 
+Smal Ultrapocket
 (fuji @xia slimshot)
 ___________________________________________________________________
 
@@ -20,7 +20,7 @@ TODO:
 - Battery status
 - Firmware information
 - Current resolution information
-- Determine what (if anything) the camera passes as image 
+- Determine what (if anything) the camera passes as image
 modification parameters (Gamma, etc).
 - At the moment, the Logitech driver stores images as .VGA and .XGA
 not .PPM

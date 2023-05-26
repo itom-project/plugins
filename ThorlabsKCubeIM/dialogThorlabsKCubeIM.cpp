@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -66,7 +66,7 @@ void DialogThorlabsKCubeIM::parametersChanged(QMap<QString, ito::Param> params)
         int *vol = params["maxVoltage"].getVal<int*>();
         int minVol = params["maxVoltage"].getMin();
         int maxVol = params["maxVoltage"].getMax();
-        
+
         ui.spinBoxAxis0MaxVol->setMaximum(maxVol);
         ui.spinBoxAxis0MaxVol->setMinimum(minVol);
         ui.spinBoxAxis0MaxVol->setValue(vol[0]);
@@ -164,7 +164,7 @@ ito::RetVal DialogThorlabsKCubeIM::applyParameters()
     if (std::abs(timeout - m_currentParameters["timeout"].getVal<double>()) > std::numeric_limits<double>::epsilon())
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
-    }  
+    }
 
     int newMaxVol[] = { 0, 0, 0, 0 };
     int newStepRate[] = { 0, 0, 0, 0 };
@@ -196,13 +196,13 @@ ito::RetVal DialogThorlabsKCubeIM::applyParameters()
         default:
             break;
         }
-        
+
     }
 
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("maxVoltage", ito::ParamBase::IntArray, 4, newMaxVol)));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stepRate", ito::ParamBase::IntArray, 4, newStepRate)));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("acceleration", ito::ParamBase::IntArray, 4, newAccel)));
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }

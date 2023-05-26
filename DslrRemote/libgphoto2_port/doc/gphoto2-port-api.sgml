@@ -15,7 +15,7 @@
       <author>
         <firstname>Lutz</firstname>
         <surname>Müller</surname>
-        <affiliation> 
+        <affiliation>
           <address>
             <email>lutz@users.sf.net</email>
           </address>
@@ -62,11 +62,11 @@
 
   <chapter id="gphoto2-port">
     <title>GPhoto2-Port Overview</title>
-    
+
     <para>
       GPhoto2-Port is the GPhoto2 I/O library.
     </para>
-    
+
     <para>
       The benefit to using this library would be that all communications can be
       done quickly and without worry for device specific functions; all devices
@@ -83,7 +83,7 @@
       hassle out of playing with low-level configurations and actually just
       get on to writing the core of the application.
     </para>
-    
+
   </chapter>
 
   <chapter id="gphoto2-base" role="no-toc">

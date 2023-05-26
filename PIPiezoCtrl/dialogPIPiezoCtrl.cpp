@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -44,7 +44,7 @@ DialogPIPiezoCtrl::DialogPIPiezoCtrl(ito::AddInBase *grabber) :
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
 {
-    
+
     QString m_ctrlType = params["ctrlType"].getVal<char*>();
 
     if (QString::compare(m_ctrlType, "C663") == 0)
@@ -64,7 +64,7 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
         ui.dblSpinPosLimitHigh->setSuffix(m_unit);
         ui.label_Velocity->setVisible(false);
         ui.dblSpinBox_Velocity->setVisible(false);
-        
+
     }
 
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -118,7 +118,7 @@ ito::RetVal DialogPIPiezoCtrl::applyParameters()
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("local", ito::ParamBase::Int, i)));
     }
-    
+
     i = ui.checkAsync->isChecked() ? 1 : 0;
     if (m_currentParameters["async"].getVal<int>() != i)
     {

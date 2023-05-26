@@ -30,9 +30,9 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 if(XERCESC_FOUND AND XSD_FOUND)
-    
+
     add_subdirectory(x3plib/src)
-    
+
     find_path(ISO5436_2_PATH iso5436_2.xsd
       PATHS $ENV{OPENGPS_DIR}
       ./x3plib/src/ISO5436_2_XML
@@ -54,7 +54,7 @@ if(XERCESC_FOUND AND XSD_FOUND)
           ../../build/x3p
         )
     endif(LINUX)
-    
+
     include_directories(
         "x3plib/include"
         #"x3plib/include/opengps/cxx"
@@ -83,25 +83,25 @@ if(XERCESC_FOUND AND XSD_FOUND)
             set(XSD_LIBPATH_VERS_POSTFIX "vc-7.1/")
         elseif(MSVC_VERSION EQUAL 1400)
             set(XSD_LIB_POSTFIX "_vc80")
-            set(XSD_LIBPATH_VERS_POSTFIX "vc-8.0/")  
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-8.0/")
         elseif(MSVC_VERSION EQUAL 1500)
             set(XSD_LIB_POSTFIX "_vc90")
-            set(XSD_LIBPATH_VERS_POSTFIX "vc-9.0/")  
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-9.0/")
         elseif(MSVC_VERSION EQUAL 1600)
             set(XSD_LIB_POSTFIX "_vc100")
-            set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")  
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")
         else()
             # since we don't knwo wether we are on windows or not, we just undefined and see what happens
             unset(XSDLIB_PATH_POSTFIX)
         endif()
 
-        # Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?) 
+        # Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?)
         if(CMAKE_CL_64)
             set(XSD_LIBPATH_POSTFIX lib64/)
         else(CMAKE_CL_64)
             set(XSD_LIBPATH_POSTFIX lib/)
         endif(CMAKE_CL_64)
-        
+
         set(XSD_LIBPATH_POSTFIX ${XSD_LIBPATH_POSTFIX} ${XSD_LIBPATH_VERS_POSTFIX})
 
 
@@ -125,16 +125,16 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     set(PLUGIN_UI)
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/x3pio.cpp
     )
 
     #Add version information to the plugIn-dll unter MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif()    
-    
-    
+    endif()
+
+
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
@@ -156,10 +156,10 @@ if(XERCESC_FOUND AND XSD_FOUND)
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${XERCESC_LIBRARY} ${zlibname} iso5436-2-xml${iso54362LIBSUFFIX} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 
-    
+
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
 
     # COPY SECTION
     set(COPY_SOURCES "")
@@ -168,10 +168,10 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     if(WIN32)
         set(iso54362xmlNAME iso5436-2-xml${iso54362LIBSUFFIX})
-        
+
         #LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/x3plib/src/zlib/contrib/minizip/$<CONFIGURATION>/${ZLIBNAME}${CMAKE_DEBUG_POSTFIX}.dll")
         #LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-        
+
         if(CMAKE_CL_64)
             set(iso54352_target "iso5436-2-xml64")
         else()
@@ -181,15 +181,15 @@ if(XERCESC_FOUND AND XSD_FOUND)
         LIST(APPEND COPY_SOURCES "$<TARGET_FILE:${iso54352_target}>")
         #LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/x3plib/src/ISO5436_2_XML/$<CONFIGURATION>/${iso54362xmlNAME}${CMAKE_DEBUG_POSTFIX}.dll")
         LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-        
+
         LIST(APPEND COPY_SOURCES "${XERCESC_BINARY}")
-        LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")  
+        LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
 
     endif(WIN32)
 
     LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/x3plib/src/ISO5436_2_XML/iso5436_2.xsd")
     LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-    
+
     itom_configure_plugin_documentation(${target_name} x3pio)
 
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)

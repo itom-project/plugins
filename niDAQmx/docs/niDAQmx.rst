@@ -11,7 +11,7 @@
 **Author**:     :pluginauthor:`NI-DAQmx`
 **Requires**:   NI-DAQmx driver from National Instruments
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -36,7 +36,7 @@ Download and install the latest NI-DAQmx driver from
 https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html#346240
 
 The major part of this driver is usually installed under **C:/Program Files/National Instruments** and
-**C:/Program Files (x86)/National Instruments**. Some important libraries are also copied to the 
+**C:/Program Files (x86)/National Instruments**. Some important libraries are also copied to the
 **C:/Windows/System32**, where they are found from the itom plugin.
 
 If you choose a different installation folder but the defaulft, please set the **NIDAQMX_ROOT**
@@ -69,7 +69,7 @@ Initialization
 ==============
 
 The plugin is initialized with a set of mandatory and optional parameters:
-    
+
     .. plugininitparams::
         :plugin: NI-DAQmx
 
@@ -100,8 +100,8 @@ signal until all conditions of the reference trigger are fulfilled.
 Parameters
 ==========
 
-These parameters are available and can be used to configure the **NI-DAQmx** instance. 
-During the runtime of an instance, the values of these parameters are obtained by the method *getParam*, 
+These parameters are available and can be used to configure the **NI-DAQmx** instance.
+During the runtime of an instance, the values of these parameters are obtained by the method *getParam*,
 writeable parameters can be changed using *setParam*.
 
 **availableDevices**: {str}, read-only
@@ -246,11 +246,11 @@ Analog input tasks have an additional parameter **ConfigMode**, that defines the
 of the channel. Possible values are:
 
 .. code-block::
-    
-    DAQmx_Val_Cfg_Default = 0, 
-    DAQmx_Val_Diff = 1, 
-    DAQmx_Val_RSE = 2, 
-    DAQmx_Val_NRSE = 3, 
+
+    DAQmx_Val_Cfg_Default = 0,
+    DAQmx_Val_Diff = 1,
+    DAQmx_Val_RSE = 2,
+    DAQmx_Val_NRSE = 3,
     DAQmx_Val_PseudoDiff = 4
 
 The possible configuration strings for one channel are:
@@ -276,7 +276,7 @@ that indicates the desired bitdepth.
 General
 --------
 
-The general approach to use a NI I/O device can be seen in one of the examples below. In general, it is 
+The general approach to use a NI I/O device can be seen in one of the examples below. In general, it is
 recommended to configure a plugin instance as far as possible. Then the task will be created and configured using
 the **startDevice** command. In case of invalid parameters, **startDevice** will raise an exception, whose
 error message usually gives detailed information about an invalid parameterization and possible different solutions.
@@ -284,15 +284,15 @@ error message usually gives detailed information about an invalid parameterizati
 The task can finally be deleted using **stopDevice**.
 
 Input tasks will always be started using **acquire**. If a start trigger is given, the real acquisition will
-be started if the trigger event is signalled (but after having called **acquire**). Finite tasks will automatically be 
-stopped if the requested number of samples per channel (**samplesPerChannel**) are acquired (if no reference 
-trigger is given). The values can then be obtained via **getVal** or **copyVal** (like for any other grabber or 
+be started if the trigger event is signalled (but after having called **acquire**). Finite tasks will automatically be
+stopped if the requested number of samples per channel (**samplesPerChannel**) are acquired (if no reference
+trigger is given). The values can then be obtained via **getVal** or **copyVal** (like for any other grabber or
 dataIO device).
 
 The acquisition of **continuous** tasks is also started by **acquire** (and an optional start trigger). Then all
 data is temporarily stored into an internal buffer of the NI driver. The buffer size is usually automatically
 determined based on **samplesPerChannel** (as far as this value is big enough, else NI determines its own internal
-buffer size; see also the parameter **bufferSize**). As far as no fast TDMS logging is enabled, you have to 
+buffer size; see also the parameter **bufferSize**). As far as no fast TDMS logging is enabled, you have to
 continuously receive the latest data via **getVal** or **copyVal** in order to avoid that the internal buffer
 overflows. The continuous task is then stopped via **stop**.
 
@@ -364,7 +364,7 @@ See the example **demo_ai_tdms_logging.py** for a demo about the TDMS logging.
 A TDMS file can for instance be read via the Python package **npTDMS** (https://pypi.org/project/npTDMS):
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Demo to load and read a TDMS file
@@ -439,7 +439,7 @@ Analog Input Tasks
 **demo_ai_finite.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite analog input task.
@@ -465,10 +465,10 @@ Analog Input Tasks
     (see also argument terminalConfig from command
     DAQmxCreateAIVoltageChan):
 
-    DAQmx_Val_Cfg_Default = 0, 
-    DAQmx_Val_Diff = 1, 
-    DAQmx_Val_RSE = 2, 
-    DAQmx_Val_NRSE = 3, 
+    DAQmx_Val_Cfg_Default = 0,
+    DAQmx_Val_Diff = 1,
+    DAQmx_Val_RSE = 2,
+    DAQmx_Val_NRSE = 3,
     DAQmx_Val_PseudoDiff = 4
 
     Hint: It depends on the NI DAQ devices, if they allow
@@ -554,7 +554,7 @@ Analog Input Tasks
 **demo_ai_continuous.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     import time
@@ -580,10 +580,10 @@ Analog Input Tasks
     (see also argument terminalConfig from command
     DAQmxCreateAIVoltageChan):
 
-    DAQmx_Val_Cfg_Default = 0, 
-    DAQmx_Val_Diff = 1, 
-    DAQmx_Val_RSE = 2, 
-    DAQmx_Val_NRSE = 3, 
+    DAQmx_Val_Cfg_Default = 0,
+    DAQmx_Val_Diff = 1,
+    DAQmx_Val_RSE = 2,
+    DAQmx_Val_NRSE = 3,
     DAQmx_Val_PseudoDiff = 4
 
     Hint: It depends on the NI DAQ devices, if they allow
@@ -611,7 +611,7 @@ Analog Input Tasks
     # samples, obtained by 'samplesPerChannel' * noOfChannels is lower
     # than the values in the following table, NI-DAQ uses the values from
     # the table:
-    # 
+    #
     # no sampling rate:      10000 samples
     # 0 - 100 samples / sec: 1 kS
     # 101 - 10000 S/s:       10 kS
@@ -657,12 +657,12 @@ Analog Input Tasks
     [i, h] = plot1(dataObject())
 
     for j in range(0, 2):
-        
+
         print(f"Run {j+1}/2...", end="")
-        
+
         # start the task
         plugin.acquire()
-        
+
         for i in range(0, 5):
             t = time.time()
             # the following sleep must not be too long, since NI raises
@@ -678,10 +678,10 @@ Analog Input Tasks
             print(f", step {i+1}/5 in %.2f s" % (time.time() - t), end="")
             h["source"] = d  # update the plot
             arrays.append(d)
-        
+
         # stop the task
         plugin.stop()
-        
+
         print(" done")
 
     # print the shapes of all subobjects
@@ -699,9 +699,9 @@ Analog Input Tasks
     #    getVal/copyVal values in order to not raise a timeout / unsufficient
     #    buffer size error.
     #
-    #    The logging is enabled via the parameters 'loggingMode', 
+    #    The logging is enabled via the parameters 'loggingMode',
     #    'loggingFilePath', 'loggingGroupName' and 'loggingOperation':
-    #    
+    #
     #    loggingMode: 0 -> disable logging
     #                 1 -> enable fast mode logging
     #                      (no simultaneous read via getVal/copyVal allowed),
@@ -728,18 +728,18 @@ Analog Input Tasks
 
     for i in range(0, 3):
         print(f"logged acquisition {i+1}/3: ", end="")
-        
+
         # start the continuous task again
         plugin.acquire()
-        
+
         # wait for 3 seconds (data are acquired and stored into the file)
         for j in range(0, 3):
             print(".", end="")
             time.sleep(1)
-        
+
         # stop the task
         plugin.stop()
-        
+
         print(" done")
 
     # stop the device (if there are still running \
@@ -751,13 +751,13 @@ Analog Input Tasks
 **demo_ai_single_value.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite analog input task for single value acquisitions.
 
     Demo script for acquiring exactly one analog value
-    per channel per acquire() command 
+    per channel per acquire() command
     with a National Instruments DAQ device.
 
     To test this script, the NI MAX (Measurement & Automation
@@ -775,10 +775,10 @@ Analog Input Tasks
     (see also argument terminalConfig from command
     DAQmxCreateAIVoltageChan):
 
-    DAQmx_Val_Cfg_Default = 0, 
-    DAQmx_Val_Diff = 1, 
-    DAQmx_Val_RSE = 2, 
-    DAQmx_Val_NRSE = 3, 
+    DAQmx_Val_Cfg_Default = 0,
+    DAQmx_Val_Diff = 1,
+    DAQmx_Val_RSE = 2,
+    DAQmx_Val_NRSE = 3,
     DAQmx_Val_PseudoDiff = 4
 
     Hint: It depends on the NI DAQ devices, if they allow
@@ -825,7 +825,7 @@ Analog Input Tasks
     for i in range(0, 50):
         # start the acquisition of the given number of samples per channel.
         plugin.acquire()
-        
+
         # getVal will return if all samples have been acquired (or timeout)
         plugin.copyVal(a[:, i])
 
@@ -840,12 +840,12 @@ Analog Input Tasks
     # stop and remove the configured task
     plugin.stopDevice()
 
-    
+
 
 **demo_ai_finite_ref_trigger.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite analog input task with a reference trigger.
@@ -956,12 +956,12 @@ Analog Input Tasks
 
     # stop and remove the configured task
     plugin.stopDevice()
-    
+
 
 **demo_ai_tdms_logging.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Continuous analog input task with optional logging (TDMS files).
@@ -984,10 +984,10 @@ Analog Input Tasks
     (see also argument terminalConfig from command
     DAQmxCreateAIVoltageChan):
 
-    DAQmx_Val_Cfg_Default = 0, 
-    DAQmx_Val_Diff = 1, 
-    DAQmx_Val_RSE = 2, 
-    DAQmx_Val_NRSE = 3, 
+    DAQmx_Val_Cfg_Default = 0,
+    DAQmx_Val_Diff = 1,
+    DAQmx_Val_RSE = 2,
+    DAQmx_Val_NRSE = 3,
     DAQmx_Val_PseudoDiff = 4
 
     Hint: It depends on the NI DAQ devices, if they allow
@@ -1018,7 +1018,7 @@ Analog Input Tasks
     # samples, obtained by 'samplesPerChannel' * noOfChannels is lower
     # than the values in the following table, NI-DAQ uses the values from
     # the table:
-    # 
+    #
     # no sampling rate:      10000 samples
     # 0 - 100 samples / sec: 1 kS
     # 101 - 10000 S/s:       10 kS
@@ -1060,15 +1060,15 @@ Analog Input Tasks
 
     # when opening a tdms file in append mode and if the group name
     # already exists, a new group with a '#number' suffix will be appended
-    # to the group name. 
+    # to the group name.
     plugin.setParam("loggingGroupName", "group1")
 
-    # 'open': Always appends data to an existing TDMS file. If it does not exist 
+    # 'open': Always appends data to an existing TDMS file. If it does not exist
     #         yet, the task start operation will return with an error.
     # 'openOrCreate': Creates a new TDMS file or appends data to the existing one.
-    # 'createOrReplace' (default): Creates a new TDMS file or replaces an existing 
+    # 'createOrReplace' (default): Creates a new TDMS file or replaces an existing
     #                              one.
-    # 'create': Newly creates the TDMS file. If it already exists, a task start 
+    # 'create': Newly creates the TDMS file. If it already exists, a task start
     #           operation will return with an error.
     plugin.setParam("loggingOperation", "createOrReplace")
 
@@ -1076,20 +1076,20 @@ Analog Input Tasks
     plugin.startDevice()
 
     for i in range(0, 10):
-        
+
         t = time.time()
         print(f"Fast, direct logging run {i+1}/10...", end="")
         # start the continuous task again
         plugin.acquire()
-        
+
         # wait for 1 seconds (data are acquired and stored into the file)
         time.sleep(1)
-        
+
         # stop the task
         plugin.stop()
         print(" done in %.3f s" % (time.time() - t))
-        
-        
+
+
 
     # Step 2: choose another logging type. Usually it is recommended to
     # stop the device before chaning the logging modes. However,
@@ -1112,15 +1112,15 @@ Analog Input Tasks
 
     for i in range(0, 10):
         # wait a little bit
-        
+
         time.sleep(0.5)
-        
+
         # receive data that is automatically stored in the file, too
         # getVal has to be called faster than the internal buffer of
         # the device will exceed.
         plugin.getVal(dataObject())
-        
-        
+
+
     # stop the task
     plugin.stop()
 
@@ -1138,7 +1138,7 @@ Analog Output Tasks
 **demo_ao_finite.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite analog output task.
@@ -1220,17 +1220,17 @@ Analog Output Tasks
 
     for i in range(0, 2):
         plugin.setVal(a)
-        
+
         t = time.time()
         print(f"run {i+1}/2 ", end='')
-        
+
         # check if already finished...
         while(plugin.getParam("taskStarted") > 0):
             print(".", end='')
             time.sleep(0.2)
-        
+
         print("done in %.2f s" % (time.time() - t))
-        
+
         # a finite task with more than one sample per channel
         # is automatically stopped at the end. It is not
         # necessary to call stop() again.
@@ -1241,7 +1241,7 @@ Analog Output Tasks
     #    Sending 1 sample per channel is an unbuffer operation. A hardware start
     #    trigger is therefore not possible.
 
-    # the setVal command will now block until all 
+    # the setVal command will now block until all
     # 'samplesPerChannel' values have been written
     plugin.setParam("setValWaitForFinish", 1)
     plugin.setParam("startTriggerMode", "off")
@@ -1280,7 +1280,7 @@ Analog Output Tasks
 **demo_ao_continuous.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Continuous analog output task.
@@ -1299,7 +1299,7 @@ Analog Output Tasks
     and the number of rows must be equal to the number of channels. The int32
     object is internally casted to uint32 (however int32 is no valid dataObject
     data type). The datatype itself depends on the number of lines of each
-    selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines 
+    selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines
     uint16, else int32.
 
     The number of samples that is written to each channel for each setVal
@@ -1344,7 +1344,7 @@ Analog Output Tasks
     # samples, obtained by 'samplesPerChannel' * noOfChannels is lower
     # than the values in the following table, NI-DAQ uses the values from
     # the table:
-    # 
+    #
     # no sampling rate:      10000 samples
     # 0 - 100 samples / sec: 1 kS
     # 101 - 10000 S/s:       10 kS
@@ -1364,13 +1364,13 @@ Analog Output Tasks
 
     for i in range(0,3):
         plugin.setVal(a)
-        
+
         print(f"run {i+1}/3: write for 3 sec", end="")
-        
+
         for i in range(0, 3):
             print(".", end="")
             time.sleep(1)
-        
+
         print(" done")
         plugin.stop()
 
@@ -1378,7 +1378,7 @@ Analog Output Tasks
 **demo_ao_single_value.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite analog output task for single value output.
@@ -1436,15 +1436,15 @@ Analog Output Tasks
 
 
     for i in range(0, 2):
-        
+
         t = time.time()
         print(f"run {i+1}/2 ... ", end='')
-        
+
         for i in range(0, 100):
             plugin.setVal(a)
-        
+
         print("done in %.2f s" % (time.time() - t))
-        
+
         # a finite task with more than one sample per channel
         # is automatically stopped at the end. It is not
         # necessary to call stop() again.
@@ -1458,7 +1458,7 @@ Digital Input Tasks
 **demo_di_finite.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite digital input task.
@@ -1528,11 +1528,11 @@ Digital Input Tasks
     for i in range(0, 5):
         print(f"run {i+1}/5...", end="")
         t = time.time()
-        
+
         # start the finite task
         plugin.acquire()
         d = dataObject()
-        
+
         # getVal waits for the finite task to be finished and reads out the values.
         plugin.getVal(d)
         a.append(d)
@@ -1622,7 +1622,7 @@ Digital Input Tasks
         plugin.copyVal(d)
         print(time.time() - t, d.shape)
         alldata.append(d)
-        
+
     plugin.stopDevice()
 
     plot1(np.hstack(alldata))
@@ -1636,9 +1636,9 @@ Digital Input Tasks
     #    getVal/copyVal values in order to not raise a timeout / unsufficient
     #    buffer size error.
     #
-    #    The logging is enabled via the parameters 'loggingMode', 
+    #    The logging is enabled via the parameters 'loggingMode',
     #    'loggingFilePath', 'loggingGroupName' and 'loggingOperation':
-    #    
+    #
     #    loggingMode: 0 -> disable logging
     #                 1 -> enable fast mode logging
     #                      (no simultaneous read via getVal/copyVal allowed),
@@ -1683,13 +1683,13 @@ Digital Input Tasks
 **demo_di_single_value.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
-    
+
     """Finite digital input task for single value input.
 
     Demo script for acquiring exactly one digital value
-    per channel per acquire() command 
+    per channel per acquire() command
     with a National Instruments DAQ device.
 
     To test this script, the NI MAX (Measurement & Automation
@@ -1788,7 +1788,7 @@ Digital Input Tasks
         # start the finite task
         plugin.acquire()
         d = dataObject()
-        
+
         # getVal waits for the finite task to be finished and reads out the values.
         plugin.copyVal(d)
         a.append(d)
@@ -1815,7 +1815,7 @@ Digital Input Tasks
         # start the finite task
         plugin.acquire()
         d = dataObject()
-        
+
         # getVal waits for the finite task to be finished and reads out the values.
         plugin.copyVal(d)
         a.append(d)
@@ -1831,7 +1831,7 @@ Digital Output Tasks
 **demo_do_finite.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite digital output task.
@@ -1850,7 +1850,7 @@ Digital Output Tasks
     and the number of rows must be equal to the number of channels. The int32
     object is internally casted to uint32 (however int32 is no valid dataObject
     data type). The datatype itself depends on the number of lines of each
-    selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines 
+    selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines
     uint16, else int32 (usually uint8).
 
     The number of samples that are written to each channel for each setVal
@@ -1934,7 +1934,7 @@ Digital Output Tasks
 **demo_do_continuous.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Continuous digital output task.
@@ -1945,7 +1945,7 @@ Digital Output Tasks
     To test this script, the NI MAX (Measurement & Automation
     Explorer) has been used to create simulated devices.
 
-    In this test, a simulated device NI PCIe-6323 (Dev4) with 1 digital output 
+    In this test, a simulated device NI PCIe-6323 (Dev4) with 1 digital output
     port (DO) with 32 lines (buffered) and two other ports (port 1 and port 2), that
     support only unbuffered outputs.
 
@@ -1954,7 +1954,7 @@ Digital Output Tasks
     and the number of rows must be equal to the number of channels. The int32
     object is internally casted to uint32 (however int32 is no valid dataObject
     data type). The datatype itself depends on the number of lines of each
-    selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines 
+    selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines
     uint16, else int32.
 
     The number of samples that is written to each channel for each setVal
@@ -1997,7 +1997,7 @@ Digital Output Tasks
     # samples, obtained by 'samplesPerChannel' * noOfChannels is lower
     # than the values in the following table, NI-DAQ uses the values from
     # the table:
-    # 
+    #
     # no sampling rate:      10000 samples
     # 0 - 100 samples / sec: 1 kS
     # 101 - 10000 S/s:       10 kS
@@ -2018,13 +2018,13 @@ Digital Output Tasks
     for j in range(0,2):
         for i in range(0,3):
             plugin.setVal(a)
-            
+
             print(f"Run {j+1}/2, iteration {i+1}/3: write for 3 sec ", end="")
-            
+
             for i in range(0, 3):
                 print(".", end="")
                 time.sleep(1)
-            
+
             print(" done")
             plugin.stop()
 
@@ -2032,13 +2032,13 @@ Digital Output Tasks
 **demo_do_single_value.py**
 
 .. code-block:: python
-    
+
     # coding=utf8
 
     """Finite digital output task for software triggered single value output.
 
     Demo script for writing exactly one digital value
-    per channel per setVal() command 
+    per channel per setVal() command
     with a National Instruments DAQ device.
 
     To test this script, the NI MAX (Measurement & Automation
@@ -2129,7 +2129,7 @@ Digital Output Tasks
     for i in range(0, 500):
         # start the finite task
         plugin.setVal(a)
-        
+
         # single value write task is always automatically stopped
         # after setVal.
 
@@ -2155,7 +2155,7 @@ Digital Output Tasks
         plugin.setVal(a)
 
     print(" done in %.2f sec" % (time.time() - t))
-    
+
 Known Issues
 ============
 

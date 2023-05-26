@@ -12,7 +12,7 @@
 	* :Fixed warnings
 
 2007-07-27 Mariusz Woloszyn
-	* ptp.h: added PTP_DPC_CANON_ViewfinderOutput as requested by 
+	* ptp.h: added PTP_DPC_CANON_ViewfinderOutput as requested by
 	Eric P Caillibot
 
 2006-06-06 Mariusz Woloszyn
@@ -95,7 +95,7 @@
 	* configure.in: changed version number, improved libusb checking
 2005-07-02 Mariusz Woloszyn
 	* src/ptpcam.c, src/ptp.c: fixed a bug that caused files over 2MB to
-	  be corrupted while downloading. 
+	  be corrupted while downloading.
 2005-07-02 libptp2-1.0.3 started
 2005-05-06 Mariusz Woloszyn
 	* ptpcam.c: added NIKON capture workaround
@@ -125,7 +125,7 @@
 	* README: minor changes, updated the copyright notice;
 	* configure.in: changed the version to 1.0.1 and updated the library
 			version;
-	* ptp.c: - LICENSE CHANGED TO GPL, 
+	* ptp.c: - LICENSE CHANGED TO GPL,
 		 - changed behavior of ptp_usb_getdata(), if *data is not
 		   NULL no memory allocation is performed,
 		 - ptp_perror(), ptp_get_operation_name,
@@ -152,7 +152,7 @@
 	* config.h.in: updated for new autoconf
 	* configure.in: changed version numbr to 1.0pre7
 2003-12-17 Mariusz Woloszyn
-	* ptp.c, ptp.h: fixed ptp_getdevicepropvalue(), thanks to: 
+	* ptp.c, ptp.h: fixed ptp_getdevicepropvalue(), thanks to:
 	  Nikolai Kopanygin
 2003-07-18 Mariusz Woloszyn
 	* ptp.h: changed #include <libptp-endian.h> to
@@ -166,7 +166,7 @@
 	  --without-*), so I changed --without-ptpcam to --disable-ptpcam!
 	* README: updated readme to mention --disable-ptpcam
 2003-06-09 Mariusz Woloszyn
-	* Makefile.am: added DISTCLEANFILES to distclean _stdint.h 
+	* Makefile.am: added DISTCLEANFILES to distclean _stdint.h
 	  & libptp-endian.h; defined libptp2 includes dir and files
 	* configure.in: reorganized library versioning system
 2003-05-28 Mariusz Woloszyn
@@ -210,7 +210,7 @@
 	* test_ptp.c: reorganized reporting errors; added property setting
 	  support!
 2003-05-12 Mariusz Woloszyn
-	* ptp.c: fflush(stderr) on error and debug; 
+	* ptp.c: fflush(stderr) on error and debug;
 	  added datatype argument for ptp_getdevicepropvalue();
 	  added ptp_setdevicepropvalue();
 	* ptp-pack.c: added ptp_unpack_DPV() and ptp_pack_DPV();
@@ -221,7 +221,7 @@
 	* Makefile.am: changed ptp_test to ptpcam
 	* test_ptp.c: reorganized debug/error output, added more verbose
 	  levels; fixed extension properties debug (only EK supported as for
-	  now); added property supported values output; 
+	  now); added property supported values output;
 2003-05-09 Mariusz Woloszyn
 	* test_ptp.c: added the device reset option (uses class specific
 	  reset)
@@ -259,7 +259,7 @@
 	* ChangeLog: reformated this file ;)
 
 2003-04-12 Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* ptp.c, library.c: Check return codes for property get during
 	  --config.
 
@@ -360,7 +360,7 @@
 	* ptp.c: updated ptp_getobjecthandles() to be protocol compliant
 	* ptp.c: rewrited ptp_transaction and ptp_sendreq code to send no
 	  more bytes than expected by device (fix for HP cameras)
-	
+
 2002-03-04 Mariusz Woloszyn
 	* library.c: some vendor/product IDs added
 	* library.c: changed initial transaction_id
@@ -385,7 +385,7 @@
 	* library.c: Remove references to gp_camera_set_error.
 
 2002-01-11 Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* Makefile.am: Moved ptp-pack.c from SOURCES to EXTRA_DIST, since
 	  it cannot be compiled stand alone.
 

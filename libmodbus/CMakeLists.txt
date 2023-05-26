@@ -41,7 +41,7 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
     ${OpenCV_DIR}/include       #include directory of OpenCV
-    ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+    ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR}/libmodbus-3.1.2/src
     #add further include directories here
 )

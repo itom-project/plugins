@@ -9,14 +9,14 @@
 **Platforms**:  Windows, Linux
 **Author**:     :pluginauthor:`DataObjectIO`
 =============== ========================================================================================================
-  
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: DataObjectIO
 
-These algorithms are defined in the plugin: 
+These algorithms are defined in the plugin:
 
 .. pluginfilterlist::
     :plugin: DataObjectIO
@@ -40,7 +40,6 @@ Details
 ==============
 
 Detailed overview about all defined algorithms:
-    
+
 .. pluginfilterlist::
     :plugin: DataObjectIO
-

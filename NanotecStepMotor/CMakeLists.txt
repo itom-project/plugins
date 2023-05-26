@@ -54,7 +54,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNanotecStepMotor.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogNanotecStepMotor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNanotecStepMotor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/NanotecStepMotor.cpp

@@ -31,7 +31,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 class PmdPico;
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MyGrabberInterface 
+  *\class    MyGrabberInterface
   *
   *\brief    Interface-Class for MyGrabber-Class
   *
@@ -73,7 +73,7 @@ private:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class ExposureListener : public QObject , public royale::IExposureListener2 
+class ExposureListener : public QObject , public royale::IExposureListener2
 {
 Q_OBJECT
 public:
@@ -93,7 +93,7 @@ private:
   *\class    MyGrabber
 
   */
-class PmdPico : public ito::AddInGrabber 
+class PmdPico : public ito::AddInGrabber
 {
     Q_OBJECT
 
@@ -102,10 +102,10 @@ class PmdPico : public ito::AddInGrabber
         ~PmdPico();
         //! Constructor
         PmdPico();
-        
+
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
-        
+
     public:
 
         friend class PmdPicoInterface;
@@ -148,9 +148,9 @@ class PmdPico : public ito::AddInGrabber
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
         royale::ICameraDevice* m_cameraDevice;
-        
+
         ExposureListener m_exposureListener;
-        
+
         DataListener m_dataListener;
 
         ito::DataObject m_dataGray; //buffer for gray image
@@ -182,9 +182,9 @@ class PmdPico : public ito::AddInGrabber
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> >paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, 
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> >paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt,
             QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
-        
+
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

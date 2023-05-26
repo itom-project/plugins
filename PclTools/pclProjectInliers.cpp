@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -282,8 +282,8 @@ SACMODEL_STICK = 17 \n\
     #if (USEOMP)
     #pragma omp parallel num_threads(nthreads)
     {
-    #endif  
-    
+    #endif
+
     Eigen::Vector4f curPt;
     curPt[3] = 0.0f;
 
@@ -307,7 +307,7 @@ SACMODEL_STICK = 17 \n\
             proj.filter(*pclDists);
         }
         break;
-        
+
         case ito::pclXYZNormal:
         {
             pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
@@ -321,7 +321,7 @@ SACMODEL_STICK = 17 \n\
             proj.filter(*pclDists);
         }
         break;
-        
+
         case ito::pclXYZI:
         {
             pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pclIn->toPointXYZI();
@@ -335,7 +335,7 @@ SACMODEL_STICK = 17 \n\
             proj.filter(*pclDists);
         }
         break;
-        
+
         case ito::pclXYZRGBA:
         {
             pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclSrc = pclIn->toPointXYZRGBA();
@@ -349,7 +349,7 @@ SACMODEL_STICK = 17 \n\
             proj.filter(*pclDists);
         }
         break;
-        
+
         case ito::pclXYZINormal:
         {
             pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
@@ -363,12 +363,12 @@ SACMODEL_STICK = 17 \n\
             proj.filter(*pclDists);
         }
         break;
-        
+
         case ito::pclXYZRGBNormal:
         {
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
-                
+
             // Create the filtering object
             pcl::ProjectInliers<pcl::PointXYZRGBNormal> proj;
             proj.setModelType(modelType);
@@ -390,5 +390,5 @@ SACMODEL_STICK = 17 \n\
     }
 
     return retval;
-#endif  
+#endif
 }

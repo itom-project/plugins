@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public Licence as published by
     the Free Software Foundation; either version 3 of the Licence, or (at
@@ -70,8 +70,8 @@ This plugin does not have any unusual dependencies.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("GPL 3.0");
-    m_aboutThis = QObject::tr(GITVERSION);       
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     NTHREADS  = QThread::idealThreadCount();
 
     return;
@@ -127,7 +127,7 @@ ito::RetVal BasicGPLFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
 \date 04.2014
 */
 BasicGPLFilters::BasicGPLFilters() : AddInAlgo()
-{   
+{
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ BasicGPLFilters::BasicGPLFilters() : AddInAlgo()
 \author ITO
 \date 04.2014
 */
-BasicGPLFilters::~BasicGPLFilters() 
+BasicGPLFilters::~BasicGPLFilters()
 {
     FilterDef *filter;
     foreach(filter, m_filterList)
@@ -222,7 +222,7 @@ ito::RetVal BasicGPLFilters::despeckleAdaptedParams(QVector<ito::Param> *paramsM
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!\detail The filter block realizing the despeckle-Algorithm 
+/*!\detail The filter block realizing the despeckle-Algorithm
    \param[in]       filterSettings  The filter settings of type DespeckleSettings
    \param[in]       cvMatIn         The input matrix which shall not be equal to the output matrix
    \param[out]      cvMatOut        The filtered output matrix of same type than input matrix
@@ -330,7 +330,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     bool createdNewObject = false;
 
     // Check wether source object is of right type and size abd a 2D plane object and return error if not
-    retval += ito::dObjHelper::verify2DDataObject(dObjIn, "dObjIn", 1, std::numeric_limits<ito::uint16>::max(), 1, std::numeric_limits<ito::uint16>::max(), 
+    retval += ito::dObjHelper::verify2DDataObject(dObjIn, "dObjIn", 1, std::numeric_limits<ito::uint16>::max(), 1, std::numeric_limits<ito::uint16>::max(),
                                                                     3, ito::tUInt8, ito::tUInt16, ito::tRGBA32);
     if (retval.containsError())
     {
@@ -372,7 +372,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     {
         return ito::RetVal(ito::retError, 0, tr("Error: minValue must be smaller than maxValue").toLatin1().data());
     }
-    
+
     DespeckleSettings filterSettings;
     memset(&filterSettings, 0, sizeof(DespeckleSettings));
 
@@ -386,7 +386,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     const cv::Mat *cvMatIn  = (cv::Mat *)(dObjIn->get_mdata()[dObjIn->seekMat(0)]);
     cv::Mat *cvMatObj = (cv::Mat *)(dObjOut.get_mdata()[dObjOut.seekMat(0)]);
 
-    // The filter block is templated for 8bit, 16bit and colored objects. 
+    // The filter block is templated for 8bit, 16bit and colored objects.
     switch(dObjIn->getType())
     {
         case ito::tUInt8:

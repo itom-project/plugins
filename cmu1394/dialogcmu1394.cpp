@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -21,9 +21,9 @@
 *********************************************************************** */
 
 #include "dialogCMU1394.h"
-dialogCMU1394::dialogCMU1394() 
-{ 
-    ui.setupUi(this); 
+dialogCMU1394::dialogCMU1394()
+{
+    ui.setupUi(this);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
@@ -42,7 +42,7 @@ int dialogCMU1394::setVals(QMap<QString, ito::Param> *paramVals)
     double dgain = 0.0;
     int inttemp =0;
     double dtemp = 0.0;
-    
+
     if(paramVals->keys().contains("name"))
     {
         setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -51,54 +51,54 @@ int dialogCMU1394::setVals(QMap<QString, ito::Param> *paramVals)
 
     if(paramVals->keys().contains("x0"))
     {
-        inttemp = ((*paramVals)["x0"]).getVal<int>();    
+        inttemp = ((*paramVals)["x0"]).getVal<int>();
         ui.spinBox_x0->setValue(inttemp);
-        inttemp = (int)((*paramVals)["x0"]).getMax(); 
+        inttemp = (int)((*paramVals)["x0"]).getMax();
         ui.spinBox_x0->setMaximum(inttemp);
-        inttemp = (int)((*paramVals)["x0"]).getMin(); 
+        inttemp = (int)((*paramVals)["x0"]).getMin();
         ui.spinBox_x0->setMinimum(inttemp);
     }
-    
+
     if(paramVals->keys().contains("sizex"))
     {
-        inttemp = ((*paramVals)["sizex"]).getVal<int>();    
+        inttemp = ((*paramVals)["sizex"]).getVal<int>();
         ui.spinBox_xsize->setValue(inttemp);
-        inttemp = (int)((*paramVals)["sizex"]).getMax(); 
+        inttemp = (int)((*paramVals)["sizex"]).getMax();
         ui.spinBox_xsize->setMaximum(inttemp);
-        inttemp = (int)((*paramVals)["sizex"]).getMin(); 
+        inttemp = (int)((*paramVals)["sizex"]).getMin();
         ui.spinBox_xsize->setMinimum(inttemp);
     }
 
     if(paramVals->keys().contains("y0"))
     {
-        inttemp = ((*paramVals)["y0"]).getVal<int>();    
+        inttemp = ((*paramVals)["y0"]).getVal<int>();
         ui.spinBox_y0->setValue(inttemp);
-        inttemp = (int)((*paramVals)["y0"]).getMax(); 
+        inttemp = (int)((*paramVals)["y0"]).getMax();
         ui.spinBox_y0->setMaximum(inttemp);
-        inttemp = (int)((*paramVals)["y0"]).getMin(); 
+        inttemp = (int)((*paramVals)["y0"]).getMin();
         ui.spinBox_y0->setMinimum(inttemp);
     }
 
     if(paramVals->keys().contains("sizey"))
     {
-        inttemp = ((*paramVals)["sizey"]).getVal<int>();    
+        inttemp = ((*paramVals)["sizey"]).getVal<int>();
         ui.spinBox_ysize->setValue(inttemp);
-        inttemp = (int)((*paramVals)["sizey"]).getMax(); 
+        inttemp = (int)((*paramVals)["sizey"]).getMax();
         ui.spinBox_ysize->setMaximum(inttemp);
-        inttemp = (int)((*paramVals)["sizey"]).getMin(); 
+        inttemp = (int)((*paramVals)["sizey"]).getMin();
         ui.spinBox_ysize->setMinimum(inttemp);
     }
 
     if(paramVals->keys().contains("offset"))
     {
         dtemp = ((*paramVals)["offset"]).getVal<double>();
-        ui.doubleSpinBox_offset->setValue(dtemp);   
+        ui.doubleSpinBox_offset->setValue(dtemp);
     }
 
     if(paramVals->keys().contains("gain"))
     {
         dgain = ((*paramVals)["gain"]).getVal<double>();
-        ui.doubleSpinBox_gain->setValue(dgain); 
+        ui.doubleSpinBox_gain->setValue(dgain);
     }
     return 0;
 }
@@ -174,7 +174,7 @@ void dialogCMU1394::on_pushButton_setSizeXMax_clicked()
 
     inttemp = ui.spinBox_x0->minimum();
     ui.spinBox_x0->setValue(inttemp);
-    
+
     inttemp = ui.spinBox_xsize->maximum();
     ui.spinBox_xsize->setValue(inttemp);
 }
@@ -193,7 +193,7 @@ void dialogCMU1394::on_pushButton_setSizeYMax_clicked()
 
     inttemp = ui.spinBox_ysize->maximum();
     ui.spinBox_ysize->setValue(inttemp);
-    
+
     inttemp = ui.spinBox_y0->minimum();
     ui.spinBox_y0->setValue(inttemp);
 }

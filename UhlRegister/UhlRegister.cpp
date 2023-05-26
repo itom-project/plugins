@@ -136,7 +136,7 @@ UhlRegisterInterface::~UhlRegisterInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-//! 
+//!
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
     creates new instance of dialogPIPiezoCtrl, calls the method setVals of dialogPIPiezoCtrl, starts the execution loop and if the dialog
@@ -153,7 +153,7 @@ const ito::RetVal UhlRegister::showConfDialog(void)
     //connect(confDialog, SIGNAL(sendParamVector(const QVector< QSharedPointer<ito::tParam> >,ItomSharedSemaphore*)), this, SLOT(setParamVector(const QVector<QSharedPointer<ito::tParam> >,ItomSharedSemaphore*)));
 
     QMetaObject::invokeMethod(this, "sendParameterRequest"); //requests plugin to send recent parameter map to dialog
-    
+
     confDialog->exec();
     delete confDialog;
     confDialog = NULL;
@@ -172,17 +172,17 @@ const ito::RetVal UhlRegister::AnalyseAnswer(char *bufData)
 //        switch (ErrCode.toInt())
         switch (atoi(&bufData[4]))
         {
-            case 1:  
+            case 1:
             {
                 ErrMsg += tr("Wrong command!");
                 break;
             }
-            case 2: 
+            case 2:
             {
                 ErrMsg += tr("Wrong register to read!");
                 break;
             }
-            case 3: 
+            case 3:
             {
                 ErrMsg += tr("Wrong data!");
                 break;
@@ -224,9 +224,9 @@ const ito::RetVal UhlRegister::UhlAxisSync()
     ito::RetVal ret = ito::retOk;
     int axis = 0;
     long pos = 0;
-    
-    // for (axis = 0; axis < m_numAxis; axis++) 
-    for (axis = 0; axis < 3; axis++) 
+
+    // for (axis = 0; axis < m_numAxis; axis++)
+    for (axis = 0; axis < 3; axis++)
     {
         ret += UhlReadRegL(XABSPOS + READ + axis, &pos);
         if (ret.containsError())
@@ -239,7 +239,7 @@ const ito::RetVal UhlRegister::UhlAxisSync()
             return ret;
         }
     }
-    
+
     return ret;
 }
 
@@ -256,7 +256,7 @@ const ito::RetVal UhlRegister::DummyRead()
     *bufsize = 49;
     bufData[*bufsize] = 0;
     m_pSer->getVal(buf, bufsize);
-    
+
     if (*bufsize > 0)
     {
         bufData[*bufsize] = 0;
@@ -297,7 +297,7 @@ const ito::RetVal UhlRegister::UhlReadString(char *buf, const int bufsize)
         Sleep(2);
     }
     while ((totlen > 0) && (buf[totlen - 1] != endline[0]) && (totlen < bufsize));
-    
+
     if (totlen > 0)
     {
         buf[totlen - 1] = 0;
@@ -322,7 +322,7 @@ const ito::RetVal UhlRegister::UhlReadRegL(unsigned char reg, long *plval)
         return ret;
     }
 
-    Sleep(3*UHLDELAY);  
+    Sleep(3*UHLDELAY);
     ret = UhlReadString(buf, sizeof(buf));
 
     if (ret == ito::retError)
@@ -335,7 +335,7 @@ const ito::RetVal UhlRegister::UhlReadRegL(unsigned char reg, long *plval)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal UhlRegister::UhlWriteReg(unsigned char reg) 
+const ito::RetVal UhlRegister::UhlWriteReg(unsigned char reg)
 {
     char buf[2];
 
@@ -391,7 +391,7 @@ const ito::RetVal UhlRegister::UhlJoystickOn()
         ret += UhlWriteRegB(COMMAND, JOYON);
         Sleep(UHLDELAY);
         ret += DummyRead();
-        ret += UhlWriteReg(START);    
+        ret += UhlWriteReg(START);
         Sleep(UHLDELAY);
         ret += DummyRead();
     }
@@ -464,12 +464,12 @@ ito::RetVal UhlRegister::waitForDone(const int timeoutMS, const QVector<int> axi
         memset(buf, 0, 50);
         retVal += UhlReadString(buf, 6);
         if (strlen(buf) != 0)
-        {        
+        {
             bufcnt = (unsigned long)strlen(buf);
             if (bufcnt == 5) // Okay, five charakters + 0
             {
                 for (axiscnt = 0; axiscnt < _axis.size(); axiscnt++)
-                {            
+                {
                     // Check if axis has moved and is where it should be (@)
                     if (buf[axiscnt] == 0x40 /*@-character*/)
                     {
@@ -509,14 +509,14 @@ ito::RetVal UhlRegister::waitForDone(const int timeoutMS, const QVector<int> axi
                 return retVal;
             }
         }
-        
+
         sendStatusUpdate(true);
 
         if (!done && isInterrupted())
         {
             buf[0] = 'a';
             retVal += m_pSer->setVal(buf, 1);
-            Sleep(UHLDELAY);     
+            Sleep(UHLDELAY);
             retVal += DummyRead();
 
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
@@ -614,7 +614,7 @@ const ito::RetVal UhlRegister::UhlCheckAxisNumber(QVector<int> axis)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-UhlRegister::UhlRegister() : AddInActuator(), m_spitchx(0), m_resolution(0), m_pSer(NULL), m_numAxis(0), 
+UhlRegister::UhlRegister() : AddInActuator(), m_spitchx(0), m_resolution(0), m_pSer(NULL), m_numAxis(0),
     m_scale(0), m_stepperspeed(50), m_accel(50), m_async(0), m_posrequestlisteners(0)
 {
 //    qRegisterMetaType< QMap<QString,ito::tParam> >("QMap<QString,ito::tParam>");
@@ -695,7 +695,7 @@ ito::RetVal UhlRegister::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -731,7 +731,7 @@ ito::RetVal UhlRegister::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
         if (paramIt != m_params.end())
         {
-            
+
             if (paramIt->getFlags() & ito::ParamBase::Readonly)
             {
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
@@ -750,7 +750,7 @@ ito::RetVal UhlRegister::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
-                else 
+                else
                 {
                     paramIt.value().setVal<double>(curval);
                 }
@@ -765,7 +765,7 @@ ito::RetVal UhlRegister::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 goto end;
             }
 
-            if (key == "speed") 
+            if (key == "speed")
             {
                 retValue += UhlJoystickOff();
                 // Value in [mm/s] * mscale = Steps / s -> Steps / s * SPITCH = Turns /s and *10 due to fucking uhl-manuel
@@ -787,7 +787,7 @@ ito::RetVal UhlRegister::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             {
                 m_async = m_params["async"].getVal<int>();
             }
-            else if (key == "accel") 
+            else if (key == "accel")
             {
                 retValue += UhlJoystickOff();
                 m_accel = m_params["accel"].getVal<int>();
@@ -830,7 +830,7 @@ ito::RetVal UhlRegister::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     }
 
 end:
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -842,7 +842,7 @@ end:
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UhlRegister::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
-{   
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     char buf[20];
@@ -889,13 +889,13 @@ ito::RetVal UhlRegister::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         if (retval.containsError() || paramSerial->getVal<int>() < 1)
         {
             retval.appendRetMessage(tr(" during port number read out").toLatin1().data());
-            m_identifier = QString("Failed(%1)").arg(getID()); 
+            m_identifier = QString("Failed(%1)").arg(getID());
             return retval;
         }
         else
         {
             m_params["comPort"].setVal<int>(paramSerial->getVal<int>());
-            m_identifier = QString("Uhl@Com%1").arg(m_params["comPort"].getVal<int>()); 
+            m_identifier = QString("Uhl@Com%1").arg(m_params["comPort"].getVal<int>());
         }
     }
 
@@ -1051,7 +1051,7 @@ ito::RetVal UhlRegister::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_numAxis = 2;
         m_spitchx = 13;
         m_resolution = 15;
-        //m_params.find("speed").value().setMax((double)(120.0));    
+        //m_params.find("speed").value().setMax((double)(120.0));
         static_cast<ito::DoubleMeta*>(m_params["speed"].getMeta())->setMax(120.0);
     }
     else
@@ -1137,7 +1137,7 @@ ito::RetVal UhlRegister::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         stepperspeed_mm = 0.01;
     }
-    else 
+    else
     {
         stepperspeed_mm = m_stepperspeed;
     }
@@ -1256,7 +1256,7 @@ ito::RetVal UhlRegister::calib(const int axis, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);        
+    ItomSharedSemaphoreLocker locker(waitCond);
 
     long positions[4];
     int axis_cnt = 0;
@@ -1264,7 +1264,7 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
     long mask_revcalib = 0;
     long mask_old = 0;
     ito::RetVal retval = ito::retOk;
-    
+
 //    emit PositioningStatusChanged(1);
 
     if (isMotorMoving())
@@ -1280,28 +1280,28 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
     else
     {
         retval += UhlCheckAxisNumber(axis);
-     
+
         if (retval != ito::retError)
         {
             retval += UhlJoystickOff();
         }
-    
+
         if (retval != ito::retError)
         {
             // Workaround for Bug in der F9S-3-O: At Reset of one axis
             // some Controller forget the positions of the other axis
 
-            for (axis_cnt = 0; axis_cnt < m_numAxis; axis_cnt++) 
+            for (axis_cnt = 0; axis_cnt < m_numAxis; axis_cnt++)
             {
                 retval += UhlReadRegL(XABSPOS + axis_cnt + READ, &positions[axis_cnt]);
             }
-        
+
             if (retval != ito::retError)
             {
                 // Get axis mask
-                (void)UhlReadRegL(75, &mask_old);    
-        
-                // Masked all axis expect the active one (bit-mask) 
+                (void)UhlReadRegL(75, &mask_old);
+
+                // Masked all axis expect the active one (bit-mask)
                 for (axis_cnt = 0; axis_cnt < axis.size(); axis_cnt++)
                 {
                     mask_calib += (m_inverse[axis.value(axis_cnt)]>0?1:0)<< axis.value(axis_cnt);
@@ -1318,7 +1318,7 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
                         retval += UhlWriteRegB(COMMAND, CALIBRATE);
         //                GOEND
                     }
-        
+
                     retval  += DummyRead();
                     if (retval != ito::retError)
                     {
@@ -1351,7 +1351,7 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
                         retval += UhlWriteRegB(COMMAND, GOEND);
         //                GOEND
                     }
-        
+
                     retval  += DummyRead();
                     if (retval != ito::retError)
                     {
@@ -1375,12 +1375,12 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
                     }
                 }
                 // Write back absolut positions of other axis
-                for (axis_cnt = 0; axis_cnt < m_numAxis; axis_cnt++) 
+                for (axis_cnt = 0; axis_cnt < m_numAxis; axis_cnt++)
                 {
                     (void)UhlWriteRegL(XABSPOS + axis_cnt, positions[axis_cnt]);
                 }
 
-                // Set absolutposition und target register of calibrated axis to zero 
+                // Set absolutposition und target register of calibrated axis to zero
                 Sleep(UHLDELAY);
                 for (axis_cnt = 0; axis_cnt < m_numAxis; axis_cnt++)
                 {
@@ -1395,7 +1395,7 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
         }
 
         (void)UhlJoystickOn();
-    
+
         if (waitCond)
         {
             waitCond->returnValue = retval;
@@ -1412,10 +1412,10 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
             }
 
             retval += getPos(axis, sharedpos, 0);
-//            emit SentPositionChanged(axis, *sharedpos);    
+//            emit SentPositionChanged(axis, *sharedpos);
         }
     }
-    sendStatusUpdate(false);    
+    sendStatusUpdate(false);
 //    emit PositioningStatusChanged(0);
     return retval;
 }
@@ -1450,7 +1450,7 @@ ito::RetVal UhlRegister::setOrigin(const int axis, ItomSharedSemaphore *waitCond
         }
     }
     retval += UhlJoystickOn();
-    sendStatusUpdate(false);    
+    sendStatusUpdate(false);
 
     if (waitCond)
     {
@@ -1541,7 +1541,7 @@ ito::RetVal UhlRegister::getPos(const QVector<int> axis, QSharedPointer<QVector<
     QSharedPointer<double> dpos(new double);
     *dpos = 0.0;
     int axis_cnt = 0;
-    
+
     for (axis_cnt = 0; axis_cnt < axis.size(); axis_cnt++)
     {
         retval += getPos(axis.value(axis_cnt), dpos, 0);
@@ -1667,7 +1667,7 @@ const ito::RetVal UhlRegister::UhlSetPos(QVector<int> axis, QVector<double> pos,
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UhlRegister::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1682,7 +1682,7 @@ ito::RetVal UhlRegister::setPosAbs(const int axis, const double pos, ItomSharedS
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UhlRegister::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1698,7 +1698,7 @@ ito::RetVal UhlRegister::setPosAbs(const QVector<int> axis, QVector<double> pos,
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UhlRegister::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1713,14 +1713,14 @@ ito::RetVal UhlRegister::setPosRel(const int axis, const double pos, ItomSharedS
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------        
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UhlRegister::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
     retval = UhlSetPos(axis, pos, GORELINTCLK, waitCond);
-    
+
 /*    if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -1729,7 +1729,7 @@ ito::RetVal UhlRegister::setPosRel(const QVector<int> axis, QVector<double> pos,
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UhlRegister::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
@@ -1738,7 +1738,7 @@ ito::RetVal UhlRegister::requestStatusAndPosition(bool sendCurrentPos, bool send
     QSharedPointer<QVector<double> > sharedpos = QSharedPointer<QVector<double> >(new QVector<double>);
 
     for (i = 0; i < m_numAxis; i++)
-    {    
+    {
         axis << i;
         *sharedpos << 0;
     }

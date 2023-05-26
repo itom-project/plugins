@@ -827,8 +827,8 @@ Image-export functions converts dataObjects to image data and saves them as comm
 * uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image format allows color are saved according to the defined color palette.
 * float32 or float64 are saved as gray-values (8bit or if suppored as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.
   Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as transparent values (alpha=zero) else as black values.
-* rgba32 can be saved as &apos;rgb&apos; (full opacity), &apos;rgba&apos; (alpha channel is considered, not supported by all formats) or gray formats, where the color image is transformed to gray. 
-  if a format from a color palette is indicated, the color image is transformed to gray first and then interpreted using the indicated color palette. 
+* rgba32 can be saved as &apos;rgb&apos; (full opacity), &apos;rgba&apos; (alpha channel is considered, not supported by all formats) or gray formats, where the color image is transformed to gray.
+  if a format from a color palette is indicated, the color image is transformed to gray first and then interpreted using the indicated color palette.
 
 Basic export-filter definition: source object, filename, palette, ...
 Basic import-filter definition: destination object, filename, channel-specification, ...
@@ -848,7 +848,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
     </message>
     <message>
         <location line="+658"/>
-        <source>loads a 2D data object from image formats via QImage (*.gif *.xbm *.xpm). 
+        <source>loads a 2D data object from image formats via QImage (*.gif *.xbm *.xpm).
 This filter is deprecated and can also be directly used via the filter &apos;loadAnyImage&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -864,288 +864,288 @@ This filter is deprecated and can also be directly used via the filter &apos;loa
     </message>
     <message>
         <location line="+838"/>
-        <source>Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported). 
+        <source>Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
-  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
-  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
-  as uint8 or uint16 data type. 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled
+  as uint8 or uint16 data type.
 
-The following base color palettes exist (further, user-defined palettes can be used, too): 
+The following base color palettes exist (further, user-defined palettes can be used, too):
 
-* gray: [0,255] gray-values, 8bit 
-* gray16: [0,65535] gray-values, 16bit 
-* rgba: color with transparency, 8bit (rgba32 input only) 
-* rgb: color without transparency, 8bit (rgba32 input only) 
-* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
-* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
-* hotIron: [0,255], hot iron map, 8bit 
-* red: [0,255], from black to red, 8bit 
-* green: [0,255], from black to green, 8bit 
-* blue: [0,255], from black to blue, 8bit 
+* gray: [0,255] gray-values, 8bit
+* gray16: [0,65535] gray-values, 16bit
+* rgba: color with transparency, 8bit (rgba32 input only)
+* rgb: color without transparency, 8bit (rgba32 input only)
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit
+* hotIron: [0,255], hot iron map, 8bit
+* red: [0,255], from black to red, 8bit
+* green: [0,255], from black to green, 8bit
+* blue: [0,255], from black to blue, 8bit
 
 This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+74"/>
-        <source>Saves a real, 2D dataObject as jpg-file or jp2-file (only jp2 supports 16bit but is not much known). 
+        <source>Saves a real, 2D dataObject as jpg-file or jp2-file (only jp2 supports 16bit but is not much known).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] and saved using the given color palette 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
-  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
-  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
-  as uint8 or uint16 data type. 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] and saved using the given color palette
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled
+  as uint8 or uint16 data type.
 
-The following base color palettes exist (further, user-defined palettes can be used, too): 
+The following base color palettes exist (further, user-defined palettes can be used, too):
 
-* gray: [0,255] gray-values, 8bit 
-* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
-* rgb: color without transparency, 8bit (rgba32 input only) 
-* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
-* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
-* hotIron: [0,255], hot iron map, 8bit 
-* red: [0,255], from black to red, 8bit 
-* green: [0,255], from black to green, 8bit 
-* blue: [0,255], from black to blue, 8bit 
+* gray: [0,255] gray-values, 8bit
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only)
+* rgb: color without transparency, 8bit (rgba32 input only)
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit
+* hotIron: [0,255], hot iron map, 8bit
+* red: [0,255], from black to red, 8bit
+* green: [0,255], from black to green, 8bit
+* blue: [0,255], from black to blue, 8bit
 
 This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+75"/>
-        <source>Saves a real, 2D dataObject as png-file (portable network graphic). 
+        <source>Saves a real, 2D dataObject as png-file (portable network graphic).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
-  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
-  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
-  as uint8 or uint16 data type. 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled
+  as uint8 or uint16 data type.
 
-The following base color palettes exist (further, user-defined palettes can be used, too): 
+The following base color palettes exist (further, user-defined palettes can be used, too):
 
-* gray: [0,255] gray-values, 8bit 
-* gray16: [0,65535] gray-values, 16bit 
-* rgba: color with transparency, 8bit (rgba32 input only) 
-* rgb: color without transparency, 8bit (rgba32 input only) 
-* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
-* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
-* hotIron: [0,255], hot iron map, 8bit 
-* red: [0,255], from black to red, 8bit 
-* green: [0,255], from black to green, 8bit 
-* blue: [0,255], from black to blue, 8bit 
+* gray: [0,255] gray-values, 8bit
+* gray16: [0,65535] gray-values, 16bit
+* rgba: color with transparency, 8bit (rgba32 input only)
+* rgb: color without transparency, 8bit (rgba32 input only)
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit
+* hotIron: [0,255], hot iron map, 8bit
+* red: [0,255], from black to red, 8bit
+* green: [0,255], from black to green, 8bit
+* blue: [0,255], from black to blue, 8bit
 
 This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+78"/>
-        <source>Saves a real, 2D dataObject as xpm-file (X PixMap) or xbm (X BitMap, black-white only). 
+        <source>Saves a real, 2D dataObject as xpm-file (X PixMap) or xbm (X BitMap, black-white only).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
-  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
-  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
-  as uint8 or uint16 data type. 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled
+  as uint8 or uint16 data type.
 
-The following base color palettes exist (further, user-defined palettes can be used, too): 
+The following base color palettes exist (further, user-defined palettes can be used, too):
 
-* gray: [0,255] gray-values, 8bit 
-* rgba: color with transparency, 8bit (rgba32 input only) 
-* rgb: color without transparency, 8bit (rgba32 input only) 
-* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
-* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
-* hotIron: [0,255], hot iron map, 8bit 
-* red: [0,255], from black to red, 8bit 
-* green: [0,255], from black to green, 8bit 
-* blue: [0,255], from black to blue, 8bit 
+* gray: [0,255] gray-values, 8bit
+* rgba: color with transparency, 8bit (rgba32 input only)
+* rgb: color without transparency, 8bit (rgba32 input only)
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit
+* hotIron: [0,255], hot iron map, 8bit
+* red: [0,255], from black to red, 8bit
+* green: [0,255], from black to green, 8bit
+* blue: [0,255], from black to blue, 8bit
 
 This filters uses Qt to save the image. In the format xbm, a threshold at 128 is applied to separate black and white.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+72"/>
-        <source>Saves a real, 2D dataObject as bmp-file or dip-file (bitmap, 8bit only). 
+        <source>Saves a real, 2D dataObject as bmp-file or dip-file (bitmap, 8bit only).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] and saved using the given color palette 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
-  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
-  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
-  as uint8 or uint16 data type. 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] and saved using the given color palette
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled
+  as uint8 or uint16 data type.
 
-The following base color palettes exist (further, user-defined palettes can be used, too): 
+The following base color palettes exist (further, user-defined palettes can be used, too):
 
-* gray: [0,255] gray-values, 8bit 
-* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
-* rgb: color without transparency, 8bit (rgba32 input only) 
-* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
-* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
-* hotIron: [0,255], hot iron map, 8bit 
-* red: [0,255], from black to red, 8bit 
-* green: [0,255], from black to green, 8bit 
-* blue: [0,255], from black to blue, 8bit 
+* gray: [0,255] gray-values, 8bit
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only)
+* rgb: color without transparency, 8bit (rgba32 input only)
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit
+* hotIron: [0,255], hot iron map, 8bit
+* red: [0,255], from black to red, 8bit
+* green: [0,255], from black to green, 8bit
+* blue: [0,255], from black to blue, 8bit
 
 This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+72"/>
-        <source>Saves a real, 2D dataObject as ppm-file (portable pixel map, 8bit only). 
+        <source>Saves a real, 2D dataObject as ppm-file (portable pixel map, 8bit only).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] and saved using the given color palette 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
-  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
-  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
-  as uint8 or uint16 data type. 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] and saved using the given color palette
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled
+  as uint8 or uint16 data type.
 
-The following base color palettes exist (further, user-defined palettes can be used, too): 
+The following base color palettes exist (further, user-defined palettes can be used, too):
 
-* gray: [0,255] gray-values, 8bit 
-* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
-* rgb: color without transparency, 8bit (rgba32 input only) 
-* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
-* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
-* hotIron: [0,255], hot iron map, 8bit 
-* red: [0,255], from black to red, 8bit 
-* green: [0,255], from black to green, 8bit 
-* blue: [0,255], from black to blue, 8bit 
+* gray: [0,255] gray-values, 8bit
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only)
+* rgb: color without transparency, 8bit (rgba32 input only)
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit
+* hotIron: [0,255], hot iron map, 8bit
+* red: [0,255], from black to red, 8bit
+* green: [0,255], from black to green, 8bit
+* blue: [0,255], from black to blue, 8bit
 
 This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+74"/>
-        <source>Saves a real, 2D dataObject as pgm-file or pbm-file (portable gray map or portable bit map, 16bit only for pgm-format). 
+        <source>Saves a real, 2D dataObject as pgm-file or pbm-file (portable gray map or portable bit map, 16bit only for pgm-format).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette (only gray-valued maps are allowed) 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. The object is at first transformed to gray and than handled 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette (only gray-valued maps are allowed)
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. The object is at first transformed to gray and than handled
   as uint8 or uint16 data type. Coloured images are not supported by this format.
 
-The following base color palettes are supported: 
+The following base color palettes are supported:
 
-* gray: [0,255] gray-values, 8bit 
-* gray16: [0,65535] gray-values, 16bit 
+* gray: [0,255] gray-values, 8bit
+* gray16: [0,65535] gray-values, 16bit
 
 This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+65"/>
-        <source>Saves a real, 2D dataObject as sr-file or ras-file (Sun Raster, 8bit only). 
+        <source>Saves a real, 2D dataObject as sr-file or ras-file (Sun Raster, 8bit only).
 
-The following conventions hold for saving the image: 
+The following conventions hold for saving the image:
 
-* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
-  supported 8bit range [0,255] and saved using the given color palette 
-* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
-  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
-  value. Invalid values are saved as transparent values (alpha = 0). 
-* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
-  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
-  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
-  as uint8 or uint16 data type. 
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the
+  supported 8bit range [0,255] and saved using the given color palette
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255]
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary
+  value. Invalid values are saved as transparent values (alpha = 0).
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled
+  as uint8 or uint16 data type.
 
-The following base color palettes exist (further, user-defined palettes can be used, too): 
+The following base color palettes exist (further, user-defined palettes can be used, too):
 
-* gray: [0,255] gray-values, 8bit 
-* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
-* rgb: color without transparency, 8bit (rgba32 input only) 
-* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
-* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
-* hotIron: [0,255], hot iron map, 8bit 
-* red: [0,255], from black to red, 8bit 
-* green: [0,255], from black to green, 8bit 
-* blue: [0,255], from black to blue, 8bit 
+* gray: [0,255] gray-values, 8bit
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only)
+* rgb: color without transparency, 8bit (rgba32 input only)
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit
+* hotIron: [0,255], hot iron map, 8bit
+* red: [0,255], from black to red, 8bit
+* green: [0,255], from black to green, 8bit
+* blue: [0,255], from black to blue, 8bit
 
 This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+864"/>
-        <source>load the following image formats from a file to a 2D data object: 
+        <source>load the following image formats from a file to a 2D data object:
 
-* png: 8bit/16bit, color available, transparency available 
-* tiff/tif: 8bit/16bit, color available 
+* png: 8bit/16bit, color available, transparency available
+* tiff/tif: 8bit/16bit, color available
 * jpg: 8bit, color available
 * jp2: 8bit/16bit, color available
-* ras/sr: 8bit, color available 
-* ppm: 8bit, color available 
-* pgm: 8bit/16bit 
-* pbm: 8bit, color available 
-* bmp/dip: 8bit, color available 
-* gif: 8bit, color available, transparency available 
+* ras/sr: 8bit, color available
+* ppm: 8bit, color available
+* pgm: 8bit/16bit
+* pbm: 8bit, color available
+* bmp/dip: 8bit, color available
+* gif: 8bit, color available, transparency available
 * xbm: 8bit, color available, transparency available (X BitMap)
 * xpm: 8bit, color available, transparency available (X PixMap)
 
-The file format only provides color or transparency data if indicated above. 
+The file format only provides color or transparency data if indicated above.
 
-You can choose which channel (colorElement) of the loaded file should be used for the data object. 
-`asIs` loads the file as it is: monochrome formats are loaded as uint8 or uint16 data object, while 
-colored file formats are loaded as rgba32 data object. The color elements `alpha`, `R`, `G`, `B`, `RGB`, 
-`RGBA` are only available for colored file formats are only load the selected channels to either a uint8/uint16 data object 
-or a rgba32 data object (rgb and rgba only). `GRAY` converts a colored file format to grayscale before loading it 
-to an uint8 or uint16 data object. 
+You can choose which channel (colorElement) of the loaded file should be used for the data object.
+`asIs` loads the file as it is: monochrome formats are loaded as uint8 or uint16 data object, while
+colored file formats are loaded as rgba32 data object. The color elements `alpha`, `R`, `G`, `B`, `RGB`,
+`RGBA` are only available for colored file formats are only load the selected channels to either a uint8/uint16 data object
+or a rgba32 data object (rgb and rgba only). `GRAY` converts a colored file format to grayscale before loading it
+to an uint8 or uint16 data object.
 
 All file formats are loaded using OpenCV, besides gif, xbm, xpm which are loaded via Qt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+433"/>
-        <source>Tries to load the given ido or idh-file as itom dataObject. Data in the given file 
-must have been saved using `saveIDO` in a xml-compatible file format, whereas *.idh only 
+        <source>Tries to load the given ido or idh-file as itom dataObject. Data in the given file
+must have been saved using `saveIDO` in a xml-compatible file format, whereas *.idh only
 contains meta information of a data object and *.ido contains the full object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+29"/>
-        <source>The given dataObject of any size and data format is saved in an itom-specific xml-file (suffix: ido, idh). 
+        <source>The given dataObject of any size and data format is saved in an itom-specific xml-file (suffix: ido, idh).
 
-It is possible to define if only meta information (tags, scaling, offset...) should be saved in the xml-file (suffix: idh, itom data header) 
-or if the array and meta information should be saved (suffix: ido, itom data object). Data is always saved in a base64-encoded format while the header text 
-is mostly written in plain, ascii text. Using this filter, the data object including all its meta information is saved and 
+It is possible to define if only meta information (tags, scaling, offset...) should be saved in the xml-file (suffix: idh, itom data header)
+or if the array and meta information should be saved (suffix: ido, itom data object). Data is always saved in a base64-encoded format while the header text
+is mostly written in plain, ascii text. Using this filter, the data object including all its meta information is saved and
 can be reload using `loadIDO`.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1158,9 +1158,9 @@ can be reload using `loadIDO`.</source>
     </message>
     <message>
         <location line="+429"/>
-        <source>loads an ascii-based data file like txt, csv, tsv or space separated values. 
+        <source>loads an ascii-based data file like txt, csv, tsv or space separated values.
 
-The text file is loaded line by line and tried to be interpreted as an array. It is possible to ignore the first n lines (optional parameter ignoreLines). 
+The text file is loaded line by line and tried to be interpreted as an array. It is possible to ignore the first n lines (optional parameter ignoreLines).
 The full content of these ignored lines is then saved in the tag &apos;ignoredLines&apos; of the destinationObject.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1168,64 +1168,64 @@ The full content of these ignored lines is then saved in the tag &apos;ignoredLi
         <location line="+620"/>
         <source>saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).
 
-The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, _m, nm) is given in the axis unit tag, an automatic conversion is applied. Else a 
-warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or _m. An auto-conversion is implemented, too. 
+The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, _m, nm) is given in the axis unit tag, an automatic conversion is applied. Else a
+warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or _m. An auto-conversion is implemented, too.
 
 This filter uses the hex-code DF for the german Umlaut &apos;oe&apos; and F6 for &apos;sz&apos; like required by the input file format description of the RPTB tool (since RPTB Version 2.01).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+206"/>
-        <source>Loads MicroProf FRT data from profilometers (based on FRT File Format specification 4.0.1.0). 
+        <source>Loads MicroProf FRT data from profilometers (based on FRT File Format specification 4.0.1.0).
 
-The files are loaded in a unit16, int32 or float64 data format. The FRT file format provides further 
-information about the measurement conditions and system settings. Several of these settings are saved 
-in tags of the resulting dataObject. These are among others (if available): 
+The files are loaded in a unit16, int32 or float64 data format. The FRT file format provides further
+information about the measurement conditions and system settings. Several of these settings are saved
+in tags of the resulting dataObject. These are among others (if available):
 
-* comment: optional multiline comment of the file 
-* scanDirection: string with the scan direction for the data acquisition 
-* measureRange: total measurement range 
-* startTime: start time of measurement (seconds from 1970) 
-* duration: duration of measurement in seconds 
-* zTableType: string with the type of the used z-scanning stage 
-* xyTableType: string with the type of the used xy-scanning stage 
-* hardware: name of the measurement device (str) 
-* speedX: speed of the x-stage in m/s (only given if overrideSpeed is false) 
-* speedY: speed of the y-stage in m/s (only given if overrideSpeed is false) 
-* sensorDelay: wait at each point so many ms (only given if overrideSpeed is true) 
-* checkSensorError: during measurement check the error state of the sensor 
-* sensorErrorTime: wait max. so many ms for non-error state of the sensor 
-* scanBackMeas: during scan: measure when scanning back 
-* title: name of dataset if given 
-* heatingChamber: temperature of heating chamber if given 
-* xyStitchingActive : &apos;true&apos; if xy stitching was active, else &apos;false&apos; 
-* xyStitchingResolutionDivisor : only given if xyStitchingActive is &apos;true&apos; 
+* comment: optional multiline comment of the file
+* scanDirection: string with the scan direction for the data acquisition
+* measureRange: total measurement range
+* startTime: start time of measurement (seconds from 1970)
+* duration: duration of measurement in seconds
+* zTableType: string with the type of the used z-scanning stage
+* xyTableType: string with the type of the used xy-scanning stage
+* hardware: name of the measurement device (str)
+* speedX: speed of the x-stage in m/s (only given if overrideSpeed is false)
+* speedY: speed of the y-stage in m/s (only given if overrideSpeed is false)
+* sensorDelay: wait at each point so many ms (only given if overrideSpeed is true)
+* checkSensorError: during measurement check the error state of the sensor
+* sensorErrorTime: wait max. so many ms for non-error state of the sensor
+* scanBackMeas: during scan: measure when scanning back
+* title: name of dataset if given
+* heatingChamber: temperature of heating chamber if given
+* xyStitchingActive : &apos;true&apos; if xy stitching was active, else &apos;false&apos;
+* xyStitchingResolutionDivisor : only given if xyStitchingActive is &apos;true&apos;
 
-Some frt files can contain more than one dataset. Multiple datasets can represent different types (topology, intensity, phases...), 
-they can come from different sensors (e.g. upside and downside sensor) or they can be acquired at different levels. 
-Per default, the standard dataset (e.g. topology) is loaded. Set &apos;printAllBufferTypes&apos; to 1 in order to get a list of available 
-buffers printed to the command line (only if more than one buffer is available). While buffers at different levels are automatically 
-loaded to a 3D data object instead of a 2D one, the user can select the type and sensor counter that should be loaded. Possible values are among others: 
+Some frt files can contain more than one dataset. Multiple datasets can represent different types (topology, intensity, phases...),
+they can come from different sensors (e.g. upside and downside sensor) or they can be acquired at different levels.
+Per default, the standard dataset (e.g. topology) is loaded. Set &apos;printAllBufferTypes&apos; to 1 in order to get a list of available
+buffers printed to the command line (only if more than one buffer is available). While buffers at different levels are automatically
+loaded to a 3D data object instead of a 2D one, the user can select the type and sensor counter that should be loaded. Possible values are among others:
 
-**bufferType** 
+**bufferType**
 
-* 0x0001: piezo 
-* 0x0002: intensity 
-* 0x0004: topography 
-* 0x0008: re_part 
-* 0x0010: im_part 
-* 0x0040: camera 
-* 0x0080: thickness 
-* 0x0100: dibfromfile 
-* 0x0200: abs_val 
-* 0x0400: phase 
-* 0x0800: samplethickness 
-* 0x1000: afm 
-* 0x0200: quality 
-* 0x0401: fit 
-* 0x0402: slope 
+* 0x0001: piezo
+* 0x0002: intensity
+* 0x0004: topography
+* 0x0008: re_part
+* 0x0010: im_part
+* 0x0040: camera
+* 0x0080: thickness
+* 0x0100: dibfromfile
+* 0x0200: abs_val
+* 0x0400: phase
+* 0x0800: samplethickness
+* 0x1000: afm
+* 0x0200: quality
+* 0x0401: fit
+* 0x0402: slope
 
-**sensorCounter** 
+**sensorCounter**
 
 Currently, only 0 (sensor 1 - top) and 1 (sensor 2 - bottom) seems to be implemented in files. In future sensor 3 and sensor 4 (indices 2 and 3) might follow.</source>
         <translation type="unfinished"></translation>
@@ -1237,22 +1237,22 @@ Currently, only 0 (sensor 1 - top) and 1 (sensor 2 - bottom) seems to be impleme
     </message>
     <message>
         <location filename="../zygo.cpp" line="-34"/>
-        <source>load binary MetroPro files from Zygo. This import filter is mainly tested with the first generation of MetroPro files. 
-However, newer files should also be loaded with the limitation, that only the tags from the first generation are saved 
+        <source>load binary MetroPro files from Zygo. This import filter is mainly tested with the first generation of MetroPro files.
+However, newer files should also be loaded with the limitation, that only the tags from the first generation are saved
 into the &apos;destinationObject&apos;.
 
-Per default, a topography is loaded from the binary file into a float32 dataObject. If available, the optional parameter 
-&apos;topography&apos; can be set to 0 in order to load the intensity data to a uint16 dataObject. The &apos;destinationObject&apos; contains 
-many tags that are directly obtained from the binary files. 
+Per default, a topography is loaded from the binary file into a float32 dataObject. If available, the optional parameter
+&apos;topography&apos; can be set to 0 in order to load the intensity data to a uint16 dataObject. The &apos;destinationObject&apos; contains
+many tags that are directly obtained from the binary files.
 
-Use the optional parameters &apos;xyUnit&apos; and &apos;valueUnit&apos; to get the result in a desired unit. &apos;valueUnit&apos; is ignored for intensity data. 
+Use the optional parameters &apos;xyUnit&apos; and &apos;valueUnit&apos; to get the result in a desired unit. &apos;valueUnit&apos; is ignored for intensity data.
 
 The file format has been implemented based on the MetroPro Reference Guide, version OMP-0347K.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../avantes.cpp" line="-17"/>
-        <source>load binary files from Avantes devices. The destinationObject is a RxN float32 data object, where R is the number of spectas in the file and N the number of pixels. Use the optional parameter &apos;dataType&apos; to decide which type of data should be loaded (including the calibration wavelength table of the grating). 
+        <source>load binary files from Avantes devices. The destinationObject is a RxN float32 data object, where R is the number of spectas in the file and N the number of pixels. Use the optional parameter &apos;dataType&apos; to decide which type of data should be loaded (including the calibration wavelength table of the grating).
 
 The description of the file format has been taken from &apos;AvaSoft 8 File Formats.pdf&apos;</source>
         <translation type="unfinished"></translation>

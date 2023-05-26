@@ -74,8 +74,8 @@ POSSIBILITY OF SUCH DAMAGE.
  *  \li Version 1.4    GenTL Subcommittee
  *  \li Version 1.5    GenTL Subcommittee
  *                      - Changed namespace to GenTL
- *                      - Changes for GenTL 1.5, Please refer to the GenTL spec 
- *                        for a list of changes. 
+ *                      - Changes for GenTL 1.5, Please refer to the GenTL spec
+ *                        for a list of changes.
  */
 
 
@@ -231,7 +231,7 @@ extern "C" {
                     /* DS_HANDLE, BUFFER_HANDLE */
     typedef void *  EVENT_HANDLE;      /* Event Handle */
 
-#   define GENTL_INVALID_HANDLE  NULL                /* Invalid handle value, V1.4 */ 
+#   define GENTL_INVALID_HANDLE  NULL                /* Invalid handle value, V1.4 */
 #   define GENTL_INFINITE        0xFFFFFFFFFFFFFFFFULL  /* Infinite value to be used in various function calls, V1.4 */
 
     /* Defines the data type possible for the various Info functions. */
@@ -492,7 +492,7 @@ extern "C" {
       PIXELENDIANNESS_LITTLE   = 1,    /* Little endian pixel data. GenTL v1.4 */
       PIXELENDIANNESS_BIG      = 2     /* Big endian pixel data. GenTL v1.4 */
     };
-    typedef int32_t PIXELENDIANNESS_ID; /* GenTL v1.4*/ 
+    typedef int32_t PIXELENDIANNESS_ID; /* GenTL v1.4*/
 
     /* Enumeration describing which data type is present in given buffer part. Introduced in GenTL v1.5 */
     enum PARTDATATYPE_IDS
@@ -706,7 +706,7 @@ extern "C" {
     GC_API DSGetBufferChunkData    ( DS_HANDLE hDataStream, BUFFER_HANDLE hBuffer, SINGLE_CHUNK_DATA *pChunkData, size_t *piNumChunks );
 
     /* GenTL v1.4 */
-    GC_API IFGetParentTL           ( IF_HANDLE hIface, TL_HANDLE *phSystem ); 
+    GC_API IFGetParentTL           ( IF_HANDLE hIface, TL_HANDLE *phSystem );
     GC_API DevGetParentIF          ( DEV_HANDLE hDevice, IF_HANDLE *phIface );
     GC_API DSGetParentDev          ( DS_HANDLE hDataStream, DEV_HANDLE *phDevice );
 
@@ -777,7 +777,7 @@ extern "C" {
     GC_API_P(PDSGetBufferChunkData    )( DS_HANDLE hDataStream, BUFFER_HANDLE hBuffer, SINGLE_CHUNK_DATA *pChunkData, size_t *piNumChunks );
 
     /* GenTL v1.4 */
-    GC_API_P(PIFGetParentTL           )( IF_HANDLE hIface, TL_HANDLE *phSystem ); 
+    GC_API_P(PIFGetParentTL           )( IF_HANDLE hIface, TL_HANDLE *phSystem );
     GC_API_P(PDevGetParentIF          )( DEV_HANDLE hDevice, IF_HANDLE *phIface );
     GC_API_P(PDSGetParentDev          )( DS_HANDLE hDataStream, DEV_HANDLE *phDevice );
 

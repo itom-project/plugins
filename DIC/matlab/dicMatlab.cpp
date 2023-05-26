@@ -103,7 +103,7 @@ extern "C" DLLEXPORT int interpolateBiLi(const float *data, const int sizeX, con
     }
     else
     {
-        ito::RetVal retval = doInterpolateLinear<float>(data, sizeX, sizeY, sizeY,  
+        ito::RetVal retval = doInterpolateLinear<float>(data, sizeX, sizeY, sizeY,
             pts, numPts, result, 3, flags | 512);
     }
 

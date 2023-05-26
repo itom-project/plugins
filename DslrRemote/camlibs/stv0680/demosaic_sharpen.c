@@ -348,4 +348,3 @@ void demosaic_sharpen (const int width, const int height,
 		}
 	}
 }
-

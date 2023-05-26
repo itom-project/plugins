@@ -582,8 +582,8 @@
         <source>The SuperlumBS is an itom-plugin, which can be used to communicate with a Superlum BroadSweeper.
 Different BroadSweeper types (BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP) are implemented.
 Only BS-840-1-HP is tested.
-The company website can be found under http://www.superlumdiodes.com 
-This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization. 
+The company website can be found under http://www.superlumdiodes.com
+This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.
 
 It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>

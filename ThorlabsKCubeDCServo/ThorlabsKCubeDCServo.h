@@ -78,13 +78,13 @@ public:
     friend class ThorlabsKCubeDCServoInterface;
 
     /*!<shows the configuration dialog*/
-    const ito::RetVal showConfDialog(void); 
+    const ito::RetVal showConfDialog(void);
 
     //!< indicates that this plugin has got a configuration dialog
     int hasConfDialog(void)
     {
         return 1;
-    } 
+    }
 
 private:
     bool m_async;
@@ -127,10 +127,10 @@ public slots:
     //! Starts calibration for all axis -> calls single axis version
     ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore* waitCond = nullptr);
 
-    
+
     ito::RetVal setOrigin(const int axis, ItomSharedSemaphore* waitCond = nullptr);
 
-    
+
     ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore* waitCond = nullptr);
 
     //! Reads out status request answer and gives back ito::retOk or ito::retError

@@ -27,12 +27,12 @@
 
 //---------------------------------------------------------------------------------------
 ImageGrabber::ImageGrabber(unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut):
-    m_cRef(1), 
-    ig_DeviceID(deviceID), 
-    ig_pSource(NULL), 
-    ig_pSession(NULL), 
-    ig_pTopology(NULL), 
-    ig_RIE(true), 
+    m_cRef(1),
+    ig_DeviceID(deviceID),
+    ig_pSource(NULL),
+    ig_pSession(NULL),
+    ig_pTopology(NULL),
+    ig_RIE(true),
     ig_Close(false),
     ig_RIFirst(NULL),
     ig_RISecond(NULL),
@@ -48,7 +48,7 @@ ImageGrabber::~ImageGrabber(void)
     {
         ig_pSession->Shutdown();
     }
-                    
+
     //SafeRelease(&ig_pSession);
 
     //SafeRelease(&ig_pTopology);
@@ -134,7 +134,7 @@ err:
     SafeRelease(&pCurrentType);
 
     unsigned int sizeRawImage = 0;
-    
+
     if (VideoFormat == MFVideoFormat_RGB24)
     {
         sizeRawImage = MT.MF_MT_FRAME_SIZE * 3;
@@ -144,14 +144,14 @@ err:
     {
         sizeRawImage = MT.MF_MT_FRAME_SIZE * 4;
     }
-        
+
     CHECK_HR(hr = RawImage::CreateInstance(&ig_RIFirst, sizeRawImage));
-    
+
     CHECK_HR(hr = RawImage::CreateInstance(&ig_RISecond, sizeRawImage));
 
     ig_RIOut = ig_RISecond;
-    
-        
+
+
     // Configure the media type that the Sample Grabber will receive.
     // Setting the major and subtype is usually enough for the topology loader
     // to resolve the topology.
@@ -167,17 +167,17 @@ err:
     CHECK_HR(hr = pSinkActivate->SetUINT32(MF_SAMPLEGRABBERSINK_IGNORE_CLOCK, TRUE));
 
     // Create the Media Session.
-    
+
     CHECK_HR(hr = MFCreateMediaSession(NULL, &ig_pSession));
-    
+
     // Create the topology.
     CHECK_HR(hr = CreateTopology(pSource, pSinkActivate, &ig_pTopology));
-    
+
 done:
 
     // Clean up.
     if (FAILED(hr))
-    {        
+    {
         if (ig_pSession)
         {
             ig_pSession->Shutdown();
@@ -213,7 +213,7 @@ void ImageGrabber::stopGrabbing()
 HRESULT ImageGrabber::startGrabbing(void)
 {
     IMFMediaEvent *pEvent = NULL;
-    
+
     PROPVARIANT var;
     PropVariantInit(&var);
 
@@ -265,12 +265,12 @@ HRESULT ImageGrabber::startGrabbing(void)
         if (!SUCCEEDED(hr))
         {
             hr = S_OK;
-            
+
             goto done;
         }
 
         if (met == MESessionEnded)
-        {            
+        {
             m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MESessionEnded \n", ig_DeviceID);
 
             ig_pSession->Stop();
@@ -287,15 +287,15 @@ HRESULT ImageGrabber::startGrabbing(void)
         /*if (met == MEVideoCaptureDeviceRemoved)
         {
             m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: MEVideoCaptureDeviceRemoved \n", ig_DeviceID);
-            
-            break;       
+
+            break;
         }*/
 
         SafeRelease(&pEvent);
     }
 
     m_debugPrintOut->printOut("IMAGEGRABBER VideoDevice %i: Finish startGrabbing \n", ig_DeviceID);
-            
+
 done:
     SafeRelease(&pEvent);
 
@@ -321,7 +321,7 @@ HRESULT ImageGrabber::CreateTopology(IMFMediaSource *pSource, IMFActivate *pSink
     CHECK_HR(hr = MFCreateTopology(&pTopology));
     CHECK_HR(hr = pSource->CreatePresentationDescriptor(&pPD));
     CHECK_HR(hr = pPD->GetStreamDescriptorCount(&cStreams));
-    
+
     for (DWORD i = 0; i < cStreams; i++)
     {
         // In this example, we look for audio streams and connect them to the sink.
@@ -429,7 +429,7 @@ HRESULT ImageGrabber::CreateInstance(ImageGrabber **ppIG, unsigned int deviceID,
 STDMETHODIMP ImageGrabber::QueryInterface(REFIID riid, void** ppv)
 {
     // Creation tab of shifting interfaces from start of this class
-    static const QITAB qit[] = 
+    static const QITAB qit[] =
     {
 
         QITABENT(ImageGrabber, IMFSampleGrabberSinkCallback),
@@ -487,7 +487,7 @@ STDMETHODIMP ImageGrabber::OnSetPresentationClock(IMFPresentationClock* pClock)
 STDMETHODIMP ImageGrabber::OnProcessSample(REFGUID guidMajorMediaType, DWORD dwSampleFlags,
     LONGLONG llSampleTime, LONGLONG llSampleDuration, const BYTE * pSampleBuffer,
     DWORD dwSampleSize)
-{    
+{
     //qDebug() << "OnProcessSample" << ((double)llSampleTime/10000.0) << (double)llSampleDuration/10000.0 << dwSampleSize;
 
     if (ig_RIE)
@@ -504,7 +504,7 @@ STDMETHODIMP ImageGrabber::OnProcessSample(REFGUID guidMajorMediaType, DWORD dwS
     }
 
     ig_RIE = !ig_RIE;
-        
+
 
     return S_OK;
 }

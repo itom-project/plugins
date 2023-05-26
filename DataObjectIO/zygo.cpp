@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -124,7 +124,7 @@ typedef struct
     char zoom_descr[8];
     ito::float32 alpha_part;
     ito::float32 beta_part;
-    ito::float32 dist_part; 
+    ito::float32 dist_part;
     ito::int16 cam_split_loc_x;
     ito::int16 cam_split_loc_y;
     ito::int16 cam_split_trans_x;
@@ -177,17 +177,17 @@ typedef struct
     ito::float32 ref_cal_pix_opd;
     ito::int32 sys_serial2;
     char unused6[40];
-    
+
 } ZygoMetroProHeader;
 #pragma pack(pop)
 
-const struct 
+const struct
 {
     unsigned int format;
     unsigned int magic;
     unsigned int size;
 }
-header_formats[] = 
+header_formats[] =
 {
     { 1, 0x881b036f, 834, },
     { 2, 0x881b0370, 834, },
@@ -263,8 +263,8 @@ ito::int16 swap16(ito::int16 int16in)
 ito::float32 swap_float32(ito::float32 float32in)
 {
     union s
-    { 
-        char pp[4]; 
+    {
+        char pp[4];
         ito::float32 f;
     } temp;
 
@@ -484,8 +484,8 @@ ito::RetVal DataObjectIO::loadZygoMetroProParams(QVector<ito::Param> *paramsMand
             header.exit_pupil_diam = swap_float32(header_ref->exit_pupil_diam);
             header.light_level_pct = swap_float32(header_ref->light_level_pct);
             header.rem_fringes_mode = swap16(header_ref->rem_fringes_mode); //this is big-endian!
-            
-            
+
+
             bool found = false;
             for (int i = 0; i < 3; ++i)
             {
@@ -685,6 +685,3 @@ ito::RetVal DataObjectIO::loadZygoMetroProParams(QVector<ito::Param> *paramsMand
 
     return retval;
 }
-
-
-

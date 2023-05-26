@@ -371,7 +371,7 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libmodbus.la: $(libmodbus_la_OBJECTS) $(libmodbus_la_DEPENDENCIES) $(EXTRA_libmodbus_la_DEPENDENCIES) 
+libmodbus.la: $(libmodbus_la_OBJECTS) $(libmodbus_la_DEPENDENCIES) $(EXTRA_libmodbus_la_DEPENDENCIES)
 	$(AM_V_CCLD)$(libmodbus_la_LINK) -rpath $(libdir) $(libmodbus_la_OBJECTS) $(libmodbus_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:

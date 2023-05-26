@@ -233,7 +233,7 @@ dc1394_convert_frames(dc1394video_frame_t *in, dc1394video_frame_t *out);
  *
  * To set the format of the output, simply set the values of the corresponding fields in the output frame
  * @param in is a pointer to the bayer video frame that is to be converted
- * @param out is a pointer to the frame to be converted to.  If there is memory allocated to the image field, 
+ * @param out is a pointer to the frame to be converted to.  If there is memory allocated to the image field,
  *      then it will be adjusted accordingly by this function.  If there is no memory allocated to the image
  *      field, then ensure that out->image == NULL and out->allocated_image_bytes == 0
  * @param method is the bayer method to interpolate the frame.
@@ -254,5 +254,3 @@ dc1394_deinterlace_stereo_frames(dc1394video_frame_t *in, dc1394video_frame_t *o
 #endif
 
 #endif /* _DC1394_CONVERSIONS_H */
-
-

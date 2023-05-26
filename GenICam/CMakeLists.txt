@@ -73,8 +73,8 @@ if(GENICAM_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/deviceContainer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/datatypes.cpp
     )
-    
-    set(PLUGIN_RCC 
+
+    set(PLUGIN_RCC
     )
 
     #Add version information to the plugIn-dll unter MSVC
@@ -83,10 +83,10 @@ if(GENICAM_FOUND)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-    
+
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${GENICAM_LIBRARIES} ${OpenCV_LIBS})
 
     #translation
@@ -101,11 +101,11 @@ if(GENICAM_FOUND)
     itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+
     # copy dlls in itoms lib folder
     file(GLOB dlls "${GENICAM_BINARY_DIR}/*.dll")
     itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
-    
+
 else(GENICAM_FOUND)
     message(SEND_ERROR "plugin ${target_name} will not be built since the GenICam library could not be found. Please properly indicate the Cmake variable **GenICam_Dir** or the environment variable **GENICAM_ROOT**")
 endif(GENICAM_FOUND)

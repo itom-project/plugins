@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -64,7 +64,7 @@ extern struct MatT AMatBiCu, AMatBiQu, AMatBiHe;
 //        4   16    interpolation type LoByte: Bi-Linear, Bi-Cubic, Bi-Quintic, Bi-Heptic
 //        5   32    interpolation type HighByte
 //        6   64    Reserved for other interpolation types
-//        7   128   
+//        7   128
 
 ito::RetVal doInterpolate(ito::DataObject *inFieldPtr, ito::DataObject *positionsdPtr, ito::DataObject *outFieldPtr, int algo, int flag, int useCuda)
 {
@@ -86,7 +86,7 @@ ito::RetVal doInterpolate(ito::DataObject *inFieldPtr, ito::DataObject *position
 //            *outFieldPtr = ito::DataObject(numPts, 1, inFieldPtr->getType());
         if (outFieldPtr->getSize(1) != 2 || outFieldPtr->getSize(0) != positionsdPtr->getSize(0) || outFieldPtr->getType() != inFieldPtr->getType())
             outFieldPtr->zeros(positionsdPtr->getSize(0), 3, ito::tFloat32);
-        
+
         ito::DataObject inpObj = *inFieldPtr;
         int dtype = inFieldPtr->getType();
 
@@ -198,9 +198,9 @@ ito::RetVal doInterpolate(ito::DataObject *inFieldPtr, ito::DataObject *position
             outFieldPtr->zeros(positionsdPtr->getSize(0), 3, ito::tFloat32);
 
         if (!(hasCuda && useCuda)
-            && ((flag & 2) != 2 
+            && ((flag & 2) != 2
             || (flag & 4) == 4
-            || ((algo == 1) && (AMatBiCu.sizex != sizex || AMatBiCu.sizey != sizey)) 
+            || ((algo == 1) && (AMatBiCu.sizex != sizex || AMatBiCu.sizey != sizey))
             || ((algo == 2) && (AMatBiQu.sizex != sizex || AMatBiQu.sizey != sizey))
             || ((algo == 3) && (AMatBiHe.sizex != sizex || AMatBiHe.sizey != sizey))))
         {
@@ -259,7 +259,7 @@ ito::RetVal doInterpolate(ito::DataObject *inFieldPtr, ito::DataObject *position
     int keepImage = paramsOpt->at(3).getVal<int>();
     int useCuda = paramsOpt->at(4).getVal<int>();
 
-    ito::DataObject positions; 
+    ito::DataObject positions;
     int numPts;
     if (positionsdPtr->getSize(0) == 2 && positionsdPtr->getSize(1) != 2)
     {

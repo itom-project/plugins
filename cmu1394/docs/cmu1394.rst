@@ -10,7 +10,7 @@
 **Devices**:    Firewire cameras supported by CMU1394 driver
 **Author**:     :pluginauthor:`CMU1394`
 =============== ========================================================================================================
- 
+
 
 Overview
 ========
@@ -21,9 +21,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: CMU1394
 
@@ -61,7 +61,7 @@ An instance of this plugin has the following internal parameters:
     Set Triggermode
 **swapByteOrder**: {int}
     Swap byte order for 16bit images
-	
+
 
 Compilation
 ===========

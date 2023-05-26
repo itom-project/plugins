@@ -49,7 +49,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetUhl.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogUhl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetUhl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UhlRegister.cpp

@@ -99,7 +99,7 @@ typedef struct {
  * Video frame structure.
  *
  * dc1394video_frame_t is the structure returned by the capture functions. It contains the captured image as well as a number of
- * information. 
+ * information.
  *
  * In general this structure should be calloc'ed so that members such as "allocated size"
  * are properly set to zero. Don't forget to free the "image" member before freeing the struct itself.
@@ -204,7 +204,7 @@ dc1394error_t dc1394_video_get_iso_channel(dc1394camera_t *camera, uint32_t * ch
 dc1394error_t dc1394_video_set_iso_channel(dc1394camera_t *camera, uint32_t channel);
 
 /**
- * Gets the current data depth, in bits. Only meaningful for 16bpp video modes (RAW16, RGB48, MONO16,...)  
+ * Gets the current data depth, in bits. Only meaningful for 16bpp video modes (RAW16, RGB48, MONO16,...)
  */
 dc1394error_t dc1394_video_get_data_depth(dc1394camera_t *camera, uint32_t *depth);
 

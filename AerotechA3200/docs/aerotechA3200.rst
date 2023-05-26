@@ -10,7 +10,7 @@
 **Devices**:    Aerotech A3200
 **Author**:     :pluginauthor:`AerotechA3200`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -20,7 +20,7 @@ Overview
 Parameters
 ==========
 
-These paramaters are available and can be used to configure the **AerotechA3200** instance. 
+These paramaters are available and can be used to configure the **AerotechA3200** instance.
 
 **name**: {str}, read-only
     name of the plugin (*AerotechA3200*)
@@ -45,9 +45,9 @@ These paramaters are available and can be used to configure the **AerotechA3200*
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: AerotechA3200
 

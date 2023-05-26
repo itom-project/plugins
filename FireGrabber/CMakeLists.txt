@@ -38,7 +38,7 @@ if(WIN32)
 else(WIN32)
     # set(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab/dc1394)
     set(DC1394_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/FireGrab)
-    
+
     FIND_LIBRARY(DC1394_LIBRARY NAMES dc1394 libdc1394
         PATHS
         /usr/lib
@@ -75,7 +75,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFireGrabber.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogFireGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFireGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/FireGrabber.cpp
@@ -106,7 +106,7 @@ endif(WIN32)
 #translation
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
 #documentation
 itom_configure_plugin_documentation(${target_name} fireGrabber)
 

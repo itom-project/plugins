@@ -61,7 +61,7 @@ void RawImage::fastCopy(const BYTE * pSampleBuffer)
     int *dst = (int *)ri_pixels;
 
     unsigned int buffersize = ri_size/4;
-    
+
     _asm
     {
         mov ESI, bsrc

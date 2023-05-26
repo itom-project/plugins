@@ -27,7 +27,7 @@ class UhlText : public ito::AddInActuator //, public DummyGrabberInterface
         friend class UhlTextInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
-        
+
 
     private:
         unsigned char m_spitchx ; // spindle pitch X in 100nm
@@ -52,7 +52,7 @@ class UhlText : public ito::AddInActuator //, public DummyGrabberInterface
         int m_posrequestlisteners;
         int m_joyEnabled;
 
-//        double offset; 
+//        double offset;
 //        unsigned short locked;
 //        const ito::RetVal UhlSetPos(QVector<int> axis, QVector<double> pos, const unsigned char absrelflag);
         const ito::RetVal UhlSetPos(QVector<int> axis, QVector<double> pos, const unsigned char absrelflag, ItomSharedSemaphore *waitCond);
@@ -71,7 +71,7 @@ class UhlText : public ito::AddInActuator //, public DummyGrabberInterface
 
 /*    signals:
 
-        void parametersChanged(QMap<QString, ito::Param> params);    
+        void parametersChanged(QMap<QString, ito::Param> params);
 //        void PositioningStatusChanged(bool Running);
 //        void SentStatusChanged(int Status);
 //        void SentPositionChanged(QVector<int> axis,QVector<double> pos);
@@ -110,7 +110,7 @@ class UhlText : public ito::AddInActuator //, public DummyGrabberInterface
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 
         ito::RetVal startJoyStickMovement(QVector<int> axis, QVector<double> vel);
-        
+
         void triggerJogIncrement();
 
     private slots:

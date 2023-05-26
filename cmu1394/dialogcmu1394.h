@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -29,7 +29,7 @@
 #include "ui_dialogcmu1394.h"
 #include "common/sharedStructures.h"
  /**
-  *\class    dialogCMU1394 
+  *\class    dialogCMU1394
   *\brief    Configurationdiablog for the CMU-driver
   *
   *         This dialog can be used to setup the most important parameters for the camera.
@@ -41,7 +41,7 @@
   * \warning    NA
   *
   */
-class dialogCMU1394 : public QDialog 
+class dialogCMU1394 : public QDialog
 {
     Q_OBJECT
 
@@ -57,7 +57,7 @@ class dialogCMU1394 : public QDialog
     signals:
 
         void changeParameters(QMap<QString, ito::ParamBase> params);
-        
+
     public slots:
 
         void valuesChanged(QMap<QString, ito::Param> params);

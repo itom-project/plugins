@@ -10,7 +10,7 @@
 **Devices**:    One axis motor controller FirgelliLAC
 **Author**:     :pluginauthor:`FirgelliLAC`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -22,9 +22,9 @@ tested with the product version PQ12-SS-GG-VV-P.
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: FirgelliLAC
 

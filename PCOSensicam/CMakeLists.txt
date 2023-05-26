@@ -47,8 +47,8 @@ endif(BUILD_TARGET64)
 
 find_path(PCO_SENSICAM_SDK_INCLUDE_DIR SencamExport.h PATHS ${PCO_SENSICAM_SDK_DIR} PATH_SUFFIXES include)
 
-if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)     
-    
+if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
+
     if(PCO_SDK_OLD_VERSION)
         add_definitions(-DPCO_SDK_OLD)
     endif(PCO_SDK_OLD_VERSION)
@@ -56,7 +56,7 @@ if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}     #include directory of the itom SDK (recommended)
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets #include this subfolder if you use any widgets from itomWidgets
         #add further include directories here
         ${PCO_SENSICAM_SDK_INCLUDE_DIR}
@@ -126,5 +126,5 @@ if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
     #itom_post_build_copy_files_to_lib_folder(${target_name} PCO_SDK_LIBRARY)
 
 else(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
-    message(SEND_ERROR "PCO_SENSICAM_SDK_DIR directory is not given or no valid pco.sdk directory. ${target_name} will not be build.")    
+    message(SEND_ERROR "PCO_SENSICAM_SDK_DIR directory is not given or no valid pco.sdk directory. ${target_name} will not be build.")
 endif(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)

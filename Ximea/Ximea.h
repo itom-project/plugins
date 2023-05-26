@@ -5,7 +5,7 @@
     Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -118,8 +118,8 @@ class Ximea : public ito::AddInGrabber
             familyUnknown
         };
 
-		enum SyncParams {          
-            sExposure = 0x0001, 
+		enum SyncParams {
+            sExposure = 0x0001,
             sBinning = 0x0002,
             sRoi = 0x0004,
             sGain = 0x0008,
@@ -173,7 +173,7 @@ class Ximea : public ito::AddInGrabber
         int m_originalSizeX;
         int m_originalSizeY;
         ito::DataObject m_hyperspectralCubeObj;
-        
+
 #if linux
         void *m_handle;
 #else
@@ -185,7 +185,7 @@ class Ximea : public ito::AddInGrabber
 #else
         HMODULE ximeaLib;
 #endif
-    
+
         void* m_pvShadingSettings;
 
         SoftwareShading m_shading;

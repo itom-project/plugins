@@ -15,16 +15,16 @@
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
-  
+
   \par
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-   
+
   \par
   You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the 
+  along with this program; if not, write to the
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
   Boston, MA  02110-1301  USA
 */
@@ -125,14 +125,14 @@ static const struct tagarray{
 {0xA002,	"ExifImageWidth"},
 {0xA003,	"ExifImageLength"},
 {0xA005,	"InteroperabilityOffset"},
-{0xA20B,	"FlashEnergy"},			
-{0xA20C,	"SpatialFrequencyResponse"},	
-{0xA20E,	"FocalPlaneXResolution"},	
-{0xA20F,	"FocalPlaneYResolution"},	
-{0xA210,	"FocalPlaneResolutionUnit"},	
-{0xA214,	"SubjectLocation"},		
-{0xA215,	"ExposureIndex"},		
-{0xA217,	"SensingMethod"},		
+{0xA20B,	"FlashEnergy"},
+{0xA20C,	"SpatialFrequencyResponse"},
+{0xA20E,	"FocalPlaneXResolution"},
+{0xA20F,	"FocalPlaneYResolution"},
+{0xA210,	"FocalPlaneResolutionUnit"},
+{0xA214,	"SubjectLocation"},
+{0xA215,	"ExposureIndex"},
+{0xA217,	"SensingMethod"},
 {0xA300,	"FileSource"},
 {0xA301,	"Scenetype"},
 {0,"end"}
@@ -192,7 +192,7 @@ static int gpe_theval(unsigned char *data,int tagind){
 static void gpi_setval(unsigned char *data,int tagind,long newval){
   int i;
   for (i=0;i<4;i++) data[tagind*12+10+i]=0xff&(newval>>(i*8));
-  if (gpi_getvalue(data,tagind)!=newval) 
+  if (gpi_getvalue(data,tagind)!=newval)
     printf("Setptr: error %d inst %ld\n",gpe_theval(data,tagind),newval);
 }
 
@@ -328,12 +328,12 @@ static int gpi_exif_get_field( int tag_number, int ifd, exifparser *exifdata, Ex
       tag = gpi_exif_get_lilend(ifdp+i*12+2, 2); /* Get the tag ID */
       /* if (exif_debug) fprintf(stderr,"Found tag %d \n",tag); */
     } while ((i < numtags) && (tag != tag_number));
-    
+
     if(tag != tag_number) {
       if (exif_debug) fprintf(stderr,"Tag %d not found\n",tag_number);
       return 0;
     }
-    
+
     ifdp = ifdp+i*12+2; /* Place pointer at TAG type position */
     tag_data->tag = tag;
     tag_data->type = gpi_exif_get_lilend(ifdp+2,2);    /* tag type */
@@ -365,15 +365,15 @@ static int gpi_exif_get_field( int tag_number, int ifd, exifparser *exifdata, Ex
       for (i = 0; i < tag_data->size; i += exif_sizetab[tag_data->type]) {
 	/*if (exif_debug) fprintf(stderr,"."); */
 	if ( tag_data->type % 5 ) {
-	  memcpy(data+i,ifdp+i,exif_sizetab[tag_data->type]);	  
+	  memcpy(data+i,ifdp+i,exif_sizetab[tag_data->type]);
 	} else { /* Fraction */
 	    tag_data->num =gpi_exif_get_lilend(ifdp+i,4);
 	    tag_data->den =gpi_exif_get_lilend(ifdp+i+4,4);
-	  
+
 	  if(exif_debug)  printf("%d/%d=%.3g ",tag_data->num,
 		                  tag_data->den,
 				 (tag_data->den==0)?0:(1.0*tag_data->num/tag_data->den));
-	}	
+	}
       }
       /* If the value can be put into an int, save the trouble and store */
       /* it into "intval" right away... */
@@ -410,7 +410,7 @@ static int gpi_exif_get_comment(exifparser *exifdat, char **comment) {
     *comment = malloc (tagdat.size+1);
     memcpy(*comment,tagdat.data,tagdat.size);
     return tagdat.size;
-  }  
+  }
 }
 
 /*
@@ -440,14 +440,14 @@ unsigned char *gpi_exif_get_thumbnail_and_size(exifparser *exifdat, long *size) 
   curptr=newimg+8;
   *size += 8;
 
-  if (exif_debug) {    
+  if (exif_debug) {
       ExifData owner;
       char *comment=NULL;
       printf("Decoding EXIF fields in thumbnail\n");
       gpi_exif_get_field( EXIF_Model, -1, exifdat, &owner);
       printf("Camera model: %s\n",owner.data);
       printf("Comment for this picture (%d chars)",gpi_exif_get_comment( exifdat, &comment));
-      if (comment) { 
+      if (comment) {
           printf(" -> %s\n",comment);
           free(comment);
       }
@@ -648,7 +648,7 @@ int gpi_exif_stat(exifparser *exifdata) {
   do{
     exifdata->ifdcnt++;
     exifdata->ifds[exifdata->ifdcnt]     = exifdata->data+offset;
-    exifdata->ifdtags[exifdata->ifdcnt]  = 
+    exifdata->ifdtags[exifdata->ifdcnt]  =
     gpi_exif_get_lilend(exifdata->data+offset,2);
 
   }while((offset=exif_next_ifd(exifdata->data,offset)));

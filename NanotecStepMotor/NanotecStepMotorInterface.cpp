@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -52,7 +52,7 @@ ito::RetVal NanotecStepMotorInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 NanotecStepMotorInterface::NanotecStepMotorInterface()
@@ -70,7 +70,7 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param param(ito::Param("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data()));
     param.setMeta(new ito::HWMeta("SerialIO"), true);
@@ -94,4 +94,3 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class NanotecStepMotorInterface with the name NanotecStepMotorInterface as plugin for the Qt-System (see Qt-DOC)
-

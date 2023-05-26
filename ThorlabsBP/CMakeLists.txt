@@ -37,7 +37,7 @@ if(THORLABS_KINESIS_BP_INCLUDE_DIR)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-    
+
     include(ItomBuildMacros)
     itom_init_cmake_policy(3.12)
     itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
@@ -64,7 +64,7 @@ if(THORLABS_KINESIS_BP_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBP.ui
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsBP.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsBP.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsBP.cpp
@@ -98,15 +98,15 @@ if(THORLABS_KINESIS_BP_INCLUDE_DIR)
     itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
-    set(BINARY_FILES 
+
+    set(BINARY_FILES
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.Benchtop.Piezo.dll"
         "${THORLABS_KINESIS_DIRECTORY}/Thorlabs.MotionControl.DeviceManager.dll"
         "${THORLABS_KINESIS_DIRECTORY}/ftd2xx.dll"
         )
-    
+
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
-    
+
 else(THORLABS_KINESIS_BP_INCLUDE_DIR)
     message(SEND_ERROR "${THORLABS_KINESIS_BP_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
 endif(THORLABS_KINESIS_BP_INCLUDE_DIR)

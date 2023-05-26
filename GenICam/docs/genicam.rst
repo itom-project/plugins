@@ -10,7 +10,7 @@
 **Devices**:    Camera control of devices that support the GenICam standard
 **Author**:     :pluginauthor:`GenICam`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: GenICam
 
@@ -94,7 +94,7 @@ The following list contains all parameters, that are related to the GenICam plug
 **userDefinedPayloadSize**: {int}, default: 0
     Usually, the ideal size of an image buffer is returned by the transport layer of GenICam or by the standard parameter 'PayloadSize'. However,
     if you set this parameter to a value bigger than 0, a user-defined buffer size in bytes can be selected. Usually, it is not necessary to change this parameter.
-    
+
 Verbose level
 =============
 
@@ -125,7 +125,7 @@ the device.
 In the example of an Active Silicon CoaXPress framegrabber, you have to set the parameters **Fg_IncomingWidth** to the **Width** of the camera,
 **Fg_IncomingHeight** to the **Height** of the camera and **Fg_IncomingPixelFormat** to the current pixel format of the camera. Then adjust the
 values **Fg_Width**, **Fg_Height** and **Fg_PixelFormat** to suitable values, since these values are read by itom to configure a proper image acquisition.
-        
+
 Compilation
 ===========
 
@@ -195,7 +195,7 @@ XSLTProc    MIT license     http://xmlsoft.org/XSLT/xsltproc2.html
 XSDe        Proprietary     NA
 ==========  ==============  =============================================
 
-Note that the XSDe license was purchased by one of the members of the committee but 
+Note that the XSDe license was purchased by one of the members of the committee but
 allows all members to re-compile the parser as long as only the GenApi XML vocabulary is used.
 
 All license texts come as part of the GenICam distribution in the licenses
@@ -210,7 +210,7 @@ CLSerAll    CLSerAll_LICENSE.txt    http://sourceforge.net/projects/clallserial
 xs3p        xs3p_License.mht        http://xml.fiforms.org/xs3p/index.html
 xxhash      xxhash_License.txt      http://opensource.org/licenses/BSD-3-Clause
 XSLTProc    MIT_License.txt         http://opensource.org/licenses/mit-license.html
-XSDe        XSDe License.pdf        NA  
+XSDe        XSDe License.pdf        NA
 ==========  ======================  ================================================
 
 Last but not least GenICam redistributes the C/C++ runtime DLLs of the
@@ -230,4 +230,3 @@ Workaround
 
 * Vistek, GigE, Windows: It seems that the Camera Link transport layer library (cti-file) has to be loaded by itom before the GigE transport layer is loaded.
   This is implicitely done, if a vistek cti file is loaded. It is also possible to load the CL cti file using a load library command in Python.
-

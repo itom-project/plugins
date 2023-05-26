@@ -20,9 +20,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: PIHexapodCtrl
 
@@ -49,7 +49,7 @@ parameters can be changed using *setParam*.
     current pivot point (x,y,z)
 **speed**: {float}
     speed of every axis in physical units / s
-    
+
 Additional functions
 ====================
 
@@ -85,21 +85,21 @@ Additional functions
     :type amplitude: float
     :param timeconstant: Wait between to command in seconds
     :type timeconstant: float
-    
+
 Example
 ========
 
-.. code-block:: python  
-    
+.. code-block:: python
+
     if not "mot" in globals():
         mot = actuator("PIHexapodCtrl", IP="129.69.65.1", Port=50000)
-    
+
     mot.setParam("speed", 1.5)
     print("speed:", mot.getParam("speed"))
-    
+
     mot.setPosAbs(1, 5, 2, -5) #move y to 5mm and z to -5mm
     print("current position of axes x, y, z:", mot.getPos(0,1,2))
-    
+
     #in order to set pivot point, tilts must be zero:
     mot.setPosAbs(3,0,4,0,5,0)
     print("pivot point(x,y,z):", mot.getParam("pivotPoint"))

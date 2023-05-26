@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -34,7 +34,7 @@
 #include "CyAPI.h" //http://www.cypress.com/file/135301?finished=1
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class ItomCyUSB : public ito::AddInDataIO //, public 
+class ItomCyUSB : public ito::AddInDataIO //, public
 {
     Q_OBJECT
 
@@ -62,7 +62,7 @@ class ItomCyUSB : public ito::AddInDataIO //, public
 			interruptOut = 0x0006,
 			controlEndPoint = 0x0007
 			};
-		
+
 		CCyIsocEndPoint *m_isocInEndPoint;
 		CCyIsocEndPoint *m_isocOutEndPoint;
 		CCyBulkEndPoint *m_bulkInEndPoint;
@@ -70,7 +70,7 @@ class ItomCyUSB : public ito::AddInDataIO //, public
 		CCyInterruptEndPoint *m_interruptInEndPoint;
 		CCyInterruptEndPoint *m_interruptOutEndPoint;
 		CCyControlEndPoint *m_controlEndPoint;
-		
+
 		static QVector<CCyUSBDevice> openedDevices;
         static QMutex openedDevicesReadWriteMutex;
 

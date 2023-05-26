@@ -56,7 +56,7 @@ elseif(QT6_FOUND)
 #    message(SEND_ERROR "Currently only Qt5 is supported")
 endif(QT5_FOUND)
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLeicaMotorFocus.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLeicaMotorFocus.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LeicaMotorFocus.cpp

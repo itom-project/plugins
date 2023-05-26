@@ -44,7 +44,7 @@ namespace pcl
 {
   /**
     * \author Marc Gronle <gronle@ito.uni-stuttgart.de>
-    * \brief Implementation of a cylinder clipper in 3D. 
+    * \brief Implementation of a cylinder clipper in 3D.
     * \ingroup filters
     */
   template<typename PointT>
@@ -115,7 +115,7 @@ namespace pcl
 
       virtual void
       clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const;
-#endif        
+#endif
       virtual void
       clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const;
 

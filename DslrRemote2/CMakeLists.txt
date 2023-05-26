@@ -29,7 +29,7 @@ itom_find_package_qt(ON Core Widgets LinguistTools)
 
 if(LibUSB_INCLUDE_DIRS)
     add_subdirectory(libptp2-1.2.0)
-    
+
     link_directories(
         ${LIBUSB_API_DIR}/lib
     )
@@ -73,7 +73,7 @@ if(LibUSB_INCLUDE_DIRS)
     endif(WIN32)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
@@ -96,5 +96,5 @@ if(LibUSB_INCLUDE_DIRS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(LibUSB_INCLUDE_DIRS)
-    message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
+    message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")
 endif(LibUSB_INCLUDE_DIRS)

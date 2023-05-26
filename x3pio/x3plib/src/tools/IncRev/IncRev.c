@@ -5,8 +5,8 @@
  *
  *  Based on an old Amiga Ansi-C program by Georg Wiora
  *  from 3rd January 1990.
- * 
- *  This program is published under the 
+ *
+ *  This program is published under the
  *  Boost Software License V1.0 (s. below)
  *
  *  Usage:
@@ -102,7 +102,7 @@ findline(FILE *fp, const char *pat)
 
     // Loop while pattern not found
 	} while (patpos == NULL);
-  
+
   // Move file pointer to begin of line
 	fseek (fp,fpos,SEEK_SET);
 
@@ -140,7 +140,7 @@ findline(FILE *fp, const char *pat)
 }
 
 /*! @brief Increment a version number in a text file
-    
+
     \li Usage: IncRev <File> <Pattern> [<Increment>]\n
     The specified <File> must contain a line with the given pattern.
       \li Example:\n
@@ -148,7 +148,7 @@ findline(FILE *fp, const char *pat)
           IncRev will search "pattern" (case sensitive), read the number
           and use the space after pattern to the last digit to replace it
           with the incremented number, in this example 124.
-  
+
     The substitution happens in place without using a temp file!
     The optional <Increment> parameter is a number to add to the
     current version number. Default is 1.
@@ -240,7 +240,7 @@ main (const int argc, const char *argv[])
 
   // Reposition to start of number
   fseek(fp,cpos,SEEK_SET);
-  // Increment number and convert to string 
+  // Increment number and convert to string
   sprintf(numbuf,"%*d",len,num+increment);
   // check if space in file is sufficient
   if (strlen(numbuf)>(size_t)len)
@@ -258,7 +258,7 @@ main (const int argc, const char *argv[])
   fprintf(stderr,"IncRev: Incrementing number %d after string \"%s\"\n"
                  "        in file \"%s\"\n"
                  "        to %d\n",num,pattern,filename,num+increment);
-  
+
   // write number to current position
   fprintf(fp,"%*d",len,num+increment);
   // Close file

@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -132,7 +132,7 @@ DialogSpider8::DialogSpider8(ito::AddInBase *dataIO, void *plugin) :
                     st->setPos(x, y);
                 break;
 
-                case 5: 
+                case 5:
                     st = m_pqgscene->addSimpleText("D I/O", QFont("Arial", fSize));
                     st->setPos(x, y);
                 break;
@@ -215,12 +215,12 @@ void DialogSpider8::setRanges(const int unit)
             ui.aiRangeCombo->addItem("1.0 V", 11);
             ui.aiRangeCombo->addItem("10.0 V", 12);
         break;
-        
+
         case 2:
             ui.aiRangeCombo->addItem("0.02 A", 20);
             ui.aiRangeCombo->addItem("0.2 A", 21);
         break;
-        
+
         case 3:
             ui.aiRangeCombo->addItem("400.0 ohm", 30);
             ui.aiRangeCombo->addItem("4000.0 ohm", 31);
@@ -409,7 +409,7 @@ void DialogSpider8::calculateResolution()
     if ((cha = m_pPlugin->getChannel(channel)) != NULL)
     {
         double value = cha->mapSFactors[range + 700];
-        ui.aiResolutionLabel->setText(QString::number(value)+" mV/digit");        
+        ui.aiResolutionLabel->setText(QString::number(value)+" mV/digit");
     }
 }
 

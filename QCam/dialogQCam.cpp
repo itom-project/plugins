@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -22,12 +22,12 @@
 
 #include "dialogQCam.h"
 
-DialogQCam::DialogQCam(ito::AddInDataIO *grabber) 
+DialogQCam::DialogQCam(ito::AddInDataIO *grabber)
     :
     m_grabber(grabber),
     m_gainChanged(false),
     m_offsetChanged(false)
-{ 
+{
     ui.setupUi(this);
 
     connect(ui.doubleSpinBox_offset, SIGNAL(valueChanged(double)), this, SLOT(spinboxchanged(double)));
@@ -50,7 +50,7 @@ int DialogQCam::getVals()
         param = QSharedPointer<ito::ParamBase>( new ito::ParamBase("gain", ito::ParamBase::Double, ui.doubleSpinBox_gain->value() ) );
         outVector.append( param );
     }
-    
+
 
     if(m_grabber)   // Grabber exists
     {
@@ -71,7 +71,7 @@ void DialogQCam::valuesChanged(QMap<QString, ito::Param> params)
 {
     ui.doubleSpinBox_offset->setValue( params["offset"].getVal<double>() );
     ui.doubleSpinBox_gain->setValue( params["gain"].getVal<double>() );
-    
+
     m_gainChanged = false;
     m_offsetChanged = false;
 }
@@ -87,7 +87,7 @@ void DialogQCam::on_pushButton_setSizeXMax_clicked()
 
     inttemp = ui.spinBox_x0->minimum();
     ui.spinBox_x0->setValue(inttemp);
-    
+
     inttemp = ui.spinBox_xsize->maximum();
     ui.spinBox_xsize->setValue(inttemp);
 }
@@ -102,7 +102,7 @@ void DialogQCam::on_pushButton_setSizeYMax_clicked()
 
     inttemp = ui.spinBox_ysize->maximum();
     ui.spinBox_ysize->setValue(inttemp);
-    
+
     inttemp = ui.spinBox_y0->minimum();
     ui.spinBox_y0->setValue(inttemp);
 }

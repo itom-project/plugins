@@ -63,10 +63,10 @@ set(PLUGIN_UI
 set(PLUGIN_RCC
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/aerotechEnsemble.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechEnsemble.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechEnsemble.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechEnsemble.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC

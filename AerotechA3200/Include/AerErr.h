@@ -25,11 +25,11 @@
 //
 /********************************************************
 
-  Error utility routines. All displays are one button message boxes. All 
-  functions are well bulletproofed from bad parameters passed. (regardless of 
+  Error utility routines. All displays are one button message boxes. All
+  functions are well bulletproofed from bad parameters passed. (regardless of
   DEBUG or RELEASE build). AERMESS and AerErrGetMessage() are the most useful ones.
 
-AerErrGetMessage() - Given error code, copies message to passed ptr, 
+AerErrGetMessage() - Given error code, copies message to passed ptr,
                           appends severity.
 AERMESS()          - Allocates buffer, does a AerGetMessage() with passed
                           error code, displays, (just give it an RC id).
@@ -37,7 +37,7 @@ AERERRGETMESS()    - Same as AerGetMessage(), but you must call this
                           if calling function has variable arguments.
 aerMessageBox()    - Appends severity to given string, displays.
 
-AerErrLogFileOpen() - Opens a LOG file    
+AerErrLogFileOpen() - Opens a LOG file
 AerErrLogError()    - Logs message to error file
 AerErrLogFileClose()- Closes log file
 
@@ -53,7 +53,7 @@ int AER_DLLENTRY aerMessageBox(HWND hWnd, LPCTSTR pText, UINT uType);
 /*
    AERMESS() is simple Message box function (OK button only). OR logs to error log if not WIN95
       ERRORS: If it fails, lets you know what file and line in calling file where it did.
-         But if it cant alloc even space to do that, it gives two boxes, one 
+         But if it cant alloc even space to do that, it gives two boxes, one
          reporting a massive failure, the other giving the filename.
       NOTE: ??? This thing will eat up filename+pathname+20 bytes of static space for each call.
          It returns nothing.
@@ -64,8 +64,8 @@ if (!uierr) aerMessageBoxFail(NULL,"AERMESS",__FILE__,__LINE__);}
 
 #define AERMESSFAIL(zz) aerMessageBoxFail(NULL,zz,__FILE__,__LINE__);
 //
-// AERERRGETMESS() copies the RC string to passed pointer, with substitution. 
-// You must you must use this to get substitition, if you are in a function 
+// AERERRGETMESS() copies the RC string to passed pointer, with substitution.
+// You must you must use this to get substitition, if you are in a function
 // that recieves variable arguments. If substitution fails, it returns raw string.
 // If copy fails entirely, it does nothing.
 // If form is true, it uses long form of message. else short.
@@ -91,9 +91,9 @@ if (!uierr) aerMessageBoxFail(NULL,"AERMESS",__FILE__,__LINE__);}
 /*
 
   AerErrGetMessage() retrieves strings from RC file, with subsitutions,
-    and itwrites message to error log, if erro log open. Pas wStrSize as 0 
-    to assumme size of MAX_TEXT_LEN. Add arguments at end, to be substituted 
-    with format specifiers in specified string. If the vsprintf substitution fails, 
+    and itwrites message to error log, if erro log open. Pas wStrSize as 0
+    to assumme size of MAX_TEXT_LEN. Add arguments at end, to be substituted
+    with format specifiers in specified string. If the vsprintf substitution fails,
     it returns the string raw. Adds prefix with Aerotech name and severity.
     See AER_MACR.H for severity levels.
     It is very bulletproof, it returns NULL only in the worst failures,
@@ -113,11 +113,11 @@ AERERR_CODE AER_DLLENTRY AerErrGetSysErrorString( LPTSTR pszText, DWORD dwTextLe
    For logging errors to file. Old file destroyed when new one opened up.
    Note that AerOpenLogFile() return NULL or pointer to string explaining error.
 */
-#define LOGFILENAME "A32Err.Log"  
-LPTSTR AER_DLLENTRY AerErrLogFileOpen(void);    
+#define LOGFILENAME "A32Err.Log"
+LPTSTR AER_DLLENTRY AerErrLogFileOpen(void);
 AERERR_CODE AER_DLLENTRY AerErrLogError(LPCTSTR pStr);
 void AER_DLLENTRY AerErrLogFileClose(void);
-/* 
+/*
 
    AerErrMessageBox() does a AerErrGetMessage(), then a AerMess() call.
    It does the string allocation for you, just pass it a error code, a severity

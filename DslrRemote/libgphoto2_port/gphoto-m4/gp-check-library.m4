@@ -202,7 +202,7 @@ It must be one of ">=", ">", "<", "<=", "=".
 				AC_MSG_CHECKING([for ][$2][ parameters from ][gp_lib_config])
 				[$1]_LIBS="$(${[$1][_CONFIG_PROG]} --libs || echo "*error*")"
 				[$1]_CFLAGS="$(${[$1][_CONFIG_PROG]} --cflags || echo "*error*")"
-				if test "x${[$1]_LIBS}" = "*error*" || 
+				if test "x${[$1]_LIBS}" = "*error*" ||
 					test "x${[$1]_CFLAGS}" = "*error*"; then
 					AC_MSG_RESULT([error])
 				else
@@ -351,7 +351,7 @@ PKG_CONFIG_PATH=${PKG_CONFIG_PATH}
 [$1][_CFLAGS]=${[$1][_CFLAGS]}
 
 * Fatal: ${PACKAGE_NAME} requires $2 $3 to build.
-* 
+*
 * Possible solutions:
 *   - set PKG_CONFIG_PATH to adequate value
 *   - call configure with [$1][_LIBS]=.. and [$1][_CFLAGS]=..
@@ -374,7 +374,7 @@ PKG_CONFIG_PATH=${PKG_CONFIG_PATH}
 
 * Fatal: ${PACKAGE_NAME} by default requires $2 $3 to build.
 *        You must explicitly disable $2 to build ${PACKAGE_TARNAME} without it.
-* 
+*
 * Possible solutions:
 *   - call configure with --with-$2=no or --without-$2
 *   - set PKG_CONFIG_PATH to adequate value
@@ -448,7 +448,7 @@ dnl ####################################################################
 dnl
 dnl Please do not remove this:
 dnl filetype: 6e60b4f0-acb2-4cd5-8258-42014f92bd2c
-dnl I use this to find all the different instances of this file which 
+dnl I use this to find all the different instances of this file which
 dnl are supposed to be synchronized.
 dnl
 dnl Local Variables:

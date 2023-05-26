@@ -1,5 +1,5 @@
 /* Direct IO to USB Mass storage devices port library for Linux
- * 
+ *
  *   Copyright (c) 2010 Hans de Goede <hdegoede@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@
 #    define N_(String) gettext_noop (String)
 #  else
 #    define N_(String) (String)
-#  endif 
+#  endif
 #else
 #  define textdomain(String) (String)
 #  define gettext(String) (String)
@@ -76,7 +76,7 @@ struct _GPPortPrivateLibrary {
 };
 
 GPPortType
-gp_port_library_type () 
+gp_port_library_type ()
 {
 	return GP_PORT_USB_DISK_DIRECT;
 }
@@ -104,9 +104,9 @@ gp_port_usbdiskdirect_lock (GPPort *port, const char *path)
 	}
 #else
 # ifdef __GCC__
-#  warning No locking library found. 
+#  warning No locking library found.
 #  warning You will run into problems if you use
-#  warning gphoto2 with a usbdiskdirect picframe in 
+#  warning gphoto2 with a usbdiskdirect picframe in
 #  warning combination with Konqueror (KDE) or Nautilus (GNOME).
 #  warning This will *not* concern USB cameras.
 # endif
@@ -173,7 +173,7 @@ gp_port_usbdiskdirect_resolve_symlink (const char *link)
 	return path;
 }
 
-static int 
+static int
 gp_port_usbdiskdirect_get_usb_id (const char *disk,
 	unsigned short *vendor_id, unsigned short *product_id)
 {

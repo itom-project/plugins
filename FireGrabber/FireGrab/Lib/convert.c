@@ -221,7 +221,7 @@ void ConvertY8(UINT32 XSize,UINT32 YSize,UINT8 *pBuf,UINT8 *pBGR)
 {
   const UINT32 cnt=XSize*YSize;
   UINT32 i;
-  
+
   for(i=0;i<cnt;++i)
   {
     *pBGR = *pBuf; ++pBGR;
@@ -1395,4 +1395,3 @@ void XPlane411(UINT32 XSize,UINT32 YSize,UINT8 *pBuf,UINT8 *pR,UINT8 *pG,UINT8 *
     *pR++=(UINT8)Res;
   }
 }
-

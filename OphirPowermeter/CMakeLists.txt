@@ -1,4 +1,4 @@
-set(target_name OphirPowermeter) 
+set(target_name OphirPowermeter)
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
@@ -45,7 +45,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetOphirPowermeter.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetOphirPowermeter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirPowermeter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirLMMeasurement.cpp
@@ -61,7 +61,7 @@ add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_U
 # Qt: enable all automoc, autouic and autorcc.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-# multi-processor compilation must be deactivate 
+# multi-processor compilation must be deactivate
 # https://docs.microsoft.com/en-us/previous-versions/bb385193(v=vs.140)?redirectedfrom=MSDN#The-MSBUILD-exe-Tool
 mark_as_advanced(MULTITHREADED_BUILD)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP")

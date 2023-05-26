@@ -39,17 +39,17 @@ AERERR_CODE AER_DLLENTRY AerAxisCalRemoveAll( HAERCTRL hAerCtrl, AXISINDEX iCorr
 AERERR_CODE AER_DLLENTRY AerAxisCalFileDownload( HAERCTRL hAerCtrl, LPCTSTR pszFileName, PDWORD pdwTable);
 AERERR_CODE AER_DLLENTRY AerAxisCalAllocateTable( HAERCTRL hAerCtrl, DWORD dwTable,
                                                   DWORD dwSize );
-AERERR_CODE AER_DLLENTRY AerAxisCalGetStatusPacket (HAERCTRL hAerCtrl, DWORD dwTable, 
+AERERR_CODE AER_DLLENTRY AerAxisCalGetStatusPacket (HAERCTRL hAerCtrl, DWORD dwTable,
                                                     PAER_AXISCAL_STATUS_PACKET pStatus);
-AERERR_CODE AER_DLLENTRY AerAxisCalGetStatus (HAERCTRL hAerCtrl, DWORD dwTable, PDWORD pdwSize, 
-                                              PDWORD pdwStatus,  PAXISINDEX piMasterAxis, 
+AERERR_CODE AER_DLLENTRY AerAxisCalGetStatus (HAERCTRL hAerCtrl, DWORD dwTable, PDWORD pdwSize,
+                                              PDWORD pdwStatus,  PAXISINDEX piMasterAxis,
                                               PAXISINDEX piCorrectedAxis );
 
 AERERR_CODE AER_DLLENTRY AerAxisCalFreeTable( HAERCTRL hAerCtrl, DWORD dwTable );
 
-AERERR_CODE AER_DLLENTRY AerAxisCalSetPoint (HAERCTRL hAerCtrl, DWORD dwTable, DWORD wPoint, 
+AERERR_CODE AER_DLLENTRY AerAxisCalSetPoint (HAERCTRL hAerCtrl, DWORD dwTable, DWORD wPoint,
                                              DOUBLE dPosition, DOUBLE dCorrection);
-AERERR_CODE AER_DLLENTRY AerAxisCalGetPoint (HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwPoint, 
+AERERR_CODE AER_DLLENTRY AerAxisCalGetPoint (HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwPoint,
                                              PDOUBLE pdPosition, PDOUBLE pdCorrection, PDWORD pdwStatus );
 
 AERERR_CODE AER_DLLENTRY AerAxisCalReset( HAERCTRL hAerCtrl, AXISINDEX iAxis );
@@ -57,9 +57,9 @@ AERERR_CODE AER_DLLENTRY AerAxisCalReset( HAERCTRL hAerCtrl, AXISINDEX iAxis );
 AERERR_CODE AER_DLLENTRY AerAxisCalSetMode( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwMode );
 AERERR_CODE AER_DLLENTRY AerAxisCalGetMode( HAERCTRL hAerCtrl, AXISINDEX iAxis, PDWORD pdwMode );
 
-AERERR_CODE AER_DLLENTRY AerAxisCalSetAxisCalParameter( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwParmNumber, 
+AERERR_CODE AER_DLLENTRY AerAxisCalSetAxisCalParameter( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwParmNumber,
                                                         DOUBLE dParameter );
-AERERR_CODE AER_DLLENTRY AerAxisCalGetAxisCalParameter( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwParmNumber, 
+AERERR_CODE AER_DLLENTRY AerAxisCalGetAxisCalParameter( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwParmNumber,
                                                         PDOUBLE pdParameter );
 
 AERERR_CODE AER_DLLENTRY AerAxisCalGetUnCalPosition( HAERCTRL hAerCtrl, AXISINDEX iAxis,
@@ -70,14 +70,14 @@ AERERR_CODE AER_DLLENTRY AerAxisCalSet( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWOR
 AERERR_CODE AER_DLLENTRY AerAxisCalGetItems( HAERCTRL hAerCtrl, AXISINDEX iAxis, PDWORD pdwItems );
 AERERR_CODE AER_DLLENTRY AerAxisCalGetPacket( HAERCTRL hAerCtrl, AXISINDEX iAxis,
                                               DWORD dwItem,  PAER_AXISCAL_PACKET pEMap );
-AERERR_CODE AER_DLLENTRY AerAxisCalGet( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwItem, PDWORD pdwTable, 
+AERERR_CODE AER_DLLENTRY AerAxisCalGet( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwItem, PDWORD pdwTable,
                                         PAXISINDEX piMasterAxis );
 
-AERERR_CODE AER_DLLENTRY AerAxisCal2DAllocateTable( HAERCTRL hAerCtrl, DWORD dwTable, 
+AERERR_CODE AER_DLLENTRY AerAxisCal2DAllocateTable( HAERCTRL hAerCtrl, DWORD dwTable,
                                                     DWORD dwNumRows, DWORD dwNumColumns );
 AERERR_CODE AER_DLLENTRY AerAxisCal2DFreeTable( HAERCTRL hAerCtrl, DWORD dwTable );
 
-AERERR_CODE AER_DLLENTRY AerAxisCal2DGetStatus( HAERCTRL hAerCtrl, DWORD dwTable, 
+AERERR_CODE AER_DLLENTRY AerAxisCal2DGetStatus( HAERCTRL hAerCtrl, DWORD dwTable,
                                                 PDWORD pdwAllocated, PDWORD pdwMode );
 
 AERERR_CODE AER_DLLENTRY AerAxisCal2DSetCorrectPosFlag( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwCorrectPos );
@@ -86,23 +86,23 @@ AERERR_CODE AER_DLLENTRY AerAxisCal2DGetCorrectPosFlag( HAERCTRL hAerCtrl, DWORD
 AERERR_CODE AER_DLLENTRY AerAxisCal2DSetMode( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwMode );
 AERERR_CODE AER_DLLENTRY AerAxisCal2DGetMode( HAERCTRL hAerCtrl, DWORD dwTable, PDWORD pdwMode );
 
-AERERR_CODE AER_DLLENTRY AerAxisCal2DSetPoint( HAERCTRL hAerCtrl, DWORD dwTable, 
+AERERR_CODE AER_DLLENTRY AerAxisCal2DSetPoint( HAERCTRL hAerCtrl, DWORD dwTable,
                                                DWORD dwRow, DWORD dwColumn,
-                                               DOUBLE dCorrectionAxis1, 
-                                               DOUBLE dCorrectionAxis2, 
+                                               DOUBLE dCorrectionAxis1,
+                                               DOUBLE dCorrectionAxis2,
                                                DOUBLE dCorrectionAxis3 );
-AERERR_CODE AER_DLLENTRY AerAxisCal2DSetPointMulti( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerAxisCal2DSetPointMulti( HAERCTRL hAerCtrl,
                                                     DWORD dwTable,
-                                                    DWORD dwNumPoints, 
-                                                    PDWORD pdwRow, 
+                                                    DWORD dwNumPoints,
+                                                    PDWORD pdwRow,
                                                     PDWORD pdwColumn,
-                                                    PDOUBLE pdCorrectionAxis1, 
-                                                    PDOUBLE pdCorrectionAxis2, 
+                                                    PDOUBLE pdCorrectionAxis1,
+                                                    PDOUBLE pdCorrectionAxis2,
                                                     PDOUBLE pdCorrectionAxis3 );
 
 AERERR_CODE AER_DLLENTRY AerAxisCal2DGetPoint( HAERCTRL hAerCtrl, DWORD dwTable,
                                                DWORD dwRow, DWORD dwColumn,
-                                               PDOUBLE pdCorrectionAxis1, 
+                                               PDOUBLE pdCorrectionAxis1,
                                                PDOUBLE pdCorrectionAxis2,
                                                PDOUBLE pdCorrectionAxis3 );
 
@@ -110,7 +110,7 @@ AERERR_CODE AER_DLLENTRY AerAxisCal2DSetData( HAERCTRL hAerCtrl, DWORD dwTable,
                                               DOUBLE dRowSampDist, DOUBLE dColSampDist,
                                               DOUBLE dRowOffset, DOUBLE dColOffset,
                                               AXISINDEX iRowAxis, AXISINDEX iColumnAxis,
-                                              AXISINDEX iOutputAxis1, AXISINDEX iOutputAxis2, 
+                                              AXISINDEX iOutputAxis1, AXISINDEX iOutputAxis2,
                                               AXISINDEX iOutputAxis3, DWORD dwCorrectAxis1Enable,
                                               DWORD dwCorrectAxis2Enable, DWORD dwCorrectAxis3Enable );
 AERERR_CODE AER_DLLENTRY AerAxisCal2DGetData( HAERCTRL hAerCtrl, DWORD dwTable,
@@ -125,12 +125,12 @@ AERERR_CODE AER_DLLENTRY AerAxisCal2DGetData( HAERCTRL hAerCtrl, DWORD dwTable,
 AERERR_CODE AER_DLLENTRY AerAxisCal2DFileDownload( HAERCTRL hAerCtrl, LPCTSTR pszFileName, PDWORD pdwTable);
 
 AERERR_CODE AER_DLLENTRY AerGainCalRemoveAll( HAERCTRL hAerCtrl, AXISINDEX iCorrectedAxis);
-AERERR_CODE AER_DLLENTRY AerGainCalFileDownload( HAERCTRL hAerCtrl, LPCTSTR pszFileName, 
+AERERR_CODE AER_DLLENTRY AerGainCalFileDownload( HAERCTRL hAerCtrl, LPCTSTR pszFileName,
                                                  PDWORD pdwTable);
 AERERR_CODE AER_DLLENTRY AerGainCalAllocateTable( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwSize );
 AERERR_CODE AER_DLLENTRY AerGainCalGetStatusPacket( HAERCTRL hAerCtrl, DWORD dwTable, PAER_GAINCAL_STATUS_PACKET pStatus );
-AERERR_CODE AER_DLLENTRY AerGainCalGetStatus (HAERCTRL hAerCtrl, DWORD dwTable, PDWORD pdwSize, 
-                                              PDWORD pdwStatus,  PAXISINDEX piMasterAxis, 
+AERERR_CODE AER_DLLENTRY AerGainCalGetStatus (HAERCTRL hAerCtrl, DWORD dwTable, PDWORD pdwSize,
+                                              PDWORD pdwStatus,  PAXISINDEX piMasterAxis,
                                               PAXISINDEX piCorrectedAxis);
 
 AERERR_CODE AER_DLLENTRY AerGainCalReset( HAERCTRL hAerCtrl, AXISINDEX iAxis );
@@ -138,17 +138,17 @@ AERERR_CODE AER_DLLENTRY AerGainCalReset( HAERCTRL hAerCtrl, AXISINDEX iAxis );
 AERERR_CODE AER_DLLENTRY AerGainCalSetMode( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwMode );
 AERERR_CODE AER_DLLENTRY AerGainCalGetMode( HAERCTRL hAerCtrl, AXISINDEX iAxis, PDWORD pdwMode );
 
-AERERR_CODE AER_DLLENTRY AerGainCalSet (HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwTable, 
+AERERR_CODE AER_DLLENTRY AerGainCalSet (HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwTable,
                                         AXISINDEX iMasterAxis);
 
 AERERR_CODE AER_DLLENTRY AerGainCalFreeTable( HAERCTRL hAerCtrl, DWORD dwTable );
 
-AERERR_CODE AER_DLLENTRY AerGainCalSetPoint( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwPoint, 
+AERERR_CODE AER_DLLENTRY AerGainCalSetPoint( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwPoint,
                                              DOUBLE dPosition, DOUBLE dKpos, DOUBLE dKi,
                                              DOUBLE dKp, DOUBLE dAff );
 
-AERERR_CODE AER_DLLENTRY AerGainCalGetPoint( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwPoint, 
-                                             PDOUBLE pdPosition, PDOUBLE pdKpos, PDOUBLE pdKi, 
+AERERR_CODE AER_DLLENTRY AerGainCalGetPoint( HAERCTRL hAerCtrl, DWORD dwTable, DWORD dwPoint,
+                                             PDOUBLE pdPosition, PDOUBLE pdKpos, PDOUBLE pdKi,
                                              PDOUBLE pdKp, PDOUBLE pdAff, PDWORD pdwStatus );
 
 #ifdef __cplusplus
@@ -164,10 +164,10 @@ AERERR_CODE AER_DLLENTRY AerGainCalGetPoint( HAERCTRL hAerCtrl, DWORD dwTable, D
 #define NUM_GAINCAL_UNITS 4
 #define NUM_AXISCAL_KEYWORDS 16
 
-//{":START", "MASTER", "POSUNIT", 
-// "CORUNIT", "SAMPLEDIST", "OFFSET", 
-// "EXPANDCOEFF", "MATERIALTEMP", "NEGPOS", 
-// "NEGCOR", "HOMEDIRECTION", "HOMEOFFSET", 
+//{":START", "MASTER", "POSUNIT",
+// "CORUNIT", "SAMPLEDIST", "OFFSET",
+// "EXPANDCOEFF", "MATERIALTEMP", "NEGPOS",
+// "NEGCOR", "HOMEDIRECTION", "HOMEOFFSET",
 // "FULLTRAVEL", "NEGCPU", ":END", ":GAIN"};
 
 #define AXISCAL_KEYWORD_INVALID       -1
@@ -192,7 +192,7 @@ AERERR_CODE AER_DLLENTRY AerGainCalGetPoint( HAERCTRL hAerCtrl, DWORD dwTable, D
 
 // {":START", "OUTAXIS3", "POSUNIT",
 //  "CORUNIT", "OFFSETROW", "OFFSETCOL",
-//  "NEGCOR", "INTABLE", "NOCPUSIGN", 
+//  "NEGCOR", "INTABLE", "NOCPUSIGN",
 //  ":END", ":START2D"};
 
 #define AXISCAL_2D_KEYWORD_START          0
@@ -209,44 +209,43 @@ AERERR_CODE AER_DLLENTRY AerGainCalGetPoint( HAERCTRL hAerCtrl, DWORD dwTable, D
 
 #define NUM_GAINCAL_KEYWORDS 7
 
-// {":GAIN", "MASTER", "POSUNIT", 
+// {":GAIN", "MASTER", "POSUNIT",
 //  "SAMPLEDIST", "OFFSET", ":END"};
 
 #define GAINCAL_KEYWORD_GAIN              0
-#define GAINCAL_KEYWORD_MASTER            1 
+#define GAINCAL_KEYWORD_MASTER            1
 #define GAINCAL_KEYWORD_POSUNIT           2
-#define GAINCAL_KEYWORD_SAMPLEDIST        3  
+#define GAINCAL_KEYWORD_SAMPLEDIST        3
 #define GAINCAL_KEYWORD_OFFSET            4
 #define GAINCAL_KEYWORD_NEGPOS			  5
-#define GAINCAL_KEYWORD_END               6 
+#define GAINCAL_KEYWORD_END               6
 
 BOOL aerIsNumberPart(TCHAR cc);
 AERERR_CODE aerParmGetCountConversionFactor(HAERCTRL hAerCtrl, DWORD dwCorrectedAxis, DWORD dwUnitType, double* pfdCntsPerInch);
 AERERR_CODE aerGetLineByte( HANDLE hFile, LPTSTR szLine );
-AERERR_CODE aerGetLineChunk( HANDLE hFile, LPTSTR szLine, LPTSTR pszFileBuffer, PDWORD pdwBufferSize, 
+AERERR_CODE aerGetLineChunk( HANDLE hFile, LPTSTR szLine, LPTSTR pszFileBuffer, PDWORD pdwBufferSize,
                              PDWORD pdwLocation, PDWORD pdwStatus );
-AERERR_CODE aerGetLine( HANDLE hFile, LPTSTR szLine, ULONG ulszLineLen, LPTSTR pszFileBuffer, PDWORD pdwBufferSize, 
+AERERR_CODE aerGetLine( HANDLE hFile, LPTSTR szLine, ULONG ulszLineLen, LPTSTR pszFileBuffer, PDWORD pdwBufferSize,
                         PDWORD pdwLocation );
 
 AERERR_CODE aerReadFileWhole( HANDLE hFile, DWORD dwFileSize, LPTSTR pszFileBuffer );
 AERERR_CODE aerGetFileSize(LPCTSTR pszFileName, PDWORD pdwSize);
 
-AERERR_CODE aerParse_START_Line (LPTSTR szLine, PAXISINDEX piCorrectedAxis, PAXISINDEX piMasterAxis, 
+AERERR_CODE aerParse_START_Line (LPTSTR szLine, PAXISINDEX piCorrectedAxis, PAXISINDEX piMasterAxis,
                                  PDWORD pdwPositionUnitType, PDOUBLE pdPositionUnitDivisor,
                                  PDWORD pdwCorrectionUnitType, PDOUBLE pdCorrectionUnitDivisor,
                                  PBOOL pbTableFormat2, PDOUBLE pdSampleDist, PDOUBLE pdOffset,
-                                 PDOUBLE pdExpandCoeff, PDOUBLE pdReferenceTemp, PBOOL pbChangePosSign, 
+                                 PDOUBLE pdExpandCoeff, PDOUBLE pdReferenceTemp, PBOOL pbChangePosSign,
                                  PBOOL pbChangeCorSign, PDWORD pdwHomeDirection, PDOUBLE pdHomeOffset,
                                  PDOUBLE pdStageFullTravel, PBOOL pbNegativeCntsPerUnit);
 
-AERERR_CODE aerParse_2D_START_Line( LPTSTR szLine, PDOUBLE pdRowAxis, PDOUBLE pdColumnAxis, 
+AERERR_CODE aerParse_2D_START_Line( LPTSTR szLine, PDOUBLE pdRowAxis, PDOUBLE pdColumnAxis,
                                     PDOUBLE pdOutputAxis1, PDOUBLE pdOutputAxis2, PDOUBLE pdOutputAxis3,
                                     PDOUBLE pdRowSampleDistance, PDOUBLE pdColumnSampleDistance,
-                                    PDWORD pdwNumberOfColumns, PDOUBLE pdOffsetRow, PDOUBLE pdOffsetCol, 
+                                    PDWORD pdwNumberOfColumns, PDOUBLE pdOffsetRow, PDOUBLE pdOffsetCol,
                                     PDWORD pdwPositionUnitType, PDOUBLE pdPositionUnitDivisor,
                                     PDWORD pdwCorrectionUnitType, PDOUBLE pdCorrectionUnitDivisor,
                                     PBOOL pbChangeCorSign, PBOOL pbCorrectInTableOnly );
 
 #endif
 // __AER_AXISCAL_H__
-

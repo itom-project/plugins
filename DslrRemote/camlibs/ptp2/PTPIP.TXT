@@ -78,7 +78,7 @@ TYPE 4 (Init_Event_Ack)
 	You can start sending PTP traffic now.
 
 TYPE 5 (Init_Fail)
-	payload 4 byte. 
+	payload 4 byte.
 		4 byte error code (unclear meaning)
 		-> might mean busy / access denied.
 
@@ -120,7 +120,7 @@ TYPE 11 (Cancel_Transaction):
 		4 length
 		4 type
 		4 <ID>
-	
+
 	-> Gets 0x7 ack back.
 
 TYPE 12 (End_Data_Packet):
@@ -165,7 +165,7 @@ Profile creation packet (USB)
 				Pick a random address in 169.254.1.*
 				(check with several ARP requests that no one use
 				this address)
-		3	DHCP in managed mode : 
+		3	DHCP in managed mode :
 				Send a standard DHCP request, if it gets no
 				answer, switch to mode 2
 
@@ -194,4 +194,4 @@ Profile creation packet (USB)
 
 0xB1	BYTE	EncryptionKeyNr
 0xB2	BYTE	MachineGUID[0x10]
-0xC2	UINT16	Encryption key length in bytes 0x0005 for WEP64, 0x000d for WEP128 
+0xC2	UINT16	Encryption key length in bytes 0x0005 for WEP64, 0x000d for WEP128

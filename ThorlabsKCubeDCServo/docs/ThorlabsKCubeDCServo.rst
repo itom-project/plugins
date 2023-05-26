@@ -10,7 +10,7 @@
 **Devices**:    K-Cube Controller for Brushed DC Servo Motors, e.g. KDC101
 **Author**:     :pluginauthor:`ThorlabsKCubeDCServo`
 =============== ================================================================
- 
+
 Overview
 ========
 
@@ -21,20 +21,20 @@ ITOM Plugin to be used for interaction with the K-Cube Controller for Brushed DC
 
 Initialization
 ==============
-  
-The following parameters are mandatory or optional for initializing an instance 
+
+The following parameters are mandatory or optional for initializing an instance
 of this plugin:
-    
+
     .. plugininitparams::
         :plugin: ThorlabsKCubeDCServo
 
 Parameters
 ===========
 
-These parameters are available and can be used to configure the 
+These parameters are available and can be used to configure the
 **ThorlabsKCubeDCServo** instance. Many of them are directly initialized by the
-parameters of the constructor. During the runtime of an instance, the value of 
-these parameters is obtained by the method *getParam*, writeable parameters can 
+parameters of the constructor. During the runtime of an instance, the value of
+these parameters is obtained by the method *getParam*, writeable parameters can
 be changed using *setParam*.
 
 **acceleration**: {float}
@@ -72,15 +72,15 @@ Usage
 This example shows how to initalized the device in **itom** and change the position:
 
     .. code-block:: python
-        
+
         serialNo = 2700001
         mot = dataIO("ThorlabsKCubeDCServo", serialNo = serialNo)
-        
+
         # execute a home drive to get the zero position
         mot.calib(0)
-        
+
         mot.setParam("speed", 2.5) # 2.5 mm/s
-        
+
         mot.setPosAbs(0, 25)  # move to the absolute position 25 mm
         mot.setOrigin(0)  # sets the current position to be '0'.
         mot.setPosAbs(0, -25)  # moves back to the original position
@@ -109,7 +109,7 @@ Compilation
 
 To compile this plugin, install the Thorlabs KINESIS from
 https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0
-driver package in the same bit-version than itom (32/64bit). 
+driver package in the same bit-version than itom (32/64bit).
 It has been implemented using KINESIS version 1.14.32.
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
 to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).

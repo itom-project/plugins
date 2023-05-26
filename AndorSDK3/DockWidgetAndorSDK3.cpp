@@ -4,7 +4,7 @@
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -32,7 +32,7 @@ DockWidgetSDK3::DockWidgetSDK3(ito::AddInDataIO *grabber) :
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
-{    
+{
     int inEditing = m_inEditing;
     m_inEditing = true;
 
@@ -49,7 +49,7 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
         {
             ui.lblModel->setText(params["camera_model"].getVal<const char*>());
         }
-        
+
         if (params.contains("camera_name"))
         {
             ui.lblName->setText(params["camera_name"].getVal<const char*>());

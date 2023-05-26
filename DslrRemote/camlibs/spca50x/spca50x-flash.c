@@ -317,7 +317,7 @@ spca500_flash_capture (CameraPrivateLibrary *pl)
 		/* wait until the camera is not busy any more */
 		/* spca50x_flash_wait_for_ready doesn't work here */
 		sleep(3);
-		
+
 		/* invalidate TOC/info cache */
 		pl->dirty_flash = 1;
 		return GP_OK;

@@ -1028,7 +1028,7 @@ extern "C"
 //@}
 
 
-/** 
+/**
 	* @anchor flagset_motortypeflags
  	* \english
 	* @name Motor Type flags
@@ -1046,7 +1046,7 @@ extern "C"
 //@}
 
 
-/** 
+/**
 	* @anchor flagset_encodersettingsflags
  	* \english
 	* @name Encoder settings flags
@@ -1065,7 +1065,7 @@ extern "C"
 //@}
 
 
-/** 
+/**
 	* @anchor flagset_mbsettingsflags
  	* \english
 	* @name Magnetic brake settings flags
@@ -1081,7 +1081,7 @@ extern "C"
 //@}
 
 
-/** 
+/**
 	* @anchor flagset_tssettingsflags
  	* \english
 	* @name Temperature sensor settings flags
@@ -1100,7 +1100,7 @@ extern "C"
 //@}
 
 
-/** 
+/**
 	* @anchor flagset_lsflags
  	* \english
 	* @name Temperature sensor settings flags
@@ -1138,7 +1138,7 @@ extern "C"
 //@}
 
 
-/** 
+/**
 	* \english
 	* Feedback settings.
 	* This structure contains feedback settings.
@@ -1157,7 +1157,7 @@ extern "C"
 		unsigned int CountsPerTurn;	/**< \english The number of encoder counts per shaft revolution. Range: 1..4294967295. To use the CountsPerTurn field, write 0 in the IPS field, otherwise the value from the IPS field will be used. \endenglish \russian Количество отсчётов энкодера на оборот вала. Диапазон: 1..4294967295. Для использования поля CountsPerTurn нужно записать 0 в поле IPS, иначе будет использоваться значение из поля IPS. \endrussian */
 	} feedback_settings_t;
 
-/** 
+/**
 	* \english
 	* Position calibration settings.
 	* This structure contains settings used in position calibrating.
@@ -1183,7 +1183,7 @@ extern "C"
 		unsigned int HomeFlags;	/**< \english \ref flagset_homeflags "Home settings flags". \endenglish \russian \ref flagset_homeflags "Флаги настроек команды home". \endrussian */
 	} home_settings_t;
 
-/** 
+/**
 	* \english
 	* Position calibration settings which use user units.
 	* This structure contains settings used in position calibrating.
@@ -1206,7 +1206,7 @@ extern "C"
 		unsigned int HomeFlags;	/**< \english \ref flagset_homeflags "Home settings flags". \endenglish \russian \ref flagset_homeflags "Флаги настроек команды home". \endrussian */
 	} home_settings_calb_t;
 
-/** 
+/**
 	* \english
 	* Move settings.
 	* \endenglish
@@ -1228,7 +1228,7 @@ extern "C"
 		unsigned int MoveFlags;	/**< \english \ref flagset_moveflags "Flags of the motion parameters". \endenglish \russian \ref flagset_moveflags "Флаги параметров движения". \endrussian */
 	} move_settings_t;
 
-/** 
+/**
 	* \english
 	* Move settings which use user units.
 	* \endenglish
@@ -1248,7 +1248,7 @@ extern "C"
 		unsigned int MoveFlags;	/**< \english \ref flagset_moveflags "Flags of the motion parameters". \endenglish \russian \ref flagset_moveflags "Флаги параметров движения". \endrussian */
 	} move_settings_calb_t;
 
-/** 
+/**
 	* \english
 	* Movement limitations and settings, related to the motor.
 	* This structure contains useful motor settings.
@@ -1280,7 +1280,7 @@ extern "C"
 		unsigned int StepsPerRev;	/**< \english Number of full steps per revolution(Used with stepper motor only). Range: 1..65535. \endenglish \russian Количество полных шагов на оборот(используется только с шаговым двигателем). Диапазон: 1..65535. \endrussian */
 	} engine_settings_t;
 
-/** 
+/**
 	* \english
 	* Movement limitations and settings, related to the motor, which use user units.
 	* This structure contains useful motor settings.
@@ -1311,7 +1311,7 @@ extern "C"
 		unsigned int StepsPerRev;	/**< \english Number of full steps per revolution(Used with stepper motor only). Range: 1..65535. \endenglish \russian Количество полных шагов на оборот(используется только с шаговым двигателем). Диапазон: 1..65535. \endrussian */
 	} engine_settings_calb_t;
 
-/** 
+/**
 	* \english
 	* Engine type and driver type settings.
 	* @param id an identifier of device
@@ -1333,7 +1333,7 @@ extern "C"
 		unsigned int DriverType;	/**< \english \ref flagset_drivertype "Flags of driver type". \endenglish \russian \ref flagset_drivertype "Флаги, определяющие тип силового драйвера". \endrussian */
 	} entype_settings_t;
 
-/** 
+/**
 	* \english
 	* Step motor power settings.
 	* \endenglish
@@ -1353,7 +1353,7 @@ extern "C"
 		unsigned int PowerFlags;	/**< \english \ref flagset_powerflags "Flags of power settings of stepper motor". \endenglish \russian \ref flagset_powerflags "Флаги параметров питания шагового мотора". \endrussian */
 	} power_settings_t;
 
-/** 
+/**
 	* \english
 	* This structure contains raw analog data from ADC embedded on board.
 	* These data used for device testing and deep recalibraton by manufacturer only.
@@ -1378,7 +1378,7 @@ extern "C"
 		unsigned int Flags;	/**< \english \ref flagset_secureflags "Flags of secure settings". \endenglish \russian \ref flagset_secureflags "Флаги критических параметров". \endrussian */
 	} secure_settings_t;
 
-/**  
+/**
 	* \english
 	* Edges settings.
 	* This structure contains border and limit switches settings.
@@ -1405,7 +1405,7 @@ extern "C"
 		int uRightBorder;	/**< \english Right border position in microsteps. Used with stepper motor only. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Позиция правой границы в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 	} edges_settings_t;
 
-/**  
+/**
 	* \english
 	* Edges settings which use user units.
 	* This structure contains border and limit switches settings.
@@ -1430,7 +1430,7 @@ extern "C"
 		float RightBorder;	/**< \english Right border position, used if BORDER_IS_ENCODER flag is set. Corrected by the table. \endenglish \russian Позиция правой границы, используется если установлен флаг BORDER_IS_ENCODER. Корректируется таблицей. \endrussian */
 	} edges_settings_calb_t;
 
-/**  
+/**
 	* \english
 	* PID settings.
 	* This structure contains factors for PID routine.
@@ -1463,7 +1463,7 @@ extern "C"
 		float Kdf;	/**< \english Differential gain for BLDC position PID routine \endenglish \russian Дифференциальный коэффициент ПИД контура по позиции для BLDC \endrussian */
 	} pid_settings_t;
 
-/** 
+/**
 	* \english
 	* Synchronization settings.
 	* This structure contains all synchronization settings, modes, periods and flags.
@@ -1488,7 +1488,7 @@ extern "C"
 		unsigned int uSpeed;	/**< \english Target speed in microsteps/s. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). Using with stepper motor only. \endenglish \russian Заданная скорость в микрошагах в секунду. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). Используется только с шаговым мотором. \endrussian */
 	} sync_in_settings_t;
 
-/** 
+/**
 	* \english
 	* Synchronization settings which use user units.
 	* This structure contains all synchronization settings, modes, periods and flags.
@@ -1511,7 +1511,7 @@ extern "C"
 		float Speed;	/**< \english Target speed. \endenglish \russian Заданная скорость. \endrussian */
 	} sync_in_settings_calb_t;
 
-/** 
+/**
 	* \english
 	* Synchronization settings.
 	* This structure contains all synchronization settings, modes, periods and flags.
@@ -1535,7 +1535,7 @@ extern "C"
 		unsigned int uAccuracy;	/**< \english This is the neighborhood around the target coordinates in microsteps (only used with stepper motor). Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Это окрестность вокруг целевой координаты в микрошагах (используется только с шаговым двигателем). Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 	} sync_out_settings_t;
 
-/** 
+/**
 	* \english
 	* Synchronization settings which use user units.
 	* This structure contains all synchronization settings, modes, periods and flags.
@@ -1558,7 +1558,7 @@ extern "C"
 		float Accuracy;	/**< \english This is the neighborhood around the target coordinates (in encoder pulses or motor steps), which is getting hit in the target position and the momentum generated by the stop. \endenglish \russian Это окрестность вокруг целевой координаты (в шагах/отсчетах энкодера), попадание в которую считается попаданием в целевую позицию и генерируется импульс по остановке. \endrussian */
 	} sync_out_settings_calb_t;
 
-/** 
+/**
 	* \english
 	* EXTIO settings.
 	* This structure contains all EXTIO settings.
@@ -1580,7 +1580,7 @@ extern "C"
 		unsigned int EXTIOModeFlags;	/**< \english \ref flagset_extiomodeflags "External IO mode flags". \endenglish \russian \ref flagset_extiomodeflags "Флаги настройки режимов внешнего ввода/вывода". \endrussian */
 	} extio_settings_t;
 
-/** 
+/**
 	* \english
 	* Brake settings.
 	* This structure contains parameters of brake control.
@@ -1602,7 +1602,7 @@ extern "C"
 		unsigned int BrakeFlags;	/**< \english \ref flagset_brakeflags "Brake settings flags". \endenglish \russian \ref flagset_brakeflags "Флаги настроек тормоза". \endrussian */
 	} brake_settings_t;
 
-/** 
+/**
 	* \english
 	* Control settings.
 	* This structure contains control parameters.
@@ -1642,7 +1642,7 @@ extern "C"
 		int uDeltaPosition;	/**< \english Fractional part of the shift in micro steps. Is only used with stepper motor. Microstep size and the range of valid values for this field depend on selected step division mode (see MicrostepMode field in engine_settings). \endenglish \russian Дробная часть смещения в микрошагах. Используется только с шаговым двигателем. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings). \endrussian */
 	} control_settings_t;
 
-/** 
+/**
 	* \english
 	* Control settings which use user units.
 	* This structure contains control parameters.
@@ -1680,7 +1680,7 @@ extern "C"
 		float DeltaPosition;	/**< \english Shift (delta) of position \endenglish \russian Смещение (дельта) позиции \endrussian */
 	} control_settings_calb_t;
 
-/** 
+/**
 	* \english
 	* Joystick settings.
 	* This structure contains joystick parameters.
@@ -1718,7 +1718,7 @@ extern "C"
 		unsigned int JoyFlags;	/**< \english \ref flagset_joyflags "Joystick flags". \endenglish \russian \ref flagset_joyflags "Флаги джойстика". \endrussian */
 	} joystick_settings_t;
 
-/** 
+/**
 	* \english
 	* Control position settings(is only used with stepper motor).
 	* When controlling the step motor with encoder (CTP_BASE 0) it is possible
@@ -1757,7 +1757,7 @@ extern "C"
 		unsigned int CTPFlags;	/**< \english \ref flagset_ctpflags "Position control flags". \endenglish \russian \ref flagset_ctpflags "Флаги контроля позиции". \endrussian */
 	} ctp_settings_t;
 
-/** 
+/**
 	* \english
 	* UART settings.
 	* This structure contains UART settings.
@@ -1776,7 +1776,7 @@ extern "C"
 		unsigned int UARTSetupFlags;	/**< \english \ref flagset_uartsetupflags "UART parity flags". \endenglish \russian \ref flagset_uartsetupflags "Флаги настроек четности команды uart". \endrussian */
 	} uart_settings_t;
 
-/** 
+/**
 	* \english
 	* Calibration settings.
 	* This structure contains calibration settings.
@@ -1799,7 +1799,7 @@ extern "C"
 		float FullCurrent_B;	/**< \english Shift factor for the analogue measurements of the full current. \endenglish \russian Коэффициент сдвига для аналоговых измерений полного тока. \endrussian */
 	} calibration_settings_t;
 
-/** 
+/**
 	* \english
 	* Controller user name and flags of setting.
 	* \endenglish
@@ -1814,7 +1814,7 @@ extern "C"
 		unsigned int CtrlFlags;	/**< \english \ref flagset_controllerflags "Flags of internal controller settings". \endenglish \russian \ref flagset_controllerflags "Флаги настроек контроллера". \endrussian */
 	} controller_name_t;
 
-/** 
+/**
 	* \english
 	* Userdata for save into FRAM.
 	* \endenglish
@@ -1828,7 +1828,7 @@ extern "C"
 		unsigned int UserData[7];	/**< \english User data. Can be set by user for his/her convinience. Each element of the array stores only 32 bits of user data. This is important on systems where an int type contains more than 4 bytes. For example that all amd64 systems. \endenglish \russian Пользовательские данные. Могут быть установлены пользователем для его удобства. Каждый элемент массива хранит только 32 бита пользовательских данных. Это важно на системах где тип int содержит больше чем 4 байта. Например это все системы amd64.\endrussian */
 	} nonvolatile_memory_t;
 
-/**  
+/**
 	* \english
 	* EMF settings.
 	* This structure contains the data for Electromechanical characteristics(EMF) of the motor.
@@ -1857,7 +1857,7 @@ extern "C"
 		unsigned int BackEMFFlags;	/**< \english \ref flagset_backemfflags "Flags of auto-detection of characteristics of windings of the engine". \endenglish \russian \ref flagset_backemfflags "Флаги автоопределения характеристик обмоток двигателя". \endrussian */
 	} emf_settings_t;
 
-/**  
+/**
 	* \english
 	* EAS settings.
 	* This structure is intended for setting parameters of algorithms that cannot be attributed to standard Kp, Ki, Kd, and L, R, Km.
@@ -1878,7 +1878,7 @@ extern "C"
 		unsigned int stepcloseloop_Kp_high;	/**< \english Position feedback in the high-speed zone, range [0, 65535], default value 33. \endenglish \russian Обратная связь по позиции в зоне больших скоростей, диапазон [0, 65535], значение по умолчанию 33. \endrussian */
 	} engine_advansed_setup_t;
 
-/**  
+/**
 	* \english
 	* EST settings.
 	* This structure EST.
@@ -1897,7 +1897,7 @@ extern "C"
 		unsigned int Param1;	/**< \english    \endenglish \russian   \endrussian */
 	} extended_settings_t;
 
-/** 
+/**
 	* \english
 	* Position information.
 	* Useful structure that contains position value in steps and micro for stepper motor
@@ -1918,7 +1918,7 @@ extern "C"
 		long_t EncPosition;	/**< \english Encoder position.  \endenglish \russian Позиция энкодера. \endrussian */
 	} get_position_t;
 
-/** 
+/**
 	* \english
 	* Position information.
 	* Useful structure that contains position value in user units for stepper motor
@@ -1937,7 +1937,7 @@ extern "C"
 		long_t EncPosition;	/**< \english Encoder position.  \endenglish \russian Позиция энкодера. \endrussian */
 	} get_position_calb_t;
 
-/** 
+/**
 	* \english
 	* Position information.
 	* Useful structure that contains position value in steps and micro for stepper motor
@@ -1959,7 +1959,7 @@ extern "C"
 		unsigned int PosFlags;	/**< \english \ref flagset_positionflags "Position setting flags". \endenglish \russian \ref flagset_positionflags "Флаги установки положения". \endrussian */
 	} set_position_t;
 
-/** 
+/**
 	* \english
 	* Position information which use user units.
 	* Useful structure that contains position value in steps and micro for stepper motor
@@ -1980,7 +1980,7 @@ extern "C"
 		unsigned int PosFlags;	/**< \english \ref flagset_positionflags "Position setting flags". \endenglish \russian \ref flagset_positionflags "Флаги установки положения". \endrussian */
 	} set_position_calb_t;
 
-/** 
+/**
 	* \english
 	* Device state.
 	* Useful structure that contains current controller state, including speed, position and boolean flags.
@@ -2013,7 +2013,7 @@ extern "C"
 		unsigned int CmdBufFreeSpace;	/**< \english This field is a service field. It shows the amount of free cells buffer synchronization chain. \endenglish \russian Данное поле служебное. Оно показывает количество свободных ячеек буфера цепочки синхронизации. \endrussian */
 	} status_t;
 
-/** 
+/**
 	* \english
 	* Device state which use user units.
 	* Useful structure that contains current controller state, including speed, position and boolean flags.
@@ -2044,7 +2044,7 @@ extern "C"
 		unsigned int CmdBufFreeSpace;	/**< \english This field is a service field. It shows the amount of free cells buffer synchronization chain. \endenglish \russian Данное поле служебное. Оно показывает количество свободных ячеек буфера цепочки синхронизации. \endrussian */
 	} status_calb_t;
 
-/** 
+/**
   * \english
   * The buffer holds no more than 25 points. The exact length of the received buffer is reflected in the Length field.
   * \endenglish
@@ -2061,7 +2061,7 @@ extern "C"
 		unsigned int Length;	/**< \english Length of actual data in buffer. \endenglish \russian Длина фактических данных в буфере. \endrussian */
 	} measurements_t;
 
-/** 
+/**
 	* \english
 	* Additional device state.
 	* This structure contains additional values such as winding's voltages, currents and temperature.
@@ -2086,7 +2086,7 @@ extern "C"
 		int DutyCycle;	/**< \english Duty cycle of PWM. \endenglish \russian Коэффициент заполнения ШИМ. \endrussian */
 	} chart_data_t;
 
-/** 
+/**
 	* \english
 	* Read command controller information.
 	* The controller responds to this command in any state. Manufacturer field for all XI**
@@ -2112,7 +2112,7 @@ extern "C"
 		unsigned int Release;	/**< \english Number of edits this release of hardware. \endenglish \russian Номер правок этой версии железа. \endrussian */
 	} device_information_t;
 
-/**  
+/**
 	* \english
 	* Serial number structure and hardware version.
 	* The structure keep new serial number, hardware version and valid key.
@@ -2136,7 +2136,7 @@ extern "C"
 		unsigned int Release;	/**< \english Number of edits this release of hardware. \endenglish \russian Номер правок этой версии железа. \endrussian */
 	} serial_number_t;
 
-/** 
+/**
 	* \english
 	* Analog data.
 	* This structure contains raw analog data from ADC embedded on board.
@@ -2183,7 +2183,7 @@ extern "C"
 		int L;	/**< \english Motor winding pseudo inductance in uHn(is only used with stepper motor). \endenglish \russian Псевдоиндуктивность обмоток двигателя(для шагового двигателя),  в мкГн \endrussian */
 	} analog_data_t;
 
-/** 
+/**
 	* \english
 	* Debug data.
 	* These data are used for device debugging by manufacturer only.
@@ -2199,7 +2199,7 @@ extern "C"
 		uint8_t DebugData[128];	/**< \english Arbitrary debug data. \endenglish \russian Отладочные данные. \endrussian */
 	} debug_read_t;
 
-/** 
+/**
 	* \english
 	* Debug data.
 	* These data are used for device debugging by manufacturer only.
@@ -2215,7 +2215,7 @@ extern "C"
 		uint8_t DebugData[128];	/**< \english Arbitrary debug data. \endenglish \russian Отладочные данные. \endrussian */
 	} debug_write_t;
 
-/** 
+/**
 	* \english
 	* Stage user name.
 	* \endenglish
@@ -2229,7 +2229,7 @@ extern "C"
 		char PositionerName[17];	/**< \english User positioner name. Can be set by user for his/her convinience. Max string length: 16 chars. \endenglish \russian Пользовательское имя подвижки. Может быть установлено пользователем для его удобства. Максимальная длина строки: 16 символов. \endrussian */
 	} stage_name_t;
 
-/** 
+/**
 	* \english
 	* Stage information.
 	* \endenglish
@@ -2243,10 +2243,10 @@ extern "C"
 	typedef struct
 	{
 		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */
-		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */	
+		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */
 	} stage_information_t;
 
-/** 
+/**
 	* \english
 	* Stage settings.
 	* \endenglish
@@ -2259,18 +2259,18 @@ extern "C"
 	*/
 	typedef struct
 	{
-		float LeadScrewPitch;	/**< \english Lead screw pitch (mm). Data type: float. \endenglish \russian Шаг ходового винта в мм. Тип данных: float. \endrussian */	
-		char Units[9];	/**< \english Units for MaxSpeed and TravelRange fields of the structure (steps, degrees, mm, ...). Max string length: 8 chars. \endenglish \russian Единицы измерения расстояния, используемые в полях MaxSpeed и TravelRange (шаги, градусы, мм, ...), Максимальная длина строки: 8 символов. \endrussian */	
-		float MaxSpeed;	/**< \english Max speed (Units/c). Data type: float. \endenglish \russian Максимальная скорость (Units/с). Тип данных: float. \endrussian */	
-		float TravelRange;	/**< \english Travel range (Units). Data type: float. \endenglish \russian Диапазон перемещения (Units). Тип данных: float. \endrussian */	
-		float SupplyVoltageMin;	/**< \english Supply voltage minimum (V). Data type: float. \endenglish \russian Минимальное напряжение питания (В). Тип данных: float. \endrussian */	
-		float SupplyVoltageMax;	/**< \english Supply voltage maximum (V). Data type: float. \endenglish \russian Максимальное напряжение питания (В). Тип данных: float. \endrussian */	
-		float MaxCurrentConsumption;	/**< \english Max current consumption (A). Data type: float. \endenglish \russian Максимальный ток потребления (А). Тип данных: float. \endrussian */	
-		float HorizontalLoadCapacity;	/**< \english Horizontal load capacity (kg). Data type: float. \endenglish \russian Горизонтальная грузоподъемность (кг). Тип данных: float. \endrussian */	
-		float VerticalLoadCapacity;	/**< \english Vertical load capacity (kg). Data type: float. \endenglish \russian Вертикальная грузоподъемность (кг). Тип данных: float. \endrussian */	
+		float LeadScrewPitch;	/**< \english Lead screw pitch (mm). Data type: float. \endenglish \russian Шаг ходового винта в мм. Тип данных: float. \endrussian */
+		char Units[9];	/**< \english Units for MaxSpeed and TravelRange fields of the structure (steps, degrees, mm, ...). Max string length: 8 chars. \endenglish \russian Единицы измерения расстояния, используемые в полях MaxSpeed и TravelRange (шаги, градусы, мм, ...), Максимальная длина строки: 8 символов. \endrussian */
+		float MaxSpeed;	/**< \english Max speed (Units/c). Data type: float. \endenglish \russian Максимальная скорость (Units/с). Тип данных: float. \endrussian */
+		float TravelRange;	/**< \english Travel range (Units). Data type: float. \endenglish \russian Диапазон перемещения (Units). Тип данных: float. \endrussian */
+		float SupplyVoltageMin;	/**< \english Supply voltage minimum (V). Data type: float. \endenglish \russian Минимальное напряжение питания (В). Тип данных: float. \endrussian */
+		float SupplyVoltageMax;	/**< \english Supply voltage maximum (V). Data type: float. \endenglish \russian Максимальное напряжение питания (В). Тип данных: float. \endrussian */
+		float MaxCurrentConsumption;	/**< \english Max current consumption (A). Data type: float. \endenglish \russian Максимальный ток потребления (А). Тип данных: float. \endrussian */
+		float HorizontalLoadCapacity;	/**< \english Horizontal load capacity (kg). Data type: float. \endenglish \russian Горизонтальная грузоподъемность (кг). Тип данных: float. \endrussian */
+		float VerticalLoadCapacity;	/**< \english Vertical load capacity (kg). Data type: float. \endenglish \russian Вертикальная грузоподъемность (кг). Тип данных: float. \endrussian */
 	} stage_settings_t;
 
-/** 
+/**
 	* \english
 	* motor information.
 	* \endenglish
@@ -2283,11 +2283,11 @@ extern "C"
 	*/
 	typedef struct
 	{
-		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */	
-		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */	
+		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */
+		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */
 	} motor_information_t;
 
-/** 
+/**
 	* \english
 	* Physical characteristics and limitations of the motor.
 	* \endenglish
@@ -2308,7 +2308,7 @@ extern "C"
 		float NominalCurrent;	/**< \english Maximum direct current in winding for DC and BLDC engines, nominal current in windings for stepper motor (A). Data type: float.  \endenglish \russian Максимальный постоянный ток в обмотке для DC и BLDC двигателей, номинальный ток в обмотке для шаговых двигателей (А). Тип данных: float. \endrussian */
 		float NominalSpeed;	/**< \english Not used. Nominal speed(rpm). Used for DC and BLDC engine. Data type: float. \endenglish \russian Не используется. Номинальная скорость (об/мин). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */
 		float NominalTorque;	/**< \english Nominal torque(mN m). Used for DC and BLDC engine. Data type: float. \endenglish \russian Номинальный крутящий момент (мН м). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */
-		float NominalPower;	/**< \english Nominal power(W). Used for DC and BLDC engine. Data type: float. \endenglish \russian Номинальная мощность(Вт). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */	
+		float NominalPower;	/**< \english Nominal power(W). Used for DC and BLDC engine. Data type: float. \endenglish \russian Номинальная мощность(Вт). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */
 		float WindingResistance;	/**< \english Resistance of windings for DC engine, each of two windings for stepper motor or each of there windings for BLDC engine(Ohm). Data type: float.\endenglish \russian Сопротивление обмотки DC двигателя, каждой из двух обмоток шагового двигателя или каждой из трёх обмоток BLDC двигателя (Ом). Тип данных: float. \endrussian */
 		float WindingInductance;	/**< \english Inductance of windings for DC engine, each of two windings for stepper motor or each of there windings for BLDC engine(mH). Data type: float.\endenglish \russian Индуктивность обмотки DC двигателя, каждой из двух обмоток шагового двигателя или каждой из трёх обмоток BLDC двигателя (мГн). Тип данных: float. \endrussian */
 		float RotorInertia;	/**< \english Rotor inertia(g cm2). Data type: float.\endenglish \russian Инерция ротора (г cм2). Тип данных: float. \endrussian */
@@ -2325,7 +2325,7 @@ extern "C"
 		float NoLoadSpeed;	/**< \english Idle speed (rpm). Used for DC and BLDC motors. Data type: float. \endenglish \russian Скорость в холостом режиме (об/мин). Применяется для DC и BLDC двигателей. Тип данных: float. \endrussian */
 	} motor_settings_t;
 
-/** 
+/**
 	* \english
 	* Encoder information.
 	* \endenglish
@@ -2338,11 +2338,11 @@ extern "C"
 	*/
 	typedef struct
 	{
-		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */	
-		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */	
+		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */
+		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */
 	} encoder_information_t;
 
-/** 
+/**
 	* \english
 	* Encoder settings.
 	* \endenglish
@@ -2363,7 +2363,7 @@ extern "C"
 		unsigned int EncoderSettings;	/**< \english \ref flagset_encodersettingsflags "Encoder settings flags". \endenglish \russian \ref flagset_encodersettingsflags "Флаги настроек энкодера". \endrussian */
 	} encoder_settings_t;
 
-/** 
+/**
 	* \english
 	* Hall sensor information.
 	* \endenglish
@@ -2376,11 +2376,11 @@ extern "C"
 	*/
 	typedef struct
 	{
-		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */	
-		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */	
+		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */
+		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */
 	} hallsensor_information_t;
 
-/** 
+/**
 	* \english
 	* Hall sensor settings.
 	* \endenglish
@@ -2400,7 +2400,7 @@ extern "C"
 		unsigned int PPR;	/**< \english The number of counts per revolution \endenglish \russian Количество отсчётов на оборот \endrussian */
 	} hallsensor_settings_t;
 
-/** 
+/**
 	* \english
 	* Gear information.
 	* \endenglish
@@ -2413,11 +2413,11 @@ extern "C"
 	*/
 	typedef struct
 	{
-		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */	
-		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */	
+		char Manufacturer[17];	/**< \english Manufacturer. Max string length: 16 chars. \endenglish \russian Производитель. Максимальная длина строки: 16 символов. \endrussian */
+		char PartNumber[25];	/**< \english Series and PartNumber. Max string length: 24 chars. \endenglish \russian Серия и номер модели. Максимальная длина строки: 24 символа. \endrussian */
 	} gear_information_t;
 
-/** 
+/**
 	* \english
 	* Gear setings.
 	* \endenglish
@@ -2439,7 +2439,7 @@ extern "C"
 		float Efficiency;	/**< \english Reduction gear efficiency (%). Data type: float. \endenglish \russian КПД редуктора (%). Тип данных: float. \endrussian */
 	} gear_settings_t;
 
-/** 
+/**
 	* \english
 	* Additional accessories information.
 	* \endenglish
@@ -2452,20 +2452,20 @@ extern "C"
 	*/
 	typedef struct
 	{
-		char MagneticBrakeInfo[25];	/**< \english The manufacturer and the part number of magnetic brake, the maximum string length is 24 characters. \endenglish \russian Производитель и номер магнитного тормоза, Максимальная длина строки: 24 символов. \endrussian */ 
+		char MagneticBrakeInfo[25];	/**< \english The manufacturer and the part number of magnetic brake, the maximum string length is 24 characters. \endenglish \russian Производитель и номер магнитного тормоза, Максимальная длина строки: 24 символов. \endrussian */
 		float MBRatedVoltage;	/**< \english Rated voltage for controlling the magnetic brake (B). Data type: float. \endenglish \russian Номинальное напряжение для управления магнитным тормозом (В). Тип данных: float. \endrussian */
-		float MBRatedCurrent;	/**< \english Rated current for controlling the magnetic brake (A). Data type: float. \endenglish \russian Номинальный ток для управления магнитным тормозом (А). Тип данных: float. \endrussian */ 
-		float MBTorque;	/**< \english Retention moment (mN m). Data type: float. \endenglish \russian Удерживающий момент (мН м). Тип данных: float. \endrussian */ 
+		float MBRatedCurrent;	/**< \english Rated current for controlling the magnetic brake (A). Data type: float. \endenglish \russian Номинальный ток для управления магнитным тормозом (А). Тип данных: float. \endrussian */
+		float MBTorque;	/**< \english Retention moment (mN m). Data type: float. \endenglish \russian Удерживающий момент (мН м). Тип данных: float. \endrussian */
 		unsigned int MBSettings;	/**< \english \ref flagset_mbsettingsflags "Magnetic brake settings flags". \endenglish \russian \ref flagset_mbsettingsflags "Флаги настроек энкодера". \endrussian */
-		char TemperatureSensorInfo[25];	/**< \english The manufacturer and the part number of the temperature sensor, the maximum string length: 24 characters. \endenglish \russian Производитель и номер температурного датчика, Максимальная длина строки: 24 символов. \endrussian */ 
-		float TSMin;	/**< \english The minimum measured temperature (degrees Celsius) Data type: float. \endenglish \russian Минимальная измеряемая температура (град Цельсия). Тип данных: float. \endrussian */ 
-		float TSMax;	/**< \english The maximum measured temperature (degrees Celsius) Data type: float. \endenglish \russian Максимальная измеряемая температура (град Цельсия) Тип данных: float. \endrussian */ 
-		float TSGrad;	/**< \english The temperature gradient (V/degrees Celsius). Data type: float. \endenglish \russian Температурный градиент (В/град Цельсия). Тип данных: float. \endrussian */ 
+		char TemperatureSensorInfo[25];	/**< \english The manufacturer and the part number of the temperature sensor, the maximum string length: 24 characters. \endenglish \russian Производитель и номер температурного датчика, Максимальная длина строки: 24 символов. \endrussian */
+		float TSMin;	/**< \english The minimum measured temperature (degrees Celsius) Data type: float. \endenglish \russian Минимальная измеряемая температура (град Цельсия). Тип данных: float. \endrussian */
+		float TSMax;	/**< \english The maximum measured temperature (degrees Celsius) Data type: float. \endenglish \russian Максимальная измеряемая температура (град Цельсия) Тип данных: float. \endrussian */
+		float TSGrad;	/**< \english The temperature gradient (V/degrees Celsius). Data type: float. \endenglish \russian Температурный градиент (В/град Цельсия). Тип данных: float. \endrussian */
 		unsigned int TSSettings;	/**< \english \ref flagset_tssettingsflags "Temperature sensor settings flags". \endenglish \russian \ref flagset_tssettingsflags "Флаги настроек температурного датчика". \endrussian */
 		unsigned int LimitSwitchesSettings;	/**< \english \ref flagset_lsflags "Temperature sensor settings flags". \endenglish \russian \ref flagset_lsflags "Флаги настроек температурного датчика". \endrussian */
 	} accessories_settings_t;
 
-/** 
+/**
 	* \english
 	* Random key.
 	* Structure that contains random key used in encryption of WKEY and SSER command contents.
@@ -2481,7 +2481,7 @@ extern "C"
 		uint8_t key[16];	/**< \english Random key. \endenglish \russian Случайный ключ. \endrussian */
 	} init_random_t;
 
-/** 
+/**
   * \english
   * Globally unique identifier.
   * \endenglish
@@ -2517,7 +2517,7 @@ extern "C"
 
 //@{
 
-/** 
+/**
 	* \english
 	* Feedback settings.
 	* @param id an identifier of device
@@ -2537,7 +2537,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_feedback_settings (device_t id, const feedback_settings_t* feedback_settings);
 
-/** 
+/**
 	* \english
 	* Feedback settings.
 	* @param id an identifier of device
@@ -2557,7 +2557,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_feedback_settings (device_t id, feedback_settings_t* feedback_settings);
 
-/** 
+/**
 	* \english
 	* Set home settings.
 	* This function send structure with calibrating position settings to controller's memory.
@@ -2575,7 +2575,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_home_settings (device_t id, const home_settings_t* home_settings);
 
-/** 
+/**
 	* \english
 	* Set home settings which use user units.
 	* This function send structure with calibrating position settings to controller's memory.
@@ -2595,7 +2595,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_home_settings_calb (device_t id, const home_settings_calb_t* home_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Read home settings.
 	* This function fill structure with settings of calibrating position.
@@ -2613,7 +2613,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_home_settings (device_t id, home_settings_t* home_settings);
 
-/** 
+/**
 	* \english
 	* Read home settings which use user units.
 	* This function fill structure with settings of calibrating position.
@@ -2633,7 +2633,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_home_settings_calb (device_t id, home_settings_calb_t* home_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Set command setup movement (speed, acceleration, threshold and etc).
 	* @param id an identifier of device
@@ -2647,7 +2647,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_move_settings (device_t id, const move_settings_t* move_settings);
 
-/** 
+/**
 	* \english
 	* Set command setup movement which use user units (speed, acceleration, threshold and etc).
 	* @param id an identifier of device
@@ -2663,7 +2663,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_move_settings_calb (device_t id, const move_settings_calb_t* move_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Read command setup movement (speed, acceleration, threshold and etc).
 	* @param id an identifier of device
@@ -2677,7 +2677,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_move_settings (device_t id, move_settings_t* move_settings);
 
-/** 
+/**
 	* \english
 	* Read command setup movement which use user units (speed, acceleration, threshold and etc).
 	* @param id an identifier of device
@@ -2693,7 +2693,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_move_settings_calb (device_t id, move_settings_calb_t* move_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Set engine settings.
 	* This function send structure with set of engine settings to controller's memory.
@@ -2716,7 +2716,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_engine_settings (device_t id, const engine_settings_t* engine_settings);
 
-/** 
+/**
 	* \english
 	* Set engine settings which use user units.
 	* This function send structure with set of engine settings to controller's memory.
@@ -2741,7 +2741,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_engine_settings_calb (device_t id, const engine_settings_calb_t* engine_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Read engine settings.
 	* This function fill structure with set of useful motor settings stored in controller's memory.
@@ -2762,7 +2762,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_engine_settings (device_t id, engine_settings_t* engine_settings);
 
-/** 
+/**
 	* \english
 	* Read engine settings which use user units.
 	* This function fill structure with set of useful motor settings stored in controller's memory.
@@ -2785,7 +2785,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_engine_settings_calb (device_t id, engine_settings_calb_t* engine_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Set engine type and driver type.
 	* @param id an identifier of device
@@ -2799,7 +2799,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_entype_settings (device_t id, const entype_settings_t* entype_settings);
 
-/** 
+/**
 	* \english
 	* Return engine type and driver type.
 	* @param id an identifier of device
@@ -2813,7 +2813,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_entype_settings (device_t id, entype_settings_t* entype_settings);
 
-/** 
+/**
 	* \english
 	* Set settings of step motor power control.
 	* Used with stepper motor only.
@@ -2828,7 +2828,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_power_settings (device_t id, const power_settings_t* power_settings);
 
-/** 
+/**
 	* \english
 	* Read settings of step motor power control.
 	* Used with stepper motor only.
@@ -2844,7 +2844,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_power_settings (device_t id, power_settings_t* power_settings);
 
-/** 
+/**
 	* \english
 	* Set protection settings.
 	* @param id an identifier of device
@@ -2859,7 +2859,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_secure_settings (device_t id, const secure_settings_t* secure_settings);
 
-/** 
+/**
 	* \english
 	* Read protection settings.
 	* @param id an identifier of device
@@ -2874,7 +2874,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_secure_settings (device_t id, secure_settings_t* secure_settings);
 
-/** 
+/**
 	* \english
 	* Set border and limit switches settings.
 	* @see get_edges_settings
@@ -2890,14 +2890,14 @@ extern "C"
 	*/
 	result_t XIMC_API set_edges_settings (device_t id, const edges_settings_t* edges_settings);
 
-/** 
+/**
 	* \english
 	* Set border and limit switches settings which use user units.
 	* @see get_edges_settings_calb
 	* @param id an identifier of device
 	* @param[in] edges_settings_calb edges settings, specify types of borders, motor behaviour and electrical behaviour of limit switches
 	* @param calibration user unit settings
-	* 
+	*
 	* \note
 	* Attention! Some parameters of the edges_settings_calb structure are corrected by the coordinate correction table.
 	*
@@ -2910,13 +2910,13 @@ extern "C"
 	* @param calibration настройки пользовательских единиц
 	*
 	* \note
-	* Внимание! Некоторые параметры структуры edges_settings_calb корректируются таблицей коррекции координат.  
+	* Внимание! Некоторые параметры структуры edges_settings_calb корректируются таблицей коррекции координат.
 	*
 	* \endrussian
 	*/
 	result_t XIMC_API set_edges_settings_calb (device_t id, const edges_settings_calb_t* edges_settings_calb, const calibration_t* calibration);
 
-/**  
+/**
 	* \english
 	* Read border and limit switches settings.
 	* @see set_edges_settings
@@ -2932,14 +2932,14 @@ extern "C"
 	*/
 	result_t XIMC_API get_edges_settings (device_t id, edges_settings_t* edges_settings);
 
-/**  
+/**
 	* \english
 	* Read border and limit switches settings which use user units.
 	* @see set_edges_settings_calb
 	* @param id an identifier of device
 	* @param[out] edges_settings_calb edges settings, specify types of borders, motor behaviour and electrical behaviour of limit switches
 	* @param calibration user unit settings
-	* 
+	*
 	* \note
 	* Attention! Some parameters of the edges_settings_calb structure are corrected by the coordinate correction table.
 	*
@@ -2952,13 +2952,13 @@ extern "C"
 	* @param calibration настройки пользовательских единиц
 	*
 	* \note
-	* Внимание! Некоторые параметры структуры edges_settings_calb корректируются таблицей коррекции координат.  
+	* Внимание! Некоторые параметры структуры edges_settings_calb корректируются таблицей коррекции координат.
 	*
 	* \endrussian
 	*/
 	result_t XIMC_API get_edges_settings_calb (device_t id, edges_settings_calb_t* edges_settings_calb, const calibration_t* calibration);
 
-/**  
+/**
 	* \english
 	* Set PID settings.
 	* This function send structure with set of PID factors to controller's memory.
@@ -2983,7 +2983,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_pid_settings (device_t id, const pid_settings_t* pid_settings);
 
-/**  
+/**
 	* \english
 	* Read PID settings.
 	* This function fill structure with set of motor PID settings stored in controller's memory.
@@ -3005,7 +3005,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_pid_settings (device_t id, pid_settings_t* pid_settings);
 
-/**  
+/**
 	* \english
 	* Set input synchronization settings.
 	* This function send structure with set of input synchronization settings, that specify behaviour of input synchronization, to controller's memory.
@@ -3024,7 +3024,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_sync_in_settings (device_t id, const sync_in_settings_t* sync_in_settings);
 
-/**  
+/**
 	* \english
 	* Set input synchronization settings which use user units.
 	* This function send structure with set of input synchronization settings, that specify behaviour of input synchronization, to controller's memory.
@@ -3045,7 +3045,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_sync_in_settings_calb (device_t id, const sync_in_settings_calb_t* sync_in_settings_calb, const calibration_t* calibration);
 
-/**  
+/**
 	* \english
 	* Read input synchronization settings.
 	* This function fill structure with set of input synchronization settings, modes, periods and flags, that specify behaviour of input synchronization.
@@ -3064,7 +3064,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_sync_in_settings (device_t id, sync_in_settings_t* sync_in_settings);
 
-/**  
+/**
 	* \english
 	* Read input synchronization settings which use user units.
 	* This function fill structure with set of input synchronization settings, modes, periods and flags, that specify behaviour of input synchronization.
@@ -3085,7 +3085,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_sync_in_settings_calb (device_t id, sync_in_settings_calb_t* sync_in_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Set output synchronization settings.
 	* This function send structure with set of output synchronization settings, that specify behaviour of output synchronization, to controller's memory.
@@ -3104,7 +3104,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_sync_out_settings (device_t id, const sync_out_settings_t* sync_out_settings);
 
-/** 
+/**
 	* \english
 	* Set output synchronization settings which use user units.
 	* This function send structure with set of output synchronization settings, that specify behaviour of output synchronization, to controller's memory.
@@ -3125,7 +3125,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_sync_out_settings_calb (device_t id, const sync_out_settings_calb_t* sync_out_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Read output synchronization settings.
 	* This function fill structure with set of output synchronization settings, modes, periods and flags, that specify behaviour of output synchronization.
@@ -3141,7 +3141,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_sync_out_settings (device_t id, sync_out_settings_t* sync_out_settings);
 
-/** 
+/**
 	* \english
 	* Read output synchronization settings which use user units.
 	* This function fill structure with set of output synchronization settings, modes, periods and flags, that specify behaviour of output synchronization.
@@ -3162,7 +3162,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_sync_out_settings_calb (device_t id, sync_out_settings_calb_t* sync_out_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Set EXTIO settings.
 	* This function writes a structure with a set of EXTIO settings to controller's memory.
@@ -3182,7 +3182,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_extio_settings (device_t id, const extio_settings_t* extio_settings);
 
-/** 
+/**
 	* \english
 	* Read EXTIO settings.
 	* This function reads a structure with a set of EXTIO settings from controller's memory.
@@ -3199,7 +3199,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_extio_settings (device_t id, extio_settings_t* extio_settings);
 
-/** 
+/**
 	* \english
 	* Set settings of brake control.
 	* @param id an identifier of device
@@ -3213,7 +3213,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_brake_settings (device_t id, const brake_settings_t* brake_settings);
 
-/** 
+/**
 	* \english
 	* Read settings of brake control.
 	* @param id an identifier of device
@@ -3227,7 +3227,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_brake_settings (device_t id, brake_settings_t* brake_settings);
 
-/** 
+/**
 	* \english
 	* Set settings of motor control.
 	* When choosing CTL_MODE = 1 switches motor control with the joystick.
@@ -3257,7 +3257,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_control_settings (device_t id, const control_settings_t* control_settings);
 
-/** 
+/**
 	* \english
 	* Set settings of motor control which use user units.
 	* When choosing CTL_MODE = 1 switches motor control with the joystick.
@@ -3289,7 +3289,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_control_settings_calb (device_t id, const control_settings_calb_t* control_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Read settings of motor control.
 	* When choosing CTL_MODE = 1 switches motor control with the joystick.
@@ -3319,7 +3319,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_control_settings (device_t id, control_settings_t* control_settings);
 
-/** 
+/**
 	* \english
 	* Read settings of motor control which use user units.
 	* When choosing CTL_MODE = 1 switches motor control with the joystick.
@@ -3351,7 +3351,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_control_settings_calb (device_t id, control_settings_calb_t* control_settings_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Set settings of joystick.
 	* If joystick position is outside DeadZone limits from the central position a movement with speed,
@@ -3388,7 +3388,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_joystick_settings (device_t id, const joystick_settings_t* joystick_settings);
 
-/** 
+/**
 	* \english
 	* Read settings of joystick.
 	* If joystick position is outside DeadZone limits from the central position a movement with speed,
@@ -3425,7 +3425,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_joystick_settings (device_t id, joystick_settings_t* joystick_settings);
 
-/** 
+/**
 	* \english
 	* Set settings of control position(is only used with stepper motor).
 	* When controlling the step motor with encoder (CTP_BASE 0) it is possible
@@ -3461,7 +3461,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_ctp_settings (device_t id, const ctp_settings_t* ctp_settings);
 
-/** 
+/**
 	* \english
 	* Read settings of control position(is only used with stepper motor).
 	* When controlling the step motor with encoder (CTP_BASE 0) it is possible
@@ -3497,7 +3497,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_ctp_settings (device_t id, ctp_settings_t* ctp_settings);
 
-/** 
+/**
 	* \english
 	* Set UART settings.
 	* This function send structure with UART settings to controller's memory.
@@ -3515,7 +3515,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_uart_settings (device_t id, const uart_settings_t* uart_settings);
 
-/** 
+/**
 	* \english
 	* Read UART settings.
 	* This function fill structure with UART settings.
@@ -3533,7 +3533,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_uart_settings (device_t id, uart_settings_t* uart_settings);
 
-/** 
+/**
 	* \english
 	* Set calibration settings.
 	* This function send structure with calibration settings to controller's memory.
@@ -3551,7 +3551,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_calibration_settings (device_t id, const calibration_settings_t* calibration_settings);
 
-/** 
+/**
 	* \english
 	* Read calibration settings.
 	* This function fill structure with calibration settings.
@@ -3569,7 +3569,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_calibration_settings (device_t id, calibration_settings_t* calibration_settings);
 
-/** 
+/**
 	* \english
 	* Write user controller name and flags of setting from FRAM.
 	* @param id an identifier of device
@@ -3583,7 +3583,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_controller_name (device_t id, const controller_name_t* controller_name);
 
-/** 
+/**
 	* \english
 	* Read user controller name and flags of setting from FRAM.
 	* @param id an identifier of device
@@ -3597,7 +3597,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_controller_name (device_t id, controller_name_t* controller_name);
 
-/** 
+/**
 	* \english
 	* Write userdata into FRAM.
 	* @param id an identifier of device
@@ -3611,7 +3611,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_nonvolatile_memory (device_t id, const nonvolatile_memory_t* nonvolatile_memory);
 
-/** 
+/**
 	* \english
 	* Read userdata from FRAM.
 	* @param id an identifier of device
@@ -3625,7 +3625,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_nonvolatile_memory (device_t id, nonvolatile_memory_t* nonvolatile_memory);
 
-/**  
+/**
 	* \english
 	* Set electromechanical coefficients.
 	* The settings are different for different stepper motors.
@@ -3635,7 +3635,7 @@ extern "C"
 	* @param[in] emf_settings EMF settings
 	* \endenglish
 	* \russian
-	* Запись электромеханических настроек шагового двигателя. 
+	* Запись электромеханических настроек шагового двигателя.
 	* Настройки различны для разных двигателей.
 	* Пожалуйста, загружайте новые настройки, когда вы меняете мотор.
 	* @see get_emf_settings
@@ -3645,7 +3645,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_emf_settings (device_t id, const emf_settings_t* emf_settings);
 
-/**  
+/**
 	* \english
 	* Read electromechanical settings.
 	* The settings are different for different stepper motors.
@@ -3654,7 +3654,7 @@ extern "C"
 	* @param[out] emf_settings EMF settings
 	* \endenglish
 	* \russian
-	* Чтение электромеханических настроек шагового двигателя. 
+	* Чтение электромеханических настроек шагового двигателя.
 	* Настройки различны для разных двигателей.
 	* @see set_emf_settings
 	* @param id идентификатор устройства
@@ -3663,7 +3663,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_emf_settings (device_t id, emf_settings_t* emf_settings);
 
-/**  
+/**
 	* \english
 	* Set engine advansed settings.
 	* @see get_engine_advansed_setup
@@ -3671,7 +3671,7 @@ extern "C"
 	* @param[in] engine_advansed_setup EAS settings
 	* \endenglish
 	* \russian
-	* Запись расширенных настроек. 
+	* Запись расширенных настроек.
 	* @see get_engine_advansed_setup
 	* @param id идентификатор устройства
 	* @param[in] engine_advansed_setup настройки EAS
@@ -3679,7 +3679,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_engine_advansed_setup (device_t id, const engine_advansed_setup_t* engine_advansed_setup);
 
-/**  
+/**
 	* \english
 	* Read engine advansed settings.
 	* @see set_engine_advansed_setup
@@ -3687,7 +3687,7 @@ extern "C"
 	* @param[out] engine_advansed_setup EAS settings
 	* \endenglish
 	* \russian
-	* Чтение расширенных настроек. 
+	* Чтение расширенных настроек.
 	* @see set_engine_advansed_setup
 	* @param id идентификатор устройства
 	* @param[out] engine_advansed_setup настройки EAS
@@ -3695,7 +3695,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_engine_advansed_setup (device_t id, engine_advansed_setup_t* engine_advansed_setup);
 
-/**  
+/**
 	* \english
 	* Set extended settings.
 	* @see get_extended_settings
@@ -3703,7 +3703,7 @@ extern "C"
 	* @param[in] extended_settings EST settings
 	* \endenglish
 	* \russian
-	* Запись расширенных настроек. 
+	* Запись расширенных настроек.
 	* @see get_extended_settings
 	* @param id идентификатор устройства
 	* @param[in] extended_settings настройки EST
@@ -3711,15 +3711,15 @@ extern "C"
 	*/
 	result_t XIMC_API set_extended_settings (device_t id, const extended_settings_t* extended_settings);
 
-/**  
+/**
 	* \english
 	* Read extended settings.
-	* @see set_extended_settings 
+	* @see set_extended_settings
 	* @param id an identifier of device
 	* @param[out] extended_settings EST settings
 	* \endenglish
 	* \russian
-	* Чтение расширенных настроек. 
+	* Чтение расширенных настроек.
 	* @see set_extended_settings
 	* @param id идентификатор устройства
 	* @param[out] extended_settings настройки EST
@@ -3743,7 +3743,7 @@ extern "C"
 
 //@{
 
-/**  
+/**
 	* \english
 	* Immediately stop the engine, the transition to the STOP, mode
 	* key BREAK (winding short-circuited), the regime "retention" is
@@ -3762,7 +3762,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_stop (device_t id);
 
-/** 
+/**
 	* \english
 	* Immediately power off motor regardless its state. Shouldn't be used
 	* during motion as the motor could be power on again automatically to continue movement.
@@ -3782,7 +3782,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_power_off (device_t id);
 
-/** 
+/**
 	* \english
 	* Upon receiving the command "move" the engine starts to move with pre-set parameters (speed, acceleration, retention),
 	* to the point specified to the Position, uPosition. For stepper motor uPosition
@@ -3798,12 +3798,12 @@ extern "C"
 	* uPosition задает значение микрошага, для DC мотора это поле не используется.
 	* @param id идентификатор устройства
 	* @param Position заданная позиция.
-	* @param uPosition часть позиции в микрошагах. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings).	
+	* @param uPosition часть позиции в микрошагах. Величина микрошага и диапазон допустимых значений для данного поля зависят от выбранного режима деления шага (см. поле MicrostepMode в engine_settings).
 	* \endrussian
 	*/
 	result_t XIMC_API command_move (device_t id, int Position, int uPosition);
 
-/** 
+/**
 	* \english
 	* Move to position which use user units.
 	* Upon receiving the command "move" the engine starts to move with pre-set parameters (speed, acceleration, retention),
@@ -3811,7 +3811,7 @@ extern "C"
 	* @param id an identifier of device
 	* @param Position position to move.
 	* @param calibration user unit settings
-	* 
+	*
 	* \note
 	* The parameter Position is adjusted by the correction table.
 	*
@@ -3820,7 +3820,7 @@ extern "C"
 	* Перемещение в позицию  с использованием пользовательских единиц.
 	* При получении команды "move" двигатель начинает перемещаться (если не используется
 	* режим "ТТЛСинхроВхода"), с заранее установленными параметрами (скорость, ускорение,
-	* удержание), к точке указанной в поле Position. 
+	* удержание), к точке указанной в поле Position.
 	* @param id идентификатор устройства
 	* @param Position позиция для перемещения
 	* @param calibration настройки пользовательских единиц
@@ -3832,7 +3832,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_move_calb (device_t id, float Position, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Move to offset.
 	* Upon receiving the command "movr" engine starts to move with pre-set parameters (speed, acceleration,
@@ -3857,7 +3857,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_movr (device_t id, int DeltaPosition, int uDeltaPosition);
 
-/** 
+/**
 	* \english
 	* Move to offset using user units.
 	* Upon receiving the command "movr" engine starts to move with pre-set parameters (speed, acceleration,
@@ -3865,7 +3865,7 @@ extern "C"
 	* DeltaPosition.
 	* @param DeltaPosition shift from initial position.
 	* @param id an identifier of device
-	* @param calibration user unit settings 
+	* @param calibration user unit settings
 	*
 	* \note
 	* The end coordinate is calculated using DeltaPosition, is adjusted by the correction table.
@@ -3877,7 +3877,7 @@ extern "C"
 	* При получении команды "movr" двигатель начинает смещаться (если не используется
 	* режим "ТТЛСинхроВхода"), с заранее установленными параметрами (скорость, ускорение,
 	* удержание), влево или вправо (зависит от знака DeltaPosition) на расстояние
-	* указанное в поле DeltaPosition. 
+	* указанное в поле DeltaPosition.
 	* @param DeltaPosition смещение.
 	* @param id идентификатор устройства
 	* @param calibration настройки пользовательских единиц
@@ -3890,7 +3890,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_movr_calb (device_t id, float DeltaPosition, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* The positive direction is to the right. A value of zero reverses the direction of the
 	* direction of the flag, the set speed.
@@ -3931,7 +3931,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_home (device_t id);
 
-/** 
+/**
 	* \english
 	* Start continous moving to the left.
 	* @param id an identifier of device
@@ -3943,7 +3943,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_left (device_t id);
 
-/** 
+/**
 	* \english
 	* Start continous moving to the right.
 	* @param id an identifier of device
@@ -3955,7 +3955,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_right (device_t id);
 
-/** 
+/**
 	* \english
 	* Upon receiving the command "loft" the engine is shifted from the current
 	* point to a distance GENG :: Antiplay, then move to the same point.
@@ -3969,7 +3969,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_loft (device_t id);
 
-/** 
+/**
 	* \english
 	* Soft stop engine. The motor stops with deceleration speed.
 	* @param id an identifier of device
@@ -3981,7 +3981,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_sstp (device_t id);
 
-/** 
+/**
 	* \english
 	* Reads the value position in steps and micro for stepper motor and encoder steps
 	* all engines.
@@ -3997,14 +3997,14 @@ extern "C"
 	*/
 	result_t XIMC_API get_position (device_t id, get_position_t* the_get_position);
 
-/** 
+/**
 	* \english
 	* Reads position value in user units for stepper motor and encoder steps
 	* all engines.
 	* @param id an identifier of device
 	* @param[out] the_get_position_calb structure contains move settings: speed, acceleration, deceleration etc.
 	* @param calibration user unit settings
-	* 
+	*
 	* \note
 	* Attention! Some parameters of the the_get_position_calb structure are corrected by the coordinate correction table.
 	*
@@ -4017,13 +4017,13 @@ extern "C"
 	* @param calibration настройки пользовательских единиц
 	*
 	* \note
-	* Внимание! Некоторые параметры структуры the_get_position_calb корректируются таблицей коррекции координат.  
+	* Внимание! Некоторые параметры структуры the_get_position_calb корректируются таблицей коррекции координат.
 	*
 	* \endrussian
 	*/
 	result_t XIMC_API get_position_calb (device_t id, get_position_calb_t* the_get_position_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Sets any position value in steps and micro for stepper motor
 	* and encoder steps of all engines. It means, that changing main
@@ -4041,7 +4041,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_position (device_t id, const set_position_t* the_set_position);
 
-/** 
+/**
 	* \english
 	* Sets any position value
 	* and encoder value of all engines which use user units. It means, that changing main
@@ -4060,7 +4060,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_position_calb (device_t id, const set_position_calb_t* the_set_position_calb, const calibration_t* calibration);
 
-/** 
+/**
 	* \english
 	* Sets the current position and the position in which the traffic moves by the move command
 	* and movr zero for all cases, except for movement to the target position. In the latter case,
@@ -4100,7 +4100,7 @@ extern "C"
 
 //@{
 
-/** 
+/**
 	* \english
 	* Save all settings from controller's RAM to controller's flash memory, replacing previous data in controller's flash memory.
 	* @param id an identifier of device
@@ -4112,7 +4112,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_save_settings (device_t id);
 
-/** 
+/**
 	* \english
 	* Read all settings from controller's flash memory to controller's RAM, replacing previous data in controller's RAM.
 	* @param id an identifier of device
@@ -4124,7 +4124,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_read_settings (device_t id);
 
-/** 
+/**
 	* \english
 	* Save important settings (calibration coefficients and etc.) from controller's RAM to controller's flash memory, replacing previous data in controller's flash memory.
 	* @param id an identifier of device
@@ -4136,7 +4136,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_save_robust_settings (device_t id);
 
-/** 
+/**
 	* \english
 	* Read important settings (calibration coefficients and etc.) from controller's flash memory to controller's RAM, replacing previous data in controller's RAM.
 	* @param id an identifier of device
@@ -4148,7 +4148,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_read_robust_settings (device_t id);
 
-/** 
+/**
 	* \english
 	* Save settings from controller's RAM to stage's EEPROM memory, which spontaneity connected to stage and it isn`t change without it mechanical reconstruction.
 	* Can be used by manufacturer only.
@@ -4162,7 +4162,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_eesave_settings (device_t id);
 
-/** 
+/**
 	* \english
 	* Read settings from controller's RAM to stage's EEPROM memory, which spontaneity connected to stage and it isn`t change without it mechanical reconstruction.
 	* @param id an identifier of device
@@ -4175,7 +4175,7 @@ extern "C"
 	*/
 	result_t XIMC_API command_eeread_settings (device_t id);
 
-/** 
+/**
   * \english
   * Start measurements and buffering of speed, following error.
   * @param id an identifier of device
@@ -4187,7 +4187,7 @@ extern "C"
   */
 	result_t XIMC_API command_start_measurements (device_t id);
 
-/** 
+/**
   * \english
   * A command to read the data buffer to build a speed graph and a sequence error. Filling the buffer starts with the command "start_measurements".
   * The buffer holds 25 points, the points are taken with a period of 1 ms. To create a robust system, read data every 20 ms,
@@ -4207,7 +4207,7 @@ extern "C"
   */
 	result_t XIMC_API get_measurements (device_t id, measurements_t* measurements);
 
-/** 
+/**
 	* \english
 	* Return device electrical parameters, useful for charts.
 	* Useful function that fill structure with snapshot of controller voltages and currents.
@@ -4225,7 +4225,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_chart_data (device_t id, chart_data_t* chart_data);
 
-/** 
+/**
 	* \english
 	* Read device serial number.
 	* @param id an identifier of device
@@ -4239,7 +4239,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_serial_number (device_t id, unsigned int* SerialNumber);
 
-/** 
+/**
 	* \english
 	* Read controller's firmware version.
 	* @param id an identifier of device
@@ -4257,7 +4257,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_firmware_version (device_t id, unsigned int* Major, unsigned int* Minor, unsigned int* Release);
 
-/** 
+/**
 	* \english
 	* Command puts the controller to update the firmware.
 	* After receiving this command, the firmware board sets a flag (for loader), sends echo reply and restarts the controller.
@@ -4285,7 +4285,7 @@ extern "C"
 
 //@{
 
-/** 
+/**
 	* \english
 	* Write device serial number and hardware version to controller's flash memory.
 	* Along with the new serial number and hardware version a "Key" is transmitted.
@@ -4305,7 +4305,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_serial_number (device_t id, const serial_number_t* serial_number);
 
-/** 
+/**
 	* \english
 	* Read analog data structure that contains raw analog data from ADC embedded on board.
 	* This function used for device testing and deep recalibraton by manufacturer only.
@@ -4321,7 +4321,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_analog_data (device_t id, analog_data_t* analog_data);
 
-/** 
+/**
 	* \english
 	* Read data from firmware for debug purpose.
 	* Its use depends on context, firmware version and previous history.
@@ -4337,7 +4337,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_debug_read (device_t id, debug_read_t* debug_read);
 
-/** 
+/**
 	* \english
 	* Write data to firmware for debug purpose.
 	* @param id an identifier of device
@@ -4367,7 +4367,7 @@ extern "C"
 
 //@{
 
-/** 
+/**
 	* \english
 	* Write user stage name from EEPROM.
 	* @param id an identifier of device
@@ -4381,7 +4381,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_stage_name (device_t id, const stage_name_t* stage_name);
 
-/** 
+/**
 	* \english
 	* Read user stage name from EEPROM.
 	* @param id an identifier of device
@@ -4395,7 +4395,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_stage_name (device_t id, stage_name_t* stage_name);
 
-/** 
+/**
 	* \english
 	* Set stage information to EEPROM.
 	* Can be used by manufacturer only.
@@ -4411,7 +4411,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_stage_information (device_t id, const stage_information_t* stage_information);
 
-/** 
+/**
 	* \english
 	* Read stage information from EEPROM.
 	* @param id an identifier of device
@@ -4425,7 +4425,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_stage_information (device_t id, stage_information_t* stage_information);
 
-/** 
+/**
 	* \english
 	* Set stage settings to EEPROM.
 	* Can be used by manufacturer only
@@ -4441,7 +4441,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_stage_settings (device_t id, const stage_settings_t* stage_settings);
 
-/**  
+/**
 	* \english
 	* Read stage settings from EEPROM.
 	* @param id an identifier of device
@@ -4455,7 +4455,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_stage_settings (device_t id, stage_settings_t* stage_settings);
 
-/** 
+/**
 	* \english
 	* Set motor information to EEPROM.
 	* Can be used by manufacturer only.
@@ -4471,7 +4471,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_motor_information (device_t id, const motor_information_t* motor_information);
 
-/**  
+/**
 	* \english
 	* Read motor information from EEPROM.
 	* @param id an identifier of device
@@ -4485,7 +4485,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_motor_information (device_t id, motor_information_t* motor_information);
 
-/** 
+/**
 	* \english
 	* Set motor settings to EEPROM.
 	* Can be used by manufacturer only.
@@ -4501,7 +4501,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_motor_settings (device_t id, const motor_settings_t* motor_settings);
 
-/**  
+/**
 	* \english
 	* Read motor settings from EEPROM.
 	* @param id an identifier of device
@@ -4515,7 +4515,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_motor_settings (device_t id, motor_settings_t* motor_settings);
 
-/** 
+/**
 	* \english
 	* Set encoder information to EEPROM.
 	* Can be used by manufacturer only.
@@ -4531,7 +4531,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_encoder_information (device_t id, const encoder_information_t* encoder_information);
 
-/** 
+/**
 	* \english
 	* Read encoder information from EEPROM.
 	* @param id an identifier of device
@@ -4545,7 +4545,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_encoder_information (device_t id, encoder_information_t* encoder_information);
 
-/** 
+/**
 	* \english
 	* Set encoder settings to EEPROM.
 	* Can be used by manufacturer only.
@@ -4561,7 +4561,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_encoder_settings (device_t id, const encoder_settings_t* encoder_settings);
 
-/** 
+/**
 	* \english
 	* Read encoder settings from EEPROM.
 	* @param id an identifier of device
@@ -4575,7 +4575,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_encoder_settings (device_t id, encoder_settings_t* encoder_settings);
 
-/** 
+/**
 	* \english
 	* Set hall sensor information to EEPROM.
 	* Can be used by manufacturer only.
@@ -4591,7 +4591,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_hallsensor_information (device_t id, const hallsensor_information_t* hallsensor_information);
 
-/** 
+/**
 	* \english
 	* Read hall sensor information from EEPROM.
 	* @param id an identifier of device
@@ -4605,7 +4605,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_hallsensor_information (device_t id, hallsensor_information_t* hallsensor_information);
 
-/** 
+/**
 	* \english
 	* Set hall sensor settings to EEPROM.
 	* Can be used by manufacturer only.
@@ -4621,7 +4621,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_hallsensor_settings (device_t id, const hallsensor_settings_t* hallsensor_settings);
 
-/** 
+/**
 	* \english
 	* Read hall sensor settings from EEPROM.
 	* @param id an identifier of device
@@ -4635,7 +4635,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_hallsensor_settings (device_t id, hallsensor_settings_t* hallsensor_settings);
 
-/** 
+/**
 	* \english
 	* Set gear information to EEPROM.
 	* Can be used by manufacturer only.
@@ -4651,7 +4651,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_gear_information (device_t id, const gear_information_t* gear_information);
 
-/** 
+/**
 	* \english
 	* Read gear information from EEPROM.
 	* @param id an identifier of device
@@ -4665,7 +4665,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_gear_information (device_t id, gear_information_t* gear_information);
 
-/** 
+/**
 	* \english
 	* Set gear settings to EEPROM.
 	* Can be used by manufacturer only.
@@ -4681,7 +4681,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_gear_settings (device_t id, const gear_settings_t* gear_settings);
 
-/** 
+/**
 	* \english
 	* Read gear settings from EEPROM.
 	* @param id an identifier of device
@@ -4695,7 +4695,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_gear_settings (device_t id, gear_settings_t* gear_settings);
 
-/** 
+/**
 	* \english
 	* Set additional accessories information to EEPROM.
 	* Can be used by manufacturer only.
@@ -4711,7 +4711,7 @@ extern "C"
 	*/
 	result_t XIMC_API set_accessories_settings (device_t id, const accessories_settings_t* accessories_settings);
 
-/** 
+/**
 	* \english
 	* Read additional accessories information from EEPROM.
 	* @param id an identifier of device
@@ -4725,7 +4725,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_accessories_settings (device_t id, accessories_settings_t* accessories_settings);
 
-/** 
+/**
 	* \english
 	* Read controller's firmware version.
 	* @param id an identifier of device
@@ -4743,7 +4743,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_bootloader_version (device_t id, unsigned int* Major, unsigned int* Minor, unsigned int* Release);
 
-/** 
+/**
 	* \english
 	* Read random number from controller.
 	* @param id an identifier of device
@@ -4757,7 +4757,7 @@ extern "C"
 	*/
 	result_t XIMC_API get_init_random (device_t id, init_random_t* init_random);
 
-/** 
+/**
   * \english
   * This value is unique to each individual die but is not a random value.
   * This unique device identifier can be used to initiate secure boot processes
@@ -4974,7 +4974,7 @@ extern "C"
 		* Данные действительные разделитель точка.
 		* Первый столбец координата. Второй - отклонение вызванное ошибкой механики.
 		* Между координатами отклонение расчитывается линейно. За диапазоном константа равная отклонению на границе.
-		* Максимальная длина таблицы 100 строк.		
+		* Максимальная длина таблицы 100 строк.
 		* \note
 		* Параметр id в данной функции является Си указателем, в отличие от большинства функций библиотеки использующих данный параметр
 		* @see command_move
@@ -5262,7 +5262,7 @@ extern "C"
 		* все попытки открыть устройство заканчиваются неудачно, или
 		* устройство можно открыть и писать в него данные, но в ответ данные не приходят.
 		* Эти проблемы лечатся переподключением устройства или удалением и повторным поиском устройства в диспетчере устройств.
-		* Функция ximc_fix_usbser_sys() автоматизирует процесс удаления-обнаружения.		
+		* Функция ximc_fix_usbser_sys() автоматизирует процесс удаления-обнаружения.
 		* Имеет смысл вызывать эту функцию, если библиотека не может открыть устройство, при том что оно физически не было удалено из системы, или если устройство не отвечает.
 		* \endrussian
 		*/
@@ -5446,7 +5446,7 @@ extern "C"
 	* \endrussian
 	*/
 	result_t XIMC_API command_wait_for_stop(device_t id, uint32_t refresh_interval_ms);
-	
+
 	/**
 	* \english
 	* Make home command, wait until it is finished and make zero command. This is a convinient way to calibrate zero position.
@@ -5469,4 +5469,3 @@ extern "C"
 #endif
 
 // vim: ts=4 shiftwidth=4
-

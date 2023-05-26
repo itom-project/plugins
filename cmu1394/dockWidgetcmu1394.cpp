@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,8 +24,8 @@
 
  DockWidgetCMU1394::DockWidgetCMU1394(QMap<QString, ito::Param> params, int uniqueID) :updating(0)
  {
-    ui.setupUi(this); 
-    
+    ui.setupUi(this);
+
     ui.lblID->setText(QString::number(uniqueID));
 
     valuesChanged(params);
@@ -45,7 +45,7 @@
         if(params.keys().contains("gain"))
             gain = params["gain"].getVal<double>();
 
-        
+
         ui.doubleSpinBoxOffset->setValue(offset);
         ui.doubleSpinBoxGain->setValue(gain);
 
@@ -113,7 +113,7 @@ void DockWidgetCMU1394::on_horizontalSliderOffset_valueChanged(int Value)
 //        QMap<QString, ito::ParamBase> paramsVals;
         ui.doubleSpinBoxOffset->setValue(offset);
 //        paramsVals.insert("offset", ito::ParamBase("offset", ito::ParamBase::Double, offset));
-        
+
 //        emit changeParameters(paramsVals);
         emit OffsetPropertiesChanged(offset);
         updating = 0;

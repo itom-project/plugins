@@ -1,10 +1,10 @@
 /* This is a supplemental README file for libgphoto2/camlibs/sq905, dealing
- * specifically with support for sq913 cameras. This file is an 
- * integral part of the libgphoto2/camlibs/sq905 library source and is 
- * distributed with that source under the LGPL license. a copy of which 
- * license may be seen in any of the source files in libgphoto2/camlibs/sq905, 
+ * specifically with support for sq913 cameras. This file is an
+ * integral part of the libgphoto2/camlibs/sq905 library source and is
+ * distributed with that source under the LGPL license. a copy of which
+ * license may be seen in any of the source files in libgphoto2/camlibs/sq905,
  * or in the head directory of libgphoto2.
- */ 
+ */
 
 
 INTRODUCTION
@@ -23,27 +23,27 @@ supported well enough under the options used for SQ_MODEL_DEFAULT.
 DIFFERENCES BETWEEN SQ913 AND  SQ905 CAMERAS
 
 As already mentioned, these new cameras have an LED display on the rear and
-also have a flash. Two other differences are not so readily visible. 
+also have a flash. Two other differences are not so readily visible.
 
 First, the sq905 cameras have a "video clip" feature. If this feature is
 set, the camera will shoot frames repeatedly, until its memory is full. The
 Argus DC-1730 does not have this feature; on similar button setting it will
-shoot three frames only, and then stop. 
+shoot three frames only, and then stop.
 
 This functional difference also is reflected in a slightly different format
-for the configuration data presented by the camera. 
+for the configuration data presented by the camera.
 
 The most major consequence of this change in the configuration data is
 that sq_postprocess ( ) must be completely rewritten before it can be used
 with these cameras; the meaning of entries 7 through 15 in each line of
 config data is now wrong. For this reason, sq_postprocess ( ) is turned off
-in CVS for now. 
+in CVS for now.
 
 Repeating myself: If you are running an existing version of camlibs/sq905
 and want to just add the new ID number 0x2770:0x913c instead of upgrading,
 then be sure to comment out the call to sq_postprocess ( ) in the download
 routine, or rewrite it. Otherwise you will get very funny-looking photos
-from your Argus DC-1730. 
+from your Argus DC-1730.
 
 
 HARDWARE COMPATIBILITY ISSUES AND PROBLEMS WITH THE ARGUS DC-1730
@@ -69,7 +69,7 @@ An old Micron "barebones" system, again with a VIA chipset, seems completely
 unusable with this camera.
 
 I have also tested the camera with a Dell Inspiron 7500 laptop. No problems,
-even with the extension cable. 
+even with the extension cable.
 
 Finally, the camera was tested again on the first machine. the Dell Pentium
 III, using the extension cable which had caused problems previously. Again

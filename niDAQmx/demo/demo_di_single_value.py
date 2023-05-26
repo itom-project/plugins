@@ -3,7 +3,7 @@
 """Finite digital input task for single value input.
 
 Demo script for acquiring exactly one digital value
-per channel per acquire() command 
+per channel per acquire() command
 with a National Instruments DAQ device.
 
 To test this script, the NI MAX (Measurement & Automation
@@ -102,7 +102,7 @@ for i in range(0, 500):
     # start the finite task
     plugin.acquire()
     d = dataObject()
-    
+
     # getVal waits for the finite task to be finished and reads out the values.
     plugin.copyVal(d)
     a.append(d)
@@ -129,7 +129,7 @@ for i in range(0, 500):
     # start the finite task
     plugin.acquire()
     d = dataObject()
-    
+
     # getVal waits for the finite task to be finished and reads out the values.
     plugin.copyVal(d)
     a.append(d)

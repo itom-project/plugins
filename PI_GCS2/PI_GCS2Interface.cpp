@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -52,7 +52,7 @@ ito::RetVal PI_GCS2Interface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 PI_GCS2Interface::PI_GCS2Interface()
@@ -99,7 +99,7 @@ the default baudrate 0 forces the controller to connect with a default baudrate 
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param p("connection", ito::ParamBase::String, "RS232", "type of the connection ('RS232', 'USB', 'TCPIP')");
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "RS232");

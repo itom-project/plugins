@@ -26,18 +26,18 @@ Features are:
 - Endline characters can automatically appended to each sent string and are split from received strings.
 - Any string can be sent with a certain delay in between each character (useful for older devices).
 - A debugging parameter allows displaying the entire data transfer in the optional toolbox.
-- The configuration dialog can be used to send user-defined strings via the opened connection. 
-  
-  Use the checkBox **enable $(ascii-code) statement parsing** to enable ASCII code parsing to *$(ascii-code) statement*. 
+- The configuration dialog can be used to send user-defined strings via the opened connection.
+
+  Use the checkBox **enable $(ascii-code) statement parsing** to enable ASCII code parsing to *$(ascii-code) statement*.
 
 Initialization
 ==============
-  
+
 For a connection to a serial port, create a new instance of this plugin using:
 
 .. py:function:: dataIO("SerialIO", port, baud, endline [, bits, stopbits, parity, flow, sendDelay, timeout, debug])
     :noindex:
-    
+
     This is the necessary constructor of the class *dataIO* of *itom* in order to create a new instance of the plugin **serialIO**.
 
     The parameter are as follows:
@@ -58,9 +58,9 @@ For a connection to a serial port, create a new instance of this plugin using:
 An example for opening port **COM 1** with 9600 bauds is:
 
 .. code-block:: python
-    
+
     serial = dataIO("SerialIO", 1, 9600, endline="\n")
-    
+
 For linux, the port number may start with zero. If port numbers < 1000 are given, at first the serial port **ttySx** is checked, where
 x is the given port number. If **ttySx** does not exist, **ttyUSBx** is searched. If a port number in the range [1000,1999] is given,
 the device **ttyUSBx** is used, where *x* is (port - 1000). Finally, if port is in the range [2000,2999], the device **ttyACMx** is
@@ -79,12 +79,12 @@ parameters can be changed using *setParam*.
     connected COM port number (defined by initialization)
 **baud**: {int}
     current baudrate in symbols per second (approximately bits/sec). Allowed baudrates are::
-    
+
         50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400,
         4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800,
         500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000,
         2500000, 3000000, 3500000, 4000000
-    
+
     However not all baudrates are supported on each operating system.
 **bits**: {int}
     Number of bits to be written in line [5,8]
@@ -97,21 +97,21 @@ parameters can be changed using *setParam*.
     2: even parity
 **flow**: {int}
     bitmask for the flow control. This mask is an or-combination of the following values (add values for resulting flow value)::
-        
+
         Xon,Xoff: Xoff (0, default), Xon (1); 1. bit
         rts control: disabled (0, default), enabled (2), handshake (4 or 4+2); 2. and 3. bit
         cts control: disabled (0, default), enabled (8); 4. bit
         dtr control: disabled (0, default), enabled (16), handshake (32 or 32+16); 5. and 6. bit
         dsr control: disabled (0, default), enabled (64); 7. bit
-    
+
     Example: Xon, rts handshake, dsr enabled is 1 + 4 + 64 = 69 for the flow value
-        
+
 **endline**: {str}
     If a string is put to the output buffer (and send via the opened port), the endline-string is automatically appended to the string.
     Typical values are::
-        
+
         "\n","\n\r","\r" or ""
-    
+
     Use the empty endline character string ("") if you want to have full control.
 **endlineRead**: {str}
     Same behaviour like **endline**, however it determines the delimiter for incoming strings and is only
@@ -119,16 +119,16 @@ parameters can be changed using *setParam*.
 **readline**: {int}
     Per default, **readline** is set to 0. This means that the **getVal** command returns the values that are currently
     available at the input buffer of the computer. If you call **getVal** too fast, it might be, that the full answer
-    is not available yet. Then you need to recall **getVal** again. 
+    is not available yet. Then you need to recall **getVal** again.
     If you set **readline** to 1, **getVal** collects values from the input buffer and checks if **endlineRead** is contained in the string. If so, **getVal** writes
-    all characters also those behind the first appearance of **endlineRead** into the bytearray. Neverteless the number of obtained signs returned by **getVal** 
+    all characters also those behind the first appearance of **endlineRead** into the bytearray. Neverteless the number of obtained signs returned by **getVal**
     just counts the signs to the first apperance of *endlineRead*.
     Remaining characters are recognized at the next call to **getVal**. If no endline characters is detected within *timeout* seconds, a timeout (error code: 256)
     is raised.
     The following code example demonstrates how to obtain the bytearray until the **endlineRead** sign.
-   
+
    .. code-block:: python
-   
+
     serial.setParam('readline', True)
     b = bytearray(100)
     num = serial.getVal(b)
@@ -136,14 +136,14 @@ parameters can be changed using *setParam*.
     print(signs)
 
 
-    
+
 **sendDelay**: {str}
     This value represents a delay (in ms) after each character that is send and received
 **timeout**: {double}
     Timeout in seconds. If the incoming buffer of the serial port cannot be read within this time, the call returns. [0,65]
 **enableDebug**: {int}
     Set this value to 1 if you want to read the entire data transfer in the toolbox of an instance (disabled: 0).
-    
+
 Usage
 =====
 
@@ -158,21 +158,21 @@ Lets assume a serial port connection should be established with the following pr
 
 Then open the serial port and assign it to the variable *serial*
 
-.. code-block:: python  
-    
+.. code-block:: python
+
     serial = dataIO("SerialIO",1,9600,endline="\n",bits=8,stopbits=1,parity=0)
 
 If you have a scenario that you need to ask for the position of an actuator. Maybe the string to send in order to ask
 for the current position is **POS?\n**, then use the **setVal** method to send this string (*\\n* is automatically appended):
 
 .. code-block:: python
-    
+
     serial.setVal("POS?")
-    
+
 Then it is necessary to get the result. Therefore create a bytearray with enough space and pass this array to the **getVal** method:
 
 .. code-block:: python
-    
+
     ba = bytearray(9) #array with nine elements
     len = serial.getVal(ba)
 
@@ -198,7 +198,7 @@ to *getVal*. By this configuration you will automatically wait for the full answ
 An example for this alternative approach is:
 
 .. code-block:: python
-    
+
     serial.setParam("readline", 1)
     serial.setParam("endlineRead", "\n")
     buffer = bytearray(20)
@@ -212,25 +212,25 @@ Clear input or output buffer
 Sometimes, it is necessary to immediately clear all characters inside of the input buffer (obtained by *getVal*) and/or output buffer (send by *setVal*). This can be done using specific **exec**-functions:
 
 .. code-block:: python
-    
+
     serial.exec("clearInputBuffer") #clear input buffer
     serial.exec("clearOutputBuffer") #clear output buffer
-    
+
     #alternative:
     serial.exec("clearBuffer", 0) #clear input buffer
     serial.exec("clearBuffer", 1) #clear output buffer
-    
+
 Get a list of available COM ports under Windows
 ===============================================
 
 In order to get a list of all available COM ports under Windows, the following python code snippet can be used. It reads the corresponding registry entries:
 
 .. code-block:: python
-    
+
     #This script can be used as example for Windows
     #to detect registered COM ports for this computer
     import winreg as wreg
-    
+
     def DetectCOMPorts():
         try:
             regconn = wreg.ConnectRegistry( None, wreg.HKEY_LOCAL_MACHINE )
@@ -244,12 +244,12 @@ In order to get a list of all available COM ports under Windows, the following p
         finally:
             key.Close()
         return values_list
-    
+
     def NumberOfCOMPorts( values_list ):
         for subkey in iter( values_list ):
             print( "Name : " + subkey[0] )
             print( "Data : " + subkey[1] )
-    
+
     NumberOfCOMPorts( DetectCOMPorts() )
 
 Installation

@@ -111,9 +111,9 @@
         <location line="+11"/>
         <source>LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.
-Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. 
-The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. 
-The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag &apos;registers&apos; containing a string with address and number of consecutive registers seperated by &apos;,&apos; and different registers seperated by &apos;;&apos; i.e.: &apos;10,2;34,1;77,4&apos; to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:&apos;10,2;34;77,4&apos; 
+Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions.
+The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written.
+The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag &apos;registers&apos; containing a string with address and number of consecutive registers seperated by &apos;,&apos; and different registers seperated by &apos;;&apos; i.e.: &apos;10,2;34,1;77,4&apos; to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:&apos;10,2;34;77,4&apos;
 If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be used for addressing.</source>
         <translation type="unfinished">LibModBus ist ein itom-Plugin, das eine Kommunikationsschnittstelle mit modbusTCP und modbusRTU bereitstellt.
 Das Plugin basiert auf der libmodbus v3.1.1 Bibliothek und wurde nur unter Windows getestet.

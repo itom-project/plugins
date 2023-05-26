@@ -35,7 +35,7 @@ include_directories(
 
 link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
-    
+
 )
 
 set(PLUGIN_HEADERS
@@ -50,7 +50,7 @@ set(PLUGIN_UI
 set(PLUGIN_RCC
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicFilters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicSpecialFilters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicGenericFilters.cpp
@@ -60,7 +60,7 @@ set(PLUGIN_SOURCES
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif()    
+endif()
 
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

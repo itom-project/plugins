@@ -47,7 +47,7 @@ if(LibUSB_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.ui
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/ItomLibUSB.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.cpp
     )
@@ -58,12 +58,12 @@ if(LibUSB_FOUND)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${LibUSB_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-        
+
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
@@ -76,7 +76,7 @@ if(LibUSB_FOUND)
     itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+
 else(LibUSB_FOUND)
-    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
 endif(LibUSB_FOUND)

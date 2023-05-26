@@ -244,12 +244,12 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         try
         {
-            if (printManual) //paramsOpt->at(0) is printManual. Manual with parameters will be printed in the itom shelf. 
+            if (printManual) //paramsOpt->at(0) is printManual. Manual with parameters will be printed in the itom shelf.
             {
                 cout << "Manual: " << m_camDevice->manual() << "\n" << endl;
             }
 
-            if (printParameterValues) //paramsOpt->at(0) is printParameterValues. Parameters with all avaiable values will be printed in the itom shelf. 
+            if (printParameterValues) //paramsOpt->at(0) is printParameterValues. Parameters with all avaiable values will be printed in the itom shelf.
             {
                 for (NITParamIterator paramIt = m_camDevice->begin(); paramIt != m_camDevice->end(); ++paramIt)
                 {
@@ -311,7 +311,7 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         try
         {
-            for (NITParamIterator paramIt = m_camDevice->begin(); paramIt != m_camDevice->end(); ++paramIt) //Iteration through all parameter. 
+            for (NITParamIterator paramIt = m_camDevice->begin(); paramIt != m_camDevice->end(); ++paramIt) //Iteration through all parameter.
             {
                 const NITParam& param = **paramIt;
 

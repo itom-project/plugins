@@ -580,15 +580,15 @@
     <name>QObject</name>
     <message>
         <location line="-30"/>
-        <source>This plugin supports Point Grey cameras (currently USB models only) that can be run by the FlyCapture2 interface from Point Grey Research. 
+        <source>This plugin supports Point Grey cameras (currently USB models only) that can be run by the FlyCapture2 interface from Point Grey Research.
 This plugin was mainly tested with Flea3 (monochrome) and Grasshopper3 cameras (monochrome, color) under Windows and Linux.
 
-The plugin has been compiled using the FlyCapture2 library version %1.%2.%3.%4. 
+The plugin has been compiled using the FlyCapture2 library version %1.%2.%3.%4.
 
-In order to compile the plugin by yourself, you need to install the FlyCapture2 SDK in 32bit or 64bit (depending on itom) and make 
-sure that the development files (include files and libraries) are installed as well (option Cross Platform Dev Files). Then set the CMake variable PGRFLYCAP_INCLUDE_DIR 
-to the include directory of the FlyCapture2 SDK. The depending variable PGRFYLCAP_API_DIR is then automatically set (if not, delete it and 
-re-configure CMake). 
+In order to compile the plugin by yourself, you need to install the FlyCapture2 SDK in 32bit or 64bit (depending on itom) and make
+sure that the development files (include files and libraries) are installed as well (option Cross Platform Dev Files). Then set the CMake variable PGRFLYCAP_INCLUDE_DIR
+to the include directory of the FlyCapture2 SDK. The depending variable PGRFYLCAP_API_DIR is then automatically set (if not, delete it and
+re-configure CMake).
 
 This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folder of itom.</source>
         <translation type="unfinished"></translation>

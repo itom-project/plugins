@@ -36,12 +36,12 @@ include_directories(
 
 if(BUILD_TARGET64)
     link_directories(
-        
+
         ${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib64/x64
     )
-else(BUILD_TARGET64)    
+else(BUILD_TARGET64)
     link_directories(
-        
+
         ${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib
     )
 endif(BUILD_TARGET64)
@@ -54,7 +54,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/cmu1394.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogcmu1394.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetcmu1394.cpp
@@ -77,7 +77,7 @@ add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_U
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-    
+
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
@@ -91,7 +91,7 @@ itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 if(BUILD_TARGET64)
     file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib64/x64/*.dll")
-else(BUILD_TARGET64)    
+else(BUILD_TARGET64)
     file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib/*.dll")
 endif(BUILD_TARGET64)
 itom_post_build_copy_files_to_lib_folder(${target_name} dlls)

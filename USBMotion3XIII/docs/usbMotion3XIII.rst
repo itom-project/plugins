@@ -10,7 +10,7 @@
 **Devices**:    USB Motion 3x III controller from COPTONIX GmbH (www.coptonix.com)
 **Author**:     :pluginauthor:`USBMotion3XIII`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: USBMotion3XIII
 

@@ -95,7 +95,7 @@ typedef enum {
  * Camera structure
  *
  * This structure represents the camera in libdc1394. It contains a number of useful static information, such as model/vendor names,
- * a few capabilities, some ROM offsets, a unique identifier, etc... 
+ * a few capabilities, some ROM offsets, a unique identifier, etc...
  */
 typedef struct __dc1394_camera
 {
@@ -135,7 +135,7 @@ typedef struct __dc1394_camera
  * A unique identifier for a functional camera unit
  *
  * Since a single camera can contain several functional units (think stereo cameras), the GUID is not enough to identify an IIDC camera.
- * The unit number must also be used, hence this struct. 
+ * The unit number must also be used, hence this struct.
  */
 typedef struct
 {
@@ -146,7 +146,7 @@ typedef struct
 /**
  * A list of cameras
  *
- * Usually returned by dc1394_camera_eumerate(). 
+ * Usually returned by dc1394_camera_eumerate().
  */
 typedef struct __dc1394camera_list_t
 {
@@ -165,7 +165,7 @@ extern "C" {
  ***************************************************************************/
 
 /**
- * Creates a new context in which cameras can be searched and used. This should be called before using any other libdc1394 function. 
+ * Creates a new context in which cameras can be searched and used. This should be called before using any other libdc1394 function.
  */
 dc1394_t* dc1394_new (void);
 

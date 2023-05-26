@@ -1,13 +1,13 @@
 /*******************************************************
  Demo Program for HIDAPI
- 
+
  Alan Ott
  Signal 11 Software
 
  2010-07-20
 
  Copyright 2010, All Rights Reserved
- 
+
  This contents of this file may be used by anyone
  for any reason without any conditions and may be
  used as a starting point for your own applications
@@ -30,7 +30,7 @@
 
 class MainWindow : public FXMainWindow {
 	FXDECLARE(MainWindow)
-	
+
 public:
 	enum {
 		ID_FIRST = FXMainWindow::ID_LAST,
@@ -45,7 +45,7 @@ public:
 		ID_MAC_TIMER,
 		ID_LAST,
 	};
-	
+
 private:
 	FXList *device_list;
 	FXButton *connect_button;
@@ -60,7 +60,7 @@ private:
 	FXTextField *get_feature_text;
 	FXText *input_text;
 	FXFont *title_font;
-	
+
 	struct hid_device_info *devices;
 	hid_device *connected_device;
 	size_t getDataFromTextField(FXTextField *tf, char *buf, size_t len);
@@ -72,7 +72,7 @@ public:
 	MainWindow(FXApp *a);
 	~MainWindow();
 	virtual void create();
-	
+
 	long onConnect(FXObject *sender, FXSelector sel, void *ptr);
 	long onDisconnect(FXObject *sender, FXSelector sel, void *ptr);
 	long onRescan(FXObject *sender, FXSelector sel, void *ptr);
@@ -120,7 +120,7 @@ MainWindow::MainWindow(FXApp *app)
 	FXLabel *label = new FXLabel(vf, "HIDAPI Test Tool");
 	title_font = new FXFont(getApp(), "Arial", 14, FXFont::Bold);
 	label->setFont(title_font);
-	
+
 	new FXLabel(vf,
 		"Select a device and press Connect.", NULL, JUSTIFY_LEFT);
 	new FXLabel(vf,
@@ -145,9 +145,9 @@ MainWindow::MainWindow(FXApp *app)
 	new FXHorizontalFrame(buttonVF, 0, 0,0,0,0, 0,0,50,0);
 
 	connected_label = new FXLabel(vf, "Disconnected");
-	
+
 	new FXHorizontalFrame(vf);
-	
+
 	// Output Group Box
 	FXGroupBox *gb = new FXGroupBox(vf, "Output", FRAME_GROOVE|LAYOUT_FILL_X);
 	FXMatrix *matrix = new FXMatrix(gb, 2, MATRIX_BY_COLUMNS|LAYOUT_FILL_X);
@@ -174,7 +174,7 @@ MainWindow::MainWindow(FXApp *app)
 	input_text = new FXText(new FXHorizontalFrame(innerVF,LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN|FRAME_THICK, 0,0,0,0, 0,0,0,0), NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
 	input_text->setEditable(false);
 	new FXButton(innerVF, "Clear", NULL, this, ID_CLEAR, BUTTON_NORMAL|LAYOUT_RIGHT);
-	
+
 
 }
 
@@ -193,12 +193,12 @@ MainWindow::create()
 	show();
 
 	onRescan(NULL, 0, NULL);
-	
+
 
 #ifdef __APPLE__
 	init_apple_message_system();
 #endif
-	
+
 	getApp()->addTimeout(this, ID_MAC_TIMER,
 		50 * timeout_scalar /*50ms*/);
 }
@@ -208,7 +208,7 @@ MainWindow::onConnect(FXObject *sender, FXSelector sel, void *ptr)
 {
 	if (connected_device != NULL)
 		return 1;
-	
+
 	FXint cur_item = device_list->getCurrentItem();
 	if (cur_item < 0)
 		return -1;
@@ -218,19 +218,19 @@ MainWindow::onConnect(FXObject *sender, FXSelector sel, void *ptr)
 	struct hid_device_info *device_info = (struct hid_device_info*) item->getData();
 	if (!device_info)
 		return -1;
-	
+
 	connected_device =  hid_open_path(device_info->path);
-	
+
 	if (!connected_device) {
 		FXMessageBox::error(this, MBOX_OK, "Device Error", "Unable To Connect to Device");
 		return -1;
 	}
-	
+
 	hid_set_nonblocking(connected_device, 1);
 
 	getApp()->addTimeout(this, ID_TIMER,
 		5 * timeout_scalar /*5ms*/);
-	
+
 	FXString s;
 	s.format("Connected to: %04hx:%04hx -", device_info->vendor_id, device_info->product_id);
 	s += FXString(" ") + device_info->manufacturer_string;
@@ -260,7 +260,7 @@ MainWindow::onDisconnect(FXObject *sender, FXSelector sel, void *ptr)
 	disconnect_button->disable();
 
 	getApp()->removeTimeout(this, ID_TIMER);
-	
+
 	return 1;
 }
 
@@ -270,11 +270,11 @@ MainWindow::onRescan(FXObject *sender, FXSelector sel, void *ptr)
 	struct hid_device_info *cur_dev;
 
 	device_list->clearItems();
-	
+
 	// List the Devices
 	hid_free_enumeration(devices);
 	devices = hid_enumerate(0x0, 0x0);
-	cur_dev = devices;	
+	cur_dev = devices;
 	while (cur_dev) {
 		// Add it to the List Box.
 		FXString s;
@@ -286,7 +286,7 @@ MainWindow::onRescan(FXObject *sender, FXSelector sel, void *ptr)
 		s += usage_str;
 		FXListItem *li = new FXListItem(s, NULL, cur_dev);
 		device_list->appendItem(li);
-		
+
 		cur_dev = cur_dev->next;
 	}
 
@@ -306,12 +306,12 @@ MainWindow::getDataFromTextField(FXTextField *tf, char *buf, size_t len)
 	FXString data = tf->getText();
 	const FXchar *d = data.text();
 	size_t i = 0;
-	
+
 	// Copy the string from the GUI.
 	size_t sz = strlen(d);
 	char *str = (char*) malloc(sz+1);
 	strcpy(str, d);
-	
+
 	// For each token in the string, parse and store in buf[].
 	char *token = strtok(str, delim);
 	while (token) {
@@ -320,7 +320,7 @@ MainWindow::getDataFromTextField(FXTextField *tf, char *buf, size_t len)
 		buf[i++] = val;
 		token = strtok(NULL, delim);
 	}
-	
+
 	free(str);
 	return i;
 }
@@ -331,12 +331,12 @@ MainWindow::onSendOutputReport(FXObject *sender, FXSelector sel, void *ptr)
 	char buf[256];
 	size_t len;
 	len = getDataFromTextField(output_text, buf, sizeof(buf));
-	
+
 	int res = hid_write(connected_device, (const unsigned char*)buf, len);
 	if (res < 0) {
 		FXMessageBox::error(this, MBOX_OK, "Error Writing", "Could not write to device. Error reported was: %ls", hid_error(connected_device));
 	}
-	
+
 	return 1;
 }
 
@@ -349,12 +349,12 @@ MainWindow::onSendFeatureReport(FXObject *sender, FXSelector sel, void *ptr)
 	for (int i = 0; i < len; i++) {
 		printf("%02hhx\n", buf[i]);
 	}
-	
+
 	int res = hid_send_feature_report(connected_device, (const unsigned char*)buf, len);
 	if (res < 0) {
 		FXMessageBox::error(this, MBOX_OK, "Error Writing", "Could not send feature report to device. Error reported was: %ls", hid_error(connected_device));
 	}
-	
+
 	return 1;
 }
 
@@ -367,7 +367,7 @@ MainWindow::onGetFeatureReport(FXObject *sender, FXSelector sel, void *ptr)
 	if (len != 1) {
 		FXMessageBox::error(this, MBOX_OK, "Too many numbers", "Enter only a single report number in the text field");
 	}
-	
+
 	int res = hid_get_feature_report(connected_device, (unsigned char*)buf, sizeof(buf));
 	if (res < 0) {
 		FXMessageBox::error(this, MBOX_OK, "Error Getting Report", "Could not get feature report from device. Error reported was: %ls", hid_error(connected_device));
@@ -390,7 +390,7 @@ MainWindow::onGetFeatureReport(FXObject *sender, FXSelector sel, void *ptr)
 		input_text->setBottomLine(INT_MAX);
 	}
 
-	
+
 	return 1;
 }
 
@@ -406,7 +406,7 @@ MainWindow::onTimeout(FXObject *sender, FXSelector sel, void *ptr)
 {
 	unsigned char buf[256];
 	int res = hid_read(connected_device, buf, sizeof(buf));
-	
+
 	if (res > 0) {
 		FXString s;
 		s.format("Received %d bytes:\n", res);
@@ -438,7 +438,7 @@ MainWindow::onMacTimeout(FXObject *sender, FXSelector sel, void *ptr)
 {
 #ifdef __APPLE__
 	check_apple_events();
-	
+
 	getApp()->addTimeout(this, ID_MAC_TIMER,
 		50 * timeout_scalar /*50ms*/);
 #endif

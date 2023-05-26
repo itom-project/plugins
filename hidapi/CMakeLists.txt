@@ -64,14 +64,14 @@ if(HIDAPI_REQUIREMENTS_FOUND)
     )
 
     if(WIN32)
-        set(PLUGIN_SOURCES 
+        set(PLUGIN_SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/windows/hid.c
         )
         set(HIDAPI_LIBRARIES Setupapi)
     elseif(UNIX)
-        set(PLUGIN_SOURCES 
+        set(PLUGIN_SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/linux/hid.c
@@ -79,7 +79,7 @@ if(HIDAPI_REQUIREMENTS_FOUND)
         )
         set(HIDAPI_LIBRARIES ${LIBUDEV_LIBRARY})
     elseif(APPLE)
-        set(PLUGIN_SOURCES 
+        set(PLUGIN_SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/mac/hid.c
@@ -93,12 +93,12 @@ if(HIDAPI_REQUIREMENTS_FOUND)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${HIDAPI_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) #${LibUSB_LIBRARIES} 
-        
+    target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${HIDAPI_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) #${LibUSB_LIBRARIES}
+
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
@@ -113,5 +113,5 @@ if(HIDAPI_REQUIREMENTS_FOUND)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(HIDAPI_REQUIREMENTS_FOUND)
-    message(SEND_ERROR "Linux package libudev, libudev-dev missing. ${target_name} will not be build")    
+    message(SEND_ERROR "Linux package libudev, libudev-dev missing. ${target_name} will not be build")
 endif(HIDAPI_REQUIREMENTS_FOUND)

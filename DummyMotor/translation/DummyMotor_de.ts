@@ -270,7 +270,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. 
+        <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes.
 
 The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
         <translation type="unfinished">Der DummyMotor ist ein virtuelles Motor-Plugin, welches bis zu 10 lineare Achsen simuliert.

@@ -40,7 +40,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/algoCancelWidget.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/demoAlgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algoCancelWidget.cpp
 )

@@ -39,7 +39,7 @@ void DockWidgetThorlabsTCubeTEC::parametersChanged(QMap<QString, ito::Param> par
         QByteArray sensorType = params["sensorType"].getVal<const char*>();
         ui.lblDeviceName->setText(params["deviceName"].getVal<const char*>());
         ui.lblSensorType->setText(sensorType);
-        
+
 
         if (sensorType == "Transducer")
         {

@@ -9,7 +9,7 @@
 **Platforms**:  Windows, Linux
 **Author**:     :pluginauthor:`FFTW-Filter`
 =============== ========================================================================================================
-  
+
 Overview
 ========
 
@@ -21,7 +21,7 @@ These filters are defined in the plugin:
 .. pluginfilterlist::
     :plugin: FFTW-Filter
     :overviewonly:
-	
+
 Usage
 ======
 
@@ -38,20 +38,20 @@ For Windows:
 	lib /machine:x64 /def:libfftw3f-3.def
 	lib /machine:x64 /def:libfftw3l-3.def
 
-5. Set the CMake variable FFTW_DIR to this new folder or define a windows environment variable FFTW_ROOT.	
+5. Set the CMake variable FFTW_DIR to this new folder or define a windows environment variable FFTW_ROOT.
 
 
 For Ubuntu:
 -----------
 
 > sudo apt-get update -y
-> sudo apt-get install -y fftw-dev 
+> sudo apt-get install -y fftw-dev
 
 Filters
 ==============
-        
+
 Detailed overview about all defined filters:
-    
+
 .. pluginfilterlist::
     :plugin: FFTW-Filter
 

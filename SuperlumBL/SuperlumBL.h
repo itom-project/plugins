@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #ifndef SUPERLUMBL_H
-#define SUPERLUMBL_h    
+#define SUPERLUMBL_h
 
 #include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
@@ -39,13 +39,13 @@
   *\class    SuperlumBL
   *\brief    ToDo
   *
-  *    \sa    AddInDataIO, SuperlumBL, 
+  *    \sa    AddInDataIO, SuperlumBL,
   *    \date    31.08.2015
   *    \author    J. Krauter, T. Boettcher
   * \warning    NA
   *
   */
-class SuperlumBL : public ito::AddInDataIO 
+class SuperlumBL : public ito::AddInDataIO
 {
     Q_OBJECT
 
@@ -57,7 +57,7 @@ class SuperlumBL : public ito::AddInDataIO
         friend class SuperlumBLInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }        //!< indicates that this plugin has got a configuration dialog
-        
+
     private:
 
         ito::AddInDataIO *m_pSer;
@@ -74,11 +74,11 @@ class SuperlumBL : public ito::AddInDataIO
         ito::RetVal SendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS);
         //ito::RetVal SetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         //ito::RetVal CheckStatus(void);
-        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);      
+        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
         ito::RetVal IdentifyAndInitializeSystem();
 
     public slots:
-        
+
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -91,7 +91,7 @@ class SuperlumBL : public ito::AddInDataIO
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    SuperlumBLInterface 
+  *\class    SuperlumBLInterface
   *
   *\brief    Interface-Class for SuperlumBLInterface-Class
   *
@@ -119,7 +119,7 @@ class SuperlumBLInterface : public ito::AddInInterfaceBase
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
 
     signals:
-        
+
 
     public slots:
 };

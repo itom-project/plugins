@@ -207,7 +207,7 @@ getpicture_logitech_pd(Camera *camera, GPContext *context, unsigned char **rd, c
  * use a different protocol - have to differetiate.
  */
 int
-ultrapocket_getrawpicture(Camera *camera, GPContext *context, 
+ultrapocket_getrawpicture(Camera *camera, GPContext *context,
    unsigned char **pdata, int *size, const char *filename)
 {
     char           ppmheader[200];
@@ -262,13 +262,13 @@ ultrapocket_getrawpicture(Camera *camera, GPContext *context,
 
    /* and chop the spare 4 pixels off the RHS */
    for (pc = 1; pc < height; pc++) {
-      memmove(outdata + pmmhdr_len + ((long)width * pc * 3), 
-              outdata + pmmhdr_len + (((long)width + 4) * pc * 3), 
+      memmove(outdata + pmmhdr_len + ((long)width * pc * 3),
+              outdata + pmmhdr_len + (((long)width + 4) * pc * 3),
               ((long)width) * 3);
    }
    /* modify outsize to reflect trim */
    outsize = ((long)width) * height * 3 + pmmhdr_len;
-   
+
    free(rawdata);
    if (result < 0) {
       free (outdata);
@@ -326,7 +326,7 @@ ultrapocket_getpicture(Camera *camera, GPContext *context, unsigned char **pdata
 	    ", gamma %.2f"
 #endif
 	    "\n%d %d\n"
-	    "255\n", BayerTileNames[tile], 
+	    "255\n", BayerTileNames[tile],
 #if DO_GAMMA
 	    GAMMA_NUMBER,
 #endif
@@ -351,8 +351,8 @@ ultrapocket_getpicture(Camera *camera, GPContext *context, unsigned char **pdata
 
    /* and chop the spare 4 pixels off the RHS */
    for (pc = 1; pc < height; pc++) {
-      memmove(outdata + pmmhdr_len + ((long)width * pc * 3), 
-              outdata + pmmhdr_len + (((long)width + 4) * pc * 3), 
+      memmove(outdata + pmmhdr_len + ((long)width * pc * 3),
+              outdata + pmmhdr_len + (((long)width + 4) * pc * 3),
               ((long)width) * 3);
    }
    /* modify outsize to reflect trim */
@@ -403,7 +403,7 @@ ultrapocket_reset(Camera *camera)
    CHECK_RESULT(gp_port_free(port));
    CHECK_RESULT(gp_port_new(&port));
    CHECK_RESULT(gp_port_set_info(port, oldpi));
-   CHECK_RESULT(gp_port_usb_find_device(port, 
+   CHECK_RESULT(gp_port_usb_find_device(port,
       cab.usb_vendor, cab.usb_product));
    CHECK_RESULT(gp_port_open(port));
    camera->port = port;
@@ -490,7 +490,7 @@ static int getpicsoverview_generic(
    char fn[20];
    int picid;
    int reset_needed;
-   
+
    CHECK_RESULT(ultrapocket_sync(camera));
 
    memset(command, 0, 16);
@@ -564,7 +564,7 @@ static int getpicsoverview_logitech_pd(
  *
  * Fuji Slimshot + Axia etc
  * The camera responds with 8 * 0x1000 bytes
- * 
+ *
  * Creative CardCam
  * The camera responds with 8 * 0x1000 bytes
  *

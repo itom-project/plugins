@@ -2,7 +2,7 @@
  * 1394-Based Digital Camera Control Library
  *
  * Allied Vision Technologies (AVT) specific extensions
- * 
+ *
  * Written by Pierre MOOS <pierre.moos@gmail.com>
  *
  * Copyright (C) 2005 Inria Sophia-Antipolis
@@ -508,7 +508,7 @@ dc1394error_t dc1394_avt_adjust_frames(uint32_t Camera_ID, dc1394video_frame_t *
 
 /**
  * Retrieve a list with supported features
- * This function is provided for backwards compatibility. New code should call 
+ * This function is provided for backwards compatibility. New code should call
  * dc1394_avt_get_smart_feature_inquiry instead.
  */
 dc1394error_t dc1394_avt_get_advanced_feature_inquiry(dc1394camera_t *camera,
@@ -551,7 +551,7 @@ dc1394error_t dc1394_avt_get_shading(dc1394camera_t *camera,
 dc1394error_t dc1394_avt_get_shading_correction(dc1394camera_t *camera,
                                                 dc1394switch_t *on_off,
                                                 dc1394bool_t *build_err,
-                                                dc1394switch_t *show, 
+                                                dc1394switch_t *show,
                                                 uint32_t *frame_nb,
                                                 uint32_t *mem_channel,
                                                 uint32_t *mem_channel_err);
@@ -569,9 +569,9 @@ dc1394error_t dc1394_avt_set_shading(dc1394camera_t *camera,
  * Set Shading Correction feature
  */
 dc1394error_t dc1394_avt_set_shading_correction(dc1394camera_t *camera,
-                                                dc1394switch_t on_off, 
+                                                dc1394switch_t on_off,
                                                 dc1394switch_t compute,
-                                                dc1394switch_t show, 
+                                                dc1394switch_t show,
                                                 uint32_t frame_nb,
                                                 uint32_t mem_channel,
                                                 dc1394switch_t mem_clear,
@@ -603,7 +603,7 @@ dc1394error_t dc1394_avt_get_shading_info(dc1394camera_t *camera,
                                           uint32_t *MaxImageSize);
 
 /**
- * Retrieve the max size of a Shading Correction image and the number of 
+ * Retrieve the max size of a Shading Correction image and the number of
  * supported memory channels to store shading images inside the camera.
  */
 dc1394error_t dc1394_avt_get_shading_correction_info(dc1394camera_t *camera,
@@ -634,8 +634,8 @@ dc1394error_t dc1394_avt_set_multiple_slope(dc1394camera_t *camera,
 
 /**
  * Get the timebase used for 'shutter' feature.
- * Possible values: 
- * 0:    1us 
+ * Possible values:
+ * 0:    1us
  * 1:    2us
  * 2:    5us
  * 3:   10us
@@ -748,7 +748,7 @@ dc1394error_t dc1394_avt_get_dsnu_correction(dc1394camera_t *camera,
 
 /**
  * Set DSNU mode, number of frames used for correction data computation and launch the the computation of the dsnu frame
- * This function is provided for backwards compatibility - new code should call 
+ * This function is provided for backwards compatibility - new code should call
  * dc1394_avt_set_dsnu_correction instead.
  */
 dc1394error_t dc1394_avt_set_dsnu(dc1394camera_t *camera,
@@ -761,7 +761,7 @@ dc1394error_t dc1394_avt_set_dsnu(dc1394camera_t *camera,
  *   enable show_image to receive correction data instead of images, load or save data from/to flash )
  */
 dc1394error_t dc1394_avt_set_dsnu_correction(dc1394camera_t *camera,
-                                             dc1394switch_t on_off, 
+                                             dc1394switch_t on_off,
                                              dc1394switch_t compute_image,
                                              uint32_t       frame_nb,
                                              dc1394switch_t show_image,
@@ -787,7 +787,7 @@ dc1394error_t dc1394_avt_get_blemish_correction(dc1394camera_t *camera,
 
 /**
  * Set Blemish mode, num of frames used for correction data computation and launch the the computation of correction data.
- * This function is provided for backwards compatibility - new code should call dc1394_avt_set_blemish_correction 
+ * This function is provided for backwards compatibility - new code should call dc1394_avt_set_blemish_correction
  * instead.
  */
 dc1394error_t dc1394_avt_set_blemish(dc1394camera_t *camera,
@@ -796,11 +796,11 @@ dc1394error_t dc1394_avt_set_blemish(dc1394camera_t *camera,
 
 /**
  * Configure Blemish Correction.
- * ( On/Off, number of frames used for computation, launch computation, enable show_image to receive correction data instead of images, 
+ * ( On/Off, number of frames used for computation, launch computation, enable show_image to receive correction data instead of images,
  *   load or save data from/to flash)
  */
 dc1394error_t dc1394_avt_set_blemish_correction(dc1394camera_t *camera,
-                                                dc1394switch_t on_off, 
+                                                dc1394switch_t on_off,
                                                 dc1394switch_t compute_image,
                                                 uint32_t       frame_nb,
                                                 dc1394switch_t show_image,
@@ -830,7 +830,7 @@ dc1394error_t dc1394_avt_set_io(dc1394camera_t *camera,uint32_t IO,
  * output_pin should be set to DC1394_AVT_IO_OUTP_PWM_CTRLx
  */
 dc1394error_t dc1394_avt_get_io_pwmout_info(dc1394camera_t *camera,
-                                            uint32_t       pwm_output_pin, 
+                                            uint32_t       pwm_output_pin,
                                             uint32_t       *min_period);
 
 /**
@@ -838,7 +838,7 @@ dc1394error_t dc1394_avt_get_io_pwmout_info(dc1394camera_t *camera,
  * output_pin should be set to DC1394_AVT_IO_OUTP_PWM_CTRLx
  */
 dc1394error_t dc1394_avt_get_io_pwmout(dc1394camera_t *camera,
-                                       uint32_t       pwm_output_pin, 
+                                       uint32_t       pwm_output_pin,
                                        uint32_t       *period,
                                        uint32_t       *pulse_width);
 
@@ -847,7 +847,7 @@ dc1394error_t dc1394_avt_get_io_pwmout(dc1394camera_t *camera,
  * output_pin should be set to DC1394_AVT_IO_OUTP_PWM_CTRLx
  */
 dc1394error_t dc1394_avt_set_io_pwmout(dc1394camera_t *camera,
-                                       uint32_t       pwm_output_pin, 
+                                       uint32_t       pwm_output_pin,
                                        uint32_t       period,
                                        uint32_t       pulse_width);
 
@@ -918,21 +918,21 @@ dc1394error_t dc1394_avt_get_lut_info(dc1394camera_t *camera,
                                       uint32_t *NumOfLuts, uint32_t *MaxLutSize);
 
 /**
- * Get num of LUTs (look-up tables) present, the maximum value for lut entries, the number of values per lut 
+ * Get num of LUTs (look-up tables) present, the maximum value for lut entries, the number of values per lut
  * and the lut size in bytes.
  */
-dc1394error_t dc1394_avt_get_lut_extd_info(dc1394camera_t *camera, 
-                                           uint32_t       *NumOfLuts, 
+dc1394error_t dc1394_avt_get_lut_extd_info(dc1394camera_t *camera,
+                                           uint32_t       *NumOfLuts,
                                            uint32_t       *MaxValue,
                                            uint32_t       *NumOfValues,
                                            uint32_t       *MaxLutSize);
 
 /**
- * Get Autofunction AOI unit sizes. Only multiples of these units are allowed for 
+ * Get Autofunction AOI unit sizes. Only multiples of these units are allowed for
  * area position and size.
  */
 dc1394error_t dc1394_avt_get_autofunc_aoi_info(dc1394camera_t *camera,
-                                               uint32_t       *unit_x, 
+                                               uint32_t       *unit_x,
                                                uint32_t       *unit_y);
 
 /**
@@ -950,7 +950,7 @@ dc1394error_t dc1394_avt_get_aoi(dc1394camera_t *camera,
 dc1394error_t dc1394_avt_get_autofunc_aoi(dc1394camera_t *camera,
                                           dc1394switch_t *on_off,
                                           dc1394switch_t *show_area,
-                                          uint32_t       *left, 
+                                          uint32_t       *left,
                                           uint32_t       *top,
                                           uint32_t       *width,
                                           uint32_t       *height);
@@ -970,7 +970,7 @@ dc1394error_t dc1394_avt_set_aoi(dc1394camera_t *camera,
 dc1394error_t dc1394_avt_set_autofunc_aoi(dc1394camera_t *camera,
                                           dc1394switch_t on_off,
                                           dc1394switch_t show_area,
-                                          uint32_t       left, 
+                                          uint32_t       left,
                                           uint32_t       top,
                                           uint32_t       width,
                                           uint32_t       height);
@@ -978,7 +978,7 @@ dc1394error_t dc1394_avt_set_autofunc_aoi(dc1394camera_t *camera,
 /**
  * Get supported Test Images
  */
-dc1394error_t dc1394_avt_get_test_images_info(dc1394camera_t *camera, 
+dc1394error_t dc1394_avt_get_test_images_info(dc1394camera_t *camera,
                                               dc1394bool_t   *TestImage1,
                                               dc1394bool_t   *TestImage2,
                                               dc1394bool_t   *TestImage3,
@@ -1001,7 +1001,7 @@ dc1394error_t dc1394_avt_set_test_images(dc1394camera_t *camera,
 
 /**
  * Get the number of captured frames
- * This function is provided for backwards compatibility - new code should call dc1394_avt_get_frame_counter 
+ * This function is provided for backwards compatibility - new code should call dc1394_avt_get_frame_counter
  * instead.
  */
 dc1394error_t dc1394_avt_get_frame_info(dc1394camera_t *camera,
@@ -1011,13 +1011,13 @@ dc1394error_t dc1394_avt_get_frame_info(dc1394camera_t *camera,
  * Frame Counter: Get the number of captured frames
  * feature_info is needed to point to a properly filled info struct - see dc1394_avt_get_smart_feature_inquiry
  */
-dc1394error_t dc1394_avt_get_frame_counter(dc1394camera_t                           *camera, 
-                                           const dc1394_avt_smart_feature_info_t    *feature_info, 
+dc1394error_t dc1394_avt_get_frame_counter(dc1394camera_t                           *camera,
+                                           const dc1394_avt_smart_feature_info_t    *feature_info,
                                            uint32_t                                 *framecounter);
 
 /**
  * Reset Frame Counter
- * This function is provided for backwards compatibility - new code should call dc1394_avt_reset_frame_counter 
+ * This function is provided for backwards compatibility - new code should call dc1394_avt_reset_frame_counter
  * instead.
  */
 dc1394error_t dc1394_avt_reset_frame_info(dc1394camera_t *camera);
@@ -1026,13 +1026,13 @@ dc1394error_t dc1394_avt_reset_frame_info(dc1394camera_t *camera);
  * Reset Frame Counter
  * feature_info is needed to point to a properly filled info struct - see dc1394_avt_get_smart_feature_inquiry
  */
-dc1394error_t dc1394_avt_reset_frame_counter(dc1394camera_t                         *camera, 
+dc1394error_t dc1394_avt_reset_frame_counter(dc1394camera_t                         *camera,
                                              const dc1394_avt_smart_feature_info_t  *feature_info);
 
 /**
  * Trigger Counter: Get the number detected trigger events
  */
-dc1394error_t dc1394_avt_get_trigger_counter(dc1394camera_t *camera, 
+dc1394error_t dc1394_avt_get_trigger_counter(dc1394camera_t *camera,
                                              uint32_t       *triggercounter);
 
 /**
@@ -1149,9 +1149,9 @@ dc1394error_t dc1394_avt_set_hsnr(dc1394camera_t *camera, dc1394bool_t on_off, u
  * feature_info is needed to point to a properly filled info struct - see dc1394_avt_get_smart_feature_inquiry.
  * Parameter userVal is only supported for newer camera families like Pike and Stingray and may be set to NULL.
  */
-dc1394error_t dc1394_avt_get_sis(dc1394camera_t                         *camera, 
-                                 const dc1394_avt_smart_feature_info_t  *feature_info, 
-                                 dc1394switch_t                         *on_off, 
+dc1394error_t dc1394_avt_get_sis(dc1394camera_t                         *camera,
+                                 const dc1394_avt_smart_feature_info_t  *feature_info,
+                                 dc1394switch_t                         *on_off,
                                  int16_t                                *linePos,
                                  uint32_t                               *userVal);
 
@@ -1160,9 +1160,9 @@ dc1394error_t dc1394_avt_get_sis(dc1394camera_t                         *camera,
  * feature_info is needed to point to a properly filled info struct - see dc1394_avt_get_smart_feature_inquiry.
  * Changing linePos during image acquisition may lead to synchronization issues with dc1394_avt_get_sis_data.
  */
-dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera, 
-                                 const dc1394_avt_smart_feature_info_t  *feature_info, 
-                                 dc1394switch_t                         on_off, 
+dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
+                                 const dc1394_avt_smart_feature_info_t  *feature_info,
+                                 dc1394switch_t                         on_off,
                                  int16_t                                linePos,
                                  uint32_t                               userVal);
 
@@ -1171,13 +1171,13 @@ dc1394error_t dc1394_avt_set_sis(dc1394camera_t                         *camera,
  * '0' otherwise. Elements marked as 'reserved' are generally unsupported.
  * feature_info is needed to point to a properly filled info struct - see dc1394_avt_get_smart_feature_inquiry
  */
-dc1394error_t dc1394_avt_get_sis_data_inquiry(const dc1394_avt_smart_feature_info_t *feature_info, 
+dc1394error_t dc1394_avt_get_sis_data_inquiry(const dc1394_avt_smart_feature_info_t *feature_info,
                                               dc1394_avt_sis_data                   *sis_data_inquiry );
 
 
 /**
- * Retrieve SIS data from image data. 'linePos' needs to reflect the setting of the corresponding SIS parameter 
- * at the time the image was aquired. Not all elements of sis_data are necessarily filled with valid data, depending 
+ * Retrieve SIS data from image data. 'linePos' needs to reflect the setting of the corresponding SIS parameter
+ * at the time the image was aquired. Not all elements of sis_data are necessarily filled with valid data, depending
  * on the camera model. See dc1394_avt_get_sis_data_inquiry for supported elements.
  * feature_info is needed to point to a properly filled info struct - see dc1394_avt_get_smart_feature_inquiry
  */
@@ -1248,25 +1248,25 @@ dc1394error_t dc1394_avt_set_low_smear(dc1394camera_t *camera,
                                        dc1394switch_t on_off);
 
 /**
- * Get Low Noise Binning 
+ * Get Low Noise Binning
  */
 dc1394error_t dc1394_avt_get_low_noise_binning(dc1394camera_t *camera,
                                                dc1394switch_t *on_off);
 
 /**
- * Set Low Noise Binning 
+ * Set Low Noise Binning
  */
 dc1394error_t dc1394_avt_set_low_noise_binning(dc1394camera_t *camera,
                                                dc1394switch_t on_off);
 
 /**
- * Get Global Reset Release Shutter 
+ * Get Global Reset Release Shutter
  */
 dc1394error_t dc1394_avt_get_global_res_rel_shutter(dc1394camera_t *camera,
                                                     dc1394switch_t *on_off);
 
 /**
- * Set Global Reset Release Shutter 
+ * Set Global Reset Release Shutter
  */
 dc1394error_t dc1394_avt_set_global_res_rel_shutter(dc1394camera_t *camera,
                                                     dc1394switch_t on_off);
@@ -1290,13 +1290,13 @@ dc1394error_t dc1394_avt_set_user_profile(dc1394camera_t *camera,
                                           dc1394switch_t set_default);
 
 /**
- * Get LED configuration - controls 'SW Feature - LED' functionality to blank the camera's status LEDs 
+ * Get LED configuration - controls 'SW Feature - LED' functionality to blank the camera's status LEDs
  */
 dc1394error_t dc1394_avt_get_led(dc1394camera_t *camera,
                                  dc1394switch_t *on_off);
 
 /**
- * Set LED configuration - controls 'SW Feature - LED' functionality to blank the camera's status LEDs 
+ * Set LED configuration - controls 'SW Feature - LED' functionality to blank the camera's status LEDs
  */
 dc1394error_t dc1394_avt_set_led(dc1394camera_t *camera,
                                  dc1394switch_t on_off);

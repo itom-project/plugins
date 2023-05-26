@@ -10,7 +10,7 @@
 	* dimera3500.c: Made exposure and flash settings configurable.
 
 2002-11-17  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* dimera3500.c: Fixed 64bit problems.
 
 2002-10-03  Lutz Müller <lutz@users.sourceforge.net>
@@ -36,5 +36,5 @@
 
 2001-12-31  Lutz Müller <urc8@rz.uni-karlsruhe.de>
 
-	* dimera3500.c (capture_image): Tell the filesystem about the 
+	* dimera3500.c (capture_image): Tell the filesystem about the
 	  new (ram) image.

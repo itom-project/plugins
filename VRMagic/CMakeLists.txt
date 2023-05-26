@@ -37,8 +37,8 @@ endif(NOT VRMAGIC_INCLUDE_DIR)
 
 if(VRMAGIC_INCLUDE_DIR)
     get_filename_component(VRMAGIC_SDK_DIR ${VRMAGIC_INCLUDE_DIR} DIRECTORY)
-	
-    
+
+
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -70,7 +70,7 @@ if(VRMAGIC_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetVRMagic.ui
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogVRMagic.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetVRMagic.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/VRMagic.cpp
@@ -84,16 +84,16 @@ if(VRMAGIC_INCLUDE_DIR)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} vrmusbcam2 ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-    
+
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
     #documentation
     itom_configure_plugin_documentation(${target_name} VRMagic)
 
@@ -106,11 +106,11 @@ if(VRMAGIC_INCLUDE_DIR)
 
     if(BUILD_TARGET64)
         file(GLOB dlls "${VRMAGIC_SDK_DIR}/lib/x64/*.dll")
-    else(BUILD_TARGET64)    
+    else(BUILD_TARGET64)
         file(GLOB dlls "${VRMAGIC_SDK_DIR}/lib/x86/*.dll")
     endif(BUILD_TARGET64)
     itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
-        
+
 else(VRMAGIC_INCLUDE_DIR)
-    message(SEND_ERROR "${target_name}-SDK directory could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "${target_name}-SDK directory could not be found. ${target_name} will not be build")
 endif(VRMAGIC_INCLUDE_DIR)

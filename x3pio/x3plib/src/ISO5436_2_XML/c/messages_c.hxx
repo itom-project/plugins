@@ -120,7 +120,7 @@ namespace OpenGPS
  * First resets the history of exceptions, see OpenGPS::ExceptionHistory::Reset. Then executes a statement
  * that is surrounded by a try-catch block. If an exception is thrown within the statement it is added to
  * the history of exceptions, see OpenGPS::ExceptionHistory::SetLastException.
- * 
+ *
  * @param STATEMENT A statement with boolean return value to be executed.
  */
 #define _OPENGPS_GENERIC_EXCEPTION_HANDLER_RETVALBOOL(STATEMENT) \
@@ -149,7 +149,7 @@ namespace OpenGPS
  * First resets the history of exceptions, see OpenGPS::ExceptionHistory::Reset. Then executes a statement
  * that is surrounded by a try-catch block. If an exception is thrown within the statement it is added to
  * the history of exceptions, see OpenGPS::ExceptionHistory::SetLastException.
- * 
+ *
  * @param STATEMENT The statement to be executed within the try-block.
  * @param CLEANUP_STATEMENT The statement to be executed within the catch-block.
  */
@@ -183,7 +183,7 @@ namespace OpenGPS
  * the history of exceptions, see OpenGPS::ExceptionHistory::SetLastException.
  *
  * See ::_OPENGPS_GENERIC_EXCEPTION_HANDLER_RETVALBOOL for statements of boolean return type.
- * 
+ *
  * @param STATEMENT A statement to be executed.
  */
 #define _OPENGPS_GENERIC_EXCEPTION_HANDLER(STATEMENT) \

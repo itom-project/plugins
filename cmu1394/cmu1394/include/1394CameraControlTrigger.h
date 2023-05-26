@@ -15,7 +15,7 @@
 //  Pittsburgh, PA
 //
 //	Copyright 5/2000
-// 
+//
 //	Iwan Ulrich
 //	Robotics Institute
 //	Carnegie Mellon University
@@ -23,12 +23,12 @@
 //
 //  This file is part of the CMU 1394 Digital Camera Driver
 //
-//  The CMU 1394 Digital Camera Driver is free software; you can redistribute 
-//  it and/or modify it under the terms of the GNU Lesser General Public License 
+//  The CMU 1394 Digital Camera Driver is free software; you can redistribute
+//  it and/or modify it under the terms of the GNU Lesser General Public License
 //  as published by the Free Software Foundation; either version 2.1 of the License,
 //  or (at your option) any later version.
 //
-//  The CMU 1394 Digital Camera Driver is distributed in the hope that it will 
+//  The CMU 1394 Digital Camera Driver is distributed in the hope that it will
 //  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
@@ -74,10 +74,10 @@ public:
 	// 1.31
 	bool HasValueReadout();
 	void GetValueReadout(unsigned short *val);
-	
+
 	bool HasSoftwareTrigger();
 	int  DoSoftwareTrigger();
-	
+
 	bool HasTriggerSource(unsigned short src);
 	void GetTriggerSource(unsigned short *src);
 	int  SetTriggerSource(unsigned short src);

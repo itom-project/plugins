@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -58,7 +58,7 @@ void DialogOphirPowermeter::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
-        
+
         m_firstRun = false;
     }
 
@@ -67,7 +67,7 @@ void DialogOphirPowermeter::parametersChanged(QMap<QString, ito::Param> params)
     {
         m_inEditing = true;
 
-        
+
         m_inEditing = false;
     }
 
@@ -78,7 +78,7 @@ void DialogOphirPowermeter::parametersChanged(QMap<QString, ito::Param> params)
 ito::RetVal DialogOphirPowermeter::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
-    
+
 
     return retValue;
 }
@@ -86,7 +86,7 @@ ito::RetVal DialogOphirPowermeter::applyParameters()
 //---------------------------------------------------------------------------------------------------------------------
 void DialogOphirPowermeter::on_buttonBox_clicked(QAbstractButton* btn)
 {
-    
+
 }
 
 //---------------------------------------------------------------------------------------------------------------------

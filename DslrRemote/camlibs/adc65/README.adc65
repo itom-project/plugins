@@ -1,6 +1,6 @@
 /* ADC-65(s) camera driver
- * Released under the GPL version 2   
- * 
+ * Released under the GPL version 2
+ *
  * Copyright 2001
  * Benjamin Moos
  * <benjamin@psnw.com>
@@ -37,12 +37,12 @@ for the CMOS sensor. I haven't incorporated this data in my driver yet for two
 reasons; 1) I haven't decided on a good way to retain this data between picture
 downloads, and downloading it for each picture is too wasteful 2) We're talking
 about really minor adjustments, compared to the resolution loss we already get
-from converting 256x256x8 R1G2B1 data to 256x256x24 RGB. 
+from converting 256x256x8 R1G2B1 data to 256x256x24 RGB.
 
 	I have included the beginnings of some colorspace stuff in the colorspace.h
 and colorspace.c files. Right now all I'm using is the colorspaceRGB data
 structure, but will work on using this do some image enhancement in the future.
-	
+
 	The hardest part of this project was figuring out the image format and I
 was often led astray by typos and small logic errors while reprogramming that
 portion of the code again and again (and again) due to the number of possible
@@ -55,14 +55,14 @@ different possible encoding schemes.
 	I have based the skeleton of this driver on the "barbie" camera driver. I
 have also grabbed a lot of ideas from the dimera driver as well. So I am
 indebted to:
-	
+
 	The Barbie Team
 	---------------
 	Scott Fritzinger <scottf@unr.edu>
 	Andreas Meyer <ahm@spies.com>
 	Pete Zaitcev <zaitcev@metabyte.com>
 	Jeff Laing <jeffl@SPATIALinfo.com>
-	
+
 	The Dimera3500 Team
 	-------------------
 	Brian Beattie http://www.beattie-home.net

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -45,7 +45,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogNanotecStepMotor : public ito::AbstractAddInConfigDialog 
+class DialogNanotecStepMotor : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
@@ -66,7 +66,7 @@ class DialogNanotecStepMotor : public ito::AbstractAddInConfigDialog
         QVector<int> m_decelInitialStatus;
         QVector<int> m_speedInitialStatus;
         QVector<int> m_accelInitialStatus;
-        
+
         QVector<bool> m_axisToInitialize;
 
         QList<QFrame*> m_pListElements;

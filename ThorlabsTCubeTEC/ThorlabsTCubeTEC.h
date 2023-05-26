@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -13,7 +13,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    ThorlabsTCubeTECInterface 
+  *\class    ThorlabsTCubeTECInterface
   *
   *\brief    Interface-Class for ThorlabsTCubeTEC-Class
   *
@@ -53,10 +53,10 @@ class ThorlabsTCubeTEC : public ito::AddInDataIO
         ThorlabsTCubeTEC();
 
         void timerEvent(QTimerEvent *event);
-        
+
     public:
         friend class ThorlabsTCubeTECInterface;
- 
+
     private:
         static QList<QByteArray> openedDevices;
         static int numberOfKinesisSimulatorConnections;
@@ -66,7 +66,7 @@ class ThorlabsTCubeTEC : public ito::AddInDataIO
         int m_updateTimerId;
 
         ito::RetVal checkError(short value, const char *message);
-        
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);

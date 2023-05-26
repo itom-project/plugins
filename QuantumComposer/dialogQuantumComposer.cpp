@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -33,7 +33,7 @@ DialogQuantumComposer::DialogQuantumComposer(ito::AddInBase* instance) :
     m_firstRun(true)
 {
     ui.setupUi(this);
-    
+
     enableGUI(false);
 };
 
@@ -50,7 +50,7 @@ void DialogQuantumComposer::parametersChanged(QMap<QString, ito::Param> params)
     if (m_firstRun)
     {
         setWindowTitle(QString(params["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-        
+
         ui.spinBoxTimeout->setValue(params["requestTimeout"].getVal<int>());
 
         ito::StringMeta* sm = (ito::StringMeta*)(params["mode"].getMeta());
@@ -144,7 +144,7 @@ void DialogQuantumComposer::parametersChanged(QMap<QString, ito::Param> params)
         ui.spinBoxCounterCounts->setValue(params["counterCounts"].getVal<int>());
 
         ui.checkBoxCounter->setChecked(params["counterState"].getVal<int>());
-                            
+
         m_firstRun = false;
     }
 
@@ -245,7 +245,7 @@ ito::RetVal DialogQuantumComposer::applyParameters()
         if (m_currentParameters["burstCounter"].getVal<int>() != count)
         {
             values.append(QSharedPointer<ito::ParamBase>(
-                new ito::ParamBase("burstCounter", ito::ParamBase::Int, count))); 
+                new ito::ParamBase("burstCounter", ito::ParamBase::Int, count)));
         }
     }
 
@@ -308,7 +308,7 @@ ito::RetVal DialogQuantumComposer::applyParameters()
                 new ito::ParamBase("counterState", ito::ParamBase::Int, state)));
         }
     }
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }

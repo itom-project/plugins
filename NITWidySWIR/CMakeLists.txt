@@ -42,19 +42,19 @@ if(NITLIBRARY_INCLUDE_DIR)
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${NITLIBRARY_INCLUDE_DIR}
         }
         #add further include directories here
     )
-    
+
     if(BUILD_TARGET64)
 		find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
     else(BUILD_TARGET64)
         find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x86)
     endif(BUILD_TARGET64)
-	
+
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/NITWidySWIR.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogNITWidySWIR.h
@@ -104,15 +104,15 @@ if(NITLIBRARY_INCLUDE_DIR)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+
     if(BUILD_TARGET64)
         file(GLOB NITLIBRARY_DLL "${NITLIBRARY_SDK_DIR}/bin/x64/*.dll")
-    else(BUILD_TARGET64)    
+    else(BUILD_TARGET64)
         file(GLOB NITLIBRARY_DLL "${NITLIBRARY_SDK_DIR}/bin/x86/*.dll")
     endif(BUILD_TARGET64)
-        
+
     itom_post_build_copy_files_to_lib_folder(${target_name} NITLIBRARY_DLL)
- 
+
 else(NITLIBRARY_INCLUDE_DIR)
     message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build.")
 endif(NITLIBRARY_INCLUDE_DIR)

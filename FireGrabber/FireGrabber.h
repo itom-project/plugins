@@ -65,7 +65,7 @@ class FireGrabberInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    FireGrabber 
+  *\class    FireGrabber
   *\brief    class to use a the standard grabber from Allied Fire Grab Packet as an itom-Addin.
   *
   *
@@ -91,10 +91,10 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
     public:
         friend class FireGrabberInterface;
 
-        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
-        
-    private:        
+
+    private:
         #ifdef WIN32
             CFGCamera  Camera;
         #else
@@ -171,7 +171,7 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
         void IntegrationPropertiesChanged(double integrationtime);
 
     private slots:
-        void dockWidgetVisibilityChanged(bool visible);         
+        void dockWidgetVisibilityChanged(bool visible);
 };
 
 

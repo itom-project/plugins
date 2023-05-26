@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -69,8 +69,8 @@ void DialogNanotecStepMotor::parametersChanged(QMap<QString, ito::Param> params)
     memcpy(m_decelInitialStatus.data(), params["decel"].getVal<int*>(), sizeof(int) * m_numAxis);
 
     if (freshStarted)
-    { 
-        
+    {
+
         // Execute those lines only once to create the list entries
 
         for (int i = 0; i < m_numAxis; ++i)
@@ -95,7 +95,7 @@ void DialogNanotecStepMotor::parametersChanged(QMap<QString, ito::Param> params)
 
     // set ui to new parameters
     ui.checkAsync->setChecked(params["async"].getVal<int>());
-    
+
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
 
@@ -155,7 +155,7 @@ ito::RetVal DialogNanotecStepMotor::applyParameters()
     }
 
     delete[] valArray;
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }
@@ -224,7 +224,7 @@ void DialogNanotecStepMotor::createUiListEntry(const int i)
     layout->setContentsMargins(0, 0, 0, 0);
     frame->setLayout(layout);
     frame->setObjectName(QString::number(i));
-     
+
     // Create innner elements and set option
     QLabel *nrLabel = new QLabel(QString::number(i), frame);
     nrLabel->setMaximumWidth(25);
@@ -247,7 +247,7 @@ void DialogNanotecStepMotor::createUiListEntry(const int i)
     accelSpin->setMaximum(65535);
     accelSpin->setMinimum(1);
     accelSpin->setSuffix(tr(" units/sec"));
-    
+
     QSpinBox *decelSpin = new QSpinBox(frame);
     decelSpin->setToolTip(tr("Decceleration"));
     decelSpin->setMaximum(65535);

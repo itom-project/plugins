@@ -36,7 +36,7 @@ include_directories(
 )
 
 link_directories(
-    
+
 )
 
 set(PLUGIN_HEADERS
@@ -45,7 +45,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobjectarithmetic.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/autofocus.cpp
 )

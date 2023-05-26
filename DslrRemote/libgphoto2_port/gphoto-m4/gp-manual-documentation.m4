@@ -52,11 +52,11 @@ AC_DEFUN([GP_CHECK_TR],
 [
 if test -n "`echo $host_os | grep '[sS]olaris'`"; then
   TR=/usr/xpg4/bin/tr
-  GREP=/usr/xpg4/bin/grep  
+  GREP=/usr/xpg4/bin/grep
 else
   TR=tr
   GREP=grep
-fi	
+fi
 ])
 
 dnl
@@ -305,10 +305,10 @@ fi
 if $have_xmltopdf; then
         xxx="${xxx} pdf"
 fi
-if $have_xmltops; then 
+if $have_xmltops; then
         xxx="${xxx} ps"
 fi
-if $have_xmltotxt; then 
+if $have_xmltotxt; then
         xxx="${xxx} txt"
 fi
 AC_SUBST(manual_html)

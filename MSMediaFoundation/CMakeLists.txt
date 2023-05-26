@@ -98,11 +98,11 @@ if (WINDOWSSDK_FOUND)
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-    
+
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
     #documentation
     itom_configure_plugin_documentation(${target_name} msMediaFoundation)
 
@@ -113,5 +113,5 @@ if (WINDOWSSDK_FOUND)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 else()
-    message(SEND_ERROR "WindowsSDK could not be found. ${target_name} will not be build")  
+    message(SEND_ERROR "WindowsSDK could not be found. ${target_name} will not be build")
 endif ()

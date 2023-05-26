@@ -38,7 +38,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogThorlabsKCubePA : public ito::AbstractAddInConfigDialog 
+class DialogThorlabsKCubePA : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 

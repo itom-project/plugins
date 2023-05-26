@@ -57,7 +57,7 @@ else()
     message(SEND_ERROR "Currently only Qt5 and Qt6 are supported")
 endif()
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogGWInstekPSP.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGWInstekPSP.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/GWInstekPSP.cpp

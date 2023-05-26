@@ -6,7 +6,7 @@ sizes = [(1,1), (2,1), (2,2), (2,3), (2,4), (2,5), (3,1), (3,2), (3,3), (3,4), (
 
 for type in types:
     a_ = dataObject([3,1000,1200], type)
-    
+
     for s in sizes:
         a = a_[:,500:500+s[0],700:700+s[1]]
 
@@ -21,7 +21,7 @@ for type in types:
             a[:,:,j+a.shape[2]//2] += ( 50 + j)
         if a.shape[1] % 2 > 0:
             a[:,:,-1] += (50+a.shape[2]//2+1)
-            
+
         b = a.copy()
         filter("fftshift",b,0)
         filter("ifftshift",b,0)
@@ -36,5 +36,5 @@ for type in types:
         s3 = np.sum(b!=a)
         if s1 != 0 or s2 != 0 or s3 != 0:
             print("fftshift error")
-        
+
 print("test finished (if no previous prints the test was successful)")

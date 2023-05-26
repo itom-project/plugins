@@ -49,13 +49,13 @@ if useCuda:
     else:
         filter("DICInterpolation", i1, i2, pts, algorithm=interpolAlgo, withDer=1, useCuda=useCuda, keepImage=-1)
         numRuns = 0
-        
+
 for n in range(0, numRuns):
     filter("DICInterpolation", i1, i2, pts, algorithm=interpolAlgo, withDer=1, useCuda=useCuda, keepImage=1)
-    
+
 if useCuda:
     filter("DICInterpolation", i1, i2, pts, algorithm=interpolAlgo, withDer=1, useCuda=useCuda, keepImage=0)
-    
+
 stop = time.perf_counter()
 print("dt: ", stop - start)
 plot(i2[:,0].reshape([dy, dx]))

@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -201,7 +201,7 @@ int dialogLibModBus::getVals(int &baud, char *endline, int &bits, int &stopbits,
 
     parity = ui.combo_parity->currentIndex();
 
-    flow = ui.combo_flow_xonxoff->currentIndex() + 
+    flow = ui.combo_flow_xonxoff->currentIndex() +
         ui.combo_flow_rts->currentIndex() * 2 +
         ui.combo_flow_cts->currentIndex() * 8 +
         ui.combo_flow_dtr->currentIndex() * 16 +
@@ -217,7 +217,7 @@ int dialogLibModBus::getVals(int &baud, char *endline, int &bits, int &stopbits,
 //----------------------------------------------------------------------------------------------------------------------------------
 dialogLibModBus::dialogLibModBus(void *sport) :
     m_psport(sport)
-{ 
+{
     ito::RetVal ret;
 
     memset(m_endline, 0, 3 * sizeof(char));
@@ -264,7 +264,7 @@ ito::RetVal parseOutString(char *buf, int *length)
         {
             strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
             outbuf += strlen(outbuf);
-            buf2++; 
+            buf2++;
             buf2++;                                 // eat the $$
             buf1 = buf2;
             buf2 = strstr(buf2, "$");               // search for next
@@ -274,12 +274,12 @@ ito::RetVal parseOutString(char *buf, int *length)
             strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
             outbuf += strlen(outbuf);
             // try to read number
-            buf2++;                                 
+            buf2++;
             buf2++;                                 // eat the $(
             int charnum = 0;
             char charbuf[4] = {0, 0, 0, 0};
 
-            // read character number until either the character token is closed, three numbers are read 
+            // read character number until either the character token is closed, three numbers are read
             // or the end of the string is reached
             while ((charnum < 3) && (*buf2 != ')') && ((buf2 - buf) < len - 1))
             {
@@ -338,7 +338,7 @@ ito::RetVal parseOutString(char *buf, int *length)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void dialogLibModBus::on_lineEditSend_returnPressed()
-{ 
+{
     ito::RetVal ret;
     QString qstr, qout;
     char endline[3] = {0, 0, 0};
@@ -432,7 +432,7 @@ void dialogLibModBus::on_lineEditSend_returnPressed()
                         qb.append(char (tmpInt));
                     }
                 }
-            
+
                 if (i > 0)
                 {
                     qout.append(" ");
@@ -455,7 +455,7 @@ void dialogLibModBus::on_lineEditSend_returnPressed()
             ui.text_transfer->append(tr("Error: '%1' could not be interpreted - not send").arg(err));
             return;
         }
-        
+
         if (length > 0)
         {
             qout.append(" ");
@@ -611,7 +611,7 @@ void dialogLibModBus::on_pushButtonCreateCommand_clicked()
             (*paramList)["port"].getVal<int>(),
             (*paramList)["baud"].getVal<int>(),
             endline,
-            (*paramList)["bits"].getVal<int>(), 
+            (*paramList)["bits"].getVal<int>(),
             (*paramList)["stopbits"].getVal<int>(),
             (*paramList)["parity"].getVal<int>(),
             (*paramList)["flow"].getVal<int>(),

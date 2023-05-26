@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -60,7 +60,7 @@ void DialogThorlabsBP::parametersChanged(QMap<QString, ito::Param> params)
         ui.lblSerial->setText(QString("%1").arg(params["serialNumber"].getVal<char*>()));
 
         ui.comboAxisSelector->clear();
-        
+
         const int *channels = params["channel"].getVal<int*>();
         for (int i = 0; i < numaxis; ++i)
         {
@@ -117,7 +117,7 @@ ito::RetVal DialogThorlabsBP::applyParameters()
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase(temporaryParams["maximumVoltage"])));
     }
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }
@@ -223,5 +223,5 @@ void DialogThorlabsBP::currentAxisChanged(int newAxis)
 
     m_currentAxis = newAxis;
 
-    
+
 }

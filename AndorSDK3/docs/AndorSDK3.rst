@@ -10,7 +10,7 @@
 **Devices**:    Andor cameras supported by their SDK3 (Zyla, Neo)
 **Author**:     :pluginauthor:`AndorSDK3`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,12 +19,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: AndorSDK3
-        
+
 Parameters
 ===========
 

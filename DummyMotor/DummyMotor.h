@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -25,7 +25,7 @@
 
 /**\file DummyMotor.h
 * \brief In this file the class the DummyMotor and its interface are defined
-* 
+*
 *\sa DummyMotorInterface, DummyMotor
 *\author Wolfram Lyda
 *\date    Oct2011
@@ -47,7 +47,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class DummyMotorInterface
 *   @brief DummyMotor functionality
-*   
+*
 *   AddIn Interface for the DummyMotor class s. also \ref DummyMotor
 */
 class DummyMotorInterface : public ito::AddInInterfaceBase
@@ -76,13 +76,13 @@ class DummyMotorInterface : public ito::AddInInterfaceBase
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class DummyMotor
 *   @brief DummyMotor functionality
-*   
+*
 *   The DummyMotor-Class can be used where algorithms should be tested without actually
 *   using a specific hardware. The DummyMotor basically accepts setPos and getPos commands
-*   and keeps track of the position with an internal variable. The maximum number of 
+*   and keeps track of the position with an internal variable. The maximum number of
 *   axis is currently limited to 10 - just for programmers conveniance.
 */
-class DummyMotor : public ito::AddInActuator 
+class DummyMotor : public ito::AddInActuator
 {
     Q_OBJECT
 
@@ -92,7 +92,7 @@ class DummyMotor : public ito::AddInActuator
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
 
     protected:
-        ~DummyMotor(); //!< Destructor           
+        ~DummyMotor(); //!< Destructor
         DummyMotor();    //!< Constructur
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
@@ -101,7 +101,7 @@ class DummyMotor : public ito::AddInActuator
         int m_numaxis;  //!< Number of axis currently aviable at this stage
         int m_async;    //!< variable to set up async and sync positioning --> Syncrone means programm do not return until positioning was done.
         int m_scale;    // Its something to round from ITO mm into stepwith of the corresponding system
-        
+
         // Cut here
         double m_distance;    //! Just to enable the WaitForAnswer to wait according to the Speed
         double m_startPos[10];

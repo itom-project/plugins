@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -26,7 +26,7 @@
 DockWidgetGWInstekPSP::DockWidgetGWInstekPSP(QMap<QString, ito::Param> params, int uniqueID) :
     m_timerID(-1)
 {
-    ui.setupUi(this); 
+    ui.setupUi(this);
 
     char *temp = params["name"].getVal<char*>(); //borrowed reference
 //    ui.lblName->setText(temp);

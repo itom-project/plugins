@@ -10,18 +10,18 @@
 **Devices**:    Powermeter VEGA from company *Ophir*
 **Author**:     :pluginauthor:`OphirPowermeter`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: OphirPowermeter
-    
+
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: OphirPowermeter
 
@@ -80,7 +80,7 @@ In the following script, the first detectable power meter is connected and a osc
 plot is opened that displays a moving graph of recent intensity values:
 
 .. code-block:: python
-    
+
     connectionType = "USB"
 
     if connectionType == "USB":  # connects the USB powermeter type

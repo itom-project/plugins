@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -55,21 +55,21 @@ namespace ito
     */
     enum tRetValue
     {
-        retOk       = 0x0,  /*!< ok */ 
-        retWarning  = 0x1,  /*!< warning */ 
-        retError    = 0x2   /*!< error */ 
+        retOk       = 0x0,  /*!< ok */
+        retWarning  = 0x1,  /*!< warning */
+        retError    = 0x2   /*!< error */
     };
-    
+
     /**
     * enumeration to describe the result of a parameter comparison (e.g. apiCompareParam)
     */
-    enum tCompareResult 
-    { 
+    enum tCompareResult
+    {
         tCmpEqual,
         tCmpCompatible,
-        tCmpFailed 
+        tCmpFailed
     };
-    
+
     /**
     * enumeration of stream (std::cout, std::cerr, std::cin) message type
     */
@@ -86,17 +86,17 @@ namespace ito
     */
     enum tDataType
     {
-        tInt8 = 0,       /*!< integer, 8bit */ 
-        tUInt8 = 1,      /*!< unsigned integer, 8bit */ 
-        tInt16 = 2,      /*!< integer, 16bit */ 
-        tUInt16 = 3,     /*!< unsigned integer, 16bit */ 
-        tInt32 = 4,      /*!< integer, 32bit */ 
-        tUInt32 = 5,     /*!< unsigned integer, 32bit (not fully supported) */ 
-        tFloat32 = 6,    /*!< float, 32bit */ 
-        tFloat64 = 7,    /*!< double (64bit) */ 
-        tComplex64 = 8,  /*!< complex value with real and imaginary part of type float32 */ 
-        tComplex128 = 9, /*!< complex value with real and imaginary part of type float64 */ 
-        tRGBA32 = 10     /*!< a uint32 / vec4u value coded as 0xAARRGGBB */ 
+        tInt8 = 0,       /*!< integer, 8bit */
+        tUInt8 = 1,      /*!< unsigned integer, 8bit */
+        tInt16 = 2,      /*!< integer, 16bit */
+        tUInt16 = 3,     /*!< unsigned integer, 16bit */
+        tInt32 = 4,      /*!< integer, 32bit */
+        tUInt32 = 5,     /*!< unsigned integer, 32bit (not fully supported) */
+        tFloat32 = 6,    /*!< float, 32bit */
+        tFloat64 = 7,    /*!< double (64bit) */
+        tComplex64 = 8,  /*!< complex value with real and imaginary part of type float32 */
+        tComplex128 = 9, /*!< complex value with real and imaginary part of type float64 */
+        tRGBA32 = 10     /*!< a uint32 / vec4u value coded as 0xAARRGGBB */
     };
 
     /**
@@ -112,7 +112,7 @@ namespace ito
         pclXYZNormal    = 0x0008, /*!< point with x,y,z value, its normal vector nx,ny,nz and a curvature value */
         pclXYZINormal   = 0x0010, /*!< point with the same values than pclXYZNormal and an additional intensity value */
         pclXYZRGBNormal = 0x0020  /*!< point with x,y,z and r,g,b and normal vector (including curvature) */
-    };  
+    };
 
     // data types for images should always be the same size
     // so define them to fixed byte sizes here

@@ -17,17 +17,17 @@
 
 
 #pragma comment(lib, "Strmiids")
-VideoDevice::VideoDevice(void): 
-    m_isSetuped(false), 
-    vd_LockOut(OpenLock), 
+VideoDevice::VideoDevice(void):
+    m_isSetuped(false),
+    vd_LockOut(OpenLock),
     m_pFriendlyName(NULL),
-    m_width(0), 
-    m_height(0), 
-    m_pSource(NULL), 
-    m_func(NULL), 
+    m_width(0),
+    m_height(0),
+    m_pSource(NULL),
+    m_func(NULL),
     m_userData(NULL),
     m_debugPrintOut(new DebugPrintOut())
-{    
+{
 
 }
 
@@ -52,7 +52,7 @@ void VideoDevice::setParameters(CamParameters parameters)
                 {
                     if (pPrevParameter[i].CurrentValue != pParameter[i].CurrentValue || pPrevParameter[i].Flag != pParameter[i].Flag)
                         hr = pProcAmp->Set(VideoProcAmp_Brightness + i, pParameter[i].CurrentValue, pParameter[i].Flag);
-                    
+
                 }
 
                 pProcAmp->Release();
@@ -66,7 +66,7 @@ void VideoDevice::setParameters(CamParameters parameters)
                 for(unsigned int i = 0; i < 7; i++)
                 {
                     if (pPrevParameter[10 + i].CurrentValue != pParameter[10 + i].CurrentValue || pPrevParameter[10 + i].Flag != pParameter[10 + i].Flag)
-                        hr = pProcControl->Set(CameraControl_Pan+i, pParameter[10 + i].CurrentValue, pParameter[10 + i].Flag);                    
+                        hr = pProcControl->Set(CameraControl_Pan+i, pParameter[10 + i].CurrentValue, pParameter[10 + i].Flag);
                 }
 
                 pProcControl->Release();
@@ -98,9 +98,9 @@ CamParameters VideoDevice::getParameters()
                 for(unsigned int i = 0; i < 10; i++)
                 {
                     Parameter temp;
-                    
+
                     hr = pProcAmp->GetRange(VideoProcAmp_Brightness + i, &temp.Min, &temp.Max, &temp.Step, &temp.Default, &temp.Flag);
-                                        
+
                     if (SUCCEEDED(hr))
                     {
                         flag = temp.Flag;
@@ -109,7 +109,7 @@ CamParameters VideoDevice::getParameters()
                             temp.CurrentValue = temp.Default;
                             temp.Flag = flag;
                         }
-                        
+
                         temp.Available = true;
 
                         pParameter[i] = temp;
@@ -135,9 +135,9 @@ CamParameters VideoDevice::getParameters()
                 for(unsigned int i = 0; i < 7; i++)
                 {
                     Parameter temp;
-                    
+
                     hr = pProcControl->GetRange(CameraControl_Pan + i, &temp.Min, &temp.Max, &temp.Step, &temp.Default, &temp.Flag);
-                                        
+
                     if (SUCCEEDED(hr))
                     {
                         flag = temp.Flag;
@@ -180,9 +180,9 @@ long VideoDevice::resetDevice(IMFActivate *pActivate)
     }
 
     m_pFriendlyName = NULL;
-    
+
     if (pActivate)
-    {        
+    {
         IMFMediaSource *pSource = NULL;
 
         hr = pActivate->GetAllocatedString(
@@ -191,7 +191,7 @@ long VideoDevice::resetDevice(IMFActivate *pActivate)
                 NULL
                 );
 
-        
+
         hr = pActivate->ActivateObject(
             __uuidof(IMFMediaSource),
             (void**)&pSource
@@ -207,9 +207,9 @@ long VideoDevice::resetDevice(IMFActivate *pActivate)
 
             SafeRelease(&pSource);
         }
-    
-        if (FAILED(hr))    
-        {            
+
+        if (FAILED(hr))
+        {
             m_pFriendlyName = NULL;
 
             m_debugPrintOut->printOut("VideoDevice %i: IMFMediaSource interface cannot be created \n", m_currentNumber);
@@ -233,13 +233,13 @@ long VideoDevice::readInfoOfDevice(IMFActivate *pActivate, unsigned int Num)
 long VideoDevice::checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice)
 {
     HRESULT hr = S_OK;
-        
+
     IMFActivate **ppDevices = NULL;
-    
+
     UINT32 count;
 
     wchar_t *newFriendlyName = NULL;
-        
+
     hr = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
 
     if (SUCCEEDED(hr))
@@ -247,7 +247,7 @@ long VideoDevice::checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice)
         if (count > 0)
         {
             if (count > m_currentNumber)
-            {            
+            {
                 hr = ppDevices[m_currentNumber]->GetAllocatedString(
                 MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
                 &newFriendlyName,
@@ -309,19 +309,19 @@ long VideoDevice::initDevice()
     IMFAttributes *pAttributes = NULL;
 
     IMFActivate * vd_pActivate= NULL;
-    
+
     CoInitialize(NULL);
-    
+
     hr = MFCreateAttributes(&pAttributes, 1);
-   
+
     if (SUCCEEDED(hr))
     {
         hr = pAttributes->SetGUID(
             MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
             MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
             );
-    }    
-    
+    }
+
     if (SUCCEEDED(hr))
     {
         hr = checkDevice(pAttributes, &vd_pActivate);
@@ -334,7 +334,7 @@ long VideoDevice::initDevice()
             }
 
             SafeRelease(&m_pSource);
-            
+
             hr = vd_pActivate->ActivateObject(
                 __uuidof(IMFMediaSource),
                 (void**)&m_pSource
@@ -351,12 +351,12 @@ long VideoDevice::initDevice()
         {
             m_debugPrintOut->printOut("VideoDevice %i: Device there is not \n", m_currentNumber);
         }
-    }    
+    }
     else
     {
 
         m_debugPrintOut->printOut("VideoDevice %i: The attribute of video cameras cannot be getting \n", m_currentNumber);
-    
+
     }
 
     SafeRelease(&pAttributes);
@@ -387,11 +387,11 @@ void VideoDevice::setEmergencyStopEvent(void *userData, void(*func)(int, void *)
 }
 
 void VideoDevice::closeDevice()
-{        
+{
     if (m_isSetuped)
     {
         m_isSetuped = false;
-        
+
         m_pSource->Stop();
 
         m_pSource->Shutdown();
@@ -415,9 +415,9 @@ void VideoDevice::closeDevice()
         }
 
         m_pImGrTh = NULL;
-        
-        vd_LockOut = OpenLock;    
-                
+
+        vd_LockOut = OpenLock;
+
         m_debugPrintOut->printOut("VideoDevice %i: Device is stopped \n", m_currentNumber);
     }
 }
@@ -429,12 +429,12 @@ unsigned int VideoDevice::getWidth()
     else
         return 0;
 }
-    
+
 unsigned int VideoDevice::getHeight()
 {
     if (m_isSetuped)
         return m_height;
-    else 
+    else
         return 0;
 }
 
@@ -444,7 +444,7 @@ IMFMediaSource *VideoDevice::getMediaSource()
 
     if (vd_LockOut == OpenLock)
     {
-        vd_LockOut = MediaSourceLock;            
+        vd_LockOut = MediaSourceLock;
 
         out = m_pSource;
     }
@@ -453,7 +453,7 @@ IMFMediaSource *VideoDevice::getMediaSource()
 }
 
 int VideoDevice::findType(unsigned int size, unsigned int frameRate)
-{    
+{
     if (m_captureFormats.size() == 0)
         return 0;
 
@@ -476,13 +476,13 @@ int VideoDevice::findType(unsigned int size, unsigned int frameRate)
 
                  STMMax = (*f).second;
              }
-        }        
+        }
 
     }
     else
     {
         std::map<UINT64, SUBTYPEMap>::iterator f = FRM.begin();
-        
+
         for(; f != FRM.end(); f++)
         {
              if ((*f).first >= frameRateMax)
@@ -519,7 +519,7 @@ void VideoDevice::buildLibraryofTypes()
     unsigned int framerate;
 
     std::vector<MediaType>::iterator i = m_currentFormats.begin();
-        
+
     int count = 0;
 
     for(; i != m_currentFormats.end(); i++)
@@ -527,7 +527,7 @@ void VideoDevice::buildLibraryofTypes()
         size = (*i).MF_MT_FRAME_SIZE;
 
         framerate = (*i).MF_MT_FRAME_RATE;
-        
+
         FrameRateMap FRM = m_captureFormats[size];
 
         SUBTYPEMap STM = FRM[framerate];
@@ -600,7 +600,7 @@ RawImage * VideoDevice::getRawImageOut()
     if (!m_isSetuped) return NULL;
 
     if (m_pImGrTh)
-            return m_pImGrTh->getImageGrabber()->getRawImage();    
+            return m_pImGrTh->getImageGrabber()->getRawImage();
     else
     {
         m_debugPrintOut->printOut("VideoDevice %i: The instance of ImageGrabberThread class does not exist  \n", m_currentNumber);
@@ -612,14 +612,14 @@ bool VideoDevice::isFrameNew()
 {
     if (!m_isSetuped) return false;
 
-    if (vd_LockOut == RawDataLock || vd_LockOut == OpenLock) 
+    if (vd_LockOut == RawDataLock || vd_LockOut == OpenLock)
     {
         if (vd_LockOut == OpenLock)
         {
             vd_LockOut = RawDataLock;
-            
+
             HRESULT hr = ImageGrabberThread::CreateInstance(&m_pImGrTh, m_pSource, m_currentNumber, m_debugPrintOut);
-                        
+
             if (FAILED(hr))
             {
                 m_debugPrintOut->printOut("VideoDevice %i: The instance of ImageGrabberThread class cannot be created.\n", m_currentNumber);
@@ -659,7 +659,7 @@ bool VideoDevice::isDeviceRawDataSource()
 }
 
 bool VideoDevice::setupDevice(unsigned int id)
-{    
+{
     if (!m_isSetuped)
     {
         HRESULT hr = -1;
@@ -667,8 +667,8 @@ bool VideoDevice::setupDevice(unsigned int id)
         hr = initDevice();
 
         if (SUCCEEDED(hr))
-        {            
-            m_width = m_currentFormats[id].width; 
+        {
+            m_width = m_currentFormats[id].width;
 
             m_height = m_currentFormats[id].height;
 
@@ -695,11 +695,11 @@ bool VideoDevice::setupDevice(unsigned int id)
         m_debugPrintOut->printOut("VideoDevice %i: Device is setuped already \n", m_currentNumber);
 
         return false;
-    }    
+    }
 }
 
 bool VideoDevice::setupDevice(unsigned int w, unsigned int h, unsigned int idealFramerate)
-{    
+{
     unsigned int id = findType(w * h, idealFramerate);
 
     return setupDevice(id);
@@ -711,7 +711,7 @@ wchar_t *VideoDevice::getName()
 }
 
 VideoDevice::~VideoDevice(void)
-{        
+{
     closeDevice();
 
     if (m_pSource)
@@ -720,7 +720,7 @@ VideoDevice::~VideoDevice(void)
     }
 
     SafeRelease(&m_pSource);
-    
+
     if (m_pFriendlyName)
     {
         CoTaskMemFree(m_pFriendlyName);
@@ -768,11 +768,11 @@ long VideoDevice::enumerateCaptureFormats(IMFMediaSource *pSource)
         {
             goto done;
         }
-        
+
         MediaType MT = FormatReader::Read(pType);
 
         m_currentFormats.push_back(MT);
-        
+
         SafeRelease(&pType);
     }
 

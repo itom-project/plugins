@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -62,7 +62,7 @@ typedef struct
     ito::float32 laserWaveLength;
     ito::uint16 storeToRam;
 } AvantesControlSettingsType;
- 
+
 typedef struct
 {
     ito::uint16 startPixel;
@@ -257,11 +257,11 @@ ito::RetVal DataObjectIO::loadAvantesRawParams(QVector<ito::Param> *paramsMand, 
                     obj.setTag("integrationTime", metaBlock.measconf.integrationTime);
                     obj.setTag("integrationDelay", metaBlock.measconf.integrationDelay);
                     obj.setTag("nrAverages", metaBlock.measconf.nrAverages);
-                    
+
                     ito::float32 *rowPtr = obj.rowPtr<ito::float32>(0, 0);
                     const char *startdata = data + 14 + 75 + 41 + 28 + 5 * 8 + 130 + dataType * metaBlock.numspectra * pixels * sizeof(ito::float32);
                     memcpy(rowPtr, startdata, metaBlock.numspectra * pixels * sizeof(ito::float32));
-                
+
 
                     *((*paramsMand)[0].getVal<ito::DataObject*>()) = obj;
                 }
@@ -279,6 +279,3 @@ ito::RetVal DataObjectIO::loadAvantesRawParams(QVector<ito::Param> *paramsMand, 
 
     return retval;
 }
-
-
-

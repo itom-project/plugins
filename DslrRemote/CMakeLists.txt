@@ -51,7 +51,7 @@ if(WIN32 OR LIBGPHOTO_FOUND)
     add_definitions(-DCMAKE)
 
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
-    
+
     include("CreateEndianHeader.cmake")
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -73,7 +73,7 @@ endif(WIN32)
     set(PLUGIN_UI
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
     )
 
@@ -87,7 +87,7 @@ endif(WIN32)
     endif()
 
     add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
@@ -129,5 +129,5 @@ else(WIN32 OR LIBGPHOTO_FOUND)
     message(SEND_ERROR "LIBGPHOTO_INCLUDE_DIR directory could not be found. ${target_name} will not be build.")
 endif()
 else(LibUSB_INCLUDE_DIRS)
-    message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
+    message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")
 endif()

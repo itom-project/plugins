@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -69,11 +69,11 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
         ui.checkInvertAxis->setToolTip( QString(info) );
     }
 
-    dtemp = (params["speed"]).getVal<double>();   
+    dtemp = (params["speed"]).getVal<double>();
     ui.spinBoxSpeed->setValue(dtemp);
-    dtemp = (params["speed"]).getMax(); 
+    dtemp = (params["speed"]).getMax();
     ui.spinBoxSpeed->setMaximum(dtemp);
-    dtemp = (params["speed"]).getMin(); 
+    dtemp = (params["speed"]).getMin();
     ui.spinBoxSpeed->setMinimum(dtemp);
     info = params["speed"].getInfo();
     if (info)
@@ -81,11 +81,11 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
         ui.spinBoxSpeed->setToolTip( QString(info) );
     }
 
-    itemp = (params["ratio"]).getVal<int>();   
+    itemp = (params["ratio"]).getVal<int>();
     ui.spinBoxRatio->setValue(itemp);
-    itemp = (params["ratio"]).getMax(); 
+    itemp = (params["ratio"]).getMax();
     ui.spinBoxRatio->setMaximum(itemp);
-    itemp = (params["ratio"]).getMin(); 
+    itemp = (params["ratio"]).getMin();
     ui.spinBoxRatio->setMinimum(itemp);
     info = params["ratio"].getInfo();
     if (info)
@@ -272,7 +272,7 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
 void DialogLeicaMotorFocus::on_cmdOk_clicked()
 {
     ito::RetVal retval;
-    
+
 
     if (m_unappliedChanges)
     {

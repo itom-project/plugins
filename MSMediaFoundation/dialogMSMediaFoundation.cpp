@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -116,7 +116,7 @@ ito::RetVal DialogMSMediaFoundation::applyParameters()
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::String, ui.comboColorMode->currentText().toLatin1().data())));
     }
-    
+
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
@@ -229,7 +229,7 @@ void DialogMSMediaFoundation::on_rangeX01_valuesChanged(int minValue, int maxVal
     {
         max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
     }
-    
+
     max_ = qBound<int>(0, max_, maxWidth-1);
 
     if (min_ != minValue || max_ != maxValue)
@@ -270,7 +270,7 @@ void DialogMSMediaFoundation::on_rangeY01_valuesChanged(int minValue, int maxVal
     {
         max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
     }
-    
+
     max_ = qBound<int>(0, max_, maxHeight - 1);
 
     if (min_ != minValue || max_ != maxValue)

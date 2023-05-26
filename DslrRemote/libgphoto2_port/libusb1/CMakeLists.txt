@@ -55,7 +55,7 @@ include_directories(
     ${LibUSB_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../../libtool
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../regex        
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../regex
 )
 
 set(PLUGIN_HEADERS
@@ -69,7 +69,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../config.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-info-list.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-log.c
@@ -87,7 +87,7 @@ set(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Co
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
-target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} 
+target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES}
     ${LTDLLIB}
     ${REGEXLIB})
 

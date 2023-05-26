@@ -48,7 +48,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetSerialIO.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogSerialIO.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetSerialIO.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SerialIO.cpp

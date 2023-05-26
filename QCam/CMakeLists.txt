@@ -36,14 +36,14 @@ include_directories(
 
 if(BUILD_TARGET64)
     set( QImaging_Libraries QCaptureCore_x64.lib QCamDriverx64.lib )
-    
-    link_directories( 
+
+    link_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/2.0.13.1/libs/AMD64
     )
-else(BUILD_TARGET64)    
+else(BUILD_TARGET64)
     set( QImaging_Libraries QCaptureCore.lib QCamDriver.lib )
-    
-    link_directories( 
+
+    link_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/2.0.13.1/libs/i386
     )
 endif(BUILD_TARGET64)
@@ -67,7 +67,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetQCam.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/QCam.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogQCam.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetQCam.cpp

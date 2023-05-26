@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -93,11 +93,11 @@ void DialogDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
 
     dval = params["offset"].getVal<double>();
     ui.sliderOffset->setValue(dval*100.0);
-    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));  
+    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
     ui.spinBox_offset->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
 
     ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
-    
+
     for (int i = 0; i < ui.combo_bpp->count(); ++i)
     {
         if (ui.combo_bpp->itemData(i, Qt::UserRole).toInt() == params["bpp"].getVal<int>())
@@ -221,14 +221,14 @@ ito::RetVal DialogDummyGrabber::applyParameters()
     if (ui.combo_bpp->isEnabled())
     {
         int bpp = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt();
-        
+
         if (m_currentParameters["bpp"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
         }
     }
 
-   
+
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
 

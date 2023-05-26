@@ -20,4 +20,3 @@ TARGET_DESTINATION=retail
 
 MUI=0
 MUI_COMMENT="HID Interface DLL"
-

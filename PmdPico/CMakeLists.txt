@@ -49,7 +49,7 @@ itom_find_package_qt(ON Core Widgets LinguistTools)
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-    ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
+    ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
     ${PmdPico_ROYALE_INCLUDE_DIR}
     #add further include directories here
 )

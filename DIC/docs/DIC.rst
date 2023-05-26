@@ -10,7 +10,7 @@
 **Devices**:    Implementation of Algorithms for Digital Image Correlation
 **Author**:     :pluginauthor:`DIC`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,8 +19,8 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: DIC

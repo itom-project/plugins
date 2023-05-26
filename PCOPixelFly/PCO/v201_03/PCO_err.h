@@ -35,10 +35,10 @@
 //           |            |    (just addition, no new version!)    //
 //-----------------------------------------------------------------//
 //  00.03    | 14.10.2003 |  - FRE: Error text file changed        //
-//           |            |    (new version)                       // 
+//           |            |    (new version)                       //
 //           | 23.10.2003 |  - LWA:added:                          //
 //           |            |  SC2_ERROR_CONNY                       //
-//           |            |  PCO_ERROR_FIRMWARE_DEVICE_OPEN_FAILED // 
+//           |            |  PCO_ERROR_FIRMWARE_DEVICE_OPEN_FAILED //
 //           |            |  (just addition, no new version!)      //
 //-----------------------------------------------------------------//
 //  00.04    | 23.10.2003 |  - LWA: reorganized error codes for    //
@@ -47,16 +47,16 @@
 //  00.05    | 12.12.2003 |  - FRE: changed PCO_errt.h             //
 //           |            |                                        //
 //           | 17.03.2004 |  - LWA added:                          //
-//           |            |  PCO_ERROR_FIRMWARE_UNKNOWN_COMMAND    // 
+//           |            |  PCO_ERROR_FIRMWARE_UNKNOWN_COMMAND    //
 //           |            |  (just addition, no new version!)      //
 //           | 23.03.2004 |  - LWA added (by FRE):                 //
 //           |            |  PCO_WARNING_FIRMWARE_HIGH_TEMPERATURE //
 //           |            |  PCO_ERROR_FIRMWARE_HIGH_TEMPERATURE   //
 //           |            |  Device codes:                         //
-//           |            |  PCO_ERROR_PCOCAM_CCD                  // 
-//           |            |  PCO_ERROR_PCOCAM_POWER                // 
-//           |            |  MBL added:                            // 
-//           |            |  PCO_WARNING_FIRMWARE_CCDCAL_NOT_LOCKED// 
+//           |            |  PCO_ERROR_PCOCAM_CCD                  //
+//           |            |  PCO_ERROR_PCOCAM_POWER                //
+//           |            |  MBL added:                            //
+//           |            |  PCO_WARNING_FIRMWARE_CCDCAL_NOT_LOCKED//
 //           | 24.03.2004 |  - FRE added:                          //
 //           |            |  PCO_ERROR_SDKDLL_WRONGBUFFERNR        //
 //           |            |  Commented SC2_xxx devices!            //
@@ -94,7 +94,7 @@
 // Error messages are built with the error source + error layer + error code.
 // In case of 'no error' the error source is not added.
 
-// The error itself is 32bit signed. 
+// The error itself is 32bit signed.
 // Bits 0-11 are used to indicate the error number.
 // Bits 12-15 shows the layer of the error source.
 // Bits 16-23 reflect the error source.
@@ -102,7 +102,7 @@
 // Bit 29 is the common error group flag. This flag is used to lookup
 // the error text inside the correct array.
 // Bit 31 indicates an error.
-// Bit 30 is set in addition to bit 31 and indicates a warning. 
+// Bit 30 is set in addition to bit 31 and indicates a warning.
 
 // e.g.: 0xC0000080 indicates a warning,
 //       0x800A3001 is an error inside the SC2-SDK-dll.
@@ -116,9 +116,9 @@
 // |||| |||| |||| |||| |||| --------------- Error or warning code
 // |||| |||| |||| |||| ||||
 // |||| |||| |||| |||| -------------------- Layer code
-// |||| |||| |||| |||| 
+// |||| |||| |||| ||||
 // |||| |||| ------------------------------ Device code
-// |||| |||| 
+// |||| ||||
 // |||------------------------------------- reserved for future use
 // |||
 // ||-------------------------------------- Common error code flag
@@ -147,7 +147,7 @@ DWORD GetErrorSource(DWORD dwerr)
 //#if defined _WIN32
 //#pragma message( "Please define 'PCO_ERR_H_CREATE_OBJECT' in your files once," )
 //#pragma message( "to avoid a linker error-message if you call GetError or GetErrorSource!" )
-//#pragma message( "Compiling " __FILE__ ) 
+//#pragma message( "Compiling " __FILE__ )
 //#endif
 
 DWORD GetError(DWORD dwerr);
@@ -170,7 +170,7 @@ DWORD GetErrorSource(DWORD dwerr);
 
 #define PCO_ERROR_CODE_MASK                0x00000FFF    // in this bit range the error codes reside
 #define PCO_ERROR_LAYER_MASK               0x0000F000    // in this bit range the layer codes reside
-#define PCO_ERROR_DEVICE_MASK              0x00FF0000    // bit range for error devices / sources 
+#define PCO_ERROR_DEVICE_MASK              0x00FF0000    // bit range for error devices / sources
 #define PCO_ERROR_RESERVED_MASK            0x1F000000    // reserved for future use
 #define PCO_ERROR_IS_COMMON                0x20000000    // indicates error message common to all layers
 #define PCO_ERROR_IS_WARNING               0x40000000    // indicates a warning
@@ -197,18 +197,18 @@ DWORD GetErrorSource(DWORD dwerr);
 // SC2 device codes (should start with SC2_)
 #define SC2_ERROR_POWER_CPLD               0x00010000    // error at CPLD in pco.power unit
 #define SC2_ERROR_HEAD_UP                  0x00020000    // error at uP of head board in pco.camera
-#define SC2_ERROR_MAIN_UP                  0x00030000    // error at uP of main board in pco.camera 
-#define SC2_ERROR_FWIRE_UP                 0x00040000    // error at uP of firewire board in pco.camera 
-#define SC2_ERROR_MAIN_FPGA                0x00050000    // error at FPGA of main board in pco.camera 
-#define SC2_ERROR_HEAD_FPGA                0x00060000    // error at FGPA of head board in pco.camera 
+#define SC2_ERROR_MAIN_UP                  0x00030000    // error at uP of main board in pco.camera
+#define SC2_ERROR_FWIRE_UP                 0x00040000    // error at uP of firewire board in pco.camera
+#define SC2_ERROR_MAIN_FPGA                0x00050000    // error at FPGA of main board in pco.camera
+#define SC2_ERROR_HEAD_FPGA                0x00060000    // error at FGPA of head board in pco.camera
 #define SC2_ERROR_MAIN_BOARD               0x00070000    // error at main board in pco.camera
 #define SC2_ERROR_HEAD_CPLD                0x00080000    // error at CPLD of head board in pco.camera
 #define SC2_ERROR_SENSOR                   0x00090000    // error at image sensor (CCD or CMOS)
 #define SC2_ERROR_POWER                    0x000D0000    // error within power unit
 #define SC2_ERROR_GIGE                     0x000E0000    // error at uP of GigE board GigE firmware
 #define SC2_ERROR_USB                      0x000F0000    // error at uP of GigE board USB firmware
-#define SC2_ERROR_BOOT_FPGA                0x00100000    // error at Boot FPGA in pco.camera 
-#define SC2_ERROR_BOOT_UP                  0x00110000    // error at Boot FPGA in pco.camera 
+#define SC2_ERROR_BOOT_FPGA                0x00100000    // error at Boot FPGA in pco.camera
+#define SC2_ERROR_BOOT_UP                  0x00110000    // error at Boot FPGA in pco.camera
 
 // Future camera/firmware device codes should be placed here:
 
@@ -260,12 +260,12 @@ DWORD GetErrorSource(DWORD dwerr);
   // The common error codes are codes which have been found inside more than one layer.
   // The resulting error code is built by adding the layer and source device to the error code.
   //
-  // e.g. CamWare - file I/O error: error = PCO_ERROR_CAMWARE 
-  //                                      + PCO_ERROR_APPLICATION 
+  // e.g. CamWare - file I/O error: error = PCO_ERROR_CAMWARE
+  //                                      + PCO_ERROR_APPLICATION
   //                                      + PCO_NOERROR_NOFILE
   //
-  //      SC2 Driver - No memory:   error = SC2_ERROR_DRIVER 
-  //                                      + PCO_ERROR_DRIVER 
+  //      SC2 Driver - No memory:   error = SC2_ERROR_DRIVER
+  //                                      + PCO_ERROR_DRIVER
   //                                      + PCO_ERROR_NOMEMORY
   //
   // 2. Specific error codes
@@ -273,10 +273,10 @@ DWORD GetErrorSource(DWORD dwerr);
   // The specific error codes are codes which have been found inside only one layer.
   // The resulting error code is built by adding the source device to the error code.
   //
-  // e.g. CamWare - pic. timeout error: err = PCO_ERROR_CAMWARE 
+  // e.g. CamWare - pic. timeout error: err = PCO_ERROR_CAMWARE
   //                                        + PCO_ERROR_APPLICATION_PICTURETIMEOUT
   //
-  //      SC2 Driver - Init failed:     err = SC2_ERROR_DRIVER 
+  //      SC2 Driver - Init failed:     err = SC2_ERROR_DRIVER
   //                                        + PCO_ERROR_DRIVER_NOTINIT
 
 
@@ -326,9 +326,9 @@ DWORD GetErrorSource(DWORD dwerr);
 
 #define PCO_ERROR_DRIVER_SYSERR                     0x80002020 // a call to a windows-function fails
 #define PCO_ERROR_DRIVER_REGERR                     0x80002022 // error in reading/writing to registry
-#define PCO_ERROR_DRIVER_WRONGVERS                  0x80002023 // need newer called vxd or dll 
-#define PCO_ERROR_DRIVER_FILE_READ_ERR              0x80002024 // error while reading from file 
-#define PCO_ERROR_DRIVER_FILE_WRITE_ERR             0x80002025 // error while writing to file 
+#define PCO_ERROR_DRIVER_WRONGVERS                  0x80002023 // need newer called vxd or dll
+#define PCO_ERROR_DRIVER_FILE_READ_ERR              0x80002024 // error while reading from file
+#define PCO_ERROR_DRIVER_FILE_WRITE_ERR             0x80002025 // error while writing to file
 
 #define PCO_ERROR_DRIVER_LUT_MISMATCH               0x80002026 // camera and dll lut do not match
 #define PCO_ERROR_DRIVER_FORMAT_NOT_SUPPORTED       0x80002027 // grabber does not support the transfer format
@@ -340,11 +340,11 @@ DWORD GetErrorSource(DWORD dwerr);
 #define PCO_ERROR_DRIVER_WRONG_ATMEL_DEVICE         0x8000202B // version information verify failed wrong device id
 #define PCO_ERROR_DRIVER_WRONG_BOARD                0x8000202C // board firmware not supported from this driver
 #define PCO_ERROR_DRIVER_READ_FLASH_FAILED          0x8000202D // board firmware verify failed
-#define PCO_ERROR_DRIVER_HEAD_VERIFY_FAILED         0x8000202E // camera head is not recognized correctly  
+#define PCO_ERROR_DRIVER_HEAD_VERIFY_FAILED         0x8000202E // camera head is not recognized correctly
 #define PCO_ERROR_DRIVER_HEAD_BOARD_MISMATCH        0x8000202F // firmware does not support connected camera head
 
 #define PCO_ERROR_DRIVER_HEAD_LOST                  0x80002030 // camera head is not connected
-#define PCO_ERROR_DRIVER_HEAD_POWER_DOWN            0x80002031 // camera head power down 
+#define PCO_ERROR_DRIVER_HEAD_POWER_DOWN            0x80002031 // camera head power down
 #define PCO_ERROR_DRIVER_CAMERA_BUSY                0x80002032 // camera busy
 
 
@@ -388,7 +388,7 @@ DWORD GetErrorSource(DWORD dwerr);
 #define PCO_ERROR_SDKDLL_DLLNOTFOUND_DIVZERO        0x80003011 // A DLL could not be found, due to div by zero
 
 #define PCO_ERROR_SDKDLL_BUFFERALREADYQUEUED        0x80003012 // buffer is already queued
-#define PCO_ERROR_SDKDLL_BUFFERNOTQUEUED            0x80003013 // buffer is not queued 
+#define PCO_ERROR_SDKDLL_BUFFERNOTQUEUED            0x80003013 // buffer is not queued
 
 #define PCO_WARNING_SDKDLL_BUFFER_STILL_ALLOKATED   0xC0003001 // Buffers are still allocated
 
@@ -440,7 +440,7 @@ DWORD GetErrorSource(DWORD dwerr);
 #define PCO_ERROR_FIRMWARE_0x80001007               0x80001007 // free ...
 
 #define PCO_ERROR_FIRMWARE_INITFAILED               0x80001008 // FPGA init failed
-#define PCO_ERROR_FIRMWARE_CONFIGFAILED             0x80001009 // FPGA configuration failed  
+#define PCO_ERROR_FIRMWARE_CONFIGFAILED             0x80001009 // FPGA configuration failed
 #define PCO_ERROR_FIRMWARE_HIGH_TEMPERATURE         0x8000100A // device exceeds temp. range
 #define PCO_ERROR_FIRMWARE_VOLTAGEOUTOFRANGE        0x8000100B // Supply voltage is out of allowed range
 

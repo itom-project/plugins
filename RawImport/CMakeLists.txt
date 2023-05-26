@@ -42,7 +42,7 @@ set(PLUGIN_HEADERS
 set(PLUGIN_UI
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/rawImport.cpp
 )
 

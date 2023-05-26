@@ -74,7 +74,7 @@ ito::RetVal ThorlabsKCubePAInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 ThorlabsKCubePAInterface::ThorlabsKCubePAInterface()
@@ -91,8 +91,8 @@ ThorlabsKCubePAInterface::ThorlabsKCubePAInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("includeSumSignal", ito::ParamBase::Int, 0, 1, 0, tr("If 1, a 3x1 dataObject with (dx, dy and sum signal) is returned via getVal / copyVal. Else (0, default), only the dx, dy signals are returned within a 2x1 dataObject.").toLatin1().data()));
 }
@@ -102,7 +102,7 @@ ThorlabsKCubePAInterface::ThorlabsKCubePAInterface()
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ThorlabsKCubePA::init. The widged window is created at this position.
 */
 ThorlabsKCubePA::ThorlabsKCubePA() :
@@ -194,7 +194,7 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     break;
                 }
             }
-            
+
             if (!found)
             {
                 retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found.");
@@ -280,7 +280,7 @@ ito::RetVal ThorlabsKCubePA::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 	{
 		checkData();
 	}
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -328,7 +328,7 @@ ito::RetVal ThorlabsKCubePA::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -370,7 +370,7 @@ ito::RetVal ThorlabsKCubePA::getParam(QSharedPointer<ito::Param> val, ItomShared
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsKCubePA::SMCSwitchType is executed.
 
@@ -641,7 +641,7 @@ ito::RetVal ThorlabsKCubePA::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond
 	return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ThorlabsKCubePA::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -664,7 +664,7 @@ void ThorlabsKCubePA::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsKCubePA::checkError(short value, const char* message)
 {
     if (value == 0)

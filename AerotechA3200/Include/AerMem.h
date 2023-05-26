@@ -59,7 +59,7 @@ extern "C" {
 //AERERR_CODE AER_DLLENTRY AerMemCheck( HAERCTRL hAerCtrl, PDWORD pdwSize );
 AERERR_CODE AER_DLLENTRY AerSysMemGetFree( HAERCTRL hAerCtrl, PDWORD pdwSpare, PDWORD pdwLargest );
 AERERR_CODE AER_DLLENTRY AerSysMemGetUsed( HAERCTRL hAerCtrl, PDWORD pdwLocal, PDWORD pdwShared );
-                                        
+
 
 //AERERR_CODE AER_DLLENTRY aerMemReadByte( HAERCTRL hAerCtrl, DWORD dwAddr, PBYTE pbyData );
 //AERERR_CODE AER_DLLENTRY aerMemReadWord( HAERCTRL hAerCtrl, DWORD dwAddr, PWORD pwData );
@@ -106,7 +106,7 @@ AERERR_CODE AER_DLLENTRY AerSysMemGetUsed( HAERCTRL hAerCtrl, PDWORD pdwLocal, P
 //   aerMemDirectWriteWordEx( hAerCtrl, AER_MEMSPACE_STD, dwAddr, wData, FALSE )
 //#define aerMemDirectWriteDWord( hAerCtrl, dwAddr, dwData) \
 //   aerMemDirectWriteDWordEx( hAerCtrl,AER_MEMSPACE_STD, dwAddr, dwData, FALSE )
-//													   
+//
 //AERERR_CODE AER_DLLENTRY aerMemDirectReadEx( HAERCTRL hAerCtrl,
 //                                             DWORD dwAddrSpace, DWORD dwAddr,
 //					     PVOID pvData, DWORD dwSize, BOOL bSwap );

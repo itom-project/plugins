@@ -18,7 +18,7 @@ namespace ito
     class AddInActuator; //forward declaration
 }
 
-class DialogPIHexapodCtrl : public QDialog 
+class DialogPIHexapodCtrl : public QDialog
 {
     Q_OBJECT
 

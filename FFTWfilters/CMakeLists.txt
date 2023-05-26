@@ -29,7 +29,7 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Widgets Core Xml LinguistTools)
 
 if(FFTW_FOUND)
-    
+
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -46,7 +46,7 @@ if(FFTW_FOUND)
     set(PLUGIN_UI
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/FFTWfilters.cpp
     )
 
@@ -54,14 +54,14 @@ if(FFTW_FOUND)
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
-    
+
     #handle translations BEGIN STEP 1
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     set(TRANSLATION_OUTPUT_FILES)
     set(TRANSLATIONS_FILES)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
@@ -70,7 +70,7 @@ if(FFTW_FOUND)
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
     itom_configure_plugin_documentation(${target_name} fftwFilters "FFTW-Filter")
 
     # COPY SECTION

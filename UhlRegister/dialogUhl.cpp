@@ -30,18 +30,18 @@ void dialogUhl::parametersChanged(QMap<QString, ito::Param> params)
 
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-    dtemp = ((params)["speed"]).getVal<double>();   
+    dtemp = ((params)["speed"]).getVal<double>();
     ui.doubleSpinBox_Speed->setValue(dtemp);
-    dtemp = ((params)["speed"]).getMax(); 
+    dtemp = ((params)["speed"]).getMax();
     ui.doubleSpinBox_Speed->setMaximum(dtemp);
-    dtemp = ((params)["speed"]).getMin(); 
+    dtemp = ((params)["speed"]).getMin();
     ui.doubleSpinBox_Speed->setMinimum(dtemp);
 
-    dtemp = ((params)["accel"]).getVal<double>();   
+    dtemp = ((params)["accel"]).getVal<double>();
     ui.doubleSpinBox_Accel->setValue(dtemp);
-    dtemp = ((params)["accel"]).getMax(); 
+    dtemp = ((params)["accel"]).getMax();
     ui.doubleSpinBox_Accel->setMaximum(dtemp);
-    dtemp = ((params)["accel"]).getMin(); 
+    dtemp = ((params)["accel"]).getMin();
     ui.doubleSpinBox_Accel->setMinimum(dtemp);
 
     m_invert[0] = (params)["inversex"].getVal<int>();
@@ -86,7 +86,7 @@ void dialogUhl::setUhlAxisOrigin(int axis)
     if (m_pUhlMotor)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    
+
         QMetaObject::invokeMethod(m_pUhlMotor,"setOrigin",Q_ARG(int,axis),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
         locker.getSemaphore()->wait(60000);
     }
@@ -186,7 +186,7 @@ void dialogUhl::on_pushButtonCalib_clicked()
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         int i = 0;
         QVector<int> axis;
-    
+
         for (i = 0; i < m_numaxis; i++)
         {
             if (m_enable[i])

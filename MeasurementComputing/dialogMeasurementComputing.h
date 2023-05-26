@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -41,7 +41,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogMeasurementComputing : public ito::AbstractAddInConfigDialog 
+class DialogMeasurementComputing : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
@@ -54,7 +54,7 @@ class DialogMeasurementComputing : public ito::AbstractAddInConfigDialog
     private:
         void enableDialog(bool enabled);
         bool m_firstRun;
-        Ui::DialogMeasurementComputing ui; 
+        Ui::DialogMeasurementComputing ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

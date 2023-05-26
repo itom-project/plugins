@@ -130,7 +130,7 @@ namespace OpenGPS
        * @returns Returns TRUE on success, FALSE otherwise.
        */
       virtual OGPS_Boolean CreateDir(const OpenGPS::String& path) const = 0;
-      
+
       /*!
        * Deletes a given directory.
        * @param path The path to the directory to be erased.
@@ -183,7 +183,7 @@ namespace OpenGPS
        * Swaps endianness.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap(const OpenGPS::UnsignedBytePtr src, short* const value) const;
 
@@ -205,7 +205,7 @@ namespace OpenGPS
        * It is assumed that src is 16 bit long.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap16(const OpenGPS::UnsignedBytePtr src, short* const value) const;
 
@@ -222,7 +222,7 @@ namespace OpenGPS
        * Swaps endianness.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap(const OpenGPS::UnsignedBytePtr src, int* const value) const;
 
@@ -237,14 +237,14 @@ namespace OpenGPS
        * @returns Pointer to the array of bytes in swapped byte order.
        */
       OpenGPS::UnsignedBytePtr ByteSwap32(const int* const value, OpenGPS::UnsignedBytePtr dst) const;
-      
+
       /*!
        * Swaps endianness.
        *
        * It is assumed that src is 32 bit long.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap32(const OpenGPS::UnsignedBytePtr src, int* const value) const;
 
@@ -261,7 +261,7 @@ namespace OpenGPS
        * Swaps endianness.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap(const OpenGPS::UnsignedBytePtr src, float* const value) const;
 
@@ -283,7 +283,7 @@ namespace OpenGPS
        * It is assumed that src is 32 bit long.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap32(const OpenGPS::UnsignedBytePtr src, float* const value) const;
 
@@ -300,7 +300,7 @@ namespace OpenGPS
        * Swaps endianness.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap(const OpenGPS::UnsignedBytePtr src, double* const value) const;
 
@@ -322,7 +322,7 @@ namespace OpenGPS
        * It is assumed that src is 64 bit long.
        *
        * @param src The array of bytes to be swapped.
-       * @param value The swapped bytes as typed data.       
+       * @param value The swapped bytes as typed data.
        */
       void ByteSwap64(const OpenGPS::UnsignedBytePtr src, double* const value) const;
 

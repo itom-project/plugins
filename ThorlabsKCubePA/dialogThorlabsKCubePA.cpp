@@ -90,4 +90,3 @@ void DialogThorlabsKCubePA::enableDialog(bool enabled)
 {
     ui.paramEditorWidget->setEnabled(enabled);
 }
-

@@ -5,7 +5,7 @@
     Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -54,7 +54,7 @@ void DockWidgetPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params
 
         m_firstRun = false;
     }
-    
+
     if (!m_inEditing)
     {
         m_inEditing = true;
@@ -117,5 +117,3 @@ void DockWidgetPGRFlyCapture::identifierChanged(const QString &identifier)
 {
     ui.lblID->setText(identifier);
 }
-
-

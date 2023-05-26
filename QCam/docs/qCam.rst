@@ -10,7 +10,7 @@
 **Devices**:    Cameras from company QImaging
 **Author**:     :pluginauthor:`QCam`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -23,9 +23,9 @@ Please note that the QCAM software is not supported with Windows 10 and higher.
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: QCam
 
@@ -58,7 +58,7 @@ An instance of this plugin has the following internal parameters:
     bit depth per pixel
 **cooled**: {int}
     CCD cooler
-    
+
 Changelog
 ==========
 
