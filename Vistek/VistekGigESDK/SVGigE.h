@@ -1912,7 +1912,7 @@ extern "C"
    */
   __usrdllexport__ Camera_handle
   CameraContainer_findCamera(CameraContainerClient_handle hCameraContainer,
-                             char *CameraItem);
+                             const char *CameraItem);
 
 
 
@@ -2057,7 +2057,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getManufacturerName(Camera_handle hCamera);
 
   /** Get model name.
@@ -2068,7 +2068,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getModelName(Camera_handle hCamera);
 
   /** Get device version.
@@ -2079,7 +2079,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getDeviceVersion(Camera_handle hCamera);
 
   /** Get manufacturer specific information.
@@ -2090,7 +2090,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getManufacturerSpecificInformation(Camera_handle hCamera);
 
   /** Get serial number.
@@ -2100,7 +2100,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getSerialNumber(Camera_handle hCamera);
 
   /** Set user-defined name
@@ -2112,7 +2112,7 @@ extern "C"
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
-  Camera_setUserDefinedName(Camera_handle hCamera, char *UserDefinedName);
+  Camera_setUserDefinedName(Camera_handle hCamera, const char *UserDefinedName);
 
   /** Get user-defined name
    *  A name that has been assigned to a camera by the user will be returned
@@ -2121,7 +2121,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getUserDefinedName(Camera_handle hCamera);
 
   /** Get MAC address.
@@ -2131,7 +2131,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getMacAddress(Camera_handle hCamera);
 
   /** Get IP address.
@@ -2141,7 +2141,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return success or error code
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getIPAddress(Camera_handle hCamera);
 
   /** Get subnet mask.
@@ -2151,7 +2151,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return success or error code
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getSubnetMask(Camera_handle hCamera);
 
   /** Get pixel clock.
@@ -2189,7 +2189,7 @@ extern "C"
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
-  Camera_readXMLFile(Camera_handle hCamera, char **XML);
+  Camera_readXMLFile(Camera_handle hCamera, const char **XML);
 
  /**  Get Sensor temperature.
    * The current camera's Sensor temperature  will be returned.
@@ -3656,7 +3656,7 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_loadSequenceParameters(Camera_handle hCamera,
-                                char *Filename);
+                                const char *Filename);
 
   /** Start Sequencer
    * Start acquisition using sequencer.
@@ -5136,7 +5136,7 @@ extern "C"
   */
   __usrdllexport__ SVGigE_RETURN
   Camera_loadSettingsFromXml(Camera_handle hCamera,
-                             char *Filename);
+                             const char *Filename);
    
  /** Save settings to XML
   *  The current settings will be stored in a XML file 
@@ -5149,7 +5149,7 @@ extern "C"
   */
   __usrdllexport__ SVGigE_RETURN
   Camera_SaveSettingsToXml(Camera_handle hCamera,
-                           char *Filename);
+                           const char *Filename);
 
 //------------------------------------------------------------------------------
 // 27 - General functions
@@ -5203,7 +5203,7 @@ extern "C"
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
-  SVGigE_writeImageToBitmapFile(char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
+  SVGigE_writeImageToBitmapFile(const char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
 
   /** Install a filter driver
    *  A filter driver will be installaed automatically for current system platform
@@ -5221,7 +5221,7 @@ extern "C"
    *  @return a success or failure code
    */
   __usrdllexport__ SVGigE_RETURN
-  SVGigE_installFilterDriver(char *PathToDriverPackage, char *FilenameINF, char *FilenameINF_m);
+  SVGigE_installFilterDriver(const char *PathToDriverPackage, const char *FilenameINF, const char *FilenameINF_m);
 
   /** De-install filter driver
    *  A SVGigE filter driver component will be located in the system and if it
@@ -5244,7 +5244,7 @@ extern "C"
    *  @param ReturnCode a valid function return code
    *  @return a string which will explain the return code
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Error_getMessage(SVGigE_RETURN ReturnCode);
 
   /** Register for log messages.
@@ -5275,7 +5275,7 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
   Camera_registerForLogMessages(Camera_handle hCamera,
                                 int LogLevel =4,
-                                char *LogFilename =NULL,
+                                const char *LogFilename =NULL,
                                 LogMessageCallback LogCallback =NULL,
                                 void *MessageContext =NULL);
 
@@ -5308,7 +5308,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return success or error code	
    */
-  __usrdllexport__ char*
+  __usrdllexport__ const char*
   Camera_getLensName(Camera_handle hCamera);
 
 
@@ -5761,7 +5761,7 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_saveTapBalanceSettings(Camera_handle hCamera,
-                                char *Filename);
+                                const char *Filename);
 
   /** Load tap balance settings(no longer available )
    *  New settings for tap balance will be loaded from a XML file.
@@ -5773,7 +5773,7 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_loadTapBalanceSettings(Camera_handle hCamera,
-                                char *Filename);
+                                const char *Filename);
 
 
 

@@ -80,10 +80,11 @@ The following parameters are mandatory or optional for initializing an instance 
 Compilation
 ===========
 
-Please install the ThorCam software package from http://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=ThorCam and install it. Then set the CMAKE
-variable THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY to the **Develop** subdirectory of the Thorlabs installation path (e.g. C:\Program Files\Thorlabs\Scientific Imaging\DCx Camera Support\Develop).
-At runtime of itom, the Thorlabs drivers must be installed for the DCx camera series such that the library **uc480_64.dll** or **uc480.dll** can be found in the
-Windows System32 directory.
+Please install the ThorCam software package from http://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=ThorCam and install it.
+Then set the CMAKE variable **THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY** or environment variable **THORLABS_DCXCAM_ROOT**
+of the **Develop** subdirectory of the Thorlabs installation path (e.g. C:\Program Files\Thorlabs\Scientific Imaging\DCx Camera Support\Develop).
+At runtime of itom, the Thorlabs drivers must be installed for the DCx camera series such that the library
+**uc480_64.dll** or **uc480.dll** can be found in the Windows System32 directory.
 
 Known problems
 ===============
@@ -97,3 +98,4 @@ Changelog
 * itom setup 2.2.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20
 * itom setup 3.0.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20
 * itom setup 3.1.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20
+* itom setup 4.3.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 3.70

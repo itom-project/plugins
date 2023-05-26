@@ -37,9 +37,9 @@
 
 // ids-includes
 #if linux
-    #include "ueye.h"
-#else
     #include "uEye.h"
+#else
+    #include "ueye.h"
     #include "version.h"
 #endif
 

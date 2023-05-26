@@ -17,6 +17,8 @@ Overview
 
 .. pluginsummaryextended::
     :plugin: PI_GCS2
+	
+Plugin to interface with Physik Instrumente (PI) GCS Controllers for X/Y and Z motion.
 
 Initialization
 ==============

@@ -123,7 +123,17 @@ Installation
 
 *Windows:*
 
-Install the visiontransfer software on your computer and add the visiontransfer.dll directory to your path variables. In visiontransfer 7.0 there is unfortunately a bug in the DLL, so the application can only be used in release (to be fixed in later versions). Since both debug and release dll have the same name and are not compatible, the dll must be added to the paths depending on the compilation mode.
+NerianSceneScanPro is currently only build with Version 7.0 of the SDK.
+Install the visiontransfer software on your computer from https://nerian.de/support/downloadarchiv/
+and add the visiontransfer.dll directory to your path variables.
+
+In visiontransfer 7.0 there is unfortunately a bug in the DLL, so the application can only be used in release (to be fixed in later versions).
+
+Since both debug and release dll have the same name and are not compatible, the dll must be added to the paths depending on the compilation mode.
+
+* itom setup >4.3.0: This plugin has been compiled using the NerianSceneScanPro API 7.0.0
+
+Set the Windows Environment Variable NERIAN_ROOT to the installation directory (e.g. C:\Program Files (x86)\Nerian Vision Software 7.0.0\)
  
     
 Changelog

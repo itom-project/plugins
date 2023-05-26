@@ -17,6 +17,9 @@ Overview
 .. pluginsummaryextended::
     :plugin: ThorlabsBDCServo
 
+ITOM Plugin to be used for interaction with the Thorlabs Benchtop Brushless DC Motor Controllers Series.
+ 
+
 Initialization
 ==============
   
@@ -88,7 +91,8 @@ parameters can be changed using *setParam*.
 Exemplary usage from Python
 =======================================
 
-In the following examples, it is shown how to use this Plugin in itom. The example shows a typical measurement routine. First the homing run is performed, then the stage moves to a start position and from there a certain range is rastered in both axes. 
+In the following examples, it is shown how to use this Plugin in itom. The example shows a typical measurement routine. First the homing run is performed,
+then the stage moves to a start position and from there a certain range is rastered in both axes. 
 
 .. code-block:: python
 
@@ -149,14 +153,18 @@ In the following examples, it is shown how to use this Plugin in itom. The examp
 Compilation
 ===========
 
-To compile this plugin, install the Thorlabs KINESIS driver package in the same bit-version than itom (32/64bit). 
+To compile this plugin, install the Thorlabs KINESIS from
+https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0
+driver package in the same bit-version than itom (32/64bit). 
 It has been implemented using KINESIS version 1.14.32.
-Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
-The required libraries from Kinesis will automatically be copied to the *lib* folder of itom. Do not use Kinesis 1.6.0 or below for compiling this plugin.
+Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
+to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
+The required libraries from Kinesis will automatically be copied to the *lib* folder of itom.
+Do not use Kinesis 1.6.0 or below for compiling this plugin.
 
 Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 
 Changelog
 ==========
 
-* v0.1.1: Fix bug of timeout during ``setPosAbs``.
+* v0.1.1: Fix bug of timeout during ``setPosAbs``.* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.

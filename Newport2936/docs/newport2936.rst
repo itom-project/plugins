@@ -16,7 +16,8 @@ Overview
 
 .. pluginsummaryextended::
     :plugin: MyGrabber
-    
+
+This plugin enables the user of the Newport 2936-R is a Dual Channel Optical Power and Energy Meter within ITOM.
 
 Initialization
 ==============
@@ -63,6 +64,12 @@ Parameters
     Wavelength [nm] for channel A
 **wavelengthB**: {int}
     Wavelength [nm] for channel B
+	
+Usage:
+======
+Download the **Computer Interface Software v3.0.4 (39.4 MB, ZIP)** data from https://www.newport.com/p/2936-R.
+Unzip the file and run the Setup.exe programm.
+Set the Windows Environment variable NEWPORT_2936_ROOT to installation path (e.g. C:\Program Files\Newport\Newport USB Driver\). 
     
 Additional functions (exec functions)
 =====================================
@@ -90,3 +97,5 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using Newport USB Driver 5.0.8
 * itom setup 4.0.0: This plugin has been compiled using Newport USB Driver 5.0.8
 * itom setup 4.1.0: This plugin has been compiled using Newport USB Driver 5.0.8
+* itom setup 4.3.0: This plugin has been compiled using Newport USB Driver 5.0.8
+* itom setup 4.3.0: This plugin has been compiled using Newport Power Meter Driver 3.0.4

@@ -2,7 +2,7 @@
 itom software
 URL: http://www.uni-stuttgart.de/ito
 Copyright (C) 2018, Institut fuer Technische Optik (ITO),,
-Universität Stuttgart, Germany
+Universitï¿½t Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut für Technische
+In addition, as a special exception, the Institut fï¿½r Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -42,7 +42,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QElapsedTimer> 
 
 #include "dockWidgetThorlabsPowerMeter.h"
-#if defined(USE_API_1_02) 
+#if defined(USE_API_1_0_2) 
     #include <PM100D.h>
 #define PM(name) PM100D_##name
 #else
@@ -102,7 +102,6 @@ ThorlabsPowerMeterInterface::~ThorlabsPowerMeterInterface()
 {
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsPowerMeterInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -116,9 +115,6 @@ ito::RetVal ThorlabsPowerMeterInterface::closeThisInst(ito::AddInBase **addInIns
    REMOVE_PLUGININSTANCE(ThorlabsPowerMeter) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
-
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of plugin.
@@ -217,7 +213,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     ViUInt32   count = 0;            //counts found devices
     ViStatus status;
 
-#ifdef USE_API_1_02 //Thorlabs Power Meter (1.02)
+#ifdef USE_API_1_0_2 //Thorlabs Power Meter (1.02)
     ViChar     rscStr[VI_FIND_BUFLEN]; // resource string
     ViFindList findList;
 
@@ -266,7 +262,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
             for (ViUInt32 i = 0; i < std::min<int>((int)count, foundDevices.size()); ++i)
             {
-#if defined(USE_API_3_02)
+#if defined(USE_API_DEP_3_0_2)
                 std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
 #else
                 std::cout << deviceInfo[i].toLatin1().data() << std::endl;
@@ -314,7 +310,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
             //try to open device
             status = PM(init)(deviceName.toLatin1().data(), VI_OFF, VI_OFF, &m_instrument);
-#if defined(USE_API_3_02)
+#if defined(USE_API_DEP_3_0_2)
             if (status != VI_SUCCESS && status != VI_WARN_CONFIG_NLOADED)
             {
                 retval += checkError(status);

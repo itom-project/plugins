@@ -400,12 +400,12 @@ struct _GigEFunc
 {
   FARPROC function_pointer;
   SVGigE_FUNCTION function_id;
-  char *function_name;
+  const char *function_name;
 }
 GigEFunc[] =
 {
   // 0 - GigE DLL (implicitly called)
-  NULL, Func_isVersionCompliantDLL,                     "isVersionCompliantDLL",
+  NULL, Func_isVersionCompliantDLL,                    "isVersionCompliantDLL",
   NULL, Func_isDriverAvailable,                        "isDriverAvailable",
 
   // 1 - Camera: Discovery and bookkeeping
@@ -825,34 +825,33 @@ typedef  SVGigE_RETURN
 // 3 - Camera: Information
 //-----------------------------------------------------------------------------------------
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getManufacturerName)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getModelName)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getDeviceVersion)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getManufacturerSpecificInformation)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getSerialNumber)(Camera_handle hCamera);
 
-typedef SVGigE_RETURN
-(*TFunc_Camera_setUserDefinedName)(Camera_handle hCamera, char *UserDefinedName);
+typedef SVGigE_RETURN (*TFunc_Camera_setUserDefinedName)(Camera_handle hCamera, char *UserDefinedName);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getUserDefinedName)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getMacAddress)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getIPAddress)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getSubnetMask)(Camera_handle hCamera);
 
 typedef SVGigE_RETURN
@@ -1375,7 +1374,7 @@ typedef SVGigE_RETURN
 //--------------Sequencer-------------------
 typedef SVGigE_RETURN
 (*TFunc_Camera_loadSequenceParameters)(Camera_handle hCamera,
-                                       char *Filename);
+                                       const char *Filename);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_startSequencer)(Camera_handle hCamera);
@@ -1867,11 +1866,11 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_loadSettingsFromXml)(Camera_handle hCamera,
-                                    char *Filename);
+                                    const char *Filename);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_SaveSettingsToXml)(Camera_handle hCamera,
-                                  char *Filename);
+                                  const char *Filename);
 
 //-----------------------------------------------------------------------------------------
 // 27 - General functions
@@ -1884,10 +1883,10 @@ typedef SVGigE_RETURN
 (*TFunc_SVGigE_estimateWhiteBalanceExtended)(unsigned char *DataRGB, int PixelNumber, int &Red, int &Green, int &Blue,SVGIGE_Whitebalance_SELECT  Whitebalance_Art );
 
 typedef SVGigE_RETURN 
-(*TFunc_SVGigE_writeImageToBitmapFile)(char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
+(*TFunc_SVGigE_writeImageToBitmapFile)(const char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
 
 typedef SVGigE_RETURN 
-(*TFunc_SVGigE_installFilterDriver)(char *PathToDriverPackage, char *FilenameINF, char *FilenameINF_m);
+(*TFunc_SVGigE_installFilterDriver)( const char *PathToDriverPackage, const char *FilenameINF, const char *FilenameINF_m);
 
 typedef SVGigE_RETURN 
 (*TFunc_SVGigE_uninstallFilterDriver)();
@@ -1902,7 +1901,7 @@ typedef char *
 typedef SVGigE_RETURN
 (*TFunc_Camera_registerForLogMessages)(Camera_handle hCamera,
                                        int  LogLevel,
-                                       char *LogFilename,
+                                       const char *LogFilename,
                                        LogMessageCallback LogCallback,
                                        void *MessageContext);
 
@@ -2041,11 +2040,11 @@ typedef SVGigE_RETURN
 									float *TapUserOffset);
 typedef SVGigE_RETURN 
 (*TFunc_Camera_saveTapBalanceSettings)(Camera_handle hCamera,
-                                       char *Filename);
+                                       const char *Filename);
 
 typedef SVGigE_RETURN 
 (*TFunc_Camera_loadTapBalanceSettings)(Camera_handle hCamera,
-                                       char *Filename);
+                                       const char *Filename);
 
 //--------------------End-of-function-type-declarations------------------------------------
 
@@ -2308,7 +2307,7 @@ Camera_restartIPConfiguration(Camera_handle hCamera)
 // 3 - Camera: Information
 //*****************************************************************************************
 
-char *
+const char *
 Camera_getManufacturerName(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2320,7 +2319,7 @@ Camera_getManufacturerName(Camera_handle hCamera)
   GigEFunc[Func_Camera_getManufacturerName].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getModelName(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2332,7 +2331,7 @@ Camera_getModelName(Camera_handle hCamera)
   GigEFunc[Func_Camera_getModelName].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getDeviceVersion(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2344,7 +2343,7 @@ Camera_getDeviceVersion(Camera_handle hCamera)
   GigEFunc[Func_Camera_getDeviceVersion].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getManufacturerSpecificInformation(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2356,7 +2355,7 @@ Camera_getManufacturerSpecificInformation(Camera_handle hCamera)
   GigEFunc[Func_Camera_getManufacturerSpecificInformation].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getSerialNumber(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2380,7 +2379,7 @@ Camera_setUserDefinedName(Camera_handle hCamera, char *UserDefinedName)
   GigEFunc[Func_Camera_setUserDefinedName].function_pointer)(hCamera, UserDefinedName);
 }
 
-char *
+const char *
 Camera_getUserDefinedName(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2392,7 +2391,7 @@ Camera_getUserDefinedName(Camera_handle hCamera)
   GigEFunc[Func_Camera_getUserDefinedName].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getMacAddress(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2404,7 +2403,7 @@ Camera_getMacAddress(Camera_handle hCamera)
   GigEFunc[Func_Camera_getMacAddress].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getIPAddress(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2416,7 +2415,7 @@ Camera_getIPAddress(Camera_handle hCamera)
   GigEFunc[Func_Camera_getIPAddress].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getSubnetMask(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -3919,7 +3918,7 @@ Camera_getPrescalerDevisor(Camera_handle hCamera,
 //---------------sequencer-------------------------------------
 SVGigE_RETURN
  Camera_loadSequenceParameters(Camera_handle hCamera,
-                               char *Filename)
+                               const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5330,7 +5329,7 @@ Camera_restoreFactoryDefaults(Camera_handle hCamera)
 
 SVGigE_RETURN
 Camera_loadSettingsFromXml(Camera_handle hCamera,
-                           char *Filename)
+                           const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5345,7 +5344,7 @@ Camera_loadSettingsFromXml(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_SaveSettingsToXml(Camera_handle hCamera,
-                         char *Filename)
+                         const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5393,7 +5392,7 @@ SVGigE_estimateWhiteBalanceExtended(unsigned char *DataRGB, int PixelNumber, int
 
 
 SVGigE_RETURN 
-SVGigE_writeImageToBitmapFile(char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType)
+SVGigE_writeImageToBitmapFile(const char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5405,7 +5404,7 @@ SVGigE_writeImageToBitmapFile(char *Filename, unsigned char *Data, int SizeX, in
 }
 
 SVGigE_RETURN 
-SVGigE_installFilterDriver(char *PathToDriverPackage, char *FilenameINF, char *FilenameINF_m)
+SVGigE_installFilterDriver(const char *PathToDriverPackage, const char *FilenameINF, const char *FilenameINF_m)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5432,8 +5431,7 @@ SVGigE_uninstallFilterDriver()
 // 28 - Diagnostics
 //*****************************************************************************************
 
-char *
-Error_getMessage(SVGigE_RETURN ReturnCode)
+const char* Error_getMessage(SVGigE_RETURN ReturnCode)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5447,7 +5445,7 @@ Error_getMessage(SVGigE_RETURN ReturnCode)
 SVGigE_RETURN
 Camera_registerForLogMessages(Camera_handle hCamera,
                               int  LogLevel,
-                              char *LogFilename,
+                              const char *LogFilename,
                               LogMessageCallback LogCallback,
                               void *MessageContext)
 {
@@ -5476,7 +5474,8 @@ SVGigE_RETURN Camera_isLensAvailable(Camera_handle hCamera, bool *isAvailable)
   GigEFunc[Func_Camera_isLensAvailable].function_pointer)(hCamera, isAvailable);
 }
 
-char* Camera_getLensName(Camera_handle hCamera)
+const char *
+Camera_getLensName(Camera_handle hCamera)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5854,7 +5853,7 @@ Camera_getTapUserSettings(Camera_handle hCamera,
 
 SVGigE_RETURN 
 Camera_saveTapBalanceSettings(Camera_handle hCamera,
-                              char *Filename)
+                              const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5867,7 +5866,7 @@ Camera_saveTapBalanceSettings(Camera_handle hCamera,
 
 SVGigE_RETURN 
 Camera_loadTapBalanceSettings(Camera_handle hCamera,
-                              char *Filename)
+                              const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )

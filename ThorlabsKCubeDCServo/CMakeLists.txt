@@ -4,26 +4,24 @@ set(target_name ThorlabsKCubeDCServo)
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
-
-include(ItomBuildMacros)
-itom_init_cmake_policy(3.12)
-itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+if(NOT THORLABS_KINESIS_DIRECTORY)
+	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+endif(NOT THORLABS_KINESIS_DIRECTORY)
 
 set(THORLABS_KINESIS_KCUBEDCSERVO_LIBNAME "Thorlabs.MotionControl.KCube.DCServo")
 
@@ -36,7 +34,14 @@ endif(THORLABS_KINESIS_DIRECTORY)
 
 if(THORLABS_KINESIS_INCLUDE_DIR)
 
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+
+    include(ItomBuildMacros)
+    itom_init_cmake_policy(3.12)
+    itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
     itom_find_package_qt(ON Widgets Xml LinguistTools)
 
     include_directories(
@@ -104,5 +109,5 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
     
 else()
-    message(WARNING "${THORLABS_KINESIS_KCUBEDCSERVO_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
+    message(SEND_ERROR "${THORLABS_KINESIS_KCUBEDCSERVO_LIBNAME}.h for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_KINESIS_DIRECTORY.")
 endif()

@@ -24,6 +24,15 @@ The following parameters are mandatory or optional for initializing an instance 
     
     .. plugininitparams::
         :plugin: CommonVisionBlox
+		
+Compilation
+===========
+
+Download the latest CommonVisionBlox SDK from https://www.commonvisionblox.com/en/.
+
+Install this software and set the CMake variable **CVB_DIR** or the environment variable **CVB_ROOT**
+to the install directory of the CommonVisionBlox SDK (e.g. C:\Program Files\STEMMER IMAGING\Common Vision Blox\).
+
         
 Parameters
 ===========
@@ -54,6 +63,10 @@ An instance of this plugin has the following internal parameters:
     model name
 **roi**: {int seq.}
     ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
+
+Compilation
+===========
+Set the CMAKE variable **CVB_DIR** or the environment variable **CVCB_ROOT** to the installation directory of the CommmonVisionBlox SDK (e.g. C:\Program Files\STEMMER IMAGING\Common Vision Blox)
     
 Usage
 =====
@@ -100,3 +113,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the common vision blox 13.01.006
 * itom setup 4.0.0: This plugin has been compiled using the common vision blox 13.01.006
 * itom setup 4.1.0: This plugin has been compiled using the common vision blox 13.01.006
+* itom setup 4.3.0: This plugin has been compiled using the common vision blox 13.04.006

@@ -30,6 +30,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #ifndef WIN32
     #include <unistd.h>
 #endif
+#include <QRandomGenerator>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
@@ -860,19 +861,20 @@ ito::RetVal DslrRemote::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //-------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DslrRemote::getFileFromCam(ito::DataObject *data, const uint32_t fhandle, const uint32_t ftype)
 {
+    QDateTime refTime1970(QDate(1970, 1, 1), QTime(0, 0, 0));
     ito::RetVal retval;
     QString tmpPath = QDir::tempPath();
-    qsrand(QDateTime::currentDateTime().toTime_t());
+    QRandomGenerator qrand(refTime1970.secsTo(QDateTime::currentDateTime()));
     QString tmpFileName;
 
     if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1
         && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
     {
-        tmpFileName = tmpPath + "/" + QString::number(qrand());
+        tmpFileName = tmpPath + "/" + QString::number(qrand.generate());
     }
     else
     {
-        tmpFileName = tmpPath + QString::number(qrand());
+        tmpFileName = tmpPath + QString::number(qrand.generate());
     }
 
     retval += m_ptp_cam->get_file(m_ptp_portnum, 0, fhandle, tmpFileName.toLatin1().data(), 1);

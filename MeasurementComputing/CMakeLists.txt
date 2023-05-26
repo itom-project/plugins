@@ -1,28 +1,29 @@
 set(target_name MeasurementComputing)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
-
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
-
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core LinguistTools Widgets)
 
 if(BUILD_TARGET64)
    set(dll_name "cbw64.dll")
@@ -32,11 +33,8 @@ else(BUILD_TARGET64)
    set(bit_dest "32")
 endif(BUILD_TARGET64)
 
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-itom_find_package_qt(ON Core LinguistTools Widgets)
-
 find_path(MeasurementComputing_DAQ_C_SDK_DIR cbw.h PATHS "C:/Users/Public/Documents/Measurement Computing/DAQ/C" DOC "Directory of the DAQ C library, must contain the file cbw.h (e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C)")
-find_file(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" "C:/Program Files (x86)/Measurement Computing/DAQ" DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")
+find_file(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" "C:/Program Files (x86)/Measurement Computing/DAQ" $ENV{MCDAQ_ROOT} DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")
 
 if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
     set(MeasurementComputing_LIB debug cbw${bit_dest} optimized cbw${bit_dest}  CACHE STRING "" FORCE)
@@ -108,5 +106,5 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
     itom_post_build_copy_files_to_lib_folder(${target_name} MeasurementComputing_DAQ_BINARY)
 
 else()
-    message(WARNING "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    
+    message(SEND_ERROR "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    
 endif()

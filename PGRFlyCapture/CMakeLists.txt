@@ -4,40 +4,44 @@ set(target_name PGRFlyCapture)
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
-
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 if(LINUX)
     add_definitions( "--std=c++0x --std=c++11" )
 endif(LINUX)
 
-
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 
+set(FLYCAPTURE_PGRFLYCAP_DIR "" CACHE PATH "path of the FLIR Fly Capture SDK. Must contain subfolders like bin,bin64,include,lib,lib64")
 
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-itom_find_package_qt(ON Core Widgets Xml LinguistTools)
+if(NOT FLYCAPTURE_PGRFLYCAP_DIR)
+	set(FLYCAPTURE_PGRFLYCAP_DIR $ENV{FLIR_SDK_ROOT})
+endif(NOT FLYCAPTURE_PGRFLYCAP_DIR)
 
 if(WIN32)
-    find_path( FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR FlyCapture2.h DOC "Include directory of Point Gray Research FlyCapture API")
+    find_path( FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR FlyCapture2.h PATHS ${FLYCAPTURE_PGRFLYCAP_DIR} PATH_SUFFIXES include DOC "Include directory of Point Gray Research FlyCapture API")
 else(WIN32)
     find_path( FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR FlyCapture2.h PATHS /usr/include/flycapture DOC "Include directory of Point Gray Research FlyCapture API")
 endif(WIN32)
@@ -121,12 +125,6 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         endif()
     endif()
     
-    if(FLYCAPTURE_LIBRARY)
-        message(STATUS "FlyCapture library found at ${FLYCAPTURE_LIBRARY}")
-    else()
-        message(SEND_FATAL "FlyCapture library not found")
-    endif()
-    
     if(WIN32)
         if(MSVC_VERSION GREATER 1899) #>= MSVC 15.0
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v140.dll"  PATHS ${PGR_BINDIR_HINT} PATH_SUFFIXES vs2015 NO_DEFAULT_PATH) #requires Microsoft C++ Redistributible 2015    
@@ -146,17 +144,11 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     
         find_file(FLYCAPTURE_LIBIOMP5MD "libiomp5md.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH)
     
-        if(FLYCAPTURE_BINARY)
-            message(STATUS "FlyCapture binary found at ${FLYCAPTURE_BINARY}")
-        else(FLYCAPTURE_BINARY)
-            message(SEND_FATAL "FlyCapture binary not found")
-        endif(FLYCAPTURE_BINARY)
-
-        if(FLYCAPTURE_LIBIOMP5MD)
-            message(STATUS "libiomp5md.dll found at ${FLYCAPTURE_LIBIOMP5MD}")
-        else(FLYCAPTURE_LIBIOMP5MD)
-            message(SEND_FATAL "libiomp5md.dll not found")
-        endif(FLYCAPTURE_LIBIOMP5MD)
+        if(FLYCAPTURE_LIBRARY AND FLYCAPTURE_LIBIOMP5MD AND FLYCAPTURE_BINARY)
+            set(FLYCAPTURE_FOUND TRUE)
+        else(FLYCAPTURE_LIBRARY AND FLYCAPTURE_LIBIOMP5MD AND FLYCAPTURE_BINARY)
+            set(FLYCAPTURE_FOUND FALSE)
+        endif(FLYCAPTURE_LIBRARY AND FLYCAPTURE_LIBIOMP5MD AND FLYCAPTURE_BINARY)
     endif()
     
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
@@ -165,9 +157,7 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${FLYCAPTURE_LIBRARY} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) 
-
-
-    
+	
     itom_configure_plugin_documentation(${target_name} pgrFlyCapture)
     
     #translation
@@ -186,6 +176,6 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         itom_post_build_copy_files_to_lib_folder(${target_name} FLYCAPTURE_LIBIOMP5MD)
     endif()
     
-else()
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
-endif()
+else(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")    
+endif(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)

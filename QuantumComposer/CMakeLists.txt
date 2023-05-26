@@ -3,34 +3,28 @@ set(target_name QuantumComposer)
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
 
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
-
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-# ...which contains useful scripts for completing this file
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# ... for example this one, found in the CMAKE_MODULE_PATH
-include(ItomBuildMacros)
-
-# The CMake policies are assumed to behave like the tested version given as argument.
-itom_init_cmake_policy(3.12)
-
-itom_init_plugin_library(${target_name})
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name})
 itom_find_package_qt(ON Core Widgets LinguistTools)
 
 include_directories(
@@ -93,4 +87,3 @@ itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATION
 itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-

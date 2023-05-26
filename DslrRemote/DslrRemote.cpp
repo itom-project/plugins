@@ -30,6 +30,7 @@
 #ifndef WIN32
     #include <unistd.h>
 #endif
+#include <QRandomGenerator>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
@@ -838,22 +839,21 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
                 break;
         }
 
-
         CameraFileInfo finfo;
         uint64_t fsize;
         QString tmpPath = QDir::tempPath();
-        qsrand(QDateTime::currentDateTime().toTime_t());
+        QDateTime refTime1970(QDate(1970, 1, 1), QTime(0, 0, 0));
+        QRandomGenerator qrand(refTime1970.secsTo(QDateTime::currentDateTime()));
         QString tmpFileName;
-//        FILE *tmpFile = fopen(tmpFileName.toLatin1().data(), "w+");
 
         if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1
             && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
         {
-             tmpFileName = tmpPath + "/" + QString::number(qrand());
+             tmpFileName = tmpPath + "/" + QString::number(qrand.generate());
         }
         else
         {
-            tmpFileName = tmpPath + QString::number(qrand());
+            tmpFileName = tmpPath + QString::number(qrand.generate());
         }
         gpret = gp_camera_file_get_info(m_camera, m_cameraFilePath.folder, m_cameraFilePath.name, &finfo, m_context);
         char *buf = (char*)malloc(finfo.file.size);

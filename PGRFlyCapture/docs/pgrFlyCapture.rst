@@ -159,6 +159,8 @@ Additional functions (exec functions)
 Compilation
 =============
 
+Download the FlyCapture2 SDK from https://www.flir.de/.
+
 FlyCapture version 2.13.3.31 uses libiomp5md.dll in version 5.0.2011.1108. 
 Libiomp5md.dll is also used by numpy (mkl version), but often in another version 
 that is not compatible (there is an error when opening itom). Since it is 
@@ -180,6 +182,9 @@ The result is, that FlyCapture2_vXXX.dll does not depend any more on the
 old *libiomp5md.dll* but on the renamed version with the same content.
 This might resolve the name conflict with the same file (different version) 
 shipped with Numpy+MKL.
+
+Then set the CMake variable *FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR** or the environment path vairable **FLIR_SDK_ROOT**
+to the base directory of the pco.sensicam (e.g. C:\Program Files\Point Grey Research\FlyCapture2).
 
 
 Image Acquisition
@@ -247,6 +252,8 @@ Changelog
   under Windows it requires the Microsoft C++ Redistributable 2012
 * itom setup 4.1.0: This plugin will be compiled using the FlyCapture 2.13.3.61, 
   under Windows it requires the Microsoft C++ Redistributable 2012
+* itom setup 4.3.0: This plugin will be compiled using the FlyCapture 2.13.3.61, 
+  under Windows it requires the Microsoft C++ Redistributable 2012  
   
 Linux
 ======
