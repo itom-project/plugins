@@ -1106,7 +1106,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                         // flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT) command is placed here. Many other
                         // cameras can work with or without this command, but this command has been added
                         // to support an AlliedVision GoldEye camera.
-                        // see issue: https://bitbucket.org/itom/plugins/issues/8/genicam-plugin-issue-with-mikrotron-eosens
+                        // see issue: https://github.com/itom-project/plugins/issues/8
                         if (m_stream->flushAllBuffersToInput())
                         {
                             m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);

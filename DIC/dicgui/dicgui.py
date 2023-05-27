@@ -3,7 +3,7 @@
 By twipOS 2016.
 '''
 
-#The algorithm is based on Python 3.2 and must be used with "itom" ==> https://bitbucket.org/itom/itom
+#The algorithm is based on Python 3.2 and must be used with "itom" ==> https://github.com/itom-project/itom
 #Import basic function and packages used by this file
 #See python help for more details
 import cv2

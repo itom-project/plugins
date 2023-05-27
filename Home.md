@@ -1,6 +1,6 @@
 # Plugins for *itom*
 
-This repository contains freely available plugins for [itom](https://bitbucket.org/itom/itom).
+This repository contains freely available plugins for [itom](https://github.com/itom-project).
 
 Currently there are plugins available like:
 
