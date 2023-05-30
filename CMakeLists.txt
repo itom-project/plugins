@@ -22,7 +22,7 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 include(ItomBuildMacros)
 
 # ITOM Shipment
-option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." ON)
+option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." OFF)
 
 # AerotechA3200
 if(NOT BUILD_TARGET64)
