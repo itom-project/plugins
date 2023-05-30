@@ -338,10 +338,12 @@ if(WIN32)
 endif()
 
 # PclTools
-option(PLUGIN_PclTools "Build with this plugin." ON)
-if(PLUGIN_PclTools)
-  add_subdirectory(PclTools)
-endif(PLUGIN_PclTools)
+if(BUILD_WITH_PCL)
+    option(PLUGIN_PclTools "Build with this plugin." ON)
+    if(PLUGIN_PclTools)
+        add_subdirectory(PclTools)
+    endif(PLUGIN_PclTools)
+endif(BUILD_WITH_PCL)
 
 # PCOCamera
 if(WIN32)
