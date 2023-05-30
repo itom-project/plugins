@@ -70,7 +70,6 @@ if(ITOM_SDK_PCL_SUPPORT)
               IOXML
               IOXMLParser
               GUISupportQt
-              GUISupportQtSQL
               RenderingQt
               ViewsQt
           )

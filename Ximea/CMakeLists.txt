@@ -31,10 +31,7 @@ itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
-find_path(XIMEA_APIDIR XIApi.h DOC "XIMEA Api directory (must contain the file m3Api.h)")
-
-
-if(XIMEA_APIDIR)
+if(XIMEA_SDK_FOUND)
 
     #if(XIMEA_BUILD_API_VERSION VERSION_EQUAL "4.25")
     #    message(STATUS "USE_API_4_10 defined")
@@ -112,6 +109,6 @@ if(WIN32)
     itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
 endif(WIN32)
 
-else(XIMEA_APIDIR)
+else(XIMEA_SDK_FOUND)
     message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
-endif(XIMEA_APIDIR)
+endif(XIMEA_SDK_FOUND)
