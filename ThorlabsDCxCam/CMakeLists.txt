@@ -1,6 +1,6 @@
-set(target_name ThorlabsDCxCam)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-cmake_minimum_required(VERSION 3.1...3.15)
+set(target_name ThorlabsDCxCam)
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)

@@ -1,6 +1,6 @@
-project(zlibwapi)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-cmake_minimum_required(VERSION 3.1...3.15)
+project(zlibwapi)
 
 set(LIBRARY_TYPE STATIC)
 

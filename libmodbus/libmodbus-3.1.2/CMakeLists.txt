@@ -1,9 +1,10 @@
+cmake_minimum_required(VERSION 3.12...3.24)
+
 set(target_name libmodbus_library)
+
 project(${target_name})
 
 message(STATUS "-------- LIBMODBUS 3.1.2 LIBRARY ----------")
-
-cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_LIBMODBUS_SHARED "Build libmodbus as shared library (DLL) or static library (must be OFF)" OFF)
 

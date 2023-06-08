@@ -1,6 +1,6 @@
-set(target_name DslrRemote)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-cmake_minimum_required(VERSION 3.1...3.15)
+set(target_name DslrRemote)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 option(BUILD_SHARED_LIBS "Build shared library." ON)

@@ -6,12 +6,11 @@
 #    copy it and distribute it without any license restrictions.
 ###################################################################
 ###################################################################
+cmake_minimum_required(VERSION 3.8...3.24)
 
-SET (target_name DIC) #->replace PCI6115 by the name of your plugin (one word)
+set(target_name DIC) #->replace PCI6115 by the name of your plugin (one word)
 
 project(${target_name})
-
-cmake_minimum_required(VERSION 3.8...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
