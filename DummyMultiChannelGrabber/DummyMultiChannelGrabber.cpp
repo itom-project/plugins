@@ -323,7 +323,7 @@ ito::RetVal DummyMultiChannelGrabber::init(QVector<ito::ParamBase> * /*paramsMan
                               tr("bitdepth of images: mono8, mono10, mono12, mono16").toLatin1().data());
         paramVal.setMeta(m, true);
         standardParam.insert(paramVal.getName(), paramVal);
-        
+
         double axisOffset[] = {0.0, 0.0};
         paramVal = ito::Param(
             "axisOffset",
@@ -576,7 +576,7 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
                     int oldX = (oldval - oldY) / 100;
                     float factorX = (float)oldX / (float)newX;
                     float factorY = (float)oldY / (float)newY;
-                    int width, height, maxWidth, maxHeight, sizex, sizey, offsetx, offsety;
+                    int width, height, maxWidth, maxHeight, sizeX, sizeY, offsetX, offsetY;
                     QMap<QString, ChannelContainer>::iterator i;
                     for (i = m_channels.begin(); i != m_channels.end(); ++i) //we need to adapt the roi for each channel
                     {
@@ -594,10 +594,10 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(QSharedPointer<ito::ParamBase
                                         ->getHeightRangeMeta()
                                         .getSizeMax();
 
-                        int sizeX = i.value().m_channelParam["roi"].getVal<int *>()[2] * factorX;
-                        int sizeY = i.value().m_channelParam["roi"].getVal<int *>()[3] * factorY;
-                        int offsetX = i.value().m_channelParam["roi"].getVal<int *>()[0] * factorX;
-                        int offsetY = i.value().m_channelParam["roi"].getVal<int *>()[1] * factorY;
+                        sizeX = i.value().m_channelParam["roi"].getVal<int *>()[2] * factorX;
+                        sizeY = i.value().m_channelParam["roi"].getVal<int *>()[3] * factorY;
+                        offsetX = i.value().m_channelParam["roi"].getVal<int *>()[0] * factorX;
+                        offsetY = i.value().m_channelParam["roi"].getVal<int *>()[1] * factorY;
                         int roi[] = {offsetX, offsetY, sizeX, sizeY};
                         i.value().m_channelParam["roi"].setVal<int *>(roi, 4);
                         i.value().m_channelParam["roi"].setMeta(
@@ -922,7 +922,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
 
 
     return retValue;
@@ -995,7 +995,7 @@ ito::RetVal DummyMultiChannelGrabber::getValByMap(QSharedPointer<QMap<QString, i
             {
                 *(it.value()) = this->m_channels[it.key()].data;
                 ++it;
-            }    
+            }
         }
     }
     return retValue;
