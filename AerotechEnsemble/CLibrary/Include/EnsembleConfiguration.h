@@ -29,7 +29,7 @@ typedef struct {
 
 /// \brief Opens the current configuration.
 ///
-/// This function opens the current configuration file and stores it in memory.  The object can then be 
+/// This function opens the current configuration file and stores it in memory.  The object can then be
 /// used to configure different Ensemble settings.
 /// \param[out] handle A pointer to a handle for the Ensemble Configuration object.
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.

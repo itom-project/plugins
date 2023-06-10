@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -76,7 +76,7 @@ to let the plugin print a list of supported formats (the plugin initialization t
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);     
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -168,7 +168,7 @@ V4L2::V4L2() : AddInGrabber(), m_isgrabbing(false), m_deviceStarted(false),m_dev
     m_params.insert(paramVal.getName(), paramVal);
 
     DockWidgetV4L2 *dw = new DockWidgetV4L2(this);
-    
+
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
@@ -369,7 +369,7 @@ ito::RetVal V4L2::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
         emit parametersChanged(m_params);
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -563,13 +563,13 @@ ito::RetVal V4L2::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     if (m_timerID > 0)
-    { 
+    {
         killTimer(m_timerID);
         m_timerID=0;
     }
-    
+
     if (m_frame)
     {
         delete[] m_frame;
@@ -599,7 +599,7 @@ ito::RetVal V4L2::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -608,7 +608,7 @@ ito::RetVal V4L2::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     incGrabberStarted();
 
     if (grabberStartedCount() == 1 && !m_deviceStarted)
@@ -623,7 +623,7 @@ ito::RetVal V4L2::startDevice(ItomSharedSemaphore *waitCond)
             m_deviceStarted = true;
         }
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -631,7 +631,7 @@ ito::RetVal V4L2::startDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal V4L2::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -666,7 +666,7 @@ ito::RetVal V4L2::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal V4L2::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -691,12 +691,12 @@ ito::RetVal V4L2::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
 
     if (!retValue.containsError())
     {
-        if (!m_frame) 
+        if (!m_frame)
         {
             checkData();
         }
@@ -752,7 +752,7 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
             //}
 
             //int colorConversion = m_params["colorConversion"].getVal<int>();
-            //if(colorConversion == 1 /*rgb2gray*/ && (m_imgChannels == 1 || desiredChannel > 0)) 
+            //if(colorConversion == 1 /*rgb2gray*/ && (m_imgChannels == 1 || desiredChannel > 0))
             //{
             //    colorConversion = 0; //grayscale camera image or selected channel -> no conversion necessary
             //}
@@ -778,7 +778,7 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
                 retValue += ito::RetVal(ito::retError, 0, tr("Error: desired bpp must be 8 or 16 bit.").toLatin1().data());
             }
             else
-            {   
+            {
                 //step 1. check ROI
                 if(resizeRequired == false)
                 {
@@ -797,7 +797,7 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
                     cv::cvtColor(tempImage, tempImage, cv::COLOR_BGR2GRAY, 0); //camera provides BGR images in OpenCV
 #else
                     cv::cvtColor(tempImage, tempImage, CV_BGR2GRAY, 0); //camera provides BGR images in OpenCV
-#endif  
+#endif
                 }
 
                 //step 3: create m_data (if not yet available)
@@ -830,7 +830,7 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
                         }
                     }
                 }
-                     
+
                 if(!retValue.containsError())
                 {
                     if(tempImage.channels() == 1)
@@ -848,7 +848,7 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
                     {
                         cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
                         int fromTo[] = {0,0,1,1,2,2}; //{0,2,1,1,2,0}; //implicit BGR (camera) -> BGR (dataObject style) conversion
-                        
+
                         //qDebug() << "tempImage.channels():" << tempImage.channels() << " elem1size:" << tempImage.elemSize1() << " elemSize:" << tempImage.elemSize() << "[" << tempImage.rows << "x" << tempImage.cols << "] depth:" << tempImage.depth();
                         //qDebug() << "out.channels():" << out[0].channels() << " elem1size:" << out[0].elemSize1() << " elemSize:" << out[0].elemSize() << "[" << out[0].rows << "x" << out[0].cols << "] depth:" << out[0].depth();
 
@@ -884,7 +884,7 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
                     }
                 }
             }
-            
+
         }
 
         m_isgrabbing = false;
@@ -943,7 +943,7 @@ ito::RetVal V4L2::checkData(ito::DataObject *externalDataObject)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toLatin1().data());            
+        return ito::RetVal(ito::retError, 0, tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toLatin1().data());
     }
 
     if (futureType == ito::tRGBA32 && (m_alphaChannel.cols != futureWidth || m_alphaChannel.rows != futureHeight))
@@ -954,12 +954,12 @@ ito::RetVal V4L2::checkData(ito::DataObject *externalDataObject)
     if (m_pDataMatBuffer.rows != m_imgRows || m_pDataMatBuffer.cols != m_imgCols) //always original chip size, resize to roi in retrieveImage
     {
         m_pDataMatBuffer = cv::Mat(m_imgRows, m_imgCols, CV_8UC3);
-        
+
         if (m_frame)
         {
             delete[] m_frame;
         }
-        
+
         m_frame = new unsigned char[m_pDL.m_device.get_buf_size()];
     }
 
@@ -967,7 +967,7 @@ ito::RetVal V4L2::checkData(ito::DataObject *externalDataObject)
     {
         if(m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
         {
-            m_data = ito::DataObject(futureHeight,futureWidth,futureType);  
+            m_data = ito::DataObject(futureHeight,futureWidth,futureType);
 
             if (futureType == ito::tRGBA32)
             {
@@ -987,7 +987,7 @@ ito::RetVal V4L2::checkData(ito::DataObject *externalDataObject)
         }
         else if(externalDataObject->calcNumMats () > 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());
         }
         else if(externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
@@ -1024,7 +1024,7 @@ ito::RetVal V4L2::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1036,7 +1036,7 @@ ito::RetVal V4L2::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -1067,7 +1067,7 @@ ito::RetVal V4L2::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();

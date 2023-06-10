@@ -59,4 +59,3 @@ int jl2005c_delete_all (Camera *camera, GPPort *port);
 
 
 #endif
-

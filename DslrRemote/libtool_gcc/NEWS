@@ -360,7 +360,7 @@ New in 2.1b: 2008-02-01; CVS version 2.1a, Libtool team:
   - Fix 1.9b regression: lt_dlopen(NULL) works on AIX again.
   - Loads of smaller bug fixes.
 
-
+
 New in 1.9f: 2004-10-23; CVS version 1.9e, Libtool team:
 * Fix a regression in 1.9d, where ECHO was always set to 'echo' and the
   backslash quoting tests were never run.
@@ -369,7 +369,7 @@ New in 1.9f: 2004-10-23; CVS version 1.9e, Libtool team:
 * Fix a regression in 1.9d, which required an installed automake to build the
   bootstrapped tarball.
 * Fix hanging bug on MinGW.
-
+
 New in 1.9d: 2004-10-03; CVS version 1.9c, Libtool team:
 * If non-pic objects were not compiled, and libtool is called in link mode,
   libtool no longer silently creates an empty archive, but rather falls
@@ -393,7 +393,7 @@ New in 1.9d: 2004-10-03; CVS version 1.9c, Libtool team:
 * Fixed some memory leaks in libltdl.
 * Improved support for OpenBSD (use rpath instead of hardcoding absolute
   file names).
-
+
 New in 1.9b: 2004-08-29; CVS version 1.5a, Libtool team:
 * The /^_?LT_[A-Z_]+$/ namespace is now reserved for Libtool's own macros.
   If you have any shell variables in this namespace they will need to be
@@ -461,7 +461,7 @@ New in 1.9b: 2004-08-29; CVS version 1.5a, Libtool team:
 * New support for IBM's xlc and xlc++ on Mac OS X.
 * Finished support for QNX RTOS.
 * Bug fixes.
-
+
 New in 1.5.8: 2004-08-07; CVS version 1.5.7a, Libtool team:
 * Support for Intel C++ version 8.0.
 * Improved support for OpenBSD.
@@ -470,15 +470,15 @@ New in 1.5.8: 2004-08-07; CVS version 1.5.7a, Libtool team:
 * Much faster check for command line length on all BSD systems.
 * Better Mac OS X/darwin support.
 * Bug Fixes.
-
+
 New in 1.5.6: 2004-04-11; CVS version 1.5.5a, Libtool team:
 * Installs libltdl files properly in $prefix/share/libtool/libltdl. 1.5.4
   did not install them at all.
 * libltdl correctly guesses the extension for loadable modules again.
-
+
 New in 1.5.4: 2004-04-03; CVS version 1.5.3a, Libtool team:
 * Bug fixes.
-
+
 New in 1.5.2: 2004-01-25; CVS version 1.5.0a, Libtool team:
 * lt_dlrealloc is an official part of the libltdl API.
 * --tag, --silent and --debug options are preserved and reused when libtool
@@ -493,11 +493,11 @@ New in 1.5.2: 2004-01-25; CVS version 1.5.0a, Libtool team:
 * Recognises the 'R' symbol type on Solaris so read-only symbols can be
   exported.
 * Bug fixes.
-
+
 New in 1.5.1: 2003-??-??; CVS version 1.5.0a, Libtool team:
 * lt_dlrealloc is an official part of the libltdl API.
 * Bug fixes.
-
+
 New in 1.5: 2003-04-14; CVS version 1.4e, Libtool team:
 * First stable release of multi-language architecture.
 * libtool and libltdl support for Mac OS/X.
@@ -506,14 +506,14 @@ New in 1.5: 2003-04-14; CVS version 1.4e, Libtool team:
 * Support auto-import patch to binutils on cygwin for much improved dll
   support.
 * Bug fixes.
-
+
 New in 1.4.3: 2002-10-13; CVS version 1.4.2a, Robert Boehne:
 * The libltdl subdirectory now bootstraps correctly with Automake 1.5.
 * srcdir != builddir builds with Automake 1.5 work correctly.
 * Support for mips-compaq-nonstopux.
 * New command line argument, --preserve-dup-deps prevents removal of
   duplicate dependent libraries.
-
+
 New in 1.4d: 2002-01-07; CVS version 1.4c, Libtool team:
 * Help strings display correctly again.
 * Better error messages when library linking fails.
@@ -529,7 +529,7 @@ New in 1.4d: 2002-01-07; CVS version 1.4c, Libtool team:
 * Initial support for QNX RTOS, UnixWare 7 and OpenUNIX 8.
 * Bug fixes to the OpenBSD port.
 * Bug fixes.
-
+
 New in 1.4.2: 2001-09-11; CVS version 1.4.1a, Gary V. Vaughan:
 * libltdl now builds on solaris again
 * diagnose and warn about not-quite-working combinations of gcc and
@@ -537,7 +537,7 @@ New in 1.4.2: 2001-09-11; CVS version 1.4.1a, Gary V. Vaughan:
 * Improved OpenBSD support.
 * Improved cygwin support.
 * Bugfixes.
-
+
 New in 1.4.1: 2001-09-03; CVS version 1.4.0a, Libtool team:
 * Better error messages from libltdl when loading fails.
 * Don't leave here-doc files behind.
@@ -545,7 +545,7 @@ New in 1.4.1: 2001-09-03; CVS version 1.4.0a, Libtool team:
 * Libtool will build with autoconf-2.50 and higher.
 * Plug memory management bugs in libltdl.
 * Prefer shl_load to dlopen for better operation on HP-UX.
-
+
 New in 1.4b: 2001-07-09; CVS version 1.4a, Libtool team:
 * Now bootstraps with autoconf-2.50 and automake-1.4-p4.
 * Always try to build at least a static lib, even if both static and
@@ -558,11 +558,11 @@ New in 1.4b: 2001-07-09; CVS version 1.4a, Libtool team:
 * Internal mutex handling no longer has namespace clashes on NCR MP-RAS.
 * New pdemo and tagdemo tests.
 * Bug fixes.
-
+
 New in 1.4: 2001-04-25; CVS version 1.3e, Libtool team:
 * Support for aix5*.
 * Bugfixes.
-
+
 New in 1.3d: 2001-04-02; CVS version 1.3c, Libtool team:
 * ltconfig is no more.  Generation of libtool happens directly from
   the configure file.
@@ -593,7 +593,7 @@ New in 1.3d: 2001-04-02; CVS version 1.3c, Libtool team:
 * Initial support for a.out freebsd shared libs.
 * Initial support for Paul Sokolovsky's pw32 POSIX over win32 layer.
 * Many bugfixes (especially in libltdl)
-
+
 New in 1.3b: 1999-07-02; CVS version 1.3a, Libtool team:
 * Complete inter-library dependencies support. It's now possible
   to link libtool libraries against other libtool libraries.
@@ -612,20 +612,20 @@ New in 1.3b: 1999-07-02; CVS version 1.3a, Libtool team:
 * New `clean' mode to delete uninstalled files.
 * New demos and tests
 * Various bugfixes
-
+
 New in 1.3.5: 2000-05-27, CVS version 1.3.4a, Libtool team:
 * Support for mac OS X (rhapsody).
 * Support for *-sequent-sysv4.
 * Support for Cygwin-1.1.0.
 * Support recent dlltool formats.
 * Bugfixes.
-
+
 New in 1.3.4: 1999-12-08, CVS version 1.3.3a, Libtool team:
 * Support for Compaq Tru64 V5.0.
 * Improved support for Digital Unix V4.*.
 * Improved support for NetBSD, FreeBSD and Unixware.
 * Many fine bugfixes.
-
+
 New in 1.3.3: 1999-07-02, CVS version 1.3.2a, Libtool team:
 * New `-dlpreopen force' flag to ensure that
   lt_preloaded_symbols is always defined.
@@ -636,12 +636,12 @@ New in 1.3.3: 1999-07-02, CVS version 1.3.2a, Libtool team:
 * Create directory to expand convenience libraries only when needed.
 * Improved support for Cygwin, DJGPP and NetBSD
 * Various bugfixes
-
+
 New in 1.3.2: 1999-05-26, CVS version 1.3.1a, Libtool team:
 * Avoid circular links of objects and libraries.
 * Look for dlerror when dlopen was found in -ldl (typo).
 * Disable shared libraries with broken GNU ld on Solaris.
-
+
 New in 1.3.1: 1999-05-21, CVS version 1.3.0a, Libtool team:
 * Documentation improvements; recommend automake users to insert libtool.m4
   in acinclude.m4
@@ -653,7 +653,7 @@ New in 1.3.1: 1999-05-21, CVS version 1.3.0a, Libtool team:
 * Pass unknown -L arguments through to the linker (for -LANG:* support).
 * Close a security hole with mode 777 directory during libltdl installation.
 * Fixed the infamous ``ifelse'' bug in libtool.m4
-
+
 New in 1.3: 1999-04-29, Libtool team:
 * This is just a summary of the changes since 1.2.
   See the news of intermediate alpha releases below for details.
@@ -672,7 +672,7 @@ New in 1.3: 1999-04-29, Libtool team:
 * Support -export-symbols-regex for controlled symbol exporting.
 * Support -R to hardcode directories in library search paths.
 * New ports, demos and tests.  Lots of improvements and bug fixes.
-
+
 New in CVS version 1.2g, Libtool team:
 * AM_PROG_LIBTOOL is smaller and faster
 * AC_LIBTL_L_WIN32_DLL is required in configure.in for libtool to
@@ -688,7 +688,7 @@ New in CVS version 1.2g, Libtool team:
 * Documentation updates
 * New tests
 * Bugfixes
-
+
 New in 1.2f: 1999-03-15; CVS version 1.2e, Libtool team:
 * libtool will correctly link uninstalled libraries into programs
   and prefer uninstalled libraries to installed ones
@@ -730,7 +730,7 @@ New in 1.2f: 1999-03-15; CVS version 1.2e, Libtool team:
 * Support for IRIX library versioning.
 * New demos and tests
 * Various bugfixes
-
+
 New in 1.2d: 1998-12-16; CVS version 1.2c, Libtool team:
 * libtool will correctly link already-installed libraries into programs.
 * New -module flag, to create loadable modules.
@@ -764,13 +764,13 @@ New in 1.2d: 1998-12-16; CVS version 1.2c, Libtool team:
   the maintenance of libtool.
 * Arguments to ltconfig have been changed to allow creation of a
   libtool C program, totally unusable as of this release.
-
+
 New in 1.2b - 1998-07-01, Gordon Matzigkeit:
 * Libtool needs a new maintainer, since Gordon Matzigkeit has quit.
   If you think you can do the job, send mail to bug-libtool@gnu.org.
 * Bug fixes.
 * Support for libtool convenience archives.
-
+
 New in 1.2a - 1998-04-19, Gordon Matzigkeit:
 * Bug fixes.
 * ltconfig accepts an `--output' option to specify the name of the
@@ -779,12 +779,12 @@ New in 1.2a - 1998-04-19, Gordon Matzigkeit:
   libtoolize, and ltconfig.
 * Added `libtool --config' to print out all configuration variables.
 * Support for *-*-hpux11*.
-
+
 New in 1.2 - 1998-03-20, Gordon Matzigkeit:
 * Minor bug fixes to provide a stable public release.
 * Libtool no longer cseses Solaris printf to barf due to silly
   2110-byte static buffers.
-
+
 New in 1.1 - 1998-03-08, Gordon Matzigkeit:
 * Bug fixes.
 * http://www.profitpress.com/libtool/ is libtool's homepage.
@@ -831,7 +831,7 @@ New in 1.1 - 1998-03-08, Gordon Matzigkeit:
   This allows us to correctly handle OSes that don't have the `lib'
   prefix by default, such as OS/2.
 * Support for *-*-amigaos*, *-*-os2*, *-*-sysv4.2uw2*, and *-*-uts4*.
-
+
 New in 1.0 - 1997-07-08, Gordon Matzigkeit:
 * Bug fixes.
 * Better configuration test to find the system linker.  The old test
@@ -851,13 +851,13 @@ New in 1.0 - 1997-07-08, Gordon Matzigkeit:
   relative directories.
 * Support *-*-linux-gnu* as an alias for *-*-linux*.
 * Support for *-*-openbsd* and *-*-freebsd3*.
-
+
 New in 0.9 - 1997-02-03, Gordon Matzigkeit:
 * Bug fixes.
 * The libtool demo now uses the libm cos(3) function, to demonstrate
   inter-library dependencies.
 * The PLATFORMS file has been moved to doc/platforms.texi.
-
+
 New in 0.8 - 1997-01-26, Gordon Matzigkeit:
 * Bug fixes, and more documentation.
 * Basic support for other language compilers (C++, Fortran, and
@@ -870,7 +870,7 @@ New in 0.8 - 1997-01-26, Gordon Matzigkeit:
 * For clarity, the demo subdirectory no longer uses ansi2knr, and has
   been rewritten to avoid ANSI-only constructs.
 * Support for *-*-irix5, *-*-irix6*, and *-*-sco3.2v5*.
-
+
 New in 0.7 - 1996-12-08, Gordon Matzigkeit:
 * Total rewrite of libtool, along with a new model for library building.
 * Completely rewritten documentation for the new paradigm.
@@ -886,9 +886,9 @@ New in 0.7 - 1996-12-08, Gordon Matzigkeit:
 * Support for stripping libraries during installation.
 * Library version information is now passed on the command line, not
   through a version file.
-
+
 Version 0.6 was never released.
-
+
 New in 0.5:
 * Disabled install-progs until next version, when it will be correctly
   implemented.
@@ -903,14 +903,14 @@ New in 0.5:
   new LIBINFO files.
 * Libtool is better at finding its config file and helper scripts.
 * Support for *-*-gnu*
-
+
 New in 0.4:
 * Bug fixes and new regression tests
 * On unsupported configurations, ``libtool configure'' demotes OBJTYPES to
   `standard' instead of aborting
 * Added new object type, `t', for tcov(1) support
 * Support for *-*-aix3*, *-*-aix4*, *-*-hpux10*, *-*-osf3*, and *-*-solaris2*
-
+
 New in 0.3:
 * Bug fixes and new regression tests
 * Added new uninstall-libs mode
@@ -922,7 +922,7 @@ New in 0.3:
 * New `libtoolize' program (modeled after GNU gettext's `gettextize') to help
   conversion to libtool
 * New ABOUT-LIBS document for inclusion with libtool-supported packages
-
+
 New in 0.2:
 * Support for *-*-linux
 * Better checking for GNU ld
@@ -931,11 +931,11 @@ New in 0.2:
 * Reimplemented the shared library version scheme.  See (libtool)Versioning.
 * Replaced `--config-file' and `--version-file' options with `--confdir'
 * Added new install-libs and install-progs modes
-
+
 New in 0.1:
 * First release of libtool
 * Support for: *-*-freebsd*, *-*-netbsd*, *-*-sunos4*, *-*-ultrix4*
--- 
+--
   Copyright (C) 1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
   2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 

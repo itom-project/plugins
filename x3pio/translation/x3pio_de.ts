@@ -29,10 +29,10 @@
     </message>
     <message>
         <location line="-621"/>
-        <source>This plugin provides methods to save and load dataObjects in/from the file format &apos;x3p&apos;. This format is specified in ISO 25178 - Geometrical product specification (GPS). 
+        <source>This plugin provides methods to save and load dataObjects in/from the file format &apos;x3p&apos;. This format is specified in ISO 25178 - Geometrical product specification (GPS).
 
-The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources, 
-is licensed under the LGPL license and uses further libraries. For more information about the license 
+The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources,
+is licensed under the LGPL license and uses further libraries. For more information about the license
 of the library itself see www.opengps.eu</source>
         <translation type="unfinished"></translation>
     </message>

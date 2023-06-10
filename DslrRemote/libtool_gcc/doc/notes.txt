@@ -56,5 +56,3 @@
      cache variables `lt_cv_sys_lib_search_path_spec' and
      `lt_cv_sys_lib_dlsearch_path_spec' respectively to the correct
      search paths.
-
-

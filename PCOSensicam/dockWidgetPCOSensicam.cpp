@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -71,10 +71,10 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
                 ui.checkFastMode->setEnabled(true);
                 break;
         }
-        
+
         m_firstRun = false;
     }
-    
+
     switch (params["cam_type"].getVal<int>())
     {
         case FASTEXP: //"Fast Exposure"

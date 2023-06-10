@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -37,12 +37,12 @@
 
 #if defined(__linux__) || defined(__APPLE__)
     #ifndef _NI_int64_DEFINED_
-    #define _NI_int64_DEFINED_   
+    #define _NI_int64_DEFINED_
         typedef int64_t      int64;
     #endif
 #endif
 
-#include "NIDAQmx.h" // This is the NI C Library .h file, which is distinquised from this file by lacking a hypen between "NI" and "DAQ"      
+#include "NIDAQmx.h" // This is the NI C Library .h file, which is distinquised from this file by lacking a hypen between "NI" and "DAQ"
 #include "NI-PeripheralClasses.h" // Classes that encapsulate general stuff like channels and tasks
 
 #include "NI-DAQmxError.h"
@@ -50,7 +50,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    NiDAQmxInterface 
+  *\class    NiDAQmxInterface
   *
   *\brief    Interface-Class for NiDAQmx-Class
   *
@@ -87,33 +87,33 @@ class NiDAQmx : public ito::AddInDataIO
     protected:
         ~NiDAQmx();
         NiDAQmx();
-        
-        
+
+
     public:
         friend class NiDAQmxInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
-        enum TaskSubTypes 
-        { 
-            Analog = 0x01, 
-            Digital = 0x02, 
-            Counter = 0x04, 
-            Input = 0x1000, 
-            Output = 0x2000 
+        enum TaskSubTypes
+        {
+            Analog = 0x01,
+            Digital = 0x02,
+            Counter = 0x04,
+            Input = 0x1000,
+            Output = 0x2000
         };
 
-        enum TaskType 
-        { 
-            AnalogInput = Analog | Input, 
-            AnalogOutput = Analog | Output, 
-            DigitalInput = Digital | Input, 
-            DigitalOutput = Digital | Output 
+        enum TaskType
+        {
+            AnalogInput = Analog | Input,
+            AnalogOutput = Analog | Output,
+            DigitalInput = Digital | Input,
+            DigitalOutput = Digital | Output
         };
 
-        enum NiTaskMode 
-        { 
-            NiTaskModeFinite = 0, 
+        enum NiTaskMode
+        {
+            NiTaskModeFinite = 0,
             NiTaskModeContinuous = 1
         };
 
@@ -137,9 +137,9 @@ class NiDAQmx : public ito::AddInDataIO
         bool m_isgrabbing; /*!< Check if acquire was executed */
         bool m_nSampleEventRegistered;
 
-        /*!< if true, a reference trigger is enabled (only for finite input tasks) and the finite task 
+        /*!< if true, a reference trigger is enabled (only for finite input tasks) and the finite task
         behaves like a continuous task (the stop is automatically executed by the reference trigger)*/
-        bool m_refTriggerEnabled; 
+        bool m_refTriggerEnabled;
 
         bool m_taskStarted;
         int m_deviceStartedCounter; /*!< counts how often the device is started, every call to startDevice will increments this, stopDevice will decrement it. The task is really stopped if it drops to zero again. */
@@ -156,7 +156,7 @@ class NiDAQmx : public ito::AddInDataIO
         TaskHandle m_taskHandle;
         QList<NiBaseChannel*> m_channels;
         NiTaskMode m_taskMode;
-        
+
         // Read-functions
         ito::RetVal readAnalog(int32 &readNumSamples); /*!< Wait for acquired data */
         ito::RetVal readDigital(int32 &readNumSamples); /*!< Wait for acquired data */
@@ -167,7 +167,7 @@ class NiDAQmx : public ito::AddInDataIO
         ito::RetVal writeAnalog(const ito::DataObject *dataObj);
         ito::RetVal writeDigital(const ito::DataObject *dataObj);
         ito::RetVal writeCounter(const ito::DataObject *dataObj);
-        
+
     public slots:
         //!< Get ADC-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
@@ -188,9 +188,9 @@ class NiDAQmx : public ito::AddInDataIO
         ito::RetVal stop(ItomSharedSemaphore *waitCond = NULL);
         //!< Wait for acquired picture, copy the Values to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        //!< 
+        //!<
         ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
-        //!< 
+        //!<
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);

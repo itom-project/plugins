@@ -29,12 +29,12 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 extern int NTHREADS;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// calculate "area weighted" intensity interpolation, i.e. sum up all intensities of the input's image pixels that fall into the new 
+// calculate "area weighted" intensity interpolation, i.e. sum up all intensities of the input's image pixels that fall into the new
 // output's image pixel.
-// We diference between two cases: 
+// We diference between two cases:
 //      - 6 parameters given - we are dealing with a linear deformation, that means points' coordinates
 //        can only vary along their carthesian coordinate axes, one at a time
-//      - 10 parameters given - general deformation, 'bounding points' defining the bounding quadrangle can vary in 
+//      - 10 parameters given - general deformation, 'bounding points' defining the bounding quadrangle can vary in
 //        x and y axes together, resulting in skewed pixels
 ito::RetVal doAreaAveragedInterpol(ito::DataObject *imgIn, ito::DataObject *imgOut, ito::DataObject *pts)
 {
@@ -47,7 +47,7 @@ ito::RetVal doAreaAveragedInterpol(ito::DataObject *imgIn, ito::DataObject *imgO
     int sizey = imgIn->getSize(0);
     if (pts->getSize(1) == 6)
     {
-        // 6 points 
+        // 6 points
         for (int np = 0; np < pts->getSize(0); np++)
         {
             ito::float64 x0 = pts->at<ito::float32>(np, 2);
@@ -87,7 +87,7 @@ ito::RetVal doAreaAveragedInterpol(ito::DataObject *imgIn, ito::DataObject *imgO
                     else if (px > fabs(x1 - x0) - 1)
                     {
                         xfact = x1 - floor(x1);
-                    }                    
+                    }
                     else if (fabs(x1 - x0) < 1 && floor(x1) != floor(x0))
                     {
                         xfact = fabs(x1 - x0);
@@ -108,7 +108,7 @@ ito::RetVal doAreaAveragedInterpol(ito::DataObject *imgIn, ito::DataObject *imgO
     {
         //   P2  l3  P3
         //   x-------x
-        //   |       | 
+        //   |       |
         // l4|       |l2
         //   |       |
         //   x-------x
@@ -258,7 +258,7 @@ ito::RetVal doAreaAveragedInterpol(ito::DataObject *imgIn, ito::DataObject *imgO
 
     if (imgOut->getDims() != 2
         || imgIn->getSize(0) != imgOut->getSize(0) || imgIn->getSize(0) == 0
-        || imgIn->getSize(1) != imgOut->getSize(1) || imgIn->getSize(1) == 0 
+        || imgIn->getSize(1) != imgOut->getSize(1) || imgIn->getSize(1) == 0
         || imgIn->getType() != imgOut->getType())
     {
         *imgOut = ito::DataObject(imgIn->getSize(0), imgIn->getSize(1), imgIn->getType());
@@ -293,7 +293,7 @@ ito::RetVal doAreaAveragedInterpol(ito::DataObject *imgIn, ito::DataObject *imgO
         return ito::RetVal(ito::retError, 0, tr("Displacement vector request, the input object must be a coordinate list of either 2xn or nx2").toLatin1().data());
 
     //if (type == 0 || 5 && displOnly)
-    // 04/08/18 changed ck, don't remember why we check for type 0, though it delivers reasonable results ... 
+    // 04/08/18 changed ck, don't remember why we check for type 0, though it delivers reasonable results ...
     if (5 && displOnly)
         return ito::RetVal(ito::retError, 0, tr("Calculation of displacement vector for polynomial currently not possible").toLatin1().data());
 

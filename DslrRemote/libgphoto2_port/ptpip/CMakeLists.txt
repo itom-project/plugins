@@ -6,7 +6,18 @@ cmake_minimum_required(VERSION 3.1...3.15)
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
+
+#this is to automatically detect the SDK subfolder of the itom build directory.
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
+
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
@@ -15,7 +26,7 @@ find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     DOC "path of SDK subfolder of itom root (build) directory")
 
 if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif()
 
 set(PACKAGE_VERSION CACHE STRING "2.5.9")
@@ -48,8 +59,6 @@ else()
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 endif()
 
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -66,10 +75,10 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-portability.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-result.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../gphoto2/gphoto2-port-version.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../config.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/../config.h
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-info-list.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-log.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port/gphoto2-port-result.c
@@ -86,7 +95,7 @@ set(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Co
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
-target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
+target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
     ${LTDLLIB}
     ${REGEXLIB})
 

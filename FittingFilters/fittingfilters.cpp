@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -60,14 +60,14 @@ FittingFiltersInterface::FittingFiltersInterface()
 {
     m_type = ito::typeAlgo;
     setObjectName("FittingFilters");
-    
+
 /*    char docstring[] = \
 "This plugin contains algorithms for fitting planes and other two dimensional polynomials to dataObjects \
 mainly using the method of least-squares. Some of the included algorithms can also be called with \
 weighted values, such that more precise fitting results are achievable. \n\
 \n\
 Furthermore this plugin also contains methods to finally subtract or reconstruct the fitted surfaces.";
-*/    
+*/
     m_description = QObject::tr("Plugin with fitting algorithms.");
 //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
@@ -82,7 +82,7 @@ Furthermore this plugin also contains methods to finally subtract or reconstruct
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LPGL");
-    m_aboutThis = QObject::tr(GITVERSION);      
+    m_aboutThis = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -592,7 +592,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 
     paramsMand->append( ito::Param("orderX", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in x-direction"));
     paramsMand->append( ito::Param("orderY", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in y-direction"));
-    
+
     return retval;
 }
 
@@ -656,7 +656,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 
     paramsMand->append( ito::Param("orderX", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in x-direction"));
     paramsMand->append( ito::Param("orderY", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in y-direction"));
-    
+
     return retval;
 }
 
@@ -821,7 +821,7 @@ to parallely compute the approximations for each pixel.");
                 if (weights)
                 {
                     weightMats[i] = (cv::Mat*)(weights->get_mdata()[ weights->seekMat(i) ]);
-                } 
+                }
             }
 
             for (int i = 0; i < (order+2); ++i)
@@ -850,7 +850,7 @@ to parallely compute the approximations for each pixel.");
 
                 #pragma omp parallel for firstprivate(yVals, wVals, coefficients, chisq)
                 for (int mi = 0; mi < m; ++mi)
-                {                  
+                {
                     for (int ni = 0; ni < n; ++ni)
                     {
                         //fill yVals
@@ -927,7 +927,7 @@ for the line regression fits and a singular value decomposition for all other ca
     paramsMand->append( ito::Param("input", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "real valued input object (1D or 2D)") );
     paramsMand->append( ito::Param("output", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "resulting output object (same than input is allowed, else output has the same type and size than input)") );
     paramsMand->append( ito::Param("order", ito::ParamBase::Int | ito::ParamBase::In, 1, 7, 1, "polynomial order"));
-    
+
     paramsOpt->append( ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, "axis index along which the 1d regressions are independently determined and subtracted (0: vertical, 1: horizontal)."));
     paramsOpt->append( ito::Param("numThreads", ito::ParamBase::Int | ito::ParamBase::In, 1, omp_get_max_threads(), 1,  "number of threads used for the parallel determination") );
 
@@ -942,7 +942,7 @@ for the line regression fits and a singular value decomposition for all other ca
     ito::DataObject *output = paramsMand->at(1).getVal<ito::DataObject*>();
     int m = 0;
     int n = 0;
-    
+
     int numThreads = paramsOpt->at(1).getVal<int>();
     int axis = paramsOpt->at(0).getVal<int>();
 
@@ -1030,7 +1030,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tUInt8:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::uint8*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::uint8*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1038,7 +1038,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tInt8:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::int8*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::int8*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1046,7 +1046,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tUInt16:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::uint16*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::uint16*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1054,7 +1054,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tInt16:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::int16*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::int16*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1062,7 +1062,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tUInt32:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::uint32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::uint32*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1070,7 +1070,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tInt32:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::int32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::int32*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1078,7 +1078,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tFloat32:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::float32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::float32*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1086,7 +1086,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tFloat64:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(&((const ito::float64*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(&((ito::float64*)(output_->data))[i], m, coefficients, step);
                 }
@@ -1100,7 +1100,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tUInt8:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < m; ++i)
-                {   
+                {
                     polyfit1d_basic((const ito::uint8*)(input_->ptr(i)), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::uint8*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1108,7 +1108,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tInt8:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < n; ++i)
-                {   
+                {
                     polyfit1d_basic(((const ito::int8*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::int8*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1116,7 +1116,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tUInt16:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < m; ++i)
-                {   
+                {
                     polyfit1d_basic(((const ito::uint16*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::uint16*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1124,7 +1124,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tInt16:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < m; ++i)
-                {   
+                {
                     polyfit1d_basic(((const ito::int16*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::int16*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1132,7 +1132,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tUInt32:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < m; ++i)
-                {   
+                {
                     polyfit1d_basic(((const ito::uint32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::uint32*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1140,7 +1140,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tInt32:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < m; ++i)
-                {   
+                {
                     polyfit1d_basic(((const ito::int32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::int32*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1148,7 +1148,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tFloat32:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < m; ++i)
-                {   
+                {
                     polyfit1d_basic(((const ito::float32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::float32*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1156,7 +1156,7 @@ for the line regression fits and a singular value decomposition for all other ca
             case ito::tFloat64:
                 #pragma omp parallel for firstprivate(coefficients)
                 for (int i = 0; i < m; ++i)
-                {   
+                {
                     polyfit1d_basic(((const ito::float64*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
                     polyval1d_subtract_basic(((ito::float64*)(output_->ptr(i))), n, coefficients);
                 }
@@ -1268,7 +1268,7 @@ the rectangle. If this is not possible, NaN is returned as value.");
             xyCoords = (ito::float64*)coords.rowPtr(0,i);
 
             dataObj.getPhysToPix2D(xyCoords[1], yPx, yInside, xyCoords[0], xPx, xInside);
-            
+
             xPxRounded = qRound(xPx);
             yPxRounded = qRound(yPx);
 
@@ -1529,7 +1529,7 @@ ito::RetVal FittingFilters::fillInvalidAreasParams(QVector<ito::Param> *paramsMa
     if (retval.containsError()) return retval;
 
     paramsMand->append(ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input real-valued data object with possible NaN values (float32, float64)."));
-    paramsMand->append(ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output real-valued data object that equals 'inputObject' but NaN values are filled with interpolated values (float32, float64)."));  
+    paramsMand->append(ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output real-valued data object that equals 'inputObject' but NaN values are filled with interpolated values (float32, float64)."));
 
     paramsOpt->append(Param("method", ito::ParamBase::String | ParamBase::In, "LeastSquaresPlane", tr("LeastSquaresPlane (default), LMedSPlane (Least median of squares), Median, Mean").toLatin1().data()));
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "LeastSquaresPlane");
@@ -1554,7 +1554,7 @@ ito::RetVal FittingFilters::fillInvalidAreasParams(QVector<ito::Param> *paramsMa
     paramsOpt->append(Param("allowedErrorProbability", ParamBase::Double | ParamBase::In, 0.0000001, 1.0, 0.001, tr("allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFitPlane)").toLatin1().data()));
 
     paramsOpt->append(Param("statistics", ParamBase::DObjPtr | ParamBase::In | ParamBase::Out, NULL, tr("optional dataObject (only possible if 'inputObject' only contains one plane). If given, the dataObject will be a float32 Mx8 dataObject where each row corresponds to one detected area. Its content is [inclusive leftmost pixel-coordinate of the area, inclusive topmost pixel-coordinate of the area, width of bounding box of area in pixel, height of bound box of area in pixel, total number of pixels in area, x-coordinate of centroid of area in physical units, y-coordinate of centroid of area in physical units, 1: area has been filled, else 0]").toLatin1().data()));
-    
+
     paramsOut->append(Param("numTotalInvalidAreas", ParamBase::Int | ParamBase::Out, 0, std::numeric_limits<int>::max(), 0, tr("total number of detected invalid areas").toLatin1().data()));
     paramsOut->append(Param("numFilledAreas", ParamBase::Int | ParamBase::Out, 0, std::numeric_limits<int>::max(), 0, tr("number of areas that where filled (their area size was <= maxAreaSize and the interpolation values based on surrounding pixels are valid).").toLatin1().data()));
     return retval;
@@ -1664,12 +1664,12 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
 
         for (int planeIdx = 0; planeIdx < numPlanes; ++planeIdx)
         {
-            
+
             input = inputObject->getCvPlaneMat(0);
             output = outputObject.getCvPlaneMat(0);
-            
+
             // operation "nanMask = cv::Mat(*input != *input);" is buggy
-            // https://stackoverflow.com/questions/41759247/filter-opencv-mat-for-nan-values 
+            // https://stackoverflow.com/questions/41759247/filter-opencv-mat-for-nan-values
 
             switch (input->type())
             {
@@ -1707,7 +1707,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                     statisticObjectRowPtr[6] = inputObject->getPixToPhys(dims - 2, centroids.at<double>(areaIdx, 1));
                     statisticObjectRowPtr[7] = statsRow[cv::CC_STAT_AREA] <= maxAreaSize;
                 }
-                
+
                 if (statsRow[cv::CC_STAT_AREA] <= maxAreaSize)
                 {
                     x = qBound(0, statsRow[cv::CC_STAT_LEFT] - extend[0], input->cols - 1);
@@ -1847,7 +1847,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                                     }
                                 }
                             }
-                                
+
                             scalar = nanmedian<ito::float32>(floatVec.data(), floatVec.size());
                             if (ito::isFinite(scalar[0]))
                             {
@@ -1907,7 +1907,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
                         break;
                     }
 
-                    
+
                 }
             }
 
@@ -1935,7 +1935,7 @@ ito::RetVal FittingFilters::fillInvalidAreas(QVector<ito::ParamBase> *paramsMand
     (*paramsOut)[0].setVal<int>(numTotalAreas);
     (*paramsOut)[1].setVal<int>(numTotalFilledAreas);
 
-    
+
 
     return retval;
 }
@@ -2024,7 +2024,7 @@ The total error is then
 
 e = sum_{i=0}^{n-1} (e_i) for n valid pixels
 
-This error should be minimized, hence 
+This error should be minimized, hence
 de/dA != 0
 de/dB != 0
 de/dC != 0 (!= means "should be equal than")
@@ -2110,7 +2110,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
     if (mat->cols != 1 && mat->rows != 1)
     {
         denom = syy*sx*sx - 2*sx*sxy*sy + n*sxy*sxy + sxx*sy*sy - n*sxx*syy;
-        
+
     }
     else if (mat->cols == 1 && mat->rows != 1)
     {
@@ -2118,7 +2118,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
         denom = sx*sx - n*sxx;
         retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomical fit or 1D-Linefitting for 1xN objects.");
     }
-    else if (mat->rows == 1 && mat->cols != 1) 
+    else if (mat->rows == 1 && mat->cols != 1)
     {
         sxx = 1.0;
         denom = sy*sy - n*syy;
@@ -2322,7 +2322,7 @@ template<typename _Tp> ito::RetVal FittingFilters::getRandomValidMinimalSampleSe
             uni = rng.uniform(0, nrOfValues);
             c = uni % mat->cols;
             r = (uni - c) / mat->cols;
-            
+
             if (!cvIsNaN((double)mat->at<_Tp>(r,c)))
             {
                 rows[nd++] = uni;
@@ -2419,7 +2419,7 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
     dS/dp0 -> 0 and dS/dp1 -> 0
 
     finally this leads to
-    
+
     1. -sum(y_i) + n * p0 + sum(x_i) * p1 -> 0
 
     2. -sum(x_i * y_i) + sum(x_i) * p0 + sum(x_i^2) * p1 -> 0
@@ -2634,7 +2634,7 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
     m_filterList.insert("subtractRegressionPlane", filter);
 
 //    TODO: undefined reference see polyfit2d.cpp
-    filter = new FilterDef(FittingFilters::fitPolynom2D, FittingFilters::fitPolynom2DParams, fitPolynom2DDoc); 
+    filter = new FilterDef(FittingFilters::fitPolynom2D, FittingFilters::fitPolynom2DParams, fitPolynom2DDoc);
     m_filterList.insert("fitPolynom2D", filter);
 
     filter = new FilterDef(FittingFilters::polyfitWeighted2D, FittingFilters::polyfitWeighted2DParams, polyfitWeighted2DDoc);
@@ -2662,7 +2662,7 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
     filter = new FilterDef(FittingFilters::fillInvalidAreas, FittingFilters::fillInvalidAreasParams, fillInvalidAreasDoc);
     m_filterList.insert("fillInvalidAreas", filter);
 #endif
-    
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }

@@ -14,8 +14,8 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    PIHexapodCtrl 
-  *\brief    This class can be used to communicate with different PI-Hexapod Controller (E-816, E-621, E-625, E-665 or E662) 
+  *\class    PIHexapodCtrl
+  *\brief    This class can be used to communicate with different PI-Hexapod Controller (E-816, E-621, E-625, E-665 or E662)
   *
   *         This class can be used to work with Piefocs and Hexapod-Stages. The ITO-Controllers have only one axis with axis number 0.
   *            This system needs a serial port, which differs depending on type:
@@ -34,7 +34,7 @@
   * \warning    NA
   *
   */
-class PIHexapodCtrl : public ito::AddInActuator 
+class PIHexapodCtrl : public ito::AddInActuator
 {
     Q_OBJECT
 
@@ -51,13 +51,13 @@ class PIHexapodCtrl : public ito::AddInActuator
 
         ito::AddInDataIO *m_pSer;
         double m_scale; //! in steps per mm
-        
+
         int m_async;
         int m_delayAfterSendCommandMS;
         double m_delayProp; //s
         double m_delayOffset; //s
         bool m_hasHardwarePositionLimit;
-        
+
         bool m_useTCPIP;
         QTcpSocket *m_connection;
         QString m_tcpAddr;
@@ -82,14 +82,14 @@ class PIHexapodCtrl : public ito::AddInActuator
         ito::RetVal PIReadString(QByteArray &result, int &len, const int timeoutMS);
         ito::RetVal PISendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, int timeoutMS );
         ito::RetVal PISendQuestionWithAnswerString(const QByteArray &questionCommand, QByteArray &answer, int timeoutMS );
-        
+
         ito::RetVal PIIdentifyAndInitializeSystem(void);
         ito::RetVal convertPIErrorsToRetVal( QVector<QPair<int,QByteArray> > &lastErrors );
         ito::RetVal PISetPos(const QVector<int> &axis,  const QVector<double> &posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         ito::RetVal PICheckStatus(int timeoutMS = 200);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
-        
+
         ito::RetVal tcpOpenConnection(const QString &ipAddress, const long port, const char /*proto*/);
         ito::RetVal tcpReconnect(void);
         void        tcpChanged(QAbstractSocket::SocketState socketState);
@@ -97,7 +97,7 @@ class PIHexapodCtrl : public ito::AddInActuator
         inline ito::RetVal checkAxisVector(const QVector<int> &axis);
 
     public slots:
-        
+
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -126,7 +126,7 @@ class PIHexapodCtrl : public ito::AddInActuator
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        
+
         //! Emits status and position if triggered. Used form the dockingwidget
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 
@@ -141,7 +141,7 @@ class PIHexapodCtrl : public ito::AddInActuator
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    PIHexapodCtrlInterface 
+  *\class    PIHexapodCtrlInterface
   *
   *\brief    Interface-Class for PIHexapodCtrlInterface-Class
   *

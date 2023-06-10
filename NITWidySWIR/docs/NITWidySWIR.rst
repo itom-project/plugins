@@ -12,7 +12,7 @@
 **Devices**:    Cameras from company *NIT* (tested with USB2 WidySWIR 640U-S)
 **Author**:     :pluginauthor:`NITWidySWIR`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,14 +21,14 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: NITWidySWIR
-        
+
 Parameters
-========== 
+==========
 
 **bpp**: {int}
     Bits per pixel bpp (8,14).
@@ -67,27 +67,27 @@ Parameters
 **trigger_mode**: {str}
     Trigger Mode of connected device (Disabled, Input, Output). Use Disabled for software trigger.
 
-Image Acquisition 
+Image Acquisition
 ==================
 
 With this camera an image is acquired by the standard **itom** image acquisition syntax:
 
     .. code-block:: python
-        
+
         cam = dataIO("NITWidySWIR") # get instance of plugin
         cam.startDevice() # start device
-        obj = dataObject() # define dataObject  
+        obj = dataObject() # define dataObject
         cam.acquire() # acquire an image
         cam.getVal(obj) # collect the image in a dataObject
-    
-The camera can be initialized with two optional parameters (**printManual, printParameterValues**). 
+
+The camera can be initialized with two optional parameters (**printManual, printParameterValues**).
 
     .. code-block:: python
-        
+
         cam = dataIO("NITWidySWIR", printManual = 1, printParameterValues = 1)
 
-**printParameterValues** print all values of the parameters in the itom shelf. 
-**printManual** prints the Manual, given by the camera link in the following: 
+**printParameterValues** print all values of the parameters in the itom shelf.
+**printManual** prints the Manual, given by the camera link in the following:
 
     +-----------------------------+------------------------------------------------------------------------------------------+
     | | Manual: ------------------+ |                                                                                        |
@@ -109,20 +109,23 @@ The camera can be initialized with two optional parameters (**printManual, print
     | | Exposure Time :           | | { 100 |mus|, 200 |mus|, ... , 25500 |mus|, 25600 |mus| }                               |
     | | Histogram Threshold :     | | { 1.6%, 0.4%, 0.1%, 0.025% }                                                           |
     +-----------------------------+------------------------------------------------------------------------------------------+
-    
+
 Installation
-============ 
+============
 
 *Windows:*
 
-* The USB2 **NITWidySWIR** driver is installed automatically by Windows after the first connection. 
+* The USB2 **NITWidySWIR** driver is installed automatically by Windows after the first connection.
+
+If not please download the NIT SDK from https://new-imaging-technologies.com/software-log-in/#sdk
+and set the environment variable **NIT_SDK_ROOT** to the installation diretcory (e.g. C:\NIT-SDK).
 
 Compilation
 ===========
 
-In order to compile the **NITWidySWIR** plugin, get the **SDK C++**, which will be deliverd together with the camera on a USB stick or contact the company (http://www.new-imaging-technologies.com). 
-Then set the CMake variable **NITLIBRARY_INCLUDE_DIR** to the directory: **...\\SDK C++\\NITLIBRARY 1.5\\include++**. 
-CMake will find all necessary files. 
+In order to compile the **NITWidySWIR** plugin, get the **SDK C++**, which will be deliverd together with the camera on a USB stick or contact the company (http://www.new-imaging-technologies.com).
+Then set the CMake variable **NITLIBRARY_INCLUDE_DIR** to the directory: **...\\SDK C++\\NITLIBRARY 1.5\\include++**.
+CMake will find all necessary files.
 
 Changelog
 =========
@@ -133,3 +136,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the NITLibrary 1.5
 * itom setup 4.0.0: This plugin has been compiled using the NITLibrary 1.5
 * itom setup 4.1.0: This plugin has been compiled using the NITLibrary 1.5
+* itom setup 4.3.0: This plugin has been compiled using the NITLibrary 1.5

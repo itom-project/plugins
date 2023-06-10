@@ -1,8 +1,8 @@
 /// \file EnsembleInformation.h
 /// \brief Contains the functions to get information about Ensembles.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_INFORMATION_H__
 #define __Ensemble_INFORMATION_H__

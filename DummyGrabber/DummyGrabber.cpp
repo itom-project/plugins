@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -174,7 +174,7 @@ image is controlled using the parameter 'roi' if the sizes stay within the limit
 You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
 \n\
 This plugin can also be used as template for other grabber.";*/
-   
+
     m_description = QObject::tr("A virtual white noise grabber");
 //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
@@ -195,8 +195,8 @@ This plugin can also be used as template for other grabber.");
     m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr(GITVERSION);      
-    
+    m_aboutThis = tr(GITVERSION);
+
     m_initParamsMand.clear();
 
     ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(4, 4096, 4), tr("Width of virtual sensor chip").toLatin1().data());
@@ -345,7 +345,7 @@ DummyGrabber::DummyGrabber() :
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    
+
     paramVal = ito::Param(
         "demoEnumStringList",
         ito::ParamBase::StringList,
@@ -448,7 +448,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     // get type of dummy image
     QString type = paramsOpt->at(3).getVal<const char*>();
 
-    if (type == "noise") 
+    if (type == "noise")
     {
         m_imageType = imgTypeNoise;
     }
@@ -958,7 +958,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                                 { -0, -roiheight, 0, -roiwidth },
                                 { -roiheight, 0, -roiwidth, 0 },
                                 { -roiheight, 0, 0, -roiwidth } };
-            
+
             for (int cnt = 0; cnt < 4; cnt++)
             {
                 droi = m_data;
@@ -980,8 +980,8 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                     gaussFunc<ito::uint32>(rng, droi, amplitude);
                 }
             }
-            
-            
+
+
 
 
             //// take 1 rechts oben
@@ -1003,7 +1003,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
             //    gaussFunc<ito::uint32>(rng, droi, amplitude);
             //}
 
-            //// take 2 
+            //// take 2
             //droi = m_data;
             //droi = droi.adjustROI(-0, -roiheight, 0, - roiwidth); // links unten
 
@@ -1023,7 +1023,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
             //    gaussFunc<ito::uint32>(rng, droi, amplitude);
             //}
 
-            //// take 3 
+            //// take 3
             //droi = m_data;
             //droi = droi.adjustROI(- roiheight, 0, - roiwidth, 0); // rechts oben
 
@@ -1065,9 +1065,9 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
 
 
 
-            
+
         }
-                    
+
         if (integration_time > 0.0)
         {
             double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
@@ -1151,12 +1151,12 @@ ito::RetVal DummyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())

@@ -18,7 +18,7 @@ List of work that still has to be done on this driver:
 
  - handle rotated images correctly (how?)
 
- - A5 support is completely broken, with the new filename based API, the 
+ - A5 support is completely broken, with the new filename based API, the
    directory caching mecanism must be completely revisited. On the
    other hand, when removing the internal caching layer, we perhaps
    facilitated the solution to this problem.
@@ -32,7 +32,7 @@ List of work that has already been done:
 
  - make image capturing work [done -swestin]
 
- - make sure thumbnail download work on serial cameras 
+ - make sure thumbnail download work on serial cameras
    [done according to Philippe -hun]
 
  - getting other info on file (resolution and stuff)
@@ -71,14 +71,14 @@ Old stuff that is already done was moved down a bit by hun:
    via the Camera *camera struct with each function call (08/15/2000 - done).
  - USB support is broken as libgpio got changed a bit. I can't test it as
    I don't have USB :-( (08/20/2000 - done).
- - Uploading : I'm working on it but there are problems. I will soon 
+ - Uploading : I'm working on it but there are problems. I will soon
    include the preliminary support I got for people with S10 and S20 to test
    as it seems easier to get them working (s10sh does it).
    (08/22/2000 - done for serial but slow)
  - The configuration dialog has to be made with the new toolkit independent
    functions provided by gphoto2. It should use gp_config_get and
    gp_config_set to retrieve and store its configuration information.
-   I think it should include : date, owner, battery status, firmware 
+   I think it should include : date, owner, battery status, firmware
    revision and Compact flash space used/available.
    I don't know if anything else is needed (08/15/2000 - mostly done).
  - Starting a Changelog file (done).

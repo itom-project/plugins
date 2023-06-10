@@ -287,4 +287,3 @@ capture_basic_setup (dc1394camera_t * camera, dc1394video_frame_t * frame)
 
     return DC1394_SUCCESS;
 }
-

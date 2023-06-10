@@ -144,20 +144,20 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>itom plugin for GigE cameras from SVS Vistek. Every camera is simply initialized by the serial number of the connected SVS Vistek camera. (see camera housing). 
+        <source>itom plugin for GigE cameras from SVS Vistek. Every camera is simply initialized by the serial number of the connected SVS Vistek camera. (see camera housing).
 
-Some files of the SVGigE SDK are shipped within this plugin (currently 1.5.2). Please check the SVS Vistek website for newer versions of the SDK and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the official SDK of SVS Vistek. 
+Some files of the SVGigE SDK are shipped within this plugin (currently 1.5.2). Please check the SVS Vistek website for newer versions of the SDK and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the official SDK of SVS Vistek.
 
-This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version and make these libraries available for itom (PATH environment variable, system directory...). 
+This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version and make these libraries available for itom (PATH environment variable, system directory...).
 
-For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter. 
+For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter.
 
 Please notice: Currently, this plugin only works for Vistek drivers up to version 1.5.2. If you want to use a 2.x series of the Vistek drivers, use the GenICam plugin of itom that is able to communicate with Vistek USB3 and GigE cameras.</source>
         <translation type="unfinished">itom-Plugin für GigE-Kameras von SVS Vistek. Jede Kamera wird mit Hilfe deren Seriennummer (siehe Gehäuse der Kamera) initialisiert.
 
 Einige Dateien des SVGigE-SDKs werden mit diesem Plugin mitgeliefert (aktuell 1.5.2). Bitte die SVS Vistek-Webseite auf neueren SDK-Versionen prüfen und ggf. die vorhandenen Dateien ersetzen. Für dieses spezielle Plugin bietet SVS Vistek jedoch keinen Support.
 
-Dieses Plugin benötigt von SVS Vistek-SDK-Bibliothek folgende Dateien: SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll oder 64bit Versionen). Bitte auf die richtige Version überprüfen und diese Bibliotheken itom zur Verfügung stellen (PATH-Umgebungsvariable, Systemverzeichnis...). 
+Dieses Plugin benötigt von SVS Vistek-SDK-Bibliothek folgende Dateien: SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll oder 64bit Versionen). Bitte auf die richtige Version überprüfen und diese Bibliotheken itom zur Verfügung stellen (PATH-Umgebungsvariable, Systemverzeichnis...).
 
 Für eine stabile Datenkommunikation bitte den SVGigE-Filtertreiber installieren und im Netzwerkadapter die Option &apos;Jumbo frames&apos; aktivieren.
 

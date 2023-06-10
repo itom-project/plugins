@@ -5,7 +5,7 @@ Sound Vision Inc (http://www.soundvisioninc.com)
 The Agfa ePhoto CL18 type cameras are an earlier design known
 as the "1307" which support 640x480 and USB only.
 
-The Tiger FastFlicks type design is the "V1 Low-Cost Dual Mode VGA 
+The Tiger FastFlicks type design is the "V1 Low-Cost Dual Mode VGA
 Digital Camera" which can do many resolutions, short MOV movies,
 and complact-flash of a sort.
 
@@ -19,7 +19,7 @@ List of Cameras known to work with this driver:
 
    Agfa ePhoto CL18
    Mustek gSmart 350
-   
+
    RCA CDS1005
    Ixla DualCam 640
 

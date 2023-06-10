@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -77,7 +77,7 @@ ito::RetVal ThorlabsISMInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 ThorlabsISMInterface::ThorlabsISMInterface()
@@ -104,8 +104,8 @@ This plugin has been tested with the cage rotator K10CR1.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("additionalGearFactor", ito::ParamBase::Double, 0.0000000001, 1.0e12, 1.0, tr("There seems to be an additional conversion factor for some devices between device and real world units. This can be given here.").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("connectToKinesisSimulator", ito::ParamBase::Int, 0, 1, 0, tr("If 1, a connection to the running Kinesis Simulator is established before starting to search for devices.").toLatin1().data()));
@@ -116,13 +116,13 @@ This plugin has been tested with the cage rotator K10CR1.");
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ThorlabsISM::init. The widged window is created at this position.
 */
 ThorlabsISM::ThorlabsISM() :
 AddInActuator(),
-    m_async(0), 
-    m_opened(false), 
+    m_async(0),
+    m_opened(false),
     m_additionalFactor(1.0)
 {
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsISM", tr("Name of the plugin").toLatin1().data()));
@@ -175,7 +175,7 @@ AddInActuator(),
             0.0,
             tr("Minimum stage position in mm (travelMode == %1) or %2 (travelMode == %3). For "
                "%4, given positions will be wrapped by 360%5 for absolute moves.")
-                .arg(MOT_Linear)   
+                .arg(MOT_Linear)
                 .arg(QLatin1String("\u00B0"))
                 .arg(MOT_Rotational)
                 .arg(QLatin1String("\u00B0"))
@@ -280,7 +280,7 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             {
                 if (deviceInfo.isKnownType && (
                         deviceInfo.typeID == 45 /*Long Travel Stage*/ ||
-                        deviceInfo.typeID == 46 /*Lab Jack*/ || 
+                        deviceInfo.typeID == 46 /*Lab Jack*/ ||
                         deviceInfo.typeID == 49 /*Lab Jack*/ ||
                         deviceInfo.typeID == 55 /*Cage Rotator*/))
                 {
@@ -302,7 +302,7 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     break;
                 }
             }
-            
+
             if (!found)
             {
                 retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices of the supported types Long Travel Stage, Labjack, Cage Rotator found.");
@@ -362,7 +362,7 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (!retval.containsError())
     {
         m_params["homingAvailable"].setVal<int>(ISC_CanHome(m_serialNo) ? 1 : 0);
-        
+
         // itom crash during initalization of this plugin. Does not crash in debug. Some bug in ISC_LoadSettings. ask Robin?
         if (!ISC_LoadSettings(m_serialNo))
         {
@@ -391,7 +391,7 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             retval += checkError(ISC_SetJogVelParams(m_serialNo, realWorldUnit2DeviceUnit(8, 2), realWorldUnit2DeviceUnit(3, 1)), "set jog velocity and acceleration");
             retval += checkError(ISC_SetJogStepSize(m_serialNo, realWorldUnit2DeviceUnit(1, 0)), "set jog step size");
         }
-        
+
 
         retval += checkError(ISC_GetVelParams(m_serialNo, &accel, &speed), "get speed and acceleration");
         m_params["speed"].setVal<double>(deviceUnit2RealWorldUnit(speed,1));
@@ -412,7 +412,7 @@ ito::RetVal ThorlabsISM::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         Sleep(200);
         QSharedPointer<QVector<int> > status(new QVector<int>(1, 0));
         retval += getStatus(status, NULL);
-        
+
     }
 
     if (waitCond)
@@ -476,7 +476,7 @@ ito::RetVal ThorlabsISM::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -518,7 +518,7 @@ ito::RetVal ThorlabsISM::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsISM::SMCSwitchType is executed.
 
@@ -623,7 +623,7 @@ ito::RetVal ThorlabsISM::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             m_params["moveCurrent"].setVal<int>(powerParams.movePercentage);
             m_params["restCurrent"].setVal<int>(powerParams.restPercentage);
         }
-        
+
 
         //---------------------------
         else
@@ -673,7 +673,7 @@ int ThorlabsISM::realWorldUnit2DeviceUnit(double realWorldUnit, int mode)
 ito::RetVal ThorlabsISM::calib(const int axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    // Home device                    
+    // Home device
     ISC_ClearMessageQueue(m_serialNo);
     ito::RetVal retval;
 
@@ -700,7 +700,7 @@ ito::RetVal ThorlabsISM::calib(const int axis, ItomSharedSemaphore *waitCond)
 
     if (!retval.containsError())
     {
-        // wait for completion                    
+        // wait for completion
         WORD messageType;
         WORD messageId;
         DWORD messageData;
@@ -726,7 +726,7 @@ ito::RetVal ThorlabsISM::calib(const int axis, ItomSharedSemaphore *waitCond)
             {
                 ISC_WaitForMessage(m_serialNo, &messageType, &messageId, &messageData);
             }
-            
+
         } while (!interrupted && (messageType != 2 || messageId != 0));
 
         int accel, speed;
@@ -771,7 +771,7 @@ ito::RetVal ThorlabsISM::calib(const QVector<int> axis, ItomSharedSemaphore *wai
     }
     else
     {
-        retval += calib(axis[0], NULL);        
+        retval += calib(axis[0], NULL);
     }
 
     if (waitCond)
@@ -839,7 +839,7 @@ ito::RetVal ThorlabsISM::getStatus(QSharedPointer<QVector<int> > status, ItomSha
 
     int homed = (s & 0x00000400) ? 1 : 0;
     int enabled = (s & 0x80000000) ? 1 : 0;
-    
+
 
     if (m_params["homed"].getVal<int>() != homed || m_params["enabled"].getVal<int>() != enabled)
     {
@@ -893,7 +893,7 @@ ito::RetVal ThorlabsISM::getPos(const int axis, QSharedPointer<double> pos, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
+/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -927,7 +927,7 @@ ito::RetVal ThorlabsISM::getPos(const QVector<int> axis, QSharedPointer<QVector<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls ThorlabsISM::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -1053,7 +1053,7 @@ ito::RetVal ThorlabsISM::setPosAbs(const QVector<int> axis, QVector<double> pos,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls ThorlabsISM::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -1202,7 +1202,7 @@ ito::RetVal ThorlabsISM::waitForDone(const int timeoutMS, const QVector<int> axi
 
 
     while (!done && !retval.containsWarningOrError())
-    {   
+    {
         if (isInterrupted())
         {
             retval += checkError(ISC_StopImmediate(m_serialNo), "stop immediate");
@@ -1255,7 +1255,7 @@ ito::RetVal ThorlabsISM::waitForDone(const int timeoutMS, const QVector<int> axi
                     sendStatusUpdate(false);
                     lastTime = timer.elapsed();
                 }
-               
+
             }
 
             if (!retval.containsError())
@@ -1268,7 +1268,7 @@ ito::RetVal ThorlabsISM::waitForDone(const int timeoutMS, const QVector<int> axi
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ThorlabsISM::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1291,7 +1291,7 @@ void ThorlabsISM::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsISM::checkError(short value, const char* message)
 {
     if (value == 0)

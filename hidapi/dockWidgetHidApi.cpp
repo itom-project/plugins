@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -39,11 +39,11 @@ char getHexChar(int i)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetHidApi::DockWidgetHidApi(QMap<QString, ito::Param> params, int uniqueID)
 {
-    ui.setupUi(this); 
+    ui.setupUi(this);
     char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete it
 //    ui.lblName->setText(temp);
     ui.lblID->setText(QString::number(uniqueID));
-     
+
     valuesChanged(params);
 }
 
@@ -129,7 +129,7 @@ void DockWidgetHidApi::serialLog(QByteArray data, const char InOutChar)
                 default: // If Ascii
                     break;
             }
-            
+
             if (uc < 32)
             {
                 switch (uc)
@@ -192,7 +192,7 @@ void DockWidgetHidApi::serialLog(QByteArray data, const char InOutChar)
         }
         else if (text2.length() == 0)
         {
-            text2 = "";        
+            text2 = "";
         }
         else if (displayType != 0)
         {

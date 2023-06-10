@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,7 +24,7 @@
 * \brief In this file the functions of the modal dialog for the AerotechEnsemble are specified
 *
 *    This file defines the functions of the dialogAerotechEnsemble-Class defined in the file "dialogAerotechEnsemble.h"
-* 
+*
 *\sa dialogAerotechEnsemble, AerotechEnsemble
 *\author Marc Gronle, Heiko Bieger
 *\date    Jan2014
@@ -107,7 +107,7 @@ dialogAerotechEnsemble::dialogAerotechEnsemble(ito::AddInActuator *motor, QStrin
 */
 int dialogAerotechEnsemble::setVals(QMap<QString, ito::Param> *paramVals)
 {
-    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+    setWindowTitle(QString((*paramVals)["name"].getVal<const char*>()) + " - " + tr("Configuration Dialog"));
 
     QMap<QString, ito::Param>::const_iterator paramIt = (*paramVals).constFind("speed");    // To check if this parameter exists
     if (paramIt != ((*paramVals).constEnd()))
@@ -158,7 +158,7 @@ void dialogAerotechEnsemble::on_pushButtonCalib_clicked()
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int i = 0;
     QVector<int> axis;
-    
+
     for (i = 0; i < m_numaxis; i++)
     {
         if (m_pDialogEnabled[i]->isChecked())
@@ -183,6 +183,6 @@ void dialogAerotechEnsemble::on_pushButtonCalib_clicked()
 
     ui.cancelButton->setEnabled(true);
     ui.okButton->setEnabled(true);
-    
+
 
 }

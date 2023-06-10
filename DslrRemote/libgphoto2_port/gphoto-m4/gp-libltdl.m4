@@ -1,6 +1,6 @@
 dnl Written by Hans Ulrich Niedermann
 dnl LDFLAGS vs LIBS fix by Dan Nicholson
-dnl 
+dnl
 dnl We are using our own libltdl checks instead of AC_WITH_LTDL
 dnl because we do not want to ship our own copy of libltdl any more.
 dnl Not shipping libltdl makes it possible to ditch our own autogen.sh

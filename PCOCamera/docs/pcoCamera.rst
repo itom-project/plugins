@@ -10,7 +10,7 @@
 **Devices**:    PCO Cameras supported by the pco.sdk
 **Author**:     :pluginauthor:`PCOCamera`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,9 +21,9 @@ The camera is always operated in a software trigger mode with a standard image s
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: PCOCamera
 
@@ -64,32 +64,35 @@ parameters can be changed using *setParam*.
 **gain**: {double}, read-only
     not available
 **offset**: {double}, read-only
-    not available 
+    not available
 
 Most parameters not only have a minimum and maximum value but also a step size.
 
 .. note::
-    
+
     Please consider that the parameters defining the region of interest may change if the binning is changed, since an increased binning value decreases the available image size.
 
 Compilation
 ============
 
-For compiling this plugin, download the latest pco.sdk (pco Software-Development-Toolkit) from http://www.pco.de and install it on your computer. Then set the CMake
-variable *PCO_SDK_DIR** to the base directory of the pco.sdk. In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board, the GigE connection etc. If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
+For compiling this plugin, download the latest pco.sdk (pco Software-Development-Toolkit) from http://www.pco.de and install it on your computer.
+Then set the CMake variable **PCO_SDK_DIR** or environment variable **PCO_SDK_ROOT** the to the base directory of the pco.sdk.
+In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board, the GigE connection etc.
+If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
 For GigE cameras you also need to install the PCO GigE driver and make sure that the connection is properly configured.
 
 Changelog
 ==========
 
-* itom setup 1.2.0: This plugin has been compiled using pco.sdk 1.17.0.632
-* itom setup 1.3.0: This plugin has been compiled using pco.sdk 1.17.0.632
-* itom setup 1.4.0: This plugin has been compiled using pco.sdk 1.17.0.632
-* itom setup 2.0.0: This plugin has been compiled using pco.sdk 1.17.0.632
-* itom setup 2.1.0: This plugin has been compiled using pco.sdk 1.17.0.632
-* itom setup 2.2.0: This plugin has been compiled using pco.sdk 1.18.0.000
-* itom setup 3.0.0: This plugin has been compiled using pco.sdk 1.18.0.000
-* itom setup 3.1.0: This plugin has been compiled using pco.sdk 1.23.0.000
-* itom setup 3.2.1: This plugin has been compiled using pco.sdk 1.24
-* itom setup 4.0.0: This plugin has been compiled using pco.sdk 1.25
-* itom setup 4.1.0: This plugin has been compiled using pco.sdk 1.25
+* itom setup 1.2.0: This plugin has been compiled using pco.sdk 1.17.0
+* itom setup 1.3.0: This plugin has been compiled using pco.sdk 1.17.0
+* itom setup 1.4.0: This plugin has been compiled using pco.sdk 1.17.0
+* itom setup 2.0.0: This plugin has been compiled using pco.sdk 1.17.0
+* itom setup 2.1.0: This plugin has been compiled using pco.sdk 1.17.0
+* itom setup 2.2.0: This plugin has been compiled using pco.sdk 1.18.0
+* itom setup 3.0.0: This plugin has been compiled using pco.sdk 1.18.0
+* itom setup 3.1.0: This plugin has been compiled using pco.sdk 1.23.0
+* itom setup 3.2.1: This plugin has been compiled using pco.sdk 1.24.0
+* itom setup 4.0.0: This plugin has been compiled using pco.sdk 1.25.0
+* itom setup 4.1.0: This plugin has been compiled using pco.sdk 1.25.0
+* itom setup 4.3.0: This plugin has been compiled using pco.sdk 1.27.0

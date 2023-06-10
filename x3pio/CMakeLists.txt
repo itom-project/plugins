@@ -4,36 +4,35 @@ cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+find_package(Xerces QUIET)
+find_package(XSD)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
-find_package(Xerces QUIET)
-find_package(Xsd QUIET)
-
 if(XERCESC_FOUND AND XSD_FOUND)
-    
+
     add_subdirectory(x3plib/src)
-    
+
     find_path(ISO5436_2_PATH iso5436_2.xsd
       PATHS $ENV{OPENGPS_DIR}
       ./x3plib/src/ISO5436_2_XML
@@ -55,7 +54,7 @@ if(XERCESC_FOUND AND XSD_FOUND)
           ../../build/x3p
         )
     endif(LINUX)
-    
+
     include_directories(
         "x3plib/include"
         #"x3plib/include/opengps/cxx"
@@ -73,7 +72,6 @@ if(XERCESC_FOUND AND XSD_FOUND)
     # see https://stackoverflow.com/questions/48882439/how-to-restore-auto-ptr-in-visual-studio-c17
     add_definitions(-D_HAS_AUTO_PTR_ETC=1)
 
-
     if(DEFINED MSVC_VERSION)
         # Library postfix/ prefix for different vs version
         #   1300 = VS  7.0
@@ -85,25 +83,25 @@ if(XERCESC_FOUND AND XSD_FOUND)
             set(XSD_LIBPATH_VERS_POSTFIX "vc-7.1/")
         elseif(MSVC_VERSION EQUAL 1400)
             set(XSD_LIB_POSTFIX "_vc80")
-            set(XSD_LIBPATH_VERS_POSTFIX "vc-8.0/")  
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-8.0/")
         elseif(MSVC_VERSION EQUAL 1500)
             set(XSD_LIB_POSTFIX "_vc90")
-            set(XSD_LIBPATH_VERS_POSTFIX "vc-9.0/")  
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-9.0/")
         elseif(MSVC_VERSION EQUAL 1600)
             set(XSD_LIB_POSTFIX "_vc100")
-            set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")  
+            set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")
         else()
             # since we don't knwo wether we are on windows or not, we just undefined and see what happens
             unset(XSDLIB_PATH_POSTFIX)
         endif()
 
-        # Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?) 
+        # Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?)
         if(CMAKE_CL_64)
             set(XSD_LIBPATH_POSTFIX lib64/)
         else(CMAKE_CL_64)
             set(XSD_LIBPATH_POSTFIX lib/)
         endif(CMAKE_CL_64)
-        
+
         set(XSD_LIBPATH_POSTFIX ${XSD_LIBPATH_POSTFIX} ${XSD_LIBPATH_VERS_POSTFIX})
 
 
@@ -127,16 +125,16 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     set(PLUGIN_UI)
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/x3pio.cpp
     )
 
     #Add version information to the plugIn-dll unter MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif()    
-    
-    
+    endif()
+
+
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
@@ -158,10 +156,10 @@ if(XERCESC_FOUND AND XSD_FOUND)
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${XERCESC_LIBRARY} ${zlibname} iso5436-2-xml${iso54362LIBSUFFIX} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 
-    
+
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
 
     # COPY SECTION
     set(COPY_SOURCES "")
@@ -170,10 +168,10 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     if(WIN32)
         set(iso54362xmlNAME iso5436-2-xml${iso54362LIBSUFFIX})
-        
+
         #LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/x3plib/src/zlib/contrib/minizip/$<CONFIGURATION>/${ZLIBNAME}${CMAKE_DEBUG_POSTFIX}.dll")
         #LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-        
+
         if(CMAKE_CL_64)
             set(iso54352_target "iso5436-2-xml64")
         else()
@@ -183,20 +181,20 @@ if(XERCESC_FOUND AND XSD_FOUND)
         LIST(APPEND COPY_SOURCES "$<TARGET_FILE:${iso54352_target}>")
         #LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/x3plib/src/ISO5436_2_XML/$<CONFIGURATION>/${iso54362xmlNAME}${CMAKE_DEBUG_POSTFIX}.dll")
         LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-        
+
         LIST(APPEND COPY_SOURCES "${XERCESC_BINARY}")
-        LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")  
+        LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
 
     endif(WIN32)
 
     LIST(APPEND COPY_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/x3plib/src/ISO5436_2_XML/iso5436_2.xsd")
     LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-    
+
     itom_configure_plugin_documentation(${target_name} x3pio)
 
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(XERCESC_FOUND AND XSD_FOUND)
-    message(WARNING "xerces or xsd could not be found. ${target_name} will not be build.")
+    message(SEND_ERROR "Xerces or xsd could not be found. ${target_name} will not be build.")
 endif(XERCESC_FOUND AND XSD_FOUND)

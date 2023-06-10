@@ -7,10 +7,10 @@
 **Type**:       :plugintype:`MeasurementComputing`
 **License**:    :pluginlicense:`MeasurementComputing`
 **Platforms**:  Windows
-**Devices**:    *MeasurementComputing*
+**Devices**:    *Measurement Computing Data Acquisition Devices*
 **Author**:     :pluginauthor:`MeasurementComputing`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,23 +19,23 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: MeasurementComputing
 
 To create a new instance using the following python code:
 
 .. code-block:: python
-    
+
     instance = dataIO("MeasurementComputing", board_number)
-		
+
 Parameters
 ==========
 
 These parameters are available and can be used to configure the **MeasurementComputing** instance. Many of them are directly initialized by the parameters of the constructor. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable parameters can be changed using *setParam*.
-		
+
 	**analog_high_input_channel**: {int}
 		last analog input channel (See pin description of your device).
 	**analog_high_output_channel**: {int}
@@ -84,11 +84,11 @@ These parameters are available and can be used to configure the **MeasurementCom
 		serial number of connected device.
 	**temperature_scale**: {str}
 		scale value of the temperature input. Coises are CELSIUS, FAHRENHEIT, KELVIN, VOLTS and NOSCALE. default = CELSIUS.
-		
+
 Range codes
 ===========
 
-The table below shows the range codes for the **input_range_code** and **output_range_code** parameters and the voltage range, which can be detected. Valid range for your hardware are listed in the Universal Library User's Guide. 
+The table below shows the range codes for the **input_range_code** and **output_range_code** parameters and the voltage range, which can be detected. Valid range for your hardware are listed in the Universal Library User's Guide.
 
 	+------------------------------------+---------------------------------+
 	|             BIPOLAR                |            UNIPOLAR             |
@@ -149,7 +149,7 @@ Additional functions (exec functions)
 
 The plugin execFunctions are:
 
-	=============	==============================================================================================================================================================================================	
+	=============	==============================================================================================================================================================================================
 	Name			Descirption
 	=============	==============================================================================================================================================================================================
 	**getBitIn**   	reads a single bit of the specified I/O port. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a input port.
@@ -243,38 +243,38 @@ The plugin execFunctions are:
 Usage
 =====
 
-Then create a new instance of the analog-digital converter plugin **MeasurementComputing**. A Mandatory parameter is the board number, defined by the software 'InstaCal'. 
+Then create a new instance of the analog-digital converter plugin **MeasurementComputing**. A Mandatory parameter is the board number, defined by the software 'InstaCal'.
 
 .. code-block:: python
-    
+
     instance = dataIO("MeasurementComputing", board_number)
-	
-Plugin parameter can be canged by using the function **setParam**. This examples shows how the analog input channels are configured. The devices will acquire the data from the **analog_low_input_channel** to the **analog_high_input_channel**. 
+
+Plugin parameter can be canged by using the function **setParam**. This examples shows how the analog input channels are configured. The devices will acquire the data from the **analog_low_input_channel** to the **analog_high_input_channel**.
 
 .. code-block:: python
-	
+
 	high_channel = 3
 	low_channel = 0
 	instance.setParam("analog_high_input_channel", high_channel)
 	instance.setParam("analog_low_input_channel", low_channel)
-	
-This examples shows how the range code is defined (see the available ranges in the table above): 
+
+This examples shows how the range code is defined (see the available ranges in the table above):
 
 .. code-block:: python
 
 	range_code = "BIP5VOLTS"
 	instance.setParam("input_range_code", range_code)
-	
-The analog input signals can be acquired by using following example code. The data are saved in the dataobject of size [m x n], where **m** is the number of input channels (the number of channels is equal to (**analog_high_input_channel** - **analog_low_input_channel** + **1**)) and **n** is the number of acquired input samples (definded by the parameter **samples_per_input_channel**). 
-**analog_voltage_input** parameter can be used to save the data in voltage values. 
+
+The analog input signals can be acquired by using following example code. The data are saved in the dataobject of size [m x n], where **m** is the number of input channels (the number of channels is equal to (**analog_high_input_channel** - **analog_low_input_channel** + **1**)) and **n** is the number of acquired input samples (definded by the parameter **samples_per_input_channel**).
+**analog_voltage_input** parameter can be used to save the data in voltage values.
 
 .. code-block:: python
 
 	instance.acquire()
 	d = dataObject()
 	instance.getVal(d)
-	
-Output values of the analog output ports are used by the following example. First you must define a dataObject with the output values you want to set by the analog output channel. Use the parameter **analog_voltage_output** to define, if you want to used voltage values, otherwise your maximum digital value is definded by the **analog_output_bpp**. 
+
+Output values of the analog output ports are used by the following example. First you must define a dataObject with the output values you want to set by the analog output channel. Use the parameter **analog_voltage_output** to define, if you want to used voltage values, otherwise your maximum digital value is definded by the **analog_output_bpp**.
 
 .. code-block:: python
 
@@ -283,31 +283,31 @@ Output values of the analog output ports are used by the following example. Firs
 	numberSamples = 1
 	range_code = "UNI5VOLTS"
 	instance.setParam("analog_voltage_output", 0)
-	instance.setParam("output_range_code", range_code) 
-	outValues = dataObject([numberChannels, numberSamples], 'int16') 
+	instance.setParam("output_range_code", range_code)
+	outValues = dataObject([numberChannels, numberSamples], 'int16')
 	outValues[:,:] = 1023 # 5V analog output in case of 10bit output channel resolution
 	instance.setVal(outValues)
-	
+
 	#set the analog output by voltage values
 	instance.setParam("analog_voltage_output", 1)
 	outValues = dataObject([numberChannels, numberSamples], 'float32')
 	outValues[:,:] = 5.0
-	instance.setVal(outValues)	
+	instance.setVal(outValues)
 
-The digital port can be used like in the following example. 
+The digital port can be used like in the following example.
 
 .. code-block:: python
 
 	# set the digital port as input to use it as a input channel
 	instance.setParam("digital_port_mode", 2)
 	instance.exec("getDIn", "FIRSTPORTA")
-	
+
 	# set the digital port as output to use it for output reasons
 	instance.setParam("digital_port_mode", 1)
 	outValues = 255 	# all port pin connections to high
 	instance.exec("setDOut", "FIRSTPORTA", outValues)
-	
-	
+
+
 One single bit of the digital port is read by using the execFunction **getBitIn**.
 
 .. code-block:: python
@@ -315,36 +315,42 @@ One single bit of the digital port is read by using the execFunction **getBitIn*
 	# set the digital port as input
 	instance.setParam("digital_port_mode", 2)
 	instance.exec("getBitIn", "FIRSTPORTA", 0)
-	
+
 	# set the digital port as output
 	instance.setParam("digital_port_mode", 1)
 	outValues = 255
 	bitNumber = 0
 	instance.exec("setBitOut", "FIRSTPORTA", bitNumber, outValues)
-	
-The temperature channel can be read by the execFunction **getTIn**. Use the temperature_scale parameter to define the value unit you want to get the data. 
+
+The temperature channel can be read by the execFunction **getTIn**. Use the temperature_scale parameter to define the value unit you want to get the data.
 
 .. code-block:: python
 
-	channel = 0 
+	channel = 0
 	instance.setParam("temperature_scale", "CELSIUS")
 	instance.exec("getTIn", channel)
-	
-The counter input is used by the execFunction **getCIn**. With the optional parameter **counter_set_value** the counter can be reset. 
+
+The counter input is used by the execFunction **getCIn**. With the optional parameter **counter_set_value** the counter can be reset.
 
 .. code-block:: python
 
 	channel = 0
 	instance.exec("getCIn", channel)
 	# reset the counter
-	resetvalue = 0 
+	resetvalue = 0
 	instance.exec("getCIn", channel, resetvalue)
-    
+
 Installation
 =============
 
-You have to install the MCC Daq Software, namely the tool "InstaCal and Universal Library for Windows". Then, indicate the following variables in CMake to
+You have to install the MC DAQ Software from https://www.mccdaq.com/Software-Downloads,
+namely the tool "InstaCal and Universal Library for Windows". Then, indicate the following variables in CMake to
 properly configure the build of this plugin:
+
+Cmake should detect the correct directories to access the MC DAQ Software Suite if the default installation folder
+has been chosen. If not set the evironment variale MCDAQ_ROOT to the installation folder (e.g. By C:/Program Files (x86)/Measurement Computing/DAQ).
+
+Check if the following variables are set appropriately:
 
 * MeasurementComputing_DAQ_BINARY: e.g. C:/Program Files (x86)/Measurement Computing/DAQ/cbw64.dll (or cbw32.dll for 32bit itom)
 * MeasurementComputing_DAQ_SDK_DIR: e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C
@@ -361,3 +367,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using CBW library version 1.89
 * itom setup 4.0.0: This plugin has been compiled using CBW library version 1.89
 * itom setup 4.1.0: This plugin has been compiled using CBW library version 1.89
+* itom setup 4.3.0: This plugin has been compiled using MCC DAQ Software library version 6.73

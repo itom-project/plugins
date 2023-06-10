@@ -6,7 +6,7 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetUhl::DockWidgetUhl(int uniqueID, ito::AddInActuator *actuator) : m_pUhlMotor(actuator)
 {
-    ui.setupUi(this); 
+    ui.setupUi(this);
 
     ui.lblID->setText(QString::number(uniqueID));
 
@@ -15,7 +15,7 @@ DockWidgetUhl::DockWidgetUhl(int uniqueID, ito::AddInActuator *actuator) : m_pUh
     ui.pushButton_stop->setEnabled(false);
 
 /*    m_numaxis = 0; //at startup we don't have information about the real number, this is sent later by the slot valuesChanged
-    ui.setupUi(this); 
+    ui.setupUi(this);
     ui.lblID->setText(QString::number(uniqueID));
     setMotorStatus(false);*/
 }
@@ -85,7 +85,7 @@ void DockWidgetUhl::valuesChanged(QMap<QString, ito::Param> params)
     }
 
 /*    ui.lblName->setText(params["name"].getVal<char*>());
-    
+
     CheckAxisNums(params);*/
 }
 
@@ -367,7 +367,7 @@ void DockWidgetUhl::waitForDoneAndCheckRetVal(ItomSharedSemaphore *waitCond)
         }
         //while(done == 0 && waitCond->wait(10) == false)
         //{
-        //    if(waitCond->wait(10) == true) 
+        //    if(waitCond->wait(10) == true)
         //    {
         //        qDebug("bruch");
         //        break;

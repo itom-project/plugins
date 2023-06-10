@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "CommonVisionBlox" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -141,7 +141,7 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
         // load the first camera
         char driverPath[DRIVERPATHSIZE] = { 0 };
         TranslateFileName("%CVB%\\Drivers\\GenICam.vin", driverPath, DRIVERPATHSIZE);
-        cvbbool_t success = LoadImageFile(driverPath, m_hCamera); 
+        cvbbool_t success = LoadImageFile(driverPath, m_hCamera);
 
         if (!success)
         {
@@ -261,7 +261,7 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
             m_params["heartbeat_timeout"].setMeta(&intMeta);
             cvbint64_t value;
             getParamInt("GevHeartbeatTimeout", value);
-            m_params["heartbeat_timeout"].setVal<int>(value);    
+            m_params["heartbeat_timeout"].setVal<int>(value);
         }
 
         //Dalsa
@@ -332,15 +332,15 @@ ito::RetVal CommonVisionBlox::close(ItomSharedSemaphore *waitCond)
 
     if (m_hCamera)
     {
-        ReleaseObject(m_hCamera); 
-    }    
+        ReleaseObject(m_hCamera);
+    }
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -386,7 +386,7 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
                 cvbdim_t nodeCount;
                 retValue += checkError(NMNodeCount(m_hNodeMap, nodeCount));
                 if (!retValue.containsError())
-                {            
+                {
                     char nodeName[128] = {0};
                     char info[128] = {8};
                     size_t nodeNameSize = 128;
@@ -394,13 +394,13 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
                     NODE node = NULL;
                     for (cvbdim_t i = 0; i < nodeCount; ++i)
                     {
-                    
+
                         NMListNode(m_hNodeMap, i, nodeName, nodeNameSize);
 
                         NMGetNode(m_hNodeMap, nodeName, node);
                         NInfoAsString(node, NI_AccessMode, info, nodeNameSize);
                         ReleaseObject(node);
-                    
+
                         //if (strcmp(info, "Read Only") != 0)
                         //{
                             //NI_AccessMode
@@ -642,7 +642,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
                     {
                         retValue += setParamInt("Width", roi_[2]);
                         retValue += setParamInt("OffsetX", roi_[0]);
-                    
+
                     }
                     else
                     {
@@ -702,7 +702,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 #if 0
             else if (key == "x0")
             {
-        
+
 
                 //retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), NULL));
                 retValue += synchronize(roi);
@@ -718,7 +718,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 
             /*else if (key == "y0")
             {
-            
+
                 retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), NULL));
                 retValue += synchronize(roi);
             }
@@ -737,10 +737,10 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
                 setGrabberStarted(started);
             }
         }
-    
+
     }
 
-    
+
 
     /*if (!retValue.containsError())
     {
@@ -796,7 +796,7 @@ ito::RetVal CommonVisionBlox::startDevice(ItomSharedSemaphore *waitCond)
         {
             if (strcmp(m_params["acquisition_mode"].getVal<char*>(), "grab") == 0)
             {
-                retValue += checkError(G2Grab(m_hCamera)); 
+                retValue += checkError(G2Grab(m_hCamera));
             }
         }
     }
@@ -897,7 +897,7 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
             retValue += setParamBool("TriggerSoftware", true);
         }
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -911,7 +911,7 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
         int height = m_params["sizey"].getVal<int>();
         const int* roi = m_params["roi"].getVal<int*>();
 
-        
+
         //checkStatus();
 
         if (strcmp(m_params["acquisition_mode"].getVal<char*>(), "grab") == 0)
@@ -1106,12 +1106,12 @@ ito::RetVal CommonVisionBlox::copyVal(void *vpdObj, ItomSharedSemaphore *waitCon
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1525,7 +1525,7 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
             }
             else
             {
-                
+
                 // value camera dependent
                 retVal += checkError(NInfoAsFloat(node, NI_Min, mi), name);
                 retVal += checkError(NInfoAsFloat(node, NI_Max, ma), name);
@@ -1630,7 +1630,7 @@ ito::RetVal CommonVisionBlox::getParamEnumerationInfo(const char *name, ito::Str
                 retVal += ito::RetVal::format(ito::retError, 0, tr("node %s is no enumeration").toLatin1().data(), name);
             }
         }
-            
+
         ReleaseObject(node);
     }
     else
@@ -1659,19 +1659,19 @@ bool CommonVisionBlox::nodeExists(const char *name) const
             return true;
         }
     }
-    
+
     return false;
 }
 
 //--------------------------------------------------------------------------------------
-// sets the ini-file entry which populates the ini with currently attached 
+// sets the ini-file entry which populates the ini with currently attached
 // cameras
 // (the flag is auto-reset when the driver was loaded)
 ito::RetVal CommonVisionBlox::scan_for_cameras()
 {
     char iniPath[DRIVERPATHSIZE] = { 0 };
     TranslateFileName("%CVBDATA%\\Drivers\\GenICam.ini", iniPath, DRIVERPATHSIZE);
-  
+
     BOOL result = WritePrivateProfileStringA("SYSTEM", "CreateAutoIni", "1", iniPath);
 
     if (!result)

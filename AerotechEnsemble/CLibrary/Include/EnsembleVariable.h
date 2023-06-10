@@ -1,8 +1,8 @@
 /// \file EnsembleVariable.h
 /// \brief Contains the functions to get and set Aerobasic variables.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_VARIABLE_H__
 #define __Ensemble_VARIABLE_H__

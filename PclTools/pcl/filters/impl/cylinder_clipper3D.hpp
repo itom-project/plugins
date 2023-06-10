@@ -72,7 +72,7 @@ pcl::CylinderClipper3D<PointT>::setTransformation (const Eigen::Vector3f& pt_on_
 
   Eigen::Vector3f axisDir1 = axis_direction.normalized();
   Eigen::Vector3f axisDir2 = Eigen::Vector3f(1.0,0.0,0.0);
-  Eigen::Vector3f rotVec = axisDir1.cross( axisDir2 ); 
+  Eigen::Vector3f rotVec = axisDir1.cross( axisDir2 );
   float angle = acos( axisDir1.dot( axisDir2 ) );
   if(fabs(angle)>1e-6)
   {

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -100,7 +100,7 @@
     switch(fitType)
     {
 
-        
+
         case pcl::SACMODEL_TORUS:
         case pcl::SACMODEL_PARALLEL_LINE:
         case pcl::SACMODEL_PERPENDICULAR_PLANE:
@@ -255,7 +255,7 @@
                 default:
                     retval += ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
                     break;
-                
+
                 case pcl::SACMODEL_PLANE:
                 case pcl::SACMODEL_LINE:
 #if PLANE_LIMIT_NORMAL
@@ -311,7 +311,7 @@
                     {
                         retval += ito::RetVal(ito::retError, 0, tr("Radius limit must have 2 entries").toLatin1().data());
                     }
-                    
+
                     normalDistanceWeight = opts[3].getVal<double>();
                     maxIterations = opts[4].getVal<int>();
                     distanceThreshold = opts[5].getVal<double>();
@@ -390,7 +390,7 @@
                     seg.setMethodType (pcl::SAC_RANSAC);
                     seg.setMaxIterations (maxIterations);
                     seg.setDistanceThreshold (distanceThreshold);
-            
+
                     if(useRadius)
                         seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
 
@@ -421,7 +421,7 @@
                     pcl::SACSegmentation<pcl::PointXYZRGBA> seg;
 
                     // Create the segmentation object for cylinder segmentation and set all the parameters
-            
+
                     seg.setOptimizeCoefficients (optimizeCoefficients);
                     seg.setModelType (fitType);
                     seg.setMethodType (pcl::SAC_RANSAC);
@@ -447,7 +447,7 @@
             break;
         case ito::pclXYZNormal:
             {
-                pcl::SACSegmentationFromNormals<pcl::PointNormal, pcl::PointNormal> seg(true); 
+                pcl::SACSegmentationFromNormals<pcl::PointNormal, pcl::PointNormal> seg(true);
 
                 // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
                 seg.setOptimizeCoefficients (optimizeCoefficients);
@@ -479,7 +479,7 @@
             break;
         case ito::pclXYZINormal:
             {
-                pcl::SACSegmentationFromNormals<pcl::PointXYZINormal, pcl::PointXYZINormal> seg(true); 
+                pcl::SACSegmentationFromNormals<pcl::PointXYZINormal, pcl::PointXYZINormal> seg(true);
 
                 // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
                 seg.setOptimizeCoefficients (optimizeCoefficients);
@@ -511,7 +511,7 @@
             break;
         case ito::pclXYZRGBNormal:
             {
-                pcl::SACSegmentationFromNormals<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> seg(true); 
+                pcl::SACSegmentationFromNormals<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> seg(true);
 
                 // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
                 seg.setOptimizeCoefficients (optimizeCoefficients);
@@ -538,8 +538,8 @@
                 seg.setProbability (probability);
 
                 // Obtain the cylinder inliers and coefficients
-                seg.segment (*fitInliers, *fitCoefficients);           
-            
+                seg.segment (*fitInliers, *fitCoefficients);
+
             }
             break;
         default:
@@ -574,7 +574,7 @@
                 free(result);
                 result = NULL;
             }
-        
+
         }
         else
         {
@@ -590,7 +590,7 @@
                     paramsOut->data()[0].setVal<double*>(vec, 3);
                     paramsOut->data()[1].setVal<double>(fitCoefficients->values[3]);
                     paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
-            
+
                     break;
                 }
                 case pcl::SACMODEL_LINE:
@@ -601,7 +601,7 @@
                     paramsOut->data()[0].setVal<double*>(points, 3);
                     paramsOut->data()[1].setVal<double*>(vec, 3);
                     paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
-            
+
                     break;
                 }
                 case pcl::SACMODEL_CYLINDER:
@@ -613,7 +613,7 @@
                     paramsOut->data()[1].setVal<double*>(vec, 3);
                     paramsOut->data()[2].setVal<double>(fitCoefficients->values[6]); //radius
                     paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
-            
+
                     break;
                 }
                 case pcl::SACMODEL_SPHERE:
@@ -647,7 +647,7 @@
                     paramsOut->data()[0].setVal<double*>(points, 3); // Positions
                     paramsOut->data()[1].setVal<double*>(normal, 3); // Normal
                     paramsOut->data()[2].setVal<double>(fitCoefficients->values[3]); //radius
-                
+
                     paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
                     break;
                 }
@@ -663,11 +663,9 @@
 
                     break;
                 }
-            }    
+            }
         }
     }
     return retval;
-#endif  
+#endif
 }
-
-

@@ -67,11 +67,11 @@ print("acquire 5x800 samples...")
 for i in range(0, 5):
     print(f"run {i+1}/5...", end="")
     t = time.time()
-    
+
     # start the finite task
     plugin.acquire()
     d = dataObject()
-    
+
     # getVal waits for the finite task to be finished and reads out the values.
     plugin.getVal(d)
     a.append(d)

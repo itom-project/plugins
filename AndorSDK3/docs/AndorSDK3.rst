@@ -10,7 +10,7 @@
 **Devices**:    Andor cameras supported by their SDK3 (Zyla, Neo)
 **Author**:     :pluginauthor:`AndorSDK3`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,12 +19,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: AndorSDK3
-        
+
 Parameters
 ===========
 
@@ -78,12 +78,26 @@ An instance of this plugin has the following internal parameters:
     current temperature of sensor in °C (inf if not implemented)
 **sensor_cooling**: {int}
     state of the sensor cooling. Cooling is disabled (0) by default at power up and must be enabled (1) for the camera to achieve its target temperature
-	
+
+Installation
+============
+
+*Windows:*
+
+Go to the Andor download page (e.g. https://andor.oxinst.com).
+Register as a user and Download the ANDOR SDK3.
+
+Enter your product details comprising the Product Model and Serial Number to request access to the SDK:
+
+The Andor SDK should be found via the default installation path (e.g. C:/Program Files/Andor SDK3).
+If not, pease the environmental variable **ANDOR_SDK_ROOT** accordingly.
+
 
 Changelog
 ==========
 
-* itom setup 3.1.0: This plugin has been compiled using the Andor SDK 3.8.30007.0
-* itom setup 3.2.1: This plugin has been compiled using the Andor SDK 3.8.30007.0
-* itom setup 4.0.0: This plugin has been compiled using the Andor SDK 3.8.30007.0
-* itom setup 4.1.0: This plugin has been compiled using the Andor SDK 3.8.30007.0
+* itom setup 3.1.0: This plugin has been compiled using the Andor SDK 3.08.30007.0
+* itom setup 3.2.1: This plugin has been compiled using the Andor SDK 3.08.30007.0
+* itom setup 4.0.0: This plugin has been compiled using the Andor SDK 3.08.30007.0
+* itom setup 4.1.0: This plugin has been compiled using the Andor SDK 3.08.30007.0
+* itom setup 4.3.0: This plugin has been compiled using the Andor SDK 3.15.30084.0

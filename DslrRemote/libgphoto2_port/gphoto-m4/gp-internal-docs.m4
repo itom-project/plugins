@@ -8,12 +8,12 @@ AC_DEFUN([GP_INTERNAL_DOCS],[dnl
 # graphs, so it is disabled by default.
 set_enable_internal_docs=no
 AC_ARG_ENABLE([internal-docs], [dnl
-AS_HELP_STRING([--enable-internal-docs], 
+AS_HELP_STRING([--enable-internal-docs],
 [Build internal code docs if doxygen available])], [dnl
 dnl If either --enable-foo nor --disable-foo were given, execute this.
   if   test "x$enableval" = xno \
     || test "x$enableval" = xoff \
-    || test "x$enableval" = xfalse; 
+    || test "x$enableval" = xfalse;
   then
     set_enable_internal_docs=no
   elif test "x$enableval" = xyes \

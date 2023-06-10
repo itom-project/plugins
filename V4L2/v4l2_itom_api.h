@@ -177,4 +177,3 @@ public:
 };
 
 #endif // V4L2_ITOM_API_H
-

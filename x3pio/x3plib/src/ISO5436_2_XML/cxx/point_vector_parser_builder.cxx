@@ -45,7 +45,7 @@ PointVectorParserBuilder::~PointVectorParserBuilder()
 {
    _OPENGPS_DELETE(m_Parser);
 }
-    
+
 void PointVectorParserBuilder::BuildParser()
 {
    _ASSERT(!m_Parser);

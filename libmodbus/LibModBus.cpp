@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -84,7 +84,7 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under GPL, since the libmodbus is also licensed under GPL");
-    m_aboutThis = QObject::tr(GITVERSION);  
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("target", ito::ParamBase::String, "127.0.0.1", tr("Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}||COM[1-9]||/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}"), true);
@@ -301,7 +301,7 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     stopbit = m_params["stopbit"].getVal<int>();
     retval += m_params["output_mode"].copyValueFrom(&((*paramsOpt)[5]));
     output_mode = m_params["output_mode"].getVal<int>();
-    
+
     QString target_ = target;
     QRegularExpression rx_ip("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$");
     QRegularExpression rx_com("^COM[1-9]$");
@@ -343,7 +343,7 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         {
             m_connected = true;
         }
-    
+
         if (!retval.containsError())
         {
            std::cout << "Connect to Device at: " << target << "; Port/ID: " << port << " success" << std::endl;
@@ -509,7 +509,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
                     {
                         registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
                     }
-                    for (j=0; j < registercounter; j++) 
+                    for (j=0; j < registercounter; j++)
                     {
                         if (output_mode)
                         {
@@ -524,7 +524,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
                         }
                         if (inputDataType==1)
                         {
-                            dObj->at<ito::uint8>(0,dObjPos)=coil_reg[j];                        
+                            dObj->at<ito::uint8>(0,dObjPos)=coil_reg[j];
                         }
                         else
                         {
@@ -541,7 +541,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
     //std::cout << val << std::endl;
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
@@ -657,16 +657,16 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
                     {
                         if (output_mode)
                         {
-                            std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
+                            std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl;
                         }
                     }
                     else
                     {
-                        std::cout << "Write at Reg. " << regAddr.at(i) << " failed! \n " << std::endl; 
+                        std::cout << "Write at Reg. " << regAddr.at(i) << " failed! \n " << std::endl;
                     }
                     dObjPos=dObjPos+regNb.at(i);
                     /*registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
-                    for (j=0; j < registercounter; j++) 
+                    for (j=0; j < registercounter; j++)
                     {
                         std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
                         incomingObject->at<ito::uint16>(0,dObjPos)=tab_reg[j];

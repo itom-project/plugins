@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "rawImport" for itom software
     URL: http://www.lccv.ufal.br/
-    Copyright (C) 2016, Laboratorio de Computacao Cientifica e Visualzacao, 
+    Copyright (C) 2016, Laboratorio de Computacao Cientifica e Visualzacao,
     Universidade Federal de Alagoas (UFAL), Brasil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -30,7 +30,7 @@
 *   \brief  Header for the rawImport filter / algorithm function(s)
 *   \detail This is a plugin to load files from (dslr) cameras based on the dcraw program included in this
 *           plugin. Dcraw was left as untempered as possible.
-*           
+*
 *   \author LCCV, Universidade Federal de Alagoas (UFAL)
 *   \date 01/2016
 */

@@ -4,7 +4,7 @@
  * *** NOTE: This is a modified version to deal with the ax203 "JPEG" fmt
  * *** This version can not decompress regular JPEG files, see
  * *** README.ax203-compression for details
- * 
+ *
  * Copyright (c) 2006, Luc Saillard <luc@saillard.org>
  *
  * ax203 modifications:
@@ -64,6 +64,3 @@ int tinyjpeg_set_components(struct jdec_private *priv, unsigned char **component
 #endif
 
 #endif
-
-
-

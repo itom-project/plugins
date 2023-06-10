@@ -205,7 +205,7 @@ int pslr_get_status(pslr_handle_t h, pslr_status *sbuf);
 int pslr_get_buffer(pslr_handle_t h, int bufno, int type, int resolution,
                     uint8_t **pdata, uint32_t *pdatalen);
 
-int pslr_set_progress_callback(pslr_handle_t h, pslr_progress_callback_t cb, 
+int pslr_set_progress_callback(pslr_handle_t h, pslr_progress_callback_t cb,
                                uintptr_t user_data);
 
 int pslr_set_shutter(pslr_handle_t h, pslr_rational_t value);

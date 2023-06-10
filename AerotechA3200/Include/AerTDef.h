@@ -65,7 +65,7 @@
 #define AXISINDEX_15    14
 #define AXISINDEX_16    15
 
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define AXISINDEX_17    16
    #define AXISINDEX_18    17
    #define AXISINDEX_19    18
@@ -109,7 +109,7 @@
 #define AXISMASK_15    0x00004000L
 #define AXISMASK_16    0x00008000L
 
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define AXISMASK_17    0x00010000L
    #define AXISMASK_18    0x00020000L
    #define AXISMASK_19    0x00040000L
@@ -160,7 +160,7 @@
 #define PHYSAXISINDEX_15  AXISINDEX_15
 #define PHYSAXISINDEX_16  AXISINDEX_16
 
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define PHYSAXISINDEX_17    AXISINDEX_17
    #define PHYSAXISINDEX_18    AXISINDEX_18
    #define PHYSAXISINDEX_19    AXISINDEX_19
@@ -202,7 +202,7 @@
 #define TASKAXISINDEX_15  AXISINDEX_15
 #define TASKAXISINDEX_16  AXISINDEX_16
 
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define TASKAXISINDEX_17    AXISINDEX_17
    #define TASKAXISINDEX_18    AXISINDEX_18
    #define TASKAXISINDEX_19    AXISINDEX_19
@@ -247,7 +247,7 @@
 #define TASKMASK_NONE    0x00000000L
 #define TASKMASK_ALL     0x0000000FL
 #define TASKMASK_1       0x00000001L
-#define TASKMASK_2       0x00000002L          
+#define TASKMASK_2       0x00000002L
 #define TASKMASK_3       0x00000004L
 #define TASKMASK_4       0x00000008L
 #define TASKMASK_ALL_VB  0x0000000FL
@@ -272,7 +272,7 @@
 #define CSPARMINDEX_15    AXISINDEX_15
 #define CSPARMINDEX_16    AXISINDEX_16
 
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define CSPARMINDEX_17    AXISINDEX_17
    #define CSPARMINDEX_18    AXISINDEX_18
    #define CSPARMINDEX_19    AXISINDEX_19
@@ -302,7 +302,7 @@
 #define CSPARMINDEX_S_8    (AXISINDEX_MAX+7)
 #define CSPARMINDEX_S_9    (AXISINDEX_MAX+8)
 #define CSPARMINDEX_S_10   (AXISINDEX_MAX+9)
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define CSPARMINDEX_S_11   (AXISINDEX_MAX+10)
    #define CSPARMINDEX_S_12   (AXISINDEX_MAX+11)
    #define CSPARMINDEX_S_13   (AXISINDEX_MAX+12)
@@ -334,22 +334,22 @@
 #define Q_LETTER CSPARMINDEX_S_3
 #define R_LETTER CSPARMINDEX_S_4
 #define L_LETTER CSPARMINDEX_S_5
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define I_LETTER CSPARMINDEX_S_6
    #define J_LETTER CSPARMINDEX_S_7
    #define K_LETTER CSPARMINDEX_S_8
 #endif
 
-#ifdef MAX_32_AXES    
-   #define MAX_PARM_ARGS       (AXISINDEX_MAX+8) 
+#ifdef MAX_32_AXES
+   #define MAX_PARM_ARGS       (AXISINDEX_MAX+8)
 #else
-   #define MAX_PARM_ARGS       (AXISINDEX_MAX+5) 
+   #define MAX_PARM_ARGS       (AXISINDEX_MAX+5)
 #endif
 
 #define IsInvalidParmArgIndex(iParm) ( (iParm>=MAX_PARM_ARGS) ? 1 : 0 )
 
 // And compiler likes to reserve the rest for internal use (temporary variables)
-#ifdef MAX_32_AXES    
+#ifdef MAX_32_AXES
    #define A32CMPLR_TEMPVAR_FIRST CSPARMINDEX_S_13
    #define A32CMPLR_TEMPVAR_LAST  CSPARMINDEX_S_20
 #else
@@ -369,7 +369,7 @@
 
 /************************************************/
 /* Real digital I/O definitions */
-#define MAX_DRIVE_DIGITAL      (MAX_AXES*DIG_BITS_IN_EACH_DRIVE)        
+#define MAX_DRIVE_DIGITAL      (MAX_AXES*DIG_BITS_IN_EACH_DRIVE)
 //
 //#define ANALOGINDEX_1   0
 //#define ANALOGINDEX_2   1
@@ -423,9 +423,9 @@
 #define MAX_ETHER_IO_READ           8
 
 // Units constants
-// DO NOT CHANGE ORDER !!                                     
+// DO NOT CHANGE ORDER !!
 #define AER_UNITTYPE_NONE    -1
-#define AER_UNITTYPE_METRIC   0      
+#define AER_UNITTYPE_METRIC   0
 #define AER_UNITTYPE_ENGLISH  1
 #define AER_UNITTYPE_COUNTS   2
 #define AER_UNITTYPE_ROTARY   3
@@ -435,7 +435,7 @@
    Axis status bits (FAULT and STATUS bits defined in AERC32.H )
    (axis status is internal to controller, not on drive, as opposed to drive status)
 */
-/* 
+/*
    NOTE: CHANGES HERE MUST BE REFLECTED IN:
          FIRMWARE\ASWPARM.C   (albGetProgErrorMsg())
 */
@@ -451,8 +451,8 @@
 #define MAXS_STATUS_JOGGING            0x00000100   // On when generating command points from a INDEX/FREERUN
 #define MAXS_STATUS_DRIVECONTROL_PEND  0x00000200   // motion command sent to drive, but drive not taken control yet
 #define MAXS_STATUS_SIMUL              0x00000400   // SMC simul
-#define MAXS_STATUS_VELTIMECONST       0x00000800   // 1=on 
-#define MAXS_STATUS_INTERRUPT          0x00001000   // interrupt to frontend sent 
+#define MAXS_STATUS_VELTIMECONST       0x00000800   // 1=on
+#define MAXS_STATUS_INTERRUPT          0x00001000   // interrupt to frontend sent
 #define MAXS_STATUS_ALIVE              0x00002000   // axis is connected to firewire (not virtual)
 #define MAXS_STATUS_1DCALIBRATION      0x00004000   // axis is being 1 dimensionally calibrated
 #define MAXS_STATUS_2DCALIBRATION      0x00008000   // axis is being 2 dimensionally calibrated
@@ -469,20 +469,20 @@
 
 // C#	CLASS=Status		REGION=Axis Status Bits
 #define BAXS_STATUS_HOMED              0x00
-#define BAXS_STATUS_PROFILING          0x01   
+#define BAXS_STATUS_PROFILING          0x01
 #define BAXS_STATUS_MOVEDONE           0x02
-#define BAXS_STATUS_CMDVALID           0x03   
-#define BAXS_STATUS_HOMING             0x04   
-#define BAXS_STATUS_DRIVECONTROLLED    0x05   
-#define BAXS_STATUS_SOFTWARE_ESTOP     0x06   
-#define BAXS_STATUS_SOFTWARE_USER      0x07   
-#define BAXS_STATUS_JOGGING            0x08   
-#define BAXS_STATUS_DRIVECONTROL_PEND  0x09   
-#define BAXS_STATUS_SIMUL              0x0A   
-#define BAXS_STATUS_VELTIMECONST       0x0B   
-#define BAXS_STATUS_INTERRUPT          0x0C   
-#define BAXS_STATUS_ALIVE              0x0D   
-#define BAXS_STATUS_1DCALIBRATION      0x0E   
+#define BAXS_STATUS_CMDVALID           0x03
+#define BAXS_STATUS_HOMING             0x04
+#define BAXS_STATUS_DRIVECONTROLLED    0x05
+#define BAXS_STATUS_SOFTWARE_ESTOP     0x06
+#define BAXS_STATUS_SOFTWARE_USER      0x07
+#define BAXS_STATUS_JOGGING            0x08
+#define BAXS_STATUS_DRIVECONTROL_PEND  0x09
+#define BAXS_STATUS_SIMUL              0x0A
+#define BAXS_STATUS_VELTIMECONST       0x0B
+#define BAXS_STATUS_INTERRUPT          0x0C
+#define BAXS_STATUS_ALIVE              0x0D
+#define BAXS_STATUS_1DCALIBRATION      0x0E
 #define BAXS_STATUS_2DCALIBRATION      0x0F
 #define BAXS_STATUS_MASTER_SLAVE       0x10
 #define BAXS_STATUS_SLEW_ACTIVE        0x11
@@ -506,7 +506,7 @@
 //   1. Falling edge of "motionActive" drive bit seen from drive, OR
 //   2. Motion queue empties (goes from not-empty to empty state) for a task that owns this axes.
 //   3. Call to AbortAxes() made
-// 
+//
 // Motion is not "done" when either:
 //   1. Rising edge of "motionActive" drive bit seen from drive, OR
 //   2. Motion queue is non empty for a task that owns this axes
@@ -682,7 +682,7 @@
 
 #define MATHDBLTYPE_LOG              30
 #define MATHDBLTYPE_ATAN2            31
-#define MATHDBLTYPEMAX_TWO_OPERANDS  32  
+#define MATHDBLTYPEMAX_TWO_OPERANDS  32
 /* Numbers up to 31 are reserved for other two operand floating point operations */
 
 #define MATHDBLTYPE_NEGATE           32
@@ -694,7 +694,7 @@
 #define MATHDBLTYPE_SIN              38
 #define MATHDBLTYPE_COS              39
 #define MATHDBLTYPE_TAN              40
-#define MATHDBLTYPE_ASIN             41         
+#define MATHDBLTYPE_ASIN             41
 #define MATHDBLTYPE_ACOS             42
 #define MATHDBLTYPE_ATAN             43
 #define MATHDBLTYPE_BIT_NOT          44
@@ -727,7 +727,7 @@
 /* Severity levels ... */
 
 // C#	CLASS=CNCProgram		REGION=Compiler Error Messages
-#define AERERR_TYPE_MSG    0      
+#define AERERR_TYPE_MSG    0
 #define AERERR_TYPE_WARN   1
 #define AERERR_TYPE_ERROR  2
 #define AERERR_TYPE_NONE   3
@@ -736,27 +736,27 @@
 /************************************************/
 // See AerCompilerxxxx()  Compiler mode masks
 //  1. Use AERCMPLR_DEFAULT for fastest possible compile. The "compile" actually consists of two parts, "Compiling into object code"
-//     and "downloading the object code". By default, the compiler writes the object code into 
-//     a ".OGM" file (same path the original source file is). Then on subsequent recompiles, if no 
-//     source code that went into the compile has changed since writing the .OGM file, 
-//     it only does the download of the OGM. Downloading the OGM is about ten times faster then compiling into 
+//     and "downloading the object code". By default, the compiler writes the object code into
+//     a ".OGM" file (same path the original source file is). Then on subsequent recompiles, if no
+//     source code that went into the compile has changed since writing the .OGM file,
+//     it only does the download of the OGM. Downloading the OGM is about ten times faster then compiling into
 //     an OGM. But the .OGM file uses about 10 times the disk space as the source code.
 //     Also, by default, if it can use the OGM, it does not read in the souce code. (that also takes some time)
-//     Therefore, calls to AerCompilerGetLineText() to see source code, will fail. 
+//     Therefore, calls to AerCompilerGetLineText() to see source code, will fail.
 //     ALSO the above behavior is followed regardless of wether the program has compile errors or not.
 //  2. Use AERCMPLR_NO_READ_OBJ and AERCMPLR_NO_WRITE_OBJ toegather to not read/write OGMS
 //       (better use both toegather because then after first OGM creation, the source will never be used, even if it changes)
 //  3. Use AERCMPLR_SRC_WITH_OBJ to force it to read source anyway, this takes more time but allows you to call
-//        AerCompilerGetLineText()    
+//        AerCompilerGetLineText()
 //  4. AERCMPLR_NO_USE_SRC can be used to force it to look at the OGM always (no out-of date-check)
-//  5. AERCMPLR_DVARS_ONLY only reads in the text, and compiles up to the line after the last "dvar" 
+//  5. AERCMPLR_DVARS_ONLY only reads in the text, and compiles up to the line after the last "dvar"
 //         (so AerCompilerGetLineText() and  AerCompilerGetProgVar() can be called)
 //
 #define AERCMPLR_MODE_DEFAULT       0x0    // Uses object files, only recompile from source when necessary, don't make listing
 #define AERCMPLR_MODE_PREPROC_ONLY  0x1    // Only run preprocessor
 #define AERCMPLR_MODE_NO_READ_OBJ   0x2    // Always recompile it from source, even if object availiable
 #define AERCMPLR_MODE_NO_USE_SRC    0x4    // Must read object, never use source (source better exist)
-#define AERCMPLR_MODE_SRC_WITH_OBJ  0x10   // Forces us to read source file, even if object is there and uptodate 
+#define AERCMPLR_MODE_SRC_WITH_OBJ  0x10   // Forces us to read source file, even if object is there and uptodate
                                       // (need this if calling AerCompilerGetLineText() later)
 #define AERCMPLR_MODE_NO_WRITE_OBJ  0x20   // Never writes objects
 #define AERCMPLR_MODE_DVARS_ONLY    0x40   // Only compiles variable declarations (so to use AerCompilerGetProgVar*() functions) on it
@@ -769,7 +769,7 @@
 #define AERCMPLR_PREPROC_ONLY  0x1    // Only run preprocessor
 #define AERCMPLR_NO_READ_OBJ   0x2    // Always recompile it from source, even if object availiable
 #define AERCMPLR_NO_USE_SRC    0x4    // Must read object, never use source (source better exist)
-#define AERCMPLR_SRC_WITH_OBJ  0x10   // Forces us to read source file, even if object is there and uptodate 
+#define AERCMPLR_SRC_WITH_OBJ  0x10   // Forces us to read source file, even if object is there and uptodate
                                       // (need this if calling AerCompilerGetLineText() later)
 #define AERCMPLR_NO_WRITE_OBJ  0x20   // Never writes objects
 #define AERCMPLR_DVARS_ONLY    0x40   // Only compiles variable declarations (so to use AerCompilerGetProgVar*() functions) on it
@@ -784,7 +784,7 @@
 #define RETURNTYPE_END           3
 #define RETURNTYPE_OFFSET        4
 #define RETURNTYPE_MAX          15     // no more because of below mask
-#define RETURNTYPE_MODE_BITS   0xF     
+#define RETURNTYPE_MODE_BITS   0xF
 
 /************************************************/
 // See AerToolxxxx()
@@ -843,15 +843,15 @@
 // C# END
 
 #define MAX_AXISCAL_TABLES                   100   // MAX_AXES*2
-#define MAX_2D_AXISCAL_TABLES                10   
+#define MAX_2D_AXISCAL_TABLES                10
 #define MAX_NUMBER_AXISCAL_TABLES_PER_AXIS   8
 
 #define AXISCAL_INVALID_MATERIAL_TEMP       -1000
 #define AXISCAL_INVALID_EXPAND_COEFF        -1000
 
-#define AXISCAL_EXPAND_COEFF                 0      	
+#define AXISCAL_EXPAND_COEFF                 0
 #define AXISCAL_CURRENT_EXPAND_COEFF         1
-#define AXISCAL_REFERENCE_TEMP               2   
+#define AXISCAL_REFERENCE_TEMP               2
 #define AXISCAL_CURRENT_MATERIAL_TEMP        3
 
 #define AXISCAL_2D_MODE_OFF                        0
@@ -870,11 +870,11 @@
 // Definitions for the AerQueueProbeSetInput() and AerQueueProbeSetMode() functions
 // These are set to the same values previousy defined in aerparam.pgm for the original CNC Probe command
 // The values follow the appropiate bit settings for the A3200 Input spec.
-#define QUEUE_PROBE_INPUT_DRIVE_DIGITAL                  0x1000000  
+#define QUEUE_PROBE_INPUT_DRIVE_DIGITAL                  0x1000000
 #define QUEUE_PROBE_INPUT_ETHERNET_DIGITAL               0x3000000
-#define QUEUE_PROBE_INPUT_VIRTUAL_BINARY                 0x6000000 
+#define QUEUE_PROBE_INPUT_VIRTUAL_BINARY                 0x6000000
 #define QUEUE_PROBE_INPUT_DRIVE_LATCH1                   0xC000000
-#define QUEUE_PROBE_INPUT_DRIVE_LATCH2                   0xD000000   
+#define QUEUE_PROBE_INPUT_DRIVE_LATCH2                   0xD000000
 #define QUEUE_PROBE_SW_MODE                              0
 #define QUEUE_PROBE_HW_MODE                              1
 
@@ -909,7 +909,7 @@
 #define PSO_OUTPUT_PULSE_WINDOWMASK             2
 #define PSO_OUTPUT_PULSE_WINDOWMASK_HARD        3
 #define PSO_OUTPUT_PULSE_WINDOWMASK_EDGE        4
-#define PSO_OUTPUT_PULSE_WINDOWMASK_HARD_EDGE   5 
+#define PSO_OUTPUT_PULSE_WINDOWMASK_HARD_EDGE   5
 #define PSO_OUTPUT_TOGGLE                       6
 #define PSO_OUTPUT_BIT_MAP                      7
 #define PSO_OUTPUT_WINDOW                       8
@@ -974,7 +974,7 @@
 // cant change these !
 #define RESET_ERROR    -1 // when reset done, but fatal error in firewire commun (must reset it again)
 #define RESET_NOTRESET  0 // while commun reset not done yet, or still going on (no library communications going on)
-#define RESET_RUNNING   1 // when commun reset done (drives reset, default parameters downloaded, firewire commun OK), 
+#define RESET_RUNNING   1 // when commun reset done (drives reset, default parameters downloaded, firewire commun OK),
 #define RESET_DONE_AX   2 // when all axis parameters in file downloaded
 #define RESET_DONE_ALL  3 // when all parameters in file downloaded
 
@@ -1016,8 +1016,8 @@
 #define AER_EVENT_TASK_CALLBACK     0x00010006
 #define AER_EVENT_JOYSTICK          0x00010007
 #define AER_EVENT_DRV_TIMEOUT       0x00010008
-#define AER_EVENT_END_G1_ACCEL      0x00010009   
-#define AER_EVENT_START_G1_DECEL    0x0001000A   
+#define AER_EVENT_END_G1_ACCEL      0x00010009
+#define AER_EVENT_START_G1_DECEL    0x0001000A
 #define AER_EVENT_ENET_WDOG         0x0001000B
 
 #define AER_EVENT_NONE           0xFFFFFFFF
@@ -1043,7 +1043,7 @@
 #define NUM_DRIVE_INFO_BLOCKS		6
 // C# END
 
-// Constants for Global Stripchart Trigger Modes (see AERSTRIP.H) 
+// Constants for Global Stripchart Trigger Modes (see AERSTRIP.H)
 // C#	CLASS=StripGlobal  		REGION=Trigger Modes
 #define STRIPGLOBAL_MODE_TIME                   0         // normal, starts when triggered
 #define STRIPGLOBAL_MODE_TIME_DELAYED           1         // sends COMMAND_DATA_COLLECT_TRIG to all drives, starts after a fixed delay, so as to coordinate with the COMMAND_DATA_COLLECT_TRIG
@@ -1056,9 +1056,9 @@
 #define STRIPGLOBAL_MODE_IO_QUEUE               8
 // C# END
 
-// Constants for Global Stripchart Status  (see AERSTRIP.H) 
+// Constants for Global Stripchart Status  (see AERSTRIP.H)
 // C#	CLASS=StripGlobal  		REGION=Status constants
-#define STRIPGLOBAL_STATUS_ALLOCATED         0x00001  // buffer to receieve data is allocated on SMC 
+#define STRIPGLOBAL_STATUS_ALLOCATED         0x00001  // buffer to receieve data is allocated on SMC
 #define STRIPGLOBAL_STATUS_ARMED             0x00002  // not used ?
 #define STRIPGLOBAL_STATUS_TRIGGERED         0x00004  // now dumping data into SMC buffer
 #define STRIPGLOBAL_STATUS_DONE              0x00008  // done collecting data
@@ -1076,7 +1076,7 @@
 #define STRIPGLOBAL_STATUS_TRIG_DELAYED_Q    0x08000  // plot start was delayed (may not have started yet)
 // C# END
 
-// Constants for Global Stripchart Input Edges (see AERSTRIP.H) 
+// Constants for Global Stripchart Input Edges (see AERSTRIP.H)
 #define STRIPGLOBAL_INPUT_RISING_EDGE        0
 #define STRIPGLOBAL_INPUT_FALLING_EDGE       1
 
@@ -1084,19 +1084,19 @@
 #define BSTRIPGLOBAL_STATUS_ALLOCATED         0
 #define BSTRIPGLOBAL_STATUS_ARMED             1
 #define BSTRIPGLOBAL_STATUS_TRIGGERED         2
-#define BSTRIPGLOBAL_STATUS_DONE              3 
+#define BSTRIPGLOBAL_STATUS_DONE              3
 #define BSTRIPGLOBAL_STATUS_OVERFLOW          4
-#define BSTRIPGLOBAL_STATUS_FR_MODE           5  
-#define BSTRIPGLOBAL_STATUS_HOLD              6  
-#define BSTRIPGLOBAL_STATUS_TABLE_MODE        7  
-#define BSTRIPGLOBAL_STATUS_TRIG_DELAYED      8  
-#define BSTRIPGLOBAL_STATUS_QUEUE_MODE        9  
-#define BSTRIPGLOBAL_STATUS_ABORTED           10  
-#define BSTRIPGLOBAL_STATUS_EVENT_MODE        11  
-#define BSTRIPGLOBAL_STATUS_UPLOADING         12  
-#define BSTRIPGLOBAL_STATUS_IO                13  
-#define BSTRIPGLOBAL_STATUS_IO_QUEUE          14  
-#define BSTRIPGLOBAL_STATUS_TRIG_DELAYED_Q    15  
+#define BSTRIPGLOBAL_STATUS_FR_MODE           5
+#define BSTRIPGLOBAL_STATUS_HOLD              6
+#define BSTRIPGLOBAL_STATUS_TABLE_MODE        7
+#define BSTRIPGLOBAL_STATUS_TRIG_DELAYED      8
+#define BSTRIPGLOBAL_STATUS_QUEUE_MODE        9
+#define BSTRIPGLOBAL_STATUS_ABORTED           10
+#define BSTRIPGLOBAL_STATUS_EVENT_MODE        11
+#define BSTRIPGLOBAL_STATUS_UPLOADING         12
+#define BSTRIPGLOBAL_STATUS_IO                13
+#define BSTRIPGLOBAL_STATUS_IO_QUEUE          14
+#define BSTRIPGLOBAL_STATUS_TRIG_DELAYED_Q    15
 #define BSTRIPGLOBAL_STATUS_MAX               16
 
 /* Defines for GetQueueDecimate  wType (see AERSTRIP.H) */
@@ -1158,7 +1158,7 @@
 /* Defines for AerStripGlobalSetOptionalDataItem() (see AERSTRIP.H) */
 //#define OPTIONAL_DATA_TYPE_SHORT   0    // for specifing OPTIONAL_DATA_CODES_ quantities
 #define OPTIONAL_DATA_TYPE_LONG    0    // for specifing OPTIONAL_DATA_CODEL_ quantities
-// NOTE: OPTIONAL_DATA_TYPE_EXTPOS is maintained for back compatibility ONLY (from 2.13 on). 
+// NOTE: OPTIONAL_DATA_TYPE_EXTPOS is maintained for back compatibility ONLY (from 2.13 on).
 // It is replaced by DATABIT_OPTIONAL_DATA* constants and DATAOPT CNC statement.
 #define OPTIONAL_DATA_TYPE_EXTPOS  1    // for specifing EXTPOS_OPTCODE quantities (changes ext pos fdbck to something else)
 // C# END
@@ -1229,7 +1229,7 @@
 #define OPTIONAL_DATA_CODEL_CLOCK           0x32      // always msec
 
 // The data below is actually part of the MISC DATA - the lower nibble is used to select which
-// data is returned from the GetCurrentCommandPointdMiscCounts function (ANDed with OPTDATAPROF_MAX) 
+// data is returned from the GetCurrentCommandPointdMiscCounts function (ANDed with OPTDATAPROF_MAX)
 #define OPTDATAPROF_BASE       0x40   // internal use constants only
 #define OPTDATAPROF_STARTANG    0x0   // internal use constants only
 #define OPTDATAPROF_ENDANG      0x1   // internal use constants only
@@ -1252,7 +1252,7 @@
 #define OPTIONAL_DATA_CODEL_PROFRADERR      (OPTDATAPROF_BASE+OPTDATAPROF_RADERR)     // counts
 
 // These are available through other means, but to make the STATUS command work we need to reserve these constants
-// These were available through parameters and/or stripchart 
+// These were available through parameters and/or stripchart
 #define OPTIONAL_DATA_CODED_PositionUnits        0x70
 #define OPTIONAL_DATA_CODED_PositionCmdUnits     0x71
 #define OPTIONAL_DATA_CODED_PositionCnts         0x72
@@ -1275,19 +1275,19 @@
 #define OPTIONAL_DATA_CODED_TaskParm             0x81     // upper byte is prm number, axis number is really task number
 #define OPTIONAL_DATA_CODED_ProgVar              0x82     // upper byte is prm number, axis number is really task number
 #define OPTIONAL_DATA_CODED_TaskStat             0x83     // upper byte status number, axis number is really task number
-#define OPTIONAL_DATA_CODED_PeakCurrent          0x84   
+#define OPTIONAL_DATA_CODED_PeakCurrent          0x84
 #define OPTIONAL_DATA_CODED_TaskFault            0x85     // axis number is really task number
 #define OPTIONAL_DATA_CODED_TaskWarning          0x86     // axis number is really task number
-#define OPTIONAL_DATA_CODED_Backlash             0x87     
-#define OPTIONAL_DATA_CODED_HomeState            0x88     // a HOMESTATUSMASK_ value  
+#define OPTIONAL_DATA_CODED_Backlash             0x87
+#define OPTIONAL_DATA_CODED_HomeState            0x88     // a HOMESTATUSMASK_ value
 #define OPTIONAL_DATA_CODED_PosCal2D             0x89     // position cal (2D contribution only)
 #define OPTIONAL_DATA_CODED_VelocityCntsSec      0x8A     // instantaonous (as opposed to averaged)
 #define OPTIONAL_DATA_CODED_VelocityCmdCntsSec   0x8B     // instantaonous (as opposed to averaged)
 #define OPTIONAL_DATA_CODED_RawFire              0x8C     // items from the firewire record sent to the drive
 #define OPTIONAL_DATA_CODED_Normalcy             0x8D
 #define OPTIONAL_DATA_CODED_TotalMoveTime        0x8E     // milliseconds
-#define OPTIONAL_DATA_CODED_GlobalEnetStatus     0x8F     // Global Ethernet (thru RT-TCP/IP) status 
-#define OPTIONAL_DATA_CODED_RemoteServerStatus   0x90     // Global Ethernet (thru RT-TCP/IP) status 
+#define OPTIONAL_DATA_CODED_GlobalEnetStatus     0x8F     // Global Ethernet (thru RT-TCP/IP) status
+#define OPTIONAL_DATA_CODED_RemoteServerStatus   0x90     // Global Ethernet (thru RT-TCP/IP) status
 #define OPTIONAL_DATA_CODED_RelativeSettleTime   0x91     // milliseconds
 #define OPTIONAL_DATA_CODED_PositionEncoder      0x92     // counts (no transforms, G92, backlash or cal subtracted out, what Nstat shows)
 #define OPTIONAL_DATA_CODED_JerkCommand          0x93     // counts/msec*msec*msec
@@ -1304,14 +1304,14 @@
 #define OPTIONAL_DATA_CODED_Misc_SUBCODE_FAST_TASK         1     // reserved for gathering fast task data
 #define OPTIONAL_DATA_CODED_Misc_SUBCODE_LIBTEST_HAMMER  100     // reserved for libtest hammering (FIRMWARE/TEST/LIBTEST)
 
-// NOTE: These are maintained for back compatibility ONLY (from 2.13 on). 
+// NOTE: These are maintained for back compatibility ONLY (from 2.13 on).
 // They are replaced by DATABIT_OPTIONAL_DATA* constants and DATAOPT CNC statement.
 //   External position is normally axis based. But some of the be,ow are task absed, in which case,
 //   retriving axis data actually gets task data as follows: (X-task1,Y-task 2,Z-task3,U-task4,all other axes undefined)
 #define EXTPOS_OPTCODE_CNCLINE         0x51   // per TASK
-#define EXTPOS_OPTCODE_PROFFLAGS       0x52   // per TASK 
-#define EXTPOS_OPTCODE_PROFTRG         0x53  
-#define EXTPOS_OPTCODE_INPUT           0x54   // binary drive 
+#define EXTPOS_OPTCODE_PROFFLAGS       0x52   // per TASK
+#define EXTPOS_OPTCODE_PROFTRG         0x53
+#define EXTPOS_OPTCODE_INPUT           0x54   // binary drive
 #define EXTPOS_OPTCODE_OUTPUT          0x55   // binary drive
 #define EXTPOS_OPTCODE_DRIVESTAT       0x56   // unitless
 #define EXTPOS_OPTCODE_AXISSTAT        0x57   // unitless
@@ -1327,7 +1327,7 @@
 #define EXTPOS_OPTCODE_PROFVEL         0x73   // task-based  "scaled" inches
 #define EXTPOS_OPTCODE_PROFTOT_DIST    0x74   // NOT USED??? task-based inches
 #define EXTPOS_OPTCODE_PROFPERC_DONE   0x75   // NOT USED??? unitless
-#define EXTPOS_OPTCODE_AVG_CUR_FBCK    0x76   // 
+#define EXTPOS_OPTCODE_AVG_CUR_FBCK    0x76   //
 #define EXTPOS_OPTCODE_MAX             0xFF   // upper byte reserved for I/O address number, if any
 
 
@@ -1340,7 +1340,7 @@
 
 //
 // these opcodes used in _aerMoveAxis()
-//    
+//
 #define AERMOVE_ABSOLUTE      MOTION_ABSOLUTE_SUBCODE
 #define AERMOVE_HOME          MOTION_HOME_SUBCODE
 #define AERMOVE_INCREMENTAL   MOTION_INCREMENTAL_SUBCODE
@@ -1381,10 +1381,10 @@
 #define AERREG_SMC_OPTION_ASYNC_COMM_ONLY     0x00000002  // Used by the new Nload
 
 #define FIBERSTART_HILLCLIMB    0
-#define FIBERSTART_SPIRAL_ROUGH 1 
-#define FIBERSTART_SPIRAL_FINE  2	 
+#define FIBERSTART_SPIRAL_ROUGH 1
+#define FIBERSTART_SPIRAL_FINE  2
 #define FIBERSTART_FASTALIGN	  3
-#define FIBERSTART_GEOCENTER    4 
+#define FIBERSTART_GEOCENTER    4
 #define FIBERSTART_CENTROID	  5
 
 #define FIBERSTART_SUBCODE_NONE	  0   // used with Centroid 1D and FastAlign 2D Only
@@ -1406,7 +1406,7 @@
 #define AER_AMP_TYPE_NDRIVEHP_PWM    0x01      // of course all NdriveHP amps are PWM
 #define AER_AMP_TYPE_NDRIVEHL_LINEAR 0x02      // of course all NdriveHL amps are Linear
 #define AER_AMP_TYPE_NPAQ_PWM        0x03
-#define AER_AMP_TYPE_NPAQ_LINEAR     0x04      
+#define AER_AMP_TYPE_NPAQ_LINEAR     0x04
 #define AER_AMP_TYPE_NDRIVECP_PWM    0x05
 #define AER_AMP_TYPE_NDRIVEMP_PWM    0x06
 #define AER_AMP_TYPE_NDRIVECL_LINEAR 0x07
@@ -1471,7 +1471,7 @@
 
 // Applies to MSGBOX Icons
 // C#	CLASS=DisplayFlags   REGION=MsgBoxIcon
-#define DF_MSGBOX_ICON_CRITICAL              16 
+#define DF_MSGBOX_ICON_CRITICAL              16
 #define DF_MSGBOX_ICON_QUESTION              32
 #define DF_MSGBOX_ICON_EXCLAMATION           48
 #define DF_MSGBOX_ICON_INFORMATION           64
@@ -1486,7 +1486,7 @@
 
 // Applies to MSGBOX Result
 // C#	CLASS=DisplayFlags   REGION=MsgBoxResult
-#define DF_MSGBOX_OK_BUTTON                  1  
+#define DF_MSGBOX_OK_BUTTON                  1
 #define DF_MSGBOX_CANCEL_BUTTON              2
 #define DF_MSGBOX_ABORT_BUTTON               3
 #define DF_MSGBOX_RETRY_BUTTON               4

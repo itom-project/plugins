@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -35,7 +35,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    PCOPixelFly 
+  *\class    PCOPixelFly
   *\brief    class to use a PCO Pixelfly QE CCD as an ITOM-Addin. Child of AddIn - Library (DLL) - Interface
   *
   *         This class can be used to work with a PCO Pixelfly QE CCD. It grabbes datas with 8 or 12 Bit.
@@ -72,9 +72,9 @@ class PCOPixelFly : public ito::AddInGrabber
 
         HANDLE m_event[BUFFERNUMBER];    /*!< Events to check if a buffer was field by acquire-function. Used in getVal-Function. */
         HANDLE m_hdriver;    /*!< Handle to the specific Driver-Board. Has to be set to zero during first init. Up to 4 Boards */
-        
+
         void* m_pAdr[BUFFERNUMBER];    /*!< Pointer to the different Buffers used in getVal-Function to copy data to dObj */
-        void* m_pBWlut; /*!< Special Black-White Lookup-Table */   
+        void* m_pBWlut; /*!< Special Black-White Lookup-Table */
 
         int m_pictimeout;    /*!< Timeout for WaitGrab in getVal-function */
         int m_bufnumber[BUFFERNUMBER]; /*!< Buffer identifier for the CCD (see SDK) */
@@ -87,7 +87,7 @@ class PCOPixelFly : public ito::AddInGrabber
 
         bool m_isgrabbing; /*!< Check if acquire was called */
         bool m_saveParamsOnClose; /*!< Check if the parameters shoudl be saved on close */
-        
+
         bool m_waited[BUFFERNUMBER]; /*!< Checkvaraible for WaitGrab in getVal-function */
 
         ito::RetVal PCOLoadLibrary(void);    /*!< Loads the pccam.dll and pcocnv.dll and defines sdk-function-handles */
@@ -104,9 +104,9 @@ class PCOPixelFly : public ito::AddInGrabber
     public slots:
         //! returns parameter of m_params with key name.
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
-        //! sets parameter of m_params with key name. 
+        //! sets parameter of m_params with key name.
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
-        
+
         //! Initialise board, load dll, allocate buffer
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //! Free buffer, delete board, unload dll
@@ -129,7 +129,7 @@ class PCOPixelFly : public ito::AddInGrabber
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    PCOPixelFlyInterface 
+  *\class    PCOPixelFlyInterface
   *
   *\brief    Interface-Class for PCOPixelFly-Class
   *

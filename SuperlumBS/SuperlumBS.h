@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #ifndef SUPERLUMBS_H
-#define SUPERLUMBS_h    
+#define SUPERLUMBS_h
 
 #include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
@@ -37,7 +37,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    SuperlumBS
-  *\brief    This class can be used to communicate with different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) 
+  *\brief    This class can be used to communicate with different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662)
   *
   *         This class can be used to work with Piefocs and Piezo-Stages. The ITO-Controllers have only one axis with axis number 0.
   *            This system needs a serial port, which differs depending on type:
@@ -49,7 +49,7 @@
   *            endline = "\n"
   *            The class comes with a Config-Dialog and a Controll-Gui-Widget
   *
-  *    \sa    AddInActuator, DummyMotor, 
+  *    \sa    AddInActuator, DummyMotor,
   *    \date    12.03.2014
   *    \author    Johann Krauter
   * \warning    NA
@@ -67,7 +67,7 @@ class SuperlumBS : public ito::AddInDataIO
         friend class SuperlumBSInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }        //!< indicates that this plugin has got a configuration dialog
-        
+
     private:
 
         ito::AddInDataIO *m_pSer;
@@ -84,11 +84,11 @@ class SuperlumBS : public ito::AddInDataIO
         ito::RetVal SendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS);
         //ito::RetVal SetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         //ito::RetVal CheckStatus(void);
-        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);      
+        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
         ito::RetVal IdentifyAndInitializeSystem();
 
     public slots:
-        
+
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -117,7 +117,7 @@ class SuperlumBS : public ito::AddInDataIO
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        
+
         //! Emits status and position if triggered. Used form the dockingwidget
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 
@@ -127,7 +127,7 @@ class SuperlumBS : public ito::AddInDataIO
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    SuperlumBSInterface 
+  *\class    SuperlumBSInterface
   *
   *\brief    Interface-Class for SuperlumBSInterface-Class
   *
@@ -155,7 +155,7 @@ class SuperlumBSInterface : public ito::AddInInterfaceBase
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
 
     signals:
-        
+
 
     public slots:
 };

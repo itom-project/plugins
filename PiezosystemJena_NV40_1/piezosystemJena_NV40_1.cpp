@@ -18,7 +18,7 @@
 #define PI_READTIMEOUT 256
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 PiezosystemJena_NV40_1Interface::PiezosystemJena_NV40_1Interface()
@@ -42,8 +42,8 @@ It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
     m_initParamsMand.append(paramVal);
 }
@@ -63,7 +63,7 @@ ito::RetVal PiezosystemJena_NV40_1Interface::closeThisInst(ito::AddInBase **addI
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-//! 
+//!
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
     creates new instance of dialogPiezosystemJena, calls the method setVals of dialogPiezosystemJena, starts the execution loop and if the dialog
@@ -79,7 +79,7 @@ const ito::RetVal PiezosystemJena_NV40_1::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PiezosystemJena_NV40_1::init. The widged window is created at this position.
 */
 PiezosystemJena_NV40_1::PiezosystemJena_NV40_1() :
@@ -123,7 +123,7 @@ PiezosystemJena_NV40_1::PiezosystemJena_NV40_1() :
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -172,7 +172,7 @@ ito::RetVal PiezosystemJena_NV40_1::getParam(QSharedPointer<ito::Param> val, Ito
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, PiezosystemJena_NV40_1::PISwitchType is executed.
 
@@ -267,7 +267,7 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
             {
                 retValue += serialSendCommand("i0");
             }
-            
+
             if (!retValue.containsError())
             {
                 it->copyValueFrom(&(*val));
@@ -312,7 +312,7 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
     \return retOk
 */
 ito::RetVal PiezosystemJena_NV40_1::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, ItomSharedSemaphore *waitCond)
-{   
+{
     QByteArray answer;
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
@@ -490,7 +490,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const int axis, QSharedPointer<double
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     double axpos = 0.0;
-    
+
     ito::RetVal retval = ito::retOk;
 
     if (axis != 0)
@@ -521,7 +521,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const int axis, QSharedPointer<double
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
+/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -558,7 +558,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const QVector<int> axis, QSharedPoint
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls PiezosystemJena_NV40_1::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -607,7 +607,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosAbs(const QVector<int> axis, QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls PiezosystemJena_NV40_1::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -656,7 +656,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosRel(const QVector<int> axis, QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
+/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -947,7 +947,7 @@ ito::RetVal PiezosystemJena_NV40_1::readString(QByteArray &result, int &len, int
                 if (pos >= 0) //found
                 {
                     done = true;
-                    result = result.left(pos);   
+                    result = result.left(pos);
                 }
             }
 
@@ -1026,7 +1026,7 @@ ito::RetVal PiezosystemJena_NV40_1::serialSendCommand(const QByteArray &command)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
+    \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string.
             If string is invalid, val is not set and error-message is reported
     \param[in] *buf        Answer-String
     \param[out] val        double Value
@@ -1078,7 +1078,7 @@ ito::RetVal PiezosystemJena_NV40_1::sendQuestionWithAnswerDouble( const QByteArr
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
+    \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string.
             If string is invalid, val is not set and error-message is reported
     \param[out] *buf        Answer-String
     \param[in] bufsize        Number of signs to read
@@ -1107,7 +1107,7 @@ ito::RetVal PiezosystemJena_NV40_1::sendQuestionWithAnswerString(const QByteArra
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PiezosystemJena_NV40_1::identifyAndInitializeSystem(QString &identifier)
 {
     ito::RetVal retval;
@@ -1137,7 +1137,7 @@ ito::RetVal PiezosystemJena_NV40_1::identifyAndInitializeSystem(QString &identif
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void PiezosystemJena_NV40_1::dockWidgetVisibilityChanged( bool visible )
 {
     if (getDockWidget())

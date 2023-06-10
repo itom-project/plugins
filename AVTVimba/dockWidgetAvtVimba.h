@@ -55,7 +55,7 @@ class DockWidgetAvtVimba : public ito::AbstractAddInDockWidget
         void on_sW_Offset_valueChanged(double d);
         void on_sW_IntTime_valueChanged(double d);
         void on_check_GainAuto_toggled(bool checked);
-          
+
 };
 
 #endif

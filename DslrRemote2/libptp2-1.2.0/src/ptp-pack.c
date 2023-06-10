@@ -41,7 +41,7 @@ static inline void
 htod16ap (PTPParams *params, unsigned char *a, uint16_t val)
 {
 	if (params->byteorder==PTP_DL_LE)
-		htole16a(a,val); else 
+		htole16a(a,val); else
 		htobe16a(a,val);
 }
 
@@ -49,7 +49,7 @@ static inline void
 htod32ap (PTPParams *params, unsigned char *a, uint32_t val)
 {
 	if (params->byteorder==PTP_DL_LE)
-		htole32a(a,val); else 
+		htole32a(a,val); else
 		htobe32a(a,val);
 }
 
@@ -114,7 +114,7 @@ ptp_pack_string(PTPParams *params, char *string, char* data, uint16_t offset, ui
 {
 	int i;
 	*len = (uint8_t)strlen(string);
-	
+
 	/* XXX: check strlen! */
 	htod8a(&data[offset],*len+1);
 	for (i=0;i<*len && i< PTP_MAXSTRLEN; i++) {
@@ -164,17 +164,17 @@ ptp_unpack_DI (PTPParams *params, char* data, PTPDeviceInfo *di)
 {
 	uint8_t len;
 	unsigned int totallen;
-	
+
 	di->StaqndardVersion = dtoh16a(&data[PTP_di_StandardVersion]);
 	di->VendorExtensionID =
 		dtoh32a(&data[PTP_di_VendorExtensionID]);
 	di->VendorExtensionVersion =
 		dtoh16a(&data[PTP_di_VendorExtensionVersion]);
-	di->VendorExtensionDesc = 
+	di->VendorExtensionDesc =
 		ptp_unpack_string(params, data,
-		PTP_di_VendorExtensionDesc, &len); 
+		PTP_di_VendorExtensionDesc, &len);
 	totallen=len*2+1;
-	di->FunctionalMode = 
+	di->FunctionalMode =
 		dtoh16a(&data[PTP_di_FunctionalMode+totallen]);
 	di->OperationsSupported_len = ptp_unpack_uint16_t_array(params, data,
 		PTP_di_OperationsSupported+totallen,
@@ -213,7 +213,7 @@ ptp_unpack_DI (PTPParams *params, char* data, PTPDeviceInfo *di)
 		PTP_di_OperationsSupported+totallen,
 		&len);
 }
-	
+
 /* ObjectHandles array pack/unpack */
 
 #define PTP_oh				 0
@@ -310,7 +310,7 @@ ptp_pack_OI (PTPParams *params, PTPObjectInfo *oi, char** oidataptr)
 	htod16a(&oidata[PTP_oi_AssociationType],oi->AssociationType);
 	htod32a(&oidata[PTP_oi_AssociationDesc],oi->AssociationDesc);
 	htod32a(&oidata[PTP_oi_SequenceNumber],oi->SequenceNumber);
-	
+
 	ptp_pack_string(params, oi->Filename, oidata, PTP_oi_filenamelen, &filenamelen);
 /*
 	filenamelen=(uint8_t)strlen(oi->Filename);
@@ -339,7 +339,7 @@ ptp_pack_OI (PTPParams *params, PTPObjectInfo *oi, char** oidataptr)
 	}
 #endif
 	/* XXX this function should return dataset length */
-	
+
 	*oidataptr=oidata;
 	return (PTP_oi_Filename+(filenamelen+1)*2+(capturedatelen+1)*4);
 }
@@ -374,7 +374,7 @@ ptp_unpack_OI (PTPParams *params, char* data, PTPObjectInfo *oi)
 
 	capture_date = ptp_unpack_string(params, data,
 		PTP_oi_filenamelen+filenamelen*2+1, &capturedatelen);
-	/* subset of ISO 8601, without '.s' tenths of second and 
+	/* subset of ISO 8601, without '.s' tenths of second and
 	 * time zone
 	 */
 	if (capturedatelen>15)
@@ -542,7 +542,7 @@ ptp_unpack_DPD (PTPParams *params, char* data, PTPDevicePropDesc *dpd)
 				(params,data,PTP_dpd_FactoryDefaultValue,&len);
 			totallen=len*2+1;
 			dpd->CurrentValue = (void *)ptp_unpack_string
-				(params, data, PTP_dpd_FactoryDefaultValue + 
+				(params, data, PTP_dpd_FactoryDefaultValue +
 				totallen, &len);
 			totallen+=len*2+1;
 			break;
@@ -774,4 +774,3 @@ ptp_nikon_unpack_EC (PTPParams *params, char *evdata, PTPUSBEventContainer** eve
 	i++;
     }
 }
-

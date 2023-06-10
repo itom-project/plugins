@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -52,7 +52,7 @@ ito::RetVal SMC100Interface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 SMC100Interface::SMC100Interface()
@@ -81,8 +81,8 @@ The parameters of the serial port (besides port number) are set automatically du
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);

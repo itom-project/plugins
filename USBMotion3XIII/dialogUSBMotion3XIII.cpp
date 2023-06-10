@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,7 +24,7 @@
 * \brief In this file the functions of the modal dialog for the DummyMotor are specified
 *
 *    This file defines the functions of the dialogDummyMotor-Class defined in the file "dialogDummyMotor.h"
-* 
+*
 */
 
 #include "dialogUSBMotion3XIII.h"

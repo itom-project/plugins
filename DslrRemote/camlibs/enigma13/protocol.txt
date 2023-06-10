@@ -35,7 +35,7 @@ This camera provides you a directory containing the name of the picture,
 the size of the picture (maybe the size, i 'll have a look)
 
 Each entry (so each photo) is composed of 16 bytes for its name, and 16 bytes for
- 
+
 
 41 54 08 00 01 00 00 00        (USB_WRITE COMMAND TO REQUEST THE TOC)
 
@@ -106,12 +106,8 @@ Size to read is the size you extracted from the table of content .... BUT, you n
 this size to the media block size :
 
 
-SIZE_TO_READ_ = (REAL_SIZE_FROM_TOC / ALIGNEMENT) * ALIGNEMENT 
+SIZE_TO_READ_ = (REAL_SIZE_FROM_TOC / ALIGNEMENT) * ALIGNEMENT
 
 
 - If the image is on FLASH, alignement is 0x2000
 - If the image is on SmartMedia card, alignement is 0x4000
-
-
-
-

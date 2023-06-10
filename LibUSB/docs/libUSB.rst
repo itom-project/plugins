@@ -10,7 +10,7 @@
 **Devices**:    Any generic USB devices
 **Author**:     :pluginauthor:`LibUSB`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,12 +19,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: LibUSB
-        
+
 Parameters
 ===========
 
@@ -40,7 +40,7 @@ An instance of this plugin has the following internal parameters:
     name of the device
 **timeout**: {float}
     Timeout for reading commands in [s]
-    
+
 Usage
 ======
 
@@ -61,21 +61,21 @@ Once the USB-device is opened and the endpoints are configured, you can send and
 
     #send values:
     usbDevice.setVal("myCommand")
-    
+
     #read values:
     b = bytearray(10) #buffer
     r = usbDevice.getVal(b)
     print(r) #number of characters read
-    
+
 The command **getVal** only reads the number of characters that arrived at the current endpoint at the moment of its call. Analyze the return value and probably call **getVal**
 again if you expect more characters to arrive. This is also the same behaviour than for serial connections.
 
 This plugin is also used by other hardware plugins to communicate with further devices.
-        
+
 Compilation
 ===========
 In order to compile LibUSB, get the sources or binaries from LibUSB from http://www.libusb.info. Then set LibUSB_DIR to the base
-directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin. 
+directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin.
 
 Hint: prebuilt versions of libusb for Visual Studio 2015 can also be found here: https://sourceforge.net/projects/itom/files/all-in-one-build-setup/Optional-3rdParty
 
@@ -91,14 +91,14 @@ In this case you have to compile LibUSB by yourself using your version of Visual
 2. Open the project **msvc/libusb_static_XXXX.vcxproj** with your Visual Studio, where XXXX corresponds to the correct version number.
 3. Compile the project (libusb-1.0 static) as **Release** in x86 and / or x64.
 4. Create a new folder (e.g. libusb_1.0.23_MSVC2015) and copy the following files to that folder ({sources} is the unpacked source folder):
-    
+
     libusb_1.0.23_MSVC2015
-        
+
         /include/libusb-1.0 --> this must contain the header file **libusb.h** from {sources}/libusb
         /MS32/static --> this must contain the **libusb-1.0.lib** from {sources}/Win32/static (if 32bit build)
         /MS64/static --> this must contain the newly built **libusb-1.0.lib** from {sources}/Win64/static (if 64bit build)
-    
-5. Set the CMake variable LibUSB_DIR to this new folder.
+
+5. Set the CMake variable LibUSB_DIR to this new folder or define a windows environment variable LibUSB_ROOT.
 
 Changelog
 =========
@@ -110,3 +110,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the libusb 1.0.22
 * itom setup 4.0.0: This plugin has been compiled using the libusb 1.0.23
 * itom setup 4.1.0: This plugin has been compiled using the libusb 1.0.24
+* itom setup 4.3.0: This plugin has been compiled using the libusb 1.0.26

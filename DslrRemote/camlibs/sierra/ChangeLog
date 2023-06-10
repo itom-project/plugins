@@ -10,11 +10,11 @@
 
 2007-04-22	Marcus Meissner <marcus@jet.franken.de>
 
-	* *-desc.c: Removed "const" from some structures that 
+	* *-desc.c: Removed "const" from some structures that
 	  are written to by the configuration handling code.
 
 2007-02-13	Chandra Curtis <chandracurtis@ntu.edu.sg>
-	*sierra.c, sierra-desc.h, olympus-desc.c: Added support for Olympus SP-500UZ.  
+	*sierra.c, sierra-desc.h, olympus-desc.c: Added support for Olympus SP-500UZ.
 	(Works with gtkam, still some issue with gphoto2)
 
 2006-08-08  Marcus Meissner  <marcus@jet.franken.de>
@@ -27,7 +27,7 @@
 	* sierra-desc.c: Fixed 2 strict aliasing problems.
 
 2005-08-04  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* sierra.c: epson photopc 700 has no reg 51 either
 
 2005-07-07  Marcus Meissner  <marcus@jet.franken.de>
@@ -43,7 +43,7 @@
 	* sierra.c: Sanyo VPC G250 does not have register 51.
 
 2005-05-08  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* sierra.c: The olympus c-420l does only like
 	  speeds up to 57600.
 	  The epson photopc 650 does only like up to 38400.
@@ -58,7 +58,7 @@
 	  Debian bug#296708.
 
 2005-02-16  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* sierra.c: Added Pentax Optio 450. Thanks to Jack
 	  for lending me his camera for some minutes. :)
 	  (Capture works, but only if you plug it in with the lens
@@ -66,7 +66,7 @@
 
 2005-02-14  Marcus Meissner <marcus@jet.franken.de>
 	* library.c, sierra-desc.h, sierra.c, sierra.h, sierra-usbwrap.c:
-	  Nikon Coolpix * and Pentax cameras also support the Sierra 
+	  Nikon Coolpix * and Pentax cameras also support the Sierra
 	  protocol (usb wrapped), however with different command bytes.
 
 	  This patch adds support to specify the usb wrapping camera
@@ -127,7 +127,7 @@
 	  interface, so we do not allow recursion but we do allow updates.
 
 2003-11-03  Patrick Mansfield <patmans@users.sourceforge.net>
-	* sierra.c: mark Epson PhotoPC 650 as SIERRA_NO_51, per bug 
+	* sierra.c: mark Epson PhotoPC 650 as SIERRA_NO_51, per bug
 	  report 831290 from Brian Lee.
 
 2003-11-03  Patrick Mansfield <patmans@users.sourceforge.net>
@@ -135,7 +135,7 @@
 	  register 30.
 
 2003-09-17  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* library.c: we were closing a context id we never opened. Not good.
 
 2003-09-13  Patrick Mansfield <patmans@users.sourceforge.net>
@@ -169,12 +169,12 @@
 	  id's for Polaroid PDC 2300Z.
 
 2003-02-27  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* library.c: We support EXIF download.
 
 2003-02-15  Patrick Mansfield <patmans@users.sourceforge.net>
 
-	* sierra.c, sierra.h: Add and use SIERRA_SKIP_INIT for use with 
+	* sierra.c, sierra.h: Add and use SIERRA_SKIP_INIT for use with
 	  Polaroid PDC 2300Z.
 
 2003-02-15  Patrick Mansfield <patmans@users.sourceforge.net>
@@ -191,9 +191,9 @@
 	  SIERRA_ACTION_PROT_STATE in sierra_set_locked.
 
 2003-02-02  Patrick Mansfield <patmans@users.sourceforge.net>
-	
+
 	* library.c: Allow sierra_get_pic_info to always work even if
-	  register 47 return no data - use other registers to get the data. 
+	  register 47 return no data - use other registers to get the data.
 	* sierra.c: Use register 43 to get audio, not sierra_get_pic_info,
 	  so register 47 is not used prior to downloading.
 
@@ -215,11 +215,11 @@
 
 2003-01-29  Lutz Mueller <lutz@users.sourceforge.net>
 
-	* sierra.c: It seems the "Agfa ePhoto307" does not support the 
+	* sierra.c: It seems the "Agfa ePhoto307" does not support the
 	  register 51. Reported by Ullrich Maenz <ullrich@familie-maenz.de>.
 
 2003-01-14  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* *.c: enabled more translations, added some missing _().
 
 2003-01-14  Lutz Müller <lutz@users.sourceforge.net>
@@ -227,12 +227,12 @@
 	* sierra.c: Split the model string into manufacturer and model.
 
 2003-01-03  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* sierra.c: Epson PhotoPC 650 at least partially working.
 
 2003-01-03  Marcus Meissner <marcus@jet.franken.de>
-	
-	* library.c: Replaced stack allocated CameraList by dynamic 
+
+	* library.c: Replaced stack allocated CameraList by dynamic
 	  allocated one, since this struct is huge.
 
 2002-12-10  Marcus Meissner <meissner@suse.de>
@@ -289,7 +289,7 @@
 	  library.c for the message when a recursive call is detected.
 
 2002-10-27  Patrick Mansfield <patmans@users.sourceforge.net>
-	* library.c: rename ifdef around recursive call problem, and 
+	* library.c: rename ifdef around recursive call problem, and
 	  change ifdef-ed out code to use gp_context_progress_start.
 
 2002-10-20  Lutz Müller <lutz@users.sourceforge.net>
@@ -304,7 +304,7 @@
 
 2002-09-21  Lutz Müller <lutz@users.sourceforge.net>
 
-	* library.c: Don't tell the camera to switch to a speed it is 
+	* library.c: Don't tell the camera to switch to a speed it is
 	  currently operating at.
 
 2002-09-21  Lutz Müller <lutz@users.sourceforge.net>
@@ -426,7 +426,7 @@
 
 2002-05-29  Patrick Mansfield <patmans@users.sourceforge.net>
 
-	* library.[hc], sierra.[hc], sierra-desc.[ch], nikon-desc.c: 
+	* library.[hc], sierra.[hc], sierra-desc.[ch], nikon-desc.c:
 	  Add camera description table for camera configuration settings.
 	  Add support for nikon coolpix 880 using the description table.
 
@@ -443,7 +443,7 @@
 
 	* library.c: If we receive SIERRA_PACKET_SESSION_END, reestablish
 	  the connection and switch to the default speed.
-	  
+
 2002-05-25  Lutz Müller <lutz@users.sourceforge.net>
 
 	* sierra.c (camera_init): It seems the code I '#if 0'ed out is needed
@@ -457,7 +457,7 @@
 
 2002-05-25  Lutz Müller <lutz@users.sourceforge.net>
 
-	* library.c (sierra_set_speed): A speed change automatically 
+	* library.c (sierra_set_speed): A speed change automatically
 	  starts a new session.
 
 2002-05-25  Lutz Müller <lutz@users.sourceforge.net>
@@ -489,7 +489,7 @@
 
 2002-05-23  Lutz Müller <lutz@users.sourceforge.net>
 
-	* library.c (sierra_init): Don't use sierra_read_packet_wait, 
+	* library.c (sierra_init): Don't use sierra_read_packet_wait,
 	  use sierra_read_packet and resend the request on GP_ERROR_TIMEOUT.
 
 2002-05-22  Lutz Müller <lutz@users.sourceforge.net>
@@ -530,7 +530,7 @@
 	  initialization sequence only on init. Olympus C-860L
 	  stops communications when receiving an initialization
 	  sequence after some communications have already occured.
-	
+
 	* library.h, library.c (sierra_ping -> sierra_init):
 	  This function isn't really a "ping", since it can be used
 	  only on startup.
@@ -592,7 +592,7 @@
 
 	Reported by Patrick Mansfield <patman@aracnet.com>:
 
-	* library.c (sierra_read_packet): At least Nikon CoolPix 880 sets 
+	* library.c (sierra_read_packet): At least Nikon CoolPix 880 sets
 	  the checksum always to 0xffff (?!?).
 
 2002-02-11  Lutz Müller <lutz@users.sourceforge.net>
@@ -621,7 +621,7 @@
 
 2002-02-06  Lutz Müller <lutz@users.sourceforge.net>
 
-	* sierra.c (sierra_read_packet_wait): {int res=(res);... 
+	* sierra.c (sierra_read_packet_wait): {int res=(res);...
 	  just cannot work. Read the macro definitions...
 
 2002-02-05  Lutz Müller <lutz@users.sourceforge.net>
@@ -638,8 +638,8 @@
 2002-02-05  Lutz Müller <lutz@users.sourceforge.net>
 
 	* library.c (sierra_list_files): For cameras that don't support
-	  filenames, it is useless to try to get a filename for each 
-	  file. Just try on the first one. If this fails, come up with 
+	  filenames, it is useless to try to get a filename for each
+	  file. Just try on the first one. If this fails, come up with
 	  dummy filenames for each file.
 
 2002-02-05  Lutz Müller <lutz@users.sourceforge.net>
@@ -673,7 +673,7 @@
 
 2002-01-19  Lutz Müller <lutz@users.sourceforge.net>
 
-	* library.c: I messed up the logic: TYPE_DATA and TYPE_DATA_END 
+	* library.c: I messed up the logic: TYPE_DATA and TYPE_DATA_END
 	  are _not_ single byte packets.
 
 2002-01-17  Lutz Müller <lutz@users.sourceforge.net>
@@ -697,6 +697,6 @@
 
 	Suggestion from Stefan Höhne <s_hoehne@informatik.uni-kl.de>:
 
-	* library.c: Check for filename == "        ". It seems his 
+	* library.c: Check for filename == "        ". It seems his
 	  camera doesn't support filenames.
 	* sierra.c: Add "Olympus C-2500L".

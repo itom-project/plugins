@@ -5,7 +5,7 @@
     Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -59,9 +59,9 @@ class DockWidgetXimea : public ito::AbstractAddInDockWidget
         void identifierChanged(const QString &identifier);
 
     private slots:
-        void on_sliderWidget_offset_valueChanged(double value);   
-        void on_sliderWidget_gain_valueChanged(double value); 
-        void on_sliderWidget_integrationtime_valueChanged(double value); 
+        void on_sliderWidget_offset_valueChanged(double value);
+        void on_sliderWidget_gain_valueChanged(double value);
+        void on_sliderWidget_integrationtime_valueChanged(double value);
 };
 
 #endif

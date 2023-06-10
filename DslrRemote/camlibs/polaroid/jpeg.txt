@@ -14,7 +14,7 @@ Funny.....for what I have the data is all 0x01's.
 I guess there is a precision number in there somewhere, but I don't know.
 For what I have, both quantization tables are precision 0.
 Precision 1 will not be used by us. We need precision 0.
-Jpeg's have two tables. 
+Jpeg's have two tables.
 Table 0 should be luminance and table 1 should be chrominance.
 
 Start of Frame 0:
@@ -83,17 +83,17 @@ Those two tables are accessed in this order:
 
 Comparing the before and after of putting a really high and out of place number
 in the table will help you locate bad spots in the table. It will make an
-obvious distortion in the image. Use this technique to find the table entry 
+obvious distortion in the image. Use this technique to find the table entry
 that affects the pixels that are distorted and then decrease the difference
 between that table entry and the ones around it (look at the order table).
 
-The greater the difference between the numbers in the table, the greater the 
-contrast or annoying shadow. Smaller differences will create smoother 
+The greater the difference between the numbers in the table, the greater the
+contrast or annoying shadow. Smaller differences will create smoother
 transitions between pixels. A table entry of 0 will make the table result be 0.
-Consider the quantization table as a multiplier table. For every dot in every 
+Consider the quantization table as a multiplier table. For every dot in every
 8x8 block of the picture, the input is multiplied by the corresponding value in
-the quantization table. Therefore, you can probably find out what quantization 
-table entry needs to be changed by looking at its coordinates. Keep in mind 
-that different compression ratios are used for different cameras though, so 
+the quantization table. Therefore, you can probably find out what quantization
+table entry needs to be changed by looking at its coordinates. Keep in mind
+that different compression ratios are used for different cameras though, so
 this might not work the same way for all cameras. If you use a bunch of 1's in
 the tables, you will probably come up with a very dull image.

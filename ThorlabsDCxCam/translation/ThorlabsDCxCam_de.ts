@@ -289,15 +289,15 @@
     <name>ThorlabsDCxCamInterface</name>
     <message>
         <location filename="../ThorlabsDCxCamInterface.cpp" line="+102"/>
-        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models: 
-- UI145xSE-C (colored, USB2) 
-- UI124xSE-M (monochrome, USB2). 
-- UI224xSE-M (monochrome, USB2). 
-- UI337xCP-C (colored, USB3) 
+        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models:
+- UI145xSE-C (colored, USB2)
+- UI124xSE-M (monochrome, USB2).
+- UI224xSE-M (monochrome, USB2).
+- UI337xCP-C (colored, USB3)
 
-The plugin has been compiled using the IDS library version %1.%2. 
+The plugin has been compiled using the IDS library version %1.%2.
 
-In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. 
+In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed.
 
 The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.</source>
         <translation type="unfinished"></translation>

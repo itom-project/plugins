@@ -95,8 +95,8 @@ class Roughness : public ito::AddInAlgo
 
         struct RoughnessParams
         {
-            enum SamplingLengthDivision 
-            { 
+            enum SamplingLengthDivision
+            {
                 SplitInto5EqualSamples = 0, //split the measurement length (less the endeffects) into 5 samples. Warns if the sampling length of each sample varies from the cut-off-wavelength (tol. 5%)
                 SplitIntoNSamplesWithCutOffWavelength = 1, //same as Use5SamplesWithCutOffWavelength but creates N samples and raises an error if N < 1.
                 Use5SamplesWithCutOffWavelength = 2 //split the measurement length (less the endeffects) into 5 samples with the length of the cut-off-wavelength. If the measurement length is longer, the end is omitted. If it is too short, an error is raisen.

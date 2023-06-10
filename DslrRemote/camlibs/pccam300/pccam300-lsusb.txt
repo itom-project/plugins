@@ -12,7 +12,7 @@ Device Descriptor:
   bcdDevice            1.00
   iManufacturer           1 Creative Tech. Ltd
   iProduct                2 Creative PC-CAM 300
-  iSerial                 0 
+  iSerial                 0
   bNumConfigurations      1
   Configuration Descriptor:
     bLength                 9
@@ -20,7 +20,7 @@ Device Descriptor:
     wTotalLength          167
     bNumInterfaces          2
     bConfigurationValue     1
-    iConfiguration          0 
+    iConfiguration          0
     bmAttributes         0x80
     MaxPower              500mA
     Interface Descriptor:
@@ -30,9 +30,9 @@ Device Descriptor:
       bAlternateSetting       0
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -50,9 +50,9 @@ Device Descriptor:
       bAlternateSetting       1
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -70,9 +70,9 @@ Device Descriptor:
       bAlternateSetting       2
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -90,9 +90,9 @@ Device Descriptor:
       bAlternateSetting       3
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -110,9 +110,9 @@ Device Descriptor:
       bAlternateSetting       4
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -130,9 +130,9 @@ Device Descriptor:
       bAlternateSetting       5
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -150,9 +150,9 @@ Device Descriptor:
       bAlternateSetting       6
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -170,9 +170,9 @@ Device Descriptor:
       bAlternateSetting       7
       bNumEndpoints           1
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -190,9 +190,9 @@ Device Descriptor:
       bAlternateSetting       0
       bNumEndpoints           3
       bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceSubClass      0
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5

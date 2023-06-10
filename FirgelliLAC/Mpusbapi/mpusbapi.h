@@ -187,7 +187,7 @@ HANDLE (*MPUSBOpen)(DWORD instance,         // Input
                  PCHAR pEP,                 // Input
                  DWORD dwDir,               // Input
                  DWORD dwReserved);         // Input <Future Use>
-                 
+
 ///////////////////////////////////////////////////////////////////////////////
 //	MPUSBRead :
 //
@@ -284,7 +284,7 @@ DWORD (*MPUSBReadInt)(HANDLE handle,        // Input
                    DWORD dwLen,             // Input
                    PDWORD pLength,          // Output
                    DWORD dwMilliseconds);   // Input
-                   
+
 ///////////////////////////////////////////////////////////////////////////////
 //	MPUSBClose : closes a given handle.
 //

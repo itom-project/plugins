@@ -212,7 +212,7 @@ waiting_for_timeout (int *current_wait, struct timeval start, int timeout) {
 }
 
 /* Changes the ptp deviceinfo with additional hidden information available,
- * or stuff that requires special tricks 
+ * or stuff that requires special tricks
  */
 int
 fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
@@ -506,7 +506,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 				case 0x1000: opcodes++; break;
 				case 0x4000: events++; break;
 				case 0x5000: propcodes++; break;
-				default: 
+				default:
 					GP_LOG_E ("ptp_sony_get_vendorpropcodes() unknown opcode %x", xprops[i]);
 					break;
 				}
@@ -527,7 +527,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 				case 0x5000:
 					di->DevicePropertiesSupported[(j++)+di->DevicePropertiesSupported_len] = xprops[i];
 					break;
-				default: 
+				default:
 					break;
 				}
 			}
@@ -742,7 +742,7 @@ static struct {
 	{"HP:PhotoSmart 320 (PTP mode)", 0x03f0, 0x6602, 0},
 	{"HP:PhotoSmart 720 (PTP mode)", 0x03f0, 0x6702, 0},
 	{"HP:PhotoSmart 620 (PTP mode)", 0x03f0, 0x6802, 0},
-	{"HP:PhotoSmart 735 (PTP mode)", 0x03f0, 0x6a02, 0},	
+	{"HP:PhotoSmart 735 (PTP mode)", 0x03f0, 0x6a02, 0},
 	{"HP:PhotoSmart 707 (PTP mode)", 0x03f0, 0x6b02, 0},
 	{"HP:PhotoSmart 733 (PTP mode)", 0x03f0, 0x6c02, 0},
 	{"HP:PhotoSmart 607 (PTP mode)", 0x03f0, 0x6d02, 0},
@@ -955,7 +955,7 @@ static struct {
 	/* Nikon Coolpix 2200 */
 	{"Nikon:Coolpix 2200 (PTP mode)", 0x04b0, 0x0122, PTP_CAP|PTP_NIKON_BROKEN_CAP},
 
-	/* Jonathan Marten <jonathanmarten@users.sf.net> 
+	/* Jonathan Marten <jonathanmarten@users.sf.net>
 	 * https://sourceforge.net/p/gphoto/bugs/968/ */
 	{"Nikon:Coolpix 2200v1.1 (PTP mode)", 0x04b0, 0x0123, PTP_CAP|PTP_NO_CAPTURE_COMPLETE},
 
@@ -1074,7 +1074,7 @@ static struct {
 
 	/* t.ludewig@gmail.com */
 	/* N CP A seems capture capable, but does not list vendor commands */
-	/* Reports 0x400d aka CaptureComplete event ... but has no 
+	/* Reports 0x400d aka CaptureComplete event ... but has no
 	 * vendor commands? yeah right ... */
 	/* It might be similar to the 1? lets try ... Marcus 20140706 */
 	{"Nikon:Coolpix A (PTP mode)",	  0x04b0, 0x0226, PTP_CAP|PTP_NIKON_1}, /* PTP_CAP */
@@ -1086,7 +1086,7 @@ static struct {
 	{"Nikon:Coolpix P7800 (PTP mode)", 0x04b0, 0x0229, 0},
 
 	/* t.ludewig@gmail.com */
-	/* Also reports 0x400d aka CaptureComplete event ... but has no 
+	/* Also reports 0x400d aka CaptureComplete event ... but has no
 	 * vendor commands? yeah right... */
 	{"Nikon:Coolpix P520 (PTP mode)", 0x04b0, 0x0228, 0}, /* PTP_CAP */
 
@@ -1539,7 +1539,7 @@ static struct {
 
 	/* Olaf Hering at SUSE */
 	{"Canon:PowerShot A590 IS",		0x04a9, 0x3176, PTPBUG_DELETE_SENDS_EVENT},
-	
+
 	/* Dmitriy Khanzhin <jinn@altlinux.org> */
 	{"Canon:PowerShot A580",		0x04a9, 0x3177, PTPBUG_DELETE_SENDS_EVENT},
 
@@ -2954,7 +2954,7 @@ capturetriggered:
 
 	if (!newobject) newobject = 0xffff0001;
 
-	/* This loop handles single and burst capture. 
+	/* This loop handles single and burst capture.
 	 * It also handles SDRAM and also CARD capture.
 	 * In Burst/SDRAM we need to download everything at once
 	 * In all SDRAM modes we download and store it in the virtual fs.
@@ -3914,7 +3914,7 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 	/* Nikon */
 	if (	(params->deviceinfo.VendorExtensionID == PTP_VENDOR_NIKON) &&
 		(ptp_operation_issupported(params, PTP_OC_NIKON_Capture) ||
-		 ptp_operation_issupported(params, PTP_OC_NIKON_AfCaptureSDRAM) 
+		 ptp_operation_issupported(params, PTP_OC_NIKON_AfCaptureSDRAM)
 		)
 		&& sdram
 	) {
@@ -4137,7 +4137,7 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 		GP_LOG_D ("Canon Powershot capture triggered...");
 		return GP_OK;
 	}
-	
+
 
 #if 0
 	if (	(params->deviceinfo.VendorExtensionID == PTP_VENDOR_CANON) &&
@@ -5256,7 +5256,7 @@ folder_to_handle(PTPParams *params, const char *folder, uint32_t storage, uint32
 	if (c != NULL) {
 		*c = 0;
 		parent = find_child (params, folder, storage, parent, retob);
-		if (parent == PTP_HANDLER_SPECIAL) 
+		if (parent == PTP_HANDLER_SPECIAL)
 			GP_LOG_D("not found???");
 		return folder_to_handle(params, c+1, storage, parent, retob);
 	} else  {
@@ -5707,7 +5707,7 @@ ptp_mtp_parse_metadata (
 			GP_LOG_D ("Tag %s is read only, sorry.", propname);
 			free (content); content = NULL;
 			continue;
-		}	
+		}
 		switch (opd.DataType) {
 		default:GP_LOG_E ("mtp parser: Unknown datatype %d, content %s", opd.DataType, content);
 			free (content); content = NULL;
@@ -5752,7 +5752,7 @@ mtp_get_playlist_string(
 	char		*content = NULL;
 
 	C_PTP (ptp_mtp_getobjectreferences (params, object_id, &objects, &numobjects));
-	
+
 	for (i=0;i<numobjects;i++) {
 		char		buf[4096];
 		int		len;
@@ -5887,7 +5887,7 @@ gpfile_putfunc (PTPParams *params, void *xpriv,
 ) {
 	PTPCFHandlerPrivate* priv= (PTPCFHandlerPrivate*)xpriv;
 	int ret;
-	
+
 	ret = gp_file_append (priv->file, (char*)bytes, sendlen);
 	if (ret != GP_OK)
 		return PTP_ERROR_IO;
@@ -6519,7 +6519,7 @@ get_info_func (CameraFilesystem *fs, const char *folder, const char *filename,
 			info->file.height  = ob->oi.ImagePixHeight;
 			info->file.fields |= GP_FILE_INFO_HEIGHT;
 		}
-	}	
+	}
 	return (GP_OK);
 }
 
@@ -6608,7 +6608,7 @@ storage_info_func (CameraFilesystem *fs,
 		C_PTP (ptp_getstorageinfo (params, sids.Storage[i], &si));
 		sif->fields |= GP_STORAGEINFO_BASE;
 		sprintf (sif->basedir, "/"STORAGE_FOLDER_PREFIX"%08x", sids.Storage[i]);
-		
+
 		if (si.VolumeLabel && strlen(si.VolumeLabel)) {
 			sif->fields |= GP_STORAGEINFO_LABEL;
 			strcpy (sif->label, si.VolumeLabel);
@@ -6727,7 +6727,7 @@ init_ptp_fs (Camera *camera, GPContext *context)
 	    ptp_operation_issupported(params,PTP_OC_MTP_GetObjPropList) &&
 	    (camera->pl->bugs & PTP_MTP_PROPLIST_WORKS)
 	) {
-		PTPObjectInfo	*oinfos = NULL;	
+		PTPObjectInfo	*oinfos = NULL;
 		int		cnt = 0, i, j, nrofprops = 0;
 		uint32_t	lasthandle = 0xffffffff;
 		MTPProperties 	*props = NULL, *xpl;
@@ -7506,8 +7506,8 @@ camera_init (Camera *camera, GPContext *context)
 
 			C_PTP (ptp_sony_9280(params, 0x4,0,1,0,0));
 			C_PTP (ptp_sony_9281(params, 0x4));	/* gets big data blob? */
-			/* also tries this multiple times , but gets back 2006 error 
-			ptp_sony_9280(params, 0x5,0,1,0,0); 
+			/* also tries this multiple times , but gets back 2006 error
+			ptp_sony_9280(params, 0x5,0,1,0,0);
 			*/
 #endif
 			/* This combination seems to reportedly work */

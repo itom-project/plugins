@@ -10,18 +10,20 @@
 **Devices**:    Filter Flipper (MFF101)
 **Author**:     :pluginauthor:`ThorlabsFF`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: ThorlabsFF
 
+ITOM Plugin to be used for interaction with the Thorlabs Filter Flippers Product Series.
+
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: ThorlabsFF
 
@@ -52,7 +54,7 @@ parameters can be changed using *setParam*.
 Installation
 ============
 
-Install the Thorlabs Kinesis software and USB Drivers. 
+Install the Thorlabs Kinesis software and USB Drivers.
 
 Usage
 ============
@@ -60,7 +62,7 @@ Usage
 This example shows how to initalized the device in **itom** and change the position:
 
     .. code-block:: python
-        
+
         flipper = dataIO("ThorlabsFF") # get instance of plugin
         flipper.setParam("transitTime", 300) # set the transit time to 300 ms
         flipper.setParam("position", 1) # flip to position 1
@@ -70,13 +72,17 @@ This example shows how to initalized the device in **itom** and change the posit
 Compilation
 ===========
 
-To compile this plugin, install the Thorlabs KINESIS driver package in the same bit-version than itom (32/64bit).
-Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
-The required libraries from Kinesis will automatically be copied to the *lib* folder of itom. Do not use Kinesis 1.6.0 or below for compiling this plugin.
+To compile this plugin, install the Thorlabs KINESIS from
+https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0
+driver package in the same bit-version than itom (32/64bit).
+It has been implemented using KINESIS version 1.14.32.
+Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
+to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
+The required libraries from Kinesis will automatically be copied to the *lib* folder of itom.
+Do not use Kinesis 1.6.0 or below for compiling this plugin.
 
 Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
-
 Changelog
 =========
 
-* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
+* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.

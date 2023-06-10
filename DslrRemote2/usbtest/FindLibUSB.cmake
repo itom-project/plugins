@@ -2,7 +2,7 @@
 # This module will find libusb as published by
 #  http://libusb.sf.net and
 #  http://libusb-win32.sf.net
-# 
+#
 # It will use PkgConfig if present and supported, else search
 # it on its own. If the LibUSB_ROOT_DIR environment variable
 # is defined, it will be used as base path.
@@ -14,7 +14,7 @@
 include ( CheckLibraryExists )
 include ( CheckIncludeFile )
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 
 find_package ( PkgConfig )
 if( PKG_CONFIG_FOUND )
@@ -36,7 +36,7 @@ if( PKGCONFIG_LIBUSB_FOUND )
     endforeach ( i )
 
 else ( PKGCONFIG_LIBUSB_FOUND )
-    
+
     find_path ( LibUSB_DIR
     NAMES
       libusb.h
@@ -49,7 +49,7 @@ else ( PKGCONFIG_LIBUSB_FOUND )
       include/libusb-1.0
     DOC "root directory of LibUSB"
     )
-    
+
     find_path ( LibUSB_INCLUDE_DIRS
     NAMES
       libusb.h
@@ -73,7 +73,7 @@ else ( PKGCONFIG_LIBUSB_FOUND )
                 set( LibUSB_LIBRARY_PATH_SUFFIX MS64/static )
             else (BUILD_TARGET64)
                 set( LibUSB_LIBRARY_PATH_SUFFIX MS32/static )
-            endif(BUILD_TARGET64)         
+            endif(BUILD_TARGET64)
         elseif( BORLAND )
             set( LibUSB_LIBRARY_PATH_SUFFIX lib/bcc )
         elseif( CMAKE_COMPILER_IS_GNUCC )
@@ -120,4 +120,3 @@ if( NOT LibUSB_FOUND )
     endif( LibUSB_FIND_REQUIRED )
 endif( NOT LibUSB_FOUND )
 #  message( STATUS "LibUSB: ${LibUSB_FOUND}" )
-

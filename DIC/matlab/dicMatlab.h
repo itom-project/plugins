@@ -36,7 +36,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
     //        4   16    interpolation type LoByte: Bi-Linear, Bi-Cubic, Bi-Quintic, Bi-Heptic
     //        5   32    interpolation type HighByte
     //        6   64    Reserved for other interpolation types
-    //        7   128 
+    //        7   128
     //        8   256   Use Cuda if available
 
     DLLEXPORT int interpolateBiLi(const float *data, const int sizeX, const int sizeY, const float *pts, const int numPts, float *result, const int flags);

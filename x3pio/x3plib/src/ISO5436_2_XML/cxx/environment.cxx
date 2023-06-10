@@ -211,7 +211,7 @@ OpenGPS::UnsignedBytePtr Environment::ByteSwap32(const int* const value, OpenGPS
    dst[0] = src[7];
    dst[1] = src[6];
    dst[2] = src[5];
-   dst[3] = src[4];   
+   dst[3] = src[4];
 #endif
 
 #  if _OGPS_INT_SIZE != 2 && _OGPS_INT_SIZE != 4 && _OGPS_INT_SIZE != 8
@@ -247,7 +247,7 @@ void Environment::ByteSwap32(const OpenGPS::UnsignedBytePtr src, int* const valu
    dst[4] = src[3];
    dst[5] = src[2];
    dst[6] = src[1];
-   dst[7] = src[0];   
+   dst[7] = src[0];
 #endif
 
 #  if _OGPS_INT_SIZE != 2 && _OGPS_INT_SIZE != 4 && _OGPS_INT_SIZE != 8

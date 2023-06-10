@@ -7,7 +7,7 @@
 //#include "ui_dialogAS5216.h"
 //#include "common/sharedStructures.h"
 // /**
-//  *\class    dialogAS5216 
+//  *\class    dialogAS5216
 //  *\brief    Configurationdiablog for the CMU-driver
 //  *
 //  *         This dialog can be used to setup the most important parameters for the camera.
@@ -19,7 +19,7 @@
 //  * \warning    NA
 //  *
 //  */
-//class dialogAS5216 : public QDialog 
+//class dialogAS5216 : public QDialog
 //{
 //    Q_OBJECT
 //
@@ -35,7 +35,7 @@
 //    signals:
 //
 //        void changeParameters(QMap<QString, ito::ParamBase> params);
-//        
+//
 //    public slots:
 //
 //        void valuesChanged(QMap<QString, ito::Param> params);

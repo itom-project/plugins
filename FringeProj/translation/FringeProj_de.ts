@@ -231,9 +231,9 @@
     </message>
     <message>
         <location line="+602"/>
-        <source>creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value. 
+        <source>creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value.
 
-The gray-code has a maximal width of graycodeBitWidth. Hence, N corresponds 1 &lt;&lt; (graycodeBitWidth+1) 
+The gray-code has a maximal width of graycodeBitWidth. Hence, N corresponds 1 &lt;&lt; (graycodeBitWidth+1)
 To apply this lookup table to a dataObject or numpy array, consider using the numpy method take(lut,array) that returns (lut[array[i]] for i in array).</source>
         <translation type="unfinished"></translation>
     </message>

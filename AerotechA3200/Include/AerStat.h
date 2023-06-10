@@ -21,11 +21,11 @@ AERERR_CODE AER_DLLENTRY AerStatusGetStatusWordIsMaskSet( HAERCTRL hAerCtrl, AXI
 AERERR_CODE AER_DLLENTRY AerStatusGetAliveMask( HAERCTRL hAerCtrl, PAXISMASK pMask);
 AERERR_CODE AER_DLLENTRY AerStatusGetNumAliveNodes( HAERCTRL hAerCtrl, PDWORD pdwNum);
 
-AERERR_CODE AER_DLLENTRY AerStatusGetDriveInfoWord( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwInfoWord, PDWORD pdwValue ); 
+AERERR_CODE AER_DLLENTRY AerStatusGetDriveInfoWord( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwInfoWord, PDWORD pdwValue );
 AERERR_CODE AER_DLLENTRY AerStatusGetAmpPeakRating( HAERCTRL hAerCtrl, AXISINDEX iAxis, PDWORD pdwPeakRating);
 AERERR_CODE AER_DLLENTRY AerStatusGetDriveInfo2( HAERCTRL hAerCtrl, DWORD dwDriveInfoBlockNum, AXISINDEX iAxis,
                                                  PDWORD pdwOne, PDWORD pdwTwo, PDWORD pdwThree, PDWORD pdwFour);
-AERERR_CODE AER_DLLENTRY AerStatusConvertDriveInfoBlock0( DWORD dwOne, DWORD dwTwo, DWORD dwThree, DWORD dwFour, 
+AERERR_CODE AER_DLLENTRY AerStatusConvertDriveInfoBlock0( DWORD dwOne, DWORD dwTwo, DWORD dwThree, DWORD dwFour,
 														  PDWORD pdwStickyBits, PDWORD pdwDriveSize, PDWORD pdwMajor,
 														  PDWORD pdwMinor, PDWORD pdwBuild, PDWORD pdwFPGA,
 														  PDWORD pdwMXH, PDWORD pdwDriveHardware, PDWORD pdwSpare );
@@ -35,7 +35,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetDriveInfo2All(HAERCTRL hAerCtrl, AXISINDEX 
 AERERR_CODE AER_DLLENTRY AerStatusGetDriveInfo2AllMode(HAERCTRL hAerCtrl, DWORD dwOnOff);
 //
 // Generic status
-AERERR_CODE AER_DLLENTRY AerStatusGetItems( HAERCTRL hAerCtrl, DWORD nItems, PAIWORD wItemAxes, PAIWORD wItemCodes, 
+AERERR_CODE AER_DLLENTRY AerStatusGetItems( HAERCTRL hAerCtrl, DWORD nItems, PAIWORD wItemAxes, PAIWORD wItemCodes,
                                             PAIDWORD dwItemExtras, PAODOUBLE dItemValues);
 AERERR_CODE AER_DLLENTRY AerStatusGetItemName( HAERCTRL hAerCtl, WORD wItem, LPTSTR pszShortName, LPTSTR pszLongName);
 AERERR_CODE AER_DLLENTRY AerStatusHasAddress( HAERCTRL hAerCtl, WORD wItem, PDWORD pdwHasAddress,
@@ -51,7 +51,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoD( HAERCTRL hAerCtrl, AXISMASK mAxi
 // rather in a structures. There are so many, cause we dont know what they want, and if we give it all the
 // function would have 9 million arguments.
 //
-AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoEx( HAERCTRL hAerCtrl, AXISMASK mAxis, DWORD dwUnits, 
+AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoEx( HAERCTRL hAerCtrl, AXISMASK mAxis, DWORD dwUnits,
                                                  PAODWORD pdwDriveStatus,
                                                  PAODWORD pdwAxisStatus,
                                                  PAODWORD pdwFault,
@@ -59,7 +59,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoEx( HAERCTRL hAerCtrl, AXISMASK mAx
                                                  PAODOUBLE pdPositionCmd,
                                                  PAODOUBLE pdVelocityAvg );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoConvert( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoConvert( HAERCTRL hAerCtrl,
                                                       AXISMASK mAxis,
                                                       PAODOUBLE pdRollOver,
                                                       PAODOUBLE pdPosFactor,
@@ -68,27 +68,27 @@ AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoConvert( HAERCTRL hAerCtrl,
                                                       PAOWORD pwUnits,
                                                       PAOWORD pwMinutes );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoCurrent( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoCurrent( HAERCTRL hAerCtrl,
                                                       AXISMASK mAxis,
                                                       PAOWORD pwCurrent,
                                                       PAOWORD pwCurrentCommand );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoIO( HAERCTRL hAerCtrl, 
-                                                 AXISMASK mAxis, 
+AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoIO( HAERCTRL hAerCtrl,
+                                                 AXISMASK mAxis,
                                                  PAODOUBLE pdAnalogIn0,
                                                  PAODOUBLE pdAnalogIn1,
                                                  PAOWORD pwDigitalIn,
                                                  PAOWORD pwDigitalOut );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoIOEx( HAERCTRL hAerCtrl, 
-                                                   AXISMASK mAxis, 
+AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoIOEx( HAERCTRL hAerCtrl,
+                                                   AXISMASK mAxis,
                                                    PAODOUBLE pdAnalogIn0,
                                                    PAODOUBLE pdAnalogIn1,
                                                    PAODWORD pdwDigitalIn,
                                                    PAODWORD pdwDigitalOut );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoPosition( HAERCTRL hAerCtrl, 
-                                                       AXISMASK mAxis, 
+AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoPosition( HAERCTRL hAerCtrl,
+                                                       AXISMASK mAxis,
                                                        DWORD dwUnits,
                                                        PAODOUBLE pdPosition,
                                                        PAODOUBLE pdPositionCmd,
@@ -100,7 +100,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoPosition( HAERCTRL hAerCtrl,
                                                        PAODOUBLE pdTargetPosUserUnits,
                                                        PAODOUBLE pdAvgVelocityUserUnits );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoStatus( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoStatus( HAERCTRL hAerCtrl,
                                                      AXISMASK mAxis,
                                                      PAODWORD pdwDriveStatus,
                                                      PAODWORD pdwAxisStatus,
@@ -108,7 +108,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfoStatus( HAERCTRL hAerCtrl,
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoStatus( HAERCTRL hAerCtrl, TASKMASK mTask, 
+AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoStatus( HAERCTRL hAerCtrl, TASKMASK mTask,
                                                      PAODWORD pdwStatus,
                                                      PAODWORD pdwStatus2,
                                                      PAODWORD pdwStatus3,
@@ -116,7 +116,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoStatus( HAERCTRL hAerCtrl, TASKMASK
                                                      PAODWORD pdwFault,
                                                      PAODWORD pdwWarning );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoProgram( HAERCTRL hAerCtrl, TASKMASK mTask, 
+AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoProgram( HAERCTRL hAerCtrl, TASKMASK mTask,
                                                       PAODWORD pdwCallStackDepth,
                                                       PAODWORD pdwCurrentProgNumber,
                                                       PAODWORD pdwCurrentLine960,
@@ -125,7 +125,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoProgram( HAERCTRL hAerCtrl, TASKMAS
 
 AERERR_CODE AER_DLLENTRY AerStatusGetProgRunning( HAERCTRL hAerCtrl, TASKINDEX iTask, LPTSTR pszName);
 
-AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoEx( HAERCTRL hAerCtrl, TASKMASK mTask, 
+AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoEx( HAERCTRL hAerCtrl, TASKMASK mTask,
                                                  PAODWORD pdwStatus,
                                                  PAODWORD pdwStatus2,
                                                  PAODWORD pdwStatus3,
@@ -134,7 +134,7 @@ AERERR_CODE AER_DLLENTRY AerStatusGetTaskInfoEx( HAERCTRL hAerCtrl, TASKMASK mTa
                                                  PAODWORD pdwWarning );
 
 
-AERERR_CODE AER_DLLENTRY AerStatusGetStopWatchData(   HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerStatusGetStopWatchData(   HAERCTRL hAerCtrl,
                                                       PAODWORD pdwLast,
                                                       PAODWORD pdwMax,
                                                       PAODWORD pdwMin,
@@ -143,6 +143,6 @@ DWORD AER_DLLENTRY AerStatusGetDriveCmdPend(HAERCTRL hAerCtrl, AXISINDEX iAxis);
 
 #ifdef __cplusplus
 }
-#endif 
+#endif
 
 #endif

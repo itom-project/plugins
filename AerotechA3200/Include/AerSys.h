@@ -14,16 +14,16 @@
    On 960 internal/library data must be 1 byte aligned (not sure why)
    On 3200 internal/library data is 2 byte aligned  ???
 */
-#pragma pack(push, enter_includeAerSys ,2) 
+#pragma pack(push, enter_includeAerSys ,2)
 //#else
-//#pragma pack(push, enter_includeAerSys ,1) 
+//#pragma pack(push, enter_includeAerSys ,1)
 //#endif
 
 
 #include "aeraer.h"     // Simple basic U600 stuff common to ALL U600 apps, and user apps
 
 #include "aermacro.h"
-#include "aersafe.h"    // Safety checking macros 
+#include "aersafe.h"    // Safety checking macros
 #include "Aerc32.h"     // Digital Drive interface
 #include "Aerpinfo.h"   // Parameter info
 #include "Aer960.h"     /* Include common (960+PC+user) header files */
@@ -54,7 +54,7 @@ extern "C" {
 AERERR_CODE AER_DLLENTRY AerSysStart(DWORD dwReset, HAERCTRL *phAerCtrl );
 AERERR_CODE AER_DLLENTRY AerSysStop( HAERCTRL hAerCtrl );
 AERERR_CODE	AER_DLLENTRY AerSysIsHardwareCompatible( HAERCTRL hAerCtrl,	PDWORD pdwCompatible );
-AERERR_CODE AER_DLLENTRY AerSysInitSystem( HAERCTRL hAerCtrl, DWORD dwReset, 
+AERERR_CODE AER_DLLENTRY AerSysInitSystem( HAERCTRL hAerCtrl, DWORD dwReset,
                                            AXISMASK mAxis, TASKMASK mTask, LPCTSTR pszFile,
                                            PDWORD pdwParmType, PDWORD pdwParmNum, PDWORD piIndex );
 AERERR_CODE AER_DLLENTRY AerSysReset( HAERCTRL hAerCtrl, DWORD dwResetFireWire );
@@ -66,11 +66,11 @@ AERERR_CODE AER_DLLENTRY AerSysTaskFaultAckAll(HAERCTRL hAerCtrl, TASKINDEX iTas
 //
 // other stuff
 AERERR_CODE AER_DLLENTRY AerSysOpen( DWORD dwDeviceID, DWORD dwCard, HAERCTRL *phAerCtrl );
-                                     
+
 AERERR_CODE AER_DLLENTRY AerSysOpenEx( HAERCTRL hAerCtrl );
 AERERR_CODE AER_DLLENTRY AerSysClose( HAERCTRL hAerCtrl );
 
-//AERERR_CODE AER_DLLENTRY AerXDeviceIOControl2( HAERCTRL hAerCtrl, DWORD dwCode, 
+//AERERR_CODE AER_DLLENTRY AerXDeviceIOControl2( HAERCTRL hAerCtrl, DWORD dwCode,
 //                                               void* pSend, DWORD dwSendBytes, PVOID pOut, DWORD dwOutBytes );
 //AERERR_CODE AER_DLLENTRY AerSysCloseAll( HAERCTRL hAerCtrl );
 AERERR_CODE AER_DLLENTRY AerSysGetDeviceID( HAERCTRL hAerCtrl,
@@ -84,41 +84,41 @@ AERERR_CODE AER_DLLENTRY AerSysIsSystemInitialized(PDWORD pdwInitialized);
 //AERERR_CODE AER_DLLENTRY AerSysDebugOpen( DWORD dwAerDeviceID, DWORD dwCard, HAERCTRL *phAerCtrl );
 //
 AERERR_CODE AER_DLLENTRY AerSysSendCommandRaw(HAERCTRL hAerCtrl, AXISINDEX iAxis,
-                                              USHORT usCommandCode, DWORD dwCmdParameter0, 
+                                              USHORT usCommandCode, DWORD dwCmdParameter0,
                                               DWORD dwCmdParameter1, DWORD dwCmdParameter2,
                                               DWORD dwCmdParameter3, DWORD dwCmdParameter4,
                                               DWORD dwCmdParameter5, DWORD dwCmdParameter6,
                                               WORD wReturnSizeBytes, PBYTE pbReturnData );
-AERERR_CODE AER_DLLENTRY AerSysSendReadDSPMem(  HAERCTRL hAerCtrl, 
-                                                AXISINDEX iAxis, 
-                                                DWORD dwType, 
-                                                DWORD dwAddress, 
+AERERR_CODE AER_DLLENTRY AerSysSendReadDSPMem(  HAERCTRL hAerCtrl,
+                                                AXISINDEX iAxis,
+                                                DWORD dwType,
+                                                DWORD dwAddress,
                                                 PDWORD pdwValue );
-AERERR_CODE AER_DLLENTRY AerSysSendReadDSPMemFloat( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerSysSendReadDSPMemFloat( HAERCTRL hAerCtrl,
                                                     AXISINDEX iAxis,
-                                                    DWORD dwType, 
-                                                    DWORD dwAddress, 
+                                                    DWORD dwType,
+                                                    DWORD dwAddress,
                                                     PFLOAT pfValue );
-AERERR_CODE AER_DLLENTRY AerSysSendReadDSPMemDouble( HAERCTRL hAerCtrl, 
+AERERR_CODE AER_DLLENTRY AerSysSendReadDSPMemDouble( HAERCTRL hAerCtrl,
                                                      AXISINDEX iAxis,
-                                                     DWORD dwType, 
-                                                     DWORD dwAddress, 
+                                                     DWORD dwType,
+                                                     DWORD dwAddress,
                                                      PDOUBLE pdValue );
 
-AERERR_CODE AER_DLLENTRY AerSysSendWriteDSPMem( HAERCTRL hAerCtrl, 
-                                                AXISINDEX iAxis, 
-                                                DWORD dwType, 
-                                                DWORD dwAddress, 
+AERERR_CODE AER_DLLENTRY AerSysSendWriteDSPMem( HAERCTRL hAerCtrl,
+                                                AXISINDEX iAxis,
+                                                DWORD dwType,
+                                                DWORD dwAddress,
                                                 DWORD dwValue );
-AERERR_CODE AER_DLLENTRY AerSysSendWriteDSPMemFloat( HAERCTRL hAerCtrl, 
-                                                     AXISINDEX iAxis, 
-                                                     DWORD dwType, 
-                                                     DWORD dwAddress, 
+AERERR_CODE AER_DLLENTRY AerSysSendWriteDSPMemFloat( HAERCTRL hAerCtrl,
+                                                     AXISINDEX iAxis,
+                                                     DWORD dwType,
+                                                     DWORD dwAddress,
                                                      FLOAT fValue );
-AERERR_CODE AER_DLLENTRY AerSysSendWriteDSPMemDouble( HAERCTRL hAerCtrl, 
-                                                      AXISINDEX iAxis, 
-                                                      DWORD dwType, 
-                                                      DWORD dwAddress, 
+AERERR_CODE AER_DLLENTRY AerSysSendWriteDSPMemDouble( HAERCTRL hAerCtrl,
+                                                      AXISINDEX iAxis,
+                                                      DWORD dwType,
+                                                      DWORD dwAddress,
                                                       DOUBLE dValue );
 
 AERERR_CODE AER_DLLENTRY AerSysSendWriteFlashMem( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwSave, DWORD dwAddress, DOUBLE dValue );
@@ -128,15 +128,15 @@ AERERR_CODE AER_DLLENTRY AerSysSendMinimumDeadBandTime(HAERCTRL hAerCtrl, AXISIN
 AERERR_CODE AER_DLLENTRY AerSysDrvSetTimeOut( HAERCTRL hAerCtrl, DWORD dwTimeOut );
 AERERR_CODE AER_DLLENTRY AerSysDrvGetTimeOut( HAERCTRL hAerCtrl, PDWORD pdwTimeOut );
 
-// Below for back compatibility only                                            
+// Below for back compatibility only
 AERERR_CODE AER_DLLENTRY AerSysCommandSendRaw(HAERCTRL hAerCtrl, AXISINDEX iAxis,
-                                              USHORT usCommandCode, DWORD dwCmdParameter0, 
+                                              USHORT usCommandCode, DWORD dwCmdParameter0,
                                               DWORD dwCmdParameter1, DWORD dwCmdParameter2,
                                               DWORD dwCmdParameter3, DWORD dwCmdParameter4,
                                               DWORD dwCmdParameter5, DWORD dwCmdParameter6,
                                               WORD wReturnSizeBytes, PBYTE pbReturnData );
-AERERR_CODE AerSysTest(HAERCTRL hAerCtrl, AXISINDEX iAxis, WORD wSubCode, 
-                       DRV_COMM_LENG wSendSizeBytes, PBYTE pbSendData, 
+AERERR_CODE AerSysTest(HAERCTRL hAerCtrl, AXISINDEX iAxis, WORD wSubCode,
+                       DRV_COMM_LENG wSendSizeBytes, PBYTE pbSendData,
                        DRV_COMM_LENG wReturnSizeBytes, PBYTE pbReturnData );
 AERERR_CODE AerSysTestDriverCommun (HAERCTRL hAerCtrl, DRV_COMM_LENG wTranLen, DRV_COMM_LENG wRecvLen, BOOL bDoAxes, BOOL bCheckResults);
 AERERR_CODE AerSysTestDriverCommun2(HAERCTRL hAerCtrl);
@@ -205,7 +205,6 @@ AERERR_CODE AER_DLLENTRY aerSysCommand( HAERCTRL hAerCtrl, WORD wOpCode, WORD wS
 #include "aerFiber.h"
 
 #pragma pack( pop, enter_includeAerSys )
-   
+
 #endif
 // __AERSYS_H__
-

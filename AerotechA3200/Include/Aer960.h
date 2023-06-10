@@ -1,7 +1,7 @@
-     
+
 /*
    Packets used in CNC commands executed by firmware
-      (see CMDCODES.H for LIBRARY command codes)     
+      (see CMDCODES.H for LIBRARY command codes)
       They are availiable to user so user can compile manually.
 
    This header file is used by the 960 code, library, and all Win32 applications.
@@ -15,7 +15,7 @@
       example: typedef const AXISPOINT *const PAXISPOINT;
 
    NOTATION: "xxxx" is a wildcard, and "=" in comment indicates that the element must be one of those. Example:
-      DWORD    dwType;              // =AXISTYPE_xxxx 
+      DWORD    dwType;              // =AXISTYPE_xxxx
     means that dwType must be one of the constants starting with "AXISTYPE_"
 
 */
@@ -36,7 +36,7 @@
 //#define AER_CPUSTAT_IMG_EXECUTE  2
 //#define AER_CPUSTAT_FATAL        3
 /*
-Version data structure  (returned by AerVerGet*()) 
+Version data structure  (returned by AerVerGet*())
 */
 typedef struct tagAER_VERSION
 {
@@ -74,15 +74,15 @@ typedef struct tagAERSOFT_COMMERRORS
    ULONG ulSpare[MAX_AXES-1];
 
    // Recieve time stamp problems
-   ULONG ulRcvNTimeStampsLate[MAX_AXES];        
-   ULONG ulRcvNTimeStampsEarly[MAX_AXES];       
-   ULONG ulRcvNTimeStampsUnchanged[MAX_AXES];   
+   ULONG ulRcvNTimeStampsLate[MAX_AXES];
+   ULONG ulRcvNTimeStampsEarly[MAX_AXES];
+   ULONG ulRcvNTimeStampsUnchanged[MAX_AXES];
    USHORT usRcvTimeStampShortest[MAX_AXES];     // units of 1/8 msec
    USHORT usRcvTimeStampLongest[MAX_AXES];      // units of 1/8 msec
 
-   ULONG ulNumRecordsRcv[MAX_AXES];             // number of records received from drive 
+   ULONG ulNumRecordsRcv[MAX_AXES];             // number of records received from drive
    ULONG ulBadEtherNetAddresses;                // number of invalid ethernet addresses recieved
-   ULONG ulXmitShutOuts[MAX_AXES];       // a positive number representing number of times a record was sent twice OR a ULXMITSHUTOUT* constant 
+   ULONG ulXmitShutOuts[MAX_AXES];       // a positive number representing number of times a record was sent twice OR a ULXMITSHUTOUT* constant
    // Other communication errors/timeouts
 //   ULONG ulStarvationsOnRcv;           // recieve firewire queue was full, when we tried to load a new point into it, just sent to us over firewire
 //   ULONG ulStarvationsOnXmit;          // xmit firewire queue was empty, when we tried to unload a new point from it, to send over firewire
@@ -99,27 +99,27 @@ typedef struct tagAERSOFT_COMMERRORS
    USHORT usTxInterruptMax;            // Max numOf interrupts miss in a miss sequence on TX seen
 
    // Polling loop data
-   ULONG  ulPollLoopHits;    
+   ULONG  ulPollLoopHits;
    USHORT usPollLoopMax;               // in 100 nanosec units
    USHORT usPollLoopMin;               // in 100 nanosec units
    USHORT usPollLoopDeltaMax;          // in 100 nanosec units
    USHORT usPollLoopDeltaMin;          // in 100 nanosec units
    USHORT usNumContextProgs;
 
-   // Thermal data: bit#0-data valid (only if 1 are remaining bits are filled in), bit#1-currently 
+   // Thermal data: bit#0-data valid (only if 1 are remaining bits are filled in), bit#1-currently
    // doing "pull back", bit#2- have done "pullback", bit#3-"On Demand" clock modulation is currently operating
    // bit#4->6 - Modulation duty cycle if "On Demand" active.
-   //   
+   //
    DWORD dwThermalDataMask;
 
    // Exceptions thrown
-   ULONG n1394InterruptExceptions;           
-   ULONG nForeverLoopExceptions;           
-   ULONG nLibraryExceptions;           
-   ULONG nTaskExceptions[MAX_TASKS+1];  // the MAX_TASKS slot is for generic engine problems not related to a particular task         
+   ULONG n1394InterruptExceptions;
+   ULONG nForeverLoopExceptions;
+   ULONG nLibraryExceptions;
+   ULONG nTaskExceptions[MAX_TASKS+1];  // the MAX_TASKS slot is for generic engine problems not related to a particular task
 
-   // Misc 
-   ULONG nQueueStomps[MAX_TASKS+1];       // Delays due to ndrive communications pipeline choking    
+   // Misc
+   ULONG nQueueStomps[MAX_TASKS+1];       // Delays due to ndrive communications pipeline choking
    ULONG ulnStarvations[MAX_TASKS+1];   // task starvations (MAX_TASKS+1 is for library)
    ULONG ulMemData[2];
 } AERSOFT_COMMERRORS;
@@ -135,7 +135,7 @@ typedef TIMER_VALUE *PTIMER_VALUE;
 
 //
 // Returned by AerSysServerGetData
-#define MAX_NUM_OF_NODES    MAX_AXES  // Arbitrary ? Maximum number of nodes (drives+repeaters+thirdparties) 
+#define MAX_NUM_OF_NODES    MAX_AXES  // Arbitrary ? Maximum number of nodes (drives+repeaters+thirdparties)
                                       // that can be connected to network, where Nservo*/npaq counts as one node
 typedef struct tagAERSOFT_SERVERDATA
 {
@@ -155,7 +155,7 @@ typedef struct tagAERSOFT_SERVERDATA
    USHORT			usChanOf[MAX_NUM_OF_NODES];
    ULONG			   ulRcvHits[MAX_AXES];       // number of records received from drive
    ULONG			   ulSpare[MAX_AXES];
-   ENETErrorData	ENETErrorDat ;        // Global Ethernet I/O error status    
+   ENETErrorData	ENETErrorDat ;        // Global Ethernet I/O error status
 } AERSOFT_SERVERDATA;
 typedef AERSOFT_SERVERDATA *PAERSOFT_SERVERDATA;
 
@@ -240,7 +240,7 @@ typedef struct tagAER_PROG_LABEL_INFO
 typedef AER_PROG_LABEL_INFO   *PAER_PROG_LABEL_INFO;
 
 #define MAX_FILE_INFO_LEN  256           // should be _MAX_PATH ?
-typedef struct tagAER_PROG_FILE_INFO            
+typedef struct tagAER_PROG_FILE_INFO
 {
    CHAR     szFile[MAX_FILE_INFO_LEN];   /* path and drive of filename   */
    DWORD    dwDate;                      /* File Date */
@@ -283,7 +283,7 @@ typedef union tagAER_PROG_STATUS
       unsigned qBufferStarted:1;          /* A queue line has been downloaded since start                */
       unsigned qBufferFull:1;             /* Queue is currently full                                     */
       unsigned qBufferEmpty:1;            /* Queue is currently empty                                    */
-      unsigned bSpare:1;                  /* Sticky? */ 
+      unsigned bSpare:1;                  /* Sticky? */
       unsigned TaskActive:MAX_TASKS;      /* Mask of tasks that are active with this program             */
    } Bit;
 } AER_PROG_STATUS;
@@ -352,12 +352,12 @@ typedef struct tagAER_AXIS_DATAD
    BYTE     byUnits;        /* Whether owning task is in Metric(0->G71) or English(1->G70) or Counts(2->G72) */
    BYTE     byMinutes;      /* Whether owning task is in per/min(G75) or not (G76) */
    LONG     lGantryOffset;  /* Gantry offset (if any) in cnts */
-   WORD     wSpare;              
+   WORD     wSpare;
 
-   AER_AXIS_DATA_IO IOData;          
+   AER_AXIS_DATA_IO IOData;
 
-   DOUBLE   dGantryOffset;       
-   DWORD    dMoreSpare[6];       
+   DOUBLE   dGantryOffset;
+   DWORD    dMoreSpare[6];
 
 } AER_AXIS_DATAD;
 typedef AER_AXIS_DATAD   *PAER_AXIS_DATAD;
@@ -380,7 +380,7 @@ typedef struct tagAER_TASK_DATA
    AERERR_CODE       Warning;             /* Reflects Task Parm - TaskWarning */
    DWORD             dwMoreSpare[16];
    //WORD              wProgNumberSticky;
-   //WORD              wMoreSpare[31];       
+   //WORD              wMoreSpare[31];
 } AER_TASK_DATA;
 typedef AER_TASK_DATA *PAER_TASK_DATA;
 typedef const AER_TASK_DATA *const PCAER_TASK_DATA;
@@ -393,18 +393,18 @@ typedef const AER_TASK_DATA *const PCAER_TASK_DATA;
 
 /**************************************************************/
 /* Pointer Type Definitions
-*/   
+*/
 
 /* Pointer structure */
 
 //
-// NOTE : Upper 2 bits of bType in the "Const" structure below is reserved. If any bits in it set, the code assummes that the 
+// NOTE : Upper 2 bits of bType in the "Const" structure below is reserved. If any bits in it set, the code assummes that the
 //        index is instead a string variable (see "wVarNum") (had to do it this goofy way, because the PTR_DATA structure size
 //        could not be increased, when  string variable option was added.
-                                       
+
 #define PTRNUMSPECIAL (DWORD)-1  // special element number (PTRTYPE_STR_GLOBAL_VAR type only) for system error message
 
-typedef struct tagPTR_DATA     // 10 bytes              
+typedef struct tagPTR_DATA     // 10 bytes
 {
    BYTE  bType;   /* =PTRTYPE_xxxx */
    BYTE  bTask;   /* to force a specific task (=BYTE_NULL for default task) */
@@ -427,7 +427,7 @@ typedef struct tagPTR_DATA     // 10 bytes
               PTRTYPE_DBL_AXIS_PARM         (required)
               PTRTYPE_DBL_POSITION          (required)
               PTRTYPE_DBL_PRESET            (required)
-              
+
       Task axis index information (TASKAXISINDEX)
               This information is required for all task axis index PTRTYPEs.
 
@@ -450,10 +450,10 @@ typedef struct tagPTR_DATA     // 10 bytes
          } Const;
          //
          //  wVarNum allowed only for PTRTYPE_DBL_AXIS_PARM
-         //                           PTRTYPE_BYTE_Dxxxx, PTRTYPE_WORD_Wxxxx,  PTRTYPE_BYTE_EDxxxx, PTRTYPE_WORD_Exxxx, 
+         //                           PTRTYPE_BYTE_Dxxxx, PTRTYPE_WORD_Wxxxx,  PTRTYPE_BYTE_EDxxxx, PTRTYPE_WORD_Exxxx,
          //                           PTRTYPE_DBL_Axxxx
          //                           PTRTYPE_DBL_CSPARM_VAR, PTRTYPE_MASK_CSPARM_VAR
-         WORD wVarNum;  // if index is a string/double variable (upper PTRINDEXTYPE_MAX_BITS of this reserved for the variable type !) 
+         WORD wVarNum;  // if index is a string/double variable (upper PTRINDEXTYPE_MAX_BITS of this reserved for the variable type !)
 
       };
    } Index;
@@ -465,7 +465,7 @@ typedef const PTR_DATA *const PCPTR_DATA;
 /* Mask type (64 bits) */
 //
 //
-// NOTE : Upper byte of wNumberr in the "Const" is reserved. If any bits in it set, the code assummes that the 
+// NOTE : Upper byte of wNumberr in the "Const" is reserved. If any bits in it set, the code assummes that the
 //        MASK_DATA64 is a string variable (see Ptrrr structure) (had to do it this goofy way, because the MASK_DATA64 structure size
 //        could not be increased, when the string variable option was added.
 
@@ -638,7 +638,7 @@ typedef const CSPARM_DATA *const PCCSPARM_DATA;
 #define MAX_STRING_FUNCT_LISTS     3
 #define MAX_STRING_FUNCT_LISTD     2
 typedef struct tagSTRING_FUNCT     /* string function */
-{                       
+{
    WORD            wSNum;
    WORD            wDNum;
    MATHSTR_DATA    ElementS[MAX_STRING_FUNCT_LISTS];
@@ -698,9 +698,9 @@ typedef struct tagLINEAR_DATA
 {
    WORD              wMType;         /* MOTIONTYPEn_ */
    DWORD             dwMode;         /* MOTIONMODEn_ */
-   struct 
+   struct
    {
-      DOUBLE            fdStartPosInch[MAX_RETRACE_AXES];  
+      DOUBLE            fdStartPosInch[MAX_RETRACE_AXES];
       DWORD             dwStartPhysAxes;  // mask of axes in StartPos
       DWORD             dwLastMoveMode;   /* MOTIONMODEn_ */
       DWORD             dwLastMoveType;   /* MOTIONTYPEn_ */
@@ -716,13 +716,13 @@ typedef struct tagSLICE_DATA
 {
    AXISINDEX         iStepAxis;
    AXISINDEX         iScanAxis;
-   DOUBLE_DATA       dStepJumpPos; 
+   DOUBLE_DATA       dStepJumpPos;
    DOUBLE_DATA       dScanJumpPos;
-   DOUBLE_DATA       dStepEndPos; 
-   DOUBLE_DATA       dScanEndPos;   
+   DOUBLE_DATA       dStepEndPos;
+   DOUBLE_DATA       dScanEndPos;
    DOUBLE_DATA       dVectorSpeed;
-   DOUBLE_DATA       dStepAxisJumpSpeed; 
-   DOUBLE_DATA       dScanAxisJumpSpeed; 
+   DOUBLE_DATA       dStepAxisJumpSpeed;
+   DOUBLE_DATA       dScanAxisJumpSpeed;
    DWORD_DATA        dwIntAccel;
    DWORD_DATA        dwIntDecel;
 }SLICE_DATA;
@@ -794,7 +794,7 @@ typedef CIRCULAR_DATA *PCIRCULAR_DATA;
 typedef const CIRCULAR_DATA *const PCCIRCULAR_DATA;
 
 // the below must be consective
-#define OFFSETINDEX_I     0    // has to be zero 
+#define OFFSETINDEX_I     0    // has to be zero
 #define OFFSETINDEX_J     1
 #define OFFSETINDEX_K     2
 #define OFFSETINDEX_R     3
@@ -809,7 +809,7 @@ Call Back data structures
 */
 // WARNING: this must match the similar constant defined in /ini/aerparam.pgm
 #define CALLBACKTYPE_RESERVED     10000
-                 
+
 #define ARG_TYPE_DWORD     0       /* pData points to a type DWORD */
 #define ARG_TYPE_DOUBLE    1       /* pData points to a type DOUBLE */
 //#define ARG_TYPE_STRING32  2       /* pData points to a type STRING32 */
@@ -872,21 +872,21 @@ typedef struct tagDIG_DRIVE_INFO
 {
    WORD  wDriveHardware;     // see DRIVE_ID_ constants
    WORD  wDriveHardware2;    // least significant bit=1 if its an NDriveHL
-   DWORD dwStickyBits; 
-   BYTE  byDriveSize; 
-   BYTE  byDriveVersion1; 
-   BYTE  byDriveVersion2; 
-   BYTE  byDriveVersion3; 
-   WORD  wFPGAVersion; 
-   WORD  wMXHVersion; 
+   DWORD dwStickyBits;
+   BYTE  byDriveSize;
+   BYTE  byDriveVersion1;
+   BYTE  byDriveVersion2;
+   BYTE  byDriveVersion3;
+   WORD  wFPGAVersion;
+   WORD  wMXHVersion;
 } DIG_DRIVE_INFO;
 typedef DIG_DRIVE_INFO *PDIG_DRIVE_INFO;
 typedef struct tagDIG_DRIVE_INFO2    // for generic return of drive data
 {
-   DWORD dwOne; 
-   DWORD dwTwo; 
-   DWORD dwThree; 
-   DWORD dwFour; 
+   DWORD dwOne;
+   DWORD dwTwo;
+   DWORD dwThree;
+   DWORD dwFour;
 } DIG_DRIVE_INFO2;
 typedef DIG_DRIVE_INFO2 *PDIG_DRIVE_INFO2;
 
@@ -1008,10 +1008,10 @@ typedef struct tagCODE_PROBE_SET
    DWORD_DATA     Mode;          // used with PROBE MODE command - indicate SW or HW mode
    DWORD_DATA     Level;         // used with PROBE MODE command - indicates active level of input
    DWORD_DATA     InputType;     // used with PROBE INPUT command - specifies type of input, drive, Ethernet etc..
-   DWORD_DATA     BitNum;        // used with PROBE INPUT command - input bit number  
-   MASK_DATA64    m64Drive;      // used with PROBE INPUT command - drive number - translate from an 
+   DWORD_DATA     BitNum;        // used with PROBE INPUT command - input bit number
+   MASK_DATA64    m64Drive;      // used with PROBE INPUT command - drive number - translate from an
                                  // axis name on the command line
-   PTR_DATA       Dest;          // used with PROBE MODE command - points to variable array - string PTRTYPE_ 
+   PTR_DATA       Dest;          // used with PROBE MODE command - points to variable array - string PTRTYPE_
 
 }  CODE_PROBE_SET;
 typedef CODE_PROBE_SET *PCODE_PROBE_SET;
@@ -1198,7 +1198,7 @@ typedef CODE_ASYNC_MOTION *PCODE_ASYNC_MOTION;
 #define ASYNCTYPE_INFEED              0x004
 //#define ASYNCTYPE_QINDEX              5
 //#define ASYNCTYPE_QMOVETO             6
-//#define ASYNCTYPE_QHOME        7   /* MACHPARM_HomeType = 3 */ 
+//#define ASYNCTYPE_QHOME        7   /* MACHPARM_HomeType = 3 */
 //#define ASYNCTYPE_ALTHOME      8   /* MACHPARM_HomeType = 1 */
 //#define ASYNCTYPE_NOHOME       9   /* MACHPARM_HomeType = 2 */
 #define ASYNCTYPE_HOME_LIM_MOV_IN     0x007   /* limited by MaxFeedRate */
@@ -1295,7 +1295,7 @@ typedef struct tagCODE_SLEW
 {
    CODE_BASE         Base;          /* Must be first element */
    DWORD_DATA        AxisPair;          /* port number  */
-   
+
    // the following 3 members can be removed when the Compiler is changed to support
    // the new slew syntax
    //DWORD_DATA        Port;          /* port number  */
@@ -1371,10 +1371,10 @@ typedef struct tagCODE_SOMECOMMAND2
 {
    CODE_BASE         Base;       /* Must be first element */
    MASK_DATA64       TaskAxisMask64;
-   DWORD_DATA        Table;    
+   DWORD_DATA        Table;
    DWORD_DATA        Mode;
    DOUBLE_DATA       DoubleData2;
-   PTR_DATA          ReturnVar;          
+   PTR_DATA          ReturnVar;
    MASK_DATA64       TaskAxisMask64Two;
    DOUBLE_DATA       DoubleData3;
    DOUBLE_DATA       DoubleData4;
@@ -1438,7 +1438,7 @@ typedef struct tagCODE_MEM
    MASK_DATA64       TaskAxisMask64;
    DWORD_DATA        MemType;
    DWORD_DATA        Address;
-   DOUBLE_DATA       Value;      
+   DOUBLE_DATA       Value;
 } CODE_MEM;
 typedef CODE_MEM *PCODE_MEM;
 
@@ -1474,20 +1474,20 @@ typedef CODE_ONGOSUB *PCODE_ONGOSUB;
 typedef struct tagCODE_PVT
 {
    CODE_BASE         Base;
-   MASK_DATA         mTaskAxis;              
-   DWORD_DATA        Duration;   /* msec */ 
+   MASK_DATA         mTaskAxis;
+   DWORD_DATA        Duration;   /* msec */
    DOUBLE_DATA       dAxDistance[MAX_AXES_PVT];   /* user units */
-   DOUBLE_DATA       dAxVelocity[MAX_AXES_PVT];   /* user units / user time unit */ 
+   DOUBLE_DATA       dAxVelocity[MAX_AXES_PVT];   /* user units / user time unit */
 } CODE_PVT;
 typedef CODE_PVT *PCODE_PVT;
 
 typedef struct tagCODE_SOMECOMMAND
 {
    CODE_BASE         Base;
-   DWORD_DATA        DWord1;            
-   DOUBLE_DATA       DoubleData1;               
+   DWORD_DATA        DWord1;
+   DOUBLE_DATA       DoubleData1;
    DOUBLE_DATA       DoubleData2;
-   PTR_DATA          ReturnVar;          
+   PTR_DATA          ReturnVar;
 } CODE_SOMECOMMAND;
 typedef CODE_SOMECOMMAND *PCODE_SOMECOMMAND;
 
@@ -1506,13 +1506,13 @@ typedef CODE_SOMECOMMAND *PCODE_SOMECOMMAND;
 typedef struct tagCODE_FIBERSTART
 {
    CODE_BASE         Base;
-   DWORD_DATA        NRoutineNumber;       
-   DWORD_DATA        NRoutineNumber2;       
-   PTR_DATA          dVarCentroidReport;       
+   DWORD_DATA        NRoutineNumber;
+   DWORD_DATA        NRoutineNumber2;
+   PTR_DATA          dVarCentroidReport;
 } CODE_FIBERSTART;
 typedef CODE_FIBERSTART *PCODE_FIBERSTART;
 
-#define VPP_OFF               0 
+#define VPP_OFF               0
 #define VPP_ON                1
 typedef struct tagCODE_VPP
 {
@@ -1524,8 +1524,8 @@ typedef CODE_VPP *PCODE_VPP;
 typedef struct tagCODE_DRIVECMD
 {
    CODE_BASE         Base;
-   PTR_DATA          PtrLHS;    
-   MASK_DATA         mTaskAxisRHS;              
+   PTR_DATA          PtrLHS;
+   MASK_DATA         mTaskAxisRHS;
    DOUBLE_DATA       ParamRHS[MCOMMAND_NUMBER_PARAMS_PER_COMMAND+2];
 } CODE_DRIVECMD;
 typedef CODE_DRIVECMD *PCODE_DRIVECMD;
@@ -1535,13 +1535,13 @@ typedef struct tagCODE_ASSIGN_Q_GEN
 {
    CODE_BASE         Base;       /* Must be first element */
    TASKINDEX         iTask;
-   MASK_DATA         Mask;       
-   PTR_DATA          PtrUniqueID; 
+   MASK_DATA         Mask;
+   PTR_DATA          PtrUniqueID;
    PTR_DATA          PtrPosDest;    // cnts
    PTR_DATA          PtrVelDest;    // cnts/msec
    PTR_DATA          PtrTimeDest;   // msec
    PTR_DATA          PtrTargDest;   // cnts
-   PTR_DATA          PtrMiscDest; 
+   PTR_DATA          PtrMiscDest;
    PTR_DATA          PtrAccelDest;  // cnts/msec/msec
 } CODE_ASSIGN_Q_GEN;
 typedef CODE_ASSIGN_Q_GEN *PCODE_ASSIGN_Q_GEN;
@@ -1550,20 +1550,20 @@ typedef struct tagCODE_PCI_COMMAND
 {
    CODE_BASE         Base;       /* Must be first element */
    DWORD             subFunctionCode;    // 0=open, 1=close, 2=readByte, 3=writeByte, 4=readWord, 5=writeWord
-   PTR_DATA          ReturnVariable; 
-   DWORD_DATA        Argument1; 
-   DWORD_DATA        Argument2; 
-   DWORD_DATA        Argument3; 
-   DWORD_DATA        Argument4; 
-   DWORD_DATA        Argument5; 
+   PTR_DATA          ReturnVariable;
+   DWORD_DATA        Argument1;
+   DWORD_DATA        Argument2;
+   DWORD_DATA        Argument3;
+   DWORD_DATA        Argument4;
+   DWORD_DATA        Argument5;
 } CODE_PCI_COMMAND;
 typedef CODE_PCI_COMMAND *PCODE_PCI_COMMAND;
 
 typedef struct tagCODE_VME_COMMAND
 {
    CODE_BASE         Base;                /* Must be first element */
-   DWORD             subFunctionCode;     // VME_READ_REG=read, VME_WRITE_REG=write, 
-   PTR_DATA          ReturnVariable; 
+   DWORD             subFunctionCode;     // VME_READ_REG=read, VME_WRITE_REG=write,
+   PTR_DATA          ReturnVariable;
    DWORD_DATA        Argument1;           // address
    DWORD_DATA        Argument2;           // value (for write only)
    DWORD_DATA        Argument3;           // value for 'mode' - this is an optional arg for read and write
@@ -1584,15 +1584,15 @@ typedef struct tagCODE_ANALOG_COMMAND
 {
    CODE_BASE         Base;       /* Must be first element */
    DWORD             subFunctionCode;   // an ANALOG_SUBCODE_* constant
-   MASK_DATA         mTaskAxisTrack;    // input, for pulse commands          
+   MASK_DATA         mTaskAxisTrack;    // input, for pulse commands
    DWORD_DATA        TrackMode;         // or time, for "time" subcode
-   DOUBLE_DATA       VelPos;            
-   MASK_DATA         mTaskAxisOutput;   // output, for pulse commands                     
-   DWORD_DATA        DACNum; 
-   DOUBLE_DATA       DACMinV;            
-   DOUBLE_DATA       DACMaxV; 
+   DOUBLE_DATA       VelPos;
+   MASK_DATA         mTaskAxisOutput;   // output, for pulse commands
+   DWORD_DATA        DACNum;
+   DOUBLE_DATA       DACMinV;
+   DOUBLE_DATA       DACMaxV;
    DOUBLE_DATA       OffValue;          // voltage for "off (voltage)" subcode
-   DOUBLE_DATA       OffsetV; 
+   DOUBLE_DATA       OffsetV;
 } CODE_ANALOG_COMMAND;
 typedef CODE_ANALOG_COMMAND *PCODE_ANALOG_COMMAND;
 
@@ -1604,11 +1604,11 @@ typedef struct tagCODE_AUTOFOCUS
 {
    CODE_BASE         Base;              /* Must be first element */
    DWORD             subFunctionCode;   // SUBCODE_FOCUS_* constant
-   MASK_DATA64       mAxis;              
-   DOUBLE_DATA       Argument1;            
-   DOUBLE_DATA       Argument2;            
-   DOUBLE_DATA       Argument3;            
-   DOUBLE_DATA       Argument4;            
+   MASK_DATA64       mAxis;
+   DOUBLE_DATA       Argument1;
+   DOUBLE_DATA       Argument2;
+   DOUBLE_DATA       Argument3;
+   DOUBLE_DATA       Argument4;
 } CODE_AUTOFOCUS;
 typedef CODE_AUTOFOCUS *PCODE_AUTOFOCUS;
 
@@ -1640,7 +1640,7 @@ typedef CODE_AUTOFOCUS *PCODE_AUTOFOCUS;
 #define CODETYPE_ASSIGN_STR          10    /* CODE_ASSIGN_STR      */
 #define CODETYPE_ASSIGN_APT          11    /* CODE_ASSIGN_APT      */
 #define CODETYPE_DWELL               12    /* CODE_DOUBLE1         */
-#define CODETYPE_PSO                 13    /* CODE_PSO             */ 
+#define CODETYPE_PSO                 13    /* CODE_PSO             */
 #define CODETYPE_COND_JUMP           14    /* CODE_COND_JUMP       */
 #define CODETYPE_COND_WAIT           15    /* CODE_CODE_WAIT       */
 #define CODETYPE_SET_OFFSET_PRESET   16    /* CODE_AXISPOINT       */
@@ -1806,7 +1806,7 @@ typedef union tagCODE_PACKET
    CODE_PVT                Pvt;
    CODE_SOMECOMMAND        SomeCommand;
    CODE_FIBERSTART         FiberStart;
-   CODE_MSET               MSet;  
+   CODE_MSET               MSet;
    CODE_VPP                Vpp;
    CODE_DRIVECMD           DriveCmd;
    CODE_ASSIGN_Q_GEN       QGenCmd;
@@ -1861,7 +1861,7 @@ typedef DRIVE_DATA *PDRIVE_DATA;
 
 typedef struct tagETHER_BINARY_DATA
 {
-   BOOL        Bool[MAX_AXES][ETHER_BIN_EACH_DRIVE];      
+   BOOL        Bool[MAX_AXES][ETHER_BIN_EACH_DRIVE];
 }ETHER_BINARY_DATA;
 typedef ETHER_BINARY_DATA *PETHER_BINARY_DATA;
 
@@ -1886,7 +1886,7 @@ typedef ETHER_REGISTER_DATA *PETHER_REGISTER_DATA;
 //   REGISTER_DATA     RegisterOutput;
 //   REGISTER_DATA     RegisterOutputStatus;
 //   REGISTER_DATA     ProcessRegisterOutput;
-//   
+//
 ////   LONG_DATA         LongOutput;
 ////   LONG_DATA         LongInput;
 ////   WORD           notUsed_SemaphoreDD;
@@ -1976,8 +1976,8 @@ typedef struct tagAER_MEASUREMENT_SUMMARY
    AER_MEASUREMENT_PACKET cut;
    AER_MEASUREMENT_PACKET motion;
    AER_MEASUREMENT_PACKET total;
-   DWORD  numMoves;          
-   DWORD  numSlices;          
+   DWORD  numMoves;
+   DWORD  numSlices;
    DWORD  numMsecsToMakeSlices;     /* Milliseconds */
    DWORD  numMsecsToRunProgram;     /* Milliseconds */
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -39,10 +39,10 @@ template<typename _Tp> ito::RetVal writeXYZ(const pcl::PointCloud<_Tp>& pointClo
     std::vector<_Tp, Eigen::aligned_allocator<_Tp> > points;
 
     points = pointCloud.points;
-    
+
     for (size_t i = 0; i < pointCloud.points.size (); ++i)
     {
-      if (!std::isfinite (pointCloud.points[i].x) || 
+      if (!std::isfinite (pointCloud.points[i].x) ||
           !std::isfinite(pointCloud.points[i].y) ||
           !std::isfinite(pointCloud.points[i].z))
         continue;

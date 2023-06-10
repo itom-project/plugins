@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -49,7 +49,7 @@ class DockWidgetVistek : public ito::AbstractAddInDockWidget
         void identifierChanged(const QString &identifier) {};
 
     private slots:
-        void on_sliderExposure_valueChanged(double value);   
+        void on_sliderExposure_valueChanged(double value);
         void on_sliderGain_valueChanged(double value);
         void on_sliderOffset_valueChanged(double value);
 };

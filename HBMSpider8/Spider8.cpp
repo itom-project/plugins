@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -69,12 +69,12 @@ The installation needs an initialized serial port";
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(""); 
-    
+    m_aboutThis = QObject::tr("");
+
     m_initParamsMand.clear();
     ito::Param paramVal("SerialIO", ito::ParamBase::HWRef, NULL, tr("Open com-port where Spider8 device is connected").toLatin1().data());
     m_initParamsMand.append(paramVal);
-   
+
 //    ito::Param paramVal("device", ito::ParamBase::String, "Dev1", tr("Name of the target Device, Dev1 as default, cDAQ1Mod1 for compactDAQ single module Device. Other names see device description in NI MAX").toLatin1().data());
 //    m_initParamsOpt.append(paramVal);
     m_initParamsOpt.clear();
@@ -174,7 +174,7 @@ ito::RetVal Spider8Funcs::hbmGetErrStr(const int errNum, QString &errMsg)
         break;
         default:
             errMsg.asprintf(QObject::tr("unknown error (%d)").toLatin1().data(), errNum);
-            retval = ito::RetVal(ito::retError, 0, QObject::tr("unknown error %1").arg(errNum).toLatin1().data());            
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("unknown error %1").arg(errNum).toLatin1().data());
         break;
     }
 
@@ -184,7 +184,7 @@ ito::RetVal Spider8Funcs::hbmGetErrStr(const int errNum, QString &errMsg)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Spider8Funcs::hbmGetError(QString &err, int &errNum)
 {
-    // retrieving Spider8 error. 
+    // retrieving Spider8 error.
     ito::RetVal retValue(ito::retOk);
     int maxlen = 255;
     char cmdBuf[20] = "";
@@ -220,7 +220,7 @@ ito::RetVal Spider8Funcs::hbmGetError(QString &err, int &errNum)
 ito::RetVal Spider8Funcs::hbmGetStatus(int &status, const int channel = -1)
 {
     // retrieving Spider8 status. If no channel number is passed the general status
-    // is queried otherwise we check the specified channel using either MSV or ACT 
+    // is queried otherwise we check the specified channel using either MSV or ACT
     // command
     ito::RetVal retValue(ito::retOk);
     char cmdBuf[20] = "";
@@ -458,7 +458,7 @@ ito::RetVal Spider8Funcs::hbmListDevices(QVector<int> &devices, QVector<QString>
         *m_readBufLen = 255;
         memset(m_readBuf.data(), 0, 255);
         retValue += m_pSer->getVal(m_readBuf, m_readBufLen, NULL);
-        
+
         // TODO: check what is returned when device does not exist
         QStringList ident = QString::fromLatin1(m_readBuf.data()).split(",");
         if (ident.length() > 0)
@@ -479,7 +479,7 @@ ito::RetVal Spider8Funcs::hbmListChannels(QMap<int, Spider8Channel> &channels)
     ito::RetVal retValue(ito::retOk);
     char cmdBuf[20] = "";
     channels.clear();
-    
+
     retValue += m_pSer->setVal("AID?", 4, NULL);
     Sleep(m_rdSleep);
     *m_readBufLen = 255;
@@ -619,7 +619,7 @@ ito::RetVal Spider8Funcs::hbmSetShunt(const int channel, const bool value)
     *m_readBufLen = 255;
     memset(m_readBuf.data(), 0, 255);
     retValue += m_pSer->getVal(m_readBuf, m_readBufLen, NULL);
-    
+
     if (atoi(m_readBuf.data()) != 0)
     {
         QString errMsg;
@@ -1162,7 +1162,7 @@ ito::RetVal Spider8Funcs::hbmReadNScale(const int numChs, const int samples, dou
     int samplesCnvrt = 0;
     QSharedPointer<char> dataBuf(new char[numValues]);
     QSharedPointer<int> dataBufSize(new int);
-    // we double buffer here, I tried messing around with incomplete word reads, but the thing gets quite messy as 
+    // we double buffer here, I tried messing around with incomplete word reads, but the thing gets quite messy as
     // Spider is really slooow. So I opted for a double buffering here. For the sake of less messy code and a little
     // higher memory use.
     ito::uint8 *localBuf = (ito::uint8*)malloc(numValues);
@@ -1264,7 +1264,7 @@ end:
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-Spider8::Spider8() : AddInDataIO(), 
+Spider8::Spider8() : AddInDataIO(),
     m_isgrabbing(false),
     m_pSer(NULL),
     m_aInIsAcquired(false),
@@ -1277,11 +1277,11 @@ Spider8::Spider8() : AddInDataIO(),
     m_params.insert(paramVal.getName(), paramVal);
 
     // General Parameters
-    paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "HBMSpider8", NULL);    
+    paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "HBMSpider8", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-//    paramVal = ito::Param("channel", ito::ParamBase::String | ito::ParamBase::Readonly, "", NULL);    
+//    paramVal = ito::Param("channel", ito::ParamBase::String | ito::ParamBase::Readonly, "", NULL);
 //    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("channelList", ito::ParamBase::String | ito::ParamBase::Readonly, "returns a list with the available channels, modes and measurement ranges", NULL);    
+    paramVal = ito::Param("channelList", ito::ParamBase::String | ito::ParamBase::Readonly, "returns a list with the available channels, modes and measurement ranges", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("actChannelList", ito::ParamBase::String | ito::ParamBase::Readonly, "returns a list of the currently activated channels", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -1404,7 +1404,7 @@ ito::RetVal Spider8::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         retValue += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
     }
 
-//    emit parametersChanged(m_params);    
+//    emit parametersChanged(m_params);
 
     if (waitCond)
     {
@@ -1633,7 +1633,7 @@ ito::RetVal Spider8::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         {
             QStringList res;
             foreach(niTask* t, m_taskMap)
-            {            
+            {
                 QStringList ch;
                 ch.append(t->getName());
                 if (t->isInitialized())
@@ -1661,7 +1661,7 @@ ito::RetVal Spider8::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         }
         else if (key.right(10) == "TaskParams")
         {
-            QStringList tl;                
+            QStringList tl;
             QString ch = key.left(2);
             if (m_taskMap.contains(ch))
             {
@@ -1773,7 +1773,7 @@ ito::RetVal Spider8::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             *val = it.value();
         }
         else if (key == "aiChParams")
-        { 
+        {
             // (channel,inConfig,inRange)
             QStringList in = QString(val->getVal<char*>()).split(",");
             if (in.length() < 2)
@@ -1837,7 +1837,7 @@ ito::RetVal Spider8::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         else if (key == "doChParams")
         { // (dev-channel,inConfig,minInLim,maxInLim)
             QStringList in = QString(val->getVal<char*>()).split(",");
-            if (m_channels.contains(in[0]) && in.size() == 1 && m_taskMap.value("do")->isInitialized()) 
+            if (m_channels.contains(in[0]) && in.size() == 1 && m_taskMap.value("do")->isInitialized())
             {
                 niDigitalOutputChannel *dou = NULL;
                 if (m_channels.value(in[0]) == NULL)
@@ -1904,7 +1904,7 @@ ito::RetVal Spider8::startDevice(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Spider8::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1925,7 +1925,7 @@ ito::RetVal Spider8::stopDevice(ItomSharedSemaphore *waitCond)
 
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Spider8::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -1981,7 +1981,7 @@ ito::RetVal Spider8::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retval;
-        waitCond->release();  
+        waitCond->release();
     }
     return retval;
 }
@@ -2147,7 +2147,7 @@ ito::RetVal Spider8::readDigital(ito::DataObject *externalDataObject)
         int size = ports * samples;
         ito::int32 retSize = -1;
 
-        //int err = DAQmxReadDigitalU8(*m_taskMap.value("di")->getTaskHandle(), samples, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, (ito::uint8*)m_data.rowPtr(0,0), size, &retSize, NULL); 
+        //int err = DAQmxReadDigitalU8(*m_taskMap.value("di")->getTaskHandle(), samples, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, (ito::uint8*)m_data.rowPtr(0,0), size, &retSize, NULL);
         m_data.setAxisDescription(0, "status");
         m_data.setAxisDescription(1, "lines");
 
@@ -2186,16 +2186,16 @@ ito::RetVal Spider8::writeDigital(const int channel, ito::DataObject *externalDa
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
 /*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
+    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the
     DataObject.
-    
+
     This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, copyVal
 */
 ito::RetVal Spider8::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -2205,7 +2205,7 @@ ito::RetVal Spider8::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     int error = -1;
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
-    
+
     if (m_aInIsAcquired)
     {
         retValue += readAnalog();
@@ -2232,7 +2232,7 @@ ito::RetVal Spider8::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
 //    retValue += m_taskMap.value("ai")->resetTaskHandle();
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -2244,8 +2244,8 @@ ito::RetVal Spider8::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
+    This method copies the recently grabbed camera frame to the given DataObject.
+
     The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
     interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
     an image stack is possible then)
@@ -2253,7 +2253,7 @@ ito::RetVal Spider8::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, getVal
 */
 ito::RetVal Spider8::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -2261,12 +2261,12 @@ ito::RetVal Spider8::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
-    
+
     if (!retValue.containsError())
     {
         //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
@@ -2284,12 +2284,12 @@ ito::RetVal Spider8::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -2298,7 +2298,7 @@ ito::RetVal Spider8::setVal(const char *data, const int length, ItomSharedSemaph
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     const ito::DataObject *dObj = reinterpret_cast<const ito::DataObject*>(data);
 
     int error = 0;
@@ -2334,7 +2334,7 @@ ito::RetVal Spider8::setVal(const char *data, const int length, ItomSharedSemaph
         m_isgrabbing = true;
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -2374,17 +2374,17 @@ void Spider8::dockWidgetVisibilityChanged(bool visible)
     If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
     of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
     m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
+
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
     all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
+
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
-    
+
     Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
     has a configuration dialog.
-    
+
     \sa hasConfDialog
 */
 const ito::RetVal Spider8::showConfDialog(void)
@@ -2412,7 +2412,7 @@ ito::RetVal Spider8::checkData(ito::DataObject *externalDataObject, int channels
         }
         else if (externalDataObject->calcNumMats () > 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());
         }
         else if (externalDataObject->getSize(dims - 2) != (unsigned int)channels || externalDataObject->getSize(dims - 1) != (unsigned int)samples || externalDataObject->getType() != ito::tFloat64)
         {

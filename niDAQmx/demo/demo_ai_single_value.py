@@ -3,7 +3,7 @@
 """Finite analog input task for single value acquisitions.
 
 Demo script for acquiring exactly one analog value
-per channel per acquire() command 
+per channel per acquire() command
 with a National Instruments DAQ device.
 
 To test this script, the NI MAX (Measurement & Automation
@@ -21,10 +21,10 @@ where ConfigMode is an integer from this list
 (see also argument terminalConfig from command
 DAQmxCreateAIVoltageChan):
 
-DAQmx_Val_Cfg_Default = 0, 
-DAQmx_Val_Diff = 1, 
-DAQmx_Val_RSE = 2, 
-DAQmx_Val_NRSE = 3, 
+DAQmx_Val_Cfg_Default = 0,
+DAQmx_Val_Diff = 1,
+DAQmx_Val_RSE = 2,
+DAQmx_Val_NRSE = 3,
 DAQmx_Val_PseudoDiff = 4
 
 Hint: It depends on the NI DAQ devices, if they allow
@@ -71,7 +71,7 @@ t = time.time()
 for i in range(0, 50):
     # start the acquisition of the given number of samples per channel.
     plugin.acquire()
-    
+
     # getVal will return if all samples have been acquired (or timeout)
     plugin.copyVal(a[:, i])
 

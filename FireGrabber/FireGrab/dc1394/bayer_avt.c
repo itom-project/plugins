@@ -79,28 +79,28 @@ void dc1394_avt_Raw8ToYUV444(uint8_t *pDst1, const uint8_t *pSrc, uint32_t XSize
         switch((i&1)+2*uColorOffsetX)
         {
         case 3:
-            pB  = pBuf; 
-            pG0 = pB+1; 
-            pG1 = pB+XSize; 
+            pB  = pBuf;
+            pG0 = pB+1;
+            pG1 = pB+XSize;
             pR  = pG1+1;
             break;
         case 2:
-            pG1 = pBuf; 
+            pG1 = pBuf;
             pR  = pG1+1;
-            pB  = pG1+XSize; 
+            pB  = pG1+XSize;
             pG0 = pB+1;
             break;
         case 1:
-            pG0 = pBuf; 
+            pG0 = pBuf;
             pB  = pG0+1;
-            pR  = pG0+XSize; 
+            pR  = pG0+XSize;
             pG1 = pR+1;
             break;
         case 0:
         default:
-            pR  = pBuf; 
-            pG1 = pR+1; 
-            pG0 = pR+XSize; 
+            pR  = pBuf;
+            pG1 = pR+1;
+            pG0 = pR+XSize;
             pB  = pG0+1;
             break;
         }
@@ -119,12 +119,12 @@ void dc1394_avt_Raw8ToYUV444(uint8_t *pDst1, const uint8_t *pSrc, uint32_t XSize
 
             if(j&1)
             {
-                pB  +=2; 
+                pB  +=2;
                 pG1 +=2;
             }
             else
             {
-                pR  +=2; 
+                pR  +=2;
                 pG0 +=2;
             }
         }
@@ -169,7 +169,7 @@ void dc1394_avt_YUV_averaging_4(uint8_t *pDst, uint32_t XSize, uint32_t YSize)
                 break;
             }
             pLineEnd += XSize;
-        } 
+        }
         dst += 2;
     }
 }
@@ -182,7 +182,7 @@ void dc1394_avt_YUV_averaging_4(uint8_t *pDst, uint32_t XSize, uint32_t YSize)
  * The resulting data is not packed in YUV 422 format, data format is still YUV444.
  * However, valid U and V components are stored only for pixels with even X-coordinate.
  */
-void dc1394_avt_YUV_averaging_2(void *pDst, uint32_t XSize, uint32_t YSize) 
+void dc1394_avt_YUV_averaging_2(void *pDst, uint32_t XSize, uint32_t YSize)
 
 {
 
@@ -218,19 +218,19 @@ void dc1394_avt_YUV_averaging_42(uint8_t *pDst, uint32_t XSize, uint32_t YSize)
     S_YUV444 *pFrameEnd    = pYUV + (XSize*(YSize-1));
 
     /* special treatment for first pixel */
-    pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[0].U + pYUV[1].U + pYUV[2].U + 
-                              pYUV_NextRow[0].U + pYUV_NextRow[1].U + pYUV_NextRow[2].U + 3 ) / 6 ); 
-    pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[0].V + pYUV[1].V + pYUV[2].V + 
-                              pYUV_NextRow[0].V + pYUV_NextRow[1].V + pYUV_NextRow[2].V + 3 ) / 6 ); 
+    pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[0].U + pYUV[1].U + pYUV[2].U +
+                              pYUV_NextRow[0].U + pYUV_NextRow[1].U + pYUV_NextRow[2].U + 3 ) / 6 );
+    pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[0].V + pYUV[1].V + pYUV[2].V +
+                              pYUV_NextRow[0].V + pYUV_NextRow[1].V + pYUV_NextRow[2].V + 3 ) / 6 );
 
     for (;;)
     {
         /* main loop - standard processing */
         pYUV += 2;
         pYUV_NextRow += 2;
-        pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U + pYUV[2].U + 
+        pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U + pYUV[2].U +
                                   pYUV_NextRow[-1].U + pYUV_NextRow[0].U + pYUV_NextRow[1].U + pYUV_NextRow[2].U + 4 ) / 8 );
-        pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[-1].V + pYUV[0].V + pYUV[1].V + pYUV[2].V + 
+        pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[-1].V + pYUV[0].V + pYUV[1].V + pYUV[2].V +
                                   pYUV_NextRow[-1].V + pYUV_NextRow[0].V + pYUV_NextRow[1].V + pYUV_NextRow[2].V + 4 ) / 8 );
 
         if( pYUV == pLineEnd )
@@ -238,9 +238,9 @@ void dc1394_avt_YUV_averaging_42(uint8_t *pDst, uint32_t XSize, uint32_t YSize)
             /* special treatment for last pixel of each row */
             pYUV += 2;
             pYUV_NextRow += 2;
-            pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U + 
-                                  pYUV_NextRow[-1].U + pYUV_NextRow[0].U + pYUV_NextRow[1].U + 3 ) / 6 ); 
-            pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[-1].V + pYUV[0].V + pYUV[1].V  + 
+            pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U +
+                                  pYUV_NextRow[-1].U + pYUV_NextRow[0].U + pYUV_NextRow[1].U + 3 ) / 6 );
+            pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[-1].V + pYUV[0].V + pYUV[1].V  +
                                   pYUV_NextRow[-1].V + pYUV_NextRow[0].V + pYUV_NextRow[1].V + 3 ) / 6 );
             pLineEnd += XSize;
 
@@ -252,26 +252,26 @@ void dc1394_avt_YUV_averaging_42(uint8_t *pDst, uint32_t XSize, uint32_t YSize)
             }
 
             /* special treatment for first pixel of each row */
-            pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[0].U + pYUV[1].U + pYUV[2].U + 
-                              pYUV_NextRow[0].U + pYUV_NextRow[1].U + pYUV_NextRow[2].U + 3 ) / 6 ); 
-            pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[0].V + pYUV[1].V + pYUV[2].V + 
-                              pYUV_NextRow[0].V + pYUV_NextRow[1].V + pYUV_NextRow[2].V + 3 ) / 6 ); 
+            pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[0].U + pYUV[1].U + pYUV[2].U +
+                              pYUV_NextRow[0].U + pYUV_NextRow[1].U + pYUV_NextRow[2].U + 3 ) / 6 );
+            pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[0].V + pYUV[1].V + pYUV[2].V +
+                              pYUV_NextRow[0].V + pYUV_NextRow[1].V + pYUV_NextRow[2].V + 3 ) / 6 );
         }
     }
 
     /* special treatment for last line */
-    pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[0].U + pYUV[1].U + pYUV[2].U + 1 ) / 3 ); 
-    pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[0].V + pYUV[1].V + pYUV[2].V + 1 ) / 3 ); 
+    pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[0].U + pYUV[1].U + pYUV[2].U + 1 ) / 3 );
+    pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[0].V + pYUV[1].V + pYUV[2].V + 1 ) / 3 );
     for (;;)
     {
         pYUV += 2;
-        pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U + pYUV[2].U + 2 ) / 4 ); 
+        pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U + pYUV[2].U + 2 ) / 4 );
         pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[-1].V + pYUV[0].V + pYUV[1].V + pYUV[2].V + 2 ) / 4 );
         if( pYUV == pLineEnd )
         {
             /* special treatment for last pixel */
             pYUV += 2;
-            pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U + 1 ) / 3 ); 
+            pYUV[0].U = (uint8_t) ( ( (uint16_t) pYUV[-1].U + pYUV[0].U + pYUV[1].U + 1 ) / 3 );
             pYUV[0].V = (uint8_t) ( ( (uint16_t) pYUV[-1].V + pYUV[0].V + pYUV[1].V + 1 ) / 3 );
             break;
         }
@@ -299,7 +299,7 @@ void dc1394_avt_YUV422UnpackedToRGB(uint8_t *pDst, uint32_t nPixelCount)
         uint8_t Y1 = yuv[1].Y;
 
         const int32_t vr      = (int16_t) ( (float) (V-128) * 1.4022 );
-        const int32_t uvg     = (int16_t) ( (float) (V-128) * (-0.7144) ) + 
+        const int32_t uvg     = (int16_t) ( (float) (V-128) * (-0.7144) ) +
                                  (int16_t) ( (float) (U-128) * (-0.3457) );
         const int32_t ub      = (int16_t) ( (float) (U-128) * 1.7710 );
 
@@ -318,25 +318,23 @@ void dc1394_avt_YUV422UnpackedToRGB(uint8_t *pDst, uint32_t nPixelCount)
     }
 }
 
-void dc1394_avt_Raw8ToRGB_YUV422(uint8_t *restrict pDst, const uint8_t *restrict pSrc, uint32_t XSize, uint32_t YSize, dc1394color_filter_t bayerPattern)  
+void dc1394_avt_Raw8ToRGB_YUV422(uint8_t *restrict pDst, const uint8_t *restrict pSrc, uint32_t XSize, uint32_t YSize, dc1394color_filter_t bayerPattern)
 {
     dc1394_avt_Raw8ToYUV444(pDst, pSrc, XSize, YSize, bayerPattern);
     dc1394_avt_YUV_averaging_2( pDst, XSize, YSize);
     dc1394_avt_YUV422UnpackedToRGB(pDst, XSize*YSize );
 }
 
-void dc1394_avt_Raw8ToRGB_LCAA(uint8_t *restrict pDst, const uint8_t *restrict pSrc, uint32_t XSize, uint32_t YSize, dc1394color_filter_t bayerPattern) 
+void dc1394_avt_Raw8ToRGB_LCAA(uint8_t *restrict pDst, const uint8_t *restrict pSrc, uint32_t XSize, uint32_t YSize, dc1394color_filter_t bayerPattern)
 {
     dc1394_avt_Raw8ToYUV444(pDst, pSrc, XSize, YSize, bayerPattern);
     dc1394_avt_YUV_averaging_4(pDst, XSize, YSize );
     dc1394_avt_YUV422UnpackedToRGB(pDst, XSize*YSize);
 }
 
-void dc1394_avt_Raw8ToRGB_LCAAV(uint8_t *restrict pDst, const uint8_t *restrict pSrc, uint32_t XSize, uint32_t YSize, dc1394color_filter_t bayerPattern) 
+void dc1394_avt_Raw8ToRGB_LCAAV(uint8_t *restrict pDst, const uint8_t *restrict pSrc, uint32_t XSize, uint32_t YSize, dc1394color_filter_t bayerPattern)
 {
     dc1394_avt_Raw8ToYUV444(pDst, pSrc, XSize, YSize, bayerPattern);
     dc1394_avt_YUV_averaging_42( pDst, XSize, YSize);
     dc1394_avt_YUV422UnpackedToRGB(pDst, XSize*YSize);
 }
-
-

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -22,7 +22,7 @@
 
 /********** Serial Port *****************
 #   1         5
-#   /---------\      1 DCD    6 DSR 
+#   /---------\      1 DCD    6 DSR
 #  | . . . . . |     2 RxD    7 RTS
 #   \ . . . . /      3 TxD    8 CTS
 #    \       /       4 DTR    9 RI
@@ -67,7 +67,7 @@
 
 #include "dockWidgetSerialIO.h"
 
-/*static*/ int SerialPort::baudRates[] = 
+/*static*/ int SerialPort::baudRates[] =
 {
     50,
     75,
@@ -756,7 +756,7 @@ int SerialPort::sreadable(void) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
-{    
+{
     int ret = 0;
 #ifndef WIN32
     unsigned int numread = 0;
@@ -1413,7 +1413,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
     retval += m_params["endline"].copyValueFrom(&((*paramsMand)[2]));
     retval += m_params["endlineRead"].copyValueFrom(&((*paramsMand)[2]));
-    
+
     tendline = m_params["endline"].getVal<char *>(); //borrowed reference
     strncpy(endline, tendline, 3);
 //    sprintf(endline, "%s", tendline);
@@ -1473,7 +1473,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     if (!retval.containsError())
     {
         retval += m_params["debugIgnoreEmpty"].copyValueFrom(&((*paramsOpt)[7]));
-        m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());    
+        m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());
     }
 
     emit parametersChanged(m_params);
@@ -1611,7 +1611,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
             QElapsedTimer timer;
             int timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000);
             bool done = false;
-            int pos = numCharactersForPrebuf; 
+            int pos = numCharactersForPrebuf;
             int len = 0;
 
             timer.start();

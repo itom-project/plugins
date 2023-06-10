@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////
 // Fileame : aerio.h
-// Purpose : linkage between virtual I/O and ethernet I/O required the 
-//           data type VIRTIO_DATA to be declared in an "h" file so 
-//           the type could be used in both places. 
-//Author   : Ratin 
+// Purpose : linkage between virtual I/O and ethernet I/O required the
+//           data type VIRTIO_DATA to be declared in an "h" file so
+//           the type could be used in both places.
+//Author   : Ratin
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef __AERVIRTIO_H_INCLUDED
 #define __AERVIRTIO_H_INCLUDED
 
 #include "AerType.h"
-#include "aercdef.h"    
+#include "aercdef.h"
 #include "AertDef.h"
 
 
@@ -21,13 +21,13 @@
     the virtual update functionality is different
 */
 
-typedef struct tagCFG_WORDS 
+typedef struct tagCFG_WORDS
 {
    WORD Word[20] ;
-} CFG_WORDS ; 
+} CFG_WORDS ;
 
 
-/////* Binary/Registor I/O 
+/////* Binary/Registor I/O
 //#define MAX_VIRT_BINARY_BITS        1024
 //#define MAX_VIRT_BINARY_WORDS       (MAX_VIRT_BINARY_BITS/16) /* 64 */
 //#define MAX_VIRT_REGISTERS          896
@@ -50,30 +50,30 @@ typedef REGISTER_DATA *PREGISTER_DATA;
 
 typedef struct tagVIRTIO_DATA
 {
-            
+
    BINARY_DATA       BinaryOutput;           //32 bytes
-   BINARY_DATA       BinaryInput;            //32 bytes  
-   
+   BINARY_DATA       BinaryInput;            //32 bytes
+
    REGISTER_DATA     RegisterInput;          //896 word inputs
-   
+
    REGISTER_DATA     RegisterOutput;         //896 word outputs
-  
+
    CFG_WORDS         CONFIG_WORDS ;          //20 words for holding config info
-  
+
 //I/O start locations
- 
-   WORD               InetGlobalInputBitsStart  ; 
+
+   WORD               InetGlobalInputBitsStart  ;
    WORD               InetGlobalOutputBitsStart ;
    WORD               InetGlobalOutputBitStatusStart;
    WORD               InetGlobalInputWordsStart ;
    WORD               InetGlobalOutputWordsStart;
-   WORD               InetGlobalOutputWordStatusStart; 
+   WORD               InetGlobalOutputWordStatusStart;
    WORD               InetGlobalInputProcessStart ;
    WORD               InetGlobalOutputProcessStart;
    WORD               InetGlobalConfigStart;
 
 //start of ethernet registers I/O
-       
+
 //   LONG_DATA      LongOutput;
 //   LONG_DATA      LongInput;
 //   WORD           notUsed_SemaphoreDD;

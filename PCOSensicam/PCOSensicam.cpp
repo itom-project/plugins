@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -97,7 +97,7 @@ PCOSensicamInterface::PCOSensicamInterface()
     setObjectName("PCOSensicam");
 
     m_description = QObject::tr("DLL for PCO-Sensicam cameras");
-    
+
 /*    char docstring[] = \
 "The PCOSensicam is a plugin to access PCO sensicam, dicam pro and hsfc pro cameras. \n\
 \n\
@@ -110,18 +110,18 @@ Download the SDK and install it at any location. Additionally you need to instal
 For compiling this plugin, set the CMake variable **PCO_SENSICAM_SDK_DIR** to the base directory of the pco.sensicam.sdk. \n\
 The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). \n\
 Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.");
-    
+
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / copyright of the external DLLs belongs to PCO");
-    m_aboutThis = QObject::tr(GITVERSION);      
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
     m_initParamsOpt.append(ito::Param("board_id", ito::ParamBase::Int, 0, MAXBOARD, 0, "board number that should be connected"));
-    
+
     return;
 }
 
@@ -146,7 +146,7 @@ PCOSensicamInterface::~PCOSensicamInterface()
     \class PCOSensicam
     \brief Class for the PCOSensicam. The PCOSensicam is able to create noisy images or simulate a typical WLI or confocal image signal.
 
-    Usually every method in this class can be executed in an own thread. Only the constructor, destructor, showConfDialog will be executed by the 
+    Usually every method in this class can be executed in an own thread. Only the constructor, destructor, showConfDialog will be executed by the
     main (GUI) thread.
 */
 
@@ -173,7 +173,7 @@ const ito::RetVal PCOSensicam::showConfDialog(void)
     \param [in] uniqueID is an unique identifier for this PCOSensicam-instance
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
-PCOSensicam::PCOSensicam() : 
+PCOSensicam::PCOSensicam() :
     AddInGrabber(),
     m_isgrabbing(false),
     m_hCamera(NULL),
@@ -305,7 +305,7 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         //and set the camera to idle mode
         retVal += checkError(SETUP_CAMERA(m_hCamera));
     }
-    
+
     if (!retVal.containsError())
     {
         m_caminfo.wSize =sizeof(SC_Camera_Description);
@@ -329,7 +329,7 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             case TEST:
                 retVal += ito::RetVal::format(ito::retError, 0, "unsupported camera type: %s", CAMTYPE_NAMES[campar.cam_typ]);
                 break;
-            
+
             case FASTEXP: //"Fast Exposure"
             case FASTEXPQE: //"Fast Exposure QE"
                 m_params["fast_mode"].setMeta(new ito::IntMeta(1,1,1), true);
@@ -367,7 +367,7 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if (!retVal.containsError())
     {
-        m_params["name"].setVal<char*>(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]);
+        m_params["name"].setVal<const char*>(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]);
         setIdentifier(QString("%1 (%2)").arg(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]).arg(getID()));
     }
 
@@ -391,7 +391,7 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (waitCond)
     {
         waitCond->returnValue = retVal;
-        waitCond->release();  
+        waitCond->release();
     }
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -475,7 +475,7 @@ ito::RetVal PCOSensicam::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             if (!retVal.containsError())
             {
                 it->setVal<int>(camValues.ccdtemp);
-            }          
+            }
         }
         else if (key == "electronic_temperature")
         {
@@ -484,7 +484,7 @@ ito::RetVal PCOSensicam::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             if (!retVal.containsError())
             {
                 it->setVal<int>(camValues.eletemp);
-            }  
+            }
         }
 
         //finally, save the desired value in the argument val (this is a shared pointer!)
@@ -536,7 +536,7 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         // value in m_params and whether the new type fits to the requirements of any possible
         // meta structure.
         retVal += apiValidateAndCastParam(*it, *val, false, true, true);
-    }  
+    }
 
     if (!retVal.containsError())
     {
@@ -697,8 +697,8 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             if (!retVal.containsError())
             {
                 it->copyValueFrom(&(*val));
-                
-            }   
+
+            }
 
             if (!retVal.containsError())
             {
@@ -730,7 +730,7 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             {
                 COCValues cocValues = m_cocValues;
                 cocValues.mode &= (0x00FF00FF); //keep type and submode, delete gain
-                
+
                 cocValues.mode |= ((val->getVal<int>() & 0xFF) << 8);
                 int desiredMode = cocValues.mode;
                 int err = test_coc2(cocValues);
@@ -746,7 +746,7 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 {
                     it->copyValueFrom(&(*val));
                 }
-            }   
+            }
 
             if (!retVal.containsError())
             {
@@ -762,7 +762,7 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             if (!retVal.containsError())
             {
                 it->copyValueFrom(&(*val));
-            }   
+            }
 
             if (!retVal.containsError())
             {
@@ -777,7 +777,7 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     emit parametersChanged(m_params);
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();
@@ -822,7 +822,7 @@ ito::RetVal PCOSensicam::startDevice(ItomSharedSemaphore *waitCond)
 
     return retVal;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With stopDevice the camera device is stopped (opposite to startDevice)
 /*!
@@ -842,7 +842,7 @@ ito::RetVal PCOSensicam::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
     if (grabberStartedCount() == 0)
     {
-        retVal += stopCamera();        
+        retVal += stopCamera();
     }
     else if (grabberStartedCount() < 0)
     {
@@ -863,7 +863,7 @@ ito::RetVal PCOSensicam::stopDevice(ItomSharedSemaphore *waitCond)
 ito::RetVal PCOSensicam::stopCamera()
 {
     ito::RetVal retVal;
-    
+
     if (!m_isstarted)
     {
         retVal = checkError(STOP_COC(m_hCamera, 0));
@@ -940,7 +940,7 @@ ito::RetVal PCOSensicam::startCamera()
         printf("\n");*/
      break;
 
-     case FASTEXPQE: //"Fast Exposure QE" 
+     case FASTEXPQE: //"Fast Exposure QE"
         type = M_FAST;
         gain = gain_mode; //(0: normal analog gain, 1: extended analog gain)
         submode=NORMALLONG;  //CYCLE is not necessary here
@@ -959,7 +959,7 @@ ito::RetVal PCOSensicam::startCamera()
         }
         else
         {
-            sprintf(cocValues.table.data(),"%i,%i,-1,-1",qRound(delay_ms),qRound(exposure_ms)); 
+            sprintf(cocValues.table.data(),"%i,%i,-1,-1",qRound(delay_ms),qRound(exposure_ms));
         }
     break;
 
@@ -975,7 +975,7 @@ ito::RetVal PCOSensicam::startCamera()
         }
         else
         {
-            sprintf(cocValues.table.data(),"%i,%i,-1,-1",qRound(delay_ms),qRound(exposure_ms)); 
+            sprintf(cocValues.table.data(),"%i,%i,-1,-1",qRound(delay_ms),qRound(exposure_ms));
         }
     break;
 
@@ -990,7 +990,7 @@ ito::RetVal PCOSensicam::startCamera()
         }
         else
         {
-            sprintf(cocValues.table.data(),"%i,%i,-1,-1",qRound(delay_ms),qRound(exposure_ms)); 
+            sprintf(cocValues.table.data(),"%i,%i,-1,-1",qRound(delay_ms),qRound(exposure_ms));
         }
     break;
 
@@ -1036,10 +1036,10 @@ ito::RetVal PCOSensicam::startCamera()
         //test and set camera values
 
         //normal mode, auto triggger binning 1x1 max roi
-        //test if SET_COC gets right values 
+        //test if SET_COC gets right values
         cocValues.mode = ((type & 0xFF) | ((gain & 0xFF) << 8) | ((submode & 0xFF)<<16));
         int err = test_coc2(cocValues);
-        
+
         if (err != PCO_NOERROR)
         {
             if ((err&0xF000FFFF)==PCO_WARNING_SDKDLL_COC_VALCHANGE)
@@ -1077,7 +1077,7 @@ ito::RetVal PCOSensicam::startCamera()
 
     int ccdxsize, ccdysize, width, height, bitpix;
     retVal += checkError(GETSIZES(m_hCamera, &ccdxsize, &ccdysize, &width, &height, &bitpix));
-        
+
     if (!retVal.containsError())
     {
         retVal += synchronizeParameters();
@@ -1133,7 +1133,7 @@ int PCOSensicam::test_coc2(COCValues &cocValues)
         {
             if (cocValues.table.size() < 2048)
             {
-                cocValues.table.resize(2*std::max(32, cocValues.table.size()));
+                cocValues.table.resize(2*std::max(32, (int)cocValues.table.size()));
             }
             else
             {
@@ -1218,7 +1218,7 @@ ito::RetVal PCOSensicam::synchronizeParameters()
             it->setFlags(ito::ParamBase::Readonly);
         }
         it->setVal<int>(std::min(m_cocValues.roiy2 * vstep - 1, ccdysize - 1));
-            
+
         it = m_params.find("roi");
         if (vstep > 0 && hstep > 0)
         {
@@ -1246,11 +1246,11 @@ ito::RetVal PCOSensicam::synchronizeParameters()
     {
         m_params["ccd_temperature"].setVal<int>(camValues.ccdtemp);
         m_params["electronic_temperature"].setVal<int>(camValues.eletemp);
-    }  
-    
+    }
+
     return retVal;
 }
-       
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Call this method to trigger a new image.
 /*!
@@ -1347,7 +1347,7 @@ ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCon
         }
 
         ResetEvent(m_buffers[0].bufEvent);
-      
+
     }
 
     return retVal + m_acquisitionRetVal;
@@ -1377,7 +1377,7 @@ ito::RetVal PCOSensicam::retrieveData(ito::DataObject *externalDataObject)
     }
 
     if (!retVal.containsError())
-    {      
+    {
         if (externalDataObject)
         {
             switch (m_params["bpp"].getVal<int>())
@@ -1436,7 +1436,7 @@ ito::RetVal PCOSensicam::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue=retVal;
         waitCond->release();
@@ -1448,7 +1448,7 @@ ito::RetVal PCOSensicam::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -1470,12 +1470,12 @@ ito::RetVal PCOSensicam::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retVal += checkData(dObj);  
+        retVal += checkData(dObj);
     }
 
     if (!retVal.containsError())
     {
-        retVal += retrieveData(dObj);  
+        retVal += retrieveData(dObj);
     }
 
     if (!retVal.containsError())
@@ -1483,7 +1483,7 @@ ito::RetVal PCOSensicam::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();

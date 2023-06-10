@@ -10,7 +10,7 @@
 **Devices**:    Avantes AvaSpec Spectrometer
 **Author**:     :pluginauthor:`AvantesAvaSpec`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: AvantesAvaSpec
 
@@ -54,7 +54,7 @@ An instance of this plugin has the following internal parameters:
     Name of the detector.
 **dark_correction**: {int}
     Dark correction mode. See section below.
-    
+
 Timestamp
 =========
 
@@ -72,13 +72,13 @@ Dark correction
 Some spectrometers have more pixels on the sensor than are used for the signal generation. These, covered and hence dark pixels, can be used for a dark
 correction. There are three types of dark correction (parameter dark_correction):
 
-* Off (0): No dark correction is applied, if the sensor is recognized to have such dark pixels, a tag 'dark' is created that contains the mean value of all dark pixels. 
+* Off (0): No dark correction is applied, if the sensor is recognized to have such dark pixels, a tag 'dark' is created that contains the mean value of all dark pixels.
   If no averaging is enabled, the output format of the dataObject is uint16, else float32. Sensors, that don't have dark pixels can only be operated in this mode.
 * Static (1): The mean value of all dark pixels is subtracted from all pixels. The output format is float32 always (negative values might occur).
 * Dynamic (2): Only choose this mode, if the software AvaSpec provides dynamic dark correction for the sensor (see sensor configuration >> checkbox 'dynamic dark correction'
   must be enabled. In this case, odd and even pixels have different dark correction values (they are probably read by different electronics). Choose this mode to
   subtract different mean values for even and odd pixels. The tag 'dark' still contains the mean of both mean values (0.5 * (mean_even + mean_odd)).
-  
+
 Changelog
 =========
 

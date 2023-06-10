@@ -119,7 +119,7 @@ To use this plugin under windows OS you probably will need to install libusb dev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Library to remote control some DSLR cameras. 
+        <source>Library to remote control some DSLR cameras.
 
 !!! Important !!!
 To use this plugin under windows OS you probably will need to install libusb devcice driver.Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.

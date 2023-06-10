@@ -46,7 +46,7 @@ with the documentation for libgphoto2/camlibs/jl2005c. If for any reason
 you do not have this file, it can be found at <gphoto.svn.sourceforge.net>
 in the directory trunk/libgphoto2/camlibs/jl2005c. My thanks to the other
 members of the team who worked together to solve the longstanding problem.
-Thanks to Adam Rubin and Bertrik Sikken for doing the research needed to 
+Thanks to Adam Rubin and Bertrik Sikken for doing the research needed to
 gather the information found at
 
 <http://sourceforge.net/apps/mediawiki/gphoto/index.php?title=ImageEncoding
@@ -72,17 +72,17 @@ These cameras use an extremely primitive command structure. The only thing
 that the camera really does know how to do is to prepare to download all data
 on it, then to download all data on it, and then to reset prior to being
 disconnected. Judging by what it does, the OEM software is almost certainly
-built on the assumption that the camera will be initialized, have its data 
+built on the assumption that the camera will be initialized, have its data
 dumped exactly once, and then disconnected. Everything else is done on the
 computer with the big blob of data which has been downloaded. Therefore,
 any other functionality has to be based on software fakery which fools the
 hardware into emulating said functionality. Suppose, for example, that there
 are ten photos in the camera. Then what the camera will do is:
 	-- report the number of photos (ten)
-	-- tell how much data needs to be downloaded in all (depends on how 
+	-- tell how much data needs to be downloaded in all (depends on how
 	much room was taken up by the raw data for all the photos)
 	-- provide a table with one line for each photo, giving its size, start
-	location, output height and width, and some kind of code for the 
+	location, output height and width, and some kind of code for the
 	compression method used on it.
 In the next step, one must request all the image data for all the ten photos
 to be downloaded. This happens in increments of 64000 bytes, with only the last
@@ -100,7 +100,7 @@ data in the camera which comes after photo number 3, as part of the exit
 routine. The sequence of downloading number 10, say, followed by number 1 is
 even more complicated. The actual steps required are:
 	-- initialize the camera
-	-- download enough data to get photo number 10, throwing away all data 
+	-- download enough data to get photo number 10, throwing away all data
 	which is not part of photo number 10 but precedes it
 	-- download the data required for photo number 10
 	-- download the rest of the data, if any
@@ -116,7 +116,7 @@ puts certain requirements on any program used to handle the camera. Most
 particularly, any program which uses libgphoto2 must be willing to call and
 actually to use the camera_exit() function which is contained in this library.
 Otherwise, given the above constraints, it is obvious that the camera would
-not work properly with that frontend program. 
+not work properly with that frontend program.
 
 TO DO
 
@@ -137,4 +137,3 @@ Absolutely none. Remember, I did not sell you this software. I have written
 this driver for my own edification and in the sincere hope that it might help
 you to use of your camera. Please see also the warranty clauses
 in the LGPL license.
-

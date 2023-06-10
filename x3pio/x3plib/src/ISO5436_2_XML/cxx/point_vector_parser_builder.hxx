@@ -73,7 +73,7 @@ namespace OpenGPS
        * @see PointVectorParserBuilder::BuildParser
        */
       virtual void BuildX(const OGPS_DataPointType dataType);
-      
+
       /*!
        * Builds the object used to parse the Y component of the vector.
        * @param dataType The data type of the Y axis.

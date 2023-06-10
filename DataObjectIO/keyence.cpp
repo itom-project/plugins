@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -34,10 +34,10 @@ typedef struct
     char magic1[4];
     char dll_version[4];
     char magic2[4];
-    
+
 } Vk4Header;
 
-typedef struct 
+typedef struct
 {
     ito::uint32 setting;
     ito::uint32 color_peak;
@@ -55,7 +55,7 @@ typedef struct
     ito::uint32 reserved;
 } Vk4OffsetTable;
 
-typedef struct 
+typedef struct
 {
     ito::uint32 size;
     ito::uint32 year;
@@ -130,7 +130,7 @@ typedef struct
     /* more values in original file */
 } Vk4MeasurementConditions;
 
-typedef struct 
+typedef struct
 {
     ito::uint32 width;
     ito::uint32 height;
@@ -142,7 +142,7 @@ typedef struct
     ito::uint8 palette[0x300];
 } Vk4TopoIntensityImage;
 
-typedef struct 
+typedef struct
 {
     ito::uint32 width;
     ito::uint32 height;
@@ -212,7 +212,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                 {
                     retval += ito::RetVal(ito::retError, 0, "image data does not correspond to given meta information");
                 }
-                
+
                 if (!retval.containsError())
                 {
                     ito::tDataType datatype;
@@ -230,7 +230,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                     }
 
                     double scale = (isHeight) ? measconds.z_length_per_digit * PICOMETRE : qPow(0.5, header.bit_depth);
-                    
+
                     if (datatype != ito::tInt32)
                     {
                         ito::DataObject temp(header.height, header.width, datatype);
@@ -317,7 +317,7 @@ ito::RetVal readDataImage(QFile &file, const QByteArray &setname, const Vk4Offse
                 {
                     retval += ito::RetVal(ito::retError, 0, "image data does not correspond to given meta information");
                 }
-                
+
                 if (!retval.containsError())
                 {
                     dataobj = ito::DataObject(header.height, header.width, ito::tRGBA32);
@@ -664,7 +664,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
                                 DELETE_AND_SET_NULL_ARRAY(lensname_);
                             }
                         }
-                        
+
                     }
                 }
 
@@ -673,7 +673,7 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
                     *((*paramsMand)[0].getVal<ito::DataObject*>()) = dataobj;
                 }
             }
-            
+
             file.close();
         }
     }
@@ -686,6 +686,3 @@ ito::RetVal DataObjectIO::loadKeyenceVK4Params(QVector<ito::Param> *paramsMand, 
 
     return retval;
 }
-
-
-

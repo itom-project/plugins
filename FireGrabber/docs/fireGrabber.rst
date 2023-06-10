@@ -10,21 +10,21 @@
 **Devices**:    Cameras supported by FirePackage from Allied Vision
 **Author**:     :pluginauthor:`FireGrabber`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: FireGrabber
-    
+
 For cameras from Allied Vision it is recommended to use the new Vimba interface and the itom plugin AVTVimba. This
 supports more types of cameras and features than the deprecated FirePackage driver from Allied Vision.
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: FireGrabber
 

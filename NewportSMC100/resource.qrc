@@ -2,7 +2,7 @@
     <qresource prefix="/dialogue">
         <file>reset.png</file>
     </qresource>
-	
+
     <qresource prefix="/widget">
 		  <file>run.png</file>
       <file>run_multi.png</file>

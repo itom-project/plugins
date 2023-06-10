@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -51,9 +51,9 @@ class AndorSDK3 : public ito::AddInGrabber
     private:
         ito::RetVal checkError(const int &code);
 
-        enum SyncParams { 
-            sPixelClock = 0x0001, 
-            sExposure = 0x0002, 
+        enum SyncParams {
+            sPixelClock = 0x0001,
+            sExposure = 0x0002,
             sBinning = 0x0004,
             sRoi = 0x0008,
             sGain = 0x0010,
@@ -139,7 +139,7 @@ class AndorSDK3 : public ito::AddInGrabber
             AT_64 y;
         };
 
-        
+
         PixelEncodingIdx m_pixelEncodingIdx;
         TriggerModeIdx m_triggerModeIdx;
         ElectronicShutteringMode m_electronicShutteringMode;

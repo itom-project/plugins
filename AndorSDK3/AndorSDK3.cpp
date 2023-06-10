@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -60,10 +60,10 @@ AndorSDK3::AndorSDK3() :
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AndorSDK3", "plugin name");
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 1.0, 0.005, tr("Exposure time of chip (in seconds).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 808, 101, tr("Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (only symmetric binning is allowed; if read only binning is not supported)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -223,7 +223,7 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             qDebug() << AT_SetEnumIndex(m_handle, L"TriggerMode", m_triggerModeIdx.tInternal);
         }
         qDebug() << AT_SetBool(m_handle, L"MetadataEnable", false);
-        //Set the camera to continuously acquires frames 
+        //Set the camera to continuously acquires frames
         qDebug() << AT_SetEnumString(m_handle, L"CycleMode", L"Continuous");
 
         if (!retVal.containsError())
@@ -312,7 +312,7 @@ ito::RetVal AndorSDK3::close(ItomSharedSemaphore *waitCond)
         retValue += checkError(AT_Close(m_handle));
         AndorSDK3::andorOpenedIndices[m_cameraIndex] = -1;
         m_handle = AT_HANDLE_UNINITIALISED;
-    }   
+    }
 
     retValue += checkError(AT_FinaliseLibrary());
 
@@ -708,7 +708,7 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
         else if (key == "bpp")
         {
-            
+
             switch (val->getVal<int>())
             {
             case 8:
@@ -730,7 +730,7 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             }
         }
         else
-        { 
+        {
             //e.g. timeout
             it->copyValueFrom(val.data());
         }
@@ -870,7 +870,7 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        //Re-queue the buffers 
+        //Re-queue the buffers
         m_buffer.imageAvailable = false;
         retValue += checkError(AT_QueueBuffer(m_handle, m_buffer.alignedBuffer, m_buffer.bufferSize));
 
@@ -1004,12 +1004,12 @@ ito::RetVal AndorSDK3::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1241,7 +1241,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         retval += rettemp;
     }
-    
+
     if (what & sFrameRate)
     {
         //get exposure time, exposure modes and ranges
@@ -1262,7 +1262,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         retval += rettemp;
     }
-    
+
     if (what & sCooling)
     {
         AT_BOOL val;
@@ -1405,7 +1405,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             it = m_params.find("sizex");
             it->setVal<int>(size.x);
             it->setMeta(new ito::IntMeta(sizeMin.x, sizeMax.x), true);
-            
+
             it = m_params.find("sizey");
             it->setVal<int>(size.y);
             it->setMeta(new ito::IntMeta(sizeMin.y, sizeMax.y), true);
@@ -1486,14 +1486,14 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         else
         {
-            it->setVal<char*>("[notSupported]");
+            it->setVal<const char*>("[notSupported]");
             it->setFlags(ito::ParamBase::Readonly);
-            
+
         }
 
-        it->setMeta(sm,true);   
+        it->setMeta(sm,true);
     }
-    
+
     if (what & sReadoutRate)
     {
         it = m_params.find("pixel_readout_rate");
@@ -1522,12 +1522,12 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         else
         {
-            it->setVal<char*>("[notSupported]");
+            it->setVal<const char*>("[notSupported]");
             it->setFlags(ito::ParamBase::Readonly);
-            
+
         }
 
-        it->setMeta(sm,true);   
+        it->setMeta(sm,true);
     }
 
     if (what & sFanSpeed)
@@ -1558,18 +1558,18 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         }
         else
         {
-            it->setVal<char*>("[notSupported]");
+            it->setVal<const char*>("[notSupported]");
             it->setFlags(ito::ParamBase::Readonly);
-            
+
         }
 
-        it->setMeta(sm,true);   
+        it->setMeta(sm,true);
     }
 
     if (what & sElectronicShutteringMode)
     {
         it = m_params.find("electronic_shuttering_mode");
-        
+
         int count;
         AT_WC wstring[100];
         QString value;
@@ -1596,7 +1596,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         {
             it->setVal<int>(0);
             it->setFlags(ito::ParamBase::Readonly);
-        }  
+        }
     }
 
     if (what & sBppAndPreAmpGain)
@@ -1653,7 +1653,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         {
             it->setVal<int>(16);
         }
-        
+
         it->setMeta(new ito::IntMeta(minBpp,maxBpp,stepBpp), true);
 
         retval += rettemp;
@@ -1684,7 +1684,7 @@ ito::RetVal AndorSDK3::checkData(ito::DataObject *externalDataObject)
     {
         futureType = ito::tInt32;
     }
-    else 
+    else
     {
         futureType = ito::tFloat64;
     }
@@ -1705,7 +1705,7 @@ ito::RetVal AndorSDK3::checkData(ito::DataObject *externalDataObject)
         }
         else if (externalDataObject->calcNumMats () > 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());
         }
         else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
@@ -1747,9 +1747,9 @@ ito::RetVal AndorSDK3::checkData(ito::DataObject *externalDataObject)
         m_buffer.aoiBitsPerPixel = (bpp <= 8) ? 8 : 16;
         m_buffer.imageAvailable = false;
 
-        //Allocate a number of memory buffers to store frames 
-        m_buffer.buffer = new unsigned char[bufferSize + 7]; 
-        m_buffer.alignedBuffer = reinterpret_cast<unsigned char*>((reinterpret_cast<unsigned long>(m_buffer.buffer) + 7) & ~7); 
+        //Allocate a number of memory buffers to store frames
+        m_buffer.buffer = new unsigned char[bufferSize + 7];
+        m_buffer.alignedBuffer = reinterpret_cast<unsigned char*>((reinterpret_cast<unsigned long>(m_buffer.buffer) + 7) & ~7);
     }
 
     return ito::retOk;
@@ -1842,7 +1842,7 @@ ito::RetVal AndorSDK3::loadEnumIndices()
             }
         }
     }
-    
+
     //ElectronicShutteringMode
     if (AT_GetEnumCount(m_handle, L"ElectronicShutteringMode", &count) == AT_SUCCESS)
     {
@@ -1860,7 +1860,7 @@ ito::RetVal AndorSDK3::loadEnumIndices()
             }
         }
     }
-    
+
     //FanSpeed
     if (AT_GetEnumCount(m_handle, L"FanSpeed", &count) == AT_SUCCESS)
     {
@@ -1882,7 +1882,7 @@ ito::RetVal AndorSDK3::loadEnumIndices()
             }
         }
     }
-    
+
     //FanSpeed
     if (AT_GetEnumCount(m_handle, L"PixelReadoutRate", &count) == AT_SUCCESS)
     {

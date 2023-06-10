@@ -1,4 +1,4 @@
-/* This is the README.sq905 file for libgphoto2/camlibs/sq905. 
+/* This is the README.sq905 file for libgphoto2/camlibs/sq905.
  *
  * This README is part of the libgphoto2/camlibs/sq905 library source and is
  * distributed with that source under the LGPL license. a copy of which
@@ -7,11 +7,11 @@
  *
  * Copyright (C) 2003 - 2010 Theodore Kilgore <kilgota@auburn.edu>
  */
- 
- 
+
+
 INTRODUCTION:
 
-Cameras with chip from S&Q Technologies are often called DSC(2770) cameras. 
+Cameras with chip from S&Q Technologies are often called DSC(2770) cameras.
 They have USB Vendor:Product number 0x2770:0x9120, and are classified as USB
 Class:Subclass:Protocol ff:ff:ff (proprietary:proprietary:proprietary).
 
@@ -54,13 +54,13 @@ to know about the camera's chip ID and to know precisely what the
 non-conforming behavior is.
 
 
-WHAT CHIP IS ACTUALLY IN THESE CAMERAS? 
+WHAT CHIP IS ACTUALLY IN THESE CAMERAS?
 
-The brief answer is that I do not know. 
+The brief answer is that I do not know.
 
 The website of SQ Technologies <www.sq.com.tw> lists several camera
 controller chips in addition to the SQ905, which is now (2007)
-discontinued. All of the SQ cameras which have the same USB ID do use the 
+discontinued. All of the SQ cameras which have the same USB ID do use the
 same control sequences, however. The lower-resolution cameras all seem to use
 the same Hynix video sensor chip. The video chips in higher-resolution cameras
 do not all behave the same way and thus probably come from several sources.
@@ -109,7 +109,7 @@ WHAT FEATURES DO THESE CAMERAS HAVE, AND WHAT DOES THIS DRIVER SUPPORT?
 -- Low resolution 176x144 or 320x240, compressed			Y
 -- Ability to "switch" resolution between pictures 			Y
 -- Ability to download all pictures on camera				Y
--- Ability to download the first k pictures, where 
+-- Ability to download the first k pictures, where
 	k is less than the number on the camera 			Y
 -- Ability to download individual photos				Y
 -- "Video clip" capability. Clips are saved as directories.		Y
@@ -118,8 +118,8 @@ WHAT FEATURES DO THESE CAMERAS HAVE, AND WHAT DOES THIS DRIVER SUPPORT?
 -------------------------------------------------------------------------
 The following things can be done with button-pushes on the camera:
 -------------------------------------------------------------------------
--- Frequency filter for use in artificial light. Can be set 
-	to cancel 60hz or 50hz interference. 
+-- Frequency filter for use in artificial light. Can be set
+	to cancel 60hz or 50hz interference.
 -- Delete all, delete last, resolution setting, compression mode setting.
 Unfortunately, it does not seem possible to do any of these things with
 commands sent from the computer even if the camera is tethered, except for
@@ -155,7 +155,7 @@ these cameras give relatively good pictures,
 Video capture of one photo is done with  "gphoto2 --capture-preview". The
 related command "gphoto2 --capture" is not implemented. It would be used to
 take a photo which can be downloaded later on, through normal photo download
-procedures. But the hardware seems unable to support "gphoto2 --capture".  
+procedures. But the hardware seems unable to support "gphoto2 --capture".
 
 The sq905 cameras can function as webcams. Support for the webcam mode of
 these cameras is available through the module gspca_sq905, included as
@@ -170,7 +170,7 @@ in webcam mode. The camera is a USB 1.1 device, and it is streaming
 uncompressed frames, using bulk transport, not isochronous transport.
 
 Thanks is hereby given to the authors and maintainers of the old "sq"
-module, which for several years provided an out-of-kernel module to support 
+module, which for several years provided an out-of-kernel module to support
 streaming with these cameras.
 
 
@@ -218,7 +218,7 @@ from ordinary photos. Clips are put into subdirectories, and you must enter
 a subdirectory to see and download the frames in it.  Digikam does not work
 quite so well for me. But it may work nicely for you, and you are hereby
 encouraged to try it. If you want to use either gtkam or digikam, you are
-encouraged to read the camera's manual. 
+encouraged to read the camera's manual.
 
 
 NOTES
@@ -266,7 +266,7 @@ and encouragement:
 	for his continued interest in these cameras.
 
 
-WARRANTY? 
+WARRANTY?
 
 	Absolutely not. No warranty. Never. Not responsible for any actual
 	or potential damage or consequences to anyone or to the equipment of
@@ -281,7 +281,7 @@ WARRANTY?
 	presumed that any end-user of this program will have access to the
 	source code of the program and can judge for himself or herself
 	whether he/she wishes to use it or not, or can consult someone with
-	appropriate expertise to make such a judgment. 
+	appropriate expertise to make such a judgment.
 
 
 Theodore Kilgore

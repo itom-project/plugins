@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -61,7 +61,7 @@ float AvantesAvaSpec::swapsingleIfNeeded(float floatin)
             floatout.sa[teller] = temp.sa[3 - teller];
         }
         return floatout.res;
-    
+
 
 }
 
@@ -138,7 +138,7 @@ tested with the following spectrometers: \
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr(GITVERSION);  
+    m_aboutThis         = tr(GITVERSION);
 
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
@@ -171,8 +171,8 @@ const ito::RetVal AvantesAvaSpec::showConfDialog(void)
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-AvantesAvaSpec::AvantesAvaSpec() :  
-    AddInGrabber(), 
+AvantesAvaSpec::AvantesAvaSpec() :
+    AddInGrabber(),
     m_pUsb(NULL),
     m_isGrabbing(false),
     m_numberDeadPixels(0),
@@ -202,12 +202,12 @@ AvantesAvaSpec::AvantesAvaSpec() :
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("current height").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 16, 16, tr("Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled and the dark_correction is disabled or no dark correction pixels are available for this sensor.").toLatin1().data()); 
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 16, 16, tr("Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled and the dark_correction is disabled or no dark correction pixels are available for this sensor.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("average", ito::ParamBase::Int, 1, 65000, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     paramVal = ito::Param("dark_correction", ito::ParamBase::Int, 0, 2, 0, tr("Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
 dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. \n\
 Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software \n\
@@ -229,7 +229,7 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
-   
+
     if (hasGuiSupport())
     {
         DockWidgetAvantesAvaSpec *toolbox = new DockWidgetAvantesAvaSpec(this);
@@ -240,7 +240,7 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
         //register the toolbox
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, toolbox);
     }
-    
+
 
 }
 
@@ -254,7 +254,7 @@ AvantesAvaSpec::~AvantesAvaSpec()
 ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    
+
     ito::RetVal retValue(ito::retOk);
 
     //open libUSB as further plugin instance.
@@ -262,7 +262,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
     QVector<ito::Param> *libUSBParamsMand = NULL;
     QVector<ito::Param> *libUSBParamsOpt = NULL;
     retValue += apiAddInGetInitParams("LibUSB", ito::typeDataIO | ito::typeRawIO, &libUSBNo, libUSBParamsMand, libUSBParamsOpt);
-    
+
     if (!retValue.containsError())
     {
         QVector<ito::ParamBase> mands, opts;
@@ -319,7 +319,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         unsigned char cmd[] = {0x20, 0x00, 0x02 /*length of command*/, 0x00, 0x01 /*get device config*/, 0x00};
         int size = sizeof(m_deviceConfig);
         retValue += sendCommand((char*)cmd, sizeof(cmd), (unsigned char*)(&m_deviceConfig), size);
-        
+
 
         if (size != sizeof(m_deviceConfig) || m_deviceConfig.prefix[2] != 0xFE || m_deviceConfig.prefix[4] != 0x81)
         {
@@ -418,7 +418,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 break;
             case SENS_HAMS11638:
                 m_params["detector_name"].setVal<const char*>("SENS_HAMS11638");
-                m_numberDeadPixels = -1; //guess it!                
+                m_numberDeadPixels = -1; //guess it!
                 break;
             case SENS_HAMS11639:
                 m_params["detector_name"].setVal<const char*>("SENS_HAMS11639");
@@ -450,7 +450,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             }
             //There seem to be some differences between the usb3 devices. Here are some additional settings.
             //These settings must be tested if they are valid for all USB3 devices. What happens with Sensors available in USB2 and USB3 devices.
-            if (m_isUsb3) 
+            if (m_isUsb3)
             {
                 m_swapNeeded = false;
                 m_answerLength = 8;
@@ -502,14 +502,14 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             QSharedPointer<char> bufferToDump(new char[1000], idleCharDeleter);
             *readBytes = 1000;
             tmpRetValue += m_pUsb->getVal(bufferToDump, readBytes, NULL);
-        } 
+        }
     }
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    setInitialized(true); //init method has been finished (independent on retval)    
+    setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
 
@@ -530,7 +530,7 @@ ito::RetVal AvantesAvaSpec::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -620,7 +620,7 @@ ito::RetVal AvantesAvaSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
         //next value (depending on a possible step size, if different than 0.0)
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
-    
+
     if(!retValue.containsError())
     {
         if(key == "integration_time" || key == "roi" || key == "average" || key == "dark_correction")
@@ -752,7 +752,7 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
     {
         retValue += checkData();
         incGrabberStarted();
-    } 
+    }
 
     if (waitCond)
     {
@@ -761,7 +761,7 @@ ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvantesAvaSpec::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -791,7 +791,7 @@ ito::RetVal AvantesAvaSpec::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->release();
     }
     return ito::retOk;
-}        
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -806,7 +806,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
         if (waitCond)
         {
             waitCond->returnValue = retValue;
-            waitCond->release();  
+            waitCond->release();
         }
     }
     else
@@ -828,7 +828,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
         if (waitCond)
         {
             waitCond->returnValue = retValue;
-            waitCond->release();  
+            waitCond->release();
         }
 
         if (!retValue.containsError())
@@ -844,7 +844,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             int xsize = m_data.getSize(1);
 
             int request_size;
-            if (average <= 1) 
+            if (average <= 1)
             {
                 //at first get the first 6 bytes (prefix) to check for the size of
                 //the data. Then obtain the data.
@@ -871,7 +871,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                         }
                     }
 
-                    
+
                     ito::float32 darkOddEvenCorrection[] = {0.0, 0.0}; //[even - mean, odd - mean]
 
                     if (m_numberOfCorrectionValues > 0)
@@ -898,7 +898,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                     if (darkCorrection > 0)
                     {
                         ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
-                        for (int teller = 0; teller < xsize; ++teller) 
+                        for (int teller = 0; teller < xsize; ++teller)
                         {
                             vals[teller] = (ito::float32)swap16IfNeeded(singleMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[(teller + m_numberDeadPixels) % 2];
                         }
@@ -906,7 +906,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                     else
                     {
                         ito::uint16 *vals = (ito::uint16*)m_data.rowPtr(0, 0);
-                        for (int teller = 0; teller < xsize; ++teller) 
+                        for (int teller = 0; teller < xsize; ++teller)
                         {
                             vals[teller] = swap16IfNeeded(singleMeasdata.pixels[teller + m_numberDeadPixels]);
                         }
@@ -982,7 +982,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                     if (darkCorrection > 0)
                     {
                         ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
-                        for (int teller = 0; teller < xsize; ++teller) 
+                        for (int teller = 0; teller < xsize; ++teller)
                         {
                             vals[teller] = ((ito::float32)swap32IfNeeded(multiMeasdata.pixels[teller + m_numberDeadPixels]) - darkOddEvenCorrection[((teller + m_numberDeadPixels) % 2)]) / (ito::float32)average;
                         }
@@ -990,7 +990,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                     else
                     {
                         ito::float32 *vals = (ito::float32*)m_data.rowPtr(0, 0);
-                        for (int teller = 0; teller < xsize; ++teller) 
+                        for (int teller = 0; teller < xsize; ++teller)
                         {
                             vals[teller] = ((ito::float32)swap32IfNeeded(multiMeasdata.pixels[teller + m_numberDeadPixels])) / (ito::float32)average;
                         }
@@ -1006,7 +1006,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             m_acquisitionRetVal += m_pUsb->setVal((const char*)cmd2, sizeof(cmd2), NULL);
         }
     }
-    
+
     return retValue + m_acquisitionRetVal;
 }
 
@@ -1035,7 +1035,7 @@ ito::RetVal AvantesAvaSpec::retrieveData(ito::DataObject *externalDataObject)
 
 
     if (!retVal.containsError())
-    {      
+    {
         if (externalDataObject)
         {
             switch (m_data.getType())
@@ -1075,7 +1075,7 @@ ito::RetVal AvantesAvaSpec::checkData(ito::DataObject *externalDataObject)
     int bpp = m_params["bpp"].getVal<int>();
     int darkCorrection = m_params["dark_correction"].getVal<int>();
     int average = m_params["average"].getVal<int>();
-    
+
     if (bpp <= 16 && (darkCorrection == 0 || m_numberOfCorrectionValues == 0) && average == 1 )
     {
         futureType = ito::tUInt16;
@@ -1101,7 +1101,7 @@ ito::RetVal AvantesAvaSpec::checkData(ito::DataObject *externalDataObject)
         }
         else if (externalDataObject->calcNumMats () != 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
         }
         else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
@@ -1131,7 +1131,7 @@ ito::RetVal AvantesAvaSpec::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1153,12 +1153,12 @@ ito::RetVal AvantesAvaSpec::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if(!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if(!retValue.containsError())
@@ -1166,7 +1166,7 @@ ito::RetVal AvantesAvaSpec::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1180,9 +1180,9 @@ ito::RetVal AvantesAvaSpec::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AvantesAvaSpec::updateParameters(QMap<QString, ito::ParamBase> params)
-{ 
+{
     foreach(const ito::ParamBase &param1, params)
-    {    
+    {
         setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
     }
 }
@@ -1204,7 +1204,7 @@ ito::RetVal AvantesAvaSpec::sendCommand(const char* cmd, int cmd_size, unsigned 
     {
         QSharedPointer<int> chuck_size(new int);
         int read_bytes = 0;
-    
+
         QSharedPointer<char> chunk_buffer((char*)buf, idleCharDeleter);
         *chuck_size = buf_size - read_bytes;
         retVal += m_pUsb->getVal(chunk_buffer, chuck_size, NULL);
@@ -1240,7 +1240,7 @@ ito::RetVal AvantesAvaSpec::readWithFixedLength(char* buf, int &buf_size)
     ito::RetVal retVal;
     QSharedPointer<int> chuck_size(new int);
     int read_bytes = 0;
-    
+
     QSharedPointer<char> chunk_buffer(buf, idleCharDeleter);
     *chuck_size = buf_size - read_bytes;
     retVal += m_pUsb->getVal(chunk_buffer, chuck_size, NULL);

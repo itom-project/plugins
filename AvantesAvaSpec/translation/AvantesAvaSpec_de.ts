@@ -45,9 +45,9 @@
     </message>
     <message>
         <location line="+6"/>
-        <source>Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output 
-dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. 
-Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software 
+        <source>Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output
+dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values.
+Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software
 AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): default.</source>
         <translation type="unfinished"></translation>
     </message>

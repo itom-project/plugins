@@ -37,25 +37,25 @@ public:
     ~VideoDevice(void);
 
     void closeDevice();
-    
+
     CamParameters getParameters();
 
     void setParameters(CamParameters parameters);
 
     void setEmergencyStopEvent(void *userData, void(*func)(int, void *));
-    
+
     long readInfoOfDevice(IMFActivate *pActivate, unsigned int Num);
-        
+
     wchar_t *getName();
 
     size_t getCountFormats();
 
     unsigned int getWidth();
-    
+
     unsigned int getHeight();
 
     MediaType getFormat(unsigned int id);
-    
+
     bool setupDevice(unsigned int w, unsigned int h, unsigned int idealFramerate = 0);
 
     bool setupDevice(unsigned int id);
@@ -63,7 +63,7 @@ public:
     bool isDeviceSetup();
 
     bool isDeviceMediaSource();
-    
+
     bool isDeviceRawDataSource();
 
     bool isFrameNew();
@@ -97,7 +97,7 @@ private:
         OpenLock
 
     } vd_LockOut;
-    
+
     wchar_t *m_pFriendlyName;
 
     ImageGrabberThread *m_pImGrTh;
@@ -111,9 +111,9 @@ private:
     unsigned int m_currentNumber;
 
     bool m_isSetuped;
-        
+
     std::map<UINT64, FrameRateMap> m_captureFormats;
-    
+
     std::vector<MediaType> m_currentFormats;
 
     IMFMediaSource *m_pSource;
@@ -121,9 +121,8 @@ private:
     emergensyStopEventCallback m_func;
 
     void *m_userData;
-    
+
     QSharedPointer<DebugPrintOut> m_debugPrintOut;
-    
+
 
 };
-

@@ -16,7 +16,7 @@ as argument to the 'setVal' method. This dataObject must be 2-dimensional
 and the number of rows must be equal to the number of channels. The int32
 object is internally casted to uint32 (however int32 is no valid dataObject
 data type). The datatype itself depends on the number of lines of each
-selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines 
+selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines
 uint16, else int32.
 
 The number of samples that is written to each channel for each setVal
@@ -61,7 +61,7 @@ plugin.showToolbox()
 # samples, obtained by 'samplesPerChannel' * noOfChannels is lower
 # than the values in the following table, NI-DAQ uses the values from
 # the table:
-# 
+#
 # no sampling rate:      10000 samples
 # 0 - 100 samples / sec: 1 kS
 # 101 - 10000 S/s:       10 kS
@@ -81,12 +81,12 @@ a = dataObject.randN([3,800], 'float64')
 
 for i in range(0,3):
     plugin.setVal(a)
-    
+
     print(f"run {i+1}/3: write for 3 sec", end="")
-    
+
     for i in range(0, 3):
         print(".", end="")
         time.sleep(1)
-    
+
     print(" done")
     plugin.stop()

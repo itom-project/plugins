@@ -16,13 +16,13 @@ unsigned int WINAPI MainThreadFunction( LPVOID lpParam )
 
     pIGT->run();
 
-    return 0; 
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------
 HRESULT ImageGrabberThread::CreateInstance(
-    ImageGrabberThread **ppIGT, 
-    IMFMediaSource *pSource, 
+    ImageGrabberThread **ppIGT,
+    IMFMediaSource *pSource,
     unsigned int deviceID,
     QSharedPointer<DebugPrintOut> debugPrintOut)
 {
@@ -38,19 +38,19 @@ HRESULT ImageGrabberThread::CreateInstance(
     {
         debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Creating of the instance of ImageGrabberThread\n", deviceID);
     }
-    
+
     return S_OK;
 }
 
 //----------------------------------------------------------------------------------------
 ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID, QSharedPointer<DebugPrintOut> debugPrintOut):
-    m_igtHandle(0), 
-    m_igtStop(false), 
+    m_igtHandle(0),
+    m_igtStop(false),
     m_pIgtImageGrabber(NULL),
     m_debugPrintOut(debugPrintOut)
 {
     HRESULT hr = ImageGrabber::CreateInstance(&m_pIgtImageGrabber, deviceID, debugPrintOut);
-        
+
     m_igtDeviceID = deviceID;
 
     if (SUCCEEDED(hr))
@@ -107,13 +107,13 @@ void ImageGrabberThread::stop()
 //----------------------------------------------------------------------------------------
 void ImageGrabberThread::start()
 {
-    m_igtHandle = _beginthreadex( 
+    m_igtHandle = _beginthreadex(
             NULL,                   // default security attributes
-            0,                      // use default stack size  
+            0,                      // use default stack size
             MainThreadFunction,       // thread function name
-            this,          // argument to thread function 
-            0,                      // use default creation flags 
-            &m_igtThreadIdArray);   // returns the thread identifier 
+            this,          // argument to thread function
+            0,                      // use default creation flags
+            &m_igtThreadIdArray);   // returns the thread identifier
 }
 
 //----------------------------------------------------------------------------------------
@@ -124,16 +124,16 @@ void ImageGrabberThread::run()
         m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: Thread for grabbing images is started\n", m_igtDeviceID);
 
         runMutex.lock();
-        
+
         HRESULT hr = m_pIgtImageGrabber->startGrabbing();
 
         runMutex.unlock();
 
-        if (!SUCCEEDED(hr))        
+        if (!SUCCEEDED(hr))
         {
             m_debugPrintOut->printOut("IMAGEGRABBERTHREAD VideoDevice %i: There is a problem with starting the process of grabbing\n", m_igtDeviceID);
         }
-        
+
     }
     else
     {

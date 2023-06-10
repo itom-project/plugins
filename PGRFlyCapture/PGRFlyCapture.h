@@ -5,7 +5,7 @@
     Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -114,7 +114,7 @@ class PGRFlyCapture : public ito::AddInGrabber
         ExtendedShutterType m_extendedShutter;
         FlyCapture2::EmbeddedImageInfo m_embeddedInfo;
         bool m_hasFrameInfo;
-       
+
         FlyCapture2::Format7ImageSettings m_currentFormat7Settings;
         FlyCapture2::Format7PacketInfo m_currentPacketInfo;
         FlyCapture2::Format7Info m_format7Info;

@@ -90,7 +90,7 @@ GP_CONFIG_MSG([build API docs with gtk-doc],[$gtkdoc_msg])
 
 
 # ---------------------------------------------------------------------------
-# Give the user the possibility to install html documentation in a 
+# Give the user the possibility to install html documentation in a
 # user-defined location.
 # ---------------------------------------------------------------------------
 AC_ARG_WITH([html-dir],
@@ -110,4 +110,3 @@ apidocdir="${htmldir}/api"
 AC_SUBST([apidocdir])
 
 ])dnl
-

@@ -15,7 +15,7 @@ namespace ito
     class AddInActuator; //forward declaration
 }
 
-class dialogUhl : public QDialog 
+class dialogUhl : public QDialog
 {
     Q_OBJECT
 

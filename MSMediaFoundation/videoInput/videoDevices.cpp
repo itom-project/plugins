@@ -7,13 +7,13 @@
 #include "DebugPrintOut.h"
 #include "Common.h"
 
-//!  Class for all video devices 
+//!  Class for all video devices
 /*!
   The singleton instance of this class contains all found and available video devices
 */
 
 //--------------------------------------------------------
-VideoDevices::VideoDevices(QSharedPointer<DebugPrintOut> debugPrintOut): 
+VideoDevices::VideoDevices(QSharedPointer<DebugPrintOut> debugPrintOut):
     m_debugPrintOut(debugPrintOut)
 {
 }
@@ -58,13 +58,13 @@ VideoDevice * VideoDevices::getDevice(unsigned int i)
 long VideoDevices::initDevices(IMFAttributes *pAttributes)
 {
     HRESULT hr = S_OK;
-        
+
     IMFActivate **ppDevices = NULL;
 
     clearDevices();
 
     UINT32 count;
-    
+
     hr = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
 
     if (SUCCEEDED(hr))
@@ -77,7 +77,7 @@ long VideoDevices::initDevices(IMFAttributes *pAttributes)
 
                 vd->readInfoOfDevice(ppDevices[i], i);
 
-                m_devices.push_back(vd);        
+                m_devices.push_back(vd);
 
                 SafeRelease(&ppDevices[i]);
             }

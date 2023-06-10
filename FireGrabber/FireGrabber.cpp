@@ -47,7 +47,7 @@
 Q_DECLARE_METATYPE(ito::DataObject)
 
 int FireGrabber::m_numberOfInstances = 0;  // initialization
-    
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -66,7 +66,7 @@ ito::RetVal FireGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 FireGrabberInterface::FireGrabberInterface()
 {
     m_type = ito::typeDataIO | ito::typeGrabber;
-    setObjectName("FireGrabber"); 
+    setObjectName("FireGrabber");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char* docstring = \
@@ -103,7 +103,7 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
     m_license = QObject::tr("LGPL; you need an installed AVT FirePackage driver, which requires further licenses if you are not using any AVT camera (see AVT FirePackage documentation).");
 #endif
     m_aboutThis = QObject::tr(GITVERSION);
-    
+
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
 
@@ -137,7 +137,7 @@ const ito::RetVal FireGrabber::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FireGrabber::FireGrabber() : 
+FireGrabber::FireGrabber() :
     AddInGrabber()
 {
    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "FireGrabber", NULL);
@@ -158,7 +158,7 @@ FireGrabber::FireGrabber() :
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.005, 150.0, 33.333333, tr("Transmission time per frame in s").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   
+
    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bit depth of camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
@@ -196,7 +196,7 @@ FireGrabber::FireGrabber() :
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   
+
    //paramVal = ito::Param("fps", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("Read frames per second").toLatin1().data());
    //m_params.insert(paramVal.getName(), paramVal);
 
@@ -226,11 +226,11 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
     {
         int value;
         const char* text;
-    } 
+    }
 
 #ifdef WIN32 // for windos firepackage
     static const errors[] =
-    {    /* All Errormassages are taken from the Fire Grab-Manual. */     
+    {    /* All Errormassages are taken from the Fire Grab-Manual. */
         { FCE_NOERROR          /*   0  */,   "No Error"},
         { HALER_NOCARD            /* 1  */,  "Card is not present"},
         { HALER_NONTDEVICE        /* 2  */,  "No logical Device"},
@@ -348,7 +348,7 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
             retValue += ito::RetVal(ito::retError, 0, tr("Unknown Error Code").toLatin1().data());
         }
     }
-        
+
     return retValue;
 }
 
@@ -613,7 +613,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             Result =  dc1394_feature_get_value(camera, DC1394_FEATURE_GAMMA, &value);
             retValue += AlliedChkError(Result);
             unsigned long valnew = min + (max - min) * val->getVal<double>();
-            retValue += AlliedChkError(dc1394_feature_set_value(camera, DC1394_FEATURE_GAMMA,valnew));   
+            retValue += AlliedChkError(dc1394_feature_set_value(camera, DC1394_FEATURE_GAMMA,valnew));
 #endif
         }
 
@@ -651,7 +651,7 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
     int32_t sizex = 1 + x1 - x0;
     int32_t sizey = 1 + y1 - y0;
 
-    //get information    
+    //get information
     retval += AlliedChkError(dc1394_format7_get_max_image_size(camera,video_mode,&xSizeMax,&ySizeMax));
     retval += AlliedChkError(dc1394_format7_get_unit_size(camera,video_mode,&hUnitImage,&vUnitImage));
     retval += AlliedChkError(dc1394_format7_get_image_size(camera,video_mode,&xSizeIs,&ySizeIs));
@@ -707,7 +707,7 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 usleep(50000); //here the internal camera firmware is slow and we do not get a ready signal out of it so better wait or it will chrash
 
                 retval += AlliedChkError(dc1394_format7_get_image_size(camera,video_mode,&xSizeIs,&ySizeIs));
-                retval += AlliedChkError(dc1394_format7_get_image_position(camera,video_mode,&xPosIs,&yPosIs));                
+                retval += AlliedChkError(dc1394_format7_get_image_position(camera,video_mode,&xPosIs,&yPosIs));
 
                 m_ySize = ySizeIs;
                 m_xSize = xSizeIs;
@@ -777,7 +777,7 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
         if (sizey < (int)ySizeInfo.MinValue || sizey > (int)ySizeInfo.MaxValue || sizey % ySizeInfo.Unit != 0)
         {
             retval += ito::RetVal::format(ito::retError,0,"sizey needs to be in range [%i,%i] (stepsize: %i)", ySizeInfo.MinValue, ySizeInfo.MaxValue, ySizeInfo.Unit);
-        }   
+        }
     }
 
     if (!retval.containsError())
@@ -822,7 +822,7 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 {
                     Camera.SetParameter(FGP_RESIZE, 0);
                 }
-                
+
                 retval += AlliedChkError(Camera.GetParameterInfo(FGP_XSIZE, &xSizeInfo));
                 retval += AlliedChkError(Camera.GetParameterInfo(FGP_YSIZE, &ySizeInfo));
                 retval += AlliedChkError(Camera.GetParameterInfo(FGP_XPOSITION, &xPosInfo));
@@ -877,7 +877,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     int tempID = 0;
     //Allied: vendorID = 673537
     //Allied Pike: cameraID = 269109919 (specific!!!)
-    //Allied Marlin: cameraID = 235356461 (specific!!!)    
+    //Allied Marlin: cameraID = 235356461 (specific!!!)
 
     plugNR = paramsOpt->at(0).getVal<int>();
     int timebase = paramsOpt->at(1).getVal<int>();
@@ -1181,7 +1181,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         // Obtain data geometry
 		uint32_t  xSizeMax, ySizeMax, xPosMax, yPosMax, hUnitImage, vUnitImage, hUnitPos, vUnitPos;
 
-		//get information    
+		//get information
 		Result = dc1394_format7_get_max_image_size(camera,video_mode,&xSizeMax,&ySizeMax);
 		Result = dc1394_format7_get_unit_size(camera,video_mode,&hUnitImage,&vUnitImage);
 		Result = dc1394_format7_get_unit_position(camera,video_mode,&hUnitPos,&vUnitPos);
@@ -1226,14 +1226,14 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
     else
     {
-        retValue += checkData(); 
+        retValue += checkData();
 
         emit parametersChanged(m_params);
     }
-    
+
     m_isgrabbing = false;
 
-    
+
 
 
     if (waitCond)
@@ -1559,7 +1559,7 @@ ito::RetVal FireGrabber::initAVTCameras(const char *vendorName, const char *mode
     if (strcmp(vendorName, "AVT") == 0)
     {
         m_exposureParams.AVTCam = true;
-        
+
         //try to read timebase register
 #ifdef WIN32
         UINT32 regValue;
@@ -1575,7 +1575,7 @@ ito::RetVal FireGrabber::initAVTCameras(const char *vendorName, const char *mode
             if (regValue & 0x80000000) //timebase present
             {
                 int timebases[] = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
-                
+
                 //try to set the desired typebase
                 int newid = 4; //20 mus per default
                 for (int idx = 0; idx < sizeof(timebases) / sizeof(int); ++idx)
@@ -1592,7 +1592,7 @@ ito::RetVal FireGrabber::initAVTCameras(const char *vendorName, const char *mode
 #else
                 dc1394_avt_set_timebase(camera, (regValue & 0xfffffff0) + newid);
 #endif
-                
+
 
                 //read register
 #ifdef WIN32
@@ -1776,7 +1776,7 @@ ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
         //  retValue += AlliedChkError(Camera.SetParameter(FGP_BURSTCOUNT, BC_INFINITE));
 
         if (!retValue.containsError())
-        {            
+        {
             retValue += AlliedChkError(dc1394_capture_setup(camera,1, DC1394_CAPTURE_FLAGS_DEFAULT));
             retValue += AlliedChkError(dc1394_video_set_transmission(camera, DC1394_ON));
             retValue += AlliedChkError(dc1394_capture_dequeue(camera, DC1394_CAPTURE_POLICY_WAIT, &frame));
@@ -1853,7 +1853,7 @@ ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
     return retValue;
 }
 #endif
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1861,7 +1861,7 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
 
     decGrabberStarted();
-    
+
 #ifndef WIN32
     if (grabberStartedCount() == 0 && camera!=0)
     {
@@ -1895,7 +1895,7 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     //Result = Camera.StopDevice();    // Stop the device
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -1919,7 +1919,7 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
 
     return retValue;
@@ -2035,7 +2035,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
-    UINT32 Result = 0;    
+    UINT32 Result = 0;
     FGFRAME frame;
 
     bool RetCode = false;
@@ -2104,7 +2104,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
                 //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian for itom
                 mat = externalDataObject->getCvPlaneMat(0);
                 frameIdx = 0;
-            
+
                 for (size_t m = 0; m < m_ySize ; m++)
                 {
                     rowPtr = mat->ptr<ito::uint16>(m);
@@ -2120,7 +2120,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
                     }
                 }
             }
-            
+
             if (!copyExternal || hasLiveList)
             {
                 //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian for itom
@@ -2174,7 +2174,7 @@ ito::RetVal FireGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -2186,7 +2186,7 @@ ito::RetVal FireGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -2208,12 +2208,12 @@ ito::RetVal FireGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -2221,7 +2221,7 @@ ito::RetVal FireGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -2280,4 +2280,3 @@ void FireGrabber::dockWidgetVisibilityChanged(bool visible)
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 // FIRE GRABBER
-

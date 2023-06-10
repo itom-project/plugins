@@ -12,7 +12,7 @@
 
 // in dicInterpolation.cu
 ito::RetVal InitCudaDevice(std::vector<int> &devices);
-template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int sizex, const int sizey, const int stepin, 
+template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int sizex, const int sizey, const int stepin,
     const float *positions, const int numPos, float *outPtr, const int stepout, const int flag);
 
 ito::RetVal h_interpolAMat(const float *inPtr, const int sizex, const int sizey, const int stepin,

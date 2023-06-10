@@ -33,7 +33,7 @@ if(TortoiseSVN_EXECUTABLE)
 
   MACRO(TortoiseSVN_WC_INFO dir prefix)
     file(WRITE "${VISIT_SOURCE_DIR}/svnrev.in" "$WCREV$")
-       
+
     EXECUTE_PROCESS(COMMAND ${TortoiseSVN_EXECUTABLE} "." "${VISIT_SOURCE_DIR}/svnrev.in" "${VISIT_SOURCE_DIR}/svnrev"
       WORKING_DIRECTORY ${VISIT_SOURCE_DIR}
       OUTPUT_VARIABLE TortoiseSVN_info_output
@@ -60,4 +60,3 @@ if(NOT TortoiseSVN_FOUND)
     endif(TortoiseSVN_FIND_REQUIRED)
   endif(NOT TortoiseSVN_FIND_QUIETLY)
 endif(NOT TortoiseSVN_FOUND)
-

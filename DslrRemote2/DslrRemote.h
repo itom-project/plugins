@@ -30,7 +30,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qsharedpointer.h>
 
 // forward declaration, interal class
-class PtpCam; 
+class PtpCam;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class DslrRemoteInterface : public ito::AddInInterfaceBase

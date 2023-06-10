@@ -40,7 +40,7 @@
 2010-06-30  Axel Waggershauser  <awagger@web.de>
 
 	* ptp-pack.c: Fixed EOS imageformat unpacking regression.
-	* config.c: fixed shadowed variable usage making set_config 
+	* config.c: fixed shadowed variable usage making set_config
 	  leave too early.
 
 2010-01-09  Daniel P. Berrange <dan@berrange.com>
@@ -182,9 +182,9 @@
 	* library.c: Added:
 		Nikon CoolPix P50, S60
 		Canon Digital IXUS 85
-		Canon PowerShot A740, G10, 
+		Canon PowerShot A740, G10,
 		Canon EOS 5D Mark II
-	
+
 
 2009-01-21  Marcus Meissner  <marcus@jet.franken.de>
 
@@ -322,7 +322,7 @@
 
 2008-06-13  Marcus Meissner  <marcus@jet.franken.de>
 
-	* library.c: Change initial timeout magic 
+	* library.c: Change initial timeout magic
 	  for Canon cameras to use 0.5 second timeouts.
 
 	  Lets hope all the Canons can do this.
@@ -394,7 +394,7 @@
 	  removing into this file. (not currently hooked up).
 
 2007-12-10  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Disabled LUMIX FZ-20 (alternate ID),
 	  since customer reports it only doing mass storage.
 
@@ -409,8 +409,8 @@
 	* library.c: Added Nikon DSC D300, Coolpix 7900.
 
 2007-11-16  Marcus Meissner  <marcus@jet.franken.de>
-	
-	* library.c: Made metadata reading more intelligent, 
+
+	* library.c: Made metadata reading more intelligent,
 	  and fall back to lowlevel methods if necessary.
 
 2007-11-14  Marcus Meissner  <marcus@jet.franken.de>
@@ -439,7 +439,7 @@
 	  between us and libmtp.
 
 2007-10-26  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c, config.c: Set GPContext consistently
 	  in the Params struct, otherwise we might resuse
 	  already free contexts.
@@ -463,7 +463,7 @@
 
 	* ptp-pack.c, ptp.h, ptp.c, library.c:
 	  Change MTP proplist to a proparray.
-	  Rename MTPPropList to MTPProperties to match the 
+	  Rename MTPPropList to MTPProperties to match the
 	  Use qsort() instead of a O(n^2) insertion sort.
 	  state.
 
@@ -473,7 +473,7 @@
 
 2007-08-22  Marcus Meissner  <marcus@jet.franken.de>
 
-	* library.c: Added Nikon Coolpix S200 (from Marius Groeger) 
+	* library.c: Added Nikon Coolpix S200 (from Marius Groeger)
 	* library.c: Added Nikon Coolpix L12, Cowon iAudio U3
 
 2007-08-03  Marcus Meissner  <marcus@jet.franken.de>
@@ -599,8 +599,8 @@
 2007-03-05  Marcus Meissner  <marcus@jet.franken.de>
 
 	* library.c: Added Fuji FinePix F20.
-	* usb.c: Adjusted PTP error reporting not to spew on the 
-	  gp_context_error channel. 
+	* usb.c: Adjusted PTP error reporting not to spew on the
+	  gp_context_error channel.
 
 2007-03-03  Marcus Meissner  <marcus@jet.franken.de>
 
@@ -698,7 +698,7 @@
 
 2007-01-02  Marcus Meissner  <marcus@jet.franken.de>
 
-	* library.c: Report storage information 
+	* library.c: Report storage information
 	  dynamically using the new API.
 
 	* ptp.c,ptp.h: From libmtp folks:
@@ -718,7 +718,7 @@
 	2006-12-29  Richard Low <richard@wentnet.com>
 	* ptp-pack.c: Fixed bugs in ObjectInfo packing
 	  magic.
-	
+
 	* library.c: Added Philips SA9200.
 
 2006-12-29  Marcus Meissner  <marcus@jet.franken.de>
@@ -733,7 +733,7 @@
 	  Rewrote the whole data flow handling to allow streaming of
 	  data from and to PTP devices without taking up memory.
 
-	  Introduced generic PTPDataHandler with get and putfunctions. 
+	  Introduced generic PTPDataHandler with get and putfunctions.
 
 2006-12-21  Marcus Meissner  <marcus@jet.franken.de>
 
@@ -762,7 +762,7 @@
 	* ptp.c,ptp.h: Added "BuyNow" property define and debugoutput.
 	* ptp-pack.c: Handle offset of DPVs of INT64 and INT128 datatype
 	  correct.
-	
+
 	* library.c: Fast directory tree and metadata retrieval for
 	  MTP devices.
 
@@ -808,13 +808,13 @@
 	* library.c: Added PowerShot G7.
 
 2006-11-15  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Kodak C643, Samsung YP-K5.
 	* library.c: added Creative Zen Vision W
 
 2006-11-12  Marcus Meissner  <marcus@jet.franken.de>
 
-	* ptp.c, ptp.h, ptp-pack.c: Implementation of 
+	* ptp.c, ptp.h, ptp-pack.c: Implementation of
 	MTP_SendObjectproplist from the libmtp folks.
 
 	* library.c: added Creative Zen Vision M
@@ -829,15 +829,15 @@
 	  extracted from the .INF files downloadable from hp.com.
 
 2006-11-04  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Canon Digital IXUS 850 IS
 	* library.c: removed pragma pack(1) ... umm.
 
 2006-10-31  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Canon PowerShot A640.
 	* library.c: Added Nikon D80.
-	
+
 2006-10-23  Marcus Meissner  <marcus@jet.franken.de>
 
 	* ptp.c,ptp.h: render more MTP opcodes. (from libmtp).
@@ -858,7 +858,7 @@
 	  EGOMAN MD223AFD (submitted by libmtp folks).
 
 2006-10-14  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: removed unused variable j
 		The Canon fast retrieval seems to be a bit flawed
 		on the IXUS 55, so add some checking.
@@ -867,7 +867,7 @@
 
 	* ptp.c,ptp.h,ptp-pack.c,library.c:
 
-	  Implement CANON fast directory retrieval (just one 
+	  Implement CANON fast directory retrieval (just one
 	  call for all objects). Should give speed-up if
 	  lots of files are on the camera.
 	  (Apparently needs Canon released in/after 2005).
@@ -898,30 +898,30 @@
 	* ptp.[ch]: Get Canon wireless MAC address wrapper.
 
 2006-10-10  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Canon Digital IXUS Wireless (same as SD430)
 	  Marked them as capture capable, but capture mode not supported
 	  yet.
 
 	* ptp.c/ptp.h: Added "Request Direct Transfer" opcode for newer Canons.
 	* ptp.c/ptp.h: Added "Get Direct Transfer Entries" opcode for newer Canons.
-	* ptp.c: Read event in multiple parts (necessary for Canons who only read 8 
+	* ptp.c: Read event in multiple parts (necessary for Canons who only read 8
 	  byte per interrupt).
 
 2006-10-05  Marcus Meissner  <marcus@jet.franken.de>
 
 	* config.c: Do not call Nikon commands on Canons.
-	* library.c,config.c,ptp-private.h: 
+	* library.c,config.c,ptp-private.h:
 	  Initialize Canon capture if we do "to RAM" capture
 	  on canons.
 
 2006-09-30  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: If PTP is busy, retry Nikon Capture
 	  command.
 
 2006-09-29  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Kodak Z612 as reported.
 
 2006-09-25  Marcus Meissner  <marcus@jet.franken.de>
@@ -949,26 +949,26 @@
 	This camera does not have the infamous PTP bug.
 
 2006-09-13  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* ptp.[ch]: formatstore function (from libmtp).
 	* library.c: fixed iconv() usage for non glibc etc (from libmtp).
 
 2006-09-11  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added iRIver T10 2GB model.
 	* library.c: Added Toshiba Gigabeat P10 model.
 
 2006-09-09  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Uses short timeout during startup, but
 	  longer timeouts later on.
 
 2006-09-03  Marcus Meissner  <marcus@jet.franken.de>
 
 	* library.c: Implemented MTP Abstract Playlist upload.
-	
+
 2006-09-02  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: CANON cmd 9006 is "lookup object".
 	  (Could be used later to speed up directory listing.)
 
@@ -1003,14 +1003,14 @@
 	  from libmtp folks (Linus Walleij).
 
 2006-08-20  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Do not download 0 sized objects.
 
 	* ptp.{c,h}: Merged libmtp patch "download to fd"
 	  to keep in sync with them.
 
 2006-08-10  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* Added alternate iRiver H10 id, reported by Scott Call.
 	* Added SanDisk sansa m240, Samsung YP-U2J, Archos 104
 
@@ -1064,9 +1064,9 @@
 	* library.c: Added AVPlaylist download (upload to come).
 
 2006-06-24  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c, config.c, ptp-private.h, Makefile.am:
-	
+
 	  Split out configuration handling into new file config.c
 
 2006-06-16  Hubert Figuiere  <hub@figuiere.net>
@@ -1092,13 +1092,13 @@
 2006-04-27  Marcus Meissner  <marcus@jet.franken.de>
 
 	* ptp.c: The iRiver devices occasionaly send a byte more than
-	  we requested which could lead to memory corruption due to 
+	  we requested which could lead to memory corruption due to
 	  logic that did not expect that.
 
 	* library.c: Replaced fprintf by gp_log in parse_metadata.
 
 2006-04-17  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* ptp.c, library.c: Added several more Nikon DSLR config options.
 	* library.c: Prepare handling Burst mode on the Nikon DSLRs,
 	  (I just need to know the Object ID sequence generated).
@@ -1106,7 +1106,7 @@
 	* library.c: Added METADATA retrieval and setting for MTP devices.
 
 2006-04-12  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added PowerShot A700 as reported.
 
 2006-04-04  Marcus Meissner  <marcus@jet.franken.de>
@@ -1156,12 +1156,12 @@
 
 2006-03-09  Hubert Figuiere  <hub@figuiere.net>
 
-	* library.c: Added Kodak C360 (from Debian) 
+	* library.c: Added Kodak C360 (from Debian)
 
 2006-02-17  Marcus Meissner  <marcus@jet.franken.de>
 
 	* ptpip.c,ptp.h,library.c:
-	
+
           PTP/IP protocol implementation.
 
 	  Currently not enabled, just included for
@@ -1175,7 +1175,7 @@
 2006-02-17  Marcus Meissner  <marcus@jet.franken.de>
 
 	* ptp.c: Return the actual PTP protocol return
-	  code from the ptp_transaction(). 
+	  code from the ptp_transaction().
 
 	  This makes us see the actual errors the camera
 	  reports.
@@ -1203,11 +1203,11 @@
 	* library.c: Added Nikon SDRAM capture.
 	  Downloads images directly after capture.
 
-	  Added configuration for Capture Target 
+	  Added configuration for Capture Target
 	  (Card or SDRAM).
 
 2006-01-24  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* ptp-bugs.h, library.c: Added bug handling where some canon
 	  cameras send ObjectDeleted events on DeleteObject.
 
@@ -1220,9 +1220,9 @@
 		     Added Canon PowerShot S80.
 	* library.c: Relaxed Association checks for directories.
 	  The E317 sees AssocType 0x0 (undefined) for DCIM/ et.al.
-	
+
 	  Avoid buffer overflows on too long filenames.
-	
+
 	  Enabled Creative Zen Micro (was failing on the 512 byte
 	  problem before, should be fixed now).
 
@@ -1235,7 +1235,7 @@
 2006-01-16  Marcus Meissner  <marcus@jet.franken.de>
 
 	* library.c: Added progress bar support for
-	  downloads and uploads. Contributed by 
+	  downloads and uploads. Contributed by
 	  Dave O <cxreg@pobox.com>.
 
 	* ptp.c, ptp.h, library.c: Print MTP object properties
@@ -1258,7 +1258,7 @@
 		- FocusMode
 
 2006-01-12  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c, ptp-pack.c:
 	  Unpack all members of the StorageInfo structure.
 	  Add Storage summary to --summary output.
@@ -1269,7 +1269,7 @@
 	  to avoid lowlevel timeouts.
 
 2006-01-09  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: added iRiver U10.
 
 2006-01-08  Marcus Meissner  <marcus@jet.franken.de>
@@ -1280,7 +1280,7 @@
 2006-01-06  Marcus Meissner  <marcus@jet.franken.de>
 
 	* PTPIP.TXT: describes PTP/IP communication basics.
-	  
+
 
 2006-01-05  Marcus Meissner  <marcus@jet.franken.de>
 
@@ -1292,16 +1292,16 @@
 	* library.c: Added Philipps HDD6320 MTP player.
 
 2006-01-01  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Add EOS 350 canon id too, since
 	  it apparently reacts to PTP traffic on it too.
 
-	* ptp.c, ptp.h: Adjusted several canon properties to 
+	* ptp.c, ptp.h: Adjusted several canon properties to
 	  better names. Added some previously not known ones.
 	  "ramsize" is actually "firmwareversion" and so on.
 
 2005-12-30  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Only allow getpartialobject for EXIF
 	  JPEG images.
 
@@ -1318,7 +1318,7 @@
 	  of the /DCIM tree.
 
 	  To switch between old (more correct) and new (faster)
-	  model, use the "Camera Settings" -> "Fast Filesystem" 
+	  model, use the "Camera Settings" -> "Fast Filesystem"
 	  config.
 
 	* library.c: Kodak C330 has no 0x0 parentobject entry in
@@ -1326,7 +1326,7 @@
 
 	* Cleaned up some names of Nikon defines values.
 
-	* ptp-pack.c, ptp.c, ptp.h: Added Eastman Kodak 
+	* ptp-pack.c, ptp.c, ptp.h: Added Eastman Kodak
 	  setserial, getserial and settext commands.
 	  You can display "Hello World!" on the TFT ... ;)
 
@@ -1351,7 +1351,7 @@
 	* library.c, ptp.c, ptp.h:
 
 	  Synchronized Nikon defines with libptp2.
-	
+
 	  Added Nikon (special) capture, checkevent, check readyness
 
 2005-12-08  Marcus Meissner  <marcus@jet.franken.de>
@@ -1370,7 +1370,7 @@
 	* Added iRiver T10 with alternate ID, reported by Jay MacDonald.
 
 2005-10-28  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* Added Canon Digital IXUS 55, PowerShot SD450.
 	* Added Canon PowerShot A410
 	* Added Nikon Coolpix 4800.
@@ -1384,7 +1384,7 @@
 	* Added Kodak V550 as reported.
 
 2005-10-13  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* Added iRiver T10.
 	  This is an MTP device, but the user reported being able to
 	  browse the filesystem and to download stuff.
@@ -1399,12 +1399,12 @@
 	* library.c: Added Coolpix 5600.
 
 2005-08-07  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Kodak C340 (mail by Maurizio Daniele <hayabusa@portalis.it>)
 
 2005-07-31  Marcus Meissner  <marcus@jet.franken.de>
-	
-	* library.c: Added Coolpix 5900 
+
+	* library.c: Added Coolpix 5900
 	  https://sourceforge.net/tracker/?func=detail&atid=358874&aid=1248287&group_id=8874
 
 2005-07-19  Marcus Meissner  <marcus@jet.franken.de>
@@ -1427,9 +1427,9 @@
 	  the correct vendor.
 
 	  Completed Canon theme download, but disabled.
-	
+
 2005-07-14  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added GX 8 in ptp mode.
 
 2005-07-08  Marcus Meissner  <marcus@jet.franken.de>
@@ -1449,7 +1449,7 @@
 	  driver where it belongs.
 
 2005-05-25  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Hub reverted the Kodak LS473 -> 743 change,
 	  corrected again.
 
@@ -1478,7 +1478,7 @@
 	* library.c: Added Canon PowerShot A520.
 
 2005-04-11  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Nikon D2Hs SLR.
 
 2005-04-10  Marcus Meissner  <marcus@jet.franken.de>
@@ -1491,7 +1491,7 @@
 	* library.c: Added Pentax Optio 43WR (as reported)
 
 2005-03-20  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Merged in most of the code from:
 	ptpcanon 0.0.2
 		 http://jalkapallo.org/superkolik/canon.html
@@ -1506,7 +1506,7 @@
 	it does not save the capture image to the FlashCard yet.
 
 2005-03-17  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* Added Kodak CX7525 ( as reported).
 
 2005-03-07  Marcus Meissner  <marcus@jet.franken.de>
@@ -1515,12 +1515,12 @@
 	* Added PowerShot A510 (as reported).
 
 2005-03-02  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* Added PowerShot S70 (as reported).
 
 2005-02-22  Marcus Meissner  <marcus@jet.franken.de>
-	
-	* Added Digital IXUS 30 (as reported). 
+
+	* Added Digital IXUS 30 (as reported).
 
 2005-02-09  Hubert Figuiere  <hfiguiere@teaser.fr>
 
@@ -1530,7 +1530,7 @@
 
 2005-01-25  Marcus Meissner  <marcus@jet.franken.de>
 
-	* ptp.c, ptp.h, library.c: 
+	* ptp.c, ptp.h, library.c:
 	Vegard Engen <vegard@engen.priv.no>
 	Clean up of last Nikon PTP patch.
 
@@ -1550,7 +1550,7 @@
 	* ptp.c, ptp.h: Added ptp_event_issupported helper
           function.
 
-	* library.c: Canon IXUS 2 (and some other IXUSs) 
+	* library.c: Canon IXUS 2 (and some other IXUSs)
 	  send ObjectRemoved events on deleteobject. We need
 	  to read them or we hang the communication.
 
@@ -1565,7 +1565,7 @@
 
 2005-01-21  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* ptp-bugs.h: Added file. 
+	* ptp-bugs.h: Added file.
 
 	* library.c (camera_init): Lookup for PTP bug
 	(init_ptp_fs): Bug specific workaround (EOS 20D + 300D)
@@ -1576,16 +1576,16 @@
 	* library.c: Added Sony DSC-P120
 
 2005-01-17  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	From Dean Brettle <brettle@users.sourceforge.net>
 	* library.c: Use capture date if no modify date is
 	  there.
-	
+
 2005-01-17  Marcus Meissner  <marcus@jet.franken.de>
 
 	From Vegard Engen <vegard@engen.priv.no>
 	* library.c, ptp.h:
-	
+
 	  Implemented PTP Property handling for:
 	  - generic WhiteBalance
 	  - generic ImageSize
@@ -1610,7 +1610,7 @@
 	* library.c: Added Minolta DIMage Z2 (PictBridge).
 
 2005-01-11  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Sony DSC-T3 as reported.
 
 2005-01-08  Marcus Meissner  <marcus@jet.franken.de>
@@ -1649,9 +1649,9 @@
 		     the CX4210 should have product id 0x560 instead of 0x565
 
 2004-11-29  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	Edward Kuns
-	* library.c: Added hack to detect / if no 
+	* library.c: Added hack to detect / if no
 	  object has parentid 0. fixes Canon EOS 20d.
 
 2004-11-15  Marcus Meissner  <marcus@jet.franken.de>
@@ -1672,11 +1672,11 @@
 	* library.c: Added Konica-Minolta DiMAGE Z3
 
 2004-10-17  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Canon PowerShot G6.
 
 2004-09-28  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Canon PowerShot A400.
 
 2004-09-21  Marcus Meissner  <marcus@jet.franken.de>
@@ -1684,7 +1684,7 @@
 	* library.c: Added Canon EOS 20D.
 
 2004-09-11  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Use widget name to mark up config entries.
 
 	  Added more config cases from Canon in capture mode.
@@ -1694,7 +1694,7 @@
 	  - exposure compensation (not fully done)
 
 2004-09-05  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* ptp-pack.c: Pack integer arrays.
 	* library.c: Enabled setting of configuration.
 		- Made work and tested:
@@ -1709,8 +1709,8 @@
 
 2004-08-25 Marcus Meissner  <marcus@jet.franken.de>
 
-	* ptp-pack.c, ptp.c, ptp.h: 
-	  - Added length parameters to the read functionality 
+	* ptp-pack.c, ptp.c, ptp.h:
+	  - Added length parameters to the read functionality
 	    to avoid buffer overflows.
  	  - Added PTPPropertyValues as generic property values.
 	  - Rewrote all property handling functions.
@@ -1722,7 +1722,7 @@
 	  - Started generic configuration handling.
 
 2004-08-15  Marcus Meissner  <meissner@suse.de>
-	
+
 	* library.c: Added Canon PowerShot A85.
 	* library.c: Added Kodak LS753 DX7630 CX7300 CX7220
 	   CX7330 CX7530 DX7440 CX6445 as reported on SourceForge
@@ -1738,7 +1738,7 @@
 	* library.c: Added Canon Powershot S60 as it works.
 
 2004-08-04 Marcus Meissner   <meissner@suse.de>
-	
+
 	* Added Canon PowerShot A310 ids as reported.
 	* Added Ricoh Caplio GX ids as reported.
 	* Added Nikon D70 ids as reported.
@@ -1746,7 +1746,7 @@
 
 2004-07-16 Mariusz Woloszyn
 
-	* ptp.h: Added NIKON extension code by Corey Manders 
+	* ptp.h: Added NIKON extension code by Corey Manders
 
 2004-06-23  Hubert Figuiere  <hfiguiere@teaser.fr>
 
@@ -1780,12 +1780,12 @@
 	* library.c: Added Kodak CX4310
 
 2004-04-26  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Added Canon Digital IXUS 430 /
 	  PowerShot S410 as reported.
 
 2004-04-18  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* library.c: Nikon Coolpix 3200 as reported.
 
 2004-04-13  Hubert Figuiere  <hfiguiere@teaser.fr>
@@ -1828,17 +1828,17 @@
 2004-01-20 Mariusz Woloszyn
 	* library.c: added more descriptive error message to capture code
 2004-01-20  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* ptp.c: As reported by Eric Valette added Canon PowerShot S50.
 	* ptp.c: New sony name, one generic Sony PTP name.
 
 2004-01-18  Marcus Meissner  <marcus@jet.franken.de>
-	
-	* ptp.c: As reported by Thorsten Ehlers - t_ehlers@users.sf.net, 
+
+	* ptp.c: As reported by Thorsten Ehlers - t_ehlers@users.sf.net,
 	  added Nikon Coolpix 3700.
 
 2004-01-10  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* ptp.c: As reported by VICTOR <viaaurea@yahoo.es>,
 	  added Olympus cameras: C-350Z, D-560Z, and X-250 (all the same id).
 
@@ -1846,7 +1846,7 @@
 	* ptp.c: sync with libptp2 code.
 
 2004-01-04  Marcus Meissner  <marcus@jet.franken.de>
-	
+
 	* ptp.c: Added Canon Digital IXUS i as reported.
 
 2004-01-02  Marcus Meissner  <marcus@jet.franken.de>
@@ -1865,8 +1865,8 @@
 2003-10-20  Hubert Figuiere  <hfiguiere@teaser.fr>
 
 	* library.c: Added Sony DSC-P52, DSC-P72, DSC-P92
-2003-10-14 Marcus Meissner 
-	
+2003-10-14 Marcus Meissner
+
 	* library.c: Fixed progress max value to be 100, or we get Inf/Nan
 	  or division by 0...
 
@@ -1877,14 +1877,14 @@
 	* library.c: removed Canon Digital Rebel, as the report was with the
 	  wrong Product ID
 
-2003-09-30 Marcus Meissner 
+2003-09-30 Marcus Meissner
 
 	* library.c: Added Canon Digital Rebel as reported by Yves Boisjoly
 		     <Yves.Boisjoly@sympatico.ca>
 	* library.c: Check if we support DeleteObject before calling it. Some
 		     cameras do not have it.
 
-2003-09-24 Marcus Meissner 
+2003-09-24 Marcus Meissner
 
 	* library.c: Use strtoul instead of strtol, or we cant handle
 	  stores with id 0x80000001.
@@ -1928,7 +1928,7 @@
 	* ptpcam.c: removed; download libptp2 sources if you need it
 	* Makefile.am: ptpcam.c removed
 	* README: updated for ptpcam.c removal
-	
+
 2003-09-11  Marcus Meissner <marcus@jet.franken.de>
 
 	* library.c: Note down filename in info struct.
@@ -1951,7 +1951,7 @@
 2003-08-05 Mariusz Woloszyn
 
 	* library.c: return thumbnauil when asked for GP_FILE_TYPE_EXIF if
-	  object is PTP_OFC_EXIF_JPEG, otherwise return 
+	  object is PTP_OFC_EXIF_JPEG, otherwise return
 	  GP_ERROR_NOT_SUPPORTED
 
 2003-08-03 Mariusz Woloszyn
@@ -2014,7 +2014,7 @@
 
 2003-05-12 Mariusz Woloszyn
 
-	* ptp.c: fflush(stderr) on error and debug; 
+	* ptp.c: fflush(stderr) on error and debug;
 	  added datatype argument for ptp_getdevicepropvalue();
 	  added ptp_setdevicepropvalue();A
 	* ptp-pack.c: added ptp_unpack_DPV() and ptp_pack_DPV();
@@ -2025,7 +2025,7 @@
 	* Makefile.am: changed ptp_test to ptpcam
 	* test_ptp.c: reorganized debug/error output, added more verbose
 	  levels; fixed extension properties debug (only EK supported as for
-	  now); added property supported values output; 
+	  now); added property supported values output;
 
 2003-05-09 Mariusz Woloszyn
 
@@ -2067,7 +2067,7 @@
 	* ChangeLog: reformated this file ;)
 
 2003-04-12 Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* ptp.c, library.c: Check return codes for property get during
 	  --config.
 
@@ -2168,7 +2168,7 @@
 	* ptp.c: updated ptp_getobjecthandles() to be protocol compliant
 	* ptp.c: rewrited ptp_transaction and ptp_sendreq code to send no
 	  more bytes than expected by device (fix for HP cameras)
-	
+
 2002-03-04 Mariusz Woloszyn
 	* library.c: some vendor/product IDs added
 	* library.c: changed initial transaction_id
@@ -2193,7 +2193,7 @@
 	* library.c: Remove references to gp_camera_set_error.
 
 2002-01-11 Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* Makefile.am: Moved ptp-pack.c from SOURCES to EXTRA_DIST, since
 	  it cannot be compiled stand alone.
 

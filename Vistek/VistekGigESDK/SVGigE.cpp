@@ -2,13 +2,13 @@
  * SVGigE       Dynamic loading of GigE camera access functions
  *******************************************************************************
  *
- * Version:     1.5.1 / November 2015  
- *   
+ * Version:     1.5.1 / November 2015
+ *
  * Copyright:   SVS VISTEK GmbH
  *
  *******************************************************************************
  *
- * THIS FILE CONTAINS BAYER PATTERN CONVERSION FROM THE FOLLOWING SOURCE: 
+ * THIS FILE CONTAINS BAYER PATTERN CONVERSION FROM THE FOLLOWING SOURCE:
  *
  * 1394-Based Digital Camera Control Library
  * Bayer pattern decoding functions
@@ -17,10 +17,10 @@
  * Written by Damien Douxchamps and Frederic Devernay
  *******************************************************************************
  */
-  
+
 #include "windows.h"
 
-#include "SVGigE.h" 
+#include "SVGigE.h"
 
 // Define a name for the SVS GigE API DLL
 #ifdef X64
@@ -79,7 +79,7 @@ typedef
     Func_StreamingChannel_create,
     Func_StreamingChannel_createEx,
     Func_StreamingChannel_delete,
-   
+
 	Func_StreamingChannel_setReadoutTransfer,
     Func_StreamingChannel_getReadoutTransfer,
 
@@ -257,7 +257,7 @@ typedef
     Func_Camera_resetTimestampCounter,
     Func_Camera_getTimestampCounter,
     Func_Camera_getTimestampTickFrequency,
-	Func_Camera_setFlippingMode,	
+	Func_Camera_setFlippingMode,
 	Func_Camera_getFlippingMode,
 	Func_Camera_setShutterMode,
 	Func_Camera_getShutterMode,
@@ -283,7 +283,7 @@ typedef
     Func_Camera_getImageCorrection,
 	Func_Camera_setPixelsCorrectionMap,
 	Func_Camera_getPixelsCorrectionMap,
-	Func_Camera_setPixelsCorrectionControlEnabel,	
+	Func_Camera_setPixelsCorrectionControlEnabel,
 	Func_Camera_getPixelsCorrectionControlEnabel,
 	Func_Camera_setPixelsCorrectionControlMark,
 	Func_Camera_getPixelsCorrectionControlMark,
@@ -350,7 +350,7 @@ typedef
     Func_Camera_getLensFocalLenght,
     Func_Camera_getLensFocalLenghtMin,
     Func_Camera_getLensFocalLenghtMax,
-    
+
 	Func_Camera_setLensFocusUnit,
     Func_Camera_getLensFocusUnit,
     Func_Camera_setLensFocus,
@@ -363,7 +363,7 @@ typedef
     Func_Camera_getLensApertureMin,
     Func_Camera_getLensApertureMax,
 
- 
+
 
     // 99 - Deprecated functions
     Func_Camera_startAcquisitionCycle,		    //2009-05-05: DEPRECATED, please use Camera_softwareTrigger()
@@ -373,25 +373,25 @@ typedef
     Func_Camera_getLUTMode,						//2009-02-19: re-implemented for backward compatibility
     Func_Camera_createLUTwhiteBalance,		    //2006-12-20: re-implemented by Camera_setWhiteBalance()
     Func_Camera_stampTimestamp,					//2008: removed, please use Camera_getTimestampCounter()
-    Func_Camera_getTimestamp,					//2008: removed, please use Camera_getTimestampCounter() 
-    Func_Image_getDebugInfo,					//2010: forwarding debug values, for internal use 
+    Func_Camera_getTimestamp,					//2008: removed, please use Camera_getTimestampCounter()
+    Func_Image_getDebugInfo,					//2010: forwarding debug values, for internal use
     Func_Camera_setTapBalance,					//2011-08-19: deprecated, please use Camera_setTapGain()
     Func_Camera_getTapBalance,					//2011-08-19: deprecated, please use Camera_getTapGain()
 	Func_StreamingChannel_setChannelTimeout,    // removed: re-implemented for backward compatibility
     Func_StreamingChannel_getChannelTimeout,    // removed:  re-implemented for backward compatibility
 	Func_Camera_setTapUserSettings,				// removed: re-implemented for backward compatibility
     Func_Camera_getTapUserSettings,				// removed: re-implemented for backward compatibility
-    Func_Camera_saveTapBalanceSettings,			// deprecated:  please use Camera_setTapGain()  
+    Func_Camera_saveTapBalanceSettings,			// deprecated:  please use Camera_setTapGain()
     Func_Camera_loadTapBalanceSettings,         // deprecated:  please use Camera_getTapGain()
 	// 00 - Consistency check
 	//
 	// The following function will be used to
-	// check whether consistency of a loaded 
+	// check whether consistency of a loaded
 	// function table is OK.
 	//
 	Func_isVersionCompliantDLL_consistency_check,
-  }                                                   
-  SVGigE_FUNCTION;                                    
+  }
+  SVGigE_FUNCTION;
 
 /**
  *  Array of function pointers that will be obtained from the GigE DLL
@@ -400,12 +400,12 @@ struct _GigEFunc
 {
   FARPROC function_pointer;
   SVGigE_FUNCTION function_id;
-  char *function_name;
+  const char *function_name;
 }
 GigEFunc[] =
 {
   // 0 - GigE DLL (implicitly called)
-  NULL, Func_isVersionCompliantDLL,                     "isVersionCompliantDLL",
+  NULL, Func_isVersionCompliantDLL,                    "isVersionCompliantDLL",
   NULL, Func_isDriverAvailable,                        "isDriverAvailable",
 
   // 1 - Camera: Discovery and bookkeeping
@@ -418,7 +418,7 @@ GigEFunc[] =
 
   // 2 - Camera: Connection
   NULL, Func_Camera_openConnection,                     "Camera_openConnection",
-  NULL, Func_Camera_openConnectionEx,                   "Camera_openConnectionEx",   
+  NULL, Func_Camera_openConnectionEx,                   "Camera_openConnectionEx",
   NULL, Func_Camera_closeConnection,                    "Camera_closeConnection",
   NULL, Func_Camera_setIPAddress,                       "Camera_setIPAddress",
   NULL, Func_Camera_forceValidNetworkSettings,          "Camera_forceValidNetworkSettings",
@@ -622,7 +622,7 @@ GigEFunc[] =
   NULL, Func_Camera_getFlippingMode,					"Camera_getFlippingMode",
   NULL,	Func_Camera_setShutterMode,						"Camera_setShutterMode",
   NULL,	Func_Camera_getShutterMode,						"Camera_getShutterMode",
-  
+
   // 21 - Controlling camera: Image appearance
   NULL, Func_Camera_getPixelType,                       "Camera_getPixelType",
   NULL, Func_Camera_setPixelDepth,                      "Camera_setPixelDepth",
@@ -642,7 +642,7 @@ GigEFunc[] =
   NULL, Func_Camera_isIdleImageCorrection,              "Camera_isIdleImageCorrection",
   NULL, Func_Camera_setImageCorrection,                 "Camera_setImageCorrection",
   NULL, Func_Camera_getImageCorrection,                 "Camera_getImageCorrection",
-  NULL, Func_Camera_setPixelsCorrectionMap,				"Camera_setPixelsCorrectionMap",	
+  NULL, Func_Camera_setPixelsCorrectionMap,				"Camera_setPixelsCorrectionMap",
   NULL, Func_Camera_getPixelsCorrectionMap,				"Camera_getPixelsCorrectionMap",
   NULL, Func_Camera_setPixelsCorrectionControlEnabel,   "Camera_setPixelsCorrectionControlEnabel",
   NULL, Func_Camera_getPixelsCorrectionControlEnabel,	"Camera_getPixelsCorrectionControlEnabel",
@@ -650,12 +650,12 @@ GigEFunc[] =
   NULL, Func_Camera_getPixelsCorrectionControlMark,		"Camera_getPixelsCorrectionControlMark",
   NULL, Func_Camera_setPixelsCorrectionMapOffset,		"Camera_setPixelsCorrectionMapOffset",
   NULL, Func_Camera_getPixelsCorrectionMapOffset,		"Camera_getPixelsCorrectionMapOffset",
-  NULL, Func_Camera_getPixelsCorrectionMapSize,			"Camera_getPixelsCorrectionMapSize", 
+  NULL, Func_Camera_getPixelsCorrectionMapSize,			"Camera_getPixelsCorrectionMapSize",
   NULL, Func_Camera_getMaximalPixelsCorrectionMapSize,	"Camera_getMaximalPixelsCorrectionMapSize",
   NULL, Func_Camera_setMapIndexCoordinate,				"Camera_setMapIndexCoordinate",
   NULL, Func_Camera_getMapIndexCoordinate,				"Camera_getMapIndexCoordinate",
   NULL, Func_Camera_deletePixelCoordinateFromMap,		"Camera_deletePixelCoordinateFromMap",
- 
+
   // 22 - Special control: IOMux configuration
   NULL, Func_Camera_getMaxIOMuxIN,                      "Camera_getMaxIOMuxIN",
   NULL, Func_Camera_getMaxIOMuxOUT,                     "Camera_getMaxIOMuxOUT",
@@ -694,7 +694,7 @@ GigEFunc[] =
 
   // 27 - General functions
   NULL, Func_SVGigE_estimateWhiteBalance,               "SVGigE_estimateWhiteBalance",
-  NULL, Func_SVGigE_estimateWhiteBalanceExtended,       "SVGigE_estimateWhiteBalanceExtended", 
+  NULL, Func_SVGigE_estimateWhiteBalanceExtended,       "SVGigE_estimateWhiteBalanceExtended",
   NULL, Func_SVGigE_writeImageToBitmapFile,             "SVGigE_writeImageToBitmapFile",
   NULL, Func_SVGigE_installFilterDriver,                "SVGigE_installFilterDriver",
   NULL, Func_SVGigE_uninstallFilterDriver,              "SVGigE_uninstallFilterDriver",
@@ -706,20 +706,20 @@ GigEFunc[] =
   // 29 - Special control: Lens conttrol
   NULL, Func_Camera_isLensAvailable,					"Camera_isLensAvailable",
   NULL, Func_Camera_getLensName,					"Camera_getLensName",
-  
+
   NULL, Func_Camera_setLensFocalLenght,					"Camera_setLensFocalLenght",
   NULL, Func_Camera_getLensFocalLenght,					"Camera_getLensFocalLenght",
   NULL, Func_Camera_getLensFocalLenghtMin,				"Camera_getLensFocalLenghtMin",
   NULL, Func_Camera_getLensFocalLenghtMax,				"Camera_getLensFocalLenghtMax",
- 
+
   NULL, Func_Camera_setLensFocusUnit,					"Camera_setLensFocusUnit",
   NULL, Func_Camera_getLensFocusUnit,					"Camera_getLensFocusUnit",
   NULL, Func_Camera_setLensFocus,					"Camera_setLensFocus",
   NULL, Func_Camera_getLensFocus,					"Camera_getLensFocus",
   NULL, Func_Camera_getLensFocusMin,					"Camera_getLensFocusMin",
   NULL, Func_Camera_getLensFocusMax,					"Camera_getLensFocusMax",
-  
-  
+
+
   NULL, Func_Camera_setLensAperture,					"Camera_setLensAperture",
   NULL, Func_Camera_getLensAperture,					"Camera_getLensAperture",
   NULL, Func_Camera_getLensApertureMin,					"Camera_getLensApertureMin",
@@ -744,8 +744,8 @@ GigEFunc[] =
   NULL, Func_Camera_getTapUserSettings,                 "Camera_getTapUserSettings",
   NULL, Func_Camera_saveTapBalanceSettings,             "Camera_saveTapBalanceSettings",
   NULL, Func_Camera_loadTapBalanceSettings,             "Camera_loadTapBalanceSettings",
-  
-  
+
+
   // 00 - Consistency check
   //
   // The following function pointer will be used to
@@ -764,7 +764,7 @@ GigEFunc[] =
 //-----------------------------------------------------------------------------------------
 
 typedef SVGigE_RETURN
-(*TFunc_isVersionCompliantDLL)(SVGigE_VERSION *DllVersion, 
+(*TFunc_isVersionCompliantDLL)(SVGigE_VERSION *DllVersion,
                                SVGigE_VERSION *ExpectedVersion);
 
 typedef SVGigE_RETURN
@@ -814,7 +814,7 @@ typedef SVGigE_RETURN
                              unsigned int SubnetMask);
 
 typedef  SVGigE_RETURN
-(*TFunc_Camera_forceValidNetworkSettings)(Camera_handle hCamera, 
+(*TFunc_Camera_forceValidNetworkSettings)(Camera_handle hCamera,
                                           unsigned int *IPAddress,
                                           unsigned int *SubnetMask);
 
@@ -825,34 +825,33 @@ typedef  SVGigE_RETURN
 // 3 - Camera: Information
 //-----------------------------------------------------------------------------------------
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getManufacturerName)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getModelName)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getDeviceVersion)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getManufacturerSpecificInformation)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getSerialNumber)(Camera_handle hCamera);
 
-typedef SVGigE_RETURN
-(*TFunc_Camera_setUserDefinedName)(Camera_handle hCamera, char *UserDefinedName);
+typedef SVGigE_RETURN (*TFunc_Camera_setUserDefinedName)(Camera_handle hCamera, char *UserDefinedName);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getUserDefinedName)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getMacAddress)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getIPAddress)(Camera_handle hCamera);
 
-typedef char *
+typedef const char *
 (*TFunc_Camera_getSubnetMask)(Camera_handle hCamera);
 
 typedef SVGigE_RETURN
@@ -935,7 +934,7 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_StreamingChannel_getBufferData)(StreamingChannel_handle hStreamingChannel,
-																			unsigned int BufferIndex,	
+																			unsigned int BufferIndex,
 																			unsigned char **BufferData);
 
 typedef SVGigE_RETURN
@@ -1357,7 +1356,7 @@ typedef SVGigE_RETURN
 //--------------Debouncer-------------------
 typedef SVGigE_RETURN
 (*TFunc_Camera_setDebouncerDuration)(Camera_handle hCamera,
-                                     float  DebouncerDuration); 
+                                     float  DebouncerDuration);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getDebouncerDuration)(Camera_handle hCamera,
@@ -1366,7 +1365,7 @@ typedef SVGigE_RETURN
 //--------------prescaler-------------------
 typedef SVGigE_RETURN
 (*TFunc_Camera_setPrescalerDevisor)(Camera_handle hCamera,
-                                    unsigned int  PrescalerDevisor); 
+                                    unsigned int  PrescalerDevisor);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getPrescalerDevisor)(Camera_handle hCamera,
@@ -1375,7 +1374,7 @@ typedef SVGigE_RETURN
 //--------------Sequencer-------------------
 typedef SVGigE_RETURN
 (*TFunc_Camera_loadSequenceParameters)(Camera_handle hCamera,
-                                       char *Filename);
+                                       const char *Filename);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_startSequencer)(Camera_handle hCamera);
@@ -1459,7 +1458,7 @@ typedef SVGigE_RETURN
 (*TFunc_Camera_setTapConfiguration)(Camera_handle hCamera,
                                     int TapCount);
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_Camera_getTapConfiguration)(Camera_handle hCamera,
                                     int *TapCount);
 
@@ -1467,7 +1466,7 @@ typedef SVGigE_RETURN
 (*TFunc_Camera_setTapConfigurationEx)(Camera_handle hCamera,
                                     SVGIGE_TAP_CONFIGURATION_SELECT SelectedTapConfig);
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_Camera_getTapConfigurationEx)(Camera_handle hCamera,
                                     SVGIGE_TAP_CONFIGURATION_SELECT *ProgrammedTapConfig);
 
@@ -1572,13 +1571,13 @@ typedef SVGigE_RETURN
 
  typedef SVGigE_RETURN
 (*TFunc_Camera_getFlippingMode)(Camera_handle hCamera,
-                        SVGIGE_FLIPPING_MODE *ProgrammedFlippingMode);	
+                        SVGIGE_FLIPPING_MODE *ProgrammedFlippingMode);
 
-  typedef SVGigE_RETURN	
+  typedef SVGigE_RETURN
 (*TFunc_Camera_setShutterMode)(Camera_handle hCamera,
                         SVGIGE_SHUTTER_MODE  ShutterMode);
 
-   typedef SVGigE_RETURN 
+   typedef SVGigE_RETURN
 (*TFunc_Camera_getShutterMode)(Camera_handle hCamera,
                         SVGIGE_SHUTTER_MODE *ProgrammedShutterMode);
 //-----------------------------------------------------------------------------------------
@@ -1682,19 +1681,19 @@ typedef SVGigE_RETURN
 (*TFunc_Camera_setPixelsCorrectionControlEnabel)(Camera_handle hCamera,
 									bool isPixelsCorrectionEnabled);
 
- 
-	
+
+
 typedef SVGigE_RETURN
 (*TFunc_Camera_getPixelsCorrectionControlEnabel)(Camera_handle hCamera,
 									bool *isPixelsCorrectionEnabled);
 
-	 
+
  typedef SVGigE_RETURN
 (*TFunc_Camera_setPixelsCorrectionControlMark)(Camera_handle hCamera,
 									bool isPixelsCorrectionMarked);
 
 
-	
+
 typedef SVGigE_RETURN
 (*TFunc_Camera_getPixelsCorrectionControlMark)(Camera_handle hCamera,
 									bool *isPixelsCorrectionMarked);
@@ -1708,32 +1707,32 @@ typedef SVGigE_RETURN
 typedef SVGigE_RETURN
 (*TFunc_Camera_getPixelsCorrectionMapOffset)(Camera_handle hCamera,
 									  int *ProgrammedOffsetX,  int *ProgrammedOffsetY);
-									 
-  
+
+
  typedef SVGigE_RETURN
 (*TFunc_Camera_getPixelsCorrectionMapSize)(Camera_handle hCamera,
 									 unsigned int *programmedMapSize);
 
-  
+
  typedef SVGigE_RETURN
 (*TFunc_Camera_getMaximalPixelsCorrectionMapSize)(Camera_handle hCamera,
 											 unsigned int *MaximalprogrammedMapSize);
- 
+
 
  typedef SVGigE_RETURN
 (*TFunc_Camera_setMapIndexCoordinate)(Camera_handle hCamera,
-									unsigned int MapIndex, 
+									unsigned int MapIndex,
 									unsigned int CoordinateX, unsigned int CoordinateY );
-									
+
 
  typedef SVGigE_RETURN
 (*TFunc_Camera_getMapIndexCoordinate)(Camera_handle hCamera,
-									unsigned int MapIndex, 
+									unsigned int MapIndex,
 								unsigned int *ProgrammedCoordinateX, unsigned int *ProgrammedCoordinateY );
 
 
  typedef SVGigE_RETURN
-(*TFunc_Camera_deletePixelCoordinateFromMap)(Camera_handle hCamera, unsigned int MapIndex);	
+(*TFunc_Camera_deletePixelCoordinateFromMap)(Camera_handle hCamera, unsigned int MapIndex);
 
 //-----------------------------------------------------------------------------------------
 // 22 - Special control: IOMux configuration
@@ -1867,29 +1866,29 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_loadSettingsFromXml)(Camera_handle hCamera,
-                                    char *Filename);
+                                    const char *Filename);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_SaveSettingsToXml)(Camera_handle hCamera,
-                                  char *Filename);
+                                  const char *Filename);
 
 //-----------------------------------------------------------------------------------------
 // 27 - General functions
 //-----------------------------------------------------------------------------------------
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_SVGigE_estimateWhiteBalance)(unsigned char *DataRGB, int DataRGBLength, float *Red, float *Green, float *Blue);
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_SVGigE_estimateWhiteBalanceExtended)(unsigned char *DataRGB, int PixelNumber, int &Red, int &Green, int &Blue,SVGIGE_Whitebalance_SELECT  Whitebalance_Art );
 
-typedef SVGigE_RETURN 
-(*TFunc_SVGigE_writeImageToBitmapFile)(char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
+typedef SVGigE_RETURN
+(*TFunc_SVGigE_writeImageToBitmapFile)(const char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
 
-typedef SVGigE_RETURN 
-(*TFunc_SVGigE_installFilterDriver)(char *PathToDriverPackage, char *FilenameINF, char *FilenameINF_m);
+typedef SVGigE_RETURN
+(*TFunc_SVGigE_installFilterDriver)( const char *PathToDriverPackage, const char *FilenameINF, const char *FilenameINF_m);
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_SVGigE_uninstallFilterDriver)();
 
 //-----------------------------------------------------------------------------------------
@@ -1902,7 +1901,7 @@ typedef char *
 typedef SVGigE_RETURN
 (*TFunc_Camera_registerForLogMessages)(Camera_handle hCamera,
                                        int  LogLevel,
-                                       char *LogFilename,
+                                       const char *LogFilename,
                                        LogMessageCallback LogCallback,
                                        void *MessageContext);
 
@@ -1926,10 +1925,10 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getLensFocalLenghtMin)(Camera_handle hCamera, unsigned int *FocalLenghtMin);
-  
+
 typedef SVGigE_RETURN
 (*TFunc_Camera_getLensFocalLenghtMax)(Camera_handle hCamera, unsigned int *FocalLenghtMax);
-  
+
 
 //----------------------------------------Focus------------------------------------------
 
@@ -1944,7 +1943,7 @@ typedef SVGigE_RETURN
 (*TFunc_Camera_setLensFocus)(Camera_handle hCamera, unsigned int ProgrammedFocus);
 
 typedef SVGigE_RETURN
-(*TFunc_Camera_getLensFocus)(Camera_handle hCamera, unsigned int *ProgrammedFocus); 
+(*TFunc_Camera_getLensFocus)(Camera_handle hCamera, unsigned int *ProgrammedFocus);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getLensFocusMin)(Camera_handle hCamera, unsigned int *FocusMin);
@@ -1975,16 +1974,16 @@ typedef SVGigE_RETURN
 typedef SVGigE_RETURN
 (*TFunc_Camera_startAcquisitionCycle)(Camera_handle hCamera);
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_Camera_setTapCalibration)(Camera_handle hCamera,
-                                  unsigned int TapID, 
-                                  unsigned int Gain, 
+                                  unsigned int TapID,
+                                  unsigned int Gain,
                                   unsigned int Offset);
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_Camera_getTapCalibration)(Camera_handle hCamera,
                                   unsigned int TapID,
-                                  unsigned int *Gain, 
+                                  unsigned int *Gain,
                                   unsigned int *Offset);
 
 typedef SVGigE_RETURN
@@ -2021,7 +2020,7 @@ typedef SVGigE_RETURN
 typedef SVGigE_RETURN
 (*TFunc_Camera_getTapBalance)(Camera_handle hCamera,
                               float *TapBalance);
-	
+
 typedef SVGigE_RETURN
 (*TFunc_StreamingChannel_setChannelTimeout)(StreamingChannel_handle hStreamingChannel,
                                             float ChannelTimeout);
@@ -2029,7 +2028,7 @@ typedef SVGigE_RETURN
 typedef SVGigE_RETURN
 (*TFunc_StreamingChannel_getChannelTimeout)(StreamingChannel_handle hStreamingChannel,
                                             float *ProgrammedChannelTimeout);
-											
+
 typedef SVGigE_RETURN
 (*TFunc_Camera_setTapUserSettings)(Camera_handle hCamera,
 									float TapUserGain,
@@ -2039,13 +2038,13 @@ typedef SVGigE_RETURN
 (*TFunc_Camera_getTapUserSettings)(Camera_handle hCamera,
 									float *TapUserGain,
 									float *TapUserOffset);
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_Camera_saveTapBalanceSettings)(Camera_handle hCamera,
-                                       char *Filename);
+                                       const char *Filename);
 
-typedef SVGigE_RETURN 
+typedef SVGigE_RETURN
 (*TFunc_Camera_loadTapBalanceSettings)(Camera_handle hCamera,
-                                       char *Filename);
+                                       const char *Filename);
 
 //--------------------End-of-function-type-declarations------------------------------------
 
@@ -2056,14 +2055,14 @@ typedef SVGigE_RETURN
 
 bool isLoadedGigEDLL()
 {
-  
+
     // Try to load GigE DLL
     GigEDLL = LoadLibrary(SVGigE_DLL);
 
     // Check DLL availability
     if( NULL == GigEDLL )
       return false;
- 
+
 
 	// Check if size of function table matches the number of imported functions
 	int FunctionCount = sizeof(GigEFunc) / sizeof(struct _GigEFunc);
@@ -2092,7 +2091,7 @@ bool isLoadedGigEDLL()
 }
 
 SVGigE_RETURN
-isVersionCompliantDLL(SVGigE_VERSION *DllVersion, 
+isVersionCompliantDLL(SVGigE_VERSION *DllVersion,
                       SVGigE_VERSION *ExpectedVersion)
 {
   // Check DLL availability
@@ -2105,7 +2104,7 @@ isVersionCompliantDLL(SVGigE_VERSION *DllVersion,
 
   // Pass through function call to DLL
 	//
-	// 2011-08-22/EKantz: check consistency of the whole function pointer 
+	// 2011-08-22/EKantz: check consistency of the whole function pointer
 	//                    table by calling the last function in that table.
 	//
   return ((TFunc_isVersionCompliantDLL)
@@ -2135,7 +2134,7 @@ isDriverAvailable()
 CameraContainerClient_handle
 CameraContainer_create(SVGigETL_Type TransportLayerType)
 {
-  // Load DLL 
+  // Load DLL
   if( !isLoadedGigEDLL() )
     return SVGigE_NO_CLIENT;
 
@@ -2169,7 +2168,7 @@ CameraContainer_delete(CameraContainerClient_handle hCameraContainer)
   // Release DLL (reference counter will be decreased)
   FreeLibrary(GigEDLL);
 
-	return Ret; 
+	return Ret;
 }
 
 SVGigE_RETURN
@@ -2279,7 +2278,7 @@ Camera_setIPAddress(Camera_handle hCamera,
 }
 
 SVGigE_RETURN
-Camera_forceValidNetworkSettings(Camera_handle hCamera, 
+Camera_forceValidNetworkSettings(Camera_handle hCamera,
                                  unsigned int *IPAddress,
                                  unsigned int *SubnetMask)
 {
@@ -2308,7 +2307,7 @@ Camera_restartIPConfiguration(Camera_handle hCamera)
 // 3 - Camera: Information
 //*****************************************************************************************
 
-char *
+const char *
 Camera_getManufacturerName(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2320,7 +2319,7 @@ Camera_getManufacturerName(Camera_handle hCamera)
   GigEFunc[Func_Camera_getManufacturerName].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getModelName(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2332,7 +2331,7 @@ Camera_getModelName(Camera_handle hCamera)
   GigEFunc[Func_Camera_getModelName].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getDeviceVersion(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2344,7 +2343,7 @@ Camera_getDeviceVersion(Camera_handle hCamera)
   GigEFunc[Func_Camera_getDeviceVersion].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getManufacturerSpecificInformation(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2356,7 +2355,7 @@ Camera_getManufacturerSpecificInformation(Camera_handle hCamera)
   GigEFunc[Func_Camera_getManufacturerSpecificInformation].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getSerialNumber(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2380,7 +2379,7 @@ Camera_setUserDefinedName(Camera_handle hCamera, char *UserDefinedName)
   GigEFunc[Func_Camera_setUserDefinedName].function_pointer)(hCamera, UserDefinedName);
 }
 
-char *
+const char *
 Camera_getUserDefinedName(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2392,7 +2391,7 @@ Camera_getUserDefinedName(Camera_handle hCamera)
   GigEFunc[Func_Camera_getUserDefinedName].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getMacAddress(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2404,7 +2403,7 @@ Camera_getMacAddress(Camera_handle hCamera)
   GigEFunc[Func_Camera_getMacAddress].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getIPAddress(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2416,7 +2415,7 @@ Camera_getIPAddress(Camera_handle hCamera)
   GigEFunc[Func_Camera_getIPAddress].function_pointer)(hCamera);
 }
 
-char *
+const char *
 Camera_getSubnetMask(Camera_handle hCamera)
 {
   // Check DLL availability
@@ -2468,7 +2467,7 @@ Camera_readXMLFile(Camera_handle hCamera,
 }
 
 SVGigE_RETURN
-Camera_getSensorTemperature(Camera_handle hCamera, 
+Camera_getSensorTemperature(Camera_handle hCamera,
                             unsigned int *SensorTemperature)
 {
   // Check DLL availability
@@ -2635,7 +2634,7 @@ StreamingChannel_getPixelType(StreamingChannel_handle hStreamingChannel,
 
 SVGigE_RETURN
 StreamingChannel_getBufferData(StreamingChannel_handle hStreamingChannel,
-															 unsigned int BufferIndex,	
+															 unsigned int BufferIndex,
                                unsigned char **BufferData)
 {
   // Check DLL availability
@@ -2742,7 +2741,7 @@ Camera_setInterPacketDelay(Camera_handle hCamera,
   GigEFunc[Func_Camera_setInterPacketDelay].function_pointer)(hCamera, InterPacketDelay);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_getInterPacketDelay(Camera_handle hCamera,
                            float *ProgrammedInterPacketDelay)
 {
@@ -2780,8 +2779,8 @@ Camera_getMulticastMode(Camera_handle hCamera, MULTICAST_MODE *MulticastMode)
 }
 
 SVGigE_RETURN
-Camera_getMulticastGroup(Camera_handle hCamera, 
-                         unsigned int *MulticastIP, 
+Camera_getMulticastGroup(Camera_handle hCamera,
+                         unsigned int *MulticastIP,
                          unsigned int *MulticastPort)
 {
   // Check DLL availability
@@ -2833,7 +2832,7 @@ Image_getSignalType(Image_handle hImage)
   GigEFunc[Func_Image_getSignalType].function_pointer)(hImage);
 }
 
-Camera_handle 
+Camera_handle
 Image_getCamera(Image_handle hImage)
 {
   // Check DLL availability
@@ -3919,7 +3918,7 @@ Camera_getPrescalerDevisor(Camera_handle hCamera,
 //---------------sequencer-------------------------------------
 SVGigE_RETURN
  Camera_loadSequenceParameters(Camera_handle hCamera,
-                               char *Filename)
+                               const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -4165,7 +4164,7 @@ Camera_getStrobeDurationIncrement(Camera_handle hCamera,
 
 
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_setTapConfiguration(Camera_handle hCamera,
                            int TapCount)
 {
@@ -4178,7 +4177,7 @@ Camera_setTapConfiguration(Camera_handle hCamera,
   GigEFunc[Func_Camera_setTapConfiguration].function_pointer)(hCamera, TapCount);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_getTapConfiguration(Camera_handle hCamera,
                            int *TapCount)
 {
@@ -4192,7 +4191,7 @@ Camera_getTapConfiguration(Camera_handle hCamera,
 }
 
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_setTapConfigurationEx(Camera_handle hCamera,
                          SVGIGE_TAP_CONFIGURATION_SELECT SelectedTapConfig)
 {
@@ -4205,7 +4204,7 @@ Camera_setTapConfigurationEx(Camera_handle hCamera,
   GigEFunc[Func_Camera_setTapConfigurationEx].function_pointer)(hCamera, SelectedTapConfig);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_getTapConfigurationEx(Camera_handle hCamera,
                          SVGIGE_TAP_CONFIGURATION_SELECT *ProgrammedTapConfig)
 {
@@ -4275,7 +4274,7 @@ Camera_getTapGain(Camera_handle hCamera,
 
 
 
- 
+
 
 
 
@@ -4477,7 +4476,7 @@ Camera_getTimestampCounter(Camera_handle hCamera,
 }
 
 SVGigE_RETURN
-Camera_getTimestampTickFrequency(Camera_handle hCamera, 
+Camera_getTimestampTickFrequency(Camera_handle hCamera,
                                  double *TimestampTickFrequency)
 {
   // Check DLL availability
@@ -4490,7 +4489,7 @@ Camera_getTimestampTickFrequency(Camera_handle hCamera,
 }
 
 SVGigE_RETURN
-Camera_setFlippingMode(Camera_handle hCamera, 
+Camera_setFlippingMode(Camera_handle hCamera,
 						SVGIGE_FLIPPING_MODE  FlippingMode)
 {
  // Check DLL availability
@@ -4504,7 +4503,7 @@ Camera_setFlippingMode(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_getFlippingMode(Camera_handle hCamera,
-                        SVGIGE_FLIPPING_MODE *ProgrammedFlippingMode) 
+                        SVGIGE_FLIPPING_MODE *ProgrammedFlippingMode)
 {
 	 // Check DLL availability
   if( NULL == GigEDLL )
@@ -4530,7 +4529,7 @@ Camera_setShutterMode(Camera_handle hCamera,
 
  SVGigE_RETURN
 Camera_getShutterMode(Camera_handle hCamera,
-                        SVGIGE_SHUTTER_MODE *ProgrammedShutterMode)  
+                        SVGIGE_SHUTTER_MODE *ProgrammedShutterMode)
 {
 		 // Check DLL availability
   if( NULL == GigEDLL )
@@ -4790,7 +4789,7 @@ Camera_getImageCorrection(Camera_handle hCamera,
   GigEFunc[Func_Camera_getImageCorrection].function_pointer)(hCamera, ProgrammedImageCorrectionMode);
 }
 
- 
+
 
 __usrdllexport__ SVGigE_RETURN
 Camera_setPixelsCorrectionMap(Camera_handle hCamera,
@@ -4834,8 +4833,8 @@ Camera_setPixelsCorrectionControlEnabel(Camera_handle hCamera,
   GigEFunc[Func_Camera_setPixelsCorrectionControlEnabel].function_pointer)(hCamera, isPixelsCorrectionEnabled);
 }
 
- 
-	
+
+
 __usrdllexport__ SVGigE_RETURN
 Camera_getPixelsCorrectionControlEnabel(Camera_handle hCamera,
 										 bool *isPixelsCorrectionEnabled)
@@ -4849,7 +4848,7 @@ Camera_getPixelsCorrectionControlEnabel(Camera_handle hCamera,
   GigEFunc[Func_Camera_getPixelsCorrectionControlEnabel].function_pointer)(hCamera,isPixelsCorrectionEnabled );
 }
 
-	 
+
 __usrdllexport__ SVGigE_RETURN
 Camera_setPixelsCorrectionControlMark(Camera_handle hCamera,
 									  bool isPixelsCorrectionMarked)
@@ -4864,7 +4863,7 @@ Camera_setPixelsCorrectionControlMark(Camera_handle hCamera,
 }
 
 
-	
+
 __usrdllexport__ SVGigE_RETURN
 Camera_getPixelsCorrectionControlMark(Camera_handle hCamera,
 									   bool *isPixelsCorrectionMarked)
@@ -4904,8 +4903,8 @@ Camera_getPixelsCorrectionMapOffset(Camera_handle hCamera,
   return ((TFunc_Camera_getPixelsCorrectionMapOffset)
   GigEFunc[Func_Camera_getPixelsCorrectionMapOffset].function_pointer)(hCamera, ProgrammedOffsetX,ProgrammedOffsetY );
 }
-									 
-  
+
+
 __usrdllexport__ SVGigE_RETURN
 Camera_getPixelsCorrectionMapSize(Camera_handle hCamera,
 								   unsigned int *programmedMapSize)
@@ -4919,7 +4918,7 @@ Camera_getPixelsCorrectionMapSize(Camera_handle hCamera,
   GigEFunc[Func_Camera_getPixelsCorrectionMapSize].function_pointer)(hCamera, programmedMapSize );
 }
 
-  
+
 __usrdllexport__ SVGigE_RETURN
 Camera_getMaximalPixelsCorrectionMapSize(Camera_handle hCamera,
 										 unsigned int *MaximalprogrammedMapSize)
@@ -4932,11 +4931,11 @@ Camera_getMaximalPixelsCorrectionMapSize(Camera_handle hCamera,
   return ((TFunc_Camera_getMaximalPixelsCorrectionMapSize)
   GigEFunc[Func_Camera_getMaximalPixelsCorrectionMapSize].function_pointer)(hCamera, MaximalprogrammedMapSize );
 }
- 
+
 
 __usrdllexport__ SVGigE_RETURN
 Camera_setMapIndexCoordinate(Camera_handle hCamera,
-									unsigned int MapIndex, 
+									unsigned int MapIndex,
 									unsigned int CoordinateX, unsigned int CoordinateY )
 {
 	// Check DLL availability
@@ -4947,11 +4946,11 @@ Camera_setMapIndexCoordinate(Camera_handle hCamera,
   return ((TFunc_Camera_setMapIndexCoordinate)
   GigEFunc[Func_Camera_setMapIndexCoordinate].function_pointer)(hCamera, MapIndex,  CoordinateX, CoordinateY );
 }
-									
+
 
 __usrdllexport__ SVGigE_RETURN
 Camera_getMapIndexCoordinate(Camera_handle hCamera,
-									unsigned int MapIndex, 
+									unsigned int MapIndex,
 									unsigned int *ProgrammedCoordinateX, unsigned int *ProgrammedCoordinateY )
 {
 	// Check DLL availability
@@ -4975,7 +4974,7 @@ Camera_deletePixelCoordinateFromMap(Camera_handle hCamera, unsigned int MapIndex
   return ((TFunc_Camera_deletePixelCoordinateFromMap)
   GigEFunc[Func_Camera_deletePixelCoordinateFromMap].function_pointer)(hCamera, MapIndex );
 
-}	
+}
 
 
 
@@ -5330,7 +5329,7 @@ Camera_restoreFactoryDefaults(Camera_handle hCamera)
 
 SVGigE_RETURN
 Camera_loadSettingsFromXml(Camera_handle hCamera,
-                           char *Filename)
+                           const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5345,7 +5344,7 @@ Camera_loadSettingsFromXml(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_SaveSettingsToXml(Camera_handle hCamera,
-                         char *Filename)
+                         const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5367,7 +5366,7 @@ Camera_SaveSettingsToXml(Camera_handle hCamera,
 // 27 - General functions
 //*****************************************************************************************
 
-SVGigE_RETURN 
+SVGigE_RETURN
 SVGigE_estimateWhiteBalance(unsigned char *DataRGB, int DataRGBLength, float *Red, float *Green, float *Blue)
 {
   // Check DLL availability
@@ -5379,7 +5378,7 @@ SVGigE_estimateWhiteBalance(unsigned char *DataRGB, int DataRGBLength, float *Re
   GigEFunc[Func_SVGigE_estimateWhiteBalance].function_pointer)(DataRGB, DataRGBLength, Red, Green, Blue);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 SVGigE_estimateWhiteBalanceExtended(unsigned char *DataRGB, int PixelNumber, int &Red, int &Green, int &Blue,SVGIGE_Whitebalance_SELECT  Whitebalance_Art )
 {
   // Check DLL availability
@@ -5392,8 +5391,8 @@ SVGigE_estimateWhiteBalanceExtended(unsigned char *DataRGB, int PixelNumber, int
 }
 
 
-SVGigE_RETURN 
-SVGigE_writeImageToBitmapFile(char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType)
+SVGigE_RETURN
+SVGigE_writeImageToBitmapFile(const char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5404,8 +5403,8 @@ SVGigE_writeImageToBitmapFile(char *Filename, unsigned char *Data, int SizeX, in
   GigEFunc[Func_SVGigE_writeImageToBitmapFile].function_pointer)(Filename, Data, SizeX, SizeY, PixelType);
 }
 
-SVGigE_RETURN 
-SVGigE_installFilterDriver(char *PathToDriverPackage, char *FilenameINF, char *FilenameINF_m)
+SVGigE_RETURN
+SVGigE_installFilterDriver(const char *PathToDriverPackage, const char *FilenameINF, const char *FilenameINF_m)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5416,7 +5415,7 @@ SVGigE_installFilterDriver(char *PathToDriverPackage, char *FilenameINF, char *F
   GigEFunc[Func_SVGigE_installFilterDriver].function_pointer)(PathToDriverPackage,FilenameINF,FilenameINF_m);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 SVGigE_uninstallFilterDriver()
 {
   // Check DLL availability
@@ -5432,8 +5431,7 @@ SVGigE_uninstallFilterDriver()
 // 28 - Diagnostics
 //*****************************************************************************************
 
-char *
-Error_getMessage(SVGigE_RETURN ReturnCode)
+const char* Error_getMessage(SVGigE_RETURN ReturnCode)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5447,7 +5445,7 @@ Error_getMessage(SVGigE_RETURN ReturnCode)
 SVGigE_RETURN
 Camera_registerForLogMessages(Camera_handle hCamera,
                               int  LogLevel,
-                              char *LogFilename,
+                              const char *LogFilename,
                               LogMessageCallback LogCallback,
                               void *MessageContext)
 {
@@ -5476,7 +5474,8 @@ SVGigE_RETURN Camera_isLensAvailable(Camera_handle hCamera, bool *isAvailable)
   GigEFunc[Func_Camera_isLensAvailable].function_pointer)(hCamera, isAvailable);
 }
 
-char* Camera_getLensName(Camera_handle hCamera)
+const char *
+Camera_getLensName(Camera_handle hCamera)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5661,10 +5660,10 @@ Camera_startAcquisitionCycle(Camera_handle hCamera)
   GigEFunc[Func_Camera_startAcquisitionCycle].function_pointer)(hCamera);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_setTapCalibration(Camera_handle hCamera,
-                         unsigned int TapID, 
-                         unsigned int Gain, 
+                         unsigned int TapID,
+                         unsigned int Gain,
                          unsigned int Offset)
 {
   // Check DLL availability
@@ -5676,10 +5675,10 @@ Camera_setTapCalibration(Camera_handle hCamera,
   GigEFunc[Func_Camera_setTapCalibration].function_pointer)(hCamera, TapID, Gain, Offset);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_getTapCalibration(Camera_handle hCamera,
-                         unsigned int TapID, 
-                         unsigned int *Gain, 
+                         unsigned int TapID,
+                         unsigned int *Gain,
                          unsigned int *Offset)
 {
   // Check DLL availability
@@ -5852,9 +5851,9 @@ Camera_getTapUserSettings(Camera_handle hCamera,
   GigEFunc[Func_Camera_getTapUserSettings].function_pointer)(hCamera, TapUserGain, TapUserOffset);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_saveTapBalanceSettings(Camera_handle hCamera,
-                              char *Filename)
+                              const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5865,9 +5864,9 @@ Camera_saveTapBalanceSettings(Camera_handle hCamera,
   GigEFunc[Func_Camera_saveTapBalanceSettings].function_pointer)(hCamera, Filename);
 }
 
-SVGigE_RETURN 
+SVGigE_RETURN
 Camera_loadTapBalanceSettings(Camera_handle hCamera,
-                              char *Filename)
+                              const char *Filename)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5906,12 +5905,12 @@ Camera_loadTapBalanceSettings(Camera_handle hCamera,
    in = in < 0 ? 0 : in;\
    in = in > 255 ? 255 : in;\
    out=in;
-  
+
 #define CLIP16(in, out, bits)\
    in = in < 0 ? 0 : in;\
    in = in > ((1<<bits)-1) ? ((1<<bits)-1) : in;\
    out=in;
-  
+
 void
 ClearBorders(unsigned char *rgb, int sx, int sy, int w)
 {
@@ -5960,7 +5959,7 @@ ClearBorders_uint16(uint16_t * rgb, int sx, int sy, int w)
 }
 
 /**************************************************************
- *     Color conversion functions for cameras that can        * 
+ *     Color conversion functions for cameras that can        *
  * output raw-Bayer pattern images, such as some Basler and   *
  * Point Grey camera. Most of the algos presented here come   *
  * from http://www-ise.stanford.edu/~tingchen/ and have been  *
@@ -6419,7 +6418,7 @@ dc1394_bayer_EdgeSense(const unsigned char *bayer, unsigned char *rgb, int sx, i
 	  CLIP(tmp, outG[(i + j) * 3]);
 	}
       }
-	
+
       for (i = 2*sx; i < (sy - 3)*sx; i += (sx<<1)) {
 	for (j = 3; j < sx - 2; j += 2) {
 	  dh = abs(((outR[(i + j - 2) * 3] +
@@ -6606,7 +6605,7 @@ dc1394_bayer_EdgeSense(const unsigned char *bayer, unsigned char *rgb, int sx, i
 	  CLIP(tmp, outR[(i + j) * 3]);
 	}
       }
-      
+
       // process BLUE channel
       for (i = 0; i < sy*sx; i += (sx<<1)) {
 	for (j = 1; j < sx - 2; j += 2) {
@@ -6646,7 +6645,7 @@ dc1394_bayer_EdgeSense(const unsigned char *bayer, unsigned char *rgb, int sx, i
 //      return;
       break;
     }
-    
+
     ClearBorders(rgb, sx, sy, 3);
 }
 
@@ -7242,7 +7241,7 @@ dc1394_bayer_EdgeSense_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int 
 	  CLIP16(tmp, outR[(i + j) * 3], bits);
 	}
       }
-	
+
       for (i = 2*sx; i < (sy - 3)*sx; i += (sx<<1)) {
 	for (j = 3; j < sx - 2; j += 2) {
 	  dh = abs(((outR[(i + j - 2) * 3] +
@@ -7429,7 +7428,7 @@ dc1394_bayer_EdgeSense_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int 
 	  CLIP16(tmp, outR[(i + j) * 3], bits);
 	}
       }
-      
+
       // process BLUE channel
       for (i = 0; i < sy*sx; i += (sx<<1)) {
 	for (j = 1; j < sx - 2; j += 2) {
@@ -7469,7 +7468,7 @@ dc1394_bayer_EdgeSense_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int 
 //      return;
       break;
     }
-   
+
     ClearBorders_uint16(rgb, sx, sy, 3);
 }
 
@@ -7753,4 +7752,3 @@ dc1394_bayer_decoding_16bit(const uint16_t *bayer, uint16_t *rgb, uint_t sx, uin
 }
 
 #endif
-

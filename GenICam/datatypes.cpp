@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -40,7 +40,7 @@ GCType::GCType(QMap<QString, ito::Param> *paramMap, const QString &name) :
 m_paramMap(paramMap),
 m_name(name)
 {
-    
+
 }
 
 //---------------------------------------------------------------------------
@@ -278,7 +278,7 @@ void GCFloatType::doubleMetaFromFloat(const CFloatPtr &fPtr, ito::DoubleMeta *db
             break;
         case GenApi::fnScientific:
             dblMeta->setDisplayNotation(ito::DoubleMeta::Scientific);
-            break;    
+            break;
     }
 
     switch (fPtr->GetRepresentation())
@@ -485,7 +485,7 @@ ito::RetVal GCEnumerationType::setValue(const ito::ParamBase *value)
         const char* val = value->getVal<const char*>();
         IEnumEntry *iee = m_sharedPtr->GetEntryByName(val);
         //qDebug() << iee->GetValue() << iee->GetNumericValue() << iee->GetSymbolic() << iee->GetAccessMode() << m_sharedPtr->GetAccessMode();
-        
+
         if (iee)
         {
             try
@@ -549,7 +549,7 @@ ito::RetVal GCEnumerationType::update(bool valueOnly /*= true*/)
     if (!(flags & ito::ParamBase::NotAvailable))
     {
         IEnumEntry *iee = m_sharedPtr->GetCurrentEntry();
-        
+
         if (iee)
         {
             if (iee->GetAccessMode() > NA)
@@ -601,6 +601,6 @@ ito::RetVal GCEnumerationType::update(bool valueOnly /*= true*/)
         }
         (*m_paramMap)[m_name].setFlags(flags);
     }
-    
+
     return retval;
 }

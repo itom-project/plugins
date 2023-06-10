@@ -13,13 +13,13 @@
 //
 //////////////////////////////////////////////////////////////////////////
 //
-// Conditional debug macros. These are extra safety check macros 
+// Conditional debug macros. These are extra safety check macros
 // that can be turned off by the "DEFINE_SAFE" defines below:
 //
 //////////////////////////////////////////////////////////////////////////
 //
 // If DEFINE_SAFE_STR is not set, STRLEN() etc. is strlen() etc.
-// if it is set, STRLEN etc. is "safe" (exception catching) 
+// if it is set, STRLEN etc. is "safe" (exception catching)
 //
 //#ifndef NDEBUG
 #define DEFINE_SAFE_STR
@@ -30,7 +30,7 @@
 // If DEFINE_SAFE_PTR is set, RETURN_ON_INVALID macros check the pointer for validity.
 // if not set, the RETURN_ON_INVALID macros do nothing.
 //
-//#define DEFINE_SAFE_PTR 
+//#define DEFINE_SAFE_PTR
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -51,20 +51,20 @@
 #  define RETURN_ON_INVALID_HCOMPILER( ph) \
    if (aerIsOkHCompiler(ph) != AERERR_NOERR) return AERCMPLR_GENERAL_BAD_COMPILER_HANDLE
 #else
-#  define RETURN_ON_INVALID_PTR(pp) 
-#  define RETURN_ON_INVALID_HAERCTL(pp) 
+#  define RETURN_ON_INVALID_PTR(pp)
+#  define RETURN_ON_INVALID_HAERCTL(pp)
 #  define RETURN_ON_INVALID_HCOMPILER(pp)
 #endif
 //////////////////////////////////////////////////////////////////////
 //
-// If DEFINE_SAFE_STR not set, then STRLEN etc. translate to normal strlen 
+// If DEFINE_SAFE_STR not set, then STRLEN etc. translate to normal strlen
 // etc.  If DEFINE_SAFE_STR is set, we use the fancy exception catching ones
-// (if bad pointer passsed, they throw up messages boxes, announing line and 
+// (if bad pointer passsed, they throw up messages boxes, announing line and
 //  file where bad call made)
 //
 //////////////////////////////////////////////////////////////////////
 //
-#ifdef DEFINE_SAFE_STR 
+#ifdef DEFINE_SAFE_STR
 //////////////////////////////////////////////////////////////////////
 //  use custom exception catching string routines
 //////////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@
 #endif
 
 // Stupid sprintf causes monster chaos (kernal exceptions etc.)if the number in exponent is "too high" and %f
-// format is used. (%f prints one digit for each exponent). Even "catch" or exceptions cant seem to trap it. 
+// format is used. (%f prints one digit for each exponent). Even "catch" or exceptions cant seem to trap it.
 // So here for safety, we trap it manually by doing scientific notation instead for these cases.
 #define SPRINTF                          sprintf
 #define SPRINTF_DOUBLE0(aaa,bbb) ((fabs(bbb)>1e+32) ? sprintf(aaa,"%e",bbb) : sprintf(aaa,"%f",bbb))

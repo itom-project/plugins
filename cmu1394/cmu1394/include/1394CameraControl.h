@@ -15,7 +15,7 @@
 //  Pittsburgh, PA
 //
 //	Copyright 5/2000
-// 
+//
 //	Iwan Ulrich
 //	Robotics Institute
 //	Carnegie Mellon University
@@ -23,12 +23,12 @@
 //
 //  This file is part of the CMU 1394 Digital Camera Driver
 //
-//  The CMU 1394 Digital Camera Driver is free software; you can redistribute 
-//  it and/or modify it under the terms of the GNU Lesser General Public License 
+//  The CMU 1394 Digital Camera Driver is free software; you can redistribute
+//  it and/or modify it under the terms of the GNU Lesser General Public License
 //  as published by the Free Software Foundation; either version 2.1 of the License,
 //  or (at your option) any later version.
 //
-//  The CMU 1394 Digital Camera Driver is distributed in the hope that it will 
+//  The CMU 1394 Digital Camera Driver is distributed in the hope that it will
 //  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
@@ -48,16 +48,16 @@ class C1394Camera;
 /**\brief Encapsulates the operation of exactly one camera feature (control)
  *
  * This class is must be initialized with a parent C1394Camera class and a
- * feature ID of type CAMERA_FEATURE for proper operation.  Thenceforth, this 
- * class can be used to monitor and manipulate the indicated control on the 
+ * feature ID of type CAMERA_FEATURE for proper operation.  Thenceforth, this
+ * class can be used to monitor and manipulate the indicated control on the
  * indicated camera.
  */
-class CAMAPI C1394CameraControl  
+class CAMAPI C1394CameraControl
 {
 public:
 	C1394CameraControl(C1394Camera *pCamera, CAMERA_FEATURE feature);
 	~C1394CameraControl();
-	
+
 	// Inquiry Stuff
 	int Inquire(unsigned long *pRawData = NULL);
 	bool HasPresence();         ///< Accessor for m_InquiryReg.present    \see Inquire()
@@ -69,7 +69,7 @@ public:
 	bool HasManualMode();       ///< Accessor for m_InquiryReg.manualmode \see Inquire()
 	void GetRange(unsigned short *min, unsigned short *max);
 	void GetRangeAbsolute(float *fmin, float *fmax);
-	
+
 	// Status Stuff
 	int Status(unsigned long *pRawData = NULL);
 	// Status Accessors
@@ -86,8 +86,8 @@ public:
 	int SetOnePush(BOOL on);    ///< Mutator for m_StatusReg.onepush    \return Same as SetStatus()
 	int SetAutoMode(BOOL on);   ///< Mutator for m_StatusReg.automode   \return Same as SetStatus()
 	int SetValue(unsigned short v_lo, unsigned short v_hi=0);
-	int SetValueAbsolute(float f); 
-	
+	int SetValueAbsolute(float f);
+
 	// Identification Stuff
 	const char *GetName();
 	const char *GetUnits();

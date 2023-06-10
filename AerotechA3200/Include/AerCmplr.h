@@ -17,8 +17,8 @@
 //    All routines here are concerned here with just steps 1. or  2. except
 //    AerCompilerRunImmediate() which does steps 1, 2. and 3.
 //
-// NOTES: 
-//    
+// NOTES:
+//
 ///////////////////////////////////////////////////////////////////////////
 //
 // these must be protrected against bad passing of the pointer (all gets) ???
@@ -35,7 +35,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 typedef ULONG LINENUM;           // All linenums are of this type
-#define LINE_NULL (ULONG)-1L     // Returned when "NO_SUCH_LINE" 
+#define LINE_NULL (ULONG)-1L     // Returned when "NO_SUCH_LINE"
 
 #define MAX_STATE_CHARS 30
 
@@ -60,7 +60,7 @@ typedef struct       // Type returned by AerCompilerErrData();
    LONG dwFileLine;       // FILE Line that error occurred. (0-based) (-1 if not relevent)
    LONG dwCharStart;      // First Character of offending token (0-based) (-1 if not applicable)
    LONG dwCharEnd;        // Last Character of offending token (0-based) (-1 if not applicable)
-   TCHAR pszFile[MAX_PATH]; // File occurred in (or "" if not applicable) 
+   TCHAR pszFile[MAX_PATH]; // File occurred in (or "" if not applicable)
 
 } AER_COMPILE_ERROR_DATA;
 
@@ -91,7 +91,7 @@ extern "C" {
 //  - Line/char numbers returned as NULL_INDEX indicate a NULL, or invalid number.
 //  - All functions that can fail, return a AERERR_CODE, which is AERERR_NOERR if
 //      the functions was succesful, else the return is one of the errors listed below.
-//  - Functions with "Get" in thier name write data into a location indicated by a passed 
+//  - Functions with "Get" in thier name write data into a location indicated by a passed
 //      pointer. If they return AERCMPLR_GENERAL_BAD_PASSED_BUFFER the pointer was found
 //      to be suspect. Do not use the pointer.
 //  - Error data consists of two parts, the error condition data, and error location data.
@@ -101,14 +101,14 @@ extern "C" {
 //    Possible error returns:
 //       AERERR_NOERR
 //       AERCMPLR_GENERAL_BAD_COMPILER_HANDLE
-//       AERCMPLR_GENERAL_NO_SUCH_FILE      
-//       AERCMPLR_GENERAL_NO_SUCH_LINE      
-//       AERCMPLR_GENERAL_NO_SUCH_ERROR     
-//       AERCMPLR_GENERAL_NO_PROGRAM_LOADED 
-//       AERCMPLR_GENERAL_BAD_PASSED_BUFFER 
-//       AERCMPLR_GENERAL_NO_SUCH_ERROR     
-//       AERCMPLR_GENERAL_INSUFFICIENT_CONNECTION_DATA      
-//       AERCMPLR_GENERAL_OVERSPECIFIED_CONNECTION_DATA      
+//       AERCMPLR_GENERAL_NO_SUCH_FILE
+//       AERCMPLR_GENERAL_NO_SUCH_LINE
+//       AERCMPLR_GENERAL_NO_SUCH_ERROR
+//       AERCMPLR_GENERAL_NO_PROGRAM_LOADED
+//       AERCMPLR_GENERAL_BAD_PASSED_BUFFER
+//       AERCMPLR_GENERAL_NO_SUCH_ERROR
+//       AERCMPLR_GENERAL_INSUFFICIENT_CONNECTION_DATA
+//       AERCMPLR_GENERAL_OVERSPECIFIED_CONNECTION_DATA
 //    or
 //       any one of the of AERCMPLR_FILE_ errors. ???  make consistant
 //
@@ -143,7 +143,7 @@ AERERR_CODE AERCMPL_DLLENTRY AerCompilerCompileLine(HCOMPILER hCompile, LPCTSTR 
 //  You can download (as a program) or run immediate data compiled from a program or a line.
 //  Downloading needs a connection. Pass it the connection data or let it use
 //  the default values.  If you pass newProgram as true, it allocates new lines.
-// ??? no queue version 
+// ??? no queue version
 //
 #define HAERCTRL_FAKE (HAERCTRL)-1
 
@@ -211,18 +211,18 @@ AERERR_CODE AERCMPL_DLLENTRY AerCompilerAutoInclude( HCOMPILER hCompile, LPCTSTR
 AERERR_CODE AERCMPL_DLLENTRY AerCompilerAutoIncludeEx( HCOMPILER hCompile, TASKMASK mTask, LPCTSTR pszParamFile );
 
 AERERR_CODE AERCMPL_DLLENTRY AerCompilerAutoRun( HCOMPILER hCompile, HAERCTRL hAerCtrl, LPCTSTR pszParamFile  );
-AERERR_CODE AERCMPL_DLLENTRY AerCompilerAutoRunEx( HCOMPILER hCompile, 
-                                                   HAERCTRL hAerCtrl, 
+AERERR_CODE AERCMPL_DLLENTRY AerCompilerAutoRunEx( HCOMPILER hCompile,
+                                                   HAERCTRL hAerCtrl,
                                                    LPCTSTR pszParamFile,
-                                                   LPTSTR pszFileWithError,  
+                                                   LPTSTR pszFileWithError,
                                                    LPTSTR pszProgTask1,
                                                    LPTSTR pszProgTask2,
                                                    LPTSTR pszProgTask3,
                                                    LPTSTR pszProgTask4 );
-AERERR_CODE AERCMPL_DLLENTRY AerCompilerAutoRunEx2( HCOMPILER hCompile, 
-                                                    HAERCTRL hAerCtrl, 
+AERERR_CODE AERCMPL_DLLENTRY AerCompilerAutoRunEx2( HCOMPILER hCompile,
+                                                    HAERCTRL hAerCtrl,
                                                     LPCTSTR pszParamFile,
-                                                    LPTSTR pszFileWithError,  
+                                                    LPTSTR pszFileWithError,
                                                     LPTSTR pszProgTask1,
                                                     LPTSTR pszProgTask2,
                                                     LPTSTR pszProgTask3,
@@ -247,15 +247,15 @@ AERERR_CODE AERCMPL_DLLENTRY AerProgramIsRunning( HAERCTRL hAerCtrl, TASKINDEX i
 AERERR_CODE AERCMPL_DLLENTRY AerProgramDownload( HAERCTRL hAerCtrl, LPCTSTR pszProgram, DWORD dwFlags, TASKINDEX iTask);
 AERERR_CODE AERCMPL_DLLENTRY AerProgramDownloadEx( HAERCTRL hAerCtrl, LPCTSTR pszProgram, DWORD dwFlags, TASKINDEX iTask, HCOMPILER hCompiler );
 
-AERERR_CODE AERCMPL_DLLENTRY AerProgramGetStatus( HAERCTRL hAerCtrl, HCOMPILER hCompiler, TASKINDEX iTask, 
-                                                  PAER_PROG_INFO pProgInfo, PDWORD pdwProgramExecuting, 
+AERERR_CODE AERCMPL_DLLENTRY AerProgramGetStatus( HAERCTRL hAerCtrl, HCOMPILER hCompiler, TASKINDEX iTask,
+                                                  PAER_PROG_INFO pProgInfo, PDWORD pdwProgramExecuting,
                                                   LPTSTR pszFile, DWORD dwFileSize,
                                                   LPTSTR pszLineText, DWORD dwLineTextSize,
                                                   LPTSTR pszFaultText, DWORD dwFaultTextSize );
 
-AERERR_CODE AERCMPL_DLLENTRY AerProgramGetStatusEx( HAERCTRL hAerCtrl, HCOMPILER hCompiler, TASKINDEX iTask, 
+AERERR_CODE AERCMPL_DLLENTRY AerProgramGetStatusEx( HAERCTRL hAerCtrl, HCOMPILER hCompiler, TASKINDEX iTask,
                                                     PDWORD pdwNumLinesSMC, PDWORD pdwCurrentLineSMC,
-                                                    PDWORD pdwCurrentLineUser, PDWORD pdwCurrentQueueLines, 
+                                                    PDWORD pdwCurrentLineUser, PDWORD pdwCurrentQueueLines,
                                                     PDWORD pdwQueueBufferFull, PDWORD pdwQueueBufferEmpty,
                                                     PDWORD pdwProgramExecuting,
                                                     LPTSTR pszFile, DWORD dwFileSize,
@@ -264,17 +264,17 @@ AERERR_CODE AERCMPL_DLLENTRY AerProgramGetStatusEx( HAERCTRL hAerCtrl, HCOMPILER
 
 AERERR_CODE AERCMPL_DLLENTRY AerAutoProgRun( HAERCTRL hAerCtrl, LPCTSTR pszParamFile );
 
-AERERR_CODE AERCMPL_DLLENTRY AerAutoProgRunEx( HAERCTRL hAerCtrl, 
-                                               LPCTSTR pszFile, 
+AERERR_CODE AERCMPL_DLLENTRY AerAutoProgRunEx( HAERCTRL hAerCtrl,
+                                               LPCTSTR pszFile,
                                                LPTSTR pszFileWithError,
                                                LPTSTR pszProgTask1,
                                                LPTSTR pszProgTask2,
                                                LPTSTR pszProgTask3,
                                                LPTSTR pszProgTask4 );
 
-AERERR_CODE AERCMPL_DLLENTRY AerAutoProgRunEx2( HAERCTRL hAerCtrl, 
+AERERR_CODE AERCMPL_DLLENTRY AerAutoProgRunEx2( HAERCTRL hAerCtrl,
                                                 LPCTSTR pszFile,
-                                                LPTSTR pszFileWithError,  
+                                                LPTSTR pszFileWithError,
                                                 LPTSTR pszProgTask1,
                                                 LPTSTR pszProgTask2,
                                                 LPTSTR pszProgTask3,
@@ -289,20 +289,20 @@ AERERR_CODE AERCMPL_DLLENTRY AerSysInitialize( HAERCTRL hAerCtrl,
                                                DWORD dwCheckHardware,
                                                HAERCTRL *phAerCtrl,
                                                PDWORD pdwInitErrorState,
-                                               PDWORD pdwFirstError, 
-                                               LPTSTR pszErrorInfo, 
+                                               PDWORD pdwFirstError,
+                                               LPTSTR pszErrorInfo,
                                                LPTSTR pszStatusInfo,
                                                LPTSTR pszProgTask1,
                                                LPTSTR pszProgTask2,
                                                LPTSTR pszProgTask3,
                                                LPTSTR pszProgTask4 );
 
-AERERR_CODE AERCMPL_DLLENTRY AerSysTaskInitialization( HCOMPILER hCompile, 
-                                                       HAERCTRL hAerCtrl, 
+AERERR_CODE AERCMPL_DLLENTRY AerSysTaskInitialization( HCOMPILER hCompile,
+                                                       HAERCTRL hAerCtrl,
                                                        LPCTSTR pszParamFile );
 AERERR_CODE AERCMPL_DLLENTRY AerProgramFree( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle );
 AERERR_CODE AERCMPL_DLLENTRY AerProgramGetHandle( HAERCTRL hAerCtrl, DWORD dwNum, PAER_PROG_HANDLE pHandle );
-AERERR_CODE AERCMPL_DLLENTRY AerProgramGetInfo( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle, 
+AERERR_CODE AERCMPL_DLLENTRY AerProgramGetInfo( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle,
                                                 PAER_PROG_INFO pInfo );
 AERERR_CODE AERCMPL_DLLENTRY AerProgramGetNumber( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle,
                                                   PDWORD pdwNumber );
@@ -313,7 +313,7 @@ AERERR_CODE AERCMPL_DLLENTRY AerProgramGetBreakPoint( HAERCTRL hAerCtrl, PAER_PR
 AERERR_CODE AERCMPL_DLLENTRY AerProgramSetFlags( HAERCTRL hAerCtrl, PAER_PROG_HANDLE pHandle, DWORD dwFlags);
 
 AERERR_CODE AERCMPL_DLLENTRY AerQueueSendCommand(HAERCTRL hAerCtrl,  HCOMPILER hCompiler,
-                                                 DWORD dwProgNum, DWORD dwLineUser, 
+                                                 DWORD dwProgNum, DWORD dwLineUser,
                                                  LPCTSTR pszTextLine);
 
 #ifdef __cplusplus    /* Needed to prevent Name mangling of function prototypes */

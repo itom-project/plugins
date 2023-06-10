@@ -166,18 +166,18 @@ CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
 CPP = gcc -E
-CPPFLAGS = 
+CPPFLAGS =
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"minizip\" -DPACKAGE_TARNAME=\"minizip\" -DPACKAGE_VERSION=\"1.2.6\" -DPACKAGE_STRING=\"minizip\ 1.2.6\" -DPACKAGE_BUGREPORT=\"bugzilla.redhat.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"minizip\" -DVERSION=\"1.2.6\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\"
 DEPDIR = .deps
 DLLTOOL = false
-DSYMUTIL = 
-DUMPBIN = 
-ECHO_C = 
+DSYMUTIL =
+DUMPBIN =
+ECHO_C =
 ECHO_N = -n
-ECHO_T = 
+ECHO_T =
 EGREP = /bin/grep -E
-EXEEXT = 
+EXEEXT =
 FGREP = /bin/grep -F
 GREP = /bin/grep
 HAVE_UNISTD_H = 1
@@ -187,33 +187,33 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld -m elf_x86_64
-LDFLAGS = 
-LIBOBJS = 
-LIBS = 
+LDFLAGS =
+LIBOBJS =
+LIBS =
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIPO = 
+LIPO =
 LN_S = ln -s
-LTLIBOBJS = 
+LTLIBOBJS =
 MAKEINFO = ${SHELL} /opt/trunk/iTOM/pluginSource/x3pio/x3plib/src/zlib/contrib/minizip/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
-NMEDIT = 
+NMEDIT =
 OBJDUMP = objdump
 OBJEXT = o
-OTOOL = 
-OTOOL64 = 
+OTOOL =
+OTOOL64 =
 PACKAGE = minizip
 PACKAGE_BUGREPORT = bugzilla.redhat.com
 PACKAGE_NAME = minizip
 PACKAGE_STRING = minizip 1.2.6
 PACKAGE_TARNAME = minizip
-PACKAGE_URL = 
+PACKAGE_URL =
 PACKAGE_VERSION = 1.2.6
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SED = /bin/sed
-SET_MAKE = 
+SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 1.2.6
@@ -223,15 +223,15 @@ abs_top_builddir = /opt/trunk/iTOM/pluginSource/x3pio/x3plib/src/zlib/contrib/mi
 abs_top_srcdir = /opt/trunk/iTOM/pluginSource/x3pio/x3plib/src/zlib/contrib/minizip
 ac_ct_AR = ar
 ac_ct_CC = gcc
-ac_ct_DUMPBIN = 
+ac_ct_DUMPBIN =
 am__include = include
 am__leading_dot = .
-am__quote = 
+am__quote =
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
 build = x86_64-unknown-linux-gnu
-build_alias = 
+build_alias =
 build_cpu = x86_64
 build_os = linux-gnu
 build_vendor = unknown
@@ -242,7 +242,7 @@ docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
 host = x86_64-unknown-linux-gnu
-host_alias = 
+host_alias =
 host_cpu = x86_64
 host_os = linux-gnu
 host_vendor = unknown
@@ -265,8 +265,8 @@ sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
 sysconfdir = ${prefix}/etc
-target_alias = 
-top_build_prefix = 
+target_alias =
+top_build_prefix =
 top_builddir = .
 top_srcdir = .
 lib_LTLIBRARIES = libminizip.la
@@ -367,7 +367,7 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libminizip.la: $(libminizip_la_OBJECTS) $(libminizip_la_DEPENDENCIES) $(EXTRA_libminizip_la_DEPENDENCIES) 
+libminizip.la: $(libminizip_la_OBJECTS) $(libminizip_la_DEPENDENCIES) $(EXTRA_libminizip_la_DEPENDENCIES)
 	$(libminizip_la_LINK) -rpath $(libdir) $(libminizip_la_OBJECTS) $(libminizip_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -415,10 +415,10 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-miniunzip$(EXEEXT): $(miniunzip_OBJECTS) $(miniunzip_DEPENDENCIES) $(EXTRA_miniunzip_DEPENDENCIES) 
+miniunzip$(EXEEXT): $(miniunzip_OBJECTS) $(miniunzip_DEPENDENCIES) $(EXTRA_miniunzip_DEPENDENCIES)
 	@rm -f miniunzip$(EXEEXT)
 	$(LINK) $(miniunzip_OBJECTS) $(miniunzip_LDADD) $(LIBS)
-minizip$(EXEEXT): $(minizip_OBJECTS) $(minizip_DEPENDENCIES) $(EXTRA_minizip_DEPENDENCIES) 
+minizip$(EXEEXT): $(minizip_OBJECTS) $(minizip_DEPENDENCIES) $(EXTRA_minizip_DEPENDENCIES)
 	@rm -f minizip$(EXEEXT)
 	$(LINK) $(minizip_OBJECTS) $(minizip_LDADD) $(LIBS)
 

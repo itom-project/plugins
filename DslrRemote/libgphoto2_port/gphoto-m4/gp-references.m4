@@ -1,7 +1,7 @@
 dnl
 dnl Define external references
 dnl
-dnl Define once, use many times. 
+dnl Define once, use many times.
 dnl No more URLs and Mail addresses in translated strings and stuff.
 dnl
 
@@ -13,12 +13,12 @@ AC_DEFINE_UNQUOTED([$1],["$2"],[$3])
 AC_DEFUN([GP_REFERENCES],
 [
 
-GP_REF(	[URL_GPHOTO_HOME], 
-	[http://www.gphoto.org/], 
+GP_REF(	[URL_GPHOTO_HOME],
+	[http://www.gphoto.org/],
 	[gphoto project home page])dnl
 
-GP_REF(	[URL_GPHOTO_PROJECT], 
-	[http://sourceforge.net/projects/gphoto], 
+GP_REF(	[URL_GPHOTO_PROJECT],
+	[http://sourceforge.net/projects/gphoto],
 	[gphoto sourceforge project page])
 
 GP_REF(	[URL_DIGICAM_LIST],

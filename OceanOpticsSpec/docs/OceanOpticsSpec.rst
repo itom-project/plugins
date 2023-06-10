@@ -10,7 +10,7 @@
 **Devices**:    Ocean Optics Spectrometers
 **Author**:     :pluginauthor:`OceanOpticsSpec`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -20,9 +20,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: OceanOpticsSpec
 
@@ -57,14 +57,14 @@ An instance of this plugin has the following internal parameters:
     current width of ROI
 **sizey**: {int}, read-only
     current height
-    
+
 Timestamp
 =========
 
 Every acquired image will have a tag 'timestamp' defined. It contains the timestamp of the acquisition in seconds based on QDateTime::currentMSecsSinceEpoch(). If data is averaged, the timestamp of the latest acquisition is used.
 
 
-  
+
 Changelog
 =========
 

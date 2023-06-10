@@ -4,20 +4,20 @@
 	(bug #105586)
 
 2004-02-22 Till Adam  <till@adam-lilienthal.de>
-  * add support for Dakota disposable cameras. This is the 
+  * add support for Dakota disposable cameras. This is the
     work of John Maushammer <gphoto2@maushammer.com>
 
 2004-02-22 Till Adam  <till@adam-lilienthal.de>
   * add support for Pencams without flash via a special camera
     model. --camera "Pencam without flash" works for those cams
-    which fail upon autodetection as regular pencams.  
+    which fail upon autodetection as regular pencams.
     Thanks to John Feuerstein <bizkit@baze.de> for helping with
     that.
 
 2004-01-17 Till Adam  <till@adam-lilienthal.de>
   * fix brokeness for pencams which don't react well to the reset
-    command needed for other firmware one cams. Thanks to 
-    Norbert Möndjen <Norbert.Moendjen@t-online.de> and 
+    command needed for other firmware one cams. Thanks to
+    Norbert Möndjen <Norbert.Moendjen@t-online.de> and
     Walt Boring <waboring@3gstech.com> for figuring that out
     and helping debug it.
 

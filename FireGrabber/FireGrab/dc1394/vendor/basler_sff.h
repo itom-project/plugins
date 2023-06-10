@@ -2,7 +2,7 @@
  * 1394-Based Digital Camera Control Library
  *
  * Basler Smart Feature Framework specific extensions
- * 
+ *
  * Written by Mikael Olenfalk <mikael _DOT_ olenfalk _AT_ tobii _DOT_ com>
  *
  * Copyright (C) 2006 Tobii Technology AB, Stockholm Sweden

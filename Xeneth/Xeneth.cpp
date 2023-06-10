@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "Xeneth" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -57,7 +57,7 @@ Xeneth::Xeneth() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("frame_rate", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000.0, 0.5, tr("frame rate in fps. This value is always set to the minimum value in order to allow huge exposure times. Since the camera is not run in free-run mode, the frame rate is not important.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Gain (normalized value 0..1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Offset (leads to blacklevel offset) (normalized value 0..1). Readonly if not adjustable.").toLatin1().data());
@@ -228,14 +228,14 @@ ito::RetVal Xeneth::close(ItomSharedSemaphore *waitCond)
         XC_CloseCamera(m_handle);
         m_handle = 0;
     }
-    
+
 
     if(waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -333,13 +333,13 @@ ito::RetVal Xeneth::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         }
         if (key == "gain")
         {
-            
+
             retValue += checkError(XC_SetPropertyValueL(m_handle, "ManualModeGain", qBound<long>(1, val->getVal<double>()*255+1, 255.99), NULL));
             retValue += synchronize(gain);
         }
         if (key == "offset")
         {
-            
+
             retValue += checkError(XC_SetPropertyValueL(m_handle, "ManualModeOffset", val->getVal<double>() *200-100, NULL));
             retValue += synchronize(offset);
         }
@@ -390,7 +390,7 @@ ito::RetVal Xeneth::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
 
             else if (key == "x0")
             {
-        
+
 
                 retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), NULL));
                 retValue += synchronize(roi);
@@ -406,7 +406,7 @@ ito::RetVal Xeneth::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
 
             else if (key == "y0")
             {
-            
+
                 retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), NULL));
                 retValue += synchronize(roi);
             }
@@ -425,10 +425,10 @@ ito::RetVal Xeneth::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 setGrabberStarted(started);
             }
         }
-    
+
     }
 
-    
+
 
     /*if(!retValue.containsError())
     {
@@ -551,7 +551,7 @@ ito::RetVal Xeneth::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         retValue += checkError(XC_StartCapture(m_handle));
         m_acquisitionRetVal = ito::retOk;
     }
-    
+
     if(waitCond)
     {
         waitCond->returnValue = retValue;
@@ -657,12 +657,12 @@ ito::RetVal Xeneth::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if(!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if(!retValue.containsError())

@@ -7,13 +7,13 @@
 |
 | File:			QCamImgfnc.h
 |
-| Project/lib:	
+| Project/lib:
 |
-| Target:		
+| Target:
 |
-| Description:	
+| Description:
 |
-| Notes:		
+| Notes:
 |
 |==============================================================================
 | dd/mon/yy  Author		Notes
@@ -108,7 +108,7 @@ void QCAMAPI QCam_BayerToRgb( QCam_qcBayerInterp algorithm,
 //
 //		pFrameOut - you must fill in the following fields:
 //						pBuffer		an allocated buffer to hold output image,
-//									this must be factor times the original 
+//									this must be factor times the original
 //									image size
 //						bufferSize	size of the buffer in bytes
 //						format		the output format must be the same as the
@@ -133,4 +133,3 @@ QCam_Err QCAMAPI QCam_BayerZoomVert( unsigned char	factor,
 #endif
 
 #endif // QCAMIMGFNC_H_INCLUDE
-

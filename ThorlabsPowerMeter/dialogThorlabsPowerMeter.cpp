@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -30,7 +30,7 @@ void DialogThorlabsPowerMeter::parametersChanged(QMap<QString, ito::Param> param
 {
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
-    
+
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -50,7 +50,7 @@ void DialogThorlabsPowerMeter::parametersChanged(QMap<QString, ito::Param> param
         ui.spinLineFrequency->setMinimum(params["line_frequency"].getMin());
         ui.spinLineFrequency->setSingleStep(((ito::IntMeta*)params["line_frequency"].getMeta())->getStepSize());
         m_firstRun = false;
-        
+
         //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
         enableDialog(true);
     }

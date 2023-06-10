@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -90,8 +90,8 @@ It is initialized by dataIO(\"SuperlumBS\", SerialIO).");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
@@ -163,7 +163,7 @@ SuperlumBS::SuperlumBS() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandM
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabeld, (1) optical output is enabled.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -274,9 +274,9 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
             if (paramIt->getFlags() & ito::ParamBase::Readonly)
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data()); 
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
             }
-            
+
             else if (val->isNumeric() && paramIt->isNumeric())
             {
                 double curval = val->getVal<double>();
@@ -286,7 +286,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 }
                 else if (curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data()); 
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                 }
 
                 //__________________________________________________________________________________________________________ Operation Mode
@@ -298,8 +298,8 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     QRegularExpression regEx("^A2(\\d{3,3})(\\d{2,2})");
                     QRegularExpressionMatch match = regEx.match(answer);
                     if (match.hasMatch() && !retValue.containsError())
-                    {        
-                        request = QByteArray("S6") + QByteArray::number(val->getVal<int>());    
+                    {
+                        request = QByteArray("S6") + QByteArray::number(val->getVal<int>());
                         bool optical;
                         switch (match.captured(1).toInt())
                         {
@@ -310,12 +310,12 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                                 optical = false; // optical output is disabled
                                 break;
 
-                            case 99: 
+                            case 99:
                             case 103:
                             case 115:
-                            case 119:    
+                            case 119:
                                 optical = true; // optical output is enabled
-                                break;    
+                                break;
 
                             default:
                                 retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
@@ -324,7 +324,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
                         if (optical)
                         {
-                            retValue += ito::RetVal(ito::retError, 0, tr("Optical output of device is enabled!").toLatin1().data()); 
+                            retValue += ito::RetVal(ito::retError, 0, tr("Optical output of device is enabled!").toLatin1().data());
                         }
                         else if (!optical)
                         {
@@ -334,12 +334,12 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                             {
                                 m_params["operation_mode"].setVal<int>(regexStringList2[1].toInt());
                             }
-                            else 
+                            else
                             {
                                 retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                             }
                         }
-                        else 
+                        else
                         {
                             retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                         }
@@ -353,11 +353,11 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 //__________________________________________________________________________________________________________ Local/ Remote Mode
                 else if (paramName == "local")
                 {
-                    //set remote operation of device 
+                    //set remote operation of device
                     if (val->getVal<int>() == 0)
                     {
                         request = QByteArray("S11");
-                        retValue += SendQuestionWithAnswerString(request, answer, 500);  
+                        retValue += SendQuestionWithAnswerString(request, answer, 500);
                         if (answer.contains("A11") && !retValue.containsError())
                         {
                             m_params["local"].setVal<int>(0); // local mode
@@ -385,7 +385,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                         retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                     }
                 }
-                
+
                 //__________________________________________________________________________________________________________ Optical Output
                 else if (paramName == "optical_output")
                 {
@@ -393,20 +393,20 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
                     QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
-                    {                        
+                    {
                         switch (regexStringList[1].toInt())
                         {
-                            case 97: 
+                            case 97:
                             case 101:
                             case 113:
                             case 117:
                                 outputOpt = false;//optical output disabled
                                 break;
-                            case 99: 
+                            case 99:
                             case 103:
                             case 115:
                             case 119:
-                                    
+
                                 outputOpt = true;//optical output enabled
                                 break;
 
@@ -418,7 +418,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                         if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 0)) //disabled optical output
                         {
                             request = QByteArray("S21");
-                            retValue += SendQuestionWithAnswerString(request, answer, 500);   
+                            retValue += SendQuestionWithAnswerString(request, answer, 500);
                             if (answer.contains("A2") && !retValue.containsError())
                             {
                                 m_params["optical_output"].setVal<int>(0);
@@ -426,12 +426,12 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                             else
                             {
                                 retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-                            }                
+                            }
                         }
                         else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 1)) //enable optical output
                         {
                             request = QByteArray("S21");
-                            retValue += SendQuestionWithAnswerString(request, answer, 500); 
+                            retValue += SendQuestionWithAnswerString(request, answer, 500);
                             if (answer.contains("A2") && !retValue.containsError())
                             {
                                 m_params["optical_output"].setVal<int>(1);
@@ -439,7 +439,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                             else
                             {
                                 retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-                            }    
+                            }
                         }
                         else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 0)) //already disabled
                         {
@@ -467,7 +467,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
                     QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
-                    {                        
+                    {
                         switch (regexStringList[1].toInt())
                         {
                             case 99: //optical output enabled
@@ -476,7 +476,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                             case 119:
                                 retValue += ito::RetVal::format(ito::retError, 0, tr("Optical Output is ENABLED!").toLatin1().data());
                                 break;
-                                            
+
                             case 97: //optical output disabled
                             case 101:
                             case 113:
@@ -485,7 +485,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
                             default:
                                 retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
-                                break;    
+                                break;
                         }
                     }
                     else
@@ -494,7 +494,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     }
                     QStringList regexStringList2 = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
                     if (!regexStringList2.isEmpty() && !retValue.containsError())
-                    {                        
+                    {
                         switch (regexStringList2[1].toInt())
                         {
                             case 97: //low power mode
@@ -520,16 +520,16 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     {
                         retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
                     }
-                    
+
                     if (!retValue.containsError() && powermod && (val->getVal<int>() == 0)) //power mode to LOW
                     {
                         request = QByteArray("S41");
-                        retValue += SendQuestionWithAnswerString(request, answer, 500);   
+                        retValue += SendQuestionWithAnswerString(request, answer, 500);
                         if (retValue.containsError())
                         {
                             retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                         }
-                        else 
+                        else
                         {
                             m_params["power_mode"].setVal<int>(0);
                             static_cast<ito::DoubleMeta*>(m_params["modification_end_wavelength"].getMeta())->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
@@ -547,14 +547,14 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     else if (!retValue.containsError() && !powermod && (val->getVal<int>() == 1)) //power mode to HIGH
                     {
                         request = QByteArray("S41");
-                        retValue += SendQuestionWithAnswerString(request, answer, 500); 
+                        retValue += SendQuestionWithAnswerString(request, answer, 500);
                         if (retValue.containsError())
                         {
                             retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                         }
                         else
                         {
-                            m_params["power_mode"].setVal<int>(1); 
+                            m_params["power_mode"].setVal<int>(1);
                             static_cast<ito::DoubleMeta*>(m_params["modification_end_wavelength"].getMeta())->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
                             static_cast<ito::DoubleMeta*>(m_params["modification_end_wavelength"].getMeta())->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
                             static_cast<ito::DoubleMeta*>(m_params["modification_start_wavelength"].getMeta())->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
@@ -566,7 +566,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                             static_cast<ito::DoubleMeta*>(m_params["wavelength_second"].getMeta())->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
                             static_cast<ito::DoubleMeta*>(m_params["wavelength_second"].getMeta())->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
                         }
-                    }        
+                    }
                     else if (!retValue.containsError() && !powermod && (val->getVal<int>() == 0)) // not changed
                     {
                     }
@@ -577,14 +577,14 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     {
                         retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
                     }
-                }  
+                }
 
                 //__________________________________________________________________________________________________________ Wavelength
                 else if (paramName == "wavelength")
                 {
                     request = QByteArray("S81") + (QByteArray::number(20 * val->getVal<double>() - 14000));
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //set wavelength of optical output in Manual sweep mode
-                    QStringList regexStringList = regexHelper("^A81(\\d{4,4})", answer);          
+                    QStringList regexStringList = regexHelper("^A81(\\d{4,4})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["wavelength"].setVal<double>(
@@ -600,11 +600,11 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 else if (paramName == "sweep_speed")
                 {
                     if (val->getVal<double>() < 10)
-                    {    
+                    {
                         request = QByteArray("S88") + (QByteArray::number(val->getVal<double>())); //set sweep speed of device (1-byte code for 2 - 9 nm/s)
                         retValue += SendQuestionWithAnswerString(request, answer, 500);
                         QStringList regexStringList = regexHelper("^A88(\\d{1,1})", answer);
-                        
+
                         if (regexStringList.length() > 0 && !retValue.containsError())
                         {
                             m_params["sweep_speed"].setVal<int>(regexStringList[1].toInt());
@@ -642,7 +642,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 {
                     request = QByteArray("S83") + (QByteArray::number(20 * val->getVal<double>() - 14000));
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //set end wavelength in Automatic or external sweep mode
-                    QStringList regexStringList = regexHelper("^A83(\\d{4,4})", answer);            
+                    QStringList regexStringList = regexHelper("^A83(\\d{4,4})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["modification_end_wavelength"].setVal<double>(
@@ -659,7 +659,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 {
                     request = QByteArray("S82") + (QByteArray::number(20 * val->getVal<double>() - 14000));
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //set start wavelength in Automatic or external sweep mode
-                    QStringList regexStringList = regexHelper("^A82(\\d{4,4})", answer);            
+                    QStringList regexStringList = regexHelper("^A82(\\d{4,4})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["modification_start_wavelength"].setVal<double>(
@@ -676,7 +676,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 {
                     request = QByteArray("S85") + (QByteArray::number(20 * val->getVal<double>() - 14000));
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //set first wavelength in TWO-WAVELENGTH MODULATION mode
-                    QStringList regexStringList = regexHelper("^A85(\\d{4,4})", answer);          
+                    QStringList regexStringList = regexHelper("^A85(\\d{4,4})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["wavelength_first"].setVal<double>(
@@ -692,8 +692,8 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 else if (paramName == "wavelength_second")
                 {
                     request = QByteArray("S86") + (QByteArray::number(20 * val->getVal<double>() - 14000));
-                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //set second wavelength in TWO-WAVELENGTH MODULATION mode 
-                    QStringList regexStringList = regexHelper("^A86(\\d{4,4})", answer);           
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //set second wavelength in TWO-WAVELENGTH MODULATION mode
+                    QStringList regexStringList = regexHelper("^A86(\\d{4,4})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
                     {
                         m_params["wavelength_second"].setVal<double>(
@@ -757,10 +757,10 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     }
 
                     request = QByteArray("S77");
-                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode   
-                    QStringList regexStringList = regexHelper("^A77(\\d{2,2})", answer); 
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode
+                    QStringList regexStringList = regexHelper("^A77(\\d{2,2})", answer);
                     if (!regexStringList.isEmpty() && !retValue.containsError())
-                    {                        
+                    {
                         switch (regexStringList[1].toInt())
                         {
                             case 1:
@@ -832,18 +832,18 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
     }
 
     emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-    }    
+    }
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
-{   
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     QByteArray answer;
@@ -861,15 +861,15 @@ ito::RetVal SuperlumBS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     }
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
-    {    
+    {
         m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
-         retval += IdentifyAndInitializeSystem();    
+         retval += IdentifyAndInitializeSystem();
     }
     else
     {
         retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -890,12 +890,12 @@ ito::RetVal SuperlumBS::close(ItomSharedSemaphore *waitCond)
 
     request = QByteArray("S20");
     retValue += SendQuestionWithAnswerString(request, answer, 500);  //ask, if optical output is enabled
-    QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer); 
+    QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
     if (!regexStringList.isEmpty() && !retValue.containsError())
-    {                        
+    {
         switch (regexStringList[1].toInt())
         {
-            case 99: 
+            case 99:
             case 103:
             case 115:
             case 119:
@@ -910,7 +910,7 @@ ito::RetVal SuperlumBS::close(ItomSharedSemaphore *waitCond)
                 break;
             default:
                 retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
-                break;        
+                break;
         }
     }
     else
@@ -1096,7 +1096,7 @@ ito::RetVal SuperlumBS::setPosRel(const int axis, const double pos, ItomSharedSe
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
-{    
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError, 0, tr("function not defined").toLatin1().data());
@@ -1150,7 +1150,7 @@ ito::RetVal SuperlumBS::requestStatusAndPosition(bool sendCurrentPos, bool sendT
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void SuperlumBS::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1183,7 +1183,7 @@ void SuperlumBS::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::SendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS)
 {
     int readSigns;
@@ -1198,7 +1198,7 @@ ito::RetVal SuperlumBS::SendQuestionWithAnswerString(QByteArray questionCommand,
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::readString(QByteArray &questionCommand, QByteArray &result, int &len, int timeoutMS)
 {
     ito::RetVal retValue = ito::retOk;
@@ -1253,7 +1253,7 @@ ito::RetVal SuperlumBS::readString(QByteArray &questionCommand, QByteArray &resu
                 if (pos >= 0) //found
                 {
                     done = true;
-                    result = result.left(pos);   
+                    result = result.left(pos);
                 }
             }
 
@@ -1268,26 +1268,26 @@ ito::RetVal SuperlumBS::readString(QByteArray &questionCommand, QByteArray &resu
 
         len = result.length();
     }
-    
+
     if (!retValue.containsError())
     {
-        if (result.contains("AE"))// general error! 
+        if (result.contains("AE"))// general error!
         {
             retValue += ito::RetVal(ito::retError,0, tr(m_params["serial_number"].getVal<char*>(), "general error!").toLatin1().data());
             return retValue;
-        }    
+        }
         else if (result.contains("AL"))// device is in local mode and can not be controlled by remote
         {
             m_params["local"].setVal<int>(0);
             retValue += ito::RetVal(ito::retError,0, tr(m_params["serial_number"].getVal<char*>(), ("Devices is in local mode! Remote needs to be activated!")).toLatin1().data());
             return retValue;
         }
-        else if (result.contains("A2033"))// Alarm Remote Interlock connection! 
-        {                        
+        else if (result.contains("A2033"))// Alarm Remote Interlock connection!
+        {
                 retValue += ito::RetVal(ito::retError, 0, tr("Alarm, Remote Interlock is opened!!! Close the Remote Interlock.").toLatin1().data());
                 m_params["remote_interlock"].setVal<int>(0);
         }
-        else if (result.contains("A2065"))// Master Key is in position O! 
+        else if (result.contains("A2065"))// Master Key is in position O!
         {
                 retValue += ito::RetVal(ito::retError, 0, tr("Master Key is in position O!!! Turn the Master Key to I.").toLatin1().data());
                 m_params["master_key"].setVal<int>(0);
@@ -1302,11 +1302,11 @@ ito::RetVal SuperlumBS::readString(QByteArray &questionCommand, QByteArray &resu
     {
         retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
     }
-    
+
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::SerialSendCommand(QByteArray command)
 {
     ito::RetVal retVal = m_pSer->setVal(command.data(), command.length(), NULL);
@@ -1323,7 +1323,7 @@ ito::RetVal SuperlumBS::SerialSendCommand(QByteArray command)
     return retVal;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
 {
     ito::RetVal retval = ito::retOk;
@@ -1356,7 +1356,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>());
         m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
         m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-        
+
         QSharedPointer<ito::Param> param(new ito::Param("port"));
         retval += m_pSer->getParam(param, NULL);
         if (retval.containsError() || param->getVal<int>() < 1)
@@ -1365,27 +1365,27 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         }
         else
         {
-            m_params["comPort"].setVal<int>(param->getVal<int>()); 
+            m_params["comPort"].setVal<int>(param->getVal<int>());
         }
     }
-    
-    //__________________________________________________________________________________________________________ Set serial number 
+
+    //__________________________________________________________________________________________________________ Set serial number
     if (!retval.containsError())
     {
         request = QByteArray("S0");
         retval += SendQuestionWithAnswerString(request, answer, 500);
         if (!retval.containsError())
         {
-            //ITO Superlum BroadSweeper indentification information 
+            //ITO Superlum BroadSweeper indentification information
             //A0: reponse code
-            //6: this integer means that the type of the instrument is 6. 
-            //2: this integer means that it is a double-channel device. 
-            //8: this integer means that the firmware version is 4. 
+            //6: this integer means that the type of the instrument is 6.
+            //2: this integer means that it is a double-channel device.
+            //8: this integer means that the firmware version is 4.
             //0579: serial number
             m_params["serial_number"].setVal<char*>(answer.data());
         }
         else
-        {            
+        {
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
     }
@@ -1394,16 +1394,16 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
     if (!retval.containsError())
     {
         request = QByteArray("S12");
-        retval += SendQuestionWithAnswerString(request, answer, 500);    
+        retval += SendQuestionWithAnswerString(request, answer, 500);
         if (!retval.containsError() && answer.contains("A11"))
-        {            
+        {
             m_params["local"].setVal<int>(0); // local mode
         }
         else if (!retval.containsError() && answer.contains("A12"))
         {
             m_params["local"].setVal<int>(1); // remote mode
-        }    
-        else 
+        }
+        else
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
@@ -1415,11 +1415,11 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         //end wavelength of full tuning range in LOW power mode
         request = QByteArray("S51");
         retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
-        QStringList regexStringList = regexHelper("^A51(\\d{4,4})", answer); 
+        QStringList regexStringList = regexHelper("^A51(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
-        {            
+        {
             double value = 0.05 * regexStringList[1].toDouble() + 700;
-            m_params["full_tuning_range_LOW_end"].setVal<double>(value);            
+            m_params["full_tuning_range_LOW_end"].setVal<double>(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_LOW_end"].getMeta())->setMin(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_LOW_start"].getMeta())->setMin(value);
             static_cast<ito::DoubleMeta*>(m_params["modification_end_wavelength"].getMeta())->setMin(value);
@@ -1440,12 +1440,12 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         //end wavelength of full tuning range in LOW power mode
         request = QByteArray("S52");
         retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
-        QStringList regexStringList = regexHelper("^A52(\\d{4,4})", answer); 
+        QStringList regexStringList = regexHelper("^A52(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
-        {            
+        {
             double value = 0.05 * regexStringList[1].toDouble() + 700;
             m_params["full_tuning_range_LOW_start"].setVal<double>(value);
-            
+
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_LOW_end"].getMeta())->setMax(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_LOW_start"].getMeta())->setMax(value);
             static_cast<ito::DoubleMeta*>(m_params["modification_end_wavelength"].getMeta())->setMax(value);
@@ -1466,9 +1466,9 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         //end wavelength of full tuning range in LOW power mode
         request = QByteArray("S53");
         retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
-        QStringList regexStringList = regexHelper("^A53(\\d{4,4})", answer); 
+        QStringList regexStringList = regexHelper("^A53(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
-        {            
+        {
             double value = 0.05 * regexStringList[1].toDouble() + 700;
             m_params["full_tuning_range_HIGH_end"].setVal<double>(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_HIGH_end"].getMeta())->setMin(value);
@@ -1491,12 +1491,12 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         //end wavelength of full tuning range in LOW power mode
         request = QByteArray("S54");
         retval += SendQuestionWithAnswerString("S54", answer, 500);//end wavelength for LOW power mode
-        QStringList regexStringList = regexHelper("^A54(\\d{4,4})", answer); 
+        QStringList regexStringList = regexHelper("^A54(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
-        {            
+        {
             double value = 0.05 * regexStringList[1].toDouble() + 700;
             m_params["full_tuning_range_HIGH_start"].setVal<double>(value);
-            
+
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_HIGH_start"].getMeta())->setMax(value);
             static_cast<ito::DoubleMeta*>(m_params["full_tuning_range_HIGH_end"].getMeta())->setMax(value);
             static_cast<ito::DoubleMeta*>(m_params["modification_end_wavelength"].getMeta())->setMax(value);
@@ -1510,16 +1510,16 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
     }
-        
+
     //__________________________________________________________________________________________________________ check optical output and booster
     if (!retval.containsError())
     {
         request = QByteArray("S20");
         retval += SendQuestionWithAnswerString(request, answer, 500);
         // check optical output
-        QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer); 
+        QStringList regexStringList = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
-        {                        
+        {
             switch (regexStringList[1].toInt())
             {
                 case 97:
@@ -1529,7 +1529,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
                     m_params["optical_output"].setVal<int>(0);
                     break;
 
-                case 99: 
+                case 99:
                 case 103:
                 case 115:
                 case 119:
@@ -1547,9 +1547,9 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         }
 
         // check booster
-        QStringList regexStringList2 = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer); 
+        QStringList regexStringList2 = regexHelper("^A2(\\d{3,3})(\\d{2,2})", answer);
         if (!regexStringList2.isEmpty() && !retval.containsError())
-        {                        
+        {
             switch (regexStringList2[1].toInt())
             {
                 case 0:
@@ -1561,7 +1561,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
                     m_params["operation_booster"].setVal<int>(0);
                     break;
 
-                case 3: 
+                case 3:
                 case 7:
                     m_params["operation_booster"].setVal<int>(1);
                     break;
@@ -1570,21 +1570,21 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
                     retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
                     break;
             }
-        }    
+        }
         else
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
     }
 
-    //__________________________________________________________________________________________________________ optical power check query      
+    //__________________________________________________________________________________________________________ optical power check query
     if (!retval.containsError())
     {
         request = QByteArray("S40");
         retval += SendQuestionWithAnswerString(request, answer, 500);
-        QStringList regexStringList = regexHelper("^A4(\\d{3,3})(\\d{2,2})", answer); 
+        QStringList regexStringList = regexHelper("^A4(\\d{3,3})(\\d{2,2})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
-        {                        
+        {
             switch (regexStringList[1].toInt())
             {
                 case 97:
@@ -1604,7 +1604,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
                     static_cast<ito::DoubleMeta*>(m_params["wavelength_second"].getMeta())->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
                     break;
 
-                case 113: 
+                case 113:
                 case 117:
                 case 115:
                 case 119:
@@ -1623,14 +1623,14 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
 
                 default:
                     retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
-                    break;        
+                    break;
             }
         }
         else
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
-    }  
+    }
 
     //__________________________________________________________________________________________________________ operation mode check query
     if (!retval.containsError())
@@ -1652,8 +1652,8 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
     if (!retval.containsError())
     {
         request = QByteArray("S71");
-        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query 
-        QStringList regexStringList = regexHelper("^A71(\\d{4,4})", answer);            
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query
+        QStringList regexStringList = regexHelper("^A71(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             m_params["wavelength"].setVal<double>(0.05 * regexStringList[1].toInt() + 700);
@@ -1661,15 +1661,15 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         else
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-        }        
-    } 
+        }
+    }
 
     //__________________________________________________________________________________________________________ check start wavelength of Sweep
     if (!retval.containsError())
     {
         request = QByteArray("S72");
         retval += SendQuestionWithAnswerString(request, answer, 500);
-        QStringList regexStringList = regexHelper("^A72(\\d{4,4})", answer);         
+        QStringList regexStringList = regexHelper("^A72(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             m_params["modification_start_wavelength"].setVal<double>(
@@ -1686,7 +1686,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
     {
         request = QByteArray("S73");
         retval += SendQuestionWithAnswerString(request, answer, 500);
-        QStringList regexStringList = regexHelper("^A73(\\d{4,4})", answer);  
+        QStringList regexStringList = regexHelper("^A73(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             m_params["modification_end_wavelength"].setVal<double>(
@@ -1702,8 +1702,8 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
     if (!retval.containsError())
     {
         request = QByteArray("S74");
-        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | sweep speed from 10 - 10000 nm/s (4-byte code)  
-        QStringList regexStringList = regexHelper("^A74(\\d{4,4})", answer);           
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | sweep speed from 10 - 10000 nm/s (4-byte code)
+        QStringList regexStringList = regexHelper("^A74(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             if (regexStringList[1].toInt() == 0)
@@ -1728,15 +1728,15 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         else
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-        }        
-    } 
+        }
+    }
 
     //__________________________________________________________________________________________________________ check Modulation first wavelength
-    if (!retval.containsError())    
-    {        
+    if (!retval.containsError())
+    {
         request = QByteArray("S75");
         retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | first wavelength of TWO-WAVELENGTH-MODULATION
-        QStringList regexStringList = regexHelper("^A75(\\d{4,4})", answer);           
+        QStringList regexStringList = regexHelper("^A75(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             m_params["wavelength_first"].setVal<double>(0.05 * regexStringList[1].toInt() + 700);
@@ -1744,7 +1744,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         else
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
-        }        
+        }
     }
 
     //__________________________________________________________________________________________________________ check Modulation second wavelength
@@ -1752,7 +1752,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
     {
         request = QByteArray("S76");
         retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | second wavelength of TWO-WAVELENGTH-MODULATION mode
-        QStringList regexStringList = regexHelper("^A76(\\d{4,4})", answer);            
+        QStringList regexStringList = regexHelper("^A76(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
         {
             m_params["wavelength_second"].setVal<double>(0.05 * regexStringList[1].toInt() + 700);
@@ -1765,12 +1765,12 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
 
     //__________________________________________________________________________________________________________ check Modulation frequency
     if (!retval.containsError())
-    {        
+    {
         request = QByteArray("S77");
-        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode   
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode
         QStringList regexStringList = regexHelper("^A77(\\d{4,4})", answer);
         if (!regexStringList.isEmpty() && !retval.containsError())
-        {                        
+        {
             switch (regexStringList[1].toInt())
             {
                 case 1:
@@ -1815,7 +1815,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
 
                 default:
                     retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
-                    break;        
+                    break;
             }
         }
         else

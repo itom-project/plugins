@@ -5,7 +5,7 @@
     Universidade Federal de Alagoas (UFAL), Brasil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -56,7 +56,7 @@ RawImportInterface::RawImportInterface()
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = QObject::tr(GITVERSION);        
+    m_aboutThis         = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ ito::RetVal RawImport::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------User-Defined-Content-----------------------------------------------------
- 
+
     filter = new FilterDef(RawImport::loadImage, RawImport::loadImageParams, tr("import filter for (dslr) raw images based on dcraw"), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("loadRawImage", filter);
 
@@ -279,7 +279,7 @@ ito::RetVal readExifTag(QProcess *exifProc, QString filename, QString tagName, Q
 ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval = ito::retOk;
-    
+
 
     QString filename = QString::fromLatin1((*paramsMand)[0].getVal<char*>());
     QString filenameLoad, dcrawExt(".ppm");

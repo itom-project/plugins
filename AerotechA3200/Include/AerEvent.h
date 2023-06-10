@@ -101,6 +101,6 @@ AERERR_CODE AER_DLLENTRY AerEventCloseEvent( HAERCTRL hAerCtrl, HANDLE hEvent,
 #ifdef __cplusplus
 }
 #endif
-   
+
 #endif
 // __AER_EVNT_H__

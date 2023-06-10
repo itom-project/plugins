@@ -10,7 +10,7 @@
 **Devices**:    Camera control of devices that support the GenICam standard
 **Author**:     :pluginauthor:`GenICam`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: GenICam
 
@@ -94,7 +94,7 @@ The following list contains all parameters, that are related to the GenICam plug
 **userDefinedPayloadSize**: {int}, default: 0
     Usually, the ideal size of an image buffer is returned by the transport layer of GenICam or by the standard parameter 'PayloadSize'. However,
     if you set this parameter to a value bigger than 0, a user-defined buffer size in bytes can be selected. Usually, it is not necessary to change this parameter.
-    
+
 Verbose level
 =============
 
@@ -125,12 +125,16 @@ the device.
 In the example of an Active Silicon CoaXPress framegrabber, you have to set the parameters **Fg_IncomingWidth** to the **Width** of the camera,
 **Fg_IncomingHeight** to the **Height** of the camera and **Fg_IncomingPixelFormat** to the current pixel format of the camera. Then adjust the
 values **Fg_Width**, **Fg_Height** and **Fg_PixelFormat** to suitable values, since these values are read by itom to configure a proper image acquisition.
-        
+
 Compilation
 ===========
 
 In order to compile this plugin, download the latest GenICam(TM) GenApi reference implementation from http://www.emva.org/standards-technology/genicam/genicam-downloads/.
-Unpack the corresponding archive (under Windows: Development and Runtime.zip or Release-SDK.zip) in one folder and set the CMake variable GENICAM_ROOT to this base folder.
+Download the lastest GenICam Reference Implementation (e.g. **GenICamTM GenApi reference implementation v. 3.4.0**).
+Open the Zip File and extract the **SDK** archive to a location of your licking ** (e.g. C:/Genicam/SDK).
+Open the Zip File and extract the **Release-Runtime** archive-sourcess to the same location.
+
+Set the CMake variable **GenICam_Dir** or system environment variable **GENICAM_ROOT** to this base folder.
 After re-configuring CMake the other variables (e.g. GENICAM_GCBASE_LIBRARY...) should be found automatically.
 
 GenICam License
@@ -191,7 +195,7 @@ XSLTProc    MIT license     http://xmlsoft.org/XSLT/xsltproc2.html
 XSDe        Proprietary     NA
 ==========  ==============  =============================================
 
-Note that the XSDe license was purchased by one of the members of the committee but 
+Note that the XSDe license was purchased by one of the members of the committee but
 allows all members to re-compile the parser as long as only the GenApi XML vocabulary is used.
 
 All license texts come as part of the GenICam distribution in the licenses
@@ -206,7 +210,7 @@ CLSerAll    CLSerAll_LICENSE.txt    http://sourceforge.net/projects/clallserial
 xs3p        xs3p_License.mht        http://xml.fiforms.org/xs3p/index.html
 xxhash      xxhash_License.txt      http://opensource.org/licenses/BSD-3-Clause
 XSLTProc    MIT_License.txt         http://opensource.org/licenses/mit-license.html
-XSDe        XSDe License.pdf        NA  
+XSDe        XSDe License.pdf        NA
 ==========  ======================  ================================================
 
 Last but not least GenICam redistributes the C/C++ runtime DLLs of the
@@ -219,10 +223,10 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using GenICam GenAPI 3.1.0
 * itom setup 4.0.0: This plugin has been compiled using GenICam GenAPI 3.2.0
 * itom setup 4.1.0: This plugin has been compiled using GenICam GenAPI 3.2.0
+* itom setup 4.3.0: This plugin has been compiled using GenICam GenAPI 3.4.0
 
 Workaround
 ==========
 
 * Vistek, GigE, Windows: It seems that the Camera Link transport layer library (cti-file) has to be loaded by itom before the GigE transport layer is loaded.
   This is implicitely done, if a vistek cti file is loaded. It is also possible to load the CL cti file using a load library command in Python.
-

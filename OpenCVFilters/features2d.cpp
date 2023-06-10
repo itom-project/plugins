@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -54,7 +54,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
         printf(tr("error while executing some methods").toLatin1().data());
         return retval;
     }
-    
+
     param = ito::Param("first_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter - (n x 128) float32 data object of descriptors from first image (queryDescriptors). These descriptors can be computed from sift/surf algorithms.").toLatin1().data());
     paramsMand->append(param);
     param = ito::Param("second_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter - (n x 128) float32 data object of descriptors from second image (trainDescriptors). These descriptors can be computed from sift/surf algorithms.").toLatin1().data());
@@ -87,7 +87,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     {
         retval += ito::RetVal(ito::retError, 0, tr("The descriptors of the first image is empty").toLatin1().data());
     }
-    
+
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
         retval += ito::RetVal(ito::retError, 0, tr("The descriptors of the second image is empty").toLatin1().data());
@@ -99,7 +99,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
         typedef std::vector< cv::DMatch >::size_type DMatchSizeType;
 
         try
-        {        
+        {
             matcher.match(*(descriptor1.getCvPlaneMat(0)), *(descriptor2.getCvPlaneMat(0)),Dmatches);
         }
         catch (cv::Exception exc)
@@ -195,7 +195,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
         printf(tr("error while executing some methods").toLatin1().data());
         return retval;
     }
-    
+
     param = ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Source image (uint8 or rgba32).").toLatin1().data());
     paramsMand->append(param);
     param = ito::Param("keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("keypoints of the source image (n x 7) float32 data object").toLatin1().data());
@@ -279,7 +279,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
             cv::drawKeypoints(image_, keypoints, outImage, color__, flags);
 #endif // (CV_MAJOR_VERSION > 4)
 
-            
+
         }
 
         if (!retval.containsError())
@@ -345,7 +345,7 @@ This function draws matches of keypoints from two images in the output image. Ma
     double max_match_distance = paramsOpt->at(3).getVal<double>();
     const ito::DataObject first_image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(),"first_image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
     const ito::DataObject second_image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<const ito::DataObject*>(),"second_image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
-    
+
     cv::Mat first_image_, second_image_;
 
     if (!retval.containsError())
@@ -423,7 +423,7 @@ This function draws matches of keypoints from two images in the output image. Ma
                 }
             }
         }
-        
+
         try
         {
 #if (CV_MAJOR_VERSION >= 4)
@@ -431,7 +431,7 @@ This function draws matches of keypoints from two images in the output image. Ma
 #else
             cv::drawMatches(first_image_, first_keypoints, second_image_, second_keypoints, dmatches, outImg, matchColor__, singlePointColor__, matchesMask, flags);
 #endif
-            
+
         }
         catch (cv::Exception exc)
         {

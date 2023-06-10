@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "IDSuEye" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
     Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -26,9 +26,9 @@
 #include "common/addInGrabber.h"
 
 #if linux
-    #include "ueye.h"
-#else
     #include "uEye.h"
+#else
+    #include "ueye.h"
 #endif
 
 #include <qsharedpointer.h>
@@ -56,9 +56,9 @@ class IDSuEye : public ito::AddInGrabber
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-        enum SyncParams { 
-            sPixelClock = 1, 
-            sExposure = 2, 
+        enum SyncParams {
+            sPixelClock = 1,
+            sExposure = 2,
             sBinning = 4,
             sRoi = 8,
             sGain = 16,
@@ -92,21 +92,19 @@ class IDSuEye : public ito::AddInGrabber
         IS_RANGE_S32 m_blacklevelRange; //range for the offset
         SENSORINFO m_sensorInfo;
 
-		QVector<INT> m_viSeqMemId;
-		QVector<char*> m_vpcSeqImgMem;
-		int m_NumberOfBuffers;
-		int m_oldNumBuf;
+        QVector<INT> m_viSeqMemId;
+        QVector<char*> m_vpcSeqImgMem;
+        int m_NumberOfBuffers;
+        int m_oldNumBuf;
 
         int m_bitspixel; //bits per pixel that needs to be allocated
         int m_imageAvailable;
-		bool m_seqAvailable;
+        bool m_seqAvailable;
         MemoryStruct m_pLockedBuf;
         bool m_colouredOutput;
         ito::RetVal m_acquisitionRetVal;
         bool m_captureVideoActive;
-#if WIN32
-		HANDLE m_seqEvent;
-#endif
+        bool m_seqEventInit;
 
     signals:
 

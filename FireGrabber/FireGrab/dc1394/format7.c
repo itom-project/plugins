@@ -996,4 +996,3 @@ dc1394_format7_get_roi(dc1394camera_t *camera,
 
     return err;
 }
-

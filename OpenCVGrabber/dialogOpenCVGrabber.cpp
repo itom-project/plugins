@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -79,7 +79,7 @@ void DialogOpenCVGrabber::parametersChanged(QMap<QString, ito::Param> params)
 
         m_firstRun = false;
     }
-    
+
     int *roi = params["roi"].getVal<int*>();
     qDebug() << roi[0] << roi[1] << roi[2] << roi[3];
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);

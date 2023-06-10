@@ -41,10 +41,10 @@ AERERR_CODE STDCALL AerCBackLibCallbackValueGetDWORD( HAERCTRL hAerCtrl, TASKIND
 AERERR_CODE STDCALL AerCBackLibCallbackValueGetString( HAERCTRL hAerCtrl, TASKINDEX iTask, DWORD dwArg, LPTSTR pszValue,
                                                        DWORD dwMaxBytes );
 
-AERERR_CODE STDCALL AerCBackLibCallbackValueGetStringEx( HAERCTRL hAerCtrl, TASKINDEX iTask, LPTSTR pszStr, DWORD dwFirstArg, 
+AERERR_CODE STDCALL AerCBackLibCallbackValueGetStringEx( HAERCTRL hAerCtrl, TASKINDEX iTask, LPTSTR pszStr, DWORD dwFirstArg,
                                                          DWORD dwLastArg, PDWORD pdwNextArg );
 
-AERERR_CODE STDCALL AerCBackLibCallbackValueMakeString( HAERCTRL hAerCtrl, TASKINDEX iTask, DWORD dwBlobIndex, 
+AERERR_CODE STDCALL AerCBackLibCallbackValueMakeString( HAERCTRL hAerCtrl, TASKINDEX iTask, DWORD dwBlobIndex,
                                                         LPTSTR pszBigString, DWORD dwBigStringLength, DWORD dwFlags );
 
 AERERR_CODE STDCALL AerCBackLibCallbackErrorGetErrorCode( TASKINDEX iTask );

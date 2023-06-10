@@ -139,7 +139,7 @@ pdc320_calc_checksum(const unsigned char *buf, int buflen) {
 
 	while (checksum > 0xffff) {
 		checksum =
-			(checksum & 0xffff) + 
+			(checksum & 0xffff) +
 			((checksum >> 16) & 0xffff);
 	}
 	return 0xffff-checksum; /* neg checksum actually */
@@ -216,7 +216,7 @@ pdc320_init (GPPort *port)
 	int i;
 
 	GP_DEBUG ("*** PDC320_INIT ***");
-	
+
 	/* The initial command is prefixed by 4 raw E6. */
 	memset(e6,0xe6,sizeof(e6));
 	CR (gp_port_write (port, (char *)e6, sizeof (e6) ));
@@ -279,7 +279,7 @@ pdc320_0c (Camera *camera, int n)
 	int size, i;
 	unsigned char buf[3], *xbuf;
 	unsigned char cmd[2];
-	
+
 	cmd[0] = 0x0c;
 	cmd[1] = n;		/* n is from 1 on up */
 
@@ -347,7 +347,7 @@ pdc320_pic (Camera *camera, int n, unsigned char **data, int *size)
 		/* Read the actual data */
 		usleep(1000);
 		CR_FREE (gp_port_read (camera->port, (char *)*data + i, len), *data);
-		
+
 		/* Read the checksum */
 		CR_FREE (gp_port_read (camera->port, (char *)buf, 2), *data);
 	}
@@ -364,7 +364,7 @@ camera_id (CameraText *id)
 }
 
 int
-camera_abilities (CameraAbilitiesList *list) 
+camera_abilities (CameraAbilitiesList *list)
 {
 	int i;
 	CameraAbilities a;

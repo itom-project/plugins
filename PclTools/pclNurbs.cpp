@@ -39,7 +39,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <pcl/surface/on_nurbs/fitting_curve_2d_asdm.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 
-template <typename Point> void 
+template <typename Point> void
 pclPointCloud2Vector3d(const pcl::PointCloud<Point>* cloud, pcl::on_nurbs::vector_vec3d &data)
 {
     for (unsigned i = 0; i < cloud->size(); i++)
@@ -150,7 +150,7 @@ template<typename Point> ito::RetVal pclFitTrimmedBSplineHelper(const pcl::Point
             //pcl::on_nurbs::Triangulation::convertSurface2PolygonMesh(fit.m_nurbs, *sharedMesh, mesh_resolution);
             *meshParam = ito::PCLPolygonMesh(sharedMesh);
         }
-        
+
         // save trimmed B-spline surface
         if (fit.m_nurbs.IsValid() && filename != "")
         {
@@ -202,7 +202,7 @@ the fitted B-spline can be saved in the OpenNURBS format (3dm) to the harddrive.
 
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
-    
+
     paramsOpt->clear();
     paramsOpt->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("fitted mesh").toLatin1().data()));
     paramsOpt->append(ito::Param("order", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 3, tr("polynomial order of the B-spline surface").toLatin1().data()));
@@ -249,7 +249,7 @@ the fitted B-spline can be saved in the OpenNURBS format (3dm) to the harddrive.
         return pclFitTrimmedBSplineHelper<pcl::PointXYZRGBNormal>(cloud->toPointXYZRGBNormalConst().get(), paramsMand, paramsOpt, paramsOut);
     default:
         return ito::RetVal(ito::retError, 0, "unsupported type of the input point cloud");
-    } 
+    }
 }
 
 #endif

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,7 +24,7 @@
 * \brief In this file the functions of the modal dialog for the DummyMotor are specified
 *
 *    This file defines the functions of the dialogDummyMotor-Class defined in the file "dialogDummyMotor.h"
-* 
+*
 *\sa dialogDummyMotor, DummyMotor
 *\author Wolfram Lyda
 *\date    Oct2011
@@ -46,7 +46,7 @@ DialogDummyMotor::DialogDummyMotor(ito::AddInBase *actuator) :
 {
     ui.setupUi(this);
     memset(m_enable, 0, 10 * sizeof(int));
-    
+
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableGUI(false);
 };
@@ -98,10 +98,10 @@ void DialogDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
     ui.doubleSpinBox_Accel->setMinimum(params["accel"].getMin());
     ui.doubleSpinBox_Accel->setValue(params["accel"].getVal<double>());
     ui.doubleSpinBox_Accel->setDisabled(params["accel"].getFlags() & ito::ParamBase::Readonly);
-        
+
     // set ui to new parameters
     ui.checkAsync->setChecked(params["async"].getVal<int>());
-    
+
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableGUI(true);
 
@@ -128,7 +128,7 @@ ito::RetVal DialogDummyMotor::applyParameters()
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Double, ui.doubleSpinBox_Accel->value())));
     }
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }
@@ -139,7 +139,7 @@ void DialogDummyMotor::on_pushButtonCalib_clicked()
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int i;
     QVector<int> axis;
-    
+
     for(i=0;i<m_numaxis;i++)
     {
         if (m_enable[i])

@@ -1,8 +1,8 @@
 /// \file EnsembleProgram.h
 /// \brief Contains the functions to execute AeroBasic programs.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_PROGRAM_H__
 #define __Ensemble_PROGRAM_H__
@@ -54,7 +54,7 @@ BOOL DLLENTRYDECLARATION EnsembleProgramStart(EnsembleHandle handle, TASKID task
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.
 BOOL DLLENTRYDECLARATION EnsembleProgramStop(EnsembleHandle handle, TASKID taskId);
 
-/// Pauses the execution of an Aerobasic program on a task.  The program on 
+/// Pauses the execution of an Aerobasic program on a task.  The program on
 /// the given task will complete the currently executing line, and pause
 /// before starting the next line.
 ///
@@ -63,8 +63,8 @@ BOOL DLLENTRYDECLARATION EnsembleProgramStop(EnsembleHandle handle, TASKID taskI
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.
 BOOL DLLENTRYDECLARATION EnsembleProgramPause(EnsembleHandle handle, TASKID taskId);
 
-/// Steps into one line of an Aerobasic program on a task.  The program currently associated with 
-/// the given task will step into one line, and executes without regard to the 
+/// Steps into one line of an Aerobasic program on a task.  The program currently associated with
+/// the given task will step into one line, and executes without regard to the
 /// current execution mode.  If the program is currently executing, then this
 /// command has no effect.
 ///
@@ -73,8 +73,8 @@ BOOL DLLENTRYDECLARATION EnsembleProgramPause(EnsembleHandle handle, TASKID task
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.
 BOOL DLLENTRYDECLARATION EnsembleProgramStepInto(EnsembleHandle handle, TASKID taskId);
 
-/// Steps over one line of an Aerobasic program on a task.  The program currently associated with 
-/// the given task will step over one line, and executes without regard to the 
+/// Steps over one line of an Aerobasic program on a task.  The program currently associated with
+/// the given task will step over one line, and executes without regard to the
 /// current execution mode.  If the program is currently executing, then this
 /// command has no effect.
 ///

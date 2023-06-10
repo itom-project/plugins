@@ -104,4 +104,3 @@
 #define HALLT_FRAMELIMITED       7              /* Limited by frames */
 
 #endif
-

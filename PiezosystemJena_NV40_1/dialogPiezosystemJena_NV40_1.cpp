@@ -29,7 +29,7 @@ void DialogPiezosystemJena_NV40_1::parametersChanged(QMap<QString, ito::Param> p
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
         m_firstRun = false;
     }
-    
+
     ui.checkAsync->setChecked(params["async"].getVal<int>() > 0);
     ui.radioRemoteOn->setChecked(params["remote"].getVal<int>() > 0);
     ui.radioClosedLoop->setChecked(params["closedLoop"].getVal<int>() > 0);
@@ -66,7 +66,7 @@ ito::RetVal DialogPiezosystemJena_NV40_1::applyParameters()
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("closedLoop", ito::ParamBase::Int, i)));
     }
-    
+
     i = ui.checkAsync->isChecked() ? 1 : 0;
     if (m_currentParameters["async"].getVal<int>() != i)
     {

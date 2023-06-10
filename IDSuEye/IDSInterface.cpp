@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "IDSuEye" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
     Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -37,9 +37,9 @@
 
 // ids-includes
 #if linux
-    #include "ueye.h"
-#else
     #include "uEye.h"
+#else
+    #include "ueye.h"
     #include "version.h"
 #endif
 
@@ -53,7 +53,7 @@ namespace
     /**
      * @brief   Extracts the given number of bits from the given position
      * @tparam  bitPosition The start position of the bit sequence.
-     * @tparam  bits        The number of bits.   
+     * @tparam  bits        The number of bits.
      * @param   x           The value from which bits shall be extracted.
      * @returns The extracted bits shifted to lowest position, all other stuff is erased.
      **/
@@ -85,7 +85,7 @@ IDSInterface::IDSInterface(QObject *parent)
 
     int major = get<24,8>(libVersion);
     int minor = get<16,8>(libVersion);
-    
+
 
 /*    char docstring[] = \
  "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
@@ -98,7 +98,7 @@ The plugin has been compiled using the IDS library version %1.%2. \n\
 \n\
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. \n\
 \n\
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart."; 
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.";
     m_detaildescription = tr(docstring).arg(major).arg(minor);*/
     m_detaildescription = tr(
 "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
@@ -128,7 +128,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("Licensed under LGPL");
-    m_aboutThis = tr(GITVERSION);  
+    m_aboutThis = tr(GITVERSION);
 
     ito::Param param( "camera_id", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, tr("Camera ID (user-definable in IDS camera manager) of the camera to open (0: the next free camera will opened [default], 1-254: specific camera ID)").toLatin1().data());
     m_initParamsOpt.append(param);

@@ -18,7 +18,7 @@
       xxx.yy.zz.uuu
 
       i.e. 3200.01.01
-      
+
    The unidex.major.minor ensure compatability
 */
 
@@ -40,7 +40,7 @@
 #define A3200_RC_VERSION_NUM   \
    AER_VERSION_UNIDEX,A3200_VERSION_MAJOR,A3200_VERSION_MINOR,A3200_VERSION_BUILD
 
-/* 
+/*
    A3200_OCX_INTERNAL_xxx constants are used by the odl file and OCX for properly
    loading  TypeLibrary in Visual C/Delphi.  Cannot just use Major and Minor,
    The system saves 5.15 as 5.f which causes problems for Delphi.  Internal_Minor should
@@ -127,6 +127,6 @@ BEGIN
 END
 #endif
 /* __A3200RC_INCLUDE__ */
-                                    
+
 #endif
 /*  __AERBLD_RC__ */

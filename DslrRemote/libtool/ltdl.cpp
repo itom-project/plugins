@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <map>
 #include <assert.h>
+#include <string>
 #include "ltdl.h"
 
 const char EOS_CHAR = '\0';
@@ -43,7 +44,7 @@ static int canonicalize_path(const char *path, char **pcanonical)
         }
         // Directory separators are converted and copied only if they are
         // not at the end of a path -- i.e. before a path separator or
-        // NULL terminator. 
+        // NULL terminator.
         else if ((path[1 + src] != PATHSEP_CHAR)
             && (path[1 + src] != EOS_CHAR)
             && (path[1 + src] != DIRSEP_CHAR)
@@ -53,7 +54,7 @@ static int canonicalize_path(const char *path, char **pcanonical)
         }
     }
 
-    // Add an end-of-string marker at the end. 
+    // Add an end-of-string marker at the end.
     canonical[dest] = EOS_CHAR;
 
     // Assign new value.
@@ -75,10 +76,10 @@ const char * lt_dlerror(void)
 
 	 strncpy(errorTxtBuf, messageBuffer, 2048);
 	 errorTxtBuf[2047] = 0;
-	 
+
     //Free the buffer.
     LocalFree(messageBuffer);
-	
+
     return errorTxtBuf;
 }
 
@@ -186,7 +187,7 @@ cleanup:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int lt_dlclose(lt_dlhandle libhandle) 
+int lt_dlclose(lt_dlhandle libhandle)
 {
     for (std::map<std::string, lt__handle>::iterator it = loadedLibs.begin();
         it != loadedLibs.end(); ++it)
@@ -250,7 +251,7 @@ int lt_dlforeachfile(const char *search_path, int(*func) (const char *filename, 
     else
     {
         base_name = strrchr(canonical, '.');
-        // not a directory nor something that could be a file pattern so we glue 
+        // not a directory nor something that could be a file pattern so we glue
         // what is for us a meaningful ending ...
         if (!base_name)
         {

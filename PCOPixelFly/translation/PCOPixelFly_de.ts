@@ -510,7 +510,7 @@
     </message>
     <message>
         <location line="+10"/>
-        <source>This plugin connects the grabber family Pixelfly from PCO to itom. It has mainly been tested with the camera &apos;pixelfly qe&apos;, that is connected to the computer by the PCO PCI interface board 540. 
+        <source>This plugin connects the grabber family Pixelfly from PCO to itom. It has mainly been tested with the camera &apos;pixelfly qe&apos;, that is connected to the computer by the PCO PCI interface board 540.
 
 Please install first the necessary drivers for the camera and grabber board from www.pco.de. This plugin supports two families of drivers. The driver with major version 1 only supports Windows, 32bit operating systems, while the new driver version 2 also operates on 64bit Windows systems.</source>
         <translation type="unfinished"></translation>

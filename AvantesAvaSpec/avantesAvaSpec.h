@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -32,7 +32,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    AvantesAvaSpec 
+  *\class    AvantesAvaSpec
   */
 class AvantesAvaSpec : public ito::AddInGrabber
 {
@@ -85,12 +85,12 @@ class AvantesAvaSpec : public ito::AddInGrabber
         void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */
 
     public slots:
-        
+
         //! returns parameter of m_params with key name.
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
-        //! sets parameter of m_params with key name. 
+        //! sets parameter of m_params with key name.
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
-        
+
         //! Initialise board, load dll, allocate buffer
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //! Free buffer, delete board, unload dll
@@ -104,9 +104,9 @@ class AvantesAvaSpec : public ito::AddInGrabber
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         //! Calls retrieveData(NULL), than copy the picture to dObj of right type and size
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
-        //! Deep copy the camera buffer to dObj. Object must be of right size and type. If liveData is running, a second deep-copy is performed to copy data to the grabber 
+        //! Deep copy the camera buffer to dObj. Object must be of right size and type. If liveData is running, a second deep-copy is performed to copy data to the grabber
         ito::RetVal copyVal(void *dObj, ItomSharedSemaphore *waitCond);
-        
+
         //! Retrieve new offset and new gain and give them to the camera dll
         void updateParameters(QMap<QString, ito::ParamBase> params);
 
@@ -116,7 +116,7 @@ class AvantesAvaSpec : public ito::AddInGrabber
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    AS5216Interface 
+  *\class    AS5216Interface
   *
   *\brief    Interface-Class for AS5216-Class
   *

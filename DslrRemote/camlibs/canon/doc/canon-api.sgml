@@ -54,7 +54,7 @@
    <title>Standard gphoto2 camera interface</title>
    &library-interface;
  </chapter>
- 
+
  <chapter id="internal-functions">
    <title>Internal Glue Functions</title>
    &internal-functions;

@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -31,7 +31,7 @@ void DialogNewport2936::parametersChanged(QMap<QString, ito::Param> params)
 {
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
-    
+
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));

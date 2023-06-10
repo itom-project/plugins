@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -41,7 +41,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    OpenCVGrabber 
+  *\class    OpenCVGrabber
   *\brief    class to use a the standard grabber from OpenCV as an ITOM-Addin. Child of AddIn - Library (DLL) - Interface
   *
   *
@@ -69,7 +69,7 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
 
     public:
         friend class OpenCVGrabberInterface;
-        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
         bool showNativeSettingsDialog();
@@ -146,7 +146,7 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    OpenCVGrabberInterface 
+  *\class    OpenCVGrabberInterface
   *
   *\brief    Interface-Class for OpenCVGrabber-Class
   *

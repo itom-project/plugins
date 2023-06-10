@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -43,7 +43,7 @@ DockWidgetAvantesAvaSpec::DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber) :
         ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
         ui.doubleSpinBox_integration_time->setSingleStep(1);
         ui.spinBox_average->setMaximum(params["average"].getMax());
-        ui.spinBox_average->setMinimum(params["average"].getMin()); 
+        ui.spinBox_average->setMinimum(params["average"].getMin());
         ui.spinBox_average->setSingleStep(1);
 
 		ui.comboDarkCorrection->clear();
@@ -59,11 +59,11 @@ AvaSpec) and subtracts different mean values for odd and even pixels.");
         m_firstRun = false;
 		m_inEditing = false;
     }
-    
+
     if (!m_inEditing)
     {
         m_inEditing = true;
-        
+
         ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>() *1000.0);
 
         int *roi = params["roi"].getVal<int*>();
@@ -114,7 +114,7 @@ void DockWidgetAvantesAvaSpec::on_rangeWidget_ROI_maximumValueChanged(int value)
         roi[2] = value-roi[0];            //+1??
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi",ito::ParamBase::IntArray,4,roi));
         setPluginParameter(p, msgLevelWarningAndError);
-        
+
         m_inEditing = false;
     }
 }
@@ -136,7 +136,7 @@ void DockWidgetAvantesAvaSpec::on_rangeWidget_ROI_minimumValueChanged(int value)
         roi[2] = curMaxVal-roi[0];            //+1??
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi",ito::ParamBase::IntArray,4,roi));
         setPluginParameter(p, msgLevelWarningAndError);
-        
+
         m_inEditing = false;
     }
 }
@@ -153,7 +153,7 @@ void DockWidgetAvantesAvaSpec::on_spinBox_average_valueChanged(int value)
 
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("average",ito::ParamBase::Int,value));
         setPluginParameter(p, msgLevelWarningAndError);
-        
+
         m_inEditing = false;
     }
 }
@@ -167,7 +167,7 @@ void DockWidgetAvantesAvaSpec::on_comboDarkCorrection_currentIndexChanged(int d)
 
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("dark_correction",ito::ParamBase::Int,d));
         setPluginParameter(p, msgLevelWarningAndError);
-        
+
         m_inEditing = false;
     }
 }

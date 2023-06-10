@@ -10,7 +10,7 @@
 **Devices**:    Cameras from company *Ximea* (tested with various xiQ USB3 cameras, monochrome and color)
 **Author**:     :pluginauthor:`Ximea`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,12 +19,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: Ximea
-		
+
 Parameters
 ==========
 
@@ -120,7 +120,7 @@ Additional functions (exec functions)
 
 .. py:function::  ximeaCam.exec('update_shading', illumination)
     :noindex:
-    
+
     Change value of the shading correction
 
     :param illumination: Current intensity value
@@ -129,7 +129,7 @@ Additional functions (exec functions)
 
 .. py:function::  ximeaCam.exec('initialize_shading', dark_image, white_image, x0, y0)
     :noindex:
-    
+
     Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time
 
     :param dark_image: Dark Image, if null, empty image will be generated
@@ -144,7 +144,7 @@ Additional functions (exec functions)
 
 .. py:function::  ximeaCam.exec('shading_correction_values', integration_time, shading_correction_factor)
     :noindex:
-    
+
     Change value of the shading correction
 
     :param integration_time: Integrationtime of CCD programmed in s
@@ -159,7 +159,7 @@ Image Acquisition and Frame Burst
 If you acquire an image, the obtained data object has some tags defined:
 
 .. code-block:: python
-    
+
     obj = dataObject()
     cam.acquire() #cam must be started before
     cam.getVal(obj)
@@ -175,7 +175,7 @@ The tags are:
 If you change *trigger_mode* to anything else than *Off* and set *trigger_selector* to *frame_burst_start (2)*, it is possible
 to acquire a serie of frames after the software or hardware trigger impulse. This can be adjusted using the parameter *frame_burst_count*.
 
-If this is set, the acquired data object is not two-dimensional but three-dimensional, where the first (z-) dimension 
+If this is set, the acquired data object is not two-dimensional but three-dimensional, where the first (z-) dimension
 corresponds to the number of acquired frames. If this is the case, the tags are:
 
 * timestamp0, timestamp1, timestamp2, ... (for each sub-frame, not MU family)
@@ -186,8 +186,13 @@ Installation
 
 *Windows:*
 
-Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.10.0.0) and check that
-your camera runs with the internal XiViewer from XIMEA. If this is the case, the camera should also run with itom.
+Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.26.01 and check that
+your camera runs with the internal XiViewer from XIMEA. Please make sure that you also install the xiApiPython Module,
+which is needed to determine the SDK version number and binary file location.
+Alternatively you can manually set the CMAKE **XIMEA_SDK_VERSION**.
+
+To finde the SDK either set the CMAKE variable **XIMEA_APIDIR** or the evironment variable **XIMEA_SDK_ROOT**
+to the API directory (e.g. C:\XIMEA\API\xiAPI).
 
 *Linux:*
 
@@ -198,18 +203,20 @@ Like under Windows, the library itself is dynamically loaded at runtime. It is u
 If you want to externally trigger the camera, make sure that you check if your GPIO pins require a 5V or 24V signal. Some cameras
 only support 24V, modern camera devices support both. This is written at the housing (at least for xiQ USB3 cameras).
 
-    
+
 Changelog
 =========
 
-* itom setup 1.2.0: This plugin has been compiled using the Ximea API 4.0.0.5
-* itom setup 1.3.0: This plugin has been compiled using the Ximea API 4.0.0.5
-* itom setup 1.4.0: This plugin has been compiled using the Ximea API 4.0.0.5
-* itom setup 2.0.0: This plugin has been compiled using the Ximea API 4.4.0
-* itom setup 2.1.0: This plugin has been compiled using the Ximea API 4.4.0
-* itom setup 2.2.0: This plugin has been compiled using the Ximea API 4.10.0
-* itom setup 3.0.0: This plugin has been compiled using the Ximea API 4.10.2
-* itom setup 3.1.0: This plugin has been compiled using the Ximea API 4.10.2
-* itom setup 3.2.1: This plugin has been compiled using the Ximea API 4.16
+* itom setup 1.2.0: This plugin has been compiled using the Ximea API 4.00.00
+* itom setup 1.3.0: This plugin has been compiled using the Ximea API 4.00.00
+* itom setup 1.4.0: This plugin has been compiled using the Ximea API 4.00.00
+* itom setup 2.0.0: This plugin has been compiled using the Ximea API 4.04.00
+* itom setup 2.1.0: This plugin has been compiled using the Ximea API 4.04.00
+* itom setup 2.2.0: This plugin has been compiled using the Ximea API 4.10.00
+* itom setup 3.0.0: This plugin has been compiled using the Ximea API 4.10.02
+* itom setup 3.1.0: This plugin has been compiled using the Ximea API 4.10.02
+* itom setup 3.2.1: This plugin has been compiled using the Ximea API 4.16.00
 * itom setup 4.0.0: This plugin has been compiled using the Ximea API 4.18.04
 * itom setup 4.1.0: This plugin has been compiled using the Ximea API 4.18.04
+* itom setup 4.2.0: This plugin has been compiled using the Ximea API 4.24.03
+* itom setup 4.3.0: This plugin has been compiled using the Ximea API 4.26.01

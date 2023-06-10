@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -43,7 +43,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogSpider8 : public ito::AbstractAddInConfigDialog 
+class DialogSpider8 : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
@@ -58,7 +58,7 @@ class DialogSpider8 : public ito::AbstractAddInConfigDialog
 
     private:
         void enableDialog(bool enabled);
-        void setRanges(const int unit);        
+        void setRanges(const int unit);
         class Spider8 *m_pPlugin;
         bool m_firstRun;
         QMap<QString, ito::Param> m_params;
@@ -77,7 +77,7 @@ class DialogSpider8 : public ito::AbstractAddInConfigDialog
         void on_aiApplyButton_clicked(bool checked = false);
         void on_aiChannelCombo_currentIndexChanged(int index);
         void on_aiConfigCombo_currentIndexChanged(int index);
-        
+
         void on_dioApplyButton_clicked(bool checked = false);
         void on_dioChannelCombo_currentIndexChanged(int index);
 

@@ -5,7 +5,7 @@
 
 2003-05-01  matthschulz <matthschulz@gmx.net>
 
-	* lmini.c: more fixing 
+	* lmini.c: more fixing
 	* largan.c: more fixing
 
 2003-03-04  matthschulz <matthschulz@gmx.net>
@@ -14,7 +14,7 @@
 	(largan_recv_reply): fixed reply reading
 	(largan_erase):  now works
 	(largan_get_pict): now works
-	
+
 	* largan.c (camera_init): delete_file_func
 	(delete_all_func): parameter change
 	(delete_file_func): implemented file deletion
@@ -28,10 +28,9 @@
 	* largan.c (camera_id): changed camlib ID.
 
 2002-10-31  Marcus Meissner <meissner@suse.de>
-	
+
 	* fixed compiler warnings, got rid of unnecessary global variables
 
 2002-10-03  Lutz Müller <lutz@users.sourceforge.net>
 
 	* Makefile.am: -I$(top_builddir)/libgphoto2
-

@@ -10,7 +10,7 @@
 **Devices**:    Cameras from company Vistek
 **Author**:     :pluginauthor:`Vistek`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: Vistek
 
@@ -91,3 +91,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
 * itom setup 4.0.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
 * itom setup 4.1.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
+* itom setup 4.3.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251

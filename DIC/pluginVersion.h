@@ -1,7 +1,7 @@
 /* ********************************************************************
     Algorithms for Digital Image Correlation using different approaches:
     subset and finite elements.
-    
+
 *********************************************************************** */
 
 #ifndef PLUGINVERSION_H

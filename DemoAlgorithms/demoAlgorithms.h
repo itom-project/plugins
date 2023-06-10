@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -27,9 +27,9 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 /** \file demoAlgorithms.h
 *   \brief  Header of a demoApplication to show plugIn-Developer how to write algorithms
-*   \detail This file is the main header of the demoAolgorithms-DLL which is programmed to explain plugin-developers how to write an 
+*   \detail This file is the main header of the demoAolgorithms-DLL which is programmed to explain plugin-developers how to write an
 *           algorithm. It was created with the PluginCreationWizard written by Marc Gronle. The user-defined content is highlighted.
-*           
+*
 *   \author Wolfram Lyda (ITO)
 *   \date 04.2012
 */
@@ -74,10 +74,10 @@ class DemoAlgorithms : public ito::AddInAlgo
 
     public:
         friend class DemoAlgorithmsInterface;
-        
+
         static QWidget* dialog(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, ito::RetVal &retValue);
         static ito::RetVal dialogParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
- 
+
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------User-Defined-Content-----------------------------------------------------

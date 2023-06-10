@@ -2,13 +2,13 @@
     This file is part of fftw-plugin for ito's itom measurement software
 
     The fftw-plugin for itom is a wrapper for the FFTW package.
-    The FFTW package was developed at MIT by Matteo Frigo and Steven G. 
-    Johnson. It was published unter GNU General Public License and 
+    The FFTW package was developed at MIT by Matteo Frigo and Steven G.
+    Johnson. It was published unter GNU General Public License and
     can be downloaded unter http://www.fftw.org/.
 
-    The fftw-plugin is a free software: you can redistribute it and/or 
-    modify it under the terms of the GNU General Public License 
-    as published by the Free Software Foundation, either version 3 of 
+    The fftw-plugin is a free software: you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version 3 of
     the License, or (at your option) any later version.
 
     the fftw-plugin is distributed in the hope that it will be useful,
@@ -22,7 +22,7 @@
 
 /*! \file FFTWfilters.cpp
    \brief   This file contains the itomflters class and interface definitions.
-   
+
    \author ITO, UFAL
    \date 12.2011
 */
@@ -90,7 +90,7 @@ To build this plugin you will need the libs from the fftw.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("GPL (uses FFTW licensed under GPL, too)");
-    m_aboutThis = QObject::tr(GITVERSION);       
+    m_aboutThis = QObject::tr(GITVERSION);
 
     return;
 }
@@ -121,7 +121,7 @@ ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVecto
 
     param = ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, -1, 1, -1, tr("shift axis: x and y axis (-1, default), only y axis (0), only x axis (1)").toLatin1().data());
     paramsOpt->append(param);
-    
+
     param = ito::Param("axisIndex", ito::ParamBase::Int | ito::ParamBase::In, -1, 0, tr("shift axis in the case of a > 2D dataObject. (-1, default) the axis parameter is considered, (0) the 0 axis of a 3D dataObject is shifted").toLatin1().data());
 
     paramsOpt->append(param);
@@ -283,8 +283,8 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, bool forward)
             {
                 rowPtrBuf2 = buf2.rowPtr<_Tp>(idxBuf, cnty);
                 memcpy(rowPtrBuf2, rowPtrData, bufSize * sizeInAxisx);
-            }           
-          
+            }
+
         }
     }
 
@@ -309,7 +309,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, bool forward)
         for (cnty = 0; cnty < (*data).getSize(1); cnty++)
         {
             rowPtrData = data->rowPtr<_Tp>(idxData, cnty);
-           
+
             if (cntz < cutSize) //first half
             {
                 rowPtrBuf2 = buf2.rowPtr<_Tp>(idxBuf, cnty);
@@ -320,7 +320,7 @@ template<typename _Tp> void calcfftshift0(ito::DataObject *data, bool forward)
                 rowPtrBuf1 = buf1.rowPtr<_Tp>(idxBuf, cnty);
                 memcpy(rowPtrData, rowPtrBuf1, bufSize * sizeInAxisx);
             }
-        
+
         }
     }
 
@@ -360,7 +360,7 @@ template<typename _Tp> void calcfftshift(uchar *data, int n, int m, int lineStep
          |              |        |              |         |              |
          |              |        4              2         4              2
          4              2       ---            ---       ---            ---
-        ---            ---       
+        ---            ---
         */
         p = forward ? (m + 1) / 2 : (m - (m + 1) / 2);
         even = ((m % 2) == 0);
@@ -369,7 +369,7 @@ template<typename _Tp> void calcfftshift(uchar *data, int n, int m, int lineStep
         _Tp *buf1 = (_Tp*)malloc(bufSize);
 
         if (even) //simple switch lines
-        {      
+        {
             for (int i = 0; i < p; ++i)
             {
                 //switch line i and (p+i)
@@ -617,7 +617,7 @@ template<typename _Tp> void calcfftshift(uchar *data, int n, int m, int lineStep
 //                field[n * lineStep + m + halfX + xodd] = buffer;
 //            }
 //        }
-//        
+//
 //        if (xodd)
 //        {
 //#if (USEOMP)
@@ -767,7 +767,7 @@ The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
                     break;
                 }
             }
-        }        
+        }
     }
 
     if (!retval.containsError())
@@ -879,7 +879,7 @@ The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
             }
         }
         else
-        { 
+        {
             for (int p = 0; p < numPlanes; ++p)
             {
                 switch (inField->getType())
@@ -917,7 +917,7 @@ The axisIndex parameter is used the shift a >2D dataObject in the 0 axis.");
                 }
             }
         }
-        
+
     }
 
     if (!retval.containsError())
@@ -1082,11 +1082,11 @@ int DataObjectAxisIterator::getPlaneStepOut() const
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 FFTWFilters::FFTWFilters() : AddInAlgo()
-{   
+{
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FFTWFilters::~FFTWFilters() 
+FFTWFilters::~FFTWFilters()
 {
     FilterDef *filter;
     foreach(filter, m_filterList)
@@ -1131,7 +1131,7 @@ In short, if your program performs many transforms of the same size and initiali
         sm.addItem("ortho"); //fft and ifft are scaled with 1/sqrt(n)
         param.setMeta(&sm, false);
         paramsOpt->append(param);
-    
+
     }
 
     return retval;
@@ -1177,9 +1177,9 @@ In short, if your program performs many transforms of the same size and initiali
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs forward dft by means of fftw row by row (# rows >=1) complex to complex
-   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
-                                                        [1]complex Data object out 
-   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)     
+   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in,
+                                                        [1]complex Data object out
+   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)
    \param[out]      outVals   Outputvalues:                None
    \author ITO, Boettcher
    \date 2012.03.06
@@ -1216,9 +1216,9 @@ ito::RetVal FFTWFilters::fftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs backward dft by means of fftw row by row (# rows >=1) complex to complex
-   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
-                                                        [1]complex Data object out 
-   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)     
+   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in,
+                                                        [1]complex Data object out
+   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)
    \param[out]      outVals   Outputvalues:                None
    \author ITO, Boettcher
    \date 2012.03.06
@@ -1255,10 +1255,10 @@ ito::RetVal FFTWFilters::ifftw1d(QVector<ito::ParamBase> *paramsMand, QVector<it
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!\detail    Performs forward dft of 2D objects complex to complex by means of fftw 
-   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
-                                                        [1]complex Data object out 
-   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)     
+/*!\detail    Performs forward dft of 2D objects complex to complex by means of fftw
+   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in,
+                                                        [1]complex Data object out
+   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)
    \param[out]      outVals   Outputvalues:                None
    \author ITO, Boettcher
    \date 2012.03.06
@@ -1294,10 +1294,10 @@ ito::RetVal FFTWFilters::fftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!\detail    Performs backward dft of 2D objects complex to complex by means of fftw 
-   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
-                                                        [1]complex Data object out 
-   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)     
+/*!\detail    Performs backward dft of 2D objects complex to complex by means of fftw
+   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in,
+                                                        [1]complex Data object out
+   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)
    \param[out]      outVals   Outputvalues:                None
    \author ITO, Boettcher
    \date 2012.03.06
@@ -1530,7 +1530,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
                             plan = fftw_plan_many_dft(1, n, howmany, in, NULL, strideIn, dist, out, NULL, strideOut, dist, planForwardBackWard, flags);
                             fftw_free(in);
                         }
-                    }                    
+                    }
 
                     while (it.nextPlaneTreeIndex(planeIndexIn, planeIndexOut))
                     {
@@ -1602,7 +1602,7 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
                 int cols = dObjOut->getSize(dObjOut->getDims() - 1);
                 const cv::Mat **mdataIn = dObjIn->get_mdata();
                 cv::Mat **mdataOut = dObjOut->get_mdata();
-                
+
 
 
                 DataObjectAxisIterator it(dObjIn, dObjOut, axis);
@@ -1986,9 +1986,9 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
 #if 0   // these filteres are not included in the public release
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs forward dft by means of fftw row by row (# rows >=1) real to complex or complex to real
-   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
-                                                        [1]complex Data object out 
-   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)     
+   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in,
+                                                        [1]complex Data object out
+   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)
    \param[out]      outVals   Outputvalues:                None
    \author ITO, Boettcher
    \date 2012.03.06
@@ -1996,7 +1996,7 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
 ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval = ito::retOk;
-    
+
     ito::DataObject *dObj_in = reinterpret_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());    //Input object
     ito::DataObject *dObj_out = reinterpret_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());    //Output object
     char *plan_select_char = (*paramsOpt)[0].getVal<char*>();                                            //plan selection string for fftw
@@ -2016,7 +2016,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
     {
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
-    
+
     int size;
 
     if (ito::dObjHelper::isCplxType(dObj_in->getType(), &size))
@@ -2046,14 +2046,14 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
     {
         plan_sel = (0U);                            // from fftw.h: #define FFTW_MEASURE (0U), #define FFTW_ESTIMATE (1U << 6)
     }
-    else 
+    else
     {
         plan_sel = (1U << 6);                        // estimate as standard, quicker planning, probably slower fft-computing
     }
 
     free(plan_select_char);
     plan_select_char = NULL;
-    
+
 
     dimensions = (*dObj_in).getDims();
     ito::int32 n0= static_cast<ito::int32>(dObj_in->getSize(0));
@@ -2078,10 +2078,10 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
             if (n0 == 1)
             {
                 fftw_complex *out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n0 * (floor(n1/2.)+1));
-                    
+
                 // calculate plan before initialising in! some keywords destroy in while planning
                 fftw_plan plan = fftw_plan_dft_r2c_1d(n1, in, out, plan_sel);
-                        
+
                 switch (dObj_in->getType())        //cast all real types to float64 for use of libfftw3-3.dll
                 {
                     case ito::tInt8:
@@ -2127,9 +2127,9 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                         }
                        break;
                 }
-                    
+
                 fftw_execute(plan);
-                    
+
                 switch (dObj_out->getType())
                 {
                 case ito::tComplex64:
@@ -2151,7 +2151,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
 
                 fftw_destroy_plan(plan);
                 fftw_free(out);
-            }        //end of 1D 
+            }        //end of 1D
 
 
             // 2D real to complex row by row
@@ -2162,7 +2162,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                 // calculate plan before initialising _in_! some keywords destroy _in_ while planning
                 int _n1[]={n1};
                 fftw_plan plan = fftw_plan_many_dft_r2c(1, _n1, n0, in, NULL, 1, n1, out, NULL, 1, n1, plan_sel);
-                        
+
                 switch (dObj_in->getType())        //cast all real types to float64 for use of libfftw3-3.dll
                 {
                     case ito::tInt8:
@@ -2229,10 +2229,10 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                         }
                        break;
                 }
-                
+
 
                 fftw_execute(plan);
-                
+
                 switch (dObj_out->getType())
                 {
                     case ito::tComplex64:
@@ -2256,7 +2256,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                         }
                     break;
                 }
-                
+
                 fftw_destroy_plan(plan);
                 fftw_free(out);
             }        // end of 2D row by row
@@ -2266,7 +2266,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             retval = ito::RetVal(ito::retError, 0, tr("Error: more than 2 dimensions are not supported").toLatin1().data());
         }
-    
+
         if (!retval.containsError())
         {
             // Add Protokoll
@@ -2275,7 +2275,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
 //            dObj_out->addToProtocol(std::string(prot));
             QString msg = tr("FFTW filter forward real to complex (unscaled!)");
             dObj_out->addToProtocol(std::string(msg.toLatin1().data()));
-        }    
+        }
     }                // end of real to complex
 
 
@@ -2287,7 +2287,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             return ito::RetVal(ito::retError, 0, tr("Error: need float64 output for complex input and c2r mode").toLatin1().data());
         }
-        
+
         fftw_complex *in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n0 * n1);
 
         if (dimensions == 2)
@@ -2297,11 +2297,11 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
             if (n0 == 1)
             {
                 ito::float64 *out= (ito::float64*)fftw_malloc(sizeof(ito::float64) * n0 * ((n1-1)*2));
-                    
+
                 // calculate plan before initialising in! some keywords destroy in while planning
                 fftw_plan plan = fftw_plan_dft_c2r_1d(n1, in, out, plan_sel);
-                        
-                switch (dObj_in->getType())    
+
+                switch (dObj_in->getType())
                 {
                 case ito::tComplex64:
                     for (int i=0; i<n1; i++)
@@ -2339,8 +2339,8 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                 // calculate plan before initialising _in_! some keywords destroy _in_ while planning
                 int _n1[]={n1};
                 fftw_plan plan = fftw_plan_many_dft_c2r(1, _n1, n0, in, NULL, 1, n1, out, NULL, 1, n1, plan_sel);
-                        
-                switch (dObj_in->getType())    
+
+                switch (dObj_in->getType())
                 {
                 case ito::tComplex64:
                     for (int i=0; i<n0; i++)
@@ -2365,9 +2365,9 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                     }
                 break;
                 }
-                
+
                 fftw_execute(plan);
-                
+
                 for (int i=0; i<n0; i++)
                 {
                     for (int j=0; j<n1; j++)
@@ -2375,39 +2375,39 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                         ((*dObj_out).at<ito::float64>(i,j)) = out[i*n1+j];
                     }
                 }
-                
+
                 fftw_destroy_plan(plan);
                 fftw_free(out);
             }  // end of 2D row by row
-                    
+
             fftw_free(in);
         }                            // end of all 1D and 2D
-            
+
         else
         {
             retval = ito::RetVal(ito::retError, 0, tr("Error: more than 2 dimensions are not supported").toLatin1().data());
         }
-    
+
         if (!retval.containsError())
         {
             // Add Protokoll
 //            char prot[81] = {0};
-//            _snprintf(prot, 80, "FFTW filter forward complex to real (unscaled!)");  
+//            _snprintf(prot, 80, "FFTW filter forward complex to real (unscaled!)");
 //            dObj_out->addToProtocol(std::string(prot));
             QString msg = tr("FFTW filter forward complex to real (unscaled!)");
             dObj_out->addToProtocol(std::string(msg.toLatin1().data()));
         }
     }
-    
+
     dObj_in->copyTagMapTo(*dObj_out);
 
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!\detail    Performs 2D dft real to complex or complex to real by means of fftw 
-   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
-                                                        [1]complex Data object out 
+/*!\detail    Performs 2D dft real to complex or complex to real by means of fftw
+   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in,
+                                                        [1]complex Data object out
    \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)
    \param[out]      outVals   Outputvalues:                None
    \author ITO, Boettcher
@@ -2416,7 +2416,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
 ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval = ito::retOk;
-    
+
     ito::DataObject *dObj_in = reinterpret_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());    //Input object
     ito::DataObject *dObj_out = reinterpret_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());    //Output object
     char *plan_select_char = (*paramsOpt)[0].getVal<char*>();                                            //plan selection string for fftw
@@ -2465,14 +2465,14 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
     {
         plan_sel = (0U);                            // from fftw.h: #define FFTW_MEASURE (0U), #define FFTW_ESTIMATE (1U << 6)
     }
-    else 
+    else
     {
         plan_sel = (1U << 6);                        // estimate as standard, quicker planning, probably slower fft-computing
     }
 
     free(plan_select_char);
     plan_select_char = NULL;
-    
+
     dimensions = (*dObj_in).getDims();
     ito::int32 n0= static_cast<ito::int32>(dObj_in->getSize(0));
     ito::int32 n1= static_cast<ito::int32>(dObj_in->getSize(1));
@@ -2490,10 +2490,10 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
         {
             ito::float64 *in= (ito::float64*)fftw_malloc(sizeof(ito::float64) * n0 * n1);
             fftw_complex *out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n0 * n1);
-                    
+
             // calculate plan before initialising _in_! some keywords destroy _in_ while planning
             fftw_plan plan = fftw_plan_dft_r2c_2d(n0, n1, in, out, plan_sel);
-                        
+
             switch (dObj_in->getType())        //cast all real types to float64 for use of libfftw3-3.dll
             {
                 case ito::tInt8:
@@ -2562,7 +2562,7 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
             }
 
             fftw_execute(plan);
-                
+
             switch (dObj_out->getType())
             {
                 case ito::tComplex64:
@@ -2586,7 +2586,7 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
                     }
                 break;
             }
-                
+
             fftw_destroy_plan(plan);
             fftw_free(out);
             fftw_free(in);
@@ -2595,7 +2595,7 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
         {
             retval = ito::RetVal(ito::retError, 0, tr("Error: this filter is designed for 2D data. As the name says.....").toLatin1().data());
         }
-    
+
         if (!retval.containsError())
         {
             // Add Protokoll
@@ -2604,9 +2604,9 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
 //            dObj_out->addToProtocol(std::string(prot));
             QString msg = tr("FFTW filter 2D real to complex (unscaled!)");
             dObj_out->addToProtocol(std::string(msg.toLatin1().data()));
-        }    
+        }
     }            //end of real to complex
-    
+
     //complex to real
     //#################
     else            // Tp_select != real_type
@@ -2615,16 +2615,16 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
         {
             return ito::RetVal(ito::retError, 0, tr("Error: need float64 output for complex input and c2r mode").toLatin1().data());
         }
-        
-        fftw_complex *in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n0 * n1);    
+
+        fftw_complex *in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n0 * n1);
 
         if ((dimensions == 2) && (n0!=1))
         {
             ito::float64 *out= (ito::float64*)fftw_malloc(sizeof(ito::float64) * n0 * n1);
-                    
+
             // calculate plan before initialising in! some keywords destroy in while planning
             fftw_plan plan = fftw_plan_dft_c2r_2d(n0, n1, in, out, plan_sel);
-                        
+
             switch (dObj_in->getType())
             {
             case ito::tComplex64:
@@ -2668,19 +2668,19 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
         {
             retval = ito::RetVal(ito::retError, 0, tr("Error: this filter is designed for 2D data. As the name says.....").toLatin1().data());
         }
-    
+
         if (!retval.containsError())
         {
             // Add Protokoll
 //            char prot[81] = {0};
-//            _snprintf(prot, 80, "FFTW filter 2D complex to real (unscaled!)");  
+//            _snprintf(prot, 80, "FFTW filter 2D complex to real (unscaled!)");
 //            dObj_out->addToProtocol(std::string(prot));
             QString msg = tr("FFTW filter 2D complex to real (unscaled!)");
             dObj_out->addToProtocol(std::string(msg.toLatin1().data()));
         }
     }
-    
-    dObj_in->copyTagMapTo(*dObj_out);    
+
+    dObj_in->copyTagMapTo(*dObj_out);
 
     return retval;
 }
@@ -2721,7 +2721,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
-    
+
     if (dObj_in->getDims() < 1) // Report error of input object is empty
     {
         return ito::RetVal(ito::retError, 0, tr("DataObject is empty").toLatin1().data());
@@ -2783,7 +2783,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         {
             // input must be changed to ito::float64 during filtering
             useDstObj = false;
-            rough_out = ito::DataObject(sizeY, sizeX, ito::tFloat64);            
+            rough_out = ito::DataObject(sizeY, sizeX, ito::tFloat64);
         }
     }
     else
@@ -2797,7 +2797,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         {
             // output must be changed to ito::float64 or right size
             useDstObj = false;
-            rough_out = ito::DataObject(sizeY, sizeX, ito::tFloat64);        
+            rough_out = ito::DataObject(sizeY, sizeX, ito::tFloat64);
         }
     }
 
@@ -2812,7 +2812,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         {
             // output must be changed to ito::float64 or right size
             useWaveObj = false;
-            wavin_out = ito::DataObject(sizeY, sizeX, ito::tFloat64);        
+            wavin_out = ito::DataObject(sizeY, sizeX, ito::tFloat64);
         }
     }
 
@@ -2858,11 +2858,11 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
             return ito::RetVal(ito::retError, 0, tr("R_z over 200 \u00B5m").toLatin1().data());  // mu m
         }
     }
-    
+
     cv::Mat *scrMat = ((cv::Mat *)dObj_in->get_mdata()[dObj_in->seekMat(0)]);
     ito::float64 *dstPtr = ((cv::Mat *)rough_out.get_mdata()[rough_out.seekMat(0)])->ptr<ito::float64>();
     ito::float64 *wavPtr = NULL;
-    
+
     if (calcWaveObj)
     {
         wavPtr = ((cv::Mat *)wavin_out.get_mdata()[wavin_out.seekMat(0)])->ptr<ito::float64>();
@@ -2875,11 +2875,11 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     fftw_complex *fourDomain = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * sizeXFD);
     fftw_complex *filtRough  = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * sizeXFD);
     fftw_complex *filtWavi   = NULL;
-    
+
     fftw_plan plan2FD       = fftw_plan_dft_r2c_1d(sizeX, srcInput, fourDomain, FFTW_ESTIMATE);
     fftw_plan planBackRough = fftw_plan_dft_c2r_1d(sizeX, filtRough, srcInput, FFTW_ESTIMATE);
     fftw_plan planBackWavi  = NULL;
-    
+
     if (calcWaveObj)
     {
         filtWavi     = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * sizeXFD);
@@ -2957,14 +2957,14 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         for (ito::int32 i = 0; i < sizeXFD; i++)
         {
             filterFuncRoughPtr[i] = 1-exp(cuExp2 * pow((ito::float64)i, 2));
-        }    
+        }
     }
 
     for (ito::int32 i = 0; i < sizeXFD; i++)
     {
         filtRough[i][0] = fourDomain[i][0] * filterFuncRoughPtr[i];
         filtRough[i][1] = fourDomain[i][1] * filterFuncRoughPtr[i];
-    }    
+    }
 
     //Waviness Filterung
     if (calcWaveObj)
@@ -2987,14 +2987,14 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
             for (ito::int32 i = 0; i < sizeXFD; i++)
             {
                 filterFuncWavePtr[i] = exp(cuExp2 * pow((ito::float64)i, 2));
-            }    
+            }
         }
 
         for (ito::int32 i = 0; i < sizeXFD; i++)
         {
             filtWavi[i][0] = fourDomain[i][0] * filterFuncWavePtr[i];
             filtWavi[i][1] = fourDomain[i][1] * filterFuncWavePtr[i];
-        } 
+        }
 
         fftw_execute(planBackWavi);  //destroys filtered?!
 
@@ -3015,7 +3015,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     {
         *fourierOut = ito::DataObject(1, sizeXFD, ito::tComplex128);
         ito::complex128* cRowPtr = (ito::complex128*)fourierOut->rowPtr(0,0);
-        
+
         memcpy(cRowPtr, fourDomain, sizeof(fourDomain)* sizeXFD);
     }
 
@@ -3073,7 +3073,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
             *dObj_wavOut = wavin_out;
         }
     }
-    
+
     return retval;
 }
 

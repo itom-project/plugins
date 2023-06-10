@@ -46,7 +46,7 @@ __device__ __constant__ unsigned short ui_d_Bitshift[MAXGRAYBITS];
 __device__ unsigned short bps2cilut[BPSLUTSIZE];
 
 //--------------------------------------------------------------------------------------------------
-__global__ 
+__global__
 void CalcBPS2CILutCUDA(unsigned char maxBits, unsigned short *d_tmpBps2cilut)
 {
 //	unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
@@ -108,7 +108,7 @@ extern "C" int CalcBPS2CILut(unsigned char numBits)
 //--------------------------------------------------------------------------------------------------
 __global__
 void BPS2CIMapGpu(unsigned char maxBits, int pitchCiMap, short *ui_d_CiMap)
-{	
+{
     unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
     unsigned int y = blockIdx.y*blockDim.y + threadIdx.y;
     unsigned int b, g, bitmask = 0;
@@ -715,7 +715,7 @@ extern "C" int CalcDimsVec(long length, dim3 *dimBlock, dim3 *dimGrid)
         //> make dims a multiple of 16 for faster calculation (see CUDA doku)
         (*dimGrid).y = ceil((*dimGrid).y / 16.0) * 16;
 	(*dimGrid).x = 1;
-/*	
+/*
 	char buf[200];
 	sprintf(buf, "Len: %d\nMaxB: %d\nBlocks: %d\nGrid: %d", length, maxbsize, (*dimBlock).x, (*dimGrid).x);
 	MessageBox(NULL, buf, "", MB_OK);

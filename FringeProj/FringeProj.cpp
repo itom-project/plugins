@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -147,7 +147,7 @@ template<typename _Tp> int CalcCIMap(struct tvArray3D **images, const float cont
     unsigned short bps2cilut[BPSLUTSIZE];
     unsigned short bitshift[MAXGRAYBITS];
 
-    
+
 
     CalcBPS2CILut(numbits, bps2cilut, bitshift);
 
@@ -357,7 +357,7 @@ template<typename _Tp> ito::RetVal calcPhaseMap4Tmpl(const ito::DataObject *sour
 *   @param [out] PhaseMap   the calculated modulo 2 pi phase map
 *   @param [out] ModulationMap the calculated modulation map
 *
-*   For all pixels the modulo 2 pi phase map is calculated using the sum of sines and cosines. It is important that the phase 
+*   For all pixels the modulo 2 pi phase map is calculated using the sum of sines and cosines. It is important that the phase
 *   shifts are equal for all images. As in the version for four images the contrast threashold and overexposure are
 *   checked and out of boundaries pixels are marked invalid.
 */
@@ -444,7 +444,7 @@ template<typename _Tp> ito::RetVal calcPhaseMapNTmpl(const ito::DataObject *sour
 *   @param [out] PhaseMap   unwrapped phase map
 *
 *   The modulo 2 pi phase map is unwrapped using the code index map out of the graycode images. If a pixel has a contrast value
-*   below the threashold or a phase value above the maximum phase value it is marked invalid. 
+*   below the threashold or a phase value above the maximum phase value it is marked invalid.
 */
 int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2D **CiMap, struct tFloatArray2D **RawPhase, struct tFloatArray2D **ModulationMap, struct tFloatArray2D **PhaseMap)
 {
@@ -514,11 +514,11 @@ int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2
                     phaseMap[y * width + x] = std::numeric_limits<ito::float32>::signaling_NaN();
                 }
             }
-            
+
             //// Added rawPhase == INVPHA check!!!
             //if ((phaseMap[y * width + x] < 0) || (phaseMap[y * width + x] > maxpha) || (rawPhase < (INVPHA + 0.1))) //the last +0.1 is for solving floating point insecurity
             //{
-            //    //phaseMap[y * width + x] = INVPHA; // This leads to problems with 
+            //    //phaseMap[y * width + x] = INVPHA; // This leads to problems with
             //    phaseMap[y * width + x] = std::numeric_limits<ito::float32>::signaling_NaN();
             //}
         }
@@ -585,8 +585,8 @@ FringeProjInterface::FringeProjInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     NTHREADS  = QThread::idealThreadCount();
 }
 
@@ -675,7 +675,7 @@ ito::RetVal FringeProj::close(ItomSharedSemaphore * /*waitCond*/)
 *    mand. Params:
 *        - images, the graycode images
 *        - contThreas contrast threashold for a valid pixel
-*        - ciMap, the calculated codeindex map    
+*        - ciMap, the calculated codeindex map
 */
 ito::RetVal FringeProj::calcCiMapParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
@@ -707,7 +707,7 @@ ito::RetVal FringeProj::calcCiMapParams(QVector<ito::Param> *paramsMand, QVector
 *    @param [in]    paramsMand    mandatory parameters for cimap calculation
 *    @param [in]    paramsOpt    optional parameters for cimap calculation
 *
-*    function for the calculation of a codeindex map out of graycode images. This function 
+*    function for the calculation of a codeindex map out of graycode images. This function
 *    is only a wrapper that either calls the CPU or GPU based calculation. See \ref CalcCIMap
 */
 ito::RetVal FringeProj::calcCiMap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
@@ -787,7 +787,7 @@ ito::RetVal FringeProj::calcCiMap(QVector<ito::ParamBase> *paramsMand, QVector<i
 *        - contThreas contrast threashold for a valid pixel
 *        - overExp, over exposed threashold for a valid pixel
 *        - phaseMap, the calculated modulo 2 pi phase map
-*        - modulationMap, the modulation map    
+*        - modulationMap, the modulation map
 */
 ito::RetVal FringeProj::calcPhaseMap4Params(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
@@ -816,7 +816,7 @@ ito::RetVal FringeProj::calcPhaseMap4Params(QVector<ito::Param> *paramsMand, QVe
 *    @param [in]    paramsMand    mandatory parameters for cimap calculation
 *    @param [in]    paramsOpt    optional parameters for cimap calculation
 *
-*    function for the calculation of a modulo 2 pi phase map out of 4 90° shifted fringe images. 
+*    function for the calculation of a modulo 2 pi phase map out of 4 90° shifted fringe images.
 *    This function is only a wrapper that either calls the CPU or GPU based calculation. See \ref CalcPhaseMap4
 */
 ito::RetVal FringeProj::calcPhaseMap4(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
@@ -867,7 +867,7 @@ ito::RetVal FringeProj::calcPhaseMap4(QVector<ito::ParamBase> *paramsMand, QVect
 *        - contThreas contrast threashold for a valid pixel
 *        - overExp, over exposed threashold for a valid pixel
 *        - phaseMap, the calculated modulo 2 pi phase map
-*        - modulationMap, the modulation map    
+*        - modulationMap, the modulation map
 */
 ito::RetVal FringeProj::calcPhaseMapNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
@@ -896,7 +896,7 @@ ito::RetVal FringeProj::calcPhaseMapNParams(QVector<ito::Param> *paramsMand, QVe
 *    @param [in]    paramsMand    mandatory parameters for cimap calculation
 *    @param [in]    paramsOpt    optional parameters for cimap calculation
 *
-*    function for the calculation of a modulo 2 pi phase map out of n equally shifted fringe images. 
+*    function for the calculation of a modulo 2 pi phase map out of n equally shifted fringe images.
 *    This function is only a wrapper that either calls the CPU or GPU based calculation. See \ref CalcPhaseMapN
 */
 ito::RetVal FringeProj::calcPhaseMapN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
@@ -979,7 +979,7 @@ ito::RetVal FringeProj::unwrapPhaseGrayParams(QVector<ito::Param> *paramsMand, Q
 *    @param [in]    paramsMand    mandatory parameters for cimap calculation
 *    @param [in]    paramsOpt    optional parameters for cimap calculation
 *
-*    function for the calculation of the unwrapped phase map the code index map and the raw phase. 
+*    function for the calculation of the unwrapped phase map the code index map and the raw phase.
 *    This function is only a wrapper that either calls the CPU or GPU based calculation. See \ref UnwrapPhaseGray
 */
 ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
@@ -1049,7 +1049,7 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
         delete ciMap;
         delete rawPhase;
         delete modMap;
-        delete phaseMap;    
+        delete phaseMap;
         return ito::RetVal(ito::retError, 0, tr("error calling calcPhaseMap4").toLatin1().data());
     }
 
@@ -1107,7 +1107,7 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
     const ito::DataObject *dispMap = (const ito::DataObject*)(*paramsMand)[0].getVal<void*>();
     ito::DataObject *xMap = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
     ito::DataObject *yMap = (ito::DataObject*)(*paramsMand)[2].getVal<void*>();
-    
+
     ito::float32 scale = cv::saturate_cast<ito::float32>( (*paramsMand)[3].getVal<double>() );
     ito::float32 dLateral = cv::saturate_cast<ito::float32>( (*paramsMand)[4].getVal<double>() );
     int shiftInXNotY = (*paramsMand)[5].getVal<int>();
@@ -1332,7 +1332,7 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
     ito::DataObject *pattern = paramsOpt->at(0).getVal<ito::DataObject*>();
     bool offsetAutoCenter = paramsOpt->at(2).getVal<int>() > 0;
     int offset = paramsOpt->at(1).getVal<int>();
-    
+
     if (retVal.containsError() == false)
     {
         int elems = (axis == 0) ? dObj.getSize(0) : dObj.getSize(1);
@@ -1421,7 +1421,7 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
 
         if (pattern)
         {
-        
+
 
             ito::DataObject p(elems, bitWidth, ito::tUInt8);
             ito::uint8 *ptr;
@@ -1449,5 +1449,3 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
 
     return retVal;
 }
-
-

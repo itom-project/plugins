@@ -46,7 +46,7 @@ extern "C" {
 #define AerMoveWaitDoneMulti(a,b,c,d) AerMoveMWaitDone(a,b,c,d)
 
 AERERR_CODE AER_DLLENTRY AerMoveAxis( HAERCTRL hAerCtrl, AXISINDEX iAxis,
-                                      DWORD dwMove, DOUBLE dDistance, DOUBLE dSpeed, 
+                                      DWORD dwMove, DOUBLE dDistance, DOUBLE dSpeed,
                                       DWORD dwCycles, DWORD dwFrequencies );
 AERERR_CODE AER_DLLENTRY AerMoveMAxis( HAERCTRL hAerCtrl, AXISMASK mAxis,
                                        DWORD dwMove, PAIDOUBLE pdDistanceArray, PAIDOUBLE pdSpeedArray,
@@ -75,7 +75,7 @@ AERERR_CODE AER_DLLENTRY AerMoveFreerun( HAERCTRL hAerCtrl, AXISINDEX iAxis, LON
 AERERR_CODE AER_DLLENTRY AerMoveMFreerun( HAERCTRL hAerCtrl, AXISMASK mAxes, PAILONG plMoveAry, PAIDWORD pdwSpeedAry ) ;
 //AERERR_CODE AER_DLLENTRY AerMoveInfeedSlave( HAERCTRL hAerCtrl, AXISINDEX iAxis, LONG lDist, DWORD dwSpeed )     ;
 //AERERR_CODE AER_DLLENTRY AerMoveMInfeedSlave( HAERCTRL hAerCtrl, AXISMASK mAxes, PLONG plMoveAry, PDWORD pdwSpeedAry ) ;
-AERERR_CODE AER_DLLENTRY AerMoveOscillate( HAERCTRL hAerCtrl, AXISINDEX iAxis, LONG lDir, DOUBLE dSpeed, 
+AERERR_CODE AER_DLLENTRY AerMoveOscillate( HAERCTRL hAerCtrl, AXISINDEX iAxis, LONG lDir, DOUBLE dSpeed,
                                            DWORD dwCycles, DWORD dwFrequencies );
 AERERR_CODE AER_DLLENTRY AerMoveMOscillate( HAERCTRL hAerCtrl, AXISMASK mAxes, PAILONG plMoveAry, PAIDOUBLE pdSpeedAry,
                                             PDWORD pdwCycles, PDWORD pdwFrequencies );
@@ -104,9 +104,9 @@ AERERR_CODE AER_DLLENTRY AerMoveRealignGantries(HAERCTRL hAerCtrl, TASKINDEX iTa
 AERERR_CODE AER_DLLENTRY AerMoveSimulation( HAERCTRL hAerCtrl, AXISINDEX iAxis, DWORD dwEnable );
 //AERERR_CODE AER_DLLENTRY AerMoveG0Index(HAERCTRL hAerCtrl, TASKINDEX iTask, AXISMASK mAxes, PDOUBLE plMoveAry, PDOUBLE pdwSpeedAry );
 //AERERR_CODE AER_DLLENTRY AerMoveG0Free(HAERCTRL hAerCtrl, TASKINDEX iTask, AXISMASK mAxes, PDOUBLE pdwSpeedAry );
-AERERR_CODE AER_DLLENTRY AerMoveMSet(HAERCTRL hAerCtrl, AXISINDEX iAxis, DOUBLE dTorque, DWORD dwAngle );                                    
+AERERR_CODE AER_DLLENTRY AerMoveMSet(HAERCTRL hAerCtrl, AXISINDEX iAxis, DOUBLE dTorque, DWORD dwAngle );
 AERERR_CODE AER_DLLENTRY AerMoveMBlockMotion(HAERCTRL hAerCtrl, AXISMASK mAxis, DWORD dwBlocked);
-//                                     
+//
 //
 //#define  AerMoveQueueAbsolute( hAerCtrl, iAxis, lTarg, dwSpeed )   \
 //   AerMoveAxis( hAerCtrl, iAxis, AERMOVE_QABSOLUTE, lTarg, dwSpeed )
@@ -144,13 +144,13 @@ AERERR_CODE AER_DLLENTRY AerMoveMBlockMotion(HAERCTRL hAerCtrl, AXISMASK mAxis, 
 //   AerMoveAxis( hAerCtrl, iAxis, AERMOVE_QFLUSH, 0, 0 )
 //#define  AerMoveMQueueFlush( hAerCtrl, mAxes ) \
 //   AerMoveMAxis( hAerCtrl, mAxes, AERMOVE_QFLUSH, NULL, NULL )
-//   
+//
 //**document
 //#define  AerMoveQueueHold( hAerCtrl, iAxis ) \
 //   AerMoveAxis( hAerCtrl, iAxis, AERMOVE_QHOLD, 0, 0 )
 //#define  AerMoveMQueueHold( hAerCtrl, mAxes ) \
 //   AerMoveMAxis( hAerCtrl, mAxes, AERMOVE_QHOLD, NULL, NULL )
-//   
+//
 ////**document
 //#define  AerMoveQueueRelease( hAerCtrl, iAxis ) \
 //   AerMoveAxis( hAerCtrl, iAxis, AERMOVE_QRELEASE, 0, 0 )

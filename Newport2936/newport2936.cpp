@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -46,7 +46,7 @@ For compiling this plugin, you need to install the Newport USB Driver V 4.2.2";
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL, uses Newport USB Driver software and driver (not covered by LPGL)");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_aboutThis = QObject::tr(GITVERSION);
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
@@ -55,7 +55,7 @@ For compiling this plugin, you need to install the Newport USB Driver V 4.2.2";
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
 /*!
-    
+
 */
 Newport2936Interface::~Newport2936Interface()
 {
@@ -119,13 +119,13 @@ Newport2936::Newport2936() : AddInGrabber(), m_isgrabbing(false), m_faileIdx(0)
 	m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offsetValueB", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 0.0, tr("Offset for zero value channel 2 [W]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-   
+
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     //paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
     //m_params.insert(paramVal.getName(), paramVal);
-    
+
     QVector<ito::Param> pMand;
     QVector<ito::Param> pOpt;
     QVector<ito::Param> pOut;
@@ -135,13 +135,13 @@ Newport2936::Newport2936() : AddInGrabber(), m_isgrabbing(false), m_faileIdx(0)
     pMand.append(ito::Param("value", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("Zero Value of Device in Watts").toLatin1().data()));
     pMand.append(ito::Param("channel", ito::ParamBase::Int | ito::ParamBase::In, 1, 2, 1, tr("Channel").toLatin1().data()));
     registerExecFunc("zero_device_to", pMand, pOpt, pOut, tr("Zero device to a specific value").toLatin1().data());
-    
+
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
     DockWidgetNewport2936 *dw = new DockWidgetNewport2936(this);
-    
+
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -187,7 +187,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     char strBuf[1024];
     long deviceFound = newp_usb_init_system();
 
-	
+
 
 	if (deviceFound != 0) {
 
@@ -205,7 +205,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
 
 		// get device ID and its name from info buffer
-		while (pToken != NULL) 
+		while (pToken != NULL)
 		{
 
 			cnt++;
@@ -215,7 +215,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 retValue += charToInt(pToken, devID);
 
 			}
-			else 
+			else
 			{
 
 				QString devName = pToken;
@@ -253,9 +253,9 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 		{
 			retValue += sendCommand(devID, "PM:CHAN 1");
 			retValue += m_params["channels"].setVal<int>(2);
-            
 
-			retValue += checkData();	
+
+			retValue += checkData();
 		}
 		else
 		{
@@ -265,7 +265,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             m_params["filterTypeB"].setFlags(ito::ParamBase::Readonly);
             m_params["attenuatorB"].setFlags(ito::ParamBase::Readonly);
             m_params["offsetValueB"].setFlags(ito::ParamBase::Readonly);
-			
+
 			retValue += checkData();
 		}
 
@@ -275,7 +275,7 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 	{
 		retValue += synchronizeParams(bAll);
 	}
-	
+
     //steps todo:
     // - get all initialization parameters
     // - try to detect your device
@@ -285,17 +285,17 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-    
+
     if (!retValue.containsError())
-    {        
+    {
         retValue += checkData();
     }
-    
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -318,7 +318,7 @@ ito::RetVal Newport2936::close(ItomSharedSemaphore *waitCond)
 
 	newp_usb_uninit_system();
 
-    
+
 	newp_usb_uninit_system();
 
     if (waitCond)
@@ -326,7 +326,7 @@ ito::RetVal Newport2936::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -340,7 +340,7 @@ ito::RetVal Newport2936::execFunc(const QString funcName, QSharedPointer<QVector
     else if (funcName == "zero_device_to")
     {
         retval += zeroDeviceTo(paramsMand->at(0).getVal<double>(), paramsMand->at(1).getVal<int>());
-        
+
     }
     if (waitCond)
     {
@@ -535,7 +535,7 @@ ito::RetVal Newport2936::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
 	ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("startDevice not necessary.").toLatin1().data());
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -543,7 +543,7 @@ ito::RetVal Newport2936::startDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Newport2936::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -557,13 +557,13 @@ ito::RetVal Newport2936::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-   
+
 	char rBuffer[128];
 	retValue += sendCommand(devID, "PM:PWS?");
 	retValue += readResponse(devID, rBuffer,128);
@@ -599,27 +599,27 @@ ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCon
 		m_isgrabbing = true;
 		m_data.setValueUnit("W");
 	}
-    
-  
-    
-    
-    
+
+
+
+
+
     //todo:
     // trigger the camera for starting the acquisition of a new image (software trigger or make hardware trigger ready (depending on trigger (0: software trigger, default))
-    
+
     //now the wait condition is released, such that itom (caller) stops waiting and continuous with its own execution.
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
-    
+
     //todo:
     // it is possible now, to wait here until the acquired image is ready
     // if you want to do this here, wait for the finished image, get it and save it
     // to any accessible buffer, for instance the m_data dataObject that is finally delivered
     // via getVal or copyVal.
-    // 
+    //
     // you can also implement this waiting and obtaining procedure in retrieveImage.
     // If you do it here, the camera thread is blocked until the image is obtained, such that calls to getParam, setParam, stopDevice...
     // are not executed during the waiting operation. They are queued and executed once the image is acquired and transmitted to the plugin.
@@ -655,7 +655,7 @@ ito::RetVal Newport2936::retrieveData(ito::DataObject *externalDataObject)
 			retValue += m_data.deepCopyPartial(*externalDataObject);
 		}
 	}
-	
+
 	return retValue;
 
 }
@@ -886,9 +886,9 @@ ito::RetVal Newport2936::synchronizeParams(int what)
         retValue = ito::RetVal(ito::retWarning, 0, tr("Failed to synchronize parameters with device. Retry to sync params.").toLatin1().data());
         retValue +=Newport2936::synchronizeParams(what);
         m_faileIdx = 0;
-        
+
     }
-    
+
 	return retValue;
 
 }
@@ -954,16 +954,16 @@ ito::RetVal Newport2936::checkData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
 /*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
+    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the
     DataObject.
-    
+
     This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, copyVal
 */
 ito::RetVal Newport2936::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -971,7 +971,7 @@ ito::RetVal Newport2936::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
     retValue += retrieveData(dObj);
 
@@ -986,7 +986,7 @@ ito::RetVal Newport2936::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -998,8 +998,8 @@ ito::RetVal Newport2936::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
+    This method copies the recently grabbed camera frame to the given DataObject.
+
     The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
     interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
     an image stack is possible then)
@@ -1007,7 +1007,7 @@ ito::RetVal Newport2936::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, getVal
 */
 ito::RetVal Newport2936::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -1015,25 +1015,25 @@ ito::RetVal Newport2936::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
-    
+
     if (!retValue.containsError())
     {
         //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
         //by the camera directly into the given, external dataObject
         retValue += retrieveData(dObj);  //checkData is executed inside of retrieveData
     }
-    
-    if (waitCond) 
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1047,7 +1047,7 @@ ito::RetVal Newport2936::zeroDevice(int channel, ItomSharedSemaphore * waitCond)
         retValue += sendCommand(devID, "PM:ZEROSTOre");
         retValue += readResponse(devID, rBuffer,64);
     }
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1079,7 +1079,7 @@ This method is invoked from the dock widget to get a value in the autograbbing m
 ito::RetVal Newport2936::acquireAutograbbing(QSharedPointer<QList<double> > value, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue(ito::retOk);
-    
+
     char rBuffer[128];
     retValue += sendCommand(devID, "PM:PWS?");
     retValue += readResponse(devID, rBuffer,128);
@@ -1147,17 +1147,17 @@ void Newport2936::dockWidgetVisibilityChanged(bool visible)
     If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
     of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
     m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
+
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
     all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
+
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
-    
+
     Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
     has a configuration dialog.
-    
+
     \sa hasConfDialog
 */
 const ito::RetVal Newport2936::showConfDialog(void)

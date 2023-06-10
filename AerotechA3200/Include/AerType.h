@@ -24,20 +24,20 @@ typedef DOUBLE *PDOUBLE;
 
 
 typedef DWORD        AERERR_CODE;       /* THE Error Code type */
-typedef AERERR_CODE  *PAERERR_CODE;  
+typedef AERERR_CODE  *PAERERR_CODE;
 
 typedef PBYTE	PAIBYTE;	   // designates a ptr to an array
-typedef PSHORT  PAISHORT;      // designates a ptr to an array   
-typedef PWORD   PAIWORD;       // designates a ptr to an array    
+typedef PSHORT  PAISHORT;      // designates a ptr to an array
+typedef PWORD   PAIWORD;       // designates a ptr to an array
 typedef PULONG  PAIULONG;      // designates a ptr to an array
 typedef PDWORD  PAIDWORD;      // designates a ptr to an array
 typedef PLONG   PAILONG;       // designates a ptr to an array
 typedef PFLOAT  PAIFLOAT;      // designates a ptr to an array
-typedef PDOUBLE PAIDOUBLE;     // designates a ptr to an array 
+typedef PDOUBLE PAIDOUBLE;     // designates a ptr to an array
 
 typedef PBYTE	PAOBYTE;	   // designates a ptr to an array
-typedef PSHORT  PAOSHORT;      // designates a ptr to an array   
-typedef PWORD   PAOWORD;       // designates a ptr to an array    
+typedef PSHORT  PAOSHORT;      // designates a ptr to an array
+typedef PWORD   PAOWORD;       // designates a ptr to an array
 typedef PULONG  PAOULONG;      // designates a ptr to an array
 typedef PDWORD  PAODWORD;      // designates a ptr to an array
 typedef PLONG   PAOLONG;       // designates a ptr to an array
@@ -48,13 +48,13 @@ typedef PDOUBLE PAODOUBLE;     // designates a ptr to an array
 #include "AerTDef.H"
 
 // typedefs related to "AerTDef.h"
-typedef DWORD            AXISINDEX;    
+typedef DWORD            AXISINDEX;
 typedef AXISINDEX       *PAXISINDEX;
 
 typedef DWORD           AXISMASK;          // don't kid yourself, AXISMASK HAS TO BE A 32 bit WORD!
 typedef AXISMASK       *PAXISMASK;
 
-typedef DWORD           PHYSAXISINDEX;     
+typedef DWORD           PHYSAXISINDEX;
 typedef PHYSAXISINDEX   *PPHYSAXISINDEX;
 typedef DWORD           PHYSAXISMASK;
 typedef PHYSAXISMASK    *PPHYSAXISMASK;

@@ -855,7 +855,7 @@ ito::RetVal OphirPowermeter::init(
             {
                 CoInitializer initializer; // must call for COM initialization and deinitialization
                 m_OphirLM = QSharedPointer<OphirLMMeasurement>(new OphirLMMeasurement);
-                
+
                 if (m_OphirLM.isNull())
                 {
                     m_OphirLM.clear();

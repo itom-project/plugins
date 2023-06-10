@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -33,7 +33,7 @@ DockWidgetVistek::DockWidgetVistek(ito::AddInDataIO *grabber) :
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVistek::parametersChanged(QMap<QString, ito::Param> params)
-{    
+{
     if (!m_inEditing)
     {
         m_inEditing = true;
@@ -50,7 +50,7 @@ void DockWidgetVistek::parametersChanged(QMap<QString, ito::Param> params)
         {
             ui.ModelLabel->setText(params["cameraModel"].getVal<char*>());
         }
-        
+
         if (params.contains("cameraSerialNo"))
         {
             ui.SerialLabel->setText(params["cameraSerialNo"].getVal<char*>());

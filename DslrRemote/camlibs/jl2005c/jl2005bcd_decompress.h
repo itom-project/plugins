@@ -27,4 +27,3 @@ jl2005bcd_decompress(unsigned char *output, unsigned char *input,
 					int inputsize, int get_thumbnail);
 
 #endif
-

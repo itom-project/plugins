@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -35,8 +35,8 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    PIPiezoCtrl 
-  *\brief    This class can be used to communicate with different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) 
+  *\class    PIPiezoCtrl
+  *\brief    This class can be used to communicate with different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662)
   *
   *         This class can be used to work with Piefocs and Piezo-Stages. The ITO-Controllers have only one axis with axis number 0.
   *            This system needs a serial port, which differs depending on type:
@@ -55,7 +55,7 @@
   * \warning    NA
   *
   */
-class PIPiezoCtrl : public ito::AddInActuator 
+class PIPiezoCtrl : public ito::AddInActuator
 {
     Q_OBJECT
 
@@ -121,9 +121,9 @@ class PIPiezoCtrl : public ito::AddInActuator
         ito::RetVal PIFilterAnswerByteArray(QByteArray &answer, const int axisID);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
-        
+
     public slots:
-        
+
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -152,7 +152,7 @@ class PIPiezoCtrl : public ito::AddInActuator
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        
+
         //! Emits status and position if triggered. Used form the dockingwidget
         ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 

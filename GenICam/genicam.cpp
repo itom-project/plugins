@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -105,8 +105,8 @@ This plugin has been tested with the following cameras: \n\
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL, this plugin is based on GenICam licensed under the GenICam license 1.5 (see GenICam_License.txt)");
-    m_aboutThis = QObject::tr(GITVERSION);     
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     //m_callInitInNewThread = false; //camera must be opened in main-thread
 
     QString description = tr("Indicate either a string containing the vendor and model name separated with a semicolon (e.g. 'XIMEA GmbH.;xiApi') or \
@@ -115,37 +115,37 @@ a list of all auto-detected vendors and models is returned.");
     ito::Param paramVal = ito::Param("GenTLProducer", ito::ParamBase::String, "C:\\XIMEA\\GenTL Producer\\x64\\ximea.gentlX64.cti", description.toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("interface", ito::ParamBase::String, "auto", 
+    paramVal = ito::Param("interface", ito::ParamBase::String, "auto",
         tr("interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty "
             "string to get a list of all possible interfaces for the chosen transport layer. "
             "Default: 'auto' opens the first supported interface of the chosen transport layer.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("deviceID", ito::ParamBase::String, "", 
+    paramVal = ito::Param("deviceID", ito::ParamBase::String, "",
         tr("name of the device to be opened. Leave empty to open first detected device of given "
             "transport layer and interface.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, 
+    paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0,
         tr("index of data stream to be opened (default: 0).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Invisible, GenApi::Expert, 
+    paramVal = ito::Param("paramVisibilityLevel", ito::ParamBase::Int, GenApi::Beginner, GenApi::Invisible, GenApi::Expert,
         tr("Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru, %4: Invisible).").
         arg(GenApi::Beginner).arg(GenApi::Expert).arg(GenApi::Guru).arg(GenApi::Invisible).toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, 
+    paramVal = ito::Param("portIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0,
         tr("port index to be opened (default: 0).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR, 
+    paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR,
         tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, "
             "3: print errors, warnings, informations, 4: debug, 5: all (gives even information "
             "about parameter changes or buffer states), higher: special debug values).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("accessLevel", ito::ParamBase::Int, GenTL::DEVICE_ACCESS_READONLY, GenTL::DEVICE_ACCESS_EXCLUSIVE, GenTL::DEVICE_ACCESS_EXCLUSIVE, 
+    paramVal = ito::Param("accessLevel", ito::ParamBase::Int, GenTL::DEVICE_ACCESS_READONLY, GenTL::DEVICE_ACCESS_EXCLUSIVE, GenTL::DEVICE_ACCESS_EXCLUSIVE,
         tr("Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).").
         arg(GenTL::DEVICE_ACCESS_READONLY).arg(GenTL::DEVICE_ACCESS_CONTROL).arg(GenTL::DEVICE_ACCESS_EXCLUSIVE).toLatin1().constData());
     m_initParamsOpt.append(paramVal);
@@ -686,7 +686,7 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
             {
                 retValue += m_framegrabber->setDeviceParam(val, it);
             }
-            
+
         }
         else
         {
@@ -712,7 +712,7 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
         emit parametersChanged(m_params);
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -748,7 +748,7 @@ void GenICamClass::parameterChangedTimerFired()
     {
         m_params["bpp"].setFlags(m_params["PixelFormat"].getFlags());
     }
-    
+
     if (!m_framegrabber)
     {
         int roi_flags = 0;
@@ -760,7 +760,7 @@ void GenICamClass::parameterChangedTimerFired()
             roi_flags |= m_params["OffsetX"].getFlags();
             roi_flags |= m_params["Width"].getFlags();
         }
-    
+
         if (m_params.contains("OffsetY") && m_params.contains("Height"))
         {
             int* roi = m_params["roi"].getVal<int*>();
@@ -788,7 +788,7 @@ void GenICamClass::parameterChangedTimerFiredFramegrabber()
         roi[0] = m_params[prefix + "OffsetX"].getVal<int>();
         roi[2] = m_params[prefix + "Width"].getVal<int>();
     }
-    
+
     if (m_params.contains(prefix + "OffsetY") && m_params.contains(prefix + "Height"))
     {
         int* roi = m_params["roi"].getVal<int*>();
@@ -811,7 +811,7 @@ void GenICamClass::cacheAcquisitionParameters()
     {
         m_acquisitionCache.triggerMode = false;
         m_acquisitionCache.triggerSource = "Software";
-        
+
     }
 
     if (m_params.contains("AcquisitionMode"))
@@ -875,7 +875,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
                 retValue += searchGenTLProducer("", splits[0], "");
             }
         }
-    
+
         if (!retValue.containsError())
         {
             m_system->setVerbose(m_verbose);
@@ -886,7 +886,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
         {
             GenTL::DEVICE_ACCESS_FLAGS deviceAccess = (GenTL::DEVICE_ACCESS_FLAGS_LIST)accessLevel_;
             m_device = m_interface->getDevice(deviceID, deviceAccess, retValue);
-        
+
         }
 
         if (!retValue.containsError())
@@ -937,7 +937,7 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
         if (!retValue.containsError())
         {
             m_device->setCallbackParameterChangedReceiver(this);
-            
+
             m_stream->setTimeoutSec(m_params["timeout"].getVal<double>());
             m_stream->setPayloadSize(m_device->getPayloadSize());
             retValue += m_device->createParamsFromDevice(m_params, visibilityLevel);
@@ -1007,13 +1007,13 @@ ito::RetVal GenICamClass::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     {
         retValue += ito::RetVal::format(ito::retError, 0, "GenTL Exception: %s (init)", ex.what());
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-        
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
@@ -1029,20 +1029,20 @@ ito::RetVal GenICamClass::close(ItomSharedSemaphore *waitCond)
         setGrabberStarted(1);
         retValue += stopDevice(NULL);
     }
-    
+
     m_framegrabber.clear();
     m_stream.clear();
     m_device.clear();
     m_interface.clear();
     m_system.clear();
-    
+
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -1055,7 +1055,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 
     try
     {
-    
+
         incGrabberStarted();
 
         if (m_stream.isNull() == false)
@@ -1074,7 +1074,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                 //first time to be started
                 retValue += m_stream->allocateAndAnnounceBuffers(m_params["numBuffers"].getVal<int>(), m_params["userDefinedPayloadSize"].getVal<int>());
 
-                
+
                 //stop acquisition (in case the camera is already running)
                 if (!retValue.containsError())
                 {
@@ -1088,7 +1088,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                     revertAllocateIfError = true;
                     //Note: We noticed a strange behaviour with two Silicon Software framegrabber and two CoaxPress Mikrotron cameras.
                     //If one camera is started (and startAcquisition is active) and startDevice of the 2nd camera is started, no
-                    //new image frames are reported for the first camera. The following startAcquisition command is responsible for 
+                    //new image frames are reported for the first camera. The following startAcquisition command is responsible for
                     //"stopping" the first camera.
                     retValue += m_stream->startAcquisition();
                 }
@@ -1106,7 +1106,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
                         // flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT) command is placed here. Many other
                         // cameras can work with or without this command, but this command has been added
                         // to support an AlliedVision GoldEye camera.
-                        // see issue: https://bitbucket.org/itom/plugins/issues/8/genicam-plugin-issue-with-mikrotron-eosens
+                        // see issue: https://github.com/itom-project/plugins/issues/8
                         if (m_stream->flushAllBuffersToInput())
                         {
                             m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_TO_INPUT);
@@ -1138,7 +1138,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
     {
         std::cout << "exception in startDevice\n" << std::endl;
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1147,7 +1147,7 @@ ito::RetVal GenICamClass::startDevice(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1187,9 +1187,9 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
             retValue += m_device->invokeCommandNode("AcquisitionStop", ito::retWarning);
             retValue += m_stream->flushBuffers(GenTL::ACQ_QUEUE_ALL_DISCARD);
             retValue += m_stream->revokeAllBuffers();
-            
+
             QThread::msleep(100);
-            
+
             m_device->setParamsLocked(0);
 
             if (m_framegrabber)
@@ -1215,7 +1215,7 @@ ito::RetVal GenICamClass::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -1272,7 +1272,7 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
         if (waitCond)
         {
             waitCond->returnValue = retValue;
-            waitCond->release();  
+            waitCond->release();
         }
 
         if (!retValue.containsError())
@@ -1288,25 +1288,25 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
     catch (GenericException &ex)
     {
         std::cout << "Exception in acquire: " << ex.GetDescription() << "\n" << std::endl;
-    } 
-    catch (const std::overflow_error& e) 
+    }
+    catch (const std::overflow_error& e)
     {
         std::cout << "Exception in acquire (overflow):" << e.what() << "\n" << std::endl;
     // this executes if f() throws std::overflow_error (same type rule)
 
-    } 
-    catch (const std::runtime_error& e) 
+    }
+    catch (const std::runtime_error& e)
     {
         std::cout << "Exception in acquire (runtime):" << e.what() << "\n" << std::endl;
     // this executes if f() throws std::underflow_error (base class rule)
 
-    } 
-    catch (const std::exception& e) 
+    }
+    catch (const std::exception& e)
     {
         std::cout << "Exception in acquire (exception):" << e.what() << "\n" << std::endl;
     // this executes if f() throws std::logic_error (base class rule)
 
-    } 
+    }
     catch(...)
     {
         std::cout << "Exception in acquire\n" << std::endl;
@@ -1376,7 +1376,7 @@ ito::RetVal GenICamClass::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1388,7 +1388,7 @@ ito::RetVal GenICamClass::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -1420,7 +1420,7 @@ ito::RetVal GenICamClass::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1505,7 +1505,7 @@ ito::RetVal GenICamClass::searchGenTLProducer(const QString &producer, const QSt
         foreach(const QDir &searchPath, searchPathes)
         {
             files = searchPath.entryList(filters);
-            
+
             foreach (const QString &file, files)
             {
                 ctiFiles << searchPath.absoluteFilePath(file);

@@ -130,7 +130,7 @@ void ISO5436_2Container::Open(const OGPS_Boolean readOnly)
       try
       {
          Decompress();
-         CreatePointBuffer();         
+         CreatePointBuffer();
       }
       catch(...)
       {
@@ -151,13 +151,13 @@ void ISO5436_2Container::Open(const OGPS_Boolean readOnly)
    m_IsCreating = FALSE;
 
    ValidateDocument();
-   TestChecksums();   
+   TestChecksums();
 }
 
 void ISO5436_2Container::Decompress()
 {
    _ASSERT(HasTempDir());
-   
+
    DecompressMain();
    ReadDocument();
    DecompressChecksum();
@@ -1117,7 +1117,7 @@ void ISO5436_2Container::CreateDocument(
       m_Document = new Schemas::ISO5436_2::ISO5436_2Type(*record1, record3, record4);
 
       if(record2)
-      {         
+      {
          m_Document->Record2(*record2);
       }
 
@@ -1417,7 +1417,7 @@ void ISO5436_2Container::SaveXmlDocument(zipFile handle)
 #endif /* _UNICODE */
 
          dump << e;
-      
+
          OpenGPS::String m(dump.str());
 
          throw OpenGPS::Exception(
@@ -1474,7 +1474,7 @@ OGPS_Boolean ISO5436_2Container::ConfigureNamespaceMap(xml_schema::properties& p
 }
 
 void ISO5436_2Container::SaveValidPointsLink(zipFile handle)
-{  
+{
   if(HasValidPointsLink() || (HasVectorBuffer() && GetVectorBuffer()->HasValidityBuffer() && GetVectorBuffer()->GetValidityBuffer()->IsAllocated() && GetVectorBuffer()->GetValidityBuffer()->HasInvalidMarks()))
   {
     _ASSERT(IsBinary());
@@ -1518,7 +1518,7 @@ void ISO5436_2Container::SaveValidPointsLink(zipFile handle)
        throw;
     }
     _VERIFY(zipCloseFileInZip(handle), ZIP_OK);
-    
+
     // Add Checksum for valid.bin
     OpenGPS::UnsignedByte md5[16];
     _VERIFY(vbuffer.GetMd5(md5), TRUE);
@@ -1882,7 +1882,7 @@ void ISO5436_2Container::CreateTempDir()
    OpenGPS::String temp;
    OGPS_Boolean created = FALSE;
    if(m_TempBasePath.length() > 0 && env->PathExists(m_TempBasePath))
-   {      
+   {
       temp = env->ConcatPathes(m_TempBasePath, uniqueDirectory);
 
       // TODO: try new random
@@ -2051,7 +2051,7 @@ PointVectorProxyContext* ISO5436_2Container::CreatePointVectorProxyContext() con
       const Schemas::ISO5436_2::MatrixDimensionType& mtype = m_Document->Record3().MatrixDimension().get();
 
       SafeMultipilcation(SafeMultipilcation(mtype.SizeX(), mtype.SizeY()), mtype.SizeZ());
-      
+
       const OGPS_ULong sx = ConvertULongLongToULong(mtype.SizeX());
       const OGPS_ULong sy = ConvertULongLongToULong(mtype.SizeY());
       const OGPS_ULong sz = ConvertULongLongToULong(mtype.SizeZ());
@@ -2222,7 +2222,7 @@ void ISO5436_2Container::TestChecksums()
          _EX_T("Although some data had been extracted there is no guarantee of their integrity."),
          _EX_T("OpenGPS::ISO5436_2Container::TestChecksums"));
    }
-   
+
    if(!m_ValidBinChecksum)
    {
       throw OpenGPS::Exception(
@@ -2419,7 +2419,7 @@ OGPS_Boolean ISO5436_2Container::WriteVendorSpecific(zipFile handle)
                         length -= chunk;
                      } while(!src.eof() && length > 0);
                   }
-               }            
+               }
             }
             catch(...)
             {

@@ -56,7 +56,7 @@ void DockWidgetAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        
+
         it = params.find("gain");
         if (it != params.end())
         {

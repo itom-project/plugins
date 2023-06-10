@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -77,14 +77,14 @@ For details please check C:\\A3200\\MANUAL.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL, The Aerotech A3200 library belongs to Aerotech under their specific license (accessible by their free FTP server).");
-    m_aboutThis = QObject::tr(GITVERSION);     
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
-    
+
 
     ito::Param param = ito::Param("axes", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("list of axes IDs that are enabled (0..2). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]").toLatin1().data());
-    m_initParamsOpt.append(param); 
+    m_initParamsOpt.append(param);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -106,14 +106,14 @@ const ito::RetVal AerotechA3200::showConfDialog(void)
     if (confDialog->exec())    // Is dialog is endet with exec and not with cancel
     {
         confDialog->getVals(&m_params);    // get parameters from dialog
-    }    
+    }
     delete confDialog;    // destray dialog
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AerotechA3200::AerotechA3200() : 
+AerotechA3200::AerotechA3200() :
     AddInActuator(),
     m_pAerotechA3200Wid(NULL),
     hAerCtrl(NULL)
@@ -129,7 +129,7 @@ AerotechA3200::AerotechA3200() :
     m_params.insert("numAxis", Param("numAxis", ParamBase::Int | ParamBase::In | ParamBase::Readonly, 0, 3, 3, "number of connected axes"));
 
     m_params.insert("scaleFactor", Param("scaleFactor", ParamBase::Double | ParamBase::Readonly, 0.0, 1000000.0, 0.0, tr("scale factor of connected controller, counts per metric unit").toLatin1().data()));
-    
+
     m_params.insert("clearoffset", Param("clearoffset", ParamBase::Int, 0, 0, 0, tr("reset the offsets to zero, back to absolute coordinate").toLatin1().data()));
     m_params.insert("finished", Param("finished", ParamBase::Int | ParamBase::Readonly, 0, 1, 0, tr("check if the motion of every axis is finished").toLatin1().data()));
     m_params.insert("stop", Param("stop", ParamBase::Int, 0, 0, 0, tr("executes an immediate stop").toLatin1().data()));
@@ -138,17 +138,17 @@ AerotechA3200::AerotechA3200() :
     m_params.insert("xenabled", Param("xenabled", ParamBase::Int, 0, 1, 0, tr("check if x-axis is enabled").toLatin1().data()));
     m_params.insert("yenabled", Param("yenabled", ParamBase::Int, 0, 1, 0, tr("check if y-axis is enabled").toLatin1().data()));
     m_params.insert("zenabled", Param("zenabled", ParamBase::Int, 0, 1, 0, tr("check if z-axis is enabled").toLatin1().data()));
-    
+
 
     double axisSpeeds[] = {20.0, 20.0, 20.0}; //mm/s, naemlich "rate" in altem Skript mcpp
     Param param = Param("speed", ParamBase::DoubleArray, NULL, tr("speed of every axis").toLatin1().data());
     param.setVal<double*>(axisSpeeds, 3);
     m_params.insert("speed", param);
-    
+
     m_currentPos.fill(0.0, 3);
     m_currentStatus.fill(0, 3);
     m_targetPos.fill(0.0, 3);
- 
+
 
 
 //#?#drunter zu modifizieren######
@@ -160,14 +160,14 @@ AerotechA3200::AerotechA3200() :
 
     //Marc: connect(this, SIGNAL(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)), USBMotion3XIIIWid, SLOT(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)));
     //Marc: connect(this, SIGNAL(targetsChanged(QVector<bool>, QVector<double>)), USBMotion3XIIIWid, SLOT(targetsChanged(QVector<bool>, QVector<double>)));
-   
+
 //    connect(m_pAerotechEnsembleWid, SIGNAL(setAbsTargetDegree(double, double, double)), this, SLOT(setAbsTargetDegree(double, double, double)));
 //    connect(m_pAerotechEnsembleWid, SIGNAL(setRelTargetDegree(unsigned int, double)), this, SLOT(setRelTargetDegree(unsigned int, double)));
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_pAerotechA3200Wid);    // Give the widget a name ..)
-   
+
 //    connect(m_pAerotechEnsembleWid, SIGNAL(MoveRelative(const int,const double ,ItomSharedSemaphore*)), this, SLOT(setPosRel(const int,const double, ItomSharedSemaphore*)));
 //    connect(m_pAerotechEnsembleWid, SIGNAL(MoveAbsolute(QVector<int>, QVector<double>, ItomSharedSemaphore*)), this, SLOT(setPosAbs(QVector<int>, QVector<double>, ItomSharedSemaphore*)));
     connect(m_pAerotechA3200Wid, SIGNAL(MotorTriggerStatusRequest(bool,bool)), this, SLOT(RequestStatusAndPosition(bool, bool)));
@@ -184,11 +184,11 @@ AerotechA3200::~AerotechA3200()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechA3200::checkError(int a3200ReturnValue)
 {
-    if (a3200ReturnValue == AERSVR_NO_FIRECARD)     
+    if (a3200ReturnValue == AERSVR_NO_FIRECARD)
     {
         a3200ReturnValue = AERERR_NOERR;   // no firewire card in PC
     }
-    if (a3200ReturnValue == AERSVR_SELF_ID_NONE)   
+    if (a3200ReturnValue == AERSVR_SELF_ID_NONE)
     {
         a3200ReturnValue = AERERR_NOERR;   // no drives connected to firewire card
     }
@@ -198,7 +198,7 @@ ito::RetVal AerotechA3200::checkError(int a3200ReturnValue)
     }
     if (a3200ReturnValue)
     {
-        if (AerErrGetMessage(a3200ReturnValue, szMsg, MAX_TEXT_LEN, FALSE)!= NULL)  
+        if (AerErrGetMessage(a3200ReturnValue, szMsg, MAX_TEXT_LEN, FALSE)!= NULL)
         {
             return ito::RetVal::format(ito::retError, 0, tr("A3200 error: %s").toLatin1().data(), szMsg);
         }
@@ -287,13 +287,13 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     int *axes = paramsOpt->at(0).getVal<int*>();
     int axesLength = paramsOpt->at(0).getLen();
     QVector<int> axesIDs;
-    
+
     /*
                            AXISMASK   axis(init bei itom)      AXISINDEX
                 Z             1             2                      1
                 X             2             0                      2
                 Y             3             1                      3
-    */        
+    */
     for (int i = 0; i < axesLength; ++i)
     {
         axesIDs.append(axes[i]);
@@ -301,7 +301,7 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
 
     m_currentStatus.fill(0, axesLength);
-    
+
 
     AXISMASK axisMask;
 
@@ -315,14 +315,14 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     {
         AXISMASK availableMask;
 
-        //es ist natuerlich besser, eine Funktion bezueglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.  
+        //es ist natuerlich besser, eine Funktion bezueglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.
         availableMask= AXISMASK_1 | AXISMASK_2 | AXISMASK_3;
 
         if (!retValue.containsError())
         {
             if (axesLength <= 0) //no specific axes given, all available are taken
             {
-                axesLength = 0; 
+                axesLength = 0;
                 axisMask = availableMask;
                 if (axisMask & AXISMASK_2)
                 {
@@ -355,11 +355,11 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 if (i== 1)
                 {
-                    m_axisNames.append("Y");    
+                    m_axisNames.append("Y");
                 }
                 if (i== 2)
                 {
-                    m_axisNames.append("Z");    
+                    m_axisNames.append("Z");
                 }
             }
 
@@ -472,7 +472,7 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
 
     if (!retValue.containsError())
-    {    
+    {
         emit parametersChanged(m_params);
     }
 
@@ -497,7 +497,7 @@ ito::RetVal AerotechA3200::close(ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();        
+        waitCond->release();
     }
     return retValue;
 }
@@ -729,7 +729,7 @@ ito::RetVal AerotechA3200::calib(const QVector<int> axis, ItomSharedSemaphore *w
         {
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
             sendStatusUpdate();
-            
+
             //starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the alive thread such that itom do not run into
             //a timeout if the homing needs lots of time
             QThread *awakeThread = new QThread(this);
@@ -741,7 +741,7 @@ ito::RetVal AerotechA3200::calib(const QVector<int> axis, ItomSharedSemaphore *w
             // Make sure the timer gets started from m_thread.
             QObject::connect(awakeThread, SIGNAL(started()), timer, SLOT(start()));
             awakeThread->start();
-    
+
             if (axis.size() > 0)
             {
                 retValue += checkError(AerMoveMHome(hAerCtrl, mask));
@@ -754,8 +754,8 @@ ito::RetVal AerotechA3200::calib(const QVector<int> axis, ItomSharedSemaphore *w
             awakeThread = NULL;
 
             sendTargetUpdate();
-            
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget); 
+
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
             doUpdatePosAndState(axis);
 
             sendStatusUpdate();
@@ -788,7 +788,7 @@ ito::RetVal AerotechA3200::setOrigin(QVector<int> axis, ItomSharedSemaphore *wai
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
-    
+
     if (isMotorMoving())
     {
         retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
@@ -955,8 +955,8 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
                 m_targetPos[axis[naxis]] = pos[naxis];
                 speedArray[naxis] = paramSpeed[axis[naxis]];
             }
-                    
-            if (axis.size() > 0) 
+
+            if (axis.size() > 0)
             {
                 // ---AerMoveMAbsolute() nutzt PLONG(machine steps)----
                 LONG _posArray[1];
@@ -971,7 +971,7 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
                     {
                         case 0:
                             mask = AXISMASK_2;
-                            break; 
+                            break;
                         case 1:
                             mask = AXISMASK_3;
                             break;
@@ -990,13 +990,13 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
                 waitCond->returnValue = retValue;
                 waitCond->release();
             }
-            
+
             ito::RetVal temp = waitForDone(-1, axis); //drops into timeout
             if (temp.containsError() && temp.errorCode() != 9999) //anything else besides timeout
             {
                 retValue += temp;
             }
-            
+
             doUpdatePosAndState(axis);
 
             sendStatusUpdate();
@@ -1064,10 +1064,10 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
             {
                 posArray[naxis] = pos[naxis];
                 m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] + pos[naxis];
-                speedArray[naxis] = paramSpeed[axis[naxis]];        
+                speedArray[naxis] = paramSpeed[axis[naxis]];
             }
-                    
-            if (axis.size() > 0) 
+
+            if (axis.size() > 0)
             {
                 LONG _posArray[1];
                 DWORD _speedArray[1];
@@ -1079,7 +1079,7 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
                     {
                         case 0:
                             mask = AXISMASK_2;
-                            break; 
+                            break;
                         case 1:
                             mask = AXISMASK_3;
                             break;
@@ -1090,8 +1090,8 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
                     retValue += checkError(AerMoveMIncremental(hAerCtrl, mask, _posArray, _speedArray));
                 }
             }
-        
-            sendTargetUpdate();  
+
+            sendTargetUpdate();
 
             if (m_async && waitCond)
             {
@@ -1104,7 +1104,7 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
             {
                 retValue += temp;
             }
-            
+
             doUpdatePosAndState(axis);
 
             sendStatusUpdate();
@@ -1120,7 +1120,7 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
     ito::RetVal retVal(ito::retOk);
@@ -1134,7 +1134,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
             _axis.append(i);
         }
     }
-    
+
     QTime timer;
     timer.start();
     QMutex waitMutex;
@@ -1145,7 +1145,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
     {
         if (!done && isInterrupted())
         {
-            if (hAerCtrl != NULL) 
+            if (hAerCtrl != NULL)
             {
                 AXISMASK AxisMask = AXISMASK_1 | AXISMASK_2 | AXISMASK_3;
                 retVal += checkError(AerMoveMAbort(hAerCtrl, AxisMask));
@@ -1176,7 +1176,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
         bool bMove = false;
         retVal += doUpdatePosAndState(_axis);
 
-        for (int i = 0; i < _axis.size(); i++) 
+        for (int i = 0; i < _axis.size(); i++)
         {
             if (m_currentStatus[_axis[i]] & ito::actuatorMoving)
             {
@@ -1184,7 +1184,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
             }
         }
         sendStatusUpdate();
- 
+
         if (bMove == FALSE)
         {
             done = true;
@@ -1193,7 +1193,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
 
     if (timeout)
     {
-        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout); 
+        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
 
@@ -1209,20 +1209,20 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
     return retVal;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
 {
     ito::RetVal retval;
-    if (hAerCtrl != NULL) 
+    if (hAerCtrl != NULL)
     {
         //bool bRet = TRUE;
         //bool bMove = FALSE;
         double pDouble[3];//0: pos, 1: status, 2: fault
         //AXISMASK mAxis;
         double faktor;
-        
+
         faktor = m_params["scaleFactor"].getVal<double>();//counts per metric units
-        foreach(const int &axis, axes) 
+        foreach(const int &axis, axes)
         {
             AXISINDEX axisIndex = (AXISINDEX)(AXISINDEX_1 + m_enabledAxes[axis]);
             /*
@@ -1230,7 +1230,7 @@ ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
                 Z             1             2                1
                 X             2             0                2
                 Y             3             1                3
-            */        
+            */
             switch(axisIndex)
             {
             case 0:
@@ -1251,24 +1251,24 @@ ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
             retval += checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_AxisStatus, 0, & pDouble[1]));
             retval += checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_Fault, 0, & pDouble[2]));
 
-            if (!retval.containsError()) 
+            if (!retval.containsError())
             {
-                m_currentPos[axis] = m_offset[axis] + pDouble[0]/faktor; 
+                m_currentPos[axis] = m_offset[axis] + pDouble[0]/faktor;
                 DWORD State = (DWORD)(pDouble[1]);
 
-                if (State & MAXS_STATUS_MOVEDONE) 
+                if (State & MAXS_STATUS_MOVEDONE)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
                 }
-                else if (State & MAXS_STATUS_DRIVECONTROLLED) 
+                else if (State & MAXS_STATUS_DRIVECONTROLLED)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
                 }
-                if (State & MAXS_STATUS_CLAMPED) 
+                if (State & MAXS_STATUS_CLAMPED)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorEndSwitch, ito::actMovingMask | ito::actStatusMask);
                 }
-                if (State & MAXS_STATUS_INTERRUPT) 
+                if (State & MAXS_STATUS_INTERRUPT)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorInterrupted, ito::actSwitchesMask | ito::actStatusMask);
                 }
@@ -1291,7 +1291,7 @@ ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechA3200::axisFaultToRetVal(int axisFault, int axisID)//
 {
     ito::RetVal retval;
@@ -1368,7 +1368,7 @@ ito::RetVal AerotechA3200::axisFaultToRetVal(int axisFault, int axisID)//
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechA3200::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
 {
     ito::RetVal retValue(ito::retOk);
@@ -1391,7 +1391,7 @@ ito::RetVal AerotechA3200::RequestStatusAndPosition(bool sendActPosition, bool s
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AerotechA3200::dockWidgetVisibilityChanged(bool visible)
 {
     if (m_pAerotechA3200Wid)
@@ -1426,7 +1426,7 @@ void AerotechA3200::dockWidgetVisibilityChanged(bool visible)
 ito::RetVal AerotechA3200::enabledisable(int axis, int ziel)
 {
     ito::RetVal retValue;
-    
+
     if (hAerCtrl == NULL)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toLatin1().data());
@@ -1449,7 +1449,7 @@ ito::RetVal AerotechA3200::enabledisable(int axis, int ziel)
                     if (!retValue.containsError())
                     {
                         retValue += checkError(AerMoveMEnable(hAerCtrl, axisMask));
-                        
+
                     }
                 }
                 else
@@ -1491,7 +1491,7 @@ ito::RetVal AerotechA3200::enabledisable(int axis, int ziel)
                     }
                 }
             }
-        }  
+        }
     }
 
     return retValue;

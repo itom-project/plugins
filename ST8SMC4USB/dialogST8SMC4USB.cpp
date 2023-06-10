@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -112,14 +112,14 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     ui.sb_accel->setSingleStep(dm->getStepSize());
     ui.sb_accel->setValue(params["accel"].getVal<double>());
 
-    
+
     dm = (ito::DoubleMeta*)(params["decel"].getMeta());
     ui.sb_decel->setMaximum(dm->getMax());
     ui.sb_decel->setMinimum(dm->getMin());
     ui.sb_decel->setSingleStep(dm->getStepSize());
     ui.sb_decel->setValue(params["decel"].getVal<double>());
 
-    
+
     dm = (ito::DoubleMeta*)(params["speed"].getMeta());
     ui.sb_speed->setMaximum(dm->getMax());
     ui.sb_speed->setMinimum(dm->getMin());
@@ -137,7 +137,7 @@ ito::RetVal DialogST8SMC4USB::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
-    
+
     int microsteps = ui.cb_microSteps->currentText().toInt();
     bool microsteps_changed = false;
     if (microsteps != m_currentParameters["micro_steps"].getVal<int>())
@@ -166,7 +166,7 @@ ito::RetVal DialogST8SMC4USB::applyParameters()
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, async)));
     }
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }

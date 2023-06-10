@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -32,7 +32,7 @@
 #include <qdialog.h>
 #include <qstring.h>
 
-class dialogGWInstekPSP : public QDialog 
+class dialogGWInstekPSP : public QDialog
 {
     Q_OBJECT
 
@@ -47,7 +47,7 @@ class dialogGWInstekPSP : public QDialog
         int getVals(QMap<QString, ito::Param> *paramVals);
 
     public slots:
-        
+
 
     private slots:
 

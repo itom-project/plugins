@@ -55,13 +55,13 @@ class OphirPowermeter : public ito::AddInDataIO
         ~OphirPowermeter();
         //! Constructor
         OphirPowermeter();
-        
+
         //ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-        
+
     public:
         friend class OphirPowermeterInterface;
         int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
-        
+
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
@@ -96,7 +96,7 @@ class OphirPowermeter : public ito::AddInDataIO
         ito::RetVal SendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS);
         bool definitelyLessThan(const double &a, const double &b);
         bool definitelyGreaterThan(const double &a, const double &b);
-        
+
         char *m_charBuffer;
         char* wCharToChar(const wchar_t *input);
         char* TCharToChar(const TCHAR* message);
@@ -108,7 +108,7 @@ class OphirPowermeter : public ito::AddInDataIO
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
         //!< Set Camera-Parameter
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
-        
+
         //!< Initialise board, load dll, allocate buffer
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //!< Free buffer, delete board, unload dll

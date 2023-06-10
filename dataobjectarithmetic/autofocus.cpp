@@ -80,7 +80,7 @@ template<typename _Tp> ito::RetVal AutoFocusDerivate(const ito::DataObject *src,
 #else
         ksize = CV_SCHARR;
 #endif
-        
+
     }
     else if (method == "3x3Roberts")
     {

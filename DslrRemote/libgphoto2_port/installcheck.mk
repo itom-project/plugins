@@ -27,4 +27,3 @@ installcheck-local: $(INSTALL_TESTS) $(INSTALLCHECK_DEPS)
 		echo "Error: One or more \"installcheck\" testcases have failed."; \
 		exit 1; \
 	fi
-

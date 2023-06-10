@@ -4,44 +4,38 @@ set(target_name FittingFilters)
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
-include(ItomBuildMacros)
-itom_init_cmake_policy(3.12)
-itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
- 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-itom_find_package_qt(ON Widgets Xml LinguistTools)
-
 find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 find_package(LAPACKE)
 
+include(ItomBuildMacros)
+itom_init_cmake_policy(3.12)
+itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Widgets Xml LinguistTools)
+
 find_package( OpenMP QUIET)
 if(OPENMP_FOUND)
-    message(STATUS "OPENMP FOUND")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
-
-
-
-
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -60,18 +54,18 @@ if(${LAPACKE_FOUND})
     set(PLUGIN_HEADERS ${PLUGIN_HEADERS}
         ${LAPACKE_INCLUDE_DIR}/lapacke.h
     )
-    
+
     include_directories(
         ${LAPACKE_INCLUDE_DIR}
     )
-    
+
     add_definitions(-DLAPACKE -DADD_ -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE )
 endif()
 
 set(PLUGIN_UI
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/fittingfilters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/polyfit2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/polyfitweighted2d.cpp
@@ -114,7 +108,7 @@ if(WIN32)
     endforeach(__LIB)
     endif(${LAPACKE_FOUND})
 endif(WIN32)
-    
+
 itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

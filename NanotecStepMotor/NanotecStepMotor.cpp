@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -58,7 +58,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-//! 
+//!
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
     creates new instance of dialogNanotecStepMotor, calls the method setVals of dialogNanotecStepMotor, starts the execution loop and if the dialog
@@ -246,7 +246,7 @@ int NanotecStepMotor::unitToSteps(const int deviceIndex, double unitStep)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the NanotecStepMotor::init. The widged window is created at this position.
 */
 NanotecStepMotor::NanotecStepMotor() :
@@ -340,7 +340,7 @@ NanotecStepMotor::NanotecStepMotor() :
     \return retOk
 */
 ito::RetVal NanotecStepMotor::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, ItomSharedSemaphore *waitCond)
-{   
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
@@ -511,7 +511,7 @@ ito::RetVal NanotecStepMotor::init(QVector<ito::ParamBase> *paramsMand, QVector<
 			// end switch behaviour
             retval += NSMReadWrite(i, "Zl", &value);
             endSwitchBehaviour[i] = value;
-            
+
             if (retval.containsError())
             {
                 break;
@@ -638,7 +638,7 @@ ito::RetVal NanotecStepMotor::getParam(QSharedPointer<ito::Param> val, ItomShare
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, NanotecStepMotor::SMCSwitchType is executed.
 
@@ -758,7 +758,7 @@ ito::RetVal NanotecStepMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 			}
 		}
 
-		
+
     }
 
     if (!retValue.containsError())
@@ -860,11 +860,11 @@ ito::RetVal NanotecStepMotor::getPos(const int axis, QSharedPointer<double> pos,
     }
 
     return retval;
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
+/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -901,7 +901,7 @@ ito::RetVal NanotecStepMotor::getPos(const QVector<int> axis, QSharedPointer<QVe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls NanotecStepMotor::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -932,7 +932,7 @@ ito::RetVal NanotecStepMotor::setPosAbs(const QVector<int> axis, QVector<double>
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls NanotecStepMotor::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -983,7 +983,7 @@ ito::RetVal NanotecStepMotor::requestStatusAndPosition(bool sendCurrentPos, bool
             retval += getPos(i, sharedpos, 0);
             m_currentPos[i] = *sharedpos;
         }
-        
+
         sendStatusUpdate(false);
     }
     else
@@ -1005,7 +1005,7 @@ ito::RetVal NanotecStepMotor::requestStatusAndPosition(bool sendCurrentPos, bool
 ito::RetVal NanotecStepMotor::NSMCheckStatus()
 {
     ito::RetVal retVal = ito::retOk;
-    
+
     int stateID = 0;
     QString stateText = "";
     for (int i = 0; i < m_numAxes; ++i)
@@ -1064,7 +1064,7 @@ ito::RetVal NanotecStepMotor::setOrigin(QVector<int> axis, ItomSharedSemaphore *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
+/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -1092,7 +1092,7 @@ ito::RetVal NanotecStepMotor::NSMSetPos(const QVector<int> axis, const QVector<d
             if (axis[i] < m_numAxes)
             {
                 int steps = unitToSteps(axis[i], posUnit[i]);
-                
+
 				if (m_currentStatus[axis[i]] & ito::actuatorEndSwitch)
 				{
 					retval += NSMReadWrite(axis[i], "D");
@@ -1146,7 +1146,7 @@ ito::RetVal NanotecStepMotor::NSMSetPos(const QVector<int> axis, const QVector<d
             }
         }
     }
-        
+
     if (!retval.containsError())
     {
         // release semaphore immediately
@@ -1156,7 +1156,7 @@ ito::RetVal NanotecStepMotor::NSMSetPos(const QVector<int> axis, const QVector<d
             waitCond->release();
             released = true;
         }
-        retval += waitForDone(-1, axis); 
+        retval += waitForDone(-1, axis);
         // Wait till movement is done and the release the semaphore
         if (!m_async && waitCond && !released)
         {
@@ -1207,16 +1207,16 @@ ito::RetVal NanotecStepMotor::waitForDone(const int timeoutMS, const QVector<int
 			axis_.append(i);
 		}
 	}
-    
+
     while (!done && !retval.containsWarningOrError())
-    {   
+    {
         if (isInterrupted())
         {
             for (int i = 0; i < m_numAxes; ++i)
             {
                 retval += NSMReadWrite(i, "S1");
             }
-            
+
             replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
 
             retval += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
@@ -1252,7 +1252,7 @@ ito::RetVal NanotecStepMotor::waitForDone(const int timeoutMS, const QVector<int
             }
 
             //done = (statePos & 1 == 1) || (stateNeg & 6 > 0);
-         
+
             if (done)
             {   // Position reached and movement done
                 replaceStatus(axis_, ito::actuatorMoving, ito::actuatorAtTarget);
@@ -1277,11 +1277,11 @@ ito::RetVal NanotecStepMotor::waitForDone(const int timeoutMS, const QVector<int
         waitMutex.unlock();
 	}
 
-	
+
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void NanotecStepMotor::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1302,4 +1302,3 @@ void NanotecStepMotor::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
-

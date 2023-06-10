@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "ThorlabsDCxCam" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -55,7 +55,7 @@ void DialogThorlabsDCxCam::parametersChanged(QMap<QString, ito::Param> params)
         {
             ui.comboTriggerMode->addItem(triggerMeta->getString(i));
         }
-        
+
 
         ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
         ito::StringMeta *colorModeMeta = static_cast<ito::StringMeta*>(params["color_mode"].getMeta());
@@ -171,8 +171,8 @@ void DialogThorlabsDCxCam::parametersChanged(QMap<QString, ito::Param> params)
 
     dval = params["offset"].getVal<double>();
     ui.sliderOffset->setValue(dval*100.0);
-    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));             
-    
+    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
+
     int userData = 0;
     if (strcmp(params["color_mode"].getVal<char*>(), "gray") == 0)
     {
@@ -296,8 +296,8 @@ ito::RetVal DialogThorlabsDCxCam::applyParameters()
     {
         double dval[] = {ui.sliderGainRed->value()/100.0, ui.sliderGainGreen->value()/100.0, ui.sliderGainBlue->value()/100.0};
         const double *curdval = m_currentParameters["gain_rgb"].getVal<double*>();
-        if (qAbs(dval[0] - curdval[0]) >= std::numeric_limits<double>::epsilon() || 
-           qAbs(dval[1] - curdval[1]) >= std::numeric_limits<double>::epsilon() || 
+        if (qAbs(dval[0] - curdval[0]) >= std::numeric_limits<double>::epsilon() ||
+           qAbs(dval[1] - curdval[1]) >= std::numeric_limits<double>::epsilon() ||
            qAbs(dval[2] - curdval[2]) >= std::numeric_limits<double>::epsilon() )
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_rgb", ito::ParamBase::DoubleArray, 3, dval)));
@@ -363,7 +363,7 @@ ito::RetVal DialogThorlabsDCxCam::applyParameters()
         {
             bpp = i;
         }
-        
+
         if (m_currentParameters["bpp"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
@@ -380,7 +380,7 @@ ito::RetVal DialogThorlabsDCxCam::applyParameters()
         }
     }
 
-   
+
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
 
@@ -448,7 +448,7 @@ void DialogThorlabsDCxCam::on_rangeY01_valuesChanged(int minValue, int maxValue)
     {
         max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
     }
-    
+
     max_ = qBound<int>(0, max_, maxHeight - 1);
 
     if (min_ != minValue || max_ != maxValue)

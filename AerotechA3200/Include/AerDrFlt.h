@@ -1,4 +1,4 @@
-/* 
+/*
    This header file is used by 960 and Axis object
    and defines the strings for the fault messages
    This file is NOT to be used by user applications.
@@ -10,8 +10,8 @@
 
 TCHAR FaultMsg[32][AER_PROG_MSG_SIZE] =
 {
-               "Position error",       //    BDRV_FAULT_POSERR:        
-               "Over current",         //    BDRV_FAULT_CURERR: 
+               "Position error",       //    BDRV_FAULT_POSERR:
+               "Over current",         //    BDRV_FAULT_CURERR:
                "CW EOT limit",         //    BDRV_FAULT_CWHARDLIM:
                "CCW EOT limit",        //    BDRV_FAULT_CCWHARDLIM:
                "CW soft limit",        //    BDRV_FAULT_CWSOFTLIM:
@@ -21,12 +21,12 @@ TCHAR FaultMsg[32][AER_PROG_MSG_SIZE] =
                "Velocity fbk",         //    BDRV_FAULT_VELFBK:
                "Hall fault",           //    BDRV_FAULT_HALLFBK:
                "Max velocity cmd",     //    BDRV_FAULT_MAXVEL:
-               "ESTOP fault",          //    BDRV_FAULT_ESTOP:    
-               "Velocity error",       //    BDRV_FAULT_MAXVELERR:    
-               "Task fault",           //    BDRV_FAULT_TASK:    
-               "Probe fault",          //    BDRV_FAULT_PROBE:    
-               "Auxiliary fault",      //    BDRV_FAULT_AUXILIARY:    
-               "Safe zone fault",      //    BDRV_FAULT_SAFEZONE:    
+               "ESTOP fault",          //    BDRV_FAULT_ESTOP:
+               "Velocity error",       //    BDRV_FAULT_MAXVELERR:
+               "Task fault",           //    BDRV_FAULT_TASK:
+               "Probe fault",          //    BDRV_FAULT_PROBE:
+               "Auxiliary fault",      //    BDRV_FAULT_AUXILIARY:
+               "Safe zone fault",      //    BDRV_FAULT_SAFEZONE:
                "Motor temp",           //    BDRV_FAULT_MOTOR_TEMP:
                "Amplifier temp",       //    BDRV_FAULT_AMP_TEMP:
                "Ext encoder fault",    //    BDRV_FAULT_EXTERNAL:

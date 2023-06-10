@@ -521,4 +521,3 @@ UINT32 FSPEC FGGetLicenseInfo(UINT8 *pLicenseType);
 #endif
 
 #endif
-

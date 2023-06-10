@@ -72,4 +72,3 @@ int digita_usb_open(CameraPrivateLibrary *dev, Camera *camera)
 
 	return GP_OK;
 }
-

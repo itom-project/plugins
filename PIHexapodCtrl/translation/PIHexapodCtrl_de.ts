@@ -583,7 +583,7 @@ Stageparamters can be set directly by setParam(&quot;STAGEPARAMETER&quot;, value
 WARNING: The calibration of voltage to position are hardcoded into the controller according to its corresponding stage.
 Hence, stages should not be mixed up.
 
-If the device is newly started, all axes have to be initialized first. This is done using the command myMotor.calib(0,1,2,3,4,5) in order 
+If the device is newly started, all axes have to be initialized first. This is done using the command myMotor.calib(0,1,2,3,4,5) in order
 to initialize the x,y,z,u,v and w axis, respectively.</source>
         <translation type="unfinished"></translation>
     </message>

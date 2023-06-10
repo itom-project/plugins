@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -68,7 +68,7 @@ BasePort::BasePort(QSharedPointer<QLibrary> lib, PortType deviceType, int verbos
         m_paramPrefix = FRAMEGRABBER_PREFIX;
         break;
     }
-    
+
 
     DevClose = (GenTL::PDevClose)m_lib->resolve("DevClose");
     DevGetNumDataStreams = (GenTL::PDevGetNumDataStreams)m_lib->resolve("DevGetNumDataStreams");
@@ -81,7 +81,7 @@ BasePort::BasePort(QSharedPointer<QLibrary> lib, PortType deviceType, int verbos
     GCGetPortURLInfo = (GenTL::PGCGetPortURLInfo)m_lib->resolve("GCGetPortURLInfo");
     GCGetPortInfo = (GenTL::PGCGetPortInfo)m_lib->resolve("GCGetPortInfo");
 
-    
+
 
     if (!DevClose || !DevGetNumDataStreams || !DevGetDataStreamID || \
         !DevGetPort || !GCReadPort || !DevOpenDataStream || !GCGetNumPortURLs \
@@ -244,10 +244,10 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
         }
 
         return retval;
-        
+
     }
 
-    
+
 
     if (piType == GenTL::INFO_DATATYPE_STRING)
     {
@@ -265,7 +265,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
 
         return retval;
     }
-    
+
     //examples for URLs
     //url = "File:///C|\\Program Files\\Active Silicon\\GenICam_XML_File\\CXP_MC258xS11.xml?SchemaVersion=1.1.0";
     //url = "File:///C:\\Program Files\\Active Silicon\\GenICam_XML_File\\CXP_MC258xS11.xml?SchemaVersion=1.1.0";
@@ -333,7 +333,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
         QRegularExpression regExp(
             "^file:(///)?([a-zA-Z0-9\\._\\-:\\/\\\\|%\\$ -]+)(\\?schemaVersion=.+)?$",
             QRegularExpression::CaseInsensitiveOption);
-        
+
         QRegularExpressionMatch match = regExp.match(url);
 
         if (match.hasMatch())
@@ -377,7 +377,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
             retval += ito::RetVal::format(ito::retError, 0 , "the xml URL '%s' is no valid URL.", url.constData());
         }
 
-        
+
     }
     else //internet resource
     {
@@ -854,7 +854,7 @@ ito::RetVal BasePort::createFloatParamFromDevice(GenApi::INode *node, QMap<QStri
             it->setMeta(new ito::DoubleMeta(0.0, 0.0, 0.0, category), true);
         }
 
-        
+
         if (!m_paramMapping.contains(name))
         {
             GenApi::CFloatPtr enumPtr(node);
@@ -871,7 +871,7 @@ ito::RetVal BasePort::createFloatParamFromDevice(GenApi::INode *node, QMap<QStri
             //remove it
             params.erase(it);
 
-            
+
             if (m_paramMapping.contains(name))
             {
                 delete m_paramMapping[name]; //deletes the GCFloatType
@@ -904,7 +904,7 @@ ito::RetVal BasePort::createStringParamFromDevice(GenApi::INode *node, QMap<QStr
             it->setMeta(meta, true);
         }
 
-        
+
         if (!m_paramMapping.contains(name))
         {
             GenApi::CStringPtr enumPtr(node);
@@ -926,7 +926,7 @@ ito::RetVal BasePort::createStringParamFromDevice(GenApi::INode *node, QMap<QStr
             //remove it
             params.erase(it);
 
-            
+
             if (m_paramMapping.contains(name))
             {
                 delete m_paramMapping[name]; //deletes the GCStringType
@@ -961,7 +961,7 @@ ito::RetVal BasePort::createBoolParamFromDevice(GenApi::INode *node, QMap<QStrin
             it->setMeta(meta, true);
         }
 
-        
+
         if (!m_paramMapping.contains(name))
         {
             GenApi::CBooleanPtr enumPtr(node);
@@ -978,7 +978,7 @@ ito::RetVal BasePort::createBoolParamFromDevice(GenApi::INode *node, QMap<QStrin
             //remove it
             params.erase(it);
 
-            
+
             if (m_paramMapping.contains(name))
             {
                 delete m_paramMapping[name]; //deletes the GCBoolType
@@ -1010,7 +1010,7 @@ ito::RetVal BasePort::createEnumParamFromDevice(GenApi::INode *node, QMap<QStrin
             it->setMeta(new ito::StringMeta(ito::StringMeta::String, NULL, category), true);
         }
 
-        
+
         if (!m_paramMapping.contains(name))
         {
             GenApi::CEnumerationPtr enumPtr(node);
@@ -1027,7 +1027,7 @@ ito::RetVal BasePort::createEnumParamFromDevice(GenApi::INode *node, QMap<QStrin
             //remove it
             params.erase(it);
 
-            
+
             if (m_paramMapping.contains(name))
             {
                 delete m_paramMapping[name]; //deletes the GCBoolType
@@ -1141,7 +1141,7 @@ QList<gcstring> BasePort::getCommandNames() const
 format parameters are available by the framegrabber. However, there are framegrabbers
 where these parameters are only available by the camera device itself.
 */
-ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSharedPointer<BasePort> fallbackDevice /*= nullptr*/) 
+ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSharedPointer<BasePort> fallbackDevice /*= nullptr*/)
 {
     ito::RetVal retval;
     CIntegerPtr pInt;
@@ -1191,11 +1191,11 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSh
 
         if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
         {
-        
+
             intMeta->setMin(0);
             intMeta->setMax(pInt->GetValue());
             sensorWidth = pInt->GetValue();
-            
+
             if (pInt->GetAccessMode() & RW)
             {
                 it->setFlags(0);
@@ -1224,7 +1224,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSh
 
         roi_readonly |= (pInt->GetAccessMode() != RW);
     }
-    
+
     //SensorHeight
     it = params.find("sizey");
     intMeta = it->getMetaT<ito::IntMeta>();
@@ -1237,11 +1237,11 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSh
 
     if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
     {
-        
+
         intMeta->setMin(0);
         intMeta->setMax(pInt->GetValue());
         sensorHeight = pInt->GetValue();
-        
+
         if (pInt->GetAccessMode() & RW)
         {
             it->setFlags(0);
@@ -1262,7 +1262,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSh
 
         if (pInt.IsValid() && (pInt->GetAccessMode() & (RO | RW)))
         {
-        
+
             intMeta->setMin(0);
             intMeta->setMax(pInt->GetValue());
             sensorHeight = pInt->GetValue();
@@ -1326,7 +1326,7 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSh
         intMetaFromInteger(pInt, &offsetYMeta);
         roi_readonly |= (pInt->GetAccessMode() != RW);
     }
-    
+
 
     it = params.find("roi");
     ito::RectMeta *rectMeta = it->getMetaT<ito::RectMeta>();

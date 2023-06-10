@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -39,7 +39,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogSDK3 : public ito::AbstractAddInConfigDialog 
+class DialogSDK3 : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 

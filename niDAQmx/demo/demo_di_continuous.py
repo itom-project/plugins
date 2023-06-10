@@ -50,7 +50,7 @@ for i in range(0, 10):
     plugin.copyVal(d)
     print(time.time() - t, d.shape)
     alldata.append(d)
-    
+
 plugin.stopDevice()
 
 plot1(np.hstack(alldata))
@@ -64,9 +64,9 @@ plot1(np.hstack(alldata))
 #    getVal/copyVal values in order to not raise a timeout / unsufficient
 #    buffer size error.
 #
-#    The logging is enabled via the parameters 'loggingMode', 
+#    The logging is enabled via the parameters 'loggingMode',
 #    'loggingFilePath', 'loggingGroupName' and 'loggingOperation':
-#    
+#
 #    loggingMode: 0 -> disable logging
 #                 1 -> enable fast mode logging
 #                      (no simultaneous read via getVal/copyVal allowed),

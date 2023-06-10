@@ -10,7 +10,7 @@
 **Devices**:    USB Plug&Play Cameras
 **Author**:     :pluginauthor:`V4L2`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,9 +19,9 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: V4L2
 

@@ -10,7 +10,7 @@
 **Devices**:    Motor-Controller STANDA 8SMC4-USB-B8-1
 **Author**:     :pluginauthor:`Standa8SMC4USB`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,9 +21,9 @@ The plugin implements the controller 8SMC4-USB from STANDA.
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: Standa8SMC4USB
 
@@ -66,8 +66,9 @@ Installation
 ============
 
 Before using the motor you need to install the communcation driver that is requested once you plug the motor controller to the USB host.
-You get this driver either by installing the software XILab from Standa or by directly downloading the driver's inf file (Windows only). For more information see
-https://en.xisupport.com/projects/enxisupport/wiki/Software. The driver might require the Microsoft Visual C++ 2008 Redistributable package.
+You get this driver either by installing the software XILab from Standa or by directly downloading the driver's inf file (Windows only).
+For more information see https://en.xisupport.com/projects/enxisupport/wiki/Software.
+The driver might require the Microsoft Visual C++ 2008 Redistributable package.
 
 Changelog
 =========

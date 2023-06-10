@@ -8,7 +8,7 @@ channels of a National Instruments DAQ device.
 To test this script, the NI MAX (Measurement & Automation
 Explorer) has been used to create simulated devices.
 
-In this test, a simulated device NI PCIe-6323 (Dev4) with 1 digital output 
+In this test, a simulated device NI PCIe-6323 (Dev4) with 1 digital output
 port (DO) with 32 lines (buffered) and two other ports (port 1 and port 2), that
 support only unbuffered outputs.
 
@@ -17,7 +17,7 @@ as argument to the 'setVal' method. This dataObject must be 2-dimensional
 and the number of rows must be equal to the number of channels. The int32
 object is internally casted to uint32 (however int32 is no valid dataObject
 data type). The datatype itself depends on the number of lines of each
-selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines 
+selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines
 uint16, else int32.
 
 The number of samples that is written to each channel for each setVal
@@ -60,7 +60,7 @@ plugin.showToolbox()
 # samples, obtained by 'samplesPerChannel' * noOfChannels is lower
 # than the values in the following table, NI-DAQ uses the values from
 # the table:
-# 
+#
 # no sampling rate:      10000 samples
 # 0 - 100 samples / sec: 1 kS
 # 101 - 10000 S/s:       10 kS
@@ -81,12 +81,12 @@ a = dataObject.randN([1,100], 'int32')
 for j in range(0,2):
     for i in range(0,3):
         plugin.setVal(a)
-        
+
         print(f"Run {j+1}/2, iteration {i+1}/3: write for 3 sec ", end="")
-        
+
         for i in range(0, 3):
             print(".", end="")
             time.sleep(1)
-        
+
         print(" done")
         plugin.stop()

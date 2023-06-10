@@ -807,12 +807,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>This plugin provides several basic filter calculations for itom::dataObject. These are for instance: 
+        <source>This plugin provides several basic filter calculations for itom::dataObject. These are for instance:
 
 * merging of planes
-* swap byte order of objects 
-* resample slices from dataObjects 
-* mean value filter along axis 
+* swap byte order of objects
+* resample slices from dataObjects
+* mean value filter along axis
 
 This plugin does not have any unusual dependencies.</source>
         <translation type="unfinished"></translation>
@@ -824,58 +824,58 @@ This plugin does not have any unusual dependencies.</source>
     </message>
     <message>
         <location line="+45"/>
-        <source>replaces infinite and/or nan-values by values of second matrix. 
+        <source>replaces infinite and/or nan-values by values of second matrix.
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Flattens a z-Stack of Mx1xN or MxNx1 matrixes to NxM or MxN. 
+        <source>Flattens a z-Stack of Mx1xN or MxNx1 matrixes to NxM or MxN.
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Swap byte order for input image. 
+        <source>Swap byte order for input image.
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Merge 3 or 4 color planes to a single tRGBA32 or tInt32-plane. 
+        <source>Merge 3 or 4 color planes to a single tRGBA32 or tInt32-plane.
 
-If second object is tInt32 and of right size in x and y, the stack object will be convertet to tInt32. In all other cases the object will be tRGBA32 
+If second object is tInt32 and of right size in x and y, the stack object will be convertet to tInt32. In all other cases the object will be tRGBA32
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Calculate mean value (and optional standard deviation) of a 3D data object in z-direction. 
+        <source>Calculate mean value (and optional standard deviation) of a 3D data object in z-direction.
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Interpolate 1D-slice from along the defined line from a 2D-Object. 
+        <source>Interpolate 1D-slice from along the defined line from a 2D-Object.
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>clip values outside or inside of minValue and maxValue to newValue (default = 0) 
+        <source>clip values outside or inside of minValue and maxValue to newValue (default = 0)
 
 Depending on the parameter &apos;insideFlag&apos;, this filter sets all values within (1) or outside (0) of the range (minValue, maxValue) to the value given by &apos;newValue&apos;. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>clip values of image A to newValue (default = 0) outside or inside of minValue and maxValue in image B 
+        <source>clip values of image A to newValue (default = 0) outside or inside of minValue and maxValue in image B
 
 Depending on the parameter &apos;insideFlag&apos;, this filter sets all values in image A depending on image B within (1) or outside (0) of the range (minValue, maxValue) to the value given by &apos;newValue&apos;. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.</source>
         <translation type="unfinished"></translation>
@@ -924,116 +924,116 @@ Depending on the parameter &apos;insideFlag&apos;, this filter sets all values o
     </message>
     <message>
         <location line="+699"/>
-        <source>2D minimum filter that set a pixel to the lowest value within the surrounding kernel. 
+        <source>2D minimum filter that set a pixel to the lowest value within the surrounding kernel.
 
-The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
-is then set to the minimum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values 
-by the minimum of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. 
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image
+is then set to the minimum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values
+by the minimum of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1.
 
-This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
-real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
-and type than the input image. 
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size
+and type than the input image.
 
 See also: highValueFilter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+17"/>
-        <source>2D maximum filter that set a pixel to the highest value within the surrounding kernel. 
+        <source>2D maximum filter that set a pixel to the highest value within the surrounding kernel.
 
-The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
-is then set to the maximum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values 
-by the maximum of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. 
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image
+is then set to the maximum value within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values
+by the maximum of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1.
 
-This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
-real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
-and type than the input image 
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size
+and type than the input image
 
 See also: lowValueFilter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+252"/>
-        <source>2D median filter that set a pixel to the median value of all valid pixels within the kernel. 
+        <source>2D median filter that set a pixel to the median value of all valid pixels within the kernel.
 
-The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
-is then set to the median value of all valid pixels within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values 
-by the median value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. 
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image
+is then set to the median value of all valid pixels within the kernel. Invalid values within the kernel are ignored. It is possible to fill these invalid values
+by the median value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1.
 
-This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
-real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size
 and type than the input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+674"/>
-        <source>2D lowpass (blurring) filter that set a pixel to the mean value of all valid pixels within the kernel. 
+        <source>2D lowpass (blurring) filter that set a pixel to the mean value of all valid pixels within the kernel.
 
-The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image 
-is then set to the mean value of all valid pixels within the kernel. It is possible to fill the invalid values 
-by the mean value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values, 
-no replacement is possible and the corresponding pixel in the destination image remains invalid. 
+The rectangular kernel of size (kernely, kernelx) is centered at each pixel of the source image. The same pixel in the destination image
+is then set to the mean value of all valid pixels within the kernel. It is possible to fill the invalid values
+by the mean value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values,
+no replacement is possible and the corresponding pixel in the destination image remains invalid.
 
-This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
-real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size
 and type than the input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+607"/>
-        <source>2D gaussian blur filter that convolves the source image with a Gaussian kernel. 
+        <source>2D gaussian blur filter that convolves the source image with a Gaussian kernel.
 
-The convolution kernel is rectangular with a side length of (kernely, kernelx). The gaussian kernel for a pixel (x0,y0) is defined by: 
+The convolution kernel is rectangular with a side length of (kernely, kernelx). The gaussian kernel for a pixel (x0,y0) is defined by:
 
-f(x,y) = A * exp(-[(x-x0)^2/(2*sigma_x^2) + (y-y0)^2/(2*sigma_y^2)]) 
+f(x,y) = A * exp(-[(x-x0)^2/(2*sigma_x^2) + (y-y0)^2/(2*sigma_y^2)])
 
-with 
+with
 
-A = 1 / (2 * pi * sigmaX * sigmaY)) 
+A = 1 / (2 * pi * sigmaX * sigmaY))
 
-Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values 
-by the Gaussian blurred value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values, 
-no replacement is possible and the corresponding pixel in the destination image remains invalid. 
+Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values
+by the Gaussian blurred value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values,
+no replacement is possible and the corresponding pixel in the destination image remains invalid.
 
-This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
-real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size
 and type than the input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+253"/>
-        <source>2D gaussian blur filter that convolves the source image with a Gaussian kernel. 
+        <source>2D gaussian blur filter that convolves the source image with a Gaussian kernel.
 
-The convolution kernel is rectangular with a side length that is determined by the epsilon values epsilonX and epsilonY. 
-The gaussian kernel for a pixel (x0,y0) is defined by: 
+The convolution kernel is rectangular with a side length that is determined by the epsilon values epsilonX and epsilonY.
+The gaussian kernel for a pixel (x0,y0) is defined by:
 
-f(x,y) = A * exp(-[(x-x0)^2/(2*sigmaX^2) + (y-y0)^2/(2*sigmaY^2)]) 
+f(x,y) = A * exp(-[(x-x0)^2/(2*sigmaX^2) + (y-y0)^2/(2*sigmaY^2)])
 
-with 
+with
 
-A = 1 / (2 * pi * sigmaX * sigmaY)) 
+A = 1 / (2 * pi * sigmaX * sigmaY))
 
-The size of the kernel is adjusted such that the limit values in x- and y-direction fullfill the following inequation: 
+The size of the kernel is adjusted such that the limit values in x- and y-direction fullfill the following inequation:
 
-f(x,y=0) = exp(-[(x-x0)^2/(2*sigmaX^2)]) / sqrt(2 * pi * sigmaX^2) &gt;= epsilonX 
-f(x=0,y) = exp(-[(y-y0)^2/(2*sigmaY^2)]) / sqrt(2 * pi * sigmaY^2) &gt;= epsilonY 
+f(x,y=0) = exp(-[(x-x0)^2/(2*sigmaX^2)]) / sqrt(2 * pi * sigmaX^2) &gt;= epsilonX
+f(x=0,y) = exp(-[(y-y0)^2/(2*sigmaY^2)]) / sqrt(2 * pi * sigmaY^2) &gt;= epsilonY
 
-Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values 
-by the Gaussian blurred value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values, 
-no replacement is possible and the corresponding pixel in the destination image remains invalid. 
+Invalid pixels within the kernel are excluded from the convolution. It is possible to fill the invalid values
+by the Gaussian blurred value of the surrounding kernel, too, if the parameter &apos;replaceNaN&apos; is set to 1. If the kernel only contains invalid values,
+no replacement is possible and the corresponding pixel in the destination image remains invalid.
 
-This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all 
-real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size 
+This filter can be applied inplace, hence, the source and destination image can be the same. This filter is implemented for all
+real data types. 3 or higher dimensional dataObjects are processed plane-by-plane, such that the destination image has always the same size
 and type than the input image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+355"/>
-        <source>Performs a median filter with kernelsize (kernelx, kernely) and pixelwise comparison of 
-filtered image and original image to remove spikes according to delta value. 
+        <source>Performs a median filter with kernelsize (kernelx, kernely) and pixelwise comparison of
+filtered image and original image to remove spikes according to delta value.
 
-At first the input image is filtered by a median filter (filter: &apos;medianFilter&apos;) using the given kernel size. The output 
-image then contains the input image, where every pixel is replaced &apos;newValue&apos; if the absolute distance between the median 
+At first the input image is filtered by a median filter (filter: &apos;medianFilter&apos;) using the given kernel size. The output
+image then contains the input image, where every pixel is replaced &apos;newValue&apos; if the absolute distance between the median
 filtered and the input image at the specific pixel is bigger than &apos;delta&apos;.
 
 This filter also works inplace (same source and destination).</source>
@@ -1041,12 +1041,12 @@ This filter also works inplace (same source and destination).</source>
     </message>
     <message>
         <location line="+23"/>
-        <source>Performs a linear mean filter with kernelsize (kernelx, kernely) and pixelwise comparison of 
-filtered image and original image to remove spikes according to delta value. 
+        <source>Performs a linear mean filter with kernelsize (kernelx, kernely) and pixelwise comparison of
+filtered image and original image to remove spikes according to delta value.
 
-At first the input image is filtered by a linear mean filter (filter: &apos;lowPassFilter&apos;) using the given kernel size. The output 
-image then contains the input image, where every pixel is replaced &apos;newValue&apos; if the absolute distance between the median 
-filtered and the input image at the specific pixel is bigger than &apos;delta&apos;. 
+At first the input image is filtered by a linear mean filter (filter: &apos;lowPassFilter&apos;) using the given kernel size. The output
+image then contains the input image, where every pixel is replaced &apos;newValue&apos; if the absolute distance between the median
+filtered and the input image at the specific pixel is bigger than &apos;delta&apos;.
 
 This filter also works inplace (same source and destination).</source>
         <translation type="unfinished"></translation>
@@ -1058,14 +1058,14 @@ This filter also works inplace (same source and destination).</source>
     </message>
     <message>
         <location line="+830"/>
-        <source>Calculates the mean value for radial circles with a given center point an a radius step size 
+        <source>Calculates the mean value for radial circles with a given center point an a radius step size
 
 The radiuses are the distances from the given center point to the physical coordinates of each pixel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../AdditionalFilters.cpp" line="-709"/>
-        <source>Finds connected areas in an image an assigns a label to them. 
+        <source>Finds connected areas in an image an assigns a label to them.
                                                              In the input image according found regions get painted with the according label.
                                                              The returned list has the format x0,y0,x1,y1 for each label.
 </source>
@@ -1073,8 +1073,8 @@ The radiuses are the distances from the given center point to the physical coord
     </message>
     <message>
         <location line="+5"/>
-        <source>Filter for detecting the centers of ellipses with subpixel accuracy. 
-                                                          
+        <source>Filter for detecting the centers of ellipses with subpixel accuracy.
+
 </source>
         <translation type="unfinished"></translation>
     </message>

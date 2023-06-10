@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -87,7 +87,7 @@ The setVal and getVal functions will write and read on the specified endpoint.\n
 	ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x04B4, tr("The vendor ID of the device to connect to").toLatin1().data()); //default denselight device
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("ProductID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0xF100, tr("The product ID of the device to connect to").toLatin1().data()); //default denselight device
-    m_initParamsMand.append(paramVal);    
+    m_initParamsMand.append(paramVal);
     paramVal = ito::Param("printInfoAboutAllDevices", ito::ParamBase::Int, 0, 1, 0, tr("If true, all information about connected devices is printed to the console.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 	paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all communication commands are printed to the dockWidget.").toLatin1().data());
@@ -253,7 +253,7 @@ ito::RetVal ItomCyUSB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
-			
+
 			if (!retValue.containsError())
 			{
 				int countEndPoint = m_cyDevices->EndPointCount() - 1;
@@ -326,11 +326,11 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
 	int numDevices = m_cyDevices->DeviceCount();
 	m_params["number_of_devices"].setVal<int>(numDevices);
-	
+
 	for (int cnt = 0; cnt < numDevices; cnt++)
 	{
-		
-		//if ((USBDevice->VendorID == VENDOR_ID) && (USBDevice->ProductID == PRODUCT_ID)) 
+
+		//if ((USBDevice->VendorID == VENDOR_ID) && (USBDevice->ProductID == PRODUCT_ID))
 		//    break;
 		if (printInfo)
 		{
@@ -373,7 +373,7 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
 					for (int e = 0; e < ifc->bNumEndpoints; ++e)
 					{
-						
+
 						CCyUSBEndPoint *ept = ifc->EndPoints[e + 1];
 
 						std::cout << "-----------------------------\n"
@@ -393,12 +393,12 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
 			m_cyDevices->Close();
 		}
-		
+
 	}
 
 	if (!retval.containsError())
 	{
-		
+
 		for (int cnt = 0; cnt < numDevices; cnt++)
 		{
 			m_cyDevices->Open(cnt);
@@ -421,7 +421,7 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 				int sizeMax_write = 0;
 				int sizeMin_read = 0;
 				int sizeMax_read = 0;
-				
+
 				bool endpoint_read_detected = false;
 				bool endpoint_write_detected = false;
 
@@ -501,7 +501,7 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
 						sizeMax_write = cnt + 1;
 
-					}				
+					}
 
 				}
 
@@ -515,7 +515,7 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 			}
 		}
 
-		
+
 	}
 
     if (!retval.containsError()) /* We need to claim the first interface */
@@ -544,7 +544,7 @@ ito::RetVal ItomCyUSB::close(ItomSharedSemaphore *waitCond)
 		m_cyDevices->Close();
 		m_cyDevices = NULL;
 	}
-	
+
 
     if (waitCond)
     {
@@ -610,7 +610,7 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 		CCyUSBEndPoint *endPoint = m_endPoints[m_params["endpoint_read"].getVal<int>()];
 		UCHAR bIn = endPoint->Address & 0x80;
 		UCHAR attrib = endPoint->Attributes;
-		
+
 		if (bIn && attrib == 1) //Incoming, isocronous endpoint
 		{
 			long len = *length;
@@ -663,7 +663,7 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 			retval += ito::RetVal(ito::retError, 0, "endpoint does not handle incoming tranfer.");
 		}
 
-		/*bool status = false;	
+		/*bool status = false;
 		OVERLAPPED inOvLap;
 		inOvLap.hEvent = CreateEvent(NULL, false, false, L"CYUSB_IN");
 
@@ -674,7 +674,7 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 		LONG length = sizeof(inBuf);
 		int endpointNum = m_params["endpoint_read"].getVal<int>();
 		UCHAR *inContext = m_endPoints[endpointNum]->BeginDataXfer(inBuf, length, &inOvLap);
-		
+
 		if (!m_endPoints[endpointNum]->WaitForXfer(&inOvLap, 100) && !retval.containsError())
 		{
 			retval += ito::RetVal(ito::retError, 0, tr("setVal error during WaitForXFer").toLatin1().data());
@@ -688,7 +688,7 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 		if (!retval.containsError())
 		{
 			*data = inBuf[0];
-		}			
+		}
 
 		if (!CloseHandle(inOvLap.hEvent) && !retval.containsError())
 		{
@@ -699,7 +699,7 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 		{
 			CloseHandle(inOvLap.hEvent);
 		}*/
-		
+
 	}
 	else
 	{
@@ -747,7 +747,7 @@ ito::RetVal ItomCyUSB::setVal(const char *data, const int datalength, ItomShared
 				ULONG errCode = endPoint->NtStatus;
 				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (isoc output endpoint).").toLatin1().data());
 			}
-			
+
 
 			delete[] isoPktInfos;
 		}
@@ -826,4 +826,3 @@ void ItomCyUSB::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
-

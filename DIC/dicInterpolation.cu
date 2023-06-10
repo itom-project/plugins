@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -32,7 +32,7 @@ struct dImgMat {
     int step;
     void *d_ptr;
     void *h_ptr;
-    
+
     dImgMat() : sizex(0), sizey(0), step(0), d_ptr(NULL), h_ptr(NULL) {}
 };
 
@@ -87,7 +87,7 @@ template<typename _Tp> __device__ void d_SetElement(Matrix<_Tp> A, int row, int 
 // Get the BLOCK_SIZExBLOCK_SIZE sub-matrix Asub of A that is
 // located col sub-matrices to the right and row sub-matrices down
 // from the upper-left corner of A
- template<typename _Tp> __device__ void d_GetSubMatrix(Matrix<_Tp> &A, int row, int col) 
+ template<typename _Tp> __device__ void d_GetSubMatrix(Matrix<_Tp> &A, int row, int col)
 {
     Matrix<_Tp> Asub;
     Asub.width    = BLOCK_SIZE;
@@ -104,7 +104,7 @@ template<typename _Tp> __device__ void d_SetElement(Matrix<_Tp> A, int row, int 
 */
 //--------------------------------------------------------------------------------------------------
 __global__ void d_interpolBiCu(const float* __restrict__ pts, int numPts,
-    const float* __restrict__ imgIn, int width, int height, int step, int colWise, const float* __restrict__ dxp, 
+    const float* __restrict__ imgIn, int width, int height, int step, int colWise, const float* __restrict__ dxp,
     const float* __restrict__ dyp, const float* __restrict__ dxyp, float* __restrict__ intensVals)
 {
     int blockId = blockIdx.x + blockIdx.y * gridDim.x;
@@ -311,7 +311,7 @@ __global__ void d_interpolBiCu(const float* __restrict__ pts, int numPts,
 }
 
 //--------------------------------------------------------------------------------------------------
-template<typename _Tp> __global__ void d_interpolBiLi(const float* __restrict__ pts, int numPts, 
+template<typename _Tp> __global__ void d_interpolBiLi(const float* __restrict__ pts, int numPts,
     const _Tp* __restrict__ imgIn, int width, int height, int step, int colWise, float* __restrict__ intensVals)
 {
     int blockId = blockIdx.x + blockIdx.y * gridDim.x;
@@ -400,7 +400,7 @@ template<typename _Tp> __global__ void d_interpolBiLi(const float* __restrict__ 
 }
 
 //--------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int sizex, const int sizey, const int stepin, 
+template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int sizex, const int sizey, const int stepin,
     const float *positions, const int numPos, float *outPtr, const int stepOut, const int flag)
 {
     ito::RetVal retval;
@@ -427,7 +427,7 @@ template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int si
     }
 
     // maybe we should refine the combination of checks here. In fact unregistering host memory and right afterwards
-    // reregistering it does not work. Anyways this actually should not occur, as, when memory size changed the pointer 
+    // reregistering it does not work. Anyways this actually should not occur, as, when memory size changed the pointer
     // address should change. So there should be no need to do that.
     if ((hp_img == NULL || dp_img == NULL || imgSizex != sizex || imgSizey != sizey || flag & 4) && (hp_img != inPtr))
     {
@@ -451,7 +451,7 @@ template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int si
     cudaHostRegister((void*)positions, numPos * 2 * sizeof(float), cudaHostRegisterMapped);
     cudaHostGetDevicePointer(&dp_pts, (void*)positions, 0);
     cudaMalloc((void**)&dp_int, 3 * sizeof(float) * numPos);
-    
+
     if (flag & 512)
         d_interpolBiLi<_Tp> << <dimGrid, dimBlocks >> >(dp_pts, numPos, dp_img, sizex, sizey, sizey, 1, dp_int);
     else
@@ -474,7 +474,7 @@ template<typename _Tp> ito::RetVal h_interpolBiLi(const _Tp *inPtr, const int si
     }
     if ((cerror = cudaGetLastError()))
         return ito::RetVal(ito::retError, 0, cudaGetErrorString(cerror));
-    
+
     return retval;
 }
 

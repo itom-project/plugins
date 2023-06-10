@@ -16,7 +16,7 @@ AERERR_CODE AER_DLLENTRY AerWatchdogDisable( HAERCTRL hAerCtrl );
 AERERR_CODE AER_DLLENTRY AerWatchdogHitTimer( HAERCTRL hAerCtrl );
 
 //AERERR_CODE AER_DLLENTRY AerENetClientWatchdogThreadStart(HAERCTRL hAerCtrl, WORD wWathcdogTimerMsec, PHANDLE phWatchdogEvent);
-//AERERR_CODE AER_DLLENTRY   AerENetClientWatchdogThreadStop( HAERCTRL hAerCtrl, HANDLE phWatchdogEvent); 
+//AERERR_CODE AER_DLLENTRY   AerENetClientWatchdogThreadStop( HAERCTRL hAerCtrl, HANDLE phWatchdogEvent);
 
 #ifdef __cplusplus
 }

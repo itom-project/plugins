@@ -58,7 +58,7 @@ extern "C"
     * the terminating null character.
     */
    _OPENGPS_EXPORT size_t ogps_GetNameInfo(OGPS_Character* const text, const size_t size);
-   
+
    /*!
     * Gets a short message describing the purpose of this software library.
     *
@@ -69,7 +69,7 @@ extern "C"
     * including the terminating null character.
     */
    _OPENGPS_EXPORT size_t ogps_GetAboutInfo(OGPS_Character* const text, const size_t size);
-   
+
    /*!
     * Gets the version identifier of this software library.
     *

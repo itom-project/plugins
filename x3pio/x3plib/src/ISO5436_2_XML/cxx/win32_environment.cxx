@@ -92,19 +92,19 @@ OGPS_Boolean Win32Environment::GetPathName(const OpenGPS::String& path, OpenGPS:
    const size_t length = path.size();
 
    clean_path.resize(length);
-   clean_path.erase();   
+   clean_path.erase();
 
    const OGPS_Character separator = GetDirectorySeparator();
 
    OGPS_Boolean hasDroppedChars = FALSE;
    OGPS_Boolean hasPathSeparator = FALSE;
-   
+
    /* Use any character in the current code page for a name, including Unicode characters, except characters in the range of zero (0) through 31, or any character that the file system does not allow. A name can contain characters in the extended character set (128–255). However, it cannot contain the following reserved characters: < > : " / \ | ? *
    */
    for(size_t index = 0; index < length; ++index)
    {
       const OGPS_Character c = path.c_str()[index];
-      
+
       if(c > 31 &&
          c != _T('<') &&
          c != _T('>') &&
@@ -150,9 +150,9 @@ OGPS_Boolean Win32Environment::GetPathName(const OpenGPS::String& path, OpenGPS:
    for(size_t index2 = length2 - 1; index2 > 0; --index2)
    {
       const OGPS_Character c2 = clean_path.c_str()[index2];
-      
+
       if(c2 == _T(' ') || c2 == _T('.'))
-      {         
+      {
          clean_path.resize(index2);
          hasDroppedChars = TRUE;
          continue;
@@ -171,7 +171,7 @@ OpenGPS::String Win32Environment::GetFileName(const OpenGPS::String& path) const
    pattern.append(1, GetAltDirectorySeparator());
 
    const size_t found = path.find_last_of(pattern);
-   
+
    if(found != OpenGPS::String::npos)
    {
       return path.substr(found + 1);
@@ -185,7 +185,7 @@ OpenGPS::String Win32Environment::ConcatPathes(const OpenGPS::String& path1, con
    _ASSERT(path1.length() > 0 || path2.length() > 0);
 
    // TODO: see .NET implementation
-   
+
    if(path1.length() == 0)
    {
       return path2;
@@ -370,7 +370,7 @@ OGPS_Boolean Win32Environment::GetVariable(const OpenGPS::String& varName, OpenG
    ResetLastErrorCode();
 
    const size_t bufferLength = GetEnvironmentVariable(varName.c_str(), NULL, 0);
-   
+
    if(bufferLength == 0)
    {
       _ASSERT(GetLastError() == ERROR_ENVVAR_NOT_FOUND);
@@ -392,7 +392,7 @@ OGPS_Boolean Win32Environment::GetVariable(const OpenGPS::String& varName, OpenG
    {
        OpenGPS::String unescaped;
       unescaped.assign(value);
-      
+
       const size_t bufferLength2 = ExpandEnvironmentStrings(unescaped.c_str(), NULL, 0);
 
       if(bufferLength2 == 0)

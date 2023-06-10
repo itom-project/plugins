@@ -62,7 +62,7 @@ public:
     int hasConfDialog(void)
     {
         return 1;
-    }; 
+    };
 
 private:
     ito::AddInDataIO* m_pSer;

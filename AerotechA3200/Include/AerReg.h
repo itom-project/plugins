@@ -83,7 +83,7 @@
                   VisionCBRespond
                   VPP
             Active
-               Card  
+               Card
                DeviceID
                UseEnetForCallback
 		 Ardence
@@ -118,8 +118,8 @@
 #define AER_REG_PCI_FUNCTION_NUMBER "PCIFunctionNumber"  // PCI Function Number for a specific firewire card
 #define AER_REG_SMC_OPTIONS         "NMotionSMCOptions"  // Bit mask for controling optional SMC software
                                                          //    1 -  Enable\Disable Global Ethernet IO
-#define AER_REG_DEVDRIVERTIMEOUT    "DevDriveTimeOut"    
-#define AER_REG_DEVDRIVERTIMEOUTNUMTIMES    "DevDriveTimeOutNumTimes"    
+#define AER_REG_DEVDRIVERTIMEOUT    "DevDriveTimeOut"
+#define AER_REG_DEVDRIVERTIMEOUTNUMTIMES    "DevDriveTimeOutNumTimes"
 #define AER_REG_RTSSINSTALLDIR      "RtssInstallDir"
 #define AER_REG_REMOTESERVERDEBUG   "RemoteServerDebug"  //Determine whether to run in client-server debug mode
 
@@ -127,7 +127,7 @@
 #define AER_REG_ENET_CLIENT_IP   "ClientIPAddress"    // IP Address of the Client computer
 #define AER_REG_ENET_SERVER_IP   "ServerIPAddress"    // IP Address of the Server computer
 #define AER_REG_ENET_SERVER_PORT_NUM  "ServerPortNumber"    // Server listens on this port for EtherNet communication
-#define AER_REG_ENET_CBACK_PORT_NUM   "CallbackPortNumber"  // Server uses this for sending callback interrupt 
+#define AER_REG_ENET_CBACK_PORT_NUM   "CallbackPortNumber"  // Server uses this for sending callback interrupt
 
 // Axes of control definitions
 #define AER_REG_AXES_OF_CONTROL_2         0x000000
@@ -180,7 +180,7 @@ typedef AER_REG_DEVICE_INFO   *PAER_REG_DEVICE_INFO;
 typedef struct tagAER_REG_ETHERNET_INFO
 {
    TCHAR szClientIPNumber[MAX_REG_SZ_SIZE+1];
-   TCHAR szServerIPNumber[MAX_REG_SZ_SIZE+1];   
+   TCHAR szServerIPNumber[MAX_REG_SZ_SIZE+1];
 
    DWORD dwPortNumber;
    DWORD dwCallbackPortNumber;
@@ -323,7 +323,7 @@ AERERR_CODE AER_DLLENTRY AerRegGetFWCardInfo( DWORD dwCardNumber, PDWORD pdwRTXI
 
 
 
- 
+
 #ifdef __cplusplus
 }
 #endif

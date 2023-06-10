@@ -7,13 +7,13 @@
 |
 | File:			QImgTypes.h
 |
-| Project/lib:	
+| Project/lib:
 |
 | Target:		All
 |
 | Description:	Basic types for internal use.
 |
-| Notes:		
+| Notes:
 |
 |==============================================================================
 | dd/mon/yy  Author		Notes
@@ -86,4 +86,3 @@
 
 
 #endif // QIMGTYPES_H_INCLUDE
-

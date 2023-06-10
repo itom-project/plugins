@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -375,7 +375,7 @@ ito::RetVal dialogSerialIO::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, i)));
     }
 
-    i = ui.combo_flow_xonxoff->currentIndex() + 
+    i = ui.combo_flow_xonxoff->currentIndex() +
         ui.combo_flow_rts->currentIndex() * 2 +
         ui.combo_flow_cts->currentIndex() * 8 +
         ui.combo_flow_dtr->currentIndex() * 16 +
@@ -421,7 +421,7 @@ ito::RetVal dialogSerialIO::applyParameters()
 
     parity = ui.combo_parity->currentIndex();
 
-    flow = ui.combo_flow_xonxoff->currentIndex() + 
+    flow = ui.combo_flow_xonxoff->currentIndex() +
         ui.combo_flow_rts->currentIndex() * 2 +
         ui.combo_flow_cts->currentIndex() * 8 +
         ui.combo_flow_dtr->currentIndex() * 16 +
@@ -489,14 +489,14 @@ ito::RetVal dialogSerialIO::parseOutString(char *buf, int *length)
     buf2 = strstr(buf1, "$");
     if (ui.checkAsciiParsing->isChecked())
     {
-        
+
         while (buf2 && ((buf2 - buf) < (len - 1)))
         {
             if (*(buf2 + 1) == '$')
             {
                 strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
                 outbuf += strlen(outbuf);
-                buf2++; 
+                buf2++;
                 buf2++;                                 // eat the $$
                 buf1 = buf2;
                 buf2 = strstr(buf2, "$");               // search for next
@@ -506,12 +506,12 @@ ito::RetVal dialogSerialIO::parseOutString(char *buf, int *length)
                 strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
                 outbuf += strlen(outbuf);
                 // try to read number
-                buf2++;                                 
+                buf2++;
                 buf2++;                                 // eat the $(
                 int charnum = 0;
                 char charbuf[4] = {0, 0, 0, 0};
 
-                // read character number until either the character token is closed, three numbers are read 
+                // read character number until either the character token is closed, three numbers are read
                 // or the end of the string is reached
                 while ((charnum < 3) && (*buf2 != ')') && ((buf2 - buf) < len - 1))
                 {
@@ -539,7 +539,7 @@ ito::RetVal dialogSerialIO::parseOutString(char *buf, int *length)
             }
         }
     }
-    
+
     *length = outbuf - out + len - (buf1 - buf);
     memcpy(outbuf, buf1, len - (buf1 - buf));
 //    strncpy(outbuf, buf1, len - (buf1 - buf));  // copy remaining string
@@ -698,7 +698,7 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
                         qb.append(char (tmpInt));
                     }
                 }
-            
+
                 if (i > 0)
                 {
                     qout.append(" ");
@@ -721,7 +721,7 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
             ui.text_transfer->append(tr("Error: '%1' could not be interpreted - not send").arg(err));
             return;
         }
-        
+
         if (length > 0)
         {
             qout.append(" ");
@@ -838,7 +838,7 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
 
     int parity = ui.combo_parity->currentIndex();
 
-    unsigned int flow = ui.combo_flow_xonxoff->currentIndex() + 
+    unsigned int flow = ui.combo_flow_xonxoff->currentIndex() +
         ui.combo_flow_rts->currentIndex() * 2 +
         ui.combo_flow_cts->currentIndex() * 8 +
         ui.combo_flow_dtr->currentIndex() * 16 +

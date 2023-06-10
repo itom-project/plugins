@@ -197,5 +197,3 @@ void light_enhance(int vw, int vh, int coarse, int fine,
     }  /* for */
 
 }  /* light_enhance */
-
-

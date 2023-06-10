@@ -142,15 +142,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsISM is an acutator plugin to control the following integrated devices from Thorlabs: 
+        <source>ThorlabsISM is an acutator plugin to control the following integrated devices from Thorlabs:
 
-* Long Travel Stage (e.g. LTS150 and LTS300) 
-* Lab Jack (e.g. MLJ050) 
-* Cage Rotator (K10CR1) 
+* Long Travel Stage (e.g. LTS150 and LTS300)
+* Lab Jack (e.g. MLJ050)
+* Cage Rotator (K10CR1)
 
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.IntegratedStepperMotors.
 
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
 
 This plugin has been tested with the cage rotator K10CR1.</source>
         <translation type="unfinished"></translation>

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -63,7 +63,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
 {
     ito::int32 a = 0, b = 0, i;
     ito::int32 lastval;
-    ito::int32 x = x0; 
+    ito::int32 x = x0;
     ito::int32 y = y0;
 
     // Check if y collides with image boarder
@@ -77,7 +77,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     {
         y = plane->rows - 1;
     }
-    
+
     // Check if x or dx collide with image boarder
     if (x < 0)
     {
@@ -96,7 +96,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     memcpy((void*)&buf[a], (void*)&(plane->ptr<_Tp>(y)[x]), dx * sizeof(_Tp));
 
     lastval = -kern;
- 
+
     for (i = 0; i < a; ++i)
     {
         buf[i] = buf[a];
@@ -114,10 +114,10 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 a = 0, b = 0, i, k;
     ito::float32 v, w, vTemp = 0;
     ito::int32 lastval, max;
-    ito::int32 x = x0; 
+    ito::int32 x = x0;
     ito::int32 y = y0;
     ito::int32 validCnt = 1;
-   
+
     // Check if y collides with image boarder
     if (y < 0)
     {
@@ -153,7 +153,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     lastval = -kern;
 
     // Do the invalid check for each pixel
- 
+
     for(i = 0; i < dx; i++)
     {
         if (ito::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
@@ -221,7 +221,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
             }
             buf[i + a] = v/validCnt;
         }
-    }    
+    }
 
     for (i = 0; i < a; ++i)
     {
@@ -240,7 +240,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 a = 0, b = 0, i, k;
     ito::float64 v, w, vTemp = 0;
     ito::int32 lastval, max;
-    ito::int32 x = x0; 
+    ito::int32 x = x0;
     ito::int32 y = y0;
     ito::int32 validCnt = 1;
 
@@ -306,7 +306,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
             {
                 max = i + a - lastval;
                 v = buf[lastval];
-                
+
             }
             for (k = 1; k < max; ++k /*k++*/)
             {
@@ -348,7 +348,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
             }
             buf[i + a] = v / validCnt;
         }
-    }    
+    }
 
     for (i = 0; i < a; ++i /*k++*/)
     {
@@ -366,7 +366,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
 \param[out]   paramsMand  Mandatory parameters for the filter function
 \param[out]   paramsOpt   Optinal parameters for the filter function
 \author ITO
-\sa  BasicFilters::genericLowPassFilter, 
+\sa  BasicFilters::genericLowPassFilter,
 \date
 */
 ito::RetVal BasicFilters::genericStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -395,7 +395,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
     ito::RetVal err = ito::retOk;
 
     _Tp invalid = 0;
-    
+
     if (std::numeric_limits<_Tp>::is_exact) replaceNaN = true;
     else invalid = std::numeric_limits<_Tp>::quiet_NaN();
 
@@ -465,7 +465,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
         if (!err.containsWarningOrError())
         {
             for (ito::int16 kernRow = 0; kernRow <  m_kernelSizeY - 1; ++kernRow /*kernRow++*/)
-            {                   
+            {
                     Get<_Tp>(planeIn, m_x0 - m_AnchorX, m_y0 + kernRow - m_AnchorY, m_dx + m_kernelSizeX - 1, m_pInLines[kernRow + 1], m_pInvalidMap[kernRow + 1], kern, invalid);
             }
 
@@ -482,12 +482,12 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
                      m_pInvalidMap[kernRow] = m_pInvalidMap[kernRow + 1];
                 }
                 m_pInLines[curLastRow] = pTempLine;
-                m_pInvalidMap[curLastRow] = pTempInvLine;           
+                m_pInvalidMap[curLastRow] = pTempInvLine;
 
                 Get<_Tp>(planeIn, m_x0 - m_AnchorX, m_y0 + y + curLastRow - m_AnchorY, m_dx + m_kernelSizeX - 1, m_pInLines[curLastRow], m_pInvalidMap[curLastRow], kern, invalid);
 
                 //err += filterFunc();
-                
+
                 filterFunc();
 
                 // Okay Invalid correction
@@ -537,24 +537,24 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 * \detail  The function calulates the LowFilter-function
 *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
 *          The actual work is done in the runFilter method.
-*     
+*
 * \param   GenericFilter   Handle to the filter engine
 * \author  ITO
 * \sa  GenericFilter::DoGenericFilter, _LowPassFilter
 * \date 12.2013
 */
-template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(const ito::DataObject *in, 
-    ito::DataObject *out, 
-    ito::int32 roiX0, 
-    ito::int32 roiY0, 
-    ito::int32 roiXSize, 
-    ito::int32 roiYSize, 
-    ito::int16 kernelSizeX, 
+template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(const ito::DataObject *in,
+    ito::DataObject *out,
+    ito::int32 roiX0,
+    ito::int32 roiY0,
+    ito::int32 roiXSize,
+    ito::int32 roiYSize,
+    ito::int16 kernelSizeX,
     ito::int16 kernelSizeY,
     ito::int32 anchorPosX,
     ito::int32 anchorPosY
     ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
-{ 
+{
     this->m_pInpObj = in;
     this->m_pOutObj = out;
 
@@ -569,7 +569,7 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(const ito::DataObject
 
     this->m_AnchorX = anchorPosX;
     this->m_AnchorY = anchorPosY;
-    
+
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
 #if (USEOMP)
@@ -595,7 +595,7 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(const ito::DataObject
     }
 #endif
 }
-        
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
 {
@@ -633,14 +633,14 @@ template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
     int bufNum = omp_get_thread_num();
 //    qDebug() << " " << bufNum << "\n"; // << std::endl;
     _Tp* curKernelBuff = kbuf[bufNum];
-#endif  
+#endif
 
     ito::int32 x, x1, y1, l;
     _Tp a, b;
 
     #if (USEOMP)
     #pragma omp for schedule(guided)
-    #endif     
+    #endif
     for (x = 0; x < this->m_dx; ++x)
     {
         for (x1 = 0; x1 < this->m_kernelSizeX; ++x1)
@@ -651,22 +651,22 @@ template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
                 curKernelBuff[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
     #else
                 kbuf[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
-    #endif  
+    #endif
             }
         }
     #if (USEOMP)
         b = curKernelBuff[0];
     #else
         b = kbuf[0];
-    #endif  
+    #endif
         for (l = 1; l < this->m_bufsize; ++l)
         {
         #if (USEOMP)
             a = curKernelBuff[l];
         #else
             a = kbuf[l];
-        #endif  
-            
+        #endif
+
             if (a < b)
                 b = a;
         }
@@ -686,41 +686,41 @@ template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
  * \detail  The function calulates the HighFilter-function
  *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
  *          The actual work is done in the runFilter method.
- *     
+ *
  * \param   GenericFilter   Handle to the filter engine
  * \author  ITO
  * \sa  GenericFilter::DoGenericFilter, _LowPassFilter
  * \date 12.2013
  */
-template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(const ito::DataObject *in, 
-                                                           ito::DataObject *out, 
-                                                           ito::int32 roiX0, 
-                                                           ito::int32 roiY0, 
-                                                           ito::int32 roiXSize, 
-                                                           ito::int32 roiYSize, 
-                                                           ito::int16 kernelSizeX, 
+template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(const ito::DataObject *in,
+                                                           ito::DataObject *out,
+                                                           ito::int32 roiX0,
+                                                           ito::int32 roiY0,
+                                                           ito::int32 roiXSize,
+                                                           ito::int32 roiYSize,
+                                                           ito::int16 kernelSizeX,
                                                            ito::int16 kernelSizeY,
                                                            ito::int32 anchorPosX,
                                                            ito::int32 anchorPosY
 ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
-{ 
+{
     this->m_pInpObj = in;
     this->m_pOutObj = out;
-    
+
     this->m_x0 = roiX0;
     this->m_y0 = roiY0;
-    
+
     this->m_dx = roiXSize;
     this->m_dy = roiYSize;
-    
+
     this->m_kernelSizeX = kernelSizeX;
     this->m_kernelSizeY = kernelSizeY;
-    
+
     this->m_AnchorX = anchorPosX;
     this->m_AnchorY = anchorPosY;
-    
+
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
-    
+
 #if (USEOMP)
     int numThreads = ito::AddInBase::getMaximumThreadCount();
     kbuf = new _Tp*[numThreads];
@@ -779,13 +779,13 @@ template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
     {
     int bufNum = omp_get_thread_num();
     _Tp* curKernelBuff = kbuf[bufNum];
-#endif  
+#endif
     ito::int32 x, x1, y1, l;
     _Tp a, b;
 
 #if (USEOMP)
     #pragma omp for schedule(guided)
-#endif    
+#endif
     for (x = 0; x < this->m_dx; ++x)
     {
         for (x1 = 0; x1 < this->m_kernelSizeX; ++x1)
@@ -820,7 +820,7 @@ template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
     }
     #if (USEOMP)
     }
-    #endif        
+    #endif
 
     //return ito::retOk;
 }
@@ -904,105 +904,105 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
         {
             case ito::tInt8:
             {
-                HighValueFilter<ito::int8> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                HighValueFilter<ito::int8> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt8:
             {
-                HighValueFilter<ito::uint8> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                HighValueFilter<ito::uint8> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt16:
             {
-                HighValueFilter<ito::int16> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                HighValueFilter<ito::int16> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt16:
             {
-                HighValueFilter<ito::uint16> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                HighValueFilter<ito::uint16> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt32:
             {
-                HighValueFilter<ito::int32> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                HighValueFilter<ito::int32> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat32:
             {
-                HighValueFilter<ito::float32> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                HighValueFilter<ito::float32> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat64:
             {
-                HighValueFilter<ito::float64> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                HighValueFilter<ito::float64> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
@@ -1015,105 +1015,105 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
         {
             case ito::tInt8:
             {
-                LowValueFilter<ito::int8> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                LowValueFilter<ito::int8> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt8:
             {
-                LowValueFilter<ito::uint8> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                LowValueFilter<ito::uint8> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt16:
             {
-                LowValueFilter<ito::int16> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                LowValueFilter<ito::int16> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt16:
             {
-                LowValueFilter<ito::uint16> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                LowValueFilter<ito::uint16> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt32:
             {
-                LowValueFilter<ito::int32> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                LowValueFilter<ito::int32> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat32:
             {
-                LowValueFilter<ito::float32> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                LowValueFilter<ito::float32> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat64:
             {
-                LowValueFilter<ito::float64> filterEngine(dObjSrc, 
-                                                          dObjDst, 
-                                                          0, 
-                                                          0, 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                          dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                          kernelsizex, 
-                                                          kernelsizey, 
-                                                          kernelsizex / 2, 
+                LowValueFilter<ito::float64> filterEngine(dObjSrc,
+                                                          dObjDst,
+                                                          0,
+                                                          0,
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                          dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                          kernelsizex,
+                                                          kernelsizey,
+                                                          kernelsizex / 2,
                                                           kernelsizey / 2);
                 retval += filterEngine.runFilter(replaceNaN);
             }
@@ -1186,41 +1186,41 @@ ito::RetVal BasicFilters::genericHighValueFilter(QVector<ito::ParamBase> *params
  * \detail  The class calulates the MedianFilter-function
  *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
  *          The actual work is done in the runFilter method.
- *     
+ *
  * \param   GenericFilter   Handle to the filter engine
  * \author  ITO
  * \sa  GenericFilter::DoGenericFilter, _LowPassFilter
  * \date 12.2013
  */
-template<typename _Tp> MedianFilter<_Tp>::MedianFilter(const ito::DataObject *in, 
-                                                           ito::DataObject *out, 
-                                                           ito::int32 roiX0, 
-                                                           ito::int32 roiY0, 
-                                                           ito::int32 roiXSize, 
-                                                           ito::int32 roiYSize, 
-                                                           ito::int16 kernelSizeX, 
+template<typename _Tp> MedianFilter<_Tp>::MedianFilter(const ito::DataObject *in,
+                                                           ito::DataObject *out,
+                                                           ito::int32 roiX0,
+                                                           ito::int32 roiY0,
+                                                           ito::int32 roiXSize,
+                                                           ito::int32 roiYSize,
+                                                           ito::int16 kernelSizeX,
                                                            ito::int16 kernelSizeY,
                                                            ito::int32 anchorPosX,
                                                            ito::int32 anchorPosY
 ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
-{ 
+{
     this->m_pInpObj = in;
     this->m_pOutObj = out;
-    
+
     this->m_x0 = roiX0;
     this->m_y0 = roiY0;
-    
+
     this->m_dx = roiXSize;
     this->m_dy = roiYSize;
-    
+
     this->m_kernelSizeX = kernelSizeX;
     this->m_kernelSizeY = kernelSizeY;
-    
+
     this->m_AnchorX = anchorPosX;
     this->m_AnchorY = anchorPosY;
-    
+
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
-    
+
 #if (USEOMP)
     int numThreads = ito::AddInBase::getMaximumThreadCount();
     kbuf = new _Tp*[numThreads];
@@ -1313,9 +1313,9 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
     ito::uint32 leftPos = 0;
     ito::uint32 rightPos = 0;
     ito::int32 x = 0, x1 = 0, y1 = 0;
-    
+
     ito::uint32 halfKernSize = this->m_bufsize / 2;
-    
+
     ito::int32 size = 0;
     _Tp a;
     _Tp *tempValuePtr;
@@ -1335,14 +1335,14 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
 #if (USEOMP)
     ito::int32 nextIdleX = 0;
     #pragma omp for schedule(guided)
-#endif    
+#endif
     for (x = 0; x < this->m_dx; ++x)
     {
 #if (USEOMP)
         ito::int16 cn =  ((x - nextIdleX) >= this->m_kernelSizeX ? this->m_kernelSizeX - 1 : (x - nextIdleX));
 
         for (; cn >= 0; cn--)
-        {            
+        {
 #endif
             for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
             {
@@ -1497,105 +1497,105 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
     {
         case ito::tInt8:
         {
-            MedianFilter<ito::int8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            MedianFilter<ito::int8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt8:
         {
-            MedianFilter<ito::uint8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            MedianFilter<ito::uint8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt16:
         {
-            MedianFilter<ito::int16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            MedianFilter<ito::int16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt16:
         {
-            MedianFilter<ito::uint16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            MedianFilter<ito::uint16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt32:
         {
-            MedianFilter<ito::int32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            MedianFilter<ito::int32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat32:
         {
-            MedianFilter<ito::float32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            MedianFilter<ito::float32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat64:
         {
-            MedianFilter<ito::float64> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            MedianFilter<ito::float64> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
@@ -1682,7 +1682,7 @@ template<typename _Tp> /*ito::RetVal*/ void SobelOptFilter<_Tp>::filterFunc()
     {
         #if (USEOMP)
         #pragma omp for schedule(guided)
-        #endif  
+        #endif
         for (ito::int32 x = 0; x < this->m_dx; x++)
         {
             this->m_pOutLine[x] = 3.0 / 32.0 * this->m_pInLines[0][x] + 10.0 / 32.0 * this->m_pInLines[1][x] + 3.0 / 32.0 * this->m_pInLines[2][x]
@@ -1693,7 +1693,7 @@ template<typename _Tp> /*ito::RetVal*/ void SobelOptFilter<_Tp>::filterFunc()
     {
         #if (USEOMP)
         #pragma omp for schedule(guided)
-        #endif  
+        #endif
         for (ito::int32 x = 0; x < this->m_dx; x++)
         {
             this->m_pOutLine[x] = 3.0 / 32.0 * this->m_pInLines[0][x] + 10.0 / 32.0 * this->m_pInLines[0][x + 1] + 3.0 / 32.0 * this->m_pInLines[0][x + 2]
@@ -1929,34 +1929,34 @@ ito::RetVal BasicFilters::genericSobelOptFilter(QVector<ito::ParamBase> *paramsM
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  const ito::DataObject *in,
-                                                           ito::DataObject *out, 
-                                                           ito::int32 roiX0, 
-                                                           ito::int32 roiY0, 
-                                                           ito::int32 roiXSize, 
-                                                           ito::int32 roiYSize, 
-                                                           ito::int16 kernelSizeX, 
+                                                           ito::DataObject *out,
+                                                           ito::int32 roiX0,
+                                                           ito::int32 roiY0,
+                                                           ito::int32 roiXSize,
+                                                           ito::int32 roiYSize,
+                                                           ito::int16 kernelSizeX,
                                                            ito::int16 kernelSizeY,
                                                            ito::int32 anchorPosX,
                                                            ito::int32 anchorPosY
 ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
-{ 
+{
     this->m_pInpObj = in;
     this->m_pOutObj = out;
-    
+
     this->m_x0 = roiX0;
     this->m_y0 = roiY0;
-    
+
     this->m_dx = roiXSize;
     this->m_dy = roiYSize;
-    
+
     this->m_kernelSizeX = kernelSizeX;
     this->m_kernelSizeY = kernelSizeY;
-    
+
     this->m_AnchorX = anchorPosX;
     this->m_AnchorY = anchorPosY;
-    
+
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
-    
+
     this->m_colwiseSumBuffer = new ito::float64[roiXSize + this->m_kernelSizeX - 1];
 
     this->m_divisor = this->m_bufsize;
@@ -1997,14 +1997,14 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
     ito::int16 kernelLastY = this->m_kernelSizeY - 1;
     ito::int16 kernelLastX = this->m_kernelSizeX - 1;
 
-    
+
     if (!this->m_isFilled)
     {
         this->m_isFilled = true;
 
    //     #if (USEOMP)
    //     #pragma omp for schedule(guided)
-   //     #endif    
+   //     #endif
         for(ito::uint32 x = 0; x < this->m_dx + kernelLastX; x++)
         {
             this->m_colwiseSumBuffer[x] = (ito::float64) this->m_pInLines[0][x];
@@ -2017,10 +2017,10 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
         }
     }
     else
-    { 
+    {
  //       #if (USEOMP)
  //       #pragma omp for schedule(guided)
- //       #endif  
+ //       #endif
         for(ito::uint32 x = 0; x < this->m_dx + kernelLastX; x++)
         {
             //((ito::int32 *)this->csum)[x]+=((ito::int32 **)this->buf)[this->nky-1][x];
@@ -2036,7 +2036,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
  //   #if (USEOMP)
  //   #pragma omp master
  //   {
- //   #endif  
+ //   #endif
     for(ito::uint16 x = 0; x < kernelLastX; x++)
     {
         //summe+=((ito::int32 *)this->csum)[x];
@@ -2064,13 +2064,13 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
 
 //    #if (USEOMP)
 //    #pragma omp for schedule(guided)
-//    #endif  
+//    #endif
     for(ito::uint32 x = 0; x < this->m_dx + kernelLastX; x++)
     {
         //((ito::int32 *)f->csum)[x]-=((ito::int32 **)this->buf)[0][x];
         this->m_colwiseSumBuffer[x] -= (ito::float64) this->m_pInLines[0][x];
     }
-    
+
 //    #if (USEOMP)
 //    }
 //    #endif
@@ -2163,105 +2163,105 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
     {
         case ito::tInt8:
         {
-            LowPassFilter<ito::int8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            LowPassFilter<ito::int8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt8:
         {
-            LowPassFilter<ito::uint8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            LowPassFilter<ito::uint8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt16:
         {
-            LowPassFilter<ito::int16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            LowPassFilter<ito::int16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt16:
         {
-            LowPassFilter<ito::uint16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            LowPassFilter<ito::uint16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt32:
         {
-            LowPassFilter<ito::int32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            LowPassFilter<ito::int32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat32:
         {
-            LowPassFilter<ito::float32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            LowPassFilter<ito::float32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat64:
         {
-            LowPassFilter<ito::float64> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                kernelsizex, 
-                                                kernelsizey, 
-                                                kernelsizex / 2, 
+            LowPassFilter<ito::float64> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                kernelsizex,
+                                                kernelsizey,
+                                                kernelsizex / 2,
                                                 kernelsizey / 2);
             retval += filterEngine.runFilter(replaceNaN);
         }
@@ -2292,32 +2292,32 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObject *in, 
-                                                           ito::DataObject *out, 
-                                                           ito::int32 roiX0, 
-                                                           ito::int32 roiY0, 
-                                                           ito::int32 roiXSize, 
-                                                           ito::int32 roiYSize, 
-                                                           ito::float64 sigmaSizeX, 
+template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObject *in,
+                                                           ito::DataObject *out,
+                                                           ito::int32 roiX0,
+                                                           ito::int32 roiY0,
+                                                           ito::int32 roiXSize,
+                                                           ito::int32 roiYSize,
+                                                           ito::float64 sigmaSizeX,
                                                            ito::float64 epsilonSizeX,
-                                                           ito::float64 sigmaSizeY, 
+                                                           ito::float64 sigmaSizeY,
                                                            ito::float64 epsilonSizeY
 ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
-{ 
+{
     this->m_pInpObj = in;
     this->m_pOutObj = out;
-    
+
     this->m_x0 = roiX0;
     this->m_y0 = roiY0;
-    
+
     this->m_dx = roiXSize;
     this->m_dy = roiYSize;
-    
+
     ito::float64 a = - 2.0 * sigmaSizeY * sigmaSizeY * log( sigmaSizeY * epsilonSizeY * sqrt(2.0 * M_PI) );
     if (a < 0.5)
     {
         this->m_kernelSizeY = 1;
-        
+
     }
     else
     {
@@ -2332,12 +2332,12 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
     else
     {
         this->m_kernelSizeX = 2 * cv::saturate_cast<ito::int16>(ceil(sqrt(a))) + 1;
-        
+
     }
 
     this->m_AnchorX = this->m_kernelSizeX / 2;
     this->m_AnchorY = this->m_kernelSizeY / 2;
-    
+
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
     this->m_pRowKernel = new ito::float64[this->m_kernelSizeX];
@@ -2353,18 +2353,18 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
         ito::float64 norm = 1 / sqrt( 2.0 * M_PI * sigSQR);
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            this->m_pColKernel[y] =  norm * exp( pow( (ito::float64)(y - this->m_AnchorY), 2) * -0.5 / sigSQR ); 
+            this->m_pColKernel[y] =  norm * exp( pow( (ito::float64)(y - this->m_AnchorY), 2) * -0.5 / sigSQR );
         }
         norm = 0.0;
 
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            norm +=  this->m_pColKernel[y]; 
+            norm +=  this->m_pColKernel[y];
         }
 
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            this->m_pColKernel[y] /=  norm; 
+            this->m_pColKernel[y] /=  norm;
         }
     }
 
@@ -2378,19 +2378,19 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
         ito::float64 norm = 1 / sqrt( 2.0 * M_PI * sigSQR);
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
-            this->m_pRowKernel[x] =  norm * exp( pow( (ito::float64)(x - this->m_AnchorX), 2) * -0.5 / sigSQR ); 
+            this->m_pRowKernel[x] =  norm * exp( pow( (ito::float64)(x - this->m_AnchorX), 2) * -0.5 / sigSQR );
         }
         norm = 0.0;
 
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
-            norm +=  this->m_pRowKernel[x]; 
+            norm +=  this->m_pRowKernel[x];
         }
 
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
-            this->m_pRowKernel[x] /=  norm; 
-        }  
+            this->m_pRowKernel[x] /=  norm;
+        }
     }
 
     if (this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
@@ -2399,7 +2399,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
     }
 
     this->m_pInLinesFiltered = new ito::float64*[this->m_kernelSizeY];
-    
+
 
     if (this->m_pInLinesFiltered == NULL)
     {
@@ -2424,33 +2424,33 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObject *in, 
-                                                           ito::DataObject *out, 
-                                                           ito::int32 roiX0, 
-                                                           ito::int32 roiY0, 
-                                                           ito::int32 roiXSize, 
+template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObject *in,
+                                                           ito::DataObject *out,
+                                                           ito::int32 roiX0,
+                                                           ito::int32 roiY0,
+                                                           ito::int32 roiXSize,
                                                            ito::int32 roiYSize,
                                                            ito::int32 kernelSizeX,
                                                            ito::int32 kernelSizeY,
-                                                           ito::float64 sigmaSizeX, 
+                                                           ito::float64 sigmaSizeX,
                                                            ito::float64 sigmaSizeY
 ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
-{ 
+{
     this->m_pInpObj = in;
     this->m_pOutObj = out;
-    
+
     this->m_x0 = roiX0;
     this->m_y0 = roiY0;
-    
+
     this->m_dx = roiXSize;
     this->m_dy = roiYSize;
-    
+
     this->m_kernelSizeX = kernelSizeX;
     this->m_kernelSizeY = kernelSizeY;
 
     this->m_AnchorX = this->m_kernelSizeX / 2;
     this->m_AnchorY = this->m_kernelSizeY / 2;
-    
+
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
     this->m_pRowKernel = new ito::float64[this->m_kernelSizeX];
@@ -2466,18 +2466,18 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
         ito::float64 norm = 1 / sqrt( 2.0 * M_PI * sigSQR);
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            this->m_pColKernel[y] =  norm * exp( pow( (ito::float64)(y - this->m_AnchorY), 2) * -0.5 / sigSQR ); 
+            this->m_pColKernel[y] =  norm * exp( pow( (ito::float64)(y - this->m_AnchorY), 2) * -0.5 / sigSQR );
         }
         norm = 0.0;
 
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            norm +=  this->m_pColKernel[y]; 
+            norm +=  this->m_pColKernel[y];
         }
 
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            this->m_pColKernel[y] /=  norm; 
+            this->m_pColKernel[y] /=  norm;
         }
     }
 
@@ -2491,19 +2491,19 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
         ito::float64 norm = 1.0 / sqrt( 2.0 * M_PI * sigSQR);
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
-            this->m_pRowKernel[x] =  norm * exp( pow( (ito::float64)(x - this->m_AnchorX), 2) * -0.5 / sigSQR ); 
+            this->m_pRowKernel[x] =  norm * exp( pow( (ito::float64)(x - this->m_AnchorX), 2) * -0.5 / sigSQR );
         }
         norm = 0.0;
 
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
-            norm +=  this->m_pRowKernel[x]; 
+            norm +=  this->m_pRowKernel[x];
         }
 
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
-            this->m_pRowKernel[x] /=  norm; 
-        }  
+            this->m_pRowKernel[x] /=  norm;
+        }
     }
 
     if (this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
@@ -2512,7 +2512,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter( const ito::DataObjec
     }
 
     this->m_pInLinesFiltered = new ito::float64*[this->m_kernelSizeY];
-    
+
 
     if (this->m_pInLinesFiltered == NULL)
     {
@@ -2575,14 +2575,14 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 
     ito::int16 kernelLastY = this->m_kernelSizeY - 1;
     ito::int16 kernelLastX = this->m_kernelSizeX - 1;
-   
+
     if (!this->m_isFilled)
     {
         this->m_isFilled = true;
 
         //#if (USEOMP)
         //#pragma omp for schedule(guided)
-        //#endif  
+        //#endif
         for(ito::int16 y = 0; y < this->m_kernelSizeY; y++)
         {
 
@@ -2598,8 +2598,8 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
         }
     }
     else
-    { 
-        
+    {
+
         //if (true)
         //{
         //    #pragma omp barrier
@@ -2608,12 +2608,12 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
         //#if (USEOMP)
         //#pragma omp master
         //{
-        //#endif  
+        //#endif
 
         ito::float64* temp = this->m_pInLinesFiltered[0];
         for(ito::int16 y = 1; y < this->m_kernelSizeY; y++)
         {
-            this->m_pInLinesFiltered[y - 1] = this->m_pInLinesFiltered[y]; 
+            this->m_pInLinesFiltered[y - 1] = this->m_pInLinesFiltered[y];
         }
         this->m_pInLinesFiltered[kernelLastY] = temp;
 
@@ -2623,7 +2623,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 
         //#if (USEOMP)
         //#pragma omp for schedule(guided)
-        //#endif  
+        //#endif
         for(ito::int32 x = 0; x < this->m_dx; x++)
         {
             this->m_pInLinesFiltered[kernelLastY][x] = 0.0;
@@ -2645,7 +2645,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
     #pragma omp parallel num_threads(ito::AddInBase::getMaximumThreadCount())
     {
     #pragma omp for schedule(guided)
-#endif  
+#endif
     for(ito::int32 x = 0; x < this->m_dx; x++)
     {
         this->m_pOutLine[x] = 0;
@@ -2655,7 +2655,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
             this->m_pOutLine[x] += cv::saturate_cast<_Tp>(this->m_pInLinesFiltered[yk][x] * this->m_pColKernel[yk]);
         }
     }
-    
+
 #if (USEOMP)
     }
 #endif
@@ -2668,7 +2668,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 \param[out]   paramsMand  Mandatory parameters for the filter function
 \param[out]   paramsOpt   Optinal parameters for the filter function
 \author ITO
-\sa  BasicFilters::genericLowPassFilter, 
+\sa  BasicFilters::genericLowPassFilter,
 \date
 */
 ito::RetVal BasicFilters::genericGaussianParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2780,7 +2780,7 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
 
     ito::float64 sigmaX = (*paramsOpt)[2].getVal<double>();
     ito::float64 sigmaY = (*paramsOpt)[3].getVal<double>();
-    
+
 
     bool replaceNaN = (*paramsOpt)[4].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
 
@@ -2788,105 +2788,105 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
     {
         case ito::tInt8:
         {
-            GaussianFilter<ito::int8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+            GaussianFilter<ito::int8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
                                                 kernelX,
-                                                kernelY, 
-                                                sigmaX, 
+                                                kernelY,
+                                                sigmaX,
                                                 sigmaY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt8:
         {
-            GaussianFilter<ito::uint8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+            GaussianFilter<ito::uint8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
                                                 kernelX,
-                                                kernelY, 
-                                                sigmaX, 
+                                                kernelY,
+                                                sigmaX,
                                                 sigmaY);;
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt16:
         {
-            GaussianFilter<ito::int16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+            GaussianFilter<ito::int16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
                                                 kernelX,
-                                                kernelY, 
-                                                sigmaX, 
+                                                kernelY,
+                                                sigmaX,
                                                 sigmaY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt16:
         {
-            GaussianFilter<ito::uint16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+            GaussianFilter<ito::uint16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
                                                 kernelX,
-                                                kernelY, 
-                                                sigmaX, 
+                                                kernelY,
+                                                sigmaX,
                                                 sigmaY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt32:
         {
-            GaussianFilter<ito::int32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+            GaussianFilter<ito::int32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
                                                 kernelX,
-                                                kernelY, 
-                                                sigmaX, 
+                                                kernelY,
+                                                sigmaX,
                                                 sigmaY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat32:
         {
-            GaussianFilter<ito::float32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+            GaussianFilter<ito::float32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
                                                 kernelX,
-                                                kernelY, 
-                                                sigmaX, 
+                                                kernelY,
+                                                sigmaX,
                                                 sigmaY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat64:
         {
-            GaussianFilter<ito::float64> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+            GaussianFilter<ito::float64> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
                                                 kernelX,
-                                                kernelY, 
-                                                sigmaX, 
+                                                kernelY,
+                                                sigmaX,
                                                 sigmaY);
             filterEngine.runFilter(replaceNaN);
         }
@@ -2920,7 +2920,7 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
 \param[out]   paramsMand  Mandatory parameters for the filter function
 \param[out]   paramsOpt   Optinal parameters for the filter function
 \author ITO
-\sa  BasicFilters::genericLowPassFilter, 
+\sa  BasicFilters::genericLowPassFilter,
 \date
 */
 ito::RetVal BasicFilters::genericGaussianEpsilonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3037,105 +3037,105 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
     {
         case ito::tInt8:
         {
-            GaussianFilter<ito::int8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                sigmaX, 
-                                                epsX, 
-                                                sigmaY, 
+            GaussianFilter<ito::int8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                sigmaX,
+                                                epsX,
+                                                sigmaY,
                                                 epsY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt8:
         {
-            GaussianFilter<ito::uint8> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                sigmaX, 
-                                                epsX, 
-                                                sigmaY, 
+            GaussianFilter<ito::uint8> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                sigmaX,
+                                                epsX,
+                                                sigmaY,
                                                 epsY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt16:
         {
-            GaussianFilter<ito::int16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                sigmaX, 
-                                                epsX, 
-                                                sigmaY, 
+            GaussianFilter<ito::int16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                sigmaX,
+                                                epsX,
+                                                sigmaY,
                                                 epsY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt16:
         {
-            GaussianFilter<ito::uint16> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                sigmaX, 
-                                                epsX, 
-                                                sigmaY, 
+            GaussianFilter<ito::uint16> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                sigmaX,
+                                                epsX,
+                                                sigmaY,
                                                 epsY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt32:
         {
-            GaussianFilter<ito::int32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                sigmaX, 
-                                                epsX, 
-                                                sigmaY, 
+            GaussianFilter<ito::int32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                sigmaX,
+                                                epsX,
+                                                sigmaY,
                                                 epsY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat32:
         {
-            GaussianFilter<ito::float32> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                sigmaX, 
-                                                epsX, 
-                                                sigmaY, 
+            GaussianFilter<ito::float32> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                sigmaX,
+                                                epsX,
+                                                sigmaY,
                                                 epsY);
             filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat64:
         {
-            GaussianFilter<ito::float64> filterEngine(dObjSrc, 
-                                                dObjDst, 
-                                                0, 
-                                                0, 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
-                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
-                                                sigmaX, 
-                                                epsX, 
-                                                sigmaY, 
+            GaussianFilter<ito::float64> filterEngine(dObjSrc,
+                                                dObjDst,
+                                                0,
+                                                0,
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1),
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2),
+                                                sigmaX,
+                                                epsX,
+                                                sigmaY,
                                                 epsY);
             filterEngine.runFilter(replaceNaN);
         }
@@ -3169,7 +3169,7 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
 \param[out]   paramsMand  Mandatory parameters for the filter function
 \param[out]   paramsOpt   Optinal parameters for the filter function
 \author ITO
-\sa  BasicFilters::genericLowPassFilter, 
+\sa  BasicFilters::genericLowPassFilter,
 \date
 */
 ito::RetVal BasicFilters::spikeCompFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3216,7 +3216,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
             scrMat = scrObj->get_mdata()[scrObj->seekMat(plane, z_length)];
             compMat = compObj.get_mdata()[compObj.seekMat(plane, z_length)];
             dstMat = outObj->get_mdata()[outObj->seekMat(plane, z_length)];
-            
+
             if (noCopyNeeded)
             {
                 for(int y = 0; y < compMat->rows; y++)
@@ -3230,7 +3230,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                         {
                             dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
-                    }            
+                    }
                 }
             }
             else
@@ -3250,7 +3250,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                         {
                             dstRowPtr[x] = scrRowPtr[x];
                         }
-                    }            
+                    }
                 }
             }
         }
@@ -3276,7 +3276,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                         {
                             dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
-                    }            
+                    }
                 }
             }
             else
@@ -3296,10 +3296,10 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                         {
                             dstRowPtr[x] = scrRowPtr[x];
                         }
-                    }            
+                    }
                 }
             }
-        }    
+        }
     }
     return ito::retOk;
 }
@@ -3430,7 +3430,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
-        return retval;        
+        return retval;
     }
     else
     {
@@ -3441,7 +3441,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
-        return retval;        
+        return retval;
     }
     else
     {
@@ -3452,7 +3452,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
-        return retval;        
+        return retval;
     }
     else
     {
@@ -3463,7 +3463,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
-        return retval;        
+        return retval;
     }
     else
     {
@@ -3489,25 +3489,25 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
 
     switch(filter)
     {
-        case tGenericLowPass:  
+        case tGenericLowPass:
             retval += genericLowPassFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
             if (retval.containsError())
             {
                 retval.appendRetMessage(tr(" while running spike removal by mean filter").toLatin1().data());
-                return retval;        
+                return retval;
             }
         break;
-        case tGenericMedian:  
+        case tGenericMedian:
             retval += genericMedianFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
             if (retval.containsError())
             {
                 retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
-                return retval;        
+                return retval;
             }
         break;
         default:
         {
-            return ito::RetVal(ito::retError, 0, tr("Error: filter type not implemented for generic spike filter").toLatin1().data());  
+            return ito::RetVal(ito::retError, 0, tr("Error: filter type not implemented for generic spike filter").toLatin1().data());
         }
     }
 

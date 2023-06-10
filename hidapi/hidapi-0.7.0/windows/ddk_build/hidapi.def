@@ -14,4 +14,3 @@ EXPORTS
    hid_open_path @12
    hid_send_feature_report @13
    hid_get_feature_report @14
-   

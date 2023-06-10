@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "IDSuEye" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
     Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -98,7 +98,7 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
         {
             ui.comboRefTriggerMode->addItem(sm->getString(i));
         }
-        
+
 
         QStringList availChannels = QString(params["supportedChannels"].getVal<const char*>()).split(",");
         availChannels.sort(Qt::CaseInsensitive);
@@ -271,7 +271,7 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
         ui.radioLoggingNormal->setChecked(true);
         break;
     }
-    
+
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
 }
@@ -284,18 +284,18 @@ ito::RetVal DialogNiDAQmx::applyParameters()
     QByteArray byteArrayVal;
 
     // Tab General, Group General
-    if (ui.comboTaskMode->currentData(Qt::UserRole).toByteArray() 
+    if (ui.comboTaskMode->currentData(Qt::UserRole).toByteArray()
         != m_currentParameters["taskMode"].getVal<const char*>())
     {
         values << QSharedPointer<ito::ParamBase>(
-            new ito::ParamBase("taskMode", ito::ParamBase::String, 
+            new ito::ParamBase("taskMode", ito::ParamBase::String,
                 ui.comboTaskMode->currentData(Qt::UserRole).toByteArray().data())
             );
     }
 
     // Tab General, Group Acquisition / Data Write
     if (std::abs(ui.doubleSpinSamplingRate->value()
-        - m_currentParameters["samplingRate"].getVal<double>()) 
+        - m_currentParameters["samplingRate"].getVal<double>())
         > std::numeric_limits<double>::epsilon())
     {
         values << QSharedPointer<ito::ParamBase>(
@@ -513,7 +513,7 @@ ito::RetVal DialogNiDAQmx::applyParameters()
             );
     }
 
-    
+
 
     return setPluginParameters(values, msgLevelWarningAndError);
 }
@@ -742,7 +742,7 @@ void DialogNiDAQmx::updateChannelCfg()
                 chn.setTerminalConfig(NiAnalogInputChannel::NiTerminalConfPseudoDiff);
                 break;
             }
-            
+
             cfgString = chn.getConfigurationString();
         }
         break;
@@ -759,7 +759,7 @@ void DialogNiDAQmx::updateChannelCfg()
         case TypeDigitalOutput:
             cfgString = current->data(0, CrPhysicalName).toString();
             break;
-        
+
         }
     }
 
@@ -803,6 +803,3 @@ void DialogNiDAQmx::on_comboStartTriggerMode_currentIndexChanged(QString text)
 {
     ui.doubleSpinStartTriggerLevel->setEnabled(text == "analogEdge");
 }
-
-
-

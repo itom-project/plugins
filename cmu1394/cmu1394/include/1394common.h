@@ -382,5 +382,3 @@ typedef struct _CAMERA_SPECIFICATION
 #endif
 
 #endif // #ifndef _1394_COMMON_H_
-
-

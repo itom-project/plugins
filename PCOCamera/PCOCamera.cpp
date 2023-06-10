@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -103,7 +103,7 @@ PCOCameraInterface::PCOCameraInterface()
     setObjectName("PCOCamera");
 
     m_description = QObject::tr("DLL for PCO-Cameras");
-    
+
 /*    char docstring[] = \
 "The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000. \n\
 This plugin has been tested with the cameras PCO.1200s, PCO.1300 and PCO.2000. \n\
@@ -122,17 +122,17 @@ The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Developm
 Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board. \n\
 \n\
 For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.");
-    
+
     m_author = "W. Lyda, C. Lingel, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / copyright of the external DLLs belongs to PCO");
-    m_aboutThis = QObject::tr(GITVERSION);      
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
-    
+
     return;
 }
 
@@ -157,7 +157,7 @@ PCOCameraInterface::~PCOCameraInterface()
     \class PCOCamera
     \brief Class for the PCOCamera. The PCOCamera is able to create noisy images or simulate a typical WLI or confocal image signal.
 
-    Usually every method in this class can be executed in an own thread. Only the constructor, destructor, showConfDialog will be executed by the 
+    Usually every method in this class can be executed in an own thread. Only the constructor, destructor, showConfDialog will be executed by the
     main (GUI) thread.
 */
 
@@ -184,7 +184,7 @@ const ito::RetVal PCOCamera::showConfDialog(void)
     \param [in] uniqueID is an unique identifier for this PCOCamera-instance
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
-PCOCamera::PCOCamera() : 
+PCOCamera::PCOCamera() :
     AddInGrabber(),
     m_isgrabbing(false),
     m_hCamera(NULL),
@@ -219,7 +219,7 @@ PCOCamera::PCOCamera() :
     paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("First row within the region of interest (zero-based, y0 < y1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Last column within the region of interest (zero-based, x0 < x1)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);    
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Last row within the region of interest (zero-based, y0 < y1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -334,8 +334,8 @@ ito::RetVal PCOCamera::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
             if (!retVal.containsError())
             {
                 double temps[] = {(double)ccdtemp/10.0, (double)camtemp, (double)powtemp};
-                it->setVal<double*>(temps,3);                
-            }            
+                it->setVal<double*>(temps,3);
+            }
         }
         //finally, save the desired value in the argument val (this is a shared pointer!)
         *val = it.value();
@@ -389,7 +389,7 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         // value in m_params and whether the new type fits to the requirements of any possible
         // meta structure.
         retVal += apiValidateAndCastParam(*it, *val, false, true, true);
-    }  
+    }
 
     char errbuffer[400] = {0};
 
@@ -491,7 +491,7 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                     retVal += startCamera();
                 }
             }
-                    
+
         }
         else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi")
         {
@@ -523,18 +523,18 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             {
                 // Adapted parameters and send out depending parameter
                 WORD wRoiX0 = (key == "x0") ? val->getVal<int>() : m_params["x0"].getVal<int>();
-                WORD wRoiY0 = (key == "y0") ? val->getVal<int>() : m_params["y0"].getVal<int>(); 
-                WORD wRoiX1 = (key == "x1") ? val->getVal<int>() : m_params["x1"].getVal<int>(); 
+                WORD wRoiY0 = (key == "y0") ? val->getVal<int>() : m_params["y0"].getVal<int>();
+                WORD wRoiX1 = (key == "x1") ? val->getVal<int>() : m_params["x1"].getVal<int>();
                 WORD wRoiY1 = (key == "y1") ? val->getVal<int>() : m_params["y1"].getVal<int>();
 
                 retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0 + 1, wRoiY0 + 1, wRoiX1 + 1, wRoiY1 + 1)); //rois are 1/1-based
             }
 
             retVal += sychronizeParameters(); //here the current roi is checked and x0,x1,y0,y1,sizex and sizey are adapted!
-                        
+
             if (grabberStartedCount() > 0)
             {
-                retVal += startCamera(); 
+                retVal += startCamera();
             }
         }
 
@@ -546,24 +546,24 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
             if (exposure < 1.0)
             {
-                exposure *= 1000;  
+                exposure *= 1000;
                 timebase--;
             }
             if (exposure < 1.0)
             {
-                exposure *= 1000;  
-                timebase--;        
+                exposure *= 1000;
+                timebase--;
             }
-            retVal += checkError(PCO_SetDelayExposureTime(m_hCamera,  
+            retVal += checkError(PCO_SetDelayExposureTime(m_hCamera,
                                             0,        // DWORD dwDelay
                                             (DWORD)exposure,//(DWORD)dwExposure,
-                                            0,        // WORD wTimeBaseDelay, Timebase: 0-ns; 1-us; 2-ms 
+                                            0,        // WORD wTimeBaseDelay, Timebase: 0-ns; 1-us; 2-ms
                                             (WORD)timebase));    // WORD wTimeBaseExposure
 
             if (!retVal.containsError())
             {
                 it->copyValueFrom(&(*val));
-            }                   
+            }
         }
         else if (key == "coolingSetPointTemperature")
         {
@@ -639,7 +639,7 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         setGrabberStarted(running);
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();
@@ -719,7 +719,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 case CAMERATYPE_PCO_EDGE_USB3: //             0x1320 // pco.edge     (all sensors   ) Interface: USB 3.0    ,(all shutter modes)
                     _snprintf(name, 14, "PCO.edge USB3");
                     break;
-                case CAMERATYPE_PCO_EDGE_HS: //               0x1340 // pco.edge     (all sensors   ) Interface: high speed ,(all shutter modes) 
+                case CAMERATYPE_PCO_EDGE_HS: //               0x1340 // pco.edge     (all sensors   ) Interface: high speed ,(all shutter modes)
                     _snprintf(name, 20, "PCO.edge high speed");
                     break;
 #ifdef CAMERATYPE_PCO_EDGE_MT
@@ -775,7 +775,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             }
         }
     }
-    
+
     if (!retVal.containsError())
     {
         m_caminfo.wSize =sizeof(PCO_Description);
@@ -835,7 +835,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             IntMeta->setMin(0);
             IntMeta->setMax(1);
             IntMeta->setStepSize(1);
-        
+
             if (!retVal.containsError())
             {
                 m_params["IRSensitivity"].setVal<int>(IRSens);
@@ -942,8 +942,8 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     }
 
   /***********************************************************
-    The following step is a must. 
-    In SC2, bin proceeds ROI in control.  
+    The following step is a must.
+    In SC2, bin proceeds ROI in control.
     ROI "field of definition" is subject to bin settings.
     Please be advised that this is opposite to SensiCam SDK
   *************************************************************/
@@ -956,10 +956,10 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     }
 
     /***********************************************************
-    ArmCamera validates settings.  
+    ArmCamera validates settings.
     recorder must be turned off to ArmCamera
     *************************************************************/
-  
+
     if (!retVal.containsError())
     {
         WORD recstate;
@@ -986,24 +986,24 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
         if (exposure < 1)
         {
-            exposure *= 1000;  
+            exposure *= 1000;
             timebase--;
         }
         if (exposure < 1)
         {
-            exposure *= 1000;  
-            timebase--;        
+            exposure *= 1000;
+            timebase--;
         }
 
-        retVal += checkError(PCO_SetDelayExposureTime(m_hCamera,  
+        retVal += checkError(PCO_SetDelayExposureTime(m_hCamera,
                                         0,        // DWORD dwDelay
                                         (DWORD)exposure,//(DWORD)dwExposure,
-                                        0,        // WORD wTimeBaseDelay, Timebase: 0-ns; 1-us; 2-ms 
+                                        0,        // WORD wTimeBaseDelay, Timebase: 0-ns; 1-us; 2-ms
                                         (WORD)timebase));    // WORD wTimeBaseExposure
     }
-    
+
     /***********************************************************
-    Cam Ram can be partitioned and set active. 
+    Cam Ram can be partitioned and set active.
     by deafult, it is a single piece. An ID is returned
     *************************************************************/
     /*if (!retVal.containsError())
@@ -1011,12 +1011,12 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     //edge 5.5 returns a firmware error in this line. However, until now, nobody is using the ram segments.
         retVal += checkError(PCO_GetActiveRamSegment(m_hCamera, &m_wActSeg));
     }*/
-  
+
     /***********************************************************
-    ArmCamera validates settings.  
+    ArmCamera validates settings.
     recorder must be turned off to ArmCamera
     *************************************************************/
-  
+
     if (!retVal.containsError())
     {
         WORD recstate;
@@ -1039,7 +1039,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     if (waitCond)
     {
         waitCond->returnValue = retVal;
-        waitCond->release();  
+        waitCond->release();
     }
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -1125,7 +1125,7 @@ ito::RetVal PCOCamera::startDevice(ItomSharedSemaphore *waitCond)
 
     return retVal;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With stopDevice the camera device is stopped (opposite to startDevice)
 /*!
@@ -1145,7 +1145,7 @@ ito::RetVal PCOCamera::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
     if (grabberStartedCount() == 0)
     {
-        retVal += stopCamera();        
+        retVal += stopCamera();
     }
     else if (grabberStartedCount() < 0)
     {
@@ -1205,7 +1205,7 @@ ito::RetVal PCOCamera::startCamera()
 
         WORD sizeX, sizeY, sizeXMax, sizeYMax;
         retVal += checkError(PCO_GetSizes(m_hCamera, &sizeX, &sizeY, &sizeXMax, &sizeYMax));
-        
+
         if (!retVal.containsError())
         {
             retVal += sychronizeParameters();
@@ -1281,7 +1281,7 @@ ito::RetVal PCOCamera::sychronizeParameters()
     retVal += checkError(PCO_GetBinning(m_hCamera, &binX, &binY));
 
     //maximum sizex and sizey are m_caminfo.wMaxHorzResStdDESC/binX and m_caminfo.wMaxVertResStdDESC/binY
-        
+
     if (!retVal.containsError())
     {
         m_params["x0"].setVal<int>(roiX0 - 1);
@@ -1346,7 +1346,7 @@ ito::RetVal PCOCamera::sychronizeParameters()
 
     return retVal;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Call this method to trigger a new image.
 /*!
@@ -1406,7 +1406,7 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retVal(ito::retOk);
     int ret = 0;
-    int timeOutMS = m_params["integration_time"].getVal<double>() * 2500 + 500; // *1300 because of ms and factor 2.5 and +500 minimum timeout for short integration time    
+    int timeOutMS = m_params["integration_time"].getVal<double>() * 2500 + 500; // *1300 because of ms and factor 2.5 and +500 minimum timeout for short integration time
     int curxsize = m_params["sizex"].getVal<int>();
     int curysize = m_params["sizey"].getVal<int>();
 
@@ -1478,10 +1478,10 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
         retVal += ito::RetVal(ito::retError, 1001, tr("timeout while waiting for image from PCO camera device").toLatin1().data());
     }
     else if (!retVal.containsError())
-    {      
+    {
         int bpp = m_params["bpp"].getVal<int>();
         if (bpp <= 8)
-        { 
+        {
             ito::uint8 *cbuf=(ito::uint8*)wBuf;
             if (cbuf == NULL)
             {
@@ -1549,7 +1549,7 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
         }
         else
         {
-            retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOCamera failed, since undefined bitdepth.").toLatin1().data());            
+            retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOCamera failed, since undefined bitdepth.").toLatin1().data());
         }
         this->m_isgrabbing = false;
     }
@@ -1624,7 +1624,7 @@ ito::RetVal PCOCamera::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue=retVal;
         waitCond->release();
@@ -1636,7 +1636,7 @@ ito::RetVal PCOCamera::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -1658,12 +1658,12 @@ ito::RetVal PCOCamera::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retVal += checkData(dObj);  
+        retVal += checkData(dObj);
     }
 
     if (!retVal.containsError())
     {
-        retVal += retrieveData(dObj);  
+        retVal += retrieveData(dObj);
     }
 
     if (!retVal.containsError())
@@ -1671,7 +1671,7 @@ ito::RetVal PCOCamera::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();

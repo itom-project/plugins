@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-   
+
 //AERERR_CODE AER_DLLENTRY AerVirtGetBinaryIO( HAERCTRL hAerCtrl,
 //                                             PAERVIRT_BINARY_DATA pInputs,
 //                                             PAERVIRT_BINARY_DATA pOutputs );
@@ -119,4 +119,3 @@ AERERR_CODE AER_DLLENTRY AerIOModeEncoderSigOutHS(HAERCTRL hAerCtrl, AXISINDEX i
 
 #endif
 // __AER_VIRT_H__
-

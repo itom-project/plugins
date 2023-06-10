@@ -56,7 +56,7 @@
 
 static void
 ptp_debug (PTPParams *params, const char *format, ...)
-{  
+{
     va_list args;
 
     va_start (args, format);
@@ -69,11 +69,11 @@ ptp_debug (PTPParams *params, const char *format, ...)
 		fflush (stderr);
 	}
     va_end (args);
-}  
+}
 
 static void
 ptp_error (PTPParams *params, const char *format, ...)
-{  
+{
     va_list args;
 
     va_start (args, format);
@@ -164,7 +164,7 @@ ptp_usb_senddata (PTPParams* params, PTPContainer* ptp,
 }
 
 PTP_EXPORT uint16_t
-ptp_usb_getdata (PTPParams* params, PTPContainer* ptp,  unsigned int *getlen, 
+ptp_usb_getdata (PTPParams* params, PTPContainer* ptp,  unsigned int *getlen,
 		unsigned char **data)
 {
 	static uint16_t ret;
@@ -280,7 +280,7 @@ ptp_usb_getresp (PTPParams* params, PTPContainer* resp)
  * filled in (i.e. operation code and parameters). It's up to caller to do
  * so.
  * The flags decide whether the transaction has a data phase and what is its
- * direction (send or receive). 
+ * direction (send or receive).
  * If transaction is sending data the sendlen should contain its length in
  * bytes, otherwise it's ignored.
  * The data should contain an address of a pointer to data going to be sent
@@ -296,12 +296,12 @@ ptp_usb_getresp (PTPParams* params, PTPContainer* resp)
  * all fields filled in.
  **/
 PTP_EXPORT uint16_t
-ptp_transaction (PTPParams* params, PTPContainer* ptp, 
+ptp_transaction (PTPParams* params, PTPContainer* ptp,
 			uint16_t flags, unsigned int sendlen, char** data)
 {
-	if ((params==NULL) || (ptp==NULL)) 
+	if ((params==NULL) || (ptp==NULL))
 		return PTP_ERROR_BADPARAM;
-	
+
 	ptp->Transaction_ID=params->transaction_id++;
 	ptp->SessionID=params->session_id;
 	/* send request */
@@ -351,7 +351,7 @@ ptp_transaction (PTPParams* params, PTPContainer* ptp,
 		    return PTP_ERROR_BADPARAM;	    \
 	    }\
 	}
-					
+
 
 static inline uint16_t
 ptp_usb_event (PTPParams* params, PTPContainer* event, int wait)
@@ -361,7 +361,7 @@ ptp_usb_event (PTPParams* params, PTPContainer* event, int wait)
 
 	PTP_CNT_INIT(usbevent);
 
-	if ((params==NULL) || (event==NULL)) 
+	if ((params==NULL) || (event==NULL))
 		return PTP_ERROR_BADPARAM;
 
 
@@ -440,7 +440,7 @@ ptp_getdeviceinfo (PTPParams* params, PTPDeviceInfo* deviceinfo)
 /**
  * ptp_opensession:
  * params:	PTPParams*
- * 		session			- session number 
+ * 		session			- session number
  *
  * Establishes a new session.
  *
@@ -459,7 +459,7 @@ ptp_opensession (PTPParams* params, uint32_t session)
 	params->session_id=0x00000000;
 	/* TransactionID should be set to 0 also! */
 	params->transaction_id=0x0000000;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_OpenSession;
 	ptp.Param1=session;
@@ -652,7 +652,7 @@ ptp_getthumb (PTPParams* params, uint32_t handle,  char** object)
  * params:	PTPParams*
  *		handle			- object handle
  *		ofc			- object format code (optional)
- * 
+ *
  * Deletes desired objects.
  *
  * Return values: Some PTP_RC_* code.
@@ -680,7 +680,7 @@ ptp_deleteobject (PTPParams* params, uint32_t handle,
  *		uint32_t* parenthandle 	- Parent ObjectHandle on responder
  * 		uint32_t* handle	- see Return values
  *		PTPObjectInfo* objectinfo- ObjectInfo that is to be sent
- * 
+ *
  * Sends ObjectInfo of file that is to be sent via SendFileObject.
  *
  * Return values: Some PTP_RC_* code.
@@ -692,7 +692,7 @@ ptp_deleteobject (PTPParams* params, uint32_t handle,
  *					  for the incoming object
  **/
 PTP_EXPORT uint16_t
-ptp_sendobjectinfo (PTPParams* params, uint32_t* store, 
+ptp_sendobjectinfo (PTPParams* params, uint32_t* store,
 			uint32_t* parenthandle, uint32_t* handle,
 			PTPObjectInfo* objectinfo)
 {
@@ -701,7 +701,7 @@ ptp_sendobjectinfo (PTPParams* params, uint32_t* store,
 	char* oidata=NULL;
 	uint32_t size;
 
-	ptp_debug(params,"PTP: Sending ObjectInfo; parent object 0x%08x", 
+	ptp_debug(params,"PTP: Sending ObjectInfo; parent object 0x%08x",
 		*parenthandle);
 
 	PTP_CNT_INIT(ptp);
@@ -709,13 +709,13 @@ ptp_sendobjectinfo (PTPParams* params, uint32_t* store,
 	ptp.Param1=*store;
 	ptp.Param2=*parenthandle;
 	ptp.Nparam=2;
-	
+
 	size=ptp_pack_OI(params, objectinfo, &oidata);
-	ret=ptp_transaction(params, &ptp, PTP_DP_SENDDATA, size, &oidata); 
+	ret=ptp_transaction(params, &ptp, PTP_DP_SENDDATA, size, &oidata);
 	free(oidata);
 	*store=ptp.Param1;
 	*parenthandle=ptp.Param2;
-	*handle=ptp.Param3; 
+	*handle=ptp.Param3;
 	return ret;
 }
 
@@ -724,7 +724,7 @@ ptp_sendobjectinfo (PTPParams* params, uint32_t* store,
  * params:	PTPParams*
  *		char*	object		- contains the object that is to be sent
  *		uint32_t size		- object size
- *		
+ *
  * Sends object to Responder.
  *
  * Return values: Some PTP_RC_* code.
@@ -751,7 +751,7 @@ ptp_sendobject (PTPParams* params, char* object, uint32_t size)
  * params:	PTPParams*
  *		storageid		- destination StorageID on Responder
  *		ofc			- object format code
- * 
+ *
  * Causes device to initiate the capture of one or more new data objects
  * according to its current device properties, storing the data into store
  * indicated by storageid. If storageid is 0x00000000, the object(s) will
@@ -778,7 +778,7 @@ ptp_initiatecapture (PTPParams* params, uint32_t storageid,
 }
 
 PTP_EXPORT uint16_t
-ptp_getdevicepropdesc (PTPParams* params, uint16_t propcode, 
+ptp_getdevicepropdesc (PTPParams* params, uint16_t propcode,
 			PTPDevicePropDesc* devicepropertydesc)
 {
 	PTPContainer ptp;
@@ -846,7 +846,7 @@ ptp_sendgenericrequest (PTPParams* params, uint16_t reqcode,
 	PTPContainer ptp;
 	uint16_t ret=0;
 	char *dpv=NULL;
-	
+
 	if (direction == PTP_DP_GETDATA)
 		*data = NULL;
 
@@ -879,7 +879,7 @@ ptp_sendgenericrequest (PTPParams* params, uint16_t reqcode,
  *		uint32_t* parenthandle 	- Parent ObjectHandle on responder
  * 		uint32_t* handle	- see Return values
  *		PTPObjectInfo* objectinfo- ObjectInfo that is to be sent
- * 
+ *
  * Sends ObjectInfo of file that is to be sent via SendFileObject.
  *
  * Return values: Some PTP_RC_* code.
@@ -891,7 +891,7 @@ ptp_sendgenericrequest (PTPParams* params, uint16_t reqcode,
  *					  for the incoming object
  **/
 PTP_EXPORT uint16_t
-ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store, 
+ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store,
 			uint32_t* parenthandle, uint32_t* handle,
 			PTPObjectInfo* objectinfo)
 {
@@ -905,13 +905,13 @@ ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store,
 	ptp.Param1=*store;
 	ptp.Param2=*parenthandle;
 	ptp.Nparam=2;
-	
+
 	size=ptp_pack_OI(params, objectinfo, &oidata);
-	ret=ptp_transaction(params, &ptp, PTP_DP_SENDDATA, size, &oidata); 
+	ret=ptp_transaction(params, &ptp, PTP_DP_SENDDATA, size, &oidata);
 	free(oidata);
 	*store=ptp.Param1;
 	*parenthandle=ptp.Param2;
-	*handle=ptp.Param3; 
+	*handle=ptp.Param3;
 	return ret;
 }
 
@@ -920,7 +920,7 @@ ptp_ek_sendfileobjectinfo (PTPParams* params, uint32_t* store,
  * params:	PTPParams*
  *		char*	object		- contains the object that is to be sent
  *		uint32_t size		- object size
- *		
+ *
  * Sends object to Responder.
  *
  * Return values: Some PTP_RC_* code.
@@ -953,7 +953,7 @@ ptp_ek_sendfileobject (PTPParams* params, char* object, uint32_t size)
  *		uint32_t handle		- ObjectHandle
  *		uint32_t p2 		- Yet unknown parameter,
  *					  value 0 works.
- * 
+ *
  * Gets form the responder the size of the specified object.
  *
  * Return values: Some PTP_RC_* code.
@@ -962,12 +962,12 @@ ptp_ek_sendfileobject (PTPParams* params, char* object, uint32_t size)
  *
  **/
 PTP_EXPORT uint16_t
-ptp_canon_getobjectsize (PTPParams* params, uint32_t handle, uint32_t p2, 
-			uint32_t* size, uint32_t* rp2) 
+ptp_canon_getobjectsize (PTPParams* params, uint32_t handle, uint32_t p2,
+			uint32_t* size, uint32_t* rp2)
 {
 	uint16_t ret;
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_GetObjectSize;
 	ptp.Param1=handle;
@@ -982,7 +982,7 @@ ptp_canon_getobjectsize (PTPParams* params, uint32_t handle, uint32_t p2,
 /**
  * ptp_canon_startshootingmode:
  * params:	PTPParams*
- * 
+ *
  * Starts shooting session. It emits a StorageInfoChanged
  * event via the interrupt pipe and pushes the StorageInfoChanged
  * and CANON_CameraModeChange events onto the event stack
@@ -995,7 +995,7 @@ PTP_EXPORT uint16_t
 ptp_canon_startshootingmode (PTPParams* params)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_StartShootingMode;
 	ptp.Nparam=0;
@@ -1005,9 +1005,9 @@ ptp_canon_startshootingmode (PTPParams* params)
 /**
  * ptp_canon_endshootingmode:
  * params:	PTPParams*
- * 
- * This operation is observed after pressing the Disconnect 
- * button on the Remote Capture app. It emits a StorageInfoChanged 
+ *
+ * This operation is observed after pressing the Disconnect
+ * button on the Remote Capture app. It emits a StorageInfoChanged
  * event via the interrupt pipe and pushes the StorageInfoChanged
  * and CANON_CameraModeChange events onto the event stack
  * (see operation PTP_OC_CANON_CheckEvent).
@@ -1019,7 +1019,7 @@ PTP_EXPORT uint16_t
 ptp_canon_endshootingmode (PTPParams* params)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_EndShootingMode;
 	ptp.Nparam=0;
@@ -1029,7 +1029,7 @@ ptp_canon_endshootingmode (PTPParams* params)
 /**
  * ptp_canon_viewfinderon:
  * params:	PTPParams*
- * 
+ *
  * Prior to start reading viewfinder images, one  must call this operation.
  * Supposedly, this operation affects the value of the CANON_ViewfinderMode
  * property.
@@ -1041,7 +1041,7 @@ PTP_EXPORT uint16_t
 ptp_canon_viewfinderon (PTPParams* params)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_ViewfinderOn;
 	ptp.Nparam=0;
@@ -1051,7 +1051,7 @@ ptp_canon_viewfinderon (PTPParams* params)
 /**
  * ptp_canon_viewfinderoff:
  * params:	PTPParams*
- * 
+ *
  * Before changing the shooting mode, or when one doesn't need to read
  * viewfinder images any more, one must call this operation.
  * Supposedly, this operation affects the value of the CANON_ViewfinderMode
@@ -1064,7 +1064,7 @@ PTP_EXPORT uint16_t
 ptp_canon_viewfinderoff (PTPParams* params)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_ViewfinderOff;
 	ptp.Nparam=0;
@@ -1076,7 +1076,7 @@ ptp_canon_viewfinderoff (PTPParams* params)
  * params:	PTPParams*
  * 		uint32_t p1 	- Yet unknown parameter,
  * 				  value 7 works
- * 
+ *
  * Make viewfinder reflect changes.
  * There is a button for this operation in the Remote Capture app.
  * What it does exactly I don't know. This operation is followed
@@ -1089,7 +1089,7 @@ PTP_EXPORT uint16_t
 ptp_canon_reflectchanges (PTPParams* params, uint32_t p1)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_ReflectChanges;
 	ptp.Param1=p1;
@@ -1101,7 +1101,7 @@ ptp_canon_reflectchanges (PTPParams* params, uint32_t p1)
 /**
  * ptp_canon_checkevent:
  * params:	PTPParams*
- * 
+ *
  * The camera has a FIFO stack, in which it accumulates events.
  * Partially these events are communicated also via the USB interrupt pipe
  * according to the PTP USB specification, partially not.
@@ -1109,7 +1109,7 @@ ptp_canon_reflectchanges (PTPParams* params, uint32_t p1)
  * if the event stack is empty, or filled with an event's data otherwise.
  * The event is removed from the stack in the latter case.
  * The Remote Capture app sends this command to the camera all the time
- * of connection, filling with it the gaps between other operations. 
+ * of connection, filling with it the gaps between other operations.
  *
  * Return values: Some PTP_RC_* code.
  * Upon success : PTPUSBEventContainer* event	- is filled with the event data
@@ -1123,7 +1123,7 @@ ptp_canon_checkevent (PTPParams* params, PTPUSBEventContainer* event, int* iseve
 	uint16_t ret;
 	PTPContainer ptp;
 	char *evdata = NULL;
-	
+
 	*isevent=0;
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_CheckEvent;
@@ -1144,8 +1144,8 @@ ptp_canon_checkevent (PTPParams* params, PTPUSBEventContainer* event, int* iseve
  * ptp_canon_focuslock:
  *
  * This operation locks the focus. It is followed by the CANON_GetChanges(?)
- * operation in the log. 
- * It affects the CANON_MacroMode property. 
+ * operation in the log.
+ * It affects the CANON_MacroMode property.
  *
  * params:	PTPParams*
  *
@@ -1156,7 +1156,7 @@ PTP_EXPORT uint16_t
 ptp_canon_focuslock (PTPParams* params)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_FocusLock;
 	ptp.Nparam=0;
@@ -1167,9 +1167,9 @@ ptp_canon_focuslock (PTPParams* params)
  * ptp_canon_focusunlock:
  *
  * This operation unlocks the focus. It is followed by the CANON_GetChanges(?)
- * operation in the log. 
+ * operation in the log.
  * It sets the CANON_MacroMode property value to 1 (where it occurs in the log).
- * 
+ *
  * params:	PTPParams*
  *
  * Return values: Some PTP_RC_* code.
@@ -1179,7 +1179,7 @@ PTP_EXPORT uint16_t
 ptp_canon_focusunlock (PTPParams* params)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_FocusUnlock;
 	ptp.Nparam=0;
@@ -1188,7 +1188,7 @@ ptp_canon_focusunlock (PTPParams* params)
 
 /**
  * ptp_canon_initiatecaptureinmemory:
- * 
+ *
  * This operation starts the image capture according to the current camera
  * settings. When the capture has happened, the camera emits a CaptureComplete
  * event via the interrupt pipe and pushes the CANON_RequestObjectTransfer,
@@ -1207,7 +1207,7 @@ PTP_EXPORT uint16_t
 ptp_canon_initiatecaptureinmemory (PTPParams* params)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_InitiateCaptureInMemory;
 	ptp.Nparam=0;
@@ -1217,7 +1217,7 @@ ptp_canon_initiatecaptureinmemory (PTPParams* params)
 /**
  * ptp_canon_getpartialobject:
  *
- * This operation is used to read from the device a data 
+ * This operation is used to read from the device a data
  * block of an object from a specified offset.
  *
  * params:	PTPParams*
@@ -1233,15 +1233,15 @@ ptp_canon_initiatecaptureinmemory (PTPParams* params)
  *
  **/
 PTP_EXPORT uint16_t
-ptp_canon_getpartialobject (PTPParams* params, uint32_t handle, 
+ptp_canon_getpartialobject (PTPParams* params, uint32_t handle,
 				uint32_t offset, uint32_t size,
-				uint32_t pos, char** block, 
+				uint32_t pos, char** block,
 				uint32_t* readnum)
 {
 	uint16_t ret;
 	PTPContainer ptp;
 	char *data=NULL;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_GetPartialObject;
 	ptp.Param1=handle;
@@ -1265,9 +1265,9 @@ ptp_canon_getpartialobject (PTPParams* params, uint32_t handle,
  * Of course, prior to calling this operation, one must turn the viewfinder
  * on with the CANON_ViewfinderOn command.
  * Invoking this operation many times, one can get live video from the camera!
- * 
+ *
  * params:	PTPParams*
- * 
+ *
  * Return values: Some PTP_RC_* code.
  *      char **image - the pointer to the read image
  *      unit32_t *size - the size of the image in bytes
@@ -1278,7 +1278,7 @@ ptp_canon_getviewfinderimage (PTPParams* params, char** image, uint32_t* size)
 {
 	uint16_t ret;
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_GetViewfinderImage;
 	ptp.Nparam=0;
@@ -1291,14 +1291,14 @@ ptp_canon_getviewfinderimage (PTPParams* params, char** image, uint32_t* size)
  * ptp_canon_getchanges:
  *
  * This is an interesting operation, about the effect of which I am not sure.
- * This command is called every time when a device property has been changed 
+ * This command is called every time when a device property has been changed
  * with the SetDevicePropValue operation, and after some other operations.
  * This operation reads the array of Device Properties which have been changed
  * by the previous operation.
  * Probably, this operation is even required to make those changes work.
  *
  * params:	PTPParams*
- * 
+ *
  * Return values: Some PTP_RC_* code.
  *      uint16_t** props - the pointer to the array of changed properties
  *      uint32_t* propnum - the number of elements in the *props array
@@ -1310,7 +1310,7 @@ ptp_canon_getchanges (PTPParams* params, uint16_t** props, uint32_t* propnum)
 	uint16_t ret;
 	PTPContainer ptp;
 	char* data=NULL;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_GetChanges;
 	ptp.Nparam=0;
@@ -1326,17 +1326,17 @@ ptp_canon_getchanges (PTPParams* params, uint16_t** props, uint32_t* propnum)
  *
  * This command reads a specified object's record in a device's filesystem,
  * or the records of all objects belonging to a specified folder (association).
- *  
+ *
  * params:	PTPParams*
  *      uint32_t store - StorageID,
  *      uint32_t p2 - Yet unknown (0 value works OK)
  *      uint32_t parent - Parent Object Handle
- *                      # If Parent Object Handle is 0xffffffff, 
+ *                      # If Parent Object Handle is 0xffffffff,
  *                      # the Parent Object is the top level folder.
  *      uint32_t handle - Object Handle
- *                      # If Object Handle is 0, the records of all objects 
+ *                      # If Object Handle is 0, the records of all objects
  *                      # belonging to the Parent Object are read.
- *                      # If Object Handle is not 0, only the record of this 
+ *                      # If Object Handle is not 0, only the record of this
  *                      # Object is read.
  *
  * Return values: Some PTP_RC_* code.
@@ -1345,14 +1345,14 @@ ptp_canon_getchanges (PTPParams* params, uint16_t** props, uint32_t* propnum)
  *
  **/
 PTP_EXPORT uint16_t
-ptp_canon_getfolderentries (PTPParams* params, uint32_t store, uint32_t p2, 
-			    uint32_t parent, uint32_t handle, 
+ptp_canon_getfolderentries (PTPParams* params, uint32_t store, uint32_t p2,
+			    uint32_t parent, uint32_t handle,
 			    PTPCANONFolderEntry** entries, uint32_t* entnum)
 {
 	uint16_t ret;
 	PTPContainer ptp;
 	char *data = NULL;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_CANON_GetFolderEntries;
 	ptp.Param1=store;
@@ -1385,7 +1385,7 @@ PTP_EXPORT uint16_t
 ptp_nikon_setcontrolmode (PTPParams* params, uint32_t mode)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_NIKON_SetControlMode;
 	ptp.Param1=mode;
@@ -1397,7 +1397,7 @@ PTP_EXPORT uint16_t
 ptp_nikon_directcapture (PTPParams* params, uint32_t unknown)
 {
 	PTPContainer ptp;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_NIKON_DirectCapture;
 	ptp.Param1=unknown; /* as of yet unknown parameter */
@@ -1411,7 +1411,7 @@ ptp_nikon_checkevent (PTPParams* params, PTPUSBEventContainer** event, uint16_t*
 	uint16_t ret;
 	PTPContainer ptp;
 	char *evdata = NULL;
-	
+
 	PTP_CNT_INIT(ptp);
 	ptp.Code=PTP_OC_NIKON_CheckEvent;
 	ptp.Nparam=0;
@@ -1425,7 +1425,7 @@ ptp_nikon_checkevent (PTPParams* params, PTPUSBEventContainer** event, uint16_t*
 PTP_EXPORT uint16_t
 ptp_nikon_keepalive (PTPParams* params)
 {
-	
+
 	PTPContainer ptp;
 
 	PTP_CNT_INIT(ptp);
@@ -1571,7 +1571,7 @@ ptp_perror(PTPParams* params, uint16_t error) {
 	}
 
 	ptp_error(params, "PTP: Error 0x%04x", error);
-	
+
 }
 
 /* return DataType description */
@@ -1726,4 +1726,3 @@ ptp_get_operation_name(PTPParams* params, uint16_t oc)
 
 	return NULL;
 }
-

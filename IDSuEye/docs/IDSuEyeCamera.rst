@@ -10,7 +10,7 @@
 **Devices**:    IDS Imaging cameras
 **Author**:     :pluginauthor:`IDSuEye`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,12 +19,12 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: IDSuEye
-        
+
 Usually, the next free camera is opened by *camera_id* = 0. If you want to select a specific camera, make sure to set unique camera IDs in the IDS camera manager tool.
 Then set *camera_id* to the desired camera ID (range 1..254).
 
@@ -36,8 +36,8 @@ Support for Thorlabs cameras
 ============================
 
 This plugin can also be used to operate Thorlabs cameras of the **DCC** or **DCU** series (e.g. https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=4024 or https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=2916).
-These cameras are OEM versions from IDS. This plugin has for instance been tested with the version DCC1545M-GL.
-    
+These cameras are OEM versions from IDS. This plugin has for instance been tested with the version DCC1545M-GL and the IDS UI-2412SE-M camera.
+
 Parameters
 ===========
 
@@ -100,12 +100,18 @@ An instance of this plugin has the following internal parameters:
 **y1**: {int}
     Index of bottom boundary pixel within ROI
 
-
-        
 Compilation
 ===========
 
-With the sources of this plugin, the header and library files of the uEye SDK in the version denoted in the changelog are directly included. Hence, the plugin compiles as it is. 
+Download the IDS Peak SDK from https://de.ids-imaging.com/ids-software-suite.html by selecting the appropriate camera.
+This can be very tricky since the IDS Software Suite is deprecated and newer models are shipped with the IDS Peak SDK
+exclusively.
+
+Software Currently supporting the IDS uEye SDK are for example: https://de.ids-imaging.com/download-details/AB02919.html#anc-software-310
+
+Set the CMAKE variable **IDS_DEVELOP_DIRECTORY** or the environment variable **IDS_UEYE_ROOT** to the installation directory (e.g. C:\Program Files\IDS\uEye\develop)
+
+With the sources of this plugin, the header and library files of the uEye SDK in the version denoted in the changelog are directly included. Hence, the plugin compiles as it is.
 Nevertheless, you need to have the camera drivers installed on your computer that fit to the uEye SDK of the plugin. However, you can also install the full SDK in any version
 on your computer and set the CMake variable IDS_DEVELOP_DIRECTORY to the develop-subfolder of the SDK (this folder contains the include and Lib subfolder). If you indicated this,
 please delete IDS_HEADER_FILE and IDS_LIBRARY in CMake and press configure again. Then, the plugin will be compiled with your individual SDK.
@@ -141,3 +147,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the uEye SDK 4.91.0
 * itom setup 4.0.0: This plugin has been compiled using the uEye SDK 4.93.0
 * itom setup 4.1.0: This plugin has been compiled using the uEye SDK 4.93.0
+* itom setup 4.3.0: This plugin has been compiled using the uEye SDK 4.96.1

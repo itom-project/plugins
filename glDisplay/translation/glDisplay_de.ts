@@ -322,23 +322,23 @@
     <name>QObject</name>
     <message>
         <location line="-36"/>
-        <source>This plugin displays a frameless window that displays one or multiple arrays using OpenGL technology. 
-Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually. 
-OpenGL allows a fast switch between all created textures. 
+        <source>This plugin displays a frameless window that displays one or multiple arrays using OpenGL technology.
+Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually.
+OpenGL allows a fast switch between all created textures.
 
-Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available - 
-placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize 
-parameter at initialization. 
+Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available -
+placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize
+parameter at initialization.
 
-In order to assign textures, use the exec-function &apos;addTextures&apos; and pass a 2d or 3d dataObject, where in the latter case 
-every plane of the 3d dataObject is registered as single texture. Create the tags &apos;wrapT&apos;, &apos;wrapS&apos;, &apos;MinFilter&apos; or &apos;MagFilter&apos; 
-to control the repeatability of every texture or its interpolation method. 
+In order to assign textures, use the exec-function &apos;addTextures&apos; and pass a 2d or 3d dataObject, where in the latter case
+every plane of the 3d dataObject is registered as single texture. Create the tags &apos;wrapT&apos;, &apos;wrapS&apos;, &apos;MinFilter&apos; or &apos;MagFilter&apos;
+to control the repeatability of every texture or its interpolation method.
 
-Allowed values for these tags are: 
+Allowed values for these tags are:
 
-* &apos;MagFilter&apos; (interpolation used when the texture is smaller than the window size): &apos;GL_NEAREST&apos; (default) or &apos;GL_LINEAR&apos; 
-* &apos;MinFilter&apos; (interpolation used when the texture is bigger than the window size): &apos;GL_NEAREST&apos; (default), &apos;GL_LINEAR&apos;, &apos;GL_LINEAR_MIPMAP_NEAREST&apos;, &apos;GL_NEAREST_MIPMAP_NEAREST&apos;, &apos;GL_LINEAR_MIPMAP_LINEAR&apos; 
-* &apos;wrapT&apos; (vertical scaling mode): &apos;GL_REPEAT&apos; (default), &apos;SCALED&apos;, &apos;GL_MIRRORED_REPEAT, &apos;GL_CLAMP_TO_EDGE&apos; 
+* &apos;MagFilter&apos; (interpolation used when the texture is smaller than the window size): &apos;GL_NEAREST&apos; (default) or &apos;GL_LINEAR&apos;
+* &apos;MinFilter&apos; (interpolation used when the texture is bigger than the window size): &apos;GL_NEAREST&apos; (default), &apos;GL_LINEAR&apos;, &apos;GL_LINEAR_MIPMAP_NEAREST&apos;, &apos;GL_NEAREST_MIPMAP_NEAREST&apos;, &apos;GL_LINEAR_MIPMAP_LINEAR&apos;
+* &apos;wrapT&apos; (vertical scaling mode): &apos;GL_REPEAT&apos; (default), &apos;SCALED&apos;, &apos;GL_MIRRORED_REPEAT, &apos;GL_CLAMP_TO_EDGE&apos;
 * &apos;wrapS&apos; (horizontal scaling mode): &apos;GL_REPEAT&apos; (default), &apos;SCALED&apos;, &apos;GL_MIRRORED_REPEAT&apos;, &apos;GL_CLAMP_TO_EDGE&apos;</source>
         <translation type="unfinished"></translation>
     </message>

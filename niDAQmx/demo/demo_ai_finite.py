@@ -23,10 +23,10 @@ where ConfigMode is an integer from this list
 (see also argument terminalConfig from command
 DAQmxCreateAIVoltageChan):
 
-DAQmx_Val_Cfg_Default = 0, 
-DAQmx_Val_Diff = 1, 
-DAQmx_Val_RSE = 2, 
-DAQmx_Val_NRSE = 3, 
+DAQmx_Val_Cfg_Default = 0,
+DAQmx_Val_Diff = 1,
+DAQmx_Val_RSE = 2,
+DAQmx_Val_NRSE = 3,
 DAQmx_Val_PseudoDiff = 4
 
 Hint: It depends on the NI DAQ devices, if they allow

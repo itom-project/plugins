@@ -14,6 +14,5 @@ AERERR_CODE AER_DLLENTRY AerSysServerResetData(HAERCTRL hAerCtrl);
 AERERR_CODE AER_DLLENTRY AerSysServerSetErrorLogMode(HAERCTRL hAerCtrl, DWORD dwErrLogMode);
 AERERR_CODE AER_DLLENTRY AerSysServerGetLastError(HAERCTRL hAerCtrl,  PDWORD pdwErrorDeath, PDWORD pdwErrorComotose );
 AERERR_CODE AER_DLLENTRY AerSysServerGeneral(HAERCTRL hAerCtrl, WORD wSubCode, DWORD dwData);
-   
-#endif
 
+#endif

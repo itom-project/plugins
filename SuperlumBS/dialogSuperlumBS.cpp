@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -69,14 +69,14 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
             enableDialog(false);
         }
         //__________________________________________________________________________________________________________ General Information
-        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));        
+        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
         ui.label_Device->setText(params["serial_number"].getVal<char*>());
         ui.label_COM_Port->setText(QString::number(params["comPort"].getVal<int>()));
         ui.label_device_name->setText(QString((params)["name"].getVal<char*>()));
 
-        //__________________________________________________________________________________________________________ Tab MANual           
+        //__________________________________________________________________________________________________________ Tab MANual
         ui.label_MAN_Start_Wavelength->setText(QString::number(params["wavelength"].getMax()) + " nm");
-        ui.label_MAN_Stop_Wavelength->setText(QString::number(params["wavelength"].getMin()) + " nm");       
+        ui.label_MAN_Stop_Wavelength->setText(QString::number(params["wavelength"].getMin()) + " nm");
 
         ui.doubleSpinBox_MAN_Wavelength->setMaximum(params["wavelength"].getMax());
         ui.doubleSpinBox_MAN_Wavelength->setMinimum(params["wavelength"].getMin());
@@ -108,7 +108,7 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
         ui.doubleSpinBox_EXT_Start_Wavelength->setMaximum(params["modification_start_wavelength"].getMax());
         ui.doubleSpinBox_EXT_Start_Wavelength->setValue(params["modification_start_wavelength"].getVal<double>());
 
-        //__________________________________________________________________________________________________________ Tab MODulation        
+        //__________________________________________________________________________________________________________ Tab MODulation
         ui.label_MOD_Start_Wavelength->setText(QString::number(params["wavelength"].getMax()) + " nm");
         ui.label_MOD_Stop_Wavelength->setText(QString::number(params["wavelength"].getMin()) + " nm");
 
@@ -119,10 +119,10 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
         ui.doubleSpinBox_MOD_Wavelength2->setMaximum(params["wavelength_second"].getMax());
         ui.doubleSpinBox_MOD_Wavelength2->setMinimum(params["wavelength_second"].getMin());
         ui.doubleSpinBox_MOD_Wavelength2->setValue(params["wavelength_second"].getVal<double>());
-       
+
         ui.comboBox_MOD_frequency->setObjectName(QString::fromUtf8("modulation_frequency"));
 
-        //__________________________________________________________________________________________________________ Booster settings 
+        //__________________________________________________________________________________________________________ Booster settings
         if (params["operation_booster"].getVal<int>() == -1) //booster is not installed
         {
             ui.label_Booster_Enable->setStyleSheet("QLabel { color : grey }");
@@ -167,7 +167,7 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
             ui.label_Booster_Limit->setStyleSheet("QLabel { color : grey }");
             ui.label_Booster_Limit->setText("Limit");
         }
-        
+
         //__________________________________________________________________________________________________________ Master Key
         if (params["master_key"].getVal<int>() == 0)
         {
@@ -180,7 +180,7 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
             ui.label_Master_Key->setText("Master Key is I");
         }
 
-        //__________________________________________________________________________________________________________ Interlock 
+        //__________________________________________________________________________________________________________ Interlock
         if (params["remote_interlock"].getVal<int>() == 1)
         {
             ui.label_Interlock_Alarm->setStyleSheet("QLabel { background-color : green; color : grey }");
@@ -258,7 +258,7 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
 
         //__________________________________________________________________________________________________________ Tab of Mode
         ui.tabWidget_Operation_Mode->setCurrentIndex( params["operation_mode"].getVal<int>() - 1 );
-        
+
         m_firstRun = false;
     }
 
@@ -325,12 +325,12 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
             ui.doubleSpinBox_AUTO_Start_Wavelength->setValue(params["modification_start_wavelength"].getVal<double>());
         }
 
-        //__________________________________________________________________________________________________________ wavelength_first    
+        //__________________________________________________________________________________________________________ wavelength_first
         if (params.contains("wavelength_first"))
         {
             ui.doubleSpinBox_MOD_Wavelength1->setValue(params["wavelength_first"].getVal<double>());
         }
-        //__________________________________________________________________________________________________________ wavelength_second    
+        //__________________________________________________________________________________________________________ wavelength_second
         if (params.contains("wavelength_second"))
         {
             ui.doubleSpinBox_MOD_Wavelength2->setValue(params["wavelength_second"].getVal<double>());
@@ -375,7 +375,7 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
             }
         }
 
-        //__________________________________________________________________________________________________________ Booster settings 
+        //__________________________________________________________________________________________________________ Booster settings
         if (params.contains("operation_booster"))
         {
             if (params["operation_booster"].getVal<int>() == -1) //booster is not installed
@@ -496,8 +496,8 @@ ito::RetVal DialogSuperlumBS::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("power_mode", ito::ParamBase::Int, valpower)));
     }
 
-    //__________________________________________________________________________________________________________ Operation Mode 
-    tabval = ui.tabWidget_Operation_Mode->currentIndex() + 1 ;    
+    //__________________________________________________________________________________________________________ Operation Mode
+    tabval = ui.tabWidget_Operation_Mode->currentIndex() + 1 ;
     if (m_currentParameters["operation_mode"].getVal<int>() != tabval)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("operation_mode", ito::ParamBase::Int, tabval)));
@@ -523,7 +523,7 @@ ito::RetVal DialogSuperlumBS::applyParameters()
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("modification_end_wavelength", ito::ParamBase::Double, valdouble)));
         }
-        
+
         //__________________________________________________________________________________________________________Start wavelength
         valdouble = ui.doubleSpinBox_AUTO_Start_Wavelength->value();
         if (m_currentParameters["modification_start_wavelength"].getVal<double>() != valdouble)
@@ -531,7 +531,7 @@ ito::RetVal DialogSuperlumBS::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("modification_start_wavelength", ito::ParamBase::Double, valdouble)));
 
         }
-        
+
         //__________________________________________________________________________________________________________Sweep speed
         valdouble = ui.doubleSpinBox_AUTO_Speed->value();
         if (m_currentParameters["sweep_speed"].getVal<int>() != valdouble)

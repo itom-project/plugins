@@ -10,7 +10,7 @@
 **Devices**:    Motor-Controller Nanotec SMCP
 **Author**:     :pluginauthor:`NanotecStepMotor`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -21,9 +21,9 @@ The plugin implements the controllers SMCP from Nanotec.
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: NanotecStepMotor
 

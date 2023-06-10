@@ -52,7 +52,7 @@ dnl ####################################################################
 dnl
 dnl Please do not remove this:
 dnl filetype: 2b993145-3256-47b4-84fd-ec4dcdf4fdf9
-dnl I use this to find all the different instances of this file which 
+dnl I use this to find all the different instances of this file which
 dnl are supposed to be synchronized.
 dnl
 dnl Local Variables:

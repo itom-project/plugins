@@ -547,9 +547,9 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>This plugin is a wrapper for the driver of the USB Motion 3x III card of COPTONIX GmbH (www.coptonix.com). It is able to address up to three different 3-phase stepper motors with up to 64 microstep-accuracy. 
+        <source>This plugin is a wrapper for the driver of the USB Motion 3x III card of COPTONIX GmbH (www.coptonix.com). It is able to address up to three different 3-phase stepper motors with up to 64 microstep-accuracy.
 
-The controller is connected to the computer by a USB connection. The wrapper addresses the methods given by the Windows library provided by COPTONIX. For more information about the driver see the corresponding website of the manufacturer (The 64bit DLL was directly provided by COPTONIX). 
+The controller is connected to the computer by a USB connection. The wrapper addresses the methods given by the Windows library provided by COPTONIX. For more information about the driver see the corresponding website of the manufacturer (The 64bit DLL was directly provided by COPTONIX).
 
 If you change any parameters like speed or acceleration, set the values and then read the values again, since the currently set values might slightly differ from the desired values due to rounding uncertainties.</source>
         <translation type="unfinished"></translation>

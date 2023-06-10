@@ -1,8 +1,8 @@
 /// \file EnsembleConnection.h
 /// \brief Contains the functions to establish connections to Ensembles.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_CONNECTION_H__
 #define __Ensemble_CONNECTION_H__

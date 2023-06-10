@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -57,7 +57,7 @@ Q_DECLARE_METATYPE(ito::DataObject)
     \class Vistek
     \brief Class that can handle SVS Vistek GigE Cameras.
 
-    Usually every method in this class can be executed in an own thread. Only the constructor, destructor, showConfDialog will be executed by the 
+    Usually every method in this class can be executed in an own thread. Only the constructor, destructor, showConfDialog will be executed by the
     main (GUI) thread.
 */
 
@@ -85,7 +85,7 @@ const ito::RetVal Vistek::showConfDialog(void)
     \param [in] parent is the parent object for this grabber (default: NULL)
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
-Vistek::Vistek(QObject *parent) : 
+Vistek::Vistek(QObject *parent) :
     AddInGrabber(),
     m_pVistekContainer(NULL),
     m_cam(SVGigE_NO_CAMERA),
@@ -236,7 +236,7 @@ ito::RetVal Vistek::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Sets parameter of m_params with key name. 
+//! Sets parameter of m_params with key name.
 /*!
     This method copies the given string of the char pointer val with a size of len to the m_params-parameter.
 
@@ -257,7 +257,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
-    
+
     if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
@@ -352,7 +352,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             else
             {
                 const int *roi = val->getVal<const int*>();
-                
+
                 if (grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
                 {
                     retValue += checkError(tr("stop camera").toLatin1().data(), Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
@@ -429,9 +429,9 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                     retValue += checkError(tr("restart camera 1").toLatin1().data(), Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_SOFTWARE_TRIGGER));
                     retValue += checkError(tr("restart camera 2").toLatin1().data(), Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_START));
                 }
-                
+
                 set = true;
-            }      
+            }
         }
         else if (!key.compare("bpp"))
         {
@@ -488,7 +488,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                     retValue += checkError(tr("restart camera 1").toLatin1().data(), Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_SOFTWARE_TRIGGER));
                     retValue += checkError(tr("restart camera 2").toLatin1().data(), Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_START));
                 }
-            }      
+            }
         }
 
         if (!retValue.containsError() && !set) //binning is already set earlier
@@ -666,7 +666,7 @@ ito::RetVal Vistek::checkError(const char *prependStr, SVGigE_RETURN returnCode)
             str = "";
         }
 
-        char *msg = Error_getMessage(returnCode);
+        const char *msg = Error_getMessage(returnCode);
         if (msg)
         {
             retval += ito::RetVal::format(ito::retError, returnCode, tr("%s: Vistek DLL error %i '%s' occurred").toLatin1().data(), str, returnCode, msg);
@@ -732,7 +732,7 @@ ito::RetVal Vistek::startDevice(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With stopDevice the camera device is stopped (opposite to startDevice)
 /*!
@@ -773,7 +773,7 @@ ito::RetVal Vistek::stopDevice(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This method triggers a new data acquisition.
 /*!
@@ -791,7 +791,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
-    
+
     int timeout = 0;
 
     if (grabberStartedCount() <= 0)
@@ -800,7 +800,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        
+
         /*bool b;
         SVGigE_RETURN ret2 = StreamingChannel_getReadoutTransfer(m_streamingChannel, &b);*/
         m_acquisitionRetVal = ito::retOk;
@@ -844,7 +844,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
                     break;
                 }
             }
-        }        
+        }
     }
 
     return retValue;
@@ -891,7 +891,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
         retValue += ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since no image has been acquired.").toLatin1().data());
     }
     else
-    {   
+    {
         /*bool isReadoutTransfer;
         StreamingChannel_getReadoutTransfer(m_streamingChannel, &isReadoutTransfer);
         qDebug() << "isReadoutTransfer" << isReadoutTransfer;*/
@@ -926,7 +926,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
             else if (m_data.getType() == ito::tUInt16)
             {
                 if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);            
+                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
             }
             else
             {
@@ -975,7 +975,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
         }
     }
 
-    
+
 
     return retValue;
 }
@@ -983,7 +983,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -1017,7 +1017,7 @@ ito::RetVal Vistek::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue=retValue;
         waitCond->release();
@@ -1029,7 +1029,7 @@ ito::RetVal Vistek::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the 
+    This method copies the recently grabbed camera frame to the given DataObject. Therefore this camera size must fit to the data structure of the
     DataObject.
 
     \note This method is similar to VideoCapture::retrieve() of openCV
@@ -1044,7 +1044,7 @@ ito::RetVal Vistek::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
@@ -1056,7 +1056,7 @@ ito::RetVal Vistek::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1064,7 +1064,7 @@ ito::RetVal Vistek::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1132,7 +1132,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
 
             // print out the new valid network settings
             memset(Msg,0,sizeof(Msg));
-            sprintf_s(Msg, 255, "Camera has been forced to a valid IP '%d.%d.%d.%d'\n", 
+            sprintf_s(Msg, 255, "Camera has been forced to a valid IP '%d.%d.%d.%d'\n",
                 (IPAddress >> 24)%256, (IPAddress >> 16)%256, (IPAddress >> 8)%256, IPAddress%256);
             std::cout << Msg << std::endl;
         }
@@ -1278,7 +1278,7 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
     ito::RetVal retval;
     SVGigE_RETURN SVGigERet;
     ParamMapIterator it;
-       
+
 
     //1. first check if there is already a stream initialized and if so, delete it
     if (m_streamingChannel != SVGigE_NO_STREAMING_CHANNEL)
@@ -1302,19 +1302,19 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
     Camera_getAreaOfInterestRange(m_cam, &sizexmin, &sizeymin, &sizexmax, &sizeymax);
     Camera_getAreaOfInterest(m_cam, &sizex, &sizey, &offsetx, &offsety);
 
-    it = m_params.find("roi");        
+    it = m_params.find("roi");
     ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, sizexmax - 1, offsetxinc, sizexmin, sizexmax, sizexinc), ito::RangeMeta(0, sizeymax - 1, offsetyinc, sizeymin, sizeymax, sizeyinc), "ImageFormatControl");
     it->setMeta(rm, true);
     int roi[] = { offsetx, offsety, sizex, sizey };
     it->setVal<int*>(roi, 4);
-        
+
     it = m_params.find("sizex");
     it->setVal<int>(sizex);
     ito::IntMeta *im = it->getMetaT<ito::IntMeta>();
     im->setMin(sizexmin);
     im->setMax(sizexmax);
     im->setStepSize(sizexinc);
-        
+
     it = m_params.find("sizey");
     it->setVal<int>(sizey);
     im = it->getMetaT<ito::IntMeta>();
@@ -1474,7 +1474,7 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
     {
         std::cout << "done!\n" << std::endl;
     }
-    
+
     return retval;
 }
 
@@ -1662,5 +1662,3 @@ SVGigE_RETURN __stdcall MessageCallback(Event_handle eventID, void* context)
 
     return SVGigE_SUCCESS;
 }
-
-

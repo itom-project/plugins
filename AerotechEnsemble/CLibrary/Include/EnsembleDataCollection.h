@@ -1,8 +1,8 @@
 /// \file EnsembleDataCollection.h
 /// \brief Contains the functions to handle data collection.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_DATACOLLECTION_H__
 #define __Ensemble_DATACOLLECTION_H__
@@ -26,7 +26,7 @@ typedef struct {
 
 /// \brief Creates a new data collection configuration.
 ///
-/// This function creates a new data collection configuration object. 
+/// This function creates a new data collection configuration object.
 /// Initial collection period is 1 msec.
 ///
 /// \param[in] handle The handle to the Ensemble
@@ -36,7 +36,7 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigCreate(EnsembleHandle handl
 
 /// \brief Frees the data collection configuration.
 ///
-/// This function frees memory of a data collection configuration object. 
+/// This function frees memory of a data collection configuration object.
 ///
 /// \param[in] DCCHandle The handle to an Ensemble Data Collection Configuration object
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.
@@ -44,7 +44,7 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigFree(EnsembleDataCollectCon
 
 /// \brief Sets the number of sample points to collect per signal.
 ///
-/// This function sets number of points per signal to collect. 
+/// This function sets number of points per signal to collect.
 ///
 /// \param[in] DCCHandle The handle to an Ensemble Data Collection Configuration object
 /// \param[in] numberOfPoints The number of sample points per signal to collect
@@ -53,7 +53,7 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigSetSamples(EnsembleDataColl
 
 /// \brief Sets how frequently a sample point will be collect on each signal.
 ///
-/// This function sets the time period between two consecutive sample points. 
+/// This function sets the time period between two consecutive sample points.
 ///
 /// \param[in] DCCHandle The handle to an Ensemble Data Collection Configuration object
 /// \param[in] collectionPeriod The time period between two samples in msec
@@ -62,7 +62,7 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigSetPeriod(EnsembleDataColle
 
 /// \brief Adds a signal at the end of the configuration.
 ///
-/// This function adds a signal to the end in the data collection configuration. 
+/// This function adds a signal to the end in the data collection configuration.
 ///
 /// \param[in] DCCHandle The handle to an Ensemble Data Collection Configuration object.
 /// \param[in] signal The name of the signal. Defined in EnsembleDataCollectionInfo.h as DATASIGNAL_xxxx
@@ -78,11 +78,11 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigAddSignal(EnsembleDataColle
 /// \param[in] DCCHandle The handle to an Ensemble Data Collection Configuration object.
 /// \param[out] signalCount The number of signals currently added to the data collection configuration.
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.
-BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigGetSignalCount(EnsembleDataCollectConfigHandle DCCHandle, WORD* signalCount); 
+BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigGetSignalCount(EnsembleDataCollectConfigHandle DCCHandle, WORD* signalCount);
 
 /// \brief Removes all signals from configuration.
 ///
-/// This function will remove all existing signals in the data collection configuration. 
+/// This function will remove all existing signals in the data collection configuration.
 /// The configuration will become invalid.
 ///
 /// \param[in] DCCHandle The handle to an Ensemble Data Collection Configuration object.
@@ -100,7 +100,7 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionConfigApply(EnsembleHandle handle
 
 /// \brief Starts data collection immediately.
 ///
-/// This function will send a data collection configuration to the Ensemble and start data collection immediately. 
+/// This function will send a data collection configuration to the Ensemble and start data collection immediately.
 ///
 /// \param[in] handle The handle to the Ensemble.
 /// \param[in] DCCHandle The handle to an Ensemble Data Collection Configuration object.
@@ -109,7 +109,7 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionStart(EnsembleHandle handle, Ense
 
 /// \brief Aborts data collection.
 ///
-/// This function will abort data collection. 
+/// This function will abort data collection.
 ///
 /// \param[in] handle The handle to the Ensemble
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.
@@ -117,16 +117,16 @@ BOOL DLLENTRYDECLARATION EnsembleDataCollectionStop(EnsembleHandle handle);
 
 /// \brief Retrieves data collection status.
 ///
-/// This function will retrieve data collection status. 
+/// This function will retrieve data collection status.
 ///
 /// \param[in] handle The handle to the Ensemble
 /// \param[out] status The status code, point allocated and collected
 /// \return TRUE on success, FALSE if an error occurred. Call EnsembleGetLastError() for more information.
-BOOL DLLENTRYDECLARATION EnsembleDataCollectionGetStatus(EnsembleHandle handle, EnsembleDataCollectionStatus *status); 
+BOOL DLLENTRYDECLARATION EnsembleDataCollectionGetStatus(EnsembleHandle handle, EnsembleDataCollectionStatus *status);
 
 /// \brief Retrieves all sample points from the Ensemble.
 ///
-/// This function will retrieve all the sample points from the Ensemble. 
+/// This function will retrieve all the sample points from the Ensemble.
 /// Caller must declare data[numberOfSignals][numberOfSamples] to match the number of signals and samples in the configuration
 /// Use (DOUBLE *)data or &data[0][0] when passing data to this function.
 ///

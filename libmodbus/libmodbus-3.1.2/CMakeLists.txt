@@ -1,10 +1,10 @@
 set(target_name libmodbus_library)
 project(${target_name})
 
-message(STATUS "-------- LIBMODBUS 3.1.2 LIBRARY ----------") 
+message(STATUS "-------- LIBMODBUS 3.1.2 LIBRARY ----------")
 
 cmake_minimum_required(VERSION 3.1...3.15)
- 
+
 option(BUILD_LIBMODBUS_SHARED "Build libmodbus as shared library (DLL) or static library (must be OFF)" OFF)
 
 if(BUILD_LIBMODBUS_SHARED)
@@ -14,7 +14,7 @@ if(BUILD_LIBMODBUS_SHARED)
 else(BUILD_LIBMODBUS_SHARED)
     add_definitions(-DLIBMODBUSSTATIC)
     set(LIBRARY_TYPE STATIC)
-    
+
     #if itomCommon is static, add -fPIC as compiler flag for linux
     if(UNIX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -35,7 +35,7 @@ configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
     ${CMAKE_CURRENT_BINARY_DIR}/config.h
     )
-    
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -52,7 +52,7 @@ set(libmodbus_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/modbus-tcp-private.h
 )
 
-set(libmodbus_SOURCES 
+set(libmodbus_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/modbus.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/modbus-data.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/modbus-rtu.c
@@ -73,7 +73,7 @@ target_link_libraries(${target_name} ${LIBRARIES})
 #    endif(WIN32)
 #else("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 #    message(STATUS "Target is 32 bits")
-#    if(WIN32)         
+#    if(WIN32)
 #        set(DEST lib/win32)
 #    else(WIN32)
 #        set(DEST lib/linux32)

@@ -10,7 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-   
+
 AERERR_CODE AER_DLLENTRY AerUserSetSecurity( HAERCTRL hAerCtrl, HSECURE hSecure );
 AERERR_CODE AER_DLLENTRY AerUserGetSecurity( HAERCTRL hAerCtrl, HSECURE *phSecure );
 

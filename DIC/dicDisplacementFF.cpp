@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -61,7 +61,7 @@ int doCalcCoordFF(cell *thisCell, Eigen::VectorXd *coeffMat, ito::DataObject *pt
                     ito::float64 n2 = 1.0 * cx * (nrows - 1 - cy) / (nrows - 1) / (ncols - 1);
                     ito::float64 n3 = 1.0 * (ncols - 1 - cx) * cy / (nrows - 1) / (ncols - 1);
                     ito::float64 n4 = 1.0 * cx * cy / nrows / ncols;
-                    
+
                     cdPtr[(cy * ncols + cx) * 8] = n1;
                     cdPtr[(cy * ncols + cx) * 8 + 2] = n2;
                     cdPtr[(cy * ncols + cx) * 8 + 4] = n3;
@@ -83,11 +83,11 @@ int doCalcCoordFF(cell *thisCell, Eigen::VectorXd *coeffMat, ito::DataObject *pt
                         + cdPtr[(cy * ncols + cx) * 8 + 7] * cptr[thisCell->nodes[3] * 2 + 1];
 
                     /*
-                    ptsPtr[(cy * ncols + cx) * 2] = cx + thisCell->x0 
-                        + cptr[thisCell->nodes[0]] * n1 + cptr[thisCell->nodes[1]] * n2 
+                    ptsPtr[(cy * ncols + cx) * 2] = cx + thisCell->x0
+                        + cptr[thisCell->nodes[0]] * n1 + cptr[thisCell->nodes[1]] * n2
                         + cptr[thisCell->nodes[2]] * n3 + cptr[thisCell->nodes[3]] * n4;
-                    ptsPtr[(cy * ncols + cx) * 2 + 1] = cy + thisCell->y0 
-                        + cptr[thisCell->nodes[4]] * n1 + cptr[thisCell->nodes[5]] * n2 
+                    ptsPtr[(cy * ncols + cx) * 2 + 1] = cy + thisCell->y0
+                        + cptr[thisCell->nodes[4]] * n1 + cptr[thisCell->nodes[5]] * n2
                         + cptr[thisCell->nodes[6]] * n3 + cptr[thisCell->nodes[7]] * n4;
                     */
                 }
@@ -110,7 +110,7 @@ int doCalcCoordFF(cell *thisCell, Eigen::VectorXd *coeffMat, ito::DataObject *pt
 //      Bit  Dez
 //        0   1     calculate derivatives
 //        1   2     keep image
-ito::RetVal doCalcIntDiffFF(ito::DataObject *imgInDef, ito::DataObject *intDiff, ito::DataObject *gradients, 
+ito::RetVal doCalcIntDiffFF(ito::DataObject *imgInDef, ito::DataObject *intDiff, ito::DataObject *gradients,
     ito::DataObject *coeffsDer, cell *thisCell, Eigen::VectorXd *coeffs, const int flags, const int mode, const int numcoeff, ito::float64 *intSqrSum = NULL)
 {
     ito::RetVal retVal(ito::retOk);
@@ -192,7 +192,7 @@ int doCalcSMatRVecFF(ito::DataObject *imgInRef, ito::DataObject *imgInDef, Eigen
         rsizes[0] = csy * csx;
         rsizes[1] = 1;
 
-        doCalcIntDiffFF(imgInDef, &intDiff, 
+        doCalcIntDiffFF(imgInDef, &intDiff,
             &intInterpol, &coeffsDer, &(*cells)[nc], coeffs, flags, 3, nnodes, &intDefSqr);
 
         ito::float32 *intDiffPtr = (ito::float32*)intDiff.rowPtr(0, 0);
@@ -245,7 +245,7 @@ int doCalcSMatRVecFF(ito::DataObject *imgInRef, ito::DataObject *imgInDef, Eigen
                 }
             }
         }
-       
+
         ito::float64 correlCoeffTmp;
         intDiff = intDiff.mul(intDiff);
         retVal += ito::dObjHelper::meanValue(&intDiff, correlCoeffTmp, 0);
@@ -585,7 +585,7 @@ Journal of Strain Analysis 47(3), 2012");
                 ito::DataObject intDiff(csy, csx, ito::tFloat64);
                 ito::DataObject coeffsDer(csy * csx, numcoeff * 2, ito::tFloat64);
 
-                doCalcIntDiffFF(inFieldDef, &intDiff, &intInterpol, &coeffsDer, 
+                doCalcIntDiffFF(inFieldDef, &intDiff, &intInterpol, &coeffsDer,
                     &cells[nc], &distCoeffVecNew, flags, 2, numcoeff, &tmpIntSqrSum);
 
 /*

@@ -6,9 +6,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////
 //
-// This structure is maintained for back compatibility only, pre-2.13, 
+// This structure is maintained for back compatibility only, pre-2.13,
 // needed by CAerDataCenter::GetAxisData()    and    AerStatusGetAxisInfo()
-// NOTE: for back compatibility reasons, AER_AXIS_DATA_EX cannot be changed. 
+// NOTE: for back compatibility reasons, AER_AXIS_DATA_EX cannot be changed.
 typedef struct tagAER_AXIS_DATA_EX
 {
    LONG     lPos;                /* Position (without calibration), reflects PositionCnts Axis Parameter            (counts)  */
@@ -32,7 +32,7 @@ typedef struct tagAER_AXIS_DATA_EX
    WORD     wNumDecimals;        /* Number of Decimals (NumDecimalsxxx axis parameter value, where xxx based on dwType of axis, ad G70/G71 mode) */
    WORD     wUnits;              /* Whether owning task is in Metric(0->G71) or English(1->G70) or Counts(2->G72) */
    WORD     wMinutes;            /* Whether owning task is in per/min(G75) or not (G76) */
-   AER_AXIS_DATA_IO IOData;          
+   AER_AXIS_DATA_IO IOData;
 } AER_AXIS_DATA_EX;
 typedef AER_AXIS_DATA_EX
    *PAER_AXIS_DATA_EX;
@@ -40,8 +40,8 @@ typedef AER_AXIS_DATA_EX
 //////////////////////////////////////////////////////////////////////////////////
 //
 // NOTE: for back compatibility reasons, AER_AXIS_DATA cannot be changed, up to the IOData member. (pre 2.14)
-// (can switch things around, but it must be that 
-// (AerAxisData.byType == AerAxisDataEx.dwType) and (AerAxisData.IOData == AerAxisDataEx.IOData) 
+// (can switch things around, but it must be that
+// (AerAxisData.byType == AerAxisDataEx.dwType) and (AerAxisData.IOData == AerAxisDataEx.IOData)
 //    "user-prog-dist-units"  means the coordinates the user programs in (are determined by the owning task's current G70/G71/G72 setting, as well as by current transforms)
 //    "user-virt-dist-units"  means the encoder position with conversion to mm/inch based on task's current G70/G71/G72 setting, and rolledover (transorms not done)
 //       So if in mirroring about X axis (G83 X) and user says: G1X10, then at end of move user-prog-dist-units=10, user-virt-dist-units=-10
@@ -61,7 +61,7 @@ typedef struct tagAER_AXIS_DATA
    DOUBLE   dPosProgCmd;         /* Position command             (user-prog-dist-units) */
    DOUBLE   dFixtureOffset;      /* Active Fixture offset value  (user-prog-dist-units) */
 
-   DOUBLE   dSpare;     
+   DOUBLE   dSpare;
 
 
    DOUBLE   dRollOver;           /* Rollover distance, if not 0.0, user-program units rollover to zero at this value. (user-virt-dist-units) */
@@ -81,9 +81,9 @@ typedef struct tagAER_AXIS_DATA
    BYTE     byUnits;             /* Whether owning task is in Metric(0->G71) or English(1->G70) or Counts(2->G72) */
    BYTE     byMinutes;           /* Whether owning task is in per/min(G75) or not (G76) */
    LONG     lGantryOffset;       /* Gantry offset (if any) in cnts */
-   WORD     wSpare;              
+   WORD     wSpare;
 
-   AER_AXIS_DATA_IO IOData;          
+   AER_AXIS_DATA_IO IOData;
 
 } AER_AXIS_DATA;
 typedef AER_AXIS_DATA   *PAER_AXIS_DATA;
@@ -114,8 +114,8 @@ typedef struct tagAER_GSTRIP_AXIS_STD_DATA
    SHORT sDigitalInputs;     // by default, is digital input data
    SHORT sTorque;
    SHORT sTorqueCmd;
-   SHORT sAnalog0;           
-   SHORT sAnalog1;           
+   SHORT sAnalog0;
+   SHORT sAnalog1;
    SHORT sDigitalOutputs;    // by default, is digital output data
    SHORT sDataCollectRate;   // should
 
@@ -140,8 +140,8 @@ typedef struct tagAER_GSTRIP_AXIS_OPT_DATA
    LONG  lOptionalData6;
    LONG  lOptionalData7;
    LONG  lSpare0;
-   SHORT sDataCollectRate;    // used to identify the rate for this sample 2, 4, or 8 kHz ?? 
-   SHORT sSpare0;             
+   SHORT sDataCollectRate;    // used to identify the rate for this sample 2, 4, or 8 kHz ??
+   SHORT sSpare0;
    SHORT sOptionalDataCode0;
    SHORT sOptionalDataCode1;
    SHORT sOptionalDataCode2;
@@ -150,7 +150,7 @@ typedef struct tagAER_GSTRIP_AXIS_OPT_DATA
    SHORT sOptionalDataCode5;
    SHORT sOptionalDataCode6;
    SHORT sOptionalDataCode7;
-   LONG  lMoreSpares[2];     
+   LONG  lMoreSpares[2];
 } AER_GSTRIP_AXIS_OPT_DATA;
 typedef AER_GSTRIP_AXIS_OPT_DATA  *PAER_GSTRIP_AXIS_OPT_DATA;
 
@@ -184,9 +184,9 @@ AERERR_CODE AER_DLLENTRY AerDCGetAxisDirectEx( HAERCTRL hAerCtrl, AXISMASK mAxis
 
 AERERR_CODE AER_DLLENTRY AerStatusGetAxisInfo2( HAERCTRL hAerCtrl, AXISMASK mAxis, PAER_AXIS_DATA pData );
 
-AERERR_CODE AER_DLLENTRY AerStatusGetPosition( HAERCTRL hAerCtrl, AXISMASK mAxis, DWORD dwUnits, 
-                                               PAODOUBLE pdPosition, 
-                                               PAODOUBLE pdPositionCmd, 
+AERERR_CODE AER_DLLENTRY AerStatusGetPosition( HAERCTRL hAerCtrl, AXISMASK mAxis, DWORD dwUnits,
+                                               PAODOUBLE pdPosition,
+                                               PAODOUBLE pdPositionCmd,
                                                PAODOUBLE pdVelocityAvg);
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -202,8 +202,7 @@ AERERR_CODE AER_DLLENTRY  AerStripGlobalGetQueue( HAERCTRL hAerCtrl, AXISMASK mA
 //////////////////////////////////////////////////////////////////////////////////
 #ifdef __cplusplus
 }
-#endif 
+#endif
 
 
 #endif
-

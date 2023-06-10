@@ -1,7 +1,7 @@
 TODO
 
 - when problems occur resulting in the camera not
-  being disconnected properly, if the speed was 
+  being disconnected properly, if the speed was
   greater than 9600, the camera must be reset
   For example: specifying an invalid image #
 - quite of bit of testing has been done, but more

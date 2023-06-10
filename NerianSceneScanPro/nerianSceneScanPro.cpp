@@ -71,7 +71,7 @@ The device has a web interface which allows access to further parameters.The int
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Lesser General Public License (LGPL)");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.append(ito::Param("device", ito::ParamBase::String, "", tr("device name (IP adress) that should be opened, an empty string opens the first device that is found (default). Pass '<scan>' for displaying all detected devices.").toLatin1().data()));
 }
@@ -79,7 +79,7 @@ The device has a web interface which allows access to further parameters.The int
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
 /*!
-    
+
 */
 NerianSceneScanProInterface::~NerianSceneScanProInterface()
 {
@@ -202,7 +202,7 @@ NerianSceneScanPro::NerianSceneScanPro() : AddInGrabber(), m_isgrabbing(false), 
     paramVal = ito::Param("exposureGainMode", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 0, tr("0: auto exposure and gain, 1: auto exposure manual gain, 2: manual exposure auto gain, 3: manual exposure and gain").toLatin1().data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("AutoExposureControl");
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     paramVal = ito::Param("autoROI", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("1 if an ROI for automatic exposure and gain control is enabled.").toLatin1().data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("AutoExposureControl");
     m_params.insert(paramVal.getName(), paramVal);
@@ -268,8 +268,8 @@ NerianSceneScanPro::NerianSceneScanPro() : AddInGrabber(), m_isgrabbing(false), 
     paramVal.setMeta(new ito::DoubleMeta(0.0, std::numeric_limits<double>::max(), 0.0, "TriggerPairingControl"), true);
     paramVal.getMetaT<ito::DoubleMeta>()->setUnit("ms");
     m_params.insert(paramVal.getName(), paramVal);
-    
-    
+
+
     paramVal = ito::Param("autoRecalibration", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("1 auto re-calibration is enabled.").toLatin1().data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("CalibrationControl");
     m_params.insert(paramVal.getName(), paramVal);
@@ -278,13 +278,13 @@ NerianSceneScanPro::NerianSceneScanPro() : AddInGrabber(), m_isgrabbing(false), 
     m_params.insert(paramVal.getName(), paramVal);
 
 
-    
+
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
     DockWidgetNerianSceneScanPro *dw = new DockWidgetNerianSceneScanPro(this);
-    
+
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -350,13 +350,13 @@ ito::RetVal NerianSceneScanPro::init(QVector<ito::ParamBase> *paramsMand, QVecto
         m_pParamsObj = new SceneScanParameters(devices[deviceIdx]);
         m_pImageTransferObj = new ImageTransfer(devices[deviceIdx]);
         m_pImagePair = new ImagePair();
-        
+
 
         retValue += m_params["name"].setVal<char*>(&devices[deviceIdx].toString()[0]);
         m_identifier = QString(&devices[deviceIdx].toString()[0]);
         setIdentifier(m_identifier);
         //take a test image
-        try 
+        try
         {
             while (!m_pImageTransferObj->receiveImagePair(*m_pImagePair))
             {
@@ -372,8 +372,8 @@ ito::RetVal NerianSceneScanPro::init(QVector<ito::ParamBase> *paramsMand, QVecto
 
         }
 
-        
-       
+
+
 
     }
     //steps todo:
@@ -385,17 +385,17 @@ ito::RetVal NerianSceneScanPro::init(QVector<ito::ParamBase> *paramsMand, QVecto
     // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-    
+
     if (!retValue.containsError())
-    {        
+    {
         retValue += checkData();
     }
-    
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -414,7 +414,7 @@ ito::RetVal NerianSceneScanPro::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     //todo:
     // - disconnect the device if not yet done
     // - this funtion is considered to be the "inverse" of init.
@@ -426,7 +426,7 @@ ito::RetVal NerianSceneScanPro::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -1007,14 +1007,14 @@ ito::RetVal NerianSceneScanPro::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     incGrabberStarted(); //increment a counter to see how many times startDevice has been called
-    
+
     //todo:
     // if this function has been called for the first time (grabberStartedCount() == 1),
     // start the camera, allocate necessary buffers or do other work that is necessary
     // to prepare the camera for image acquisitions.
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1022,7 +1022,7 @@ ito::RetVal NerianSceneScanPro::startDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NerianSceneScanPro::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1036,7 +1036,7 @@ ito::RetVal NerianSceneScanPro::stopDevice(ItomSharedSemaphore *waitCond)
         retValue += ito::RetVal(ito::retWarning, 0, tr("The grabber has already been stopped.").toLatin1().data());
         setGrabberStarted(0);
     }
-    
+
     //todo:
     // if the counter (obtained by grabberStartedCount()) drops to zero again, stop the camera, free all allocated
     // image buffers of the camera... (it is the opposite from all things that have been started, allocated... in startDevice)
@@ -1048,7 +1048,7 @@ ito::RetVal NerianSceneScanPro::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NerianSceneScanPro::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -1079,15 +1079,15 @@ ito::RetVal NerianSceneScanPro::acquire(const int trigger, ItomSharedSemaphore *
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
-    
+
     //todo:
     // it is possible now, to wait here until the acquired image is ready
     // if you want to do this here, wait for the finished image, get it and save it
     // to any accessible buffer, for instance the m_data dataObject that is finally delivered
     // via getVal or copyVal.
-    // 
+    //
     // you can also implement this waiting and obtaining procedure in retrieveImage.
     // If you do it here, the camera thread is blocked until the image is obtained, such that calls to getParam, setParam, stopDevice...
     // are not executed during the waiting operation. They are queued and executed once the image is acquired and transmitted to the plugin.
@@ -1106,7 +1106,7 @@ ito::RetVal NerianSceneScanPro::retrieveData(ito::DataObject *externalDataObject
 
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
-    
+
     const int bufferWidth = m_params["sizex"].getVal<int>();
     const int bufferHeight = m_params["sizey"].getVal<int>();
     const int numChannel = m_params["sizez"].getVal<int>();
@@ -1190,7 +1190,7 @@ ito::RetVal NerianSceneScanPro::retrieveData(ito::DataObject *externalDataObject
                                 }
                                 memcpy(ptr1, imPtr1 + row*imageRowStep1, pixelStep1*bufferWidth);
                             }
-                            
+
                         }
                     }
 
@@ -1255,7 +1255,7 @@ ito::RetVal NerianSceneScanPro::retrieveData(ito::DataObject *externalDataObject
                         }
                     }
                 }
-          
+
         }
     }
 
@@ -1286,16 +1286,16 @@ ito::RetVal NerianSceneScanPro::retrieveData(ito::DataObject *externalDataObject
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
 /*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
+    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the
     DataObject.
-    
+
     This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, copyVal
 */
 ito::RetVal NerianSceneScanPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -1303,7 +1303,7 @@ ito::RetVal NerianSceneScanPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCo
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
     retValue += retrieveData();
 
@@ -1318,7 +1318,7 @@ ito::RetVal NerianSceneScanPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCo
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1330,8 +1330,8 @@ ito::RetVal NerianSceneScanPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCo
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
+    This method copies the recently grabbed camera frame to the given DataObject.
+
     The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
     interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
     an image stack is possible then)
@@ -1339,7 +1339,7 @@ ito::RetVal NerianSceneScanPro::getVal(void *vpdObj, ItomSharedSemaphore *waitCo
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, getVal
 */
 ito::RetVal NerianSceneScanPro::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -1347,12 +1347,12 @@ ito::RetVal NerianSceneScanPro::copyVal(void *vpdObj, ItomSharedSemaphore *waitC
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
-    
+
     if (!retValue.containsError())
     {
         //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
@@ -1365,13 +1365,13 @@ ito::RetVal NerianSceneScanPro::copyVal(void *vpdObj, ItomSharedSemaphore *waitC
         //send newly acquired image to possibly connected live images
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
-    
-    if (waitCond) 
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -1407,17 +1407,17 @@ void NerianSceneScanPro::dockWidgetVisibilityChanged(bool visible)
     If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
     of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
     m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
+
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
     all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
+
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
-    
+
     Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
     has a configuration dialog.
-    
+
     \sa hasConfDialog
 */
 const ito::RetVal NerianSceneScanPro::showConfDialog(void)
@@ -1434,11 +1434,11 @@ ito::RetVal NerianSceneScanPro::syncParams(SyncParams what /*=sAll*/)
         if (what & sOperationMode)
         {
             int min, max, inc,val;
-            
+
             retVal += getParamInfo<int>(min, max, inc, val, "operation_mode");
                 //int val = m_pParamsObj->getOperationMode();
-            
-            
+
+
             if (!retVal.containsError())
             {
                 retVal += m_params["operationMode"].setVal<int>(val);
@@ -1451,9 +1451,9 @@ ito::RetVal NerianSceneScanPro::syncParams(SyncParams what /*=sAll*/)
         if (what & sDisparityOffset)
         {
             int min, max, inc, val;
-            
+
             retVal += getParamInfo<int>(min, max, inc, val, "disparity_offset");
-            
+
             //int val = m_pParamsObj->getOperationMode();
 
 
@@ -1967,7 +1967,7 @@ ito::RetVal NerianSceneScanPro::syncParams(SyncParams what /*=sAll*/)
             retVal += m_params["autoRecalibration"].setVal<int>(val ? 1 : 0);
             val = m_pParamsObj->getSaveAutoReclabration();
             retVal += m_params["saveAutoRecalibration"].setVal<int>(val ? 1 : 0);*/
-            
+
         }
         if (what & sImageFormat)
         {
@@ -2038,7 +2038,7 @@ template<typename _Tp> inline ito::RetVal NerianSceneScanPro::getParamInfo(_Tp &
         std::map<std::string,ParameterInfo> paramMap =  m_pParamsObj->getAllParameters();
         std::map<std::string, ParameterInfo>::iterator it = paramMap.find(name);
 
-        
+
         if ( it != paramMap.end())
         {
             ParameterInfo::ParameterType t = it->second.getType();

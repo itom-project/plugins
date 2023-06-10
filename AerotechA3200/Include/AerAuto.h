@@ -23,12 +23,10 @@ AERERR_CODE AER_DLLENTRY AerAutoProgAddProgram( LPCTSTR pszFile, DWORD dwSystem,
                                                 LPCTSTR pszProg, DWORD dwType,
                                                 TASKMASK mTask );
 AERERR_CODE AER_DLLENTRY AerAutoProgRemoveProgram( LPCTSTR pszFile, DWORD dwProg );
-   
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
 // __AERAUTO_H__
-
-

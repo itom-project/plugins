@@ -53,10 +53,10 @@ ito::RetVal DIC::DICDeformation(QVector<ito::ParamBase> *paramsMand, QVector<ito
     ito::DataObject *defField = paramsMand->at(3).getVal<ito::DataObject*>();
     int rowWise = 1;
 
-    if (defCoeffs->getSize(0) != sizey * sizex || defCoeffs->getSize(1) < 2 && 
+    if (defCoeffs->getSize(0) != sizey * sizex || defCoeffs->getSize(1) < 2 &&
         defCoeffs->getSize(1) != sizey * sizex || defCoeffs->getSize(0) < 2)
         return ito::RetVal(ito::retError, 0, tr("Input data object size mismatch (sizex * sizey x 2 || 2 x sizex * sizey").toLatin1().data());
-    
+
     if (defCoeffs->getSize(1) < defCoeffs->getSize(0))
         rowWise = 0;
 
@@ -73,9 +73,9 @@ ito::RetVal DIC::DICDeformation(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     ito::DataObject xvals, yvals, dx, dy, posx, posy;
     int nSizes[2] = { sizey, sizex };
-	if (sizex < 4 || sizey < 4)  
+	if (sizex < 4 || sizey < 4)
 		return ito::RetVal(ito::retError, 0, tr("Currently only spline interpolation implemented, requiring at least 3 x 3 cells.").toLatin1().data());
-		
+
 
     if (rowWise)
     {
@@ -172,7 +172,7 @@ ito::RetVal DIC::DICDeformation(QVector<ito::ParamBase> *paramsMand, QVector<ito
         fParamsMand[0].setVal<void*>(&inpObj);
         fParamsMand[1].setVal<void*>(&outpObj);
         retVal += DICSplineCoeffs(&fParamsMand, &fParamsOpt, &fParamsOut);
-        
+
         fParamsMand[0].setVal<void*>(&outpObj);
         fParamsMand[1].setVal<void*>(&posx);
         fParamsMand[2].setVal<void*>(&interpVals);

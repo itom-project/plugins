@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -84,7 +84,7 @@ public:
     ito::RetVal invokeCommandNode(const gcstring &name, ito::tRetValue errorLevel = ito::retError);
 
     //call this to update the m_params["sizex"], ["sizey"] and ["bpp"]
-    ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params, QSharedPointer<BasePort> fallbackDevice = nullptr); 
+    ito::RetVal syncImageParameters(QMap<QString, ito::Param> &params, QSharedPointer<BasePort> fallbackDevice = nullptr);
 
     QVector<PfncFormat> supportedImageFormats(QVector<int> *bitdepths = NULL, QStringList *formatNames = NULL, QVector<int> *colortypes = NULL);
 

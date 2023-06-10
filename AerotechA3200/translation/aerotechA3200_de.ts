@@ -420,7 +420,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>This plugin allows communicating with controllers of type A3200 of company Aerotech. 
+        <source>This plugin allows communicating with controllers of type A3200 of company Aerotech.
 For details please check C:\A3200\MANUAL.</source>
         <translation type="unfinished"></translation>
     </message>

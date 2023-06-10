@@ -27,7 +27,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "dockWidgetThorlabsPowerMeter.h"
 #include <cmath>
-#include <QMessageBox> 
+#include <QMessageBox>
 
 
 
@@ -46,7 +46,7 @@ DockWidgetThorlabsPowerMeter::DockWidgetThorlabsPowerMeter(ito::AddInDataIO *gra
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsPowerMeter::parametersChanged(QMap<QString, ito::Param> params)
 {
-    
+
     if (m_firstRun)
     {
         m_inEditing = true;
@@ -69,7 +69,7 @@ void DockWidgetThorlabsPowerMeter::parametersChanged(QMap<QString, ito::Param> p
 
     if (!m_inEditing)
     {
-        
+
         m_inEditing = true;
         ui.dspinWavelength->setValue(params["wavelength"].getVal<double>());
         ui.spinAverage->setValue(params["average_number"].getVal<ito::int32>());
@@ -97,7 +97,7 @@ void DockWidgetThorlabsPowerMeter::parametersChanged(QMap<QString, ito::Param> p
     ui.sliderPowerRange->setMaximum(params["power_range"].getMax()*1E3);
     ui.sliderPowerRange->setValue(params["power_range"].getVal<double>()*1e3);
     ui.sliderPowerRange->blockSignals(false);
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ void DockWidgetThorlabsPowerMeter::on_btnZero_clicked()
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsPowerMeter::timerEvent(QTimerEvent *event)
 {
-    
+
         ito::RetVal retval(ito::retOk);
         ItomSharedSemaphore* waitCond = new ItomSharedSemaphore();
         QSharedPointer<double> value = QSharedPointer<double>(new double);
@@ -248,7 +248,7 @@ void DockWidgetThorlabsPowerMeter::timerEvent(QTimerEvent *event)
         }
         waitCond->deleteSemaphore();
 
-    
+
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsPowerMeter::manageTimer(const bool &visible)

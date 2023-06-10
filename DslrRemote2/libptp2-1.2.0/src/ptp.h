@@ -651,7 +651,7 @@ typedef struct _PTPCANONFolderEntry PTPCANONFolderEntry;
 #define PTP_DPC_NIKON_E3AAFlashMode			0xD076
 #define PTP_DPC_NIKON_E4ModelingFlash			0xD077
 #define PTP_DPC_NIKON_BracketSet			0xD078
-#define PTP_DPC_NIKON_E6ManualModeBracketing		0xD079	
+#define PTP_DPC_NIKON_E6ManualModeBracketing		0xD079
 #define PTP_DPC_NIKON_BracketOrder			0xD07A
 #define PTP_DPC_NIKON_E8AutoBracketSelection		0xD07B
 #define PTP_DPC_NIKON_BracketingSet			0xD07C
@@ -854,7 +854,7 @@ PTP_EXPORT uint16_t ptp_ek_sendfileobjectinfo(PTPParams* params, uint32_t* store
 				PTPObjectInfo* objectinfo);
 PTP_EXPORT uint16_t ptp_ek_sendfileobject(PTPParams* params, char* object,
 				uint32_t size);
-				
+
 /* Canon PTP extensions */
 
 PTP_EXPORT uint16_t ptp_canon_getobjectsize(PTPParams* params, uint32_t handle,
@@ -874,15 +874,15 @@ PTP_EXPORT uint16_t ptp_canon_focusunlock(PTPParams* params);
 PTP_EXPORT uint16_t ptp_canon_initiatecaptureinmemory(PTPParams* params);
 PTP_EXPORT uint16_t ptp_canon_getpartialobject(PTPParams* params, uint32_t handle,
 				uint32_t offset, uint32_t size,
-				uint32_t pos, char** block, 
+				uint32_t pos, char** block,
 				uint32_t* readnum);
 PTP_EXPORT uint16_t ptp_canon_getviewfinderimage(PTPParams* params, char** image,
 				uint32_t* size);
 PTP_EXPORT uint16_t ptp_canon_getchanges(PTPParams* params, uint16_t** props,
-				uint32_t* propnum); 
+				uint32_t* propnum);
 PTP_EXPORT uint16_t ptp_canon_getfolderentries(PTPParams* params, uint32_t store,
 				uint32_t p2, uint32_t parenthandle,
-				uint32_t handle, 
+				uint32_t handle,
 				PTPCANONFolderEntry** entries,
 				uint32_t* entnum);
 

@@ -45,11 +45,11 @@ void dialogNITWidySWIR::parametersChanged(QMap<QString, ito::Param> params)
 {
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
-    
+
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-		
+
 		//set bpp comboBox
 		ui.comboBox_bpp->addItem("8");
 		ui.comboBox_bpp->addItem("14");
@@ -66,7 +66,7 @@ void dialogNITWidySWIR::parametersChanged(QMap<QString, ito::Param> params)
 		for (int i = 0; i < ui.comboBox_bpp->count(); ++i)
 		{
 			if (ui.comboBox_bpp->itemText(i).toInt() == params["bpp"].getVal<int>())
-			{				
+			{
 				ui.comboBox_bpp->setCurrentIndex(i);
 				break;
 			}
@@ -85,10 +85,10 @@ void dialogNITWidySWIR::parametersChanged(QMap<QString, ito::Param> params)
 				break;
 			}
 		}
-		
+
 		ui.comboBox_shutterMode->setEnabled(!(params["shutter_mode"].getFlags() & ito::ParamBase::Readonly));
 
-		
+
 		// set trigger comboBox
 		ui.comboBox_triggerMode->addItem("Disabled");
 		ui.comboBox_triggerMode->addItem("Input");
@@ -166,7 +166,7 @@ void dialogNITWidySWIR::parametersChanged(QMap<QString, ito::Param> params)
 		ui.rangeWidget_height->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly));
 
 		m_firstRun = false;
-        
+
         //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
         enableDialog(true);
     }
@@ -180,7 +180,7 @@ ito::RetVal dialogNITWidySWIR::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
-	
+
 	if (ui.comboBox_bpp->isEnabled())
 	{
 		int bpp = ui.comboBox_bpp->currentText().toInt();
@@ -198,7 +198,7 @@ ito::RetVal dialogNITWidySWIR::applyParameters()
 		}
 	}
 
-	
+
 	if (ui.comboBox_triggerMode->isEnabled())
 	{
 

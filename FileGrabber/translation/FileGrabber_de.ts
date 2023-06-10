@@ -222,9 +222,9 @@
     </message>
     <message>
         <location line="+13"/>
-        <source>This plugin emulates a camera by grabbing images from files in a specific folder on the hard disk. Alternatively, it is possible to iteratively load images from a 3D-data object (stack). The first possibility uses the command imread from OpenCV (OpenCV library highgui required). 
+        <source>This plugin emulates a camera by grabbing images from files in a specific folder on the hard disk. Alternatively, it is possible to iteratively load images from a 3D-data object (stack). The first possibility uses the command imread from OpenCV (OpenCV library highgui required).
 
-The grabber can work in 3 different modes: 
+The grabber can work in 3 different modes:
 1) Files in a specified folder are sequentially loaded each time a getVal / copyVal is performed. At the moment only 8 and 16 bit images are supported.
 2) Images are sequentially loaded from a 3D data object (stack of images). Each getVal / copyVal returns a reference/copy to the specific plane of the stack. Supports 8, 12, 14, 16, 24-bit.
 3) Files in a specified folder are scanned and preloaded to an image stack. Each getVal / copyVal returns a reference/copy to the specific plane of the stack. Supports 8, 12, 14, 16, 24-bit.

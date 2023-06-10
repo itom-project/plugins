@@ -1,10 +1,10 @@
 /// \file EnsembleErrorCodes.h
 /// \brief Contains the error code enumeration.
-/// 
+///
 /// These are the different errors that you can get by calling EnsembleGetLastError()
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_ERROR_CODES_H__
 #define __Ensemble_ERROR_CODES_H__
@@ -321,5 +321,3 @@ typedef enum {
 #define ErrorCode_COUNT 166
 
 #endif // __Ensemble_ERROR_CODES_H__
-
-

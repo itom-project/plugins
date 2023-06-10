@@ -15,12 +15,12 @@
 	* Changelog: Date fixed :-) (2002-01-15 -> 2003-01-15)
 
 2003-01-15  Marcus Meissner <marcus@jet.franken.de>
-	
-	* Added Medion MD 6000 (same as JD 4100z3) and Jenoptik JD 4100z3 
+
+	* Added Medion MD 6000 (same as JD 4100z3) and Jenoptik JD 4100z3
 	  (verified usb ids by downloading driver).
 
 2003-01-10  Marcus Meissner <meissner@suse.de>
-	
+
 	* Added Concord EyeQ 4330 (has same id as Traveller 410z), reported by
 	  Christian Boltz <christian.boltz@nexgo.de>.
 
@@ -29,7 +29,7 @@
 	* Makefile.am: -I$(top_builddir)/libgphoto2
 
 2002-09-12  Marcus Meissner <meissner@suse.de>
-	
+
 	* Added Medion 9700 as submitted by Arjan van de Ven <arjanv@redhat.com>
 
 2002-07-05  Lutz Müller <lutz@users.sourceforge.net>

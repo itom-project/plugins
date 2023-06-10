@@ -92,7 +92,7 @@ private:
 
 public slots:
 
-	
+
 
 };
 
@@ -132,9 +132,9 @@ class NITWidySWIR : public ito::AddInGrabber
         ~NITWidySWIR();
         //! Constructor
         NITWidySWIR();
-        
+
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-        
+
     public:
         friend class NITWidySWIRInterface;
 		friend class NITWidySWIRObserver;
@@ -142,7 +142,7 @@ class NITWidySWIR : public ito::AddInGrabber
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
 		enum GrabStatus { GrabIdle, GrabAcquisitionRunning, GrabFrameReceived };
-        
+
 
     private:
 		QMutex m_mutex; //this mutex makes the access to m_grabbingStatus thread-safe
@@ -186,7 +186,7 @@ class NITWidySWIR : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
 		ito::RetVal loadNUCFile(const QString &filePath, double integrationTime);
-        
+
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 

@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "CommonVisionBlox" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2015, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -50,7 +50,7 @@ CVBInterface::CVBInterface(QObject *parent)
     setObjectName("CommonVisionBlox");
 
     m_description = QObject::tr("GenICam cameras via Common Vision Blox from Stemmer");
-    
+
 
 /*    char docstring[] = \
  "This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer. \n\
@@ -62,7 +62,7 @@ CVBInterface::CVBInterface(QObject *parent)
  \n\
  In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
  \n\
- This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE."; 
+ This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE.";
     m_detaildescription = tr(docstring);*/
     m_detaildescription = tr(
  "This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer. \n\
@@ -74,14 +74,14 @@ CVBInterface::CVBInterface(QObject *parent)
  \n\
  In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
  \n\
- This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE."); 
+ This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE.");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("Licensed under LGPL, Stemmer Common Vision Blox under its own license.");
-    m_aboutThis = tr(GITVERSION);  
+    m_aboutThis = tr(GITVERSION);
 
     ito::Param param("scanForCameras", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1 scan for new cameras, else take the last opened camera (default). If you scan for new cameras, the configuration file (ini) created in CommonVisionBlox for GenICam or other cameras will be reset to the default values.").toLatin1().data());
     m_initParamsOpt.append(param);

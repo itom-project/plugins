@@ -3,7 +3,7 @@
 By twipOS 2016.
 '''
 
-#The algorithm is based on Python 3.2 and must be used with "itom" ==> https://bitbucket.org/itom/itom
+#The algorithm is based on Python 3.2 and must be used with "itom" ==> https://github.com/itom-project/itom
 #Import basic function and packages used by this file
 #See python help for more details
 import cv2
@@ -29,45 +29,45 @@ except:
     from dicgui_ui import dicGuiUi
 
 reloadModules = 1
-    
+
 
 class dicGui(ItomUi):
     '''
     In the class dicGui all operations to XXX are contained.
     '''
-    
+
     def __init__(self, modulePath = None):
         '''
         Internal constructor of the image processing system.
-        
+
         Parameters
         -----------
         modulePath:
             Path where the system is located, if no parameter is giving the files has to be in the working directory
-        
+
         Returns
         -------
         None
-        
+
         Notes
         -----
         This function initializes the image processing system.
         '''
-        
+
         self.softwareVersion = "0.0.1"
-        
+
         if(modulePath is None):
             self.modulePath = getCurrentPath()+"/"
             sys.path.append( self.modulePath )
         else:
             sys.path.append( modulePath )
             self.modulePath = modulePath
-        
+
         self.GUI = None
-        
+
         self.startDir = ""
         self.timer = None
-        
+
         self.cfg = {}
         self.eval = {}
         self.data = {}
@@ -120,7 +120,7 @@ class dicGui(ItomUi):
         self.numMeas = 0
         self.numImg = 0
         self.preAllocSize  = 8
-        
+
         self.downloadImgsMeas = False
         self.imgsPathMeas = ""
         self.timer = None
@@ -128,34 +128,34 @@ class dicGui(ItomUi):
         self.tmpImg = dataObject()
 
         self.isMeasuring = False
-        
+
         self.cam = None
         self.ser = None
         self.hbm = None
         #self.imageOrig = None
         #self.imageDef = None
         self.loadedCalib = None
-        
+
         self.loadConfig()
-                    
+
     def __del__(self):
         '''
         Deletes all objects
-        
+
         '''
         try:
             if not self.GUI is None and self.GUI.gui.isVisible():
                 self.GUI.gui.hide()
         except:
             pass
-        
+
         try:
             removeButton("DIC", "showGUI")
         except:
-            print("\n deleting button bar failed") 
-                
+            print("\n deleting button bar failed")
+
         self.saveConfig()
-    
+
     def deleteUI(self):
         if (self.timer != None):
             self.timer.stop()
@@ -188,27 +188,27 @@ class dicGui(ItomUi):
                 self.ser = None
             except:
                 pass
-    
+
     def init(self):
         '''
         Set up values of the GUI-elementes.
-        
+
         Parameters
         -----------
         None
-        
+
         Returns
         -------
         None
-        
+
         Notes
         -----
         This function initializes the gui elements and set the values to start the image processing.
         '''
         pass
-    
+
     def saveConfig(self):
-        try:    
+        try:
             file = open(self.modulePath + 'systemConfig.json', mode ='w')
             saveDict = {}
             saveDict["cfg"] = {}
@@ -226,7 +226,7 @@ class dicGui(ItomUi):
             file.close()
         except:
             ui.msgCritical("Error", "Failed saving system parameters.")
-    
+
     def loadConfig(self):
         #try to open file and overwrite default values with json values
         try:
@@ -235,7 +235,7 @@ class dicGui(ItomUi):
             jfile.close()
         except:
             jsonFile = {}
-        
+
         if(type(jsonFile) == dict and "cfg" in jsonFile.keys() and jsonFile["cfg"] is not None):
             cfgDict = jsonFile.get('cfg')
             for key in cfgDict:
@@ -248,37 +248,37 @@ class dicGui(ItomUi):
                 else:
                     self.cfg.update({key : cfgDict[key]})
             #self.cfg.update(jsonFile.get('cfg'))
-    
+
     def show(self, modalLevel = 0):
         '''
         Internal constructor of the GUI class.
-        
+
         Parameters
         -----------
         sys: {bvSystem}
             a weak reference to the image processing system
         systemPath:
             Path where the system is located, if no parameter is giving the files has to be in the working directory
-        
+
         Returns
         -------
         None
-        
+
         Notes
         -----
         This function loads the ui-dialog and takes a weak reference on the image processing system.
         '''
-        
+
         self.GUI = dicGuiUi(weakref.ref(self), self.modulePath, )
         self.GUI.init()
         try:
             removeButton("DIC", "showGUI")
         except:
             self.buttonHandle = None
-            
+
         self.buttonHandle = addButton("DIC","showGUI","dicgui.show()", "ui/dicIcon.png")
         self.GUI.show(modalLevel)
-        
+
     def loadImageDict(self, dictPath, openItem = None):
         tmpImg = loadIDC(dictPath)
         for key in tmpImg:
@@ -288,7 +288,7 @@ class dicGui(ItomUi):
                 self.imageInput = tempImg[key]
             elif key == "eval":
                 self.imageEval = tempImg[key]
-        
+
     def findCBPoints(self, img, numPts):
         try:
             img2 = img.normalize(0, 255).astype('uint8')
@@ -300,7 +300,7 @@ class dicGui(ItomUi):
             imgBCBD = cv2.GaussianBlur(np.array(img2), (7, 7), 2)
             tmpRes = cv2.findChessboardCorners(imgBCBD, tuple(numPts), \
                 cv2.CALIB_CB_ADAPTIVE_THRESH|cv2.CALIB_CB_FAST_CHECK|cv2.CALIB_CB_NORMALIZE_IMAGE)
-            
+
             res = tmpRes[0]
             # do corner refinement as suggested in opencv calibration example
             if res == 1:
@@ -313,19 +313,19 @@ class dicGui(ItomUi):
             res = -1
             pts = dataObject()
         return [res, pts]
-        
+
     def detNearestPt(self, Pt, pts, nptsInLine, dst):
         '''
         Insert descritopn here
-        
+
         Parameters
         -----------
-        
-        
+
+
         Returns
         -------
 
-        
+
         Notes
         -----
 
@@ -338,7 +338,7 @@ class dicGui(ItomUi):
         d3 = d3.dot(d3.transpose())
         d4 = np.array(Pt) - pts[pts.size(0) - 1, :]
         d4 = d4.dot(d4.transpose())
-        
+
         if d1 <= dst[0]:
             ptRet = 0
         elif d2 <= dst[1]:
@@ -349,9 +349,9 @@ class dicGui(ItomUi):
             ptRet = pts.size(0) - 1
         else:
             ptRet = -1
-            
+
         return ptRet
-        
+
     def detUsableImgRange(self, img1, img2):
         diffOfs = np.zeros([2, 2], dtype='int')
         diffSizes = np.zeros([2, 2], dtype='int')
@@ -366,19 +366,19 @@ class dicGui(ItomUi):
             diffSizes[0, :] = min(diffSizes[0, :]) + diffOfs[0, :]
             diffSizes[1, :] = min(diffSizes[1, :]) + diffOfs[1, :]
         return {"dO" : diffOfs, "dS" : diffSizes}
-        
+
     def defineCoordSys(self, img, pts, markerSize):
         '''
         Insert descritopn here
-        
+
         Parameters
         -----------
-        
-        
+
+
         Returns
         -------
 
-        
+
         Notes
         -----
 
@@ -386,7 +386,7 @@ class dicGui(ItomUi):
         self.GUI.gui.pltCalibration.call("clearGeometricShapes")
         self.GUI.gui.pltCalibration["source"] = img
         shapes = set()
-        numPts = pts.size(0) 
+        numPts = pts.size(0)
         for np in range(0, numPts):
             pt = pts[np, :]
             shapes.add(shape(2, pt[:, :2]))
@@ -396,7 +396,7 @@ class dicGui(ItomUi):
         #self.GUI.gui.pltCalibration.call("userInteractionStart", 4, 1, 2)
         #self.GUI.gui.pltCalibration.connect("userInteractionDone(int,bool,QVector<ito::Shape>)",self.finishedInput)
         #shapes = list(self.GUI.gui.pltCalibration["geometricShapes"])
-        
+
         found = 0
         while not found:
             shapes = plotItem(self.GUI.gui.pltCalibration).drawAndPickElements(shape.Line, 2)
@@ -434,24 +434,24 @@ class dicGui(ItomUi):
             dst4 = dv4 * dv4.trans()
             dv4 = pts[pts.size(0) - 1, :] - pts[pts.size(0) - 2, :]
             dst[3] = 0.7 * min(dst4[0,0], (dv4 * dv4.trans())[0,0])
-            
+
             ptY1 = self.detNearestPt(shapes[-2].point1, pts, nptsInLine, dst)
             ptX0 = self.detNearestPt(shapes[-2].point2, pts, nptsInLine, dst)
             ptX1 = self.detNearestPt(shapes[-1].point2, pts, nptsInLine, dst)
-            
+
             if ptY1 != -1 and ptX0 != -1 and ptX1 != -1 \
             and ptY1 != ptX1 and ptY1 != ptX0 and ptX1 != ptX0:
                 found = 1
-                
+
                 npts = dataObject.zeros([pts.size(0), 5], dtype=pts.dtype)
                 npt = 0
                 numLines = int(pts.size(0) / nptsInLine)
-                
+
                 if abs(ptX1 - ptX0) < abs(ptY1 - ptX0):
                     colwise = 1
                 else:
                     colwise = 0
-                    
+
                 if ptX1 > ptX0:
                     xstart = 0
                     xfact = 1
@@ -464,7 +464,7 @@ class dicGui(ItomUi):
                 else:
                     ystart = 0
                     yfact = 1
-                
+
                 if colwise:
                     for py in range(0, numLines):
                         for px in range(0, nptsInLine):
@@ -479,7 +479,7 @@ class dicGui(ItomUi):
                             npts[npt, 2] = (xstart + xfact * px) * markerSize[0]
                             npts[npt, 3] = (ystart + yfact * py) * markerSize[1]
                             npt = npt + 1
-                
+
                 return npts
             else:
                 ptShapes = self.GUI.gui.pltCalibration["geometricShapes"]
@@ -489,20 +489,20 @@ class dicGui(ItomUi):
     def showQuivers(self, posAndSizes):
         shapes = self.GUI.gui.pltDisplacement["geometricShapes"]
         newShapes = set()
-        
+
         # maintain marked fields but remove old quivers
         if not shapes is None and len(shapes) > 0:
             for ns in range(0, len(shapes)):
                 if shapes[ns].type != 8:
                     continue
                 newShapes.add(shapes[ns])
-        
+
         # add quivers
         if (posAndSizes.dims > 0):
             for nq in range(0, posAndSizes.size(0)):
                 newShapes.add(shape(4, [posAndSizes[nq, 0], posAndSizes[nq, 1]], \
                     [posAndSizes[nq, 2], posAndSizes[nq, 3]]))
-                
+
         # allow lines - just for displaying
         self.GUI.gui.pltDisplacement["allowedGeometricShapes"] = 28
         self.GUI.gui.pltDisplacement.call("setGeometricShapes", list(newShapes))
@@ -530,7 +530,7 @@ class dicGui(ItomUi):
         else:
             range = 3
         return range
-        
+
     def CB2bridge(self, guiCB):
         if guiCB["currentText"] == "Full":
             bridge = 0
@@ -541,7 +541,7 @@ class dicGui(ItomUi):
         else:
             bridge = 0
         return bridge
-        
+
     def initHBM(self):
         serialErr = 0
         if (self.hbm != None):
@@ -553,7 +553,7 @@ class dicGui(ItomUi):
         if (self.cam != None):
             del self.cam
             self.cam = None
-            
+
         retval = 0
         retStr = ""
         if self.cfg["enableSpider"] == 1:
@@ -567,7 +567,7 @@ class dicGui(ItomUi):
                 serialErr = 1
                 self.ser = None
                 retval = retval -1
-            try: 
+            try:
                 if retval == 0:
                     self.hbm = dataIO("HBMSpider8", self.ser)
                     #self.gui.leStatus["text"] = self.hbm.getParam("status")
@@ -579,7 +579,7 @@ class dicGui(ItomUi):
                     #self.gui.leStatus["text"] = retStr
                 retval = retval -2
                 self.hbm = None
-            
+
         if self.cfg["enableCam"] == 1:
             try:
                 self.cam = dataIO("DslrRemote2")
@@ -602,7 +602,7 @@ class dicGui(ItomUi):
                 print(retStr)
                 self.cam = None
                 retval = retval -4
-                
+
     def prepMeasure(self):
         if self.hbm is None:
             [retval, retstr] = self.initHBM()
@@ -610,7 +610,7 @@ class dicGui(ItomUi):
                 ui.msgCritical("Error", "Could not initialize Spider!\nCheck settings and try again!")
                 print("Error: Could not initialize Spider! Check settings and try again!")
                 return
-                
+
         if (self.hbm != None and self.GUI.gui.cbEnableSpider["checked"] == True):
             # if there are alreay measurement values available measurement was probably
             # only paused. so just restart device
@@ -632,9 +632,9 @@ class dicGui(ItomUi):
                 if self.GUI.gui.cbChan7["checked"]:
                     self.cfg["channels"].append(7)
                     numCha += 1
-                
+
                 self.resultObj = dataObject([numCha + 1, self.preAllocSize],dtype='float64')
-                    
+
                 for nc in range(0, len(self.cfg["channels"])):
                     self.hbm.setParam("aiChParams", str(self.cfg["channels"][nc]) + "," \
                         + str(self.cfg["bridges"][self.cfg["channels"][nc] - 4]) + "," \
@@ -651,7 +651,7 @@ class dicGui(ItomUi):
                     if self.cfg["ranges"][self.cfg["channels"][nc] - 4] > maxrange:
                         maxrange = self.cfg["ranges"][self.cfg["channels"][nc] - 4]
                 self.GUI.axisScaleLive = [self.cfg["rangeVals"][maxrange] * -1.05, self.cfg["rangeVals"][maxrange] * 1.05]
-                
+
             self.hbm.startDevice()
             #self.GUI.gui.leStatus["text"] = self.hbm.getParam("status")
 
@@ -660,7 +660,7 @@ class dicGui(ItomUi):
             return
         self.GUI.upDating = True
         tmpObj = dataObject()
-        
+
         try:
             self.hbm.acquire()
             self.resultObj[0, self.numMeas] = time.clock()
@@ -669,7 +669,7 @@ class dicGui(ItomUi):
             for nc in range(0, tmpObj.size(0)):
                 self.resultObj[nc + 1, self.numMeas] = np.sum(tmpObj[nc, :] \
                     / self.cfg["samples"] * self.cfg["scales"][self.cfg["channels"][nc] - 4])
-            
+
             if tmpObj.size(0) >= 1:
                 self.GUI.gui.leLastValue4["text"] = "{0:.5g}".format(self.resultObj[1, self.numMeas])
             else:
@@ -687,7 +687,7 @@ class dicGui(ItomUi):
             else:
                 self.GUI.gui.leLastValue7["text"] =  ""
             self.GUI.plotAutoScale()
-            
+
             if ((self.numMeas + 1) > self.GUI.gui.tbMeas["rowCount"]):
                 self.GUI.gui.tbMeas.call("insertRow", self.numMeas)
             if (not self.GUI.gui.cbZero["checked"]):
@@ -698,7 +698,7 @@ class dicGui(ItomUi):
                 self.GUI.gui.tbMeas.call("setItem", self.numMeas, 0, self.resultObj[0, self.numMeas] - self.resultObj[0, 0])
                 for nc in range(0, tmpObj.size(0)):
                     self.gui.tbMeas.call("setItem", self.numMeas, self.cfg["channels"][nc] - 4 + 1, self.resultObj[nc + 1, self.numMeas] - self.resultObj[nc + 1, 0])
-            
+
             self.numMeas += 1
             if self.numMeas == self.preAllocSize:
                 tmp = dataObject.zeros([1 + tmpObj.size(0), self.preAllocSize * 2], dtype='float64')
@@ -764,7 +764,7 @@ class dicGui(ItomUi):
             else:
                 ui.msgCritical("Error", "Unknown pattern type, currently only checkerboard type supported!")
                 return -1
-                
+
             if colwise:
                 for nc in range(0, npx):
                     iavgx += np.mean(np.sqrt(np.sum((ptsImg[nimg, 1 + nc * npy : (nc + 1) * npy, :] \
@@ -785,13 +785,13 @@ class dicGui(ItomUi):
                 iavgy /= npy
                 iavgx /= (npy - 1)
                 pass
-            
+
             avgx += dx / iavgx
             avgy += dy / iavgy
-            
+
         avgx = (avgx / ptsObj.shape[0])
         avgy = (avgy / ptsObj.shape[0])
-        
+
         return (avgx + avgy) / 2.0
 
 if( __name__ == '__main__'):
@@ -799,6 +799,6 @@ if( __name__ == '__main__'):
         dicgui = dicGui()
     except:
         raise RuntimeError("Could not load dataViewer.")
-    
+
     dicgui.init()
     dicgui.show(0)

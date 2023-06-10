@@ -92,4 +92,3 @@ void DialogGenicam::enableDialog(bool enabled)
 {
     ui.paramEditorWidget->setEnabled(enabled);
 }
-

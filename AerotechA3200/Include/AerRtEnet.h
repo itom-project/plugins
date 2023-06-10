@@ -1,18 +1,18 @@
 //////////////////////////////////////////////////////////////////////////
 // Filename:             AswEnet.h
-// Description:          Uses Rt-TCP/IP to do deterministic communication 
-//                       with remote ethernet devices. Supported post TCP 
-//                       protocols are Modbus, HTTP and Telnet. 
+// Description:          Uses Rt-TCP/IP to do deterministic communication
+//                       with remote ethernet devices. Supported post TCP
+//                       protocols are Modbus, HTTP and Telnet.
 //
 // Date started:         10/27/2003
 //
 // Auther:               Mohammed M Rahman Ratin
-// Operation:            One portion of the code acts as tcp client, fills 
-//                       in the Modbus data structure to send to the remote 
-//                       device that understands Modbus protocol. It then 
+// Operation:            One portion of the code acts as tcp client, fills
+//                       in the Modbus data structure to send to the remote
+//                       device that understands Modbus protocol. It then
 //                       waits for an acknowledge and then sends the next
-//                       modbus data. This is done in a state machine. 
-//                                   
+//                       modbus data. This is done in a state machine.
+//
 //
 //
 //
@@ -20,21 +20,21 @@
 // History:
 //
 //
-// Copyright (C) 2003 AEROTECH INC. 
+// Copyright (C) 2003 AEROTECH INC.
 //                    All Rights Reserved.
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef __AERRTENET_H_INCLUDED
 #define __AERRTENET_H_INCLUDED
 
-#pragma pack(push,enter_includeAerrtenet,2) 
+#pragma pack(push,enter_includeAerrtenet,2)
 
 #include "AerVirtIO.h"
 
-//Ethernet process init 
+//Ethernet process init
 DWORD RtEnetProcessInit(void);
 
-//Ethernet process thread 
+//Ethernet process thread
 DWORD RtEnetProcessLoop(void);
 
 
@@ -64,10 +64,10 @@ DWORD RtEnetProcessLoop(void);
 #define MODBUS_EXCEPTION_FC16  0x90
 #define MODBUS_EXCEPTION_FC23  0x97
 
-#define MODBUS_EXCEPTION_ILL_FUNC   0x01 
-#define MODBUS_EXCEPTION_ILL_ADD    0x02 
-#define MODBUS_EXCEPTION_ILL_VALUE  0x03 
-#define MODBUS_EXCEPTION_SALVE_FAIL 0x04 
+#define MODBUS_EXCEPTION_ILL_FUNC   0x01
+#define MODBUS_EXCEPTION_ILL_ADD    0x02
+#define MODBUS_EXCEPTION_ILL_VALUE  0x03
+#define MODBUS_EXCEPTION_SALVE_FAIL 0x04
 
 //status bits
 #define GLOBAL_ETHERNET_FAULT_SYSTEM_ERROR                (1 << 0)
@@ -82,38 +82,38 @@ DWORD RtEnetProcessLoop(void);
 
 
 
-#define MAXWORDUPDATE           120 //maximum word update per packet 
+#define MAXWORDUPDATE           120 //maximum word update per packet
 #define VWOUTOFFSET             256  //start of process registers among 512 registers
-#define CONFIGCOUNT             4 
-#define WAGOTCPWATCHDOGTIMER    200  //200 msec watchdog timer for the WAGO tcp/ip communication 
+#define CONFIGCOUNT             4
+#define WAGOTCPWATCHDOGTIMER    200  //200 msec watchdog timer for the WAGO tcp/ip communication
 #define WAGOTCPWATCHDOGADDRESS  4144
 
-#define WAGO_FIELDBUS_IO          1 
-#define AUTOMATION_DERECT_IO      2 
+#define WAGO_FIELDBUS_IO          1
+#define AUTOMATION_DERECT_IO      2
 #define DVT_SENSOR                3
 #define COGNEX                    4
 #define STDMODBUS                 5
 #define FLATADDRESSING            7 //Uses InetGlobalxxxStart to also determine offset over modbus
 
-//offset into the index for differnt 
-//category of I/O 
- 
-//#define DOUTOFFSET            0            //output bit offset 
-//#define DOUTSTATOFFSET       32            //status of output bits offset  
-//#define DINOFFSET            64            //discrete input offset  
-//#define WINOFFSET            96            //word input offset 
+//offset into the index for differnt
+//category of I/O
+
+//#define DOUTOFFSET            0            //output bit offset
+//#define DOUTSTATOFFSET       32            //status of output bits offset
+//#define DINOFFSET            64            //discrete input offset
+//#define WINOFFSET            96            //word input offset
 //#define VWINOFFSET          352            //virtual word input offset
 //#define WOUTOFFSET          608            //output word offset
-//#define VWOUTOFFSET         864            //status of word output offset 
-//#define WOUTSTATOFFSET      1120            //virtual output word offset 
+//#define VWOUTOFFSET         864            //status of word output offset
+//#define WOUTSTATOFFSET      1120            //virtual output word offset
 
-//#define IOCOUNT      1376  //total number of WORDS 
+//#define IOCOUNT      1376  //total number of WORDS
                            //allocated for IO (discrete I/O only uses
-                           //lower half of the 16 bit words)  
+                           //lower half of the 16 bit words)
 
 //#define CONFIGOFFSET IOCOUNT               //where config  info is stored
 
-typedef struct   
+typedef struct
 {
    HANDLE hStartEvent;
    HANDLE hEnetCloseComEvent;
@@ -121,21 +121,21 @@ typedef struct
 } ENET_EVENT_DATA;
 
 typedef struct tagENETErrorData
-{ 
-   int GenericError;                         //should be able to handle -1 
+{
+   int GenericError;                         //should be able to handle -1
    int GlobalEthernetUpdateState ;       //aerotech specific error
    DWORD GlobalEthernetStatus;           //status
-   
-} ENETErrorData; 
 
-typedef ENETErrorData *PENETErrorData; 
+} ENETErrorData;
+
+typedef ENETErrorData *PENETErrorData;
 
 #define AER_SHARED_MEMORY_ENET_NAME "_ENET_SHAREDMEM_"
 
 typedef struct tagENETCOMMUNSPACE
-{ 
+{
    VIRTIO_DATA		GlobalIOTable;
-   double			dGLOBPARM_InetGlobalIOIPAddress; 
+   double			dGLOBPARM_InetGlobalIOIPAddress;
    double			dGLOBPARM_InetGlobalIOSubnetMask;
    double			dGLOBPARM_InetGlobalIOGateway;
    double			dGLOBPARM_InetGlobalDefNumInputWords;
@@ -159,13 +159,13 @@ typedef struct tagENETCOMMUNSPACE
    ENET_EVENT_DATA	hEnetEventData;
    ENETErrorData    ENETErrorDat;
 
-} ENETCOMMUNSPACE ; 
+} ENETCOMMUNSPACE ;
 
 typedef ENETCOMMUNSPACE *PENETCOMMUNSPACE;
 
 
 // Safe versions of the min() & max() macros for use on re-entrant code
-// Ensures that any function arguments aren't called twice 
+// Ensures that any function arguments aren't called twice
 #define minw(a, b)\
  (WORD)(a < b ? a : b )
 
@@ -177,13 +177,13 @@ typedef ENETCOMMUNSPACE *PENETCOMMUNSPACE;
 
 
 #define maxi(a, b)\
- (int)((int)a > (int)b ? (int)a : (int)b) 
+ (int)((int)a > (int)b ? (int)a : (int)b)
 
 /* byte swap a 16 bit word*/
 #define swapw(w)\
    (WORD)((((int)w << 8) & 0xff00) | (((WORD)w >> 8) & 0x00ff))
 
-/* byte swap a 32 bit word*/   
+/* byte swap a 32 bit word*/
 #define swapl(lw)\
    (LWORD)((((LWORD) lw << 24) & 0xff000000L) | (((LWORD) lw <<8 ) & 0x00ff0000L) |\
    (((LWORD) lw >>8  ) & 0x0000ff00L) | (((LWORD) lw>>24) & 0x000000ffL))
@@ -197,7 +197,7 @@ typedef ENETCOMMUNSPACE *PENETCOMMUNSPACE;
 //				LengthField;
 //	BYTE		UnitID,
 //				FunctionCode ;
-//}  MODTCPHDR ; 
+//}  MODTCPHDR ;
 
 
 typedef struct modhdr {
@@ -209,32 +209,32 @@ typedef struct modhdr {
           LengthFieldLow,
           UnitID,
           FunctionCode ;
-}  MODTCPHDR ; 
+}  MODTCPHDR ;
 
 
 
-typedef struct modpkt 
+typedef struct modpkt
 {
-   MODTCPHDR  m ;         // modbus header 
-   BYTE  data[512];       // Data area 
-}  MODPKT ; 
+   MODTCPHDR  m ;         // modbus header
+   BYTE  data[512];       // Data area
+}  MODPKT ;
 
 
 typedef enum {
-   INIT_NOT_DONE,       //MMI reset isn't done 
-   NOT_CONNECTED,       //Not conneted with remote device 
-   SET_WATCHDOG_TIMER,  //Set the watchdog timer on the WAGO 
+   INIT_NOT_DONE,       //MMI reset isn't done
+   NOT_CONNECTED,       //Not conneted with remote device
+   SET_WATCHDOG_TIMER,  //Set the watchdog timer on the WAGO
    INQUIRE_NUM_IO,      //Inquire about number of I/O to update
-   UPDATE_DIG_INPUTS,   //Send packet to update digital inputs 
-   UPDATE_DIG_OUTPUTS,  //Send packet to update digital inputs 
-   UPDATE_DIG_OUTPUTS_STATUS, //Send packet to update digital inputs 
-   UPDATE_REG_INPUTS,         //Send packet to update digital inputs 
-   UPDATE_REG_OUTPUTS,        //Send packet to update digital inputs 
-   UPDATE_REG_OUTPUTS_STATUS, //Send packet to update digital inputs 
-   UPDATE_REG_PROCESS_INPUTS, //Send packet to update digital inputs 
-   UPDATE_REG_PROCESS_OUTPUTS //Send packet to update digital inputs 
-    
-}  ENET_STATES; 
+   UPDATE_DIG_INPUTS,   //Send packet to update digital inputs
+   UPDATE_DIG_OUTPUTS,  //Send packet to update digital inputs
+   UPDATE_DIG_OUTPUTS_STATUS, //Send packet to update digital inputs
+   UPDATE_REG_INPUTS,         //Send packet to update digital inputs
+   UPDATE_REG_OUTPUTS,        //Send packet to update digital inputs
+   UPDATE_REG_OUTPUTS_STATUS, //Send packet to update digital inputs
+   UPDATE_REG_PROCESS_INPUTS, //Send packet to update digital inputs
+   UPDATE_REG_PROCESS_OUTPUTS //Send packet to update digital inputs
+
+}  ENET_STATES;
 #pragma pack(pop,enter_includeAerrtenet)
 
 #endif

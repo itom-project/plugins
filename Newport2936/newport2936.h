@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -14,7 +14,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    Newport2936Interface 
+  *\class    Newport2936Interface
   *
   *\brief    Interface-Class for Newport2936-Class
   *
@@ -52,16 +52,16 @@ class Newport2936 : public ito::AddInGrabber
         ~Newport2936();
         //! Constructor
         Newport2936();
-        
+
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 		ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
-        
+
     public:
         friend class Newport2936Interface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
-        
+
         char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
 
     private:
@@ -78,13 +78,13 @@ class Newport2936 : public ito::AddInGrabber
 			bAutoRange = 0x0010,
 			bPowerOffset = 0x0020,
 
-			bAll = bWavelength | bAttenuator | bFilterType | bPowerRange | bAutoRange | bPowerOffset 
+			bAll = bWavelength | bAttenuator | bFilterType | bPowerRange | bAutoRange | bPowerOffset
 		};
 		ito::RetVal synchronizeParams(int what = bAll);
         ito::RetVal charToInt(const char* str, int &val);
         ito::RetVal charToDouble(const char* str, double &val);
 
-        
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
@@ -111,7 +111,7 @@ class Newport2936 : public ito::AddInGrabber
 		ito::RetVal sendCommand(long DeviceID, const char* commandBuffer);
 		ito::RetVal readResponse(long DeviceID, char* responseBuffer, const unsigned long& length);
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
-        
+
 
         ito::RetVal acquireAutograbbing(QSharedPointer<QList<double> > value, ItomSharedSemaphore *waitCond);
         //checkData usually need not to be overwritten (see comments in source code)

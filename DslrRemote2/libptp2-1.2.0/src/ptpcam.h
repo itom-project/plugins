@@ -58,7 +58,7 @@ int myusb_bulk_write(usb_dev_handle *dev, int ep, char *bytes, int length,
 }
 
 /* error reporting macro */
-#define ERROR(error) fprintf(stderr,"ERROR: "error);				
+#define ERROR(error) fprintf(stderr,"ERROR: "error);
 
 /* property value printing macros */
 #define PRINT_PROPVAL_DEC(value)	\

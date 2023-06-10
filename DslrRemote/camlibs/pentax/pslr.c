@@ -333,7 +333,7 @@ int pslr_get_status(pslr_handle_t h, pslr_status *ps)
     return PSLR_OK;
 }
 
-int pslr_get_buffer(pslr_handle_t h, int bufno, int type, int resolution, 
+int pslr_get_buffer(pslr_handle_t h, int bufno, int type, int resolution,
                     uint8_t **ppData, uint32_t *pLen)
 {
     CHECK(ipslr_read_buffer(h, bufno, type, resolution, ppData, pLen));
@@ -419,7 +419,7 @@ int pslr_set_jpeg_resolution(pslr_handle_t h, int resolution)
 {
     ipslr_handle_t *p = (ipslr_handle_t *) h;
     if (resolution >= PSLR_MAX_RESOLUTIONS)
-        return PSLR_PARAM;	
+        return PSLR_PARAM;
 
     CHECK(ipslr_cmd_00_09(p, 1));
     CHECK(ipslr_write_args(p, 2, 1, resolution));
@@ -485,7 +485,7 @@ int pslr_set_image_format(pslr_handle_t h, pslr_image_format_t format)
     CHECK(ipslr_write_args(p, 2, 1, format));
     CHECK(command(p, 0x18, 0x12, 0x08));
     CHECK(get_status(p));
-    CHECK(ipslr_cmd_00_09(p, 2));    
+    CHECK(ipslr_cmd_00_09(p, 2));
     return PSLR_OK;
 }
 
@@ -506,7 +506,7 @@ int pslr_set_raw_format(pslr_handle_t h, pslr_raw_format_t format)
     CHECK(ipslr_write_args(p, 2, 1, format));
     CHECK(command(p, 0x18, 0x1f, 0x08));
     CHECK(get_status(p));
-    CHECK(ipslr_cmd_00_09(p, 2));    
+    CHECK(ipslr_cmd_00_09(p, 2));
     return PSLR_OK;
 }
 
@@ -518,7 +518,7 @@ int pslr_delete_buffer(pslr_handle_t h, int bufno)
     CHECK(ipslr_write_args(p, 1, bufno));
     CHECK(command(p, 0x02, 0x03, 0x04));
     CHECK(get_status(p));
-    return PSLR_OK;    
+    return PSLR_OK;
 }
 
 int pslr_green_button(pslr_handle_t h)
@@ -551,7 +551,7 @@ int pslr_set_exposure_mode(pslr_handle_t h, pslr_exposure_mode_t mode)
     CHECK(ipslr_write_args(p, 2, 1, mode));
     CHECK(command(p, 0x18, 0x01, 0x08));
     CHECK(get_status(p));
-    CHECK(ipslr_cmd_00_09(p, 2));    
+    CHECK(ipslr_cmd_00_09(p, 2));
     return PSLR_OK;
 }
 
@@ -651,9 +651,9 @@ uint32_t pslr_buffer_read(pslr_handle_t h, uint8_t *buf, uint32_t size)
     if (blksz > BLKSZ)
         blksz = BLKSZ;
 
-    /*printf("File offset %d segment: %d offset %d address 0x%x read size %d\n", p->offset, 
+    /*printf("File offset %d segment: %d offset %d address 0x%x read size %d\n", p->offset,
      *       i, seg_offs, addr, blksz); */
-    
+
     ret = ipslr_download(p, addr, blksz, buf);
     if (ret != PSLR_OK)
         return 0;
@@ -687,7 +687,7 @@ int pslr_select_af_point(pslr_handle_t h, uint32_t point)
     CHECK(ipslr_write_args(p, 1, point));
     CHECK(command(p, 0x18, 0x07, 0x04));
     CHECK(get_status(p));
-    CHECK(ipslr_cmd_00_09(p, 2));        
+    CHECK(ipslr_cmd_00_09(p, 2));
     return PSLR_OK;
 }
 
@@ -872,7 +872,7 @@ static int ipslr_status_full(ipslr_handle_t *p, pslr_status *status)
 	ipslr_status_diff(buf);
 #endif
         memset(status, 0, sizeof(*status));
-        status->bufmask = buf[0x16] << 8 | buf[0x17]; 
+        status->bufmask = buf[0x16] << 8 | buf[0x17];
 	status->current_iso = get_uint32(&buf[0x130]); /*d*/
         status->current_shutter_speed.nom = get_uint32(&buf[0x108]); /*d*/
         status->current_shutter_speed.denom = get_uint32(&buf[0x10C]); /*d*/
@@ -1387,7 +1387,7 @@ static int scsi_write(ipslr_handle_t *p, uint8_t *cmd, uint32_t cmdLen,
     io.timeout = 20000;     /* 20000 millisecs == 20 seconds */
     /* io.flags = 0; */     /* take defaults: indirect IO, etc */
     /* io.pack_id = 0; */
-    /* io.usr_ptr = NULL; */  
+    /* io.usr_ptr = NULL; */
 
     r = ioctl(sg_fd, SG_IO, &io);
 
@@ -1426,7 +1426,7 @@ static int scsi_read(ipslr_handle_t *p, uint8_t *cmd, uint32_t cmdLen,
     io.timeout = 20000;     /* 20000 millisecs == 20 seconds */
     /* io.flags = 0; */     /* take defaults: indirect IO, etc */
     /* io.pack_id = 0; */
-    /* io.usr_ptr = NULL; */  
+    /* io.usr_ptr = NULL; */
 
     r = ioctl(sg_fd, SG_IO, &io);
     if (r == -1) {
@@ -1460,11 +1460,11 @@ static uint32_t get_uint32(uint8_t *buf)
 
 static bool is_k10d(ipslr_handle_t *p)
 {
-    if (p->model && p->model->id1 == PSLR_ID1_K10D 
+    if (p->model && p->model->id1 == PSLR_ID1_K10D
         && p->model->id2 == PSLR_ID2_K10D)
         return true;
 
-    if (p->model && p->model->id1 == PSLR_ID1_GX10 
+    if (p->model && p->model->id1 == PSLR_ID1_GX10
         && p->model->id2 == PSLR_ID2_GX10)
         return true;
 
@@ -1473,7 +1473,7 @@ static bool is_k10d(ipslr_handle_t *p)
 
 static bool is_k20d(ipslr_handle_t *p)
 {
-    if (p->model && p->model->id1 == PSLR_ID1_K20D 
+    if (p->model && p->model->id1 == PSLR_ID1_K20D
         && p->model->id2 == PSLR_ID2_K20D)
         return true;
     if (p->model && p->model->id1 == PSLR_ID1_GX20
@@ -1501,7 +1501,7 @@ static bool is_k100ds(ipslr_handle_t *p)
 
 static bool is_istds(ipslr_handle_t *p)
 {
-    if (p->model && p->model->id1 == PSLR_ID1_IST_DS 
+    if (p->model && p->model->id1 == PSLR_ID1_IST_DS
         && p->model->id2 == PSLR_ID2_IST_DS)
         return true;
     return false;

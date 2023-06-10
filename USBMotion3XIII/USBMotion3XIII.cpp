@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -128,8 +128,8 @@ might slightly differ from the desired values due to rounding uncertainties.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);     
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_autoLoadPolicy = ito::autoLoadAlways;
     m_autoSavePolicy = ito::autoSaveAlways;
 
@@ -295,25 +295,25 @@ ito::RetVal USBMotion3XIIIInterface::unloadDLL()
         initusbmc = 0; enumdevices = 0; getproductversion = 0; getvendorname = 0;
         getproductname = 0; getserialnumber = 0; opendevicebyindex = 0; opendevicebyserial = 0;
         closedevice = 0; currentdeviceindex = 0; geti2cstatusstring = 0; geterrorstring = 0;
-        writei2c = 0; readi2c = 0; scani2c = 0; setsclhilo = 0; getsclhilo = 0; setscl = 0; 
-        getscl = 0; chkslvaddr = 0; vmax_calc = 0; rhz_calc = 0; amax_calc = 0; drhz_calc = 0; 
-        rhz_fullstep = 0; drhz_fullstep = 0; calcpmulpdiv = 0; setglobalparam = 0; 
-        makes24bit = 0; makes12bit = 0; sendtmc428 = 0; readtmc428 = 0; 
-        setxyztarget = 0; setxtarget = 0; setxactual = 0; setvmin = 0; setvmax = 0; 
-        setvtarget = 0; setvactual = 0; setpmulpdiv = 0; setamax = 0; setcoilcurrent = 0; 
-        setconfrm = 0; setmaskflag = 0; setprdivusrs = 0; setreftolerance = 0; setxlatched = 0; 
-        setsmgp = 0; setdglowword = 0; setcoverposlen = 0; setcoverdatagramm = 0; 
-        getxvactual = 0; getxtarget = 0; getxactual = 0; getvmin = 0; 
-        getvmax = 0; getvtarget = 0; getvactual = 0; getamax = 0; getaactual = 0; 
-        getcoilcurrent = 0; getpmulpdiv = 0; getconfrm = 0; getmaskflag = 0; getprdivusrs = 0; 
-        getreftolerance = 0;  getxlatched = 0; getsmgp = 0; getdglowword = 0; getdghighword = 0; 
-        getcoverposlen = 0; getcoverdatagramm = 0; getpowerdown = 0; getswitch = 0; 
-        initposition = 0; saveposition = 0; restoreposition = 0; setmode = 0; 
-        setmicrosteps = 0; setswitchsettings = 0; setlastmotor = 0; getmode = 0; 
-        getswitchsettings = 0; getlpbit = 0; getmicrosteps = 0; getlastmotor = 0; 
-        gohome = 0; aborthoming = 0; gethomingstate = 0; savedrivertabletoeep = 0; 
-        saveparamtoeep = 0; initparamfromeep = 0; initparamtodefault = 0; enabledriverchain = 0; 
-        enablejoystick = 0; getadcvalues = 0; setjoysticktolerance = 0; getjoysticktolerance = 0; 
+        writei2c = 0; readi2c = 0; scani2c = 0; setsclhilo = 0; getsclhilo = 0; setscl = 0;
+        getscl = 0; chkslvaddr = 0; vmax_calc = 0; rhz_calc = 0; amax_calc = 0; drhz_calc = 0;
+        rhz_fullstep = 0; drhz_fullstep = 0; calcpmulpdiv = 0; setglobalparam = 0;
+        makes24bit = 0; makes12bit = 0; sendtmc428 = 0; readtmc428 = 0;
+        setxyztarget = 0; setxtarget = 0; setxactual = 0; setvmin = 0; setvmax = 0;
+        setvtarget = 0; setvactual = 0; setpmulpdiv = 0; setamax = 0; setcoilcurrent = 0;
+        setconfrm = 0; setmaskflag = 0; setprdivusrs = 0; setreftolerance = 0; setxlatched = 0;
+        setsmgp = 0; setdglowword = 0; setcoverposlen = 0; setcoverdatagramm = 0;
+        getxvactual = 0; getxtarget = 0; getxactual = 0; getvmin = 0;
+        getvmax = 0; getvtarget = 0; getvactual = 0; getamax = 0; getaactual = 0;
+        getcoilcurrent = 0; getpmulpdiv = 0; getconfrm = 0; getmaskflag = 0; getprdivusrs = 0;
+        getreftolerance = 0;  getxlatched = 0; getsmgp = 0; getdglowword = 0; getdghighword = 0;
+        getcoverposlen = 0; getcoverdatagramm = 0; getpowerdown = 0; getswitch = 0;
+        initposition = 0; saveposition = 0; restoreposition = 0; setmode = 0;
+        setmicrosteps = 0; setswitchsettings = 0; setlastmotor = 0; getmode = 0;
+        getswitchsettings = 0; getlpbit = 0; getmicrosteps = 0; getlastmotor = 0;
+        gohome = 0; aborthoming = 0; gethomingstate = 0; savedrivertabletoeep = 0;
+        saveparamtoeep = 0; initparamfromeep = 0; initparamtodefault = 0; enabledriverchain = 0;
+        enablejoystick = 0; getadcvalues = 0; setjoysticktolerance = 0; getjoysticktolerance = 0;
     }
 
     return ito::retOk;
@@ -431,7 +431,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, USBMotion3XIIIWid);    // Give the widget a name ..)
     }
-   
+
    // till here
     changeStatusTimer(false);
 }
@@ -489,8 +489,8 @@ ito::RetVal USBMotion3XIII::updateStatus()
     QVector<bool> available = QVector<bool>() << false << false << false;
     QVector<bool> enabled = QVector<bool>() << false << false << false;
     QVector<bool> running = QVector<bool>() << false << false << false;
-    QVector<double> actPosDbl = QVector<double>() << 0.0 << 0.0 << 0.0; 
-    QVector<double> targetPosDbl = QVector<double>() << 0.0 << 0.0 << 0.0; 
+    QVector<double> actPosDbl = QVector<double>() << 0.0 << 0.0 << 0.0;
+    QVector<double> targetPosDbl = QVector<double>() << 0.0 << 0.0 << 0.0;
 
     int targetPos[] = {0, 0, 0};
     int actualPos[] = {0, 0, 0};
@@ -507,7 +507,7 @@ ito::RetVal USBMotion3XIII::updateStatus()
         if (m_availableAxis.contains(i))
         {
             m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable; //available[i] = true;
-            
+
             getxtarget(i, mcStatus, targetPos[i], DWTIMEOUT);
             getxactual(i, mcStatus, actualPos[i], DWTIMEOUT);
 
@@ -520,14 +520,14 @@ ito::RetVal USBMotion3XIII::updateStatus()
             if (mcStatus & (1 << (2*i)))
             {
                 //target position reached
-                replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget); 
+                replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
                 running[i] = false;
             }
             else
             {
                 if ((m_currentStatus[i] & ito::actuatorInterrupted) == 0)
                 {
-                    setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask); 
+                    setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
                 }
                 running[i] = true;
             }
@@ -535,7 +535,7 @@ ito::RetVal USBMotion3XIII::updateStatus()
         else
         {
             m_currentStatus[i] = m_currentStatus[i] ^ ito::actuatorAvailable; //available[i] = false;
-            
+
         }
     }
 
@@ -572,7 +572,7 @@ ito::RetVal USBMotion3XIII::loadDriverSettingsToParams()
     int microSteps;
 
     RetVal retValue(retOk);
-    
+
     for (unsigned int axis = 0; axis <= 2; axis ++)
     {
         //motorSteps must already been loaded
@@ -635,7 +635,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
     int deviceIndex = -2; //-2: by serial, -1: auto (next free), 0..20 (specific index)
 
     unsigned int errorCode = 0;
-    
+
     QString serialName = (*paramsMand)[0].getVal<char*>(); //borrowed reference
 
     if (initusbmc == 0)
@@ -686,7 +686,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 serialName = RETSTRING(getserialnumber(deviceIndex));
             }
         }
-        
+
         if (openedDevices.contains(serialName))
         {
             retValue += ito::RetVal::format(ito::retError, 0, tr("Device with serial '%s' is already in use").toLatin1().data(), serialName.toLatin1().data());
@@ -745,7 +745,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 m_params["axisSteps1"].setVal<double>(paramsOpt->value(0).getVal<double>());
                 m_params["axisSteps2"].setVal<double>(paramsOpt->value(1).getVal<double>());
                 m_params["axisSteps3"].setVal<double>(paramsOpt->value(2).getVal<double>());
-                
+
                 if (m_params["axisSteps1"].getVal<double>() > 0) m_availableAxis.append(0);
                 if (m_params["axisSteps2"].getVal<double>() > 0) m_availableAxis.append(1);
                 if (m_params["axisSteps3"].getVal<double>() > 0) m_availableAxis.append(2);
@@ -760,7 +760,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 //}
 
                 unsigned char mcStatus;
-            
+
                 retValue += errorCheck(setmode(0, 0x00, mcStatus, DWTIMEOUT));
                 retValue += errorCheck(setmode(1, 0x00, mcStatus, DWTIMEOUT));
                 retValue += errorCheck(setmode(2, 0x00, mcStatus, DWTIMEOUT));
@@ -771,14 +771,14 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 // %% setswitchsettings for all axis
                 // calculate Settings
                 int Switches = paramsOpt->value(6).getVal<int>();
-                int ERG1 = (Switches & 48) >> 4; 
+                int ERG1 = (Switches & 48) >> 4;
                 int ERG2 = (Switches & 12) >> 2;
                 int ERG3 = (Switches &  3) >> 0;
                 // set setswitchsettings
                 retValue += errorCheck(setswitchsettings(0, ERG1, mcStatus, DWTIMEOUT));
                 retValue += errorCheck(setswitchsettings(1, ERG2, mcStatus, DWTIMEOUT));
                 retValue += errorCheck(setswitchsettings(2, ERG3, mcStatus, DWTIMEOUT));
-                
+
                 retValue += loadDriverSettingsToParams(); //iprom: warum ist diese Zeile rausgeflogen? Hier wird der aktuelle Zustand des Controllers gelesen und die m_params-Parameter mit diesem synchronisiert
             }
         }
@@ -814,15 +814,15 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
             setIdentifier(id);
 
             QString axis = "";
-            if (m_availableAxis.contains(0)) 
+            if (m_availableAxis.contains(0))
             {
                 axis.append("x (0) ");
             }
-            if (m_availableAxis.contains(1)) 
+            if (m_availableAxis.contains(1))
             {
                 axis.append("y (1) ");
             }
-            if (m_availableAxis.contains(2)) 
+            if (m_availableAxis.contains(2))
             {
                 axis.append("z (2) ");
             }
@@ -838,7 +838,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 //----------------------------------------------------------------------------------------------------------------------------------
 USBMotion3XIII::~USBMotion3XIII()
 {
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -858,7 +858,7 @@ ito::RetVal USBMotion3XIII::close(ItomSharedSemaphore *waitCond)
     if (!checkConnection().containsError() && m_curDeviceIndex >= 0)
     {
         //retValue += errorCheck(saveparamtoeep(0, DWTIMEOUT));
-        
+
         if (closedevice() == 0)
         {
             QString serial = m_params["serialNumber"].getVal<char*>();
@@ -880,7 +880,7 @@ ito::RetVal USBMotion3XIII::close(ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();        
+        waitCond->release();
     }
 
     return retValue;
@@ -1039,7 +1039,7 @@ ito::RetVal USBMotion3XIII::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
         else if (key == "switchSettings1" || key == "switchSettings2" || key == "switchSettings3")
         {
             unsigned char status;
-            retValue += errorCheck(setswitchsettings(key.right(1).toInt()-1, val->getVal<int>(), status, DWTIMEOUT)); 
+            retValue += errorCheck(setswitchsettings(key.right(1).toInt()-1, val->getVal<int>(), status, DWTIMEOUT));
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1080,7 +1080,7 @@ ito::RetVal USBMotion3XIII::setMicroSteps(int axis, int steps) //axis = 1,2,3, s
     {
         return ito::RetVal(retError, 0, tr("axis %1 is not available (axisSteps = 0)").arg(axis).toLatin1().data());
     }
-    
+
     switch(steps)
     {
     case 1: msteps = 0; break;
@@ -1106,14 +1106,14 @@ ito::RetVal USBMotion3XIII::setMicroSteps(int axis, int steps) //axis = 1,2,3, s
     {
         retValue += m_params["microSteps" + QString::number(axis)].setVal<double>(steps);
     }
-    
+
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //axis = 1,2,3
 //changeBitMask (OR-Relation): 0x1 -> change agtat, 0x2 -> change aleat, 0x4 -> change v0, 0x8 -> change threshold
-ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double agtat, double aleat, double v0, double threshold) 
+ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double agtat, double aleat, double v0, double threshold)
 {
     RetVal retValue(retOk);
 
@@ -1171,7 +1171,7 @@ ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double
         {
             return RetVal(retError,0, tr("coilCurrentLow is bigger than the maximal allowed value").toLatin1().data());
         }
-   
+
         driverAleat = (aleat >= 100) ? 0 : (unsigned char)(aleat / 12.5);
     }
     if (changeBitMask & 0x4) //set coilCurrentRest
@@ -1236,7 +1236,7 @@ ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double
     }
 
     return retValue;
-}  
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, double vmax) //axis = 1,2,3, changeBitMask = 0x1 (change vmin), 0x2 (change vmax) or both
@@ -1278,7 +1278,7 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
         }
 
         driverVMax = qRound(vmax * stepsPerUnit);
-    
+
         retValue += errorCheck(setvmax(motor, driverVMax, mcStatus, DWTIMEOUT));
 
         getvmax(motor, mcStatus, driverVMax, DWTIMEOUT);
@@ -1305,7 +1305,7 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
         }
 
         driverVMin = qRound(vmin * stepsPerUnit);
-    
+
         retValue += errorCheck(setvmin(motor, driverVMin, mcStatus, DWTIMEOUT));
 
         getvmin(motor, mcStatus, driverVMin, DWTIMEOUT);
@@ -1362,7 +1362,7 @@ ito::RetVal USBMotion3XIII::setAcceleration(int axis, double amax) //axis = 1,2,
     driverAmax = qRound(amax * stepsPerUnit);
 
     motor = axis-1;
-    
+
     retValue += errorCheck(setamax(motor, driverAmax, mcStatus, DWTIMEOUT));
 
     //check
@@ -1373,7 +1373,7 @@ ito::RetVal USBMotion3XIII::setAcceleration(int axis, double amax) //axis = 1,2,
     {
         retValue += m_params["aMax" + QString::number(axis)].setVal<double>(amax);
     }
-    
+
     return retValue;
 }
 
@@ -1416,7 +1416,7 @@ ito::RetVal USBMotion3XIII::setEnabled(int axis, int value) //axis = 1,2,3
         }
         sendStatusUpdate(true);
     }
-    
+
     return retValue;
 }
 
@@ -1441,7 +1441,7 @@ ito::RetVal USBMotion3XIII::calib(const QVector<int> axis, ItomSharedSemaphore *
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-        
+
     }
 
     return retValue;
@@ -1622,7 +1622,7 @@ ito::RetVal USBMotion3XIII::setPosAbs(const int axis, const double pos, ItomShar
             sendTargetUpdate();
             changeStatusTimer(true); //set timer to short interval, since motor is running now
         }
-        
+
         if (m_async && waitCond && !released)
         {
             waitCond->returnValue = retValue;
@@ -1865,7 +1865,7 @@ ito::RetVal USBMotion3XIII::setPosRel(QVector<int> axis, QVector<double> pos, It
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
     ito::RetVal retVal(ito::retOk);
@@ -1885,7 +1885,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
     QVector<int> _axis = axis;
     if (_axis.size() == 0) //all axis
     {
-        for (int i = 0; i < 3; i++) 
+        for (int i = 0; i < 3; i++)
         {
             if (m_availableAxis.contains(i)) _axis.append(i);
         }
@@ -1910,7 +1910,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
             switch(i)
             {
             case 0:
-                if (v1 != 0 || (mcStatus & 0x01) == 0) 
+                if (v1 != 0 || (mcStatus & 0x01) == 0)
                 {
                     motor |= 1;
                     setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
@@ -1922,7 +1922,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
                 }
                 break;
             case 1:
-                if (v2 != 0 || (mcStatus & 0x04) == 0) 
+                if (v2 != 0 || (mcStatus & 0x04) == 0)
                 {
                     motor |= 2;
                     setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
@@ -1934,7 +1934,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
                 }
                 break;
             case 2:
-                if (v3 != 0 || (mcStatus & 0x10) == 0) 
+                if (v3 != 0 || (mcStatus & 0x10) == 0)
                 {
                     motor |= 4;
                     setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
@@ -1985,7 +1985,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
             retVal += errorCheck(getxvactual(x1, x2, x3, v1, v2, v3, mcStatus, DWTIMEOUT));
             //stop motors by setting actual position to new target
             retVal += errorCheck(setxyztarget(motor, x1, x2, x3, mcStatus, DWTIMEOUT));
-            
+
             retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
             done = true;
             return retVal;
@@ -2014,7 +2014,7 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
     return retVal;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void USBMotion3XIII::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())

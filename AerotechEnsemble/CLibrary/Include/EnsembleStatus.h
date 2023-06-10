@@ -1,8 +1,8 @@
 /// \file EnsembleStatus.h
 /// \brief Contains the functions to obtain Ensemble status information.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_STATUS_H__
 #define __Ensemble_STATUS_H__

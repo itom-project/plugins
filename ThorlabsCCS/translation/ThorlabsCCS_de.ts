@@ -121,16 +121,16 @@
     </message>
     <message>
         <location line="+16"/>
-        <source>This plugin can operate spectrometers from the Thorlabs CCS Series. 
+        <source>This plugin can operate spectrometers from the Thorlabs CCS Series.
 
-If you start the plugin without further parameters (device=&apos;&apos;), the first connected device is opened. 
-Set device = &apos;&lt;scan&gt;&apos; in order to get a printed list of detected devices. Use the device string or the desired 
-device in order to open this specific one. 
+If you start the plugin without further parameters (device=&apos;&apos;), the first connected device is opened.
+Set device = &apos;&lt;scan&gt;&apos; in order to get a printed list of detected devices. Use the device string or the desired
+device in order to open this specific one.
 
-This plugin has been tested with CCS175. 
+This plugin has been tested with CCS175.
 
-For compiling this plugin, you need to install the Thorlabs OSASW Instrumentation software, shipped with the spectrometer. 
-Then set the CMake variable THORLABS_IVI_VISA_SDK to the 32/64 IVI_VISA directory (e.g. C:/Program Files/IVI Foundation/...) where 
+For compiling this plugin, you need to install the Thorlabs OSASW Instrumentation software, shipped with the spectrometer.
+Then set the CMake variable THORLABS_IVI_VISA_SDK to the 32/64 IVI_VISA directory (e.g. C:/Program Files/IVI Foundation/...) where
 subdirectories like include or bin are contained.</source>
         <translation type="unfinished"></translation>
     </message>

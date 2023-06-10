@@ -4,4 +4,3 @@
 void largan_ccd2dib(char *pData, char *pDib, long dwDibRowBytes, int nCcdFactor);
 
 #endif
-

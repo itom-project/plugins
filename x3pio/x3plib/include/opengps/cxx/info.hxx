@@ -28,7 +28,7 @@
  *   http://www.opengps.eu/                                                *
  ***************************************************************************/
 
-/*! @addtogroup Cpp 
+/*! @addtogroup Cpp
    @{ */
 
 /*! @file
@@ -96,7 +96,7 @@ namespace OpenGPS
        * Prints the copyright information of this software library to standard output.
        */
       static void PrintCopyright();
-      
+
       /*!
        * Prints the license information of this software library to standard output.
        */

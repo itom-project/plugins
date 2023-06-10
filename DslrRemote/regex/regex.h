@@ -30,22 +30,22 @@
 #else
 # define __DLL_IMPORT__	__attribute__((dllimport)) extern
 # define __DLL_EXPORT__	__attribute__((dllexport)) extern
-#endif 
+#endif
 
 #if (defined __WIN32__) || (defined _WIN32)
 # ifdef BUILD_REGEX_DLL
 #  define REGEX_DLL_IMPEXP	__DLL_EXPORT__
 # elif defined(REGEX_STATIC)
-#  define REGEX_DLL_IMPEXP	 
+#  define REGEX_DLL_IMPEXP
 # elif defined (USE_REGEX_DLL)
 #  define REGEX_DLL_IMPEXP	__DLL_IMPORT__
 # elif defined (USE_REGEX_STATIC)
-#  define REGEX_DLL_IMPEXP 	 
+#  define REGEX_DLL_IMPEXP
 # else /* assume USE_REGEX_DLL */
 #  define REGEX_DLL_IMPEXP	__DLL_IMPORT__
 # endif
 #else /* __WIN32__ */
-# define REGEX_DLL_IMPEXP	 
+# define REGEX_DLL_IMPEXP
 #endif
 
 /* Allow the use in C++ code.  */
@@ -203,7 +203,7 @@ typedef unsigned long int reg_syntax_t;
    stored in the pattern buffer, so changing this does not affect
    already-compiled regexps.  */
 REGEX_DLL_IMPEXP reg_syntax_t re_syntax_options;
-
+
 /* Define combinations of the above bits for the standard possibilities.
    (The [[[ comments delimit what gets put into the Texinfo file, so
    don't delete them!)  */
@@ -274,7 +274,7 @@ REGEX_DLL_IMPEXP reg_syntax_t re_syntax_options;
    | RE_NO_BK_PARENS        | RE_NO_BK_REFS				\
    | RE_NO_BK_VBAR	    | RE_UNMATCHED_RIGHT_PAREN_ORD)
 /* [[[end syntaxes]]] */
-
+
 /* Maximum number of duplicates an interval can allow.  Some systems
    (erroneously) define this in other header files, but we want our
    value, so remove any previous define.  */
@@ -353,7 +353,7 @@ typedef enum
   REG_ESIZE,		/* Compiled pattern bigger than 2^16 bytes.  */
   REG_ERPAREN		/* Unmatched ) or \); not returned from regcomp.  */
 } reg_errcode_t;
-
+
 /* This data structure represents a compiled pattern.  Before calling
    the pattern compiler, the fields `buffer', `allocated', `fastmap',
    `translate', and `no_sub' can be set.  After the pattern has been
@@ -429,7 +429,7 @@ struct re_pattern_buffer
 };
 
 typedef struct re_pattern_buffer regex_t;
-
+
 /* Type for byte offsets within the string.  POSIX mandates this.  */
 typedef int regoff_t;
 
@@ -460,7 +460,7 @@ typedef struct
   regoff_t rm_so;  /* Byte offset from string's start to substring's start.  */
   regoff_t rm_eo;  /* Byte offset from string's start to substring's end.  */
 } regmatch_t;
-
+
 /* Declarations for routines.  */
 
 /* Sets the current default syntax to SYNTAX, and return the old syntax.

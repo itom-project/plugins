@@ -7,7 +7,7 @@
 
   Communication structure definition
   (see U3200\SoftwareOnly\Specifications\Command Interface.doc)
-   NOTE: Each entry contains data for all MAX_AXES axes 
+   NOTE: Each entry contains data for all MAX_AXES axes
 
 **********************************************************************************/
 
@@ -18,8 +18,8 @@
 
 typedef struct tagCOMMAND_SINGLE
 {
-   USHORT            usCommandCode;   
-   USHORT            usCommandFlags;   
+   USHORT            usCommandCode;
+   USHORT            usCommandFlags;
    /* Other command arguments (usage depends on command) */
    DWORD             dwCmdParameter0;    /* MUST BE FIRST COMMAND RELATED THINGEE IN STRUCTURE */
    DWORD             dwCmdParameter1;
@@ -42,7 +42,7 @@ typedef struct tagCOMMAND_ONE_AXIS
 {
 
    /* Profile point command arguments */
-   LONG              lPositionCmd;       /* signed, (cnts)   MUST BE FIRST ONE IN STRUCTURE */    
+   LONG              lPositionCmd;       /* signed, (cnts)   MUST BE FIRST ONE IN STRUCTURE */
    LONG              lVelocityCmd;       /* signed, (cnts/msec) */
    LONG              lAccelerationCmd;   /* signed, (cnts/msec/msec) */
    LONG              lCalibration;       /* calibration value */
@@ -76,15 +76,15 @@ typedef struct tagSTATUS_ONE_AXIS
    WORD              wTorqueCmd;
    BYTE              bEtherBinInAddr;
    BYTE              bEtherBinOutAddr;
-   WORD              wExpandedIn;              
+   WORD              wExpandedIn;
    DWORD             dwEtherBinIn;
    DWORD             dwEtherBinOut;
    DWORD             dwOptionalFeedBack[NUMBER_OPTIONAL_FEEDBACK_ITEMS];
    WORD              wCmdReturnCode1;                              /* Response content code */
-   WORD              wExpandedOut;                                  
+   WORD              wExpandedOut;
    WORD              wCmdReturn1[STATUS_RETURN_DATA_SIZE_WORDS];   /* Response data from commands */
    WORD              wCmdReturnCode2;                              /* Response content code (second) */
-   WORD              wSpare2;                                  
+   WORD              wSpare2;
    WORD              wCmdReturn2[STATUS_RETURN_DATA_SIZE_WORDS];   /* Response data from commands */
 } STATUS_ONE_AXIS, *PSTATUS_ONE_AXIS;
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -48,7 +48,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-//! 
+//!
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
     creates new instance of dialogST8SMC4USB, calls the method setVals of dialogST8SMC4USB, starts the execution loop and if the dialog
@@ -256,7 +256,7 @@ ito::RetVal ST8SMC4USB::synchronizeMotorSettings(double newAccel /*= -1.0*/, dou
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ST8SMC4USB::init. The widged window is created at this position.
 */
 ito::RetVal ST8SMC4USB::SMCCheckError(ito::RetVal retval)
@@ -276,14 +276,14 @@ ito::RetVal ST8SMC4USB::SMCCheckError(ito::RetVal retval)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ST8SMC4USB::init. The widged window is created at this position.
 */
 ST8SMC4USB::ST8SMC4USB() :
     AddInActuator(),
     m_device(-1),
-    m_engine_settings(), 
-    m_pSer(nullptr), 
+    m_engine_settings(),
+    m_pSer(nullptr),
     m_async(0)
 {
     // Read only - Parameters
@@ -329,7 +329,7 @@ ST8SMC4USB::ST8SMC4USB() :
     \return retOk
 */
 ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, ItomSharedSemaphore *waitCond)
-{   
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     result_t result;
@@ -366,7 +366,7 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     {
         retval += m_params["units_per_step"].setVal<double>(m_unitPerSteps);
     }
-                    
+
     device_enumeration_t devenum;
     const char* enumerate_hints = "addr=";
 
@@ -558,7 +558,7 @@ ito::RetVal ST8SMC4USB::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -600,7 +600,7 @@ ito::RetVal ST8SMC4USB::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ST8SMC4USB::SMCSwitchType is executed.
 
@@ -779,7 +779,7 @@ ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *wait
         waitCond->returnValue = retval;
         waitCond->release();
     }
-    
+
     return retval;
 
 }
@@ -837,7 +837,7 @@ ito::RetVal ST8SMC4USB::getPos(const int axis, QSharedPointer<double> pos, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
+/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -882,7 +882,7 @@ ito::RetVal ST8SMC4USB::getPos(const QVector<int> axis, QSharedPointer<QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls ST8SMC4USB::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -913,7 +913,7 @@ ito::RetVal ST8SMC4USB::setPosAbs(const QVector<int> axis, QVector<double> pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls ST8SMC4USB::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -963,7 +963,7 @@ ito::RetVal ST8SMC4USB::requestStatusAndPosition(bool sendCurrentPos, bool sendT
     {
         retval += getPos(0, sharedpos, 0);
         m_currentPos[0] = *sharedpos;
-        
+
         sendStatusUpdate(false);
     }
     else
@@ -989,7 +989,7 @@ ito::RetVal ST8SMC4USB::SMCCheckStatus()
     for (int i = 0; i < 1; i++)
     {
         setStatus(m_currentStatus[i], ito::actuatorAvailable, ito::actSwitchesMask | ito::actMovingMask);
-    }    
+    }
 
     requestStatusAndPosition(true, true);
     sendStatusUpdate(false);
@@ -1027,7 +1027,7 @@ ito::RetVal ST8SMC4USB::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
+/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -1083,7 +1083,7 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
             }
         }
     }
-        
+
     if (!retval.containsError())
     {
         // release semaphore immediately
@@ -1093,7 +1093,7 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
             waitCond->release();
             released = true;
         }
-        retval += waitForDone(-1, axis); 
+        retval += waitForDone(-1, axis);
         // Wait till movement is done and the release the semaphore
         if (!m_async && waitCond && !released)
         {
@@ -1117,7 +1117,7 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
         retval += getPos(0, pos, NULL);
         m_targetPos[0] = m_currentPos[0];
         sendTargetUpdate();
-        
+
         for (int i = 0; i < 1; i++)
         {
             // replaceStatus(i, ito::actuatorInterrupted, ito::actuatorAtTarget);
@@ -1146,9 +1146,9 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
     status_t state;
 
     Sleep(10);
-    
+
     while (!done && !retval.containsWarningOrError())
-    {   
+    {
         Sleep(250); // to be sure that the first requested status is correct
         if ((result = get_status(m_device, &state)) != result_ok)
         {
@@ -1163,7 +1163,7 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
             {
                 retval += ito::RetVal(ito::retError, 0, tr("Error while stopping: %1").arg(getErrorString(result)).toLatin1().data());
             }
-            
+
             for (int i = 0; i < 1; i++)
             {
                 m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
@@ -1176,7 +1176,7 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
         else
         {
             done = ((state.MoveSts & MOVE_STATE_MOVING) == 0) && (state.MvCmdSts & MVCMD_RUNNING) == 0;
-         
+
             if (done)
             {   // Position reached and movement done
                 replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
@@ -1194,7 +1194,7 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ST8SMC4USB::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())

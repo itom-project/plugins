@@ -11,18 +11,20 @@
 **Author**:     :pluginauthor:`PI_GCS2`
 **Requires**:   Plugin SerialIO
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: PI_GCS2
 
+Plugin to interface with Physik Instrumente (PI) GCS Controllers for X/Y and Z motion.
+
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: PI_GCS2
 

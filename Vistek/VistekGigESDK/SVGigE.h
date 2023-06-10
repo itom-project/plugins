@@ -47,8 +47,8 @@
  *
  ** Version 1.5.1
  * --------------------
- *	A negative value for PixelsCorrectionMapOffset is allowed. 
- *	Improvements in the c# interface. 
+ *	A negative value for PixelsCorrectionMapOffset is allowed.
+ *	Improvements in the c# interface.
  *	Bug fixing when using an Adapter with multiple IP addresses.
  *
  ** Version 1.5.0
@@ -60,13 +60,13 @@
  ** Version 1.4.26.62
  * --------------------
  *   	+ Camera_setLensFocusUnit()
- *		+ Camera_getLensFocusUnit() 
+ *		+ Camera_getLensFocusUnit()
  *
  ** Version 1.4.26.61-2
  * --------------------
  *      + Camera_setTapConfigurationEx(()
  *	    + Camera_getTapConfigurationEx()
- *  	+ Camera_setFlippingMode()	
+ *  	+ Camera_setFlippingMode()
  *	    + Camera_getFlippingMode()
  *	    + Camera_setShutterMode()
  *	    + Camera_getShutterMode()
@@ -87,7 +87,7 @@
  *    - functions added:
  *      + Camera_setPixelsCorrectionMap()
  *	    + Camera_getPixelsCorrectionMap()
- *  	+ Camera_setPixelsCorrectionControlEnabel()	
+ *  	+ Camera_setPixelsCorrectionControlEnabel()
  *	    + Camera_getPixelsCorrectionControlEnabel()
  *	    + Camera_setPixelsCorrectionControlMark()
  *	    + Camera_getPixelsCorrectionControlMark()
@@ -103,7 +103,7 @@
  *    - functions added:
  *      + Camera_isLensAvailable()
  *	    + Camera_getLensName()
- *  	+ Camera_setLensFocalLenght()	
+ *  	+ Camera_setLensFocalLenght()
  *	    + Camera_getLensFocalLenght()
  *	    + Camera_getLensFocalLenghtMin()
  *	    + Camera_getLensFocalLenghtMax()
@@ -115,7 +115,7 @@
  *      + Camera_getLensAperture()
  *      + Camera_getLensApertureMin()
  *      + Camera_getLensApertureMax()
- *      
+ *
 
  * Version 1.4.25.60
  * ------------------
@@ -145,8 +145,8 @@
  *     + Camera_getStrobeDurationExtended()
  *     + Camera_getTapGain()
  *     + Camera_setTapGain()
- *     + Camera_loadSettingsFromXml()  
- *     + Camera_SaveSettingsToXml()  
+ *     + Camera_loadSettingsFromXml()
+ *     + Camera_SaveSettingsToXml()
  *     + Camera_loadSequenceParameters()
  *     + Camera_startSequencer()
  *   - removed
@@ -155,7 +155,7 @@
  *
  * Version 1.4.24.58
  * -----------------
- *   - firmware for 'eco' camera series updated to build 1759 with support for 'trigger violation' 
+ *   - firmware for 'eco' camera series updated to build 1759 with support for 'trigger violation'
  *
  * Version 1.4.24.57
  * -----------------
@@ -174,7 +174,7 @@
  *     - Camera_setTapBalance()
  *     - Camera_getTapBalance()
  *   - "MultiStream" (removed)->deprecated
- 
+
  *
  * Version 1.4.23.56
  * -----------------
@@ -187,7 +187,7 @@
  * -----------------
  *   - functions added:
  *     + isDriverAvailable()
- * 
+ *
  * Version 1.4.23.53
  * -----------------
  *   - SVGigE_IOMux_IN_READOUT added
@@ -336,7 +336,7 @@
  *     + Camera_setLUTMode() re-implemented for backward compatibility
  *     + Camera_getLUTMode() re-implemented for backward compatibility
  *
- * Version 1.4.15.30 
+ * Version 1.4.15.30
  * -----------------
  *   - functions added:
  *     + Image_getTransferTime()
@@ -345,16 +345,16 @@
  *     + Camera_setTapBalance()
  *     + Camera_getTapBalance()
  *
- * Version 1.4.14.26 
+ * Version 1.4.14.26
  * -----------------
- *   - a need for firmware upgrade is checked on Camera_open()   
+ *   - a need for firmware upgrade is checked on Camera_open()
  *
  *   - functions added:
  *     + Camera_setAcquisitionModeAndStart()
  *     + Camera_forceValidNetworkSettings()
  *     + Camera_setIPAddress()
  *
- * Version 1.4.14.22 
+ * Version 1.4.14.22
  * -----------------
  *   - functions added:
  *     + Camera_setLookupTableMode()
@@ -367,7 +367,7 @@
  *     + Image_getImage12bitAs16bit()
  *     + Image_getImage16bitAs8bit()
  *
- * Version 1.4.13.20 
+ * Version 1.4.13.20
  * -----------------
  *   - functions added:
  *     + Camera_setWhiteBalance()
@@ -413,7 +413,7 @@
  * Version 1.4.3.1
  * ---------------
  *   - packet resend capabilities improved
- *     NOTE: The image pointer will be NULL for uncomplete images 
+ *     NOTE: The image pointer will be NULL for uncomplete images
  *           which may be the case for unsufficient network bandwidth
  *
  * Version 1.4.1.4
@@ -470,15 +470,15 @@
  *  CameraContainer_getNumberOfCameras()
  *  CameraContainer_getCamera()
  *  CameraContainer_findCamera()
- *	
+ *
  * 2 - Camera: Connection
  * ----------------------
  *  Camera_openConnection()
  *  Camera_closeConnection()
  *  Camera_openConnectionEx()
  *  Camera_setIPAddress()
- *  Camera_forceValidNetworkSettings() 
- *  Camera_restartIPConfiguration() 
+ *  Camera_forceValidNetworkSettings()
+ *  Camera_restartIPConfiguration()
  *
  * 3 - Camera: Information
  * -----------------------
@@ -513,7 +513,7 @@
  *  StreamingChannel_getActualFrameRate()
  *  StreamingChannel_getActualDataRate()
  *  StreamingChannel_getPeakDataRate()
- * 
+ *
  * 6 - Stream: Channel info
  * ------------------------
  *  StreamingChannel_getPixelType()
@@ -547,7 +547,7 @@
  *  Image_getImage12bitAs8bit()
  *  Image_getImage12bitAs16bit()
  *  Image_getImage16bitAs8bit()
- *		
+ *
  * 10 - Stream: Image characteristics
  * ----------------------------------
  *  Image_getPixelType()
@@ -578,7 +578,7 @@
  *  Stream_releaseMessage()
  *  Stream_flushMessages()
  *  Stream_closeEvent()
- *  
+ *
  * 13 - Controlling camera: Frame rate
  * -----------------------------------
  *  Camera_setFrameRate()
@@ -695,7 +695,7 @@
  *  Camera_resetTimestampCounter()
  *  Camera_getTimestampCounter()
  *  Camera_getTimestampTickFrequency()
- *  Camera_setFlippingMode()	
+ *  Camera_setFlippingMode()
  *	Camera_getFlippingMode()
  *	Camera_setShutterMode()
  *	Camera_getShutterMode()
@@ -723,7 +723,7 @@
  *  Camera_getImageCorrection()
  *  Camera_setPixelsCorrectionMap()
  *  Camera_getPixelsCorrectionMap()
- *  Camera_setPixelsCorrectionControlEnabel()	
+ *  Camera_setPixelsCorrectionControlEnabel()
  *	Camera_getPixelsCorrectionControlEnabel()
  *	Camera_setPixelsCorrectionControlMark()
  *	Camera_getPixelsCorrectionControlMark()
@@ -733,7 +733,7 @@
  *  Camera_getMaximalPixelsCorrectionMapSize()
  *  Camera_getMapIndexCoordinate()
  *  Camera_deletePixelCoordinateFromMap()
- *   
+ *
  *
  * 22 - Special control: IOMux configuration
  * -------------------------------------------------------
@@ -772,8 +772,8 @@
  *  Camera_writeEEPROM()
  *  Camera_readEEPROM()
  *  Camera_restoreFactoryDefaults()
- *  Camera_loadSettingsFromXml()  
- *  Camera_SaveSettingsToXml()  
+ *  Camera_loadSettingsFromXml()
+ *  Camera_SaveSettingsToXml()
  *
  * 27 - General functions
  * ----------------------
@@ -787,7 +787,7 @@
  * ----------------
  *  getErrorMessage()
  *  Camera_registerForLogMessages()
- *  
+ *
 
  * 29 - Special control: Lens control
  * ------------------------------------------------------
@@ -798,17 +798,17 @@
  *  Camera_getLensFocalLenghtMin()
  *  Camera_getLensFocalLenghtMax()
  *  Camera_setLensFocusUnit()
- *  Camera_getLensFocusUnit() 
+ *  Camera_getLensFocusUnit()
  *  Camera_setLensFocus()
- *  Camera_getLensFocus() 
+ *  Camera_getLensFocus()
  *  Camera_getLensFocusMin()
- *  Camera_getLensFocusMax() 
+ *  Camera_getLensFocusMax()
  *  Camera_setLensAperture()
  *  Camera_getLensAperture()
  *  Camera_getLensApertureMin()
  *  Camera_getLensApertureMax()
- 
- *      
+
+ *
  * ---------------------------------------------------------
  * 99 - Deprecated functions
  * ---------------------------------------------------------
@@ -863,7 +863,7 @@ extern "C"
     unsigned char	DriverVersion;
     unsigned char	BuildVersion;
 
-  } SVGigE_VERSION; 
+  } SVGigE_VERSION;
 
   /** Version settings
    *  The following version settings apply to current SVGigE SDK:
@@ -1010,7 +1010,7 @@ extern "C"
     SVGigE_SVCAM_STATUS_ONLY_OFFSET_NOT_ACTIVE         	= -145,
     // mapping from SVGigE_GEV_STATUS_ERROR
     SVGigE_SVCAM_STATUS_CAMERA_COMMUNICATION_ERROR      = -199,
-   
+
 // Mapped transport layer return codes
    SVGigE_TL_SUCCESS                                    =    0,
     SVGigE_TL_DLL_NOT_LOADED                            = -201,
@@ -1188,25 +1188,25 @@ extern "C"
 	CAMERA_FEATURES2_2_TAP_1X_2YE			  		   = 62, // camera supports a dual tap top/bottom sensor
 	CAMERA_FEATURES2_4_TAP_2XE_2YE					   = 63, // camera supports a quad tap sensor
 	// Extended feature vector
-	CAMERA_FEATURES3_START               			   = 64, // second extended camera feature 
+	CAMERA_FEATURES3_START               			   = 64, // second extended camera feature
 	CAMERA_FEATURES3_REVERSE_X	              		   = 64, // camera supports horizontal flipping
 	CAMERA_FEATURES3_REVERSE_Y	                	   = 65, // camera supports vertical flipping
 	CAMERA_FEATURES3_GLOBAL_SHUTTER                    = 66, // camera supports GLOBAL SHUTTER  Mode
 	CAMERA_FEATURES3_ROLLING_SHUTTER                   = 67, // camera supports ROLLING SHUTTER Mode
-	CAMERA_FEATURES3_MFT_FOCUS_UNIT                    = 68, // MFT focus unit can be changed,  
+	CAMERA_FEATURES3_MFT_FOCUS_UNIT                    = 68, // MFT focus unit can be changed,
 	} CAMERA_FEATURE;
 
 
   /** Look-up table mode.
    *  A camera can be instructed to apply a look-up table. Usually this will
    *  be used for running a gamma correction. However, other goals can also
-   *  be implemented by a look-up table, like converting a gray-scale picture 
+   *  be implemented by a look-up table, like converting a gray-scale picture
    *  into a binary black/white picture.
    */
   typedef enum
   {
     LUT_MODE_DISABLED               = 0,
-    LUT_MODE_WHITE_BALANCE          = 1,  // 2006-12-20: deactivated, use  
+    LUT_MODE_WHITE_BALANCE          = 1,  // 2006-12-20: deactivated, use
 										  // Camera_setWhiteBalance() instead
 	LUT_MODE_ENABLED                = 2,
 
@@ -1281,7 +1281,7 @@ extern "C"
 	{
     ACQUISITION_CONTROL_STOP    = 0,
     ACQUISITION_CONTROL_START   = 1,
-    
+
   } ACQUISITION_CONTROL;
 
   /** Trigger polarity.
@@ -1384,7 +1384,7 @@ extern "C"
 
 	}SVGIGE_TAP_CONFIGURATION_SELECT;
 
-	
+
 	/** flipping mode selection defines.
 	 *  the following modes of flipping are available
 	 */
@@ -1395,7 +1395,7 @@ extern "C"
 		SVGIGE_REVERSE_Y	= 2,
 		SVGIGE_REVERSE_X_Y	= 3,
 	} SVGIGE_FLIPPING_MODE ;
-	
+
 	/** Shutter mode selection defines.
 	 *  the following modes of Shutter are available
 	 */
@@ -1404,8 +1404,8 @@ extern "C"
 		SVGIGE_GLOBAL_SHUTTER  = 0,
 		SVGIGE_ROLLING_SHUTTER = 1,
 	}	SVGIGE_SHUTTER_MODE ;
-	
-	
+
+
 	/** Auto tap balance modes.
 	 *  The following modes of auto tap balancing are available
 	 */
@@ -1414,7 +1414,7 @@ extern "C"
 		SVGIGE_AUTO_TAP_BALANCE_MODE_OFF			=0,
 		SVGIGE_AUTO_TAP_BALANCE_MODE_ONCE			=1,
 		SVGIGE_AUTO_TAP_BALANCE_MODE_CONTINUOUS		=2,
-		SVGIGE_AUTO_TAP_BALANCE_MODE_RESET			=3,				
+		SVGIGE_AUTO_TAP_BALANCE_MODE_RESET			=3,
 
 	}SVGIGE_AUTO_TAP_BALANCE_MODE;
 
@@ -1438,12 +1438,12 @@ extern "C"
 		Custom_Map =2,
 
 	} PIXELS_CORRECTION_MAP_SELECT ;
-	
+
 	/** following focus units are available
     */
 	typedef enum
 		{
-		 One_mm_Unit = 0,		//  focus  unit: 1 mm 
+		 One_mm_Unit = 0,		//  focus  unit: 1 mm
 		 Dec_mm_Unit =1,	   //   focus  unit:  1/10 mm
 		} FOCUS_UNIT;
 
@@ -1508,7 +1508,7 @@ extern "C"
   /** Signal types
    *  Each image that is delivered to an application by a callback will have a related signal
    *  which informs about the circumstances why a callback was triggered.
-   *  
+   *
    *  Usually a complete image will be delivered with the SVGigE_SIGNAL_FRAME_COMPLETED signal.
    */
   typedef enum
@@ -1572,7 +1572,7 @@ extern "C"
 	SVGigE_IOMUX_IN31      = (1 << 31),
   } SVGigE_IOMux_IN;
 
-  /** Some of the multiplexer's IN signals (signal sources) have a 
+  /** Some of the multiplexer's IN signals (signal sources) have a
    *  pre-defined usage:
    */
 
@@ -1667,7 +1667,7 @@ extern "C"
   } SVGigE_IOMux_OUT;
 
 
-  /** Some of the multiplexer's OUT signals (signal sinks) have a 
+  /** Some of the multiplexer's OUT signals (signal sinks) have a
    *  pre-defined usage:
    */
   // Trigger signal to camera
@@ -1695,7 +1695,7 @@ extern "C"
   } SVGigE_BaudRate;
 
   /** Camera buffer structure
-	  *  Camera information will be stored and transferred to the application 
+	  *  Camera information will be stored and transferred to the application
 	  *  using the following structure
 	  */
   typedef struct {
@@ -1705,7 +1705,7 @@ extern "C"
     unsigned long macHigh;
     unsigned long macLow;
     char manufacturer[32];
-    char model[32];  
+    char model[32];
     char specificInformation[48];
     char deviceVersion[32];
     char serialNumber[16];
@@ -1722,27 +1722,27 @@ extern "C"
   typedef struct {
 	unsigned char *ImageData;		// pointer to image data
 	int ImageSize;					// image buffer size
-    
+
 	unsigned int ImageID;			// image ID assigned by camera
-    
+
 	int BufferIndex;				// buffer index of current image
 	int ImageCount;					// total number of images
 	int FrameLoss;					// lost images in streaming channel instance
 	int PacketCount;				// packet count for one image
 	int PacketResend;				// number of resend packets in one image
-    
+
 	int TransferTime; 				// Total packet transfer time from receiving first packet until
 									// finishing image and sending to user space [microseconds]
-                      							
+
 	float ActualFrameRate;			// actual frame rate in streaming channel
 	float ActualDataRate;			// actual data rate in streaming channel
-    
+
 	unsigned char Header[576];		// header data of current image
-    
+
 	SVGigE_SIGNAL_TYPE SignalType;	// type of signal
-    
+
 	bool ImageLocked;				// flag for locking image while doing image processing
-    
+
   } SVGigE_IMAGE;
 
   /** Signal structure.
@@ -1755,7 +1755,7 @@ extern "C"
 	  SVGigE_SIGNAL_TYPE SignalType;
 	  void *Data;
 	  int DataLength;
-  } SVGigE_SIGNAL;  
+  } SVGigE_SIGNAL;
 
   /** Streaming channel callback function.
    *  The user-defined streaming channel callback function will be called each
@@ -1763,25 +1763,25 @@ extern "C"
    *  is ready for processing
    *
    *  NOTE: The callback function will return a NULL pointer in case an image
-   *        could not be completely received over the network due to a timeout, 
+   *        could not be completely received over the network due to a timeout,
    *        e.g. in the result of insufficient bandwidth
    */
   typedef SVGigE_RETURN (__stdcall *StreamCallback)(Image_handle Image, void* Context);
 
   /** Messaging channel callback function.
    *  The user-defined messaging channel callback function will be called each time
-   *  when an event was signaled which arrived from a camera or from intermediate software 
+   *  when an event was signaled which arrived from a camera or from intermediate software
    *  layers.
-   * 
+   *
    *  An application should retrieve, process appropriately and finally release any message
-   *  that has arrived when the event callback function gets control. There might be one or 
+   *  that has arrived when the event callback function gets control. There might be one or
    *  multiple messages waiting for processing in a FIFO on entry to the callback function.
    *
-   *  HINT: If the size of the FIFO was not sufficient for handling all messages that 
+   *  HINT: If the size of the FIFO was not sufficient for handling all messages that
    *  arrived from one callback to the next callback then an exception will be raised.
-   *  An application must catch this exception and should react with an appropriate 
-   *  user message, log entry or the like which informs an operator about this 
-   *  exceptional situation. 
+   *  An application must catch this exception and should react with an appropriate
+   *  user message, log entry or the like which informs an operator about this
+   *  exceptional situation.
    */
   typedef SVGigE_RETURN (__stdcall *EventCallback)(Event_handle EventID, void* Context);
 
@@ -1912,14 +1912,14 @@ extern "C"
    */
   __usrdllexport__ Camera_handle
   CameraContainer_findCamera(CameraContainerClient_handle hCameraContainer,
-                             char *CameraItem);
+                             const char *CameraItem);
 
 
 
 //-------------------------------------------
   /** Set CommandTransferTimeout
 	*  The user can set the appropriate Timeout for the transfer.
-	*  this have to be occurred befor opening the camera, if not the default timeout will be used, in this case 200 ms. 
+	*  this have to be occurred befor opening the camera, if not the default timeout will be used, in this case 200 ms.
 	*  @param hCameraContainer a handle received from CameraContainer_create()
 	*  @param UserTransferTimeout the current timeout to be used
 	*  @return SVGigE_SUCCESS or an appropriate SVGigE error code
@@ -1927,7 +1927,7 @@ extern "C"
   __usrdllexport__ Camera_handle
   CameraContainer_setCommandTransferTimeout(CameraContainerClient_handle hCameraContainer,
                              int UserTransferTimeout);
-			
+
  /** Get the current used timeout
 	*  Current used Transfer Timeout will be returned.
 	*  @param hCameraContainer a handle from a camera that has been opened before
@@ -1950,12 +1950,12 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param Timeout the time without traffic or heartbeat after which a camera drops a connection (default: 3.0 sec.)
    *   NOTE: Values between 0.0 to 0.5 sec. will be mapped to the default value (3.0 sec.)
-	 * HINT: It is recommended to use an extended timeout for debug sessions (e.g. 30 sec.). 
-	 * This prevents from loosing connection to a camera due to missing heartbeat when 
+	 * HINT: It is recommended to use an extended timeout for debug sessions (e.g. 30 sec.).
+	 * This prevents from loosing connection to a camera due to missing heartbeat when
 	 * stepping through a program in debug mode.
    *  @return success or error code
    */
-  __usrdllexport__ SVGigE_RETURN 
+  __usrdllexport__ SVGigE_RETURN
   Camera_openConnection(Camera_handle hCamera, float Timeout);
 
   /** Open connection to camera.
@@ -1965,14 +1965,14 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param HeartbeatTimeout the time without traffic or heartbeat after which a camera drops a connection (default: 3.0 sec.)
    	* NOTE: Values between 0.0 to 0.5 sec. will be mapped to the default value (3.0 sec.)
-	* HINT: It is recommended to use an extended timeout for debug sessions (e.g. 30 sec.). 
-	* This prevents from loosing connection to a camera due to missing heartbeat when 
+	* HINT: It is recommended to use an extended timeout for debug sessions (e.g. 30 sec.).
+	* This prevents from loosing connection to a camera due to missing heartbeat when
 	* stepping through a program in debug mode.
    *  @param GVCPRetryCount retrys before giving up, valid values between 1 and n. Default is 3
    *  @param GVCPTimeout Timeout before next retry in msec. Default is 200 msec
    *  @return success or error code
    */
-  __usrdllexport__ SVGigE_RETURN 
+  __usrdllexport__ SVGigE_RETURN
   Camera_openConnectionEx(Camera_handle hCamera, float HeartbeatTimeout, int GVCPRetryCount, int GVCPTimeout);
 
 
@@ -1990,13 +1990,13 @@ extern "C"
    *  The camera will get a new persistent IP address assigned. If the camera
    *  is currently unavailable in the subnet where it is attached to, then a
    *  temporary IP address will be forced into the camera first. In any case
-   *  the camera will have the new IP address assigned as a persistent IP 
+   *  the camera will have the new IP address assigned as a persistent IP
    *  which will apply after camera's next reboot.
    *
    *  HINT:
    *  If an IP address is set that is not inside the subnet where the camera
    *  is currently connected to, then the camera becomes unavailable after next
-   *  reboot. This can be avoided by having a valid IP address assigned automatically 
+   *  reboot. This can be avoided by having a valid IP address assigned automatically
    *  by setting both values to zero, IPAddress and NetMask
    *
    *  @see CameraContainer_getCamera()
@@ -2011,8 +2011,8 @@ extern "C"
                       unsigned int NetMask);
 
   /** Force valid network settings
-   *  A camera's availability will be evaluated. If it is outside current subnet 
-   *  then it will be forced to valid network settings inside current subnet. 
+   *  A camera's availability will be evaluated. If it is outside current subnet
+   *  then it will be forced to valid network settings inside current subnet.
    *  Valid network settings will be reported back to caller.
    *
    *  @see CameraContainer_getCamera()
@@ -2021,20 +2021,20 @@ extern "C"
    *  @param SubnetMask the new subnet mask that has been selected and forced
    *  @return success or error code
    *
-   *  HINT: If the return code is SVGigE_SVCAM_STATUS_CAMERA_OCCUPIED then the 
+   *  HINT: If the return code is SVGigE_SVCAM_STATUS_CAMERA_OCCUPIED then the
    *        IPAdress will show the IP of the host that occupies the camera.
    */
   __usrdllexport__ SVGigE_RETURN
-  Camera_forceValidNetworkSettings(Camera_handle hCamera, 
+  Camera_forceValidNetworkSettings(Camera_handle hCamera,
                                    unsigned int *IPAddress,
                                    unsigned int *SubnetMask);
 
   /** Restart IP configuration
-   *  A camera's IP configuration process will be restarted. Usually this 
+   *  A camera's IP configuration process will be restarted. Usually this
    *  function will be used when a new DHCP address configuration should be
    *  performed. If no DHCP server is available then a fallback to LLA will
    *  take place. If, however, the camera has already got a persistent IP
-   *  assigned then the result of the IP configuration process will be the 
+   *  assigned then the result of the IP configuration process will be the
    *  already assigned fixed IP address.
    *
    *  @see CameraContainer_getCamera()
@@ -2043,7 +2043,7 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_restartIPConfiguration(Camera_handle hCamera);
-  
+
 
 //------------------------------------------------------------------------------
 // 3 - Camera: Information
@@ -2057,7 +2057,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getManufacturerName(Camera_handle hCamera);
 
   /** Get model name.
@@ -2068,7 +2068,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getModelName(Camera_handle hCamera);
 
   /** Get device version.
@@ -2079,7 +2079,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getDeviceVersion(Camera_handle hCamera);
 
   /** Get manufacturer specific information.
@@ -2090,7 +2090,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getManufacturerSpecificInformation(Camera_handle hCamera);
 
   /** Get serial number.
@@ -2100,7 +2100,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getSerialNumber(Camera_handle hCamera);
 
   /** Set user-defined name
@@ -2112,7 +2112,7 @@ extern "C"
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
-  Camera_setUserDefinedName(Camera_handle hCamera, char *UserDefinedName);
+  Camera_setUserDefinedName(Camera_handle hCamera, const char *UserDefinedName);
 
   /** Get user-defined name
    *  A name that has been assigned to a camera by the user will be returned
@@ -2121,7 +2121,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getUserDefinedName(Camera_handle hCamera);
 
   /** Get MAC address.
@@ -2131,7 +2131,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return a string containing requested information
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getMacAddress(Camera_handle hCamera);
 
   /** Get IP address.
@@ -2141,7 +2141,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return success or error code
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getIPAddress(Camera_handle hCamera);
 
   /** Get subnet mask.
@@ -2151,7 +2151,7 @@ extern "C"
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @return success or error code
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Camera_getSubnetMask(Camera_handle hCamera);
 
   /** Get pixel clock.
@@ -2189,7 +2189,7 @@ extern "C"
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
-  Camera_readXMLFile(Camera_handle hCamera, char **XML);
+  Camera_readXMLFile(Camera_handle hCamera, const char **XML);
 
  /**  Get Sensor temperature.
    * The current camera's Sensor temperature  will be returned.
@@ -2205,7 +2205,7 @@ extern "C"
 //------------------------------------------------------------------------------
 // 4 - Stream: Channel creation and control
 //------------------------------------------------------------------------------
- 
+
   /** Create streaming channel.
    *  A UDP streaming channel will be established for image data transfer.
    *  A connection to the camera has to be successfully opened first using
@@ -2263,7 +2263,7 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
   StreamingChannel_delete(StreamingChannel_handle hStreamingChannel);
 
- 
+
 
   /** Set readout transfer.
    *  The readout transfer of a streaming channel will be enabled or disabled
@@ -2278,7 +2278,7 @@ extern "C"
    *  has finished.
    *  Controlling readout transfer might be useful when operating multiple
    *  cameras that are triggered all at the same time. The application will
-   *  be able to request data in a pre-defined way on a one-by-one basis and 
+   *  be able to request data in a pre-defined way on a one-by-one basis and
    *  to avoid bandwidth bottlenecks this way which otherwise might occur.
    *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
@@ -2290,9 +2290,9 @@ extern "C"
                                       bool isReadoutTransfer);
 
   /** Get readout transfer.
-   *  The readout transfer of a streaming channel will be retrieved. If false, 
-   *  then the camera would capture an image but it would not transfer the image 
-   *  to the host. The application can request the streaming channel to send the 
+   *  The readout transfer of a streaming channel will be retrieved. If false,
+   *  then the camera would capture an image but it would not transfer the image
+   *  to the host. The application can request the streaming channel to send the
    *  already captured data by toggling the isRedoutTransfer parameter to true at
    *  any time after image exposure has finished.
    *  If the isReadoutTransfer parameter is toggled to true before image
@@ -2301,7 +2301,7 @@ extern "C"
    *  has finished.
    *  Controlling readout transfer might be useful when operating multiple
    *  cameras that are triggered all at the same time. The application will
-   *  be able to request data in a pre-defined way on a one-by-one basis and 
+   *  be able to request data in a pre-defined way on a one-by-one basis and
    *  to avoid bandwidth bottlenecks this way which otherwise might occur.
    *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
@@ -2353,8 +2353,8 @@ extern "C"
    *  The peak data rate will be returned. It is determined for a single image
    *  transfer by measuring the transfer time from first to last network packet
    *  which belong to a single image. The peak data rate is received by dividing
-   *  the amount of data of one image by that transfer time. It can be used for 
-   *  evaluating the bandwidth situation when operating multiple GigE cameras 
+   *  the amount of data of one image by that transfer time. It can be used for
+   *  evaluating the bandwidth situation when operating multiple GigE cameras
    *  over a single GigE line.
    *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
@@ -2366,11 +2366,11 @@ extern "C"
                                    float *PeakDataRate);
 
 //------------------------------------------------------------------------------
-// 6 - Stream: Channel info 
+// 6 - Stream: Channel info
 //------------------------------------------------------------------------------
 
   /** Get pixel type.
-	*  The pixel type will be returned that applies to the output image 
+	*  The pixel type will be returned that applies to the output image
 	*
 	*  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
 	*  @param PixelType the programmed pixel type that has been set for the output image/view
@@ -2383,9 +2383,9 @@ extern "C"
   /** Get buffer data.
    *  A streaming channel will be queried for information about one of its image buffers.
 	 *  On success, a pointer to image data will be returned.
-	 *  Since the buffer's data pointer is queried asynchronously with regard to image 
-   *  acquisition, no assumption can be made for the content that is in the buffer at 
-   *  time of running this function. Image access functions have to be used for obtaining 
+	 *  Since the buffer's data pointer is queried asynchronously with regard to image
+   *  acquisition, no assumption can be made for the content that is in the buffer at
+   *  time of running this function. Image access functions have to be used for obtaining
    *  actual images that were captured by the camera.
 	 *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
@@ -2395,11 +2395,11 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   StreamingChannel_getBufferData(StreamingChannel_handle hStreamingChannel,
-																 unsigned int BufferIndex,	
+																 unsigned int BufferIndex,
 	                               unsigned char **BufferData);
 
   /** Get buffer size.
-   *  The buffer size will be returned that applies to the output image 
+   *  The buffer size will be returned that applies to the output image
 	 *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
 	 *  @param BufferSize the buffer size for the output image/view
@@ -2410,7 +2410,7 @@ extern "C"
                                  int *BufferSize);
 
   /** Get image pitch.
-   *  The image pitch will be returned that applies to the output image 
+   *  The image pitch will be returned that applies to the output image
 	 *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
 	 *  @param ImagePitch the image pitch for the output image/view
@@ -2421,7 +2421,7 @@ extern "C"
                                  int *ImagePitch);
 
   /** Get image size X.
-   *  The image size X will be returned that applies to the output image 
+   *  The image size X will be returned that applies to the output image
 	 *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
 	 *  @param ImageSizeX the image size X for the output image/view
@@ -2432,7 +2432,7 @@ extern "C"
                                  int *ImageSizeX);
 
   /** Get image size Y.
-   *  The image size Y will be returned that applies to the output image 
+   *  The image size Y will be returned that applies to the output image
 	 *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
 	 *  @param ImageSizeY the image size Y for the output image/view
@@ -2445,7 +2445,7 @@ extern "C"
 //------------------------------------------------------------------------------
 // 7 - Stream: Transfer Parameters
 //------------------------------------------------------------------------------
- 
+
   /** Evaluate maximal packet size.
    *  A test will be performed which determines the maximal usable packet size
    *  based on given network hardware. This value will be used when opening a
@@ -2456,9 +2456,9 @@ extern "C"
 	 *  @param MaximalPacketSize the maximal possible packet size without fragmentation
    *  @return success or error code
    */
-  __usrdllexport__ SVGigE_RETURN 
+  __usrdllexport__ SVGigE_RETURN
   Camera_evaluateMaximalPacketSize(Camera_handle hCamera,
-                                   int *MaximalPacketSize); 
+                                   int *MaximalPacketSize);
 
 	/** Set streaming packet size.
 	 *  The packet size is set which will be generated by the camera for streaming
@@ -2598,20 +2598,20 @@ extern "C"
    *  to be released after processing it by a user application in order to free
    *  the occupied buffer space for a subsequent image acquisition.
    *
-   *  After releasing an image, none image access function must be called anymore 
+   *  After releasing an image, none image access function must be called anymore
    *  which would use the released image handle.
    *
    *  NOTE: The Image_release() function is called automatically when leaving the
    *        callback function. Therefore, afterwards a buffer will stay available
    *        with image content only as long as a buffer overrun occurs. A buffer
-   *        overrun can be prevented by using a sufficient number of buffers. 
+   *        overrun can be prevented by using a sufficient number of buffers.
    *
    *  HINT: An application is responsible for providing a sufficient number of
-   *        buffers to the driver in order to prevent from buffer overrun. It is 
-   *        recommended to assign e.g. at least 60 MByte total buffer space 
-   *        (number of buffers times the size of a particular buffer). That amount 
-   *        of buffer space would make sure that images are available also in worst 
-   *        case for at least 500 ms because of a limited bandwidth on a GigE line 
+   *        buffers to the driver in order to prevent from buffer overrun. It is
+   *        recommended to assign e.g. at least 60 MByte total buffer space
+   *        (number of buffers times the size of a particular buffer). That amount
+   *        of buffer space would make sure that images are available also in worst
+   *        case for at least 500 ms because of a limited bandwidth on a GigE line
    *        (< 120 MB/s).
    *
    *  @param hImage an image handle that was received from the callback function
@@ -2642,7 +2642,7 @@ extern "C"
                     BAYER_METHOD BayerMethod);
 
 	/** Get image 12-bit as 8-bit
-	 *  A 12-bit image will be converted into a 8-bit image. The caller needs to 
+	 *  A 12-bit image will be converted into a 8-bit image. The caller needs to
 	 *  provide for a sufficient buffer for the 8-bit image.
    *
    *  @param hImage an image handle that was received from the callback function
@@ -2656,8 +2656,8 @@ extern "C"
                             int BufferLength);
 
 	/** Get image 12-bit as 16-bit
-	 *  A 12-bit image will be converted into a 16-bit image. The caller needs to 
-	 *  provide for a sufficiently large buffer (2 x width x height bytes) for the 
+	 *  A 12-bit image will be converted into a 16-bit image. The caller needs to
+	 *  provide for a sufficiently large buffer (2 x width x height bytes) for the
    *  16-bit image.
    *
    *  @param hImage an image handle that was received from the callback function
@@ -2671,7 +2671,7 @@ extern "C"
                              int BufferLength);
 
 	/** Get image 16-bit as 8-bit
-	 *  A 16-bit image will be converted into a 8-bit image. The caller needs to 
+	 *  A 16-bit image will be converted into a 8-bit image. The caller needs to
 	 *  provide for a sufficient buffer for the 8-bit image.
    *
    *  @param hImage an image handle that was received from the callback function
@@ -2762,7 +2762,7 @@ extern "C"
   Image_getTimestamp(Image_handle hImage);
 
   /** Get image transfer time
-   *  The time that elapsed from image's first network packet arriving on PC side 
+   *  The time that elapsed from image's first network packet arriving on PC side
 	 *  until image completion will be determined, including possible packet resends.
    *
    *  @param hImage an image handle that was received from the callback function
@@ -2792,13 +2792,13 @@ extern "C"
 //------------------------------------------------------------------------------
 // 12 - Stream: Messaging channel
 //------------------------------------------------------------------------------
-  
+
   /** Create event.
    *  An event will be created inside GigE API which is capable of waiting for
    *  messages that are issued inside a streaming channel. One or more message
-   *  types have to be added to the event before messages will be actually 
+   *  types have to be added to the event before messages will be actually
    *  delivered to the application.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID a pointer to the identifier of a messaging channel
@@ -2809,41 +2809,41 @@ extern "C"
   Stream_createEvent(StreamingChannel_handle hStreamingChannel,
                      Event_handle *EventID,
                      int SizeFIFO);
-  
+
   /** Add message type.
    *  A message type will be added to a previously created messaging channel.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
-   *  @param MessageType one of pre-defined message types 
+   *  @param MessageType one of pre-defined message types
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
   Stream_addMessageType(StreamingChannel_handle hStreamingChannel,
                         Event_handle EventID,
                         SVGigE_SIGNAL_TYPE MessageType);
-  
+
   /** Remove message type.
    *  A message type will be removed from a previously created messaging channel.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
-   *  @param MessageType one of pre-defined message types 
+   *  @param MessageType one of pre-defined message types
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
   Stream_removeMessageType(StreamingChannel_handle hStreamingChannel,
                            Event_handle EventID,
                            SVGigE_SIGNAL_TYPE MessageType);
-  
+
   /** Is message pending.
    *  A messaging channel with a given EventID will be checked whether pending
    *  messages are available. The function will return a result immediately if
    *  the timeout is set to zero. Otherwise it will wait for a message atmost
    *  till the timeout elapses.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2854,12 +2854,12 @@ extern "C"
   Stream_isMessagePending(StreamingChannel_handle hStreamingChannel,
                           Event_handle EventID,
                           int Timeout_ms);
-  
+
   /** Register event callback.
-   *  A callback function will be registered which will be called whenever an event is 
-   *  signalled in the messaging channel. One parameter of the callback is a Context 
+   *  A callback function will be registered which will be called whenever an event is
+   *  signalled in the messaging channel. One parameter of the callback is a Context
    *  which was registered along with the callback.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2872,11 +2872,11 @@ extern "C"
                                Event_handle EventID,
                                EventCallback Callback,
                                void *Context);
-  
+
   /** Unregister event callback.
    *  A previously registered callback function will be unregistered from message channel.
    *  This will effectively stop any further calls to that function.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2887,10 +2887,10 @@ extern "C"
   Stream_unregisterEventCallback(StreamingChannel_handle hStreamingChannel,
                                  Event_handle EventID,
                                  EventCallback Callback);
-  
+
   /** Get message.
    *  A subsequent MessageID will be retrieved for a previously received EventID.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID an ID of a messaging channel from EventCallback() or from isMessagePending()
@@ -2903,10 +2903,10 @@ extern "C"
                     Event_handle EventID,
                     Message_handle *MessageID,
                     SVGigE_SIGNAL_TYPE *MessageType);
-  
+
   /** Get message data.
    *  The data pointer and length will be retrieved for a previously received MessageID.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2921,10 +2921,10 @@ extern "C"
                         Message_handle MessageID,
                         void **MessageData,
                         int *MessageLength);
-  
+
   /** Get message timestamp.
    *  A message's timestamp will be retrieved for a previously received MessageID.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2937,11 +2937,11 @@ extern "C"
                              Event_handle EventID,
                              Message_handle MessageID,
                              double *MessageTimestamp);
-  
+
   /** Release message.
-   *  A previously received MessageID will be released. No further access must happen 
+   *  A previously received MessageID will be released. No further access must happen
    *  for the released MessageID since it will be removed from memory.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2952,10 +2952,10 @@ extern "C"
   Stream_releaseMessage(StreamingChannel_handle hStreamingChannel,
                         Event_handle EventID,
                         Message_handle MessageID);
-  
+
   /** Flush messages.
    *  All messages in the message FIFO will be removed.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2964,11 +2964,11 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
   Stream_flushMessages(StreamingChannel_handle hStreamingChannel,
                        Event_handle EventID);
-  
+
   /** Close event.
    *  The messaging channel with given EventID will be closed and all resources
    *  will be freed.
-   *  
+   *
    *  @see CameraContainer_getCamera()
    *  @param hStreamingChannel a handle to a valid streaming channel
    *  @param EventID the identifier of a messaging channel
@@ -2982,7 +2982,7 @@ extern "C"
 //------------------------------------------------------------------------------
 // 13 - Controlling camera: Frame rate
 //------------------------------------------------------------------------------
-  
+
   /** Set frame rate.
    *  The camera will be adjusted to a new frame rate
    *
@@ -3058,9 +3058,9 @@ extern "C"
                                float *FramerateIncrement);
 
 //------------------------------------------------------------------------------
-// 14 - Controlling camera: Exposure 
+// 14 - Controlling camera: Exposure
 //------------------------------------------------------------------------------
-  
+
   /** Set exposure time.
    *  The camera will be adjusted to a new exposure time
    *
@@ -3252,7 +3252,7 @@ extern "C"
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param GainIncrement the analog gain increment 
+   *  @param GainIncrement the analog gain increment
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
@@ -3309,7 +3309,7 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
 	Camera_setAutoGainEnabled(Camera_handle Camera,
 														bool isAutoGainEnabled);
-			
+
  /** Get auto gain enabled
 	*  Current auto gain status will be returned.
 	*
@@ -3320,9 +3320,9 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
 	Camera_getAutoGainEnabled(Camera_handle Camera,
 														bool *isAutoGainEnabled);
-			
+
  /** Set auto gain brightness
-	*  The target brightness (0..255) will be set which the camera tries to 
+	*  The target brightness (0..255) will be set which the camera tries to
   *  reach automatically when auto gain/exposure is enabled. The range
   *  0..255 always applies independently from pixel depth.
 	*
@@ -3333,9 +3333,9 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
 	Camera_setAutoGainBrightness(Camera_handle Camera,
                                float Brightness);
-			
+
  /** Get auto gain brightness
-	*  The target brightness (0..255) will be returned that the camera tries 
+	*  The target brightness (0..255) will be returned that the camera tries
   *  to reach automatically when auto gain/exposure is enabled.
 	*
 	*  @param Camera a handle from a camera that has been opened before
@@ -3345,9 +3345,9 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
 	Camera_getAutoGainBrightness(Camera_handle Camera,
                                float *Brightness);
-			
+
  /** Set auto gain dynamics
-	*  AutoGain PID regulator's time constants for the I (integration) and 
+	*  AutoGain PID regulator's time constants for the I (integration) and
   *  D (differentiation) components will be set to new values.
 	*
 	*  @param Camera a handle from a camera that has been opened before
@@ -3361,7 +3361,7 @@ extern "C"
                              float AutoGainParameterD);
 
  /** Get auto gain dynamics
-	*  AutoGain PID regulator's time constants for the I (integration) and 
+	*  AutoGain PID regulator's time constants for the I (integration) and
   *  D (differentiation) components will be retrieved from the camera.
 	*
 	*  @param Camera a handle from a camera that has been opened before
@@ -3387,7 +3387,7 @@ extern "C"
 	Camera_setAutoGainLimits(Camera_handle Camera,
                            float MinGain,
                            float MaxGain);
-			
+
  /** Get auto gain limits
 	*  The minimal and maximal gain will be returned that the camera
 	*  must not exceed in auto gain/exposure mode.
@@ -3401,7 +3401,7 @@ extern "C"
 	Camera_getAutoGainLimits(Camera_handle Camera,
                            float *MinGain,
                            float *MaxGain);
-			
+
  /** Set auto exposure limits
 	*  The minimal and maximal exposure will be determined that the camera
 	*  must not exceed in auto gain/exposure mode.
@@ -3415,7 +3415,7 @@ extern "C"
 	Camera_setAutoExposureLimits(Camera_handle Camera,
                                float MinExposure,
                                float MaxExposure);
-			
+
  /** Set auto exposure limits
   *  The minimal and maximal exposure will be determined that the camera
   *  must not exceed in auto gain/exposure mode.
@@ -3474,7 +3474,7 @@ extern "C"
   Camera_setAcquisitionMode(Camera_handle hCamera,
                             ACQUISITION_MODE AcquisitionMode);
 
-  /** Set Acquisition mode and start 
+  /** Set Acquisition mode and start
    *  In addition to setting the acquisition mode it can be determined whether
    *  acquisition control will go to enabled or stay on disabled after the new
    *  acquisition mode has been adjusted
@@ -3502,9 +3502,9 @@ extern "C"
   Camera_getAcquisitionMode(Camera_handle hCamera,
                             ACQUISITION_MODE *AcquisitionMode);
 
-  /** Software trigger. 
+  /** Software trigger.
    *  The camera will be triggered for starting a new acquisition cycle.
-   *  A mandatory pre-requisition for a successful software trigger is to have 
+   *  A mandatory pre-requisition for a successful software trigger is to have
    *  the camera set to ACQUISITION_MODE_SOFTWARE_TIGGER before.
    *
    *  @see CameraContainer_getCamera()
@@ -3516,7 +3516,7 @@ extern "C"
 
   /** Software trigger ID. (defined but not yet available)
    *  The camera will be triggered for starting a new acquisition cycle.
-   *  A mandatory pre-requisition for a successful software trigger is to have 
+   *  A mandatory pre-requisition for a successful software trigger is to have
    *  the camera set to ACQUISITION_MODE_SOFTWARE_TIGGER before.
    *  In addition to a usual software trigger, an ID will be accepted that
    *  can be written into the image on demand, e.g. for maintaining a unique
@@ -3579,7 +3579,7 @@ extern "C"
   Camera_setPivMode(Camera_handle hCamera,
                     PIV_MODE  PivMode);
 
-   /** Get PIV Mode 
+   /** Get PIV Mode
     *  Check if camera's PIV mode is enabled or disabled.
     *  The state of camera's current PivMode will be returned
     *
@@ -3604,7 +3604,7 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_setDebouncerDuration(Camera_handle hCamera,
-                              float  DebouncerDuration); 
+                              float  DebouncerDuration);
 
  /** Get debouncer  duration
   *  The camera's debouncer  duration will be returned
@@ -3620,7 +3620,7 @@ extern "C"
                               float *DebouncerDuration);
 
   //-----------------prescaler-----------------------
-  
+
   /** Set prescaler devisor
    *   The camera's prescaler Devisor will be set to the selected value
    *
@@ -3630,14 +3630,14 @@ extern "C"
    */
    __usrdllexport__ SVGigE_RETURN
    Camera_setPrescalerDevisor(Camera_handle hCamera,
-                             unsigned int PrescalerDevisor); 
+                             unsigned int PrescalerDevisor);
 
  /** Get prescaler devisor
   *  The camera's prescaler devisor will be returned
   *
   *  @see CameraContainer_getCamera()
   *  @param hCamera a camera handle received from CameraContainer_getCamera()
-  *  @param PrescalerDevisor the currently programmed setting for prescaler devisor. 
+  *  @param PrescalerDevisor the currently programmed setting for prescaler devisor.
   *  @return success or error code
   */
   __usrdllexport__ SVGigE_RETURN
@@ -3646,8 +3646,8 @@ extern "C"
 
   //-----------------Sequencer-----------------------
 
-  /** load Sequence parameters 
-   *  New sequence parameters will be loaded from a XML file into the camera  
+  /** load Sequence parameters
+   *  New sequence parameters will be loaded from a XML file into the camera
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -3656,11 +3656,11 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_loadSequenceParameters(Camera_handle hCamera,
-                                char *Filename);
+                                const char *Filename);
 
   /** Start Sequencer
    * Start acquisition using sequencer.
-   * This will occur after loading the appropriate sequence parameters. 
+   * This will occur after loading the appropriate sequence parameters.
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -3672,7 +3672,7 @@ extern "C"
 //------------------------------------------------------------------------------
 // 18 - Controlling camera: Strobe
 //------------------------------------------------------------------------------
-  
+
   /** Set strobe polarity
    *  The camera's strobe polarity will be set to the selected value
    *
@@ -3716,7 +3716,7 @@ extern "C"
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param StrobePolarity the currently programmed setting for strobe polarity
-   *  @param StrobIndex the index of the current strobe channel, it can take a value 1,2,3 or 4. 
+   *  @param StrobIndex the index of the current strobe channel, it can take a value 1,2,3 or 4.
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
@@ -3743,12 +3743,12 @@ extern "C"
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param StrobePosition the new value for strobe position in microseconds
-   *  @param StrobIndex the index of the current strobe channel, it can take a value 1,2,3 or 4. 
+   *  @param StrobIndex the index of the current strobe channel, it can take a value 1,2,3 or 4.
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_setStrobePositionExtended(Camera_handle hCamera,
-                                   float StrobePosition, 
+                                   float StrobePosition,
                                    int StrobIndex);
 
   /** Get strobe position
@@ -3771,15 +3771,15 @@ extern "C"
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param StrobePosition the currently programmed value for strobe position in microseconds
-   *  @param StrobIndex the index of the current strobe channel it can take a value 1,2,3 or 4. 
+   *  @param StrobIndex the index of the current strobe channel it can take a value 1,2,3 or 4.
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_getStrobePositionExtended(Camera_handle hCamera,
-                                   float *StrobePosition, 
+                                   float *StrobePosition,
                                    int StrobIndex);
 
-  /** Get maximal strobe position 
+  /** Get maximal strobe position
    *  The camera's maximal strobe position (delay) will be returned in micro seconds
    *
    *  @see CameraContainer_getCamera()
@@ -3823,12 +3823,12 @@ extern "C"
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param StrobeDuration the new value for strobe duration in microseconds
-   *  @param StrobIndex the index of the current strobe channel it can take a value 1,2,3 or 4. 
+   *  @param StrobIndex the index of the current strobe channel it can take a value 1,2,3 or 4.
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_setStrobeDurationExtended(Camera_handle hCamera,
-                                   float StrobeDuration, 
+                                   float StrobeDuration,
                                    int StrobIndex);
 
   /** Get strobe duration
@@ -3849,7 +3849,7 @@ extern "C"
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param StrobeDuration the currently programmed value for strobe duration in microseconds
-   *  @param StrobIndex the index of the current strobe channel it can take a value 1,2,3 or 4. 
+   *  @param StrobIndex the index of the current strobe channel it can take a value 1,2,3 or 4.
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
@@ -3884,8 +3884,8 @@ extern "C"
 //------------------------------------------------------------------------------
 // 19 - Controlling camera: Tap balance
 //------------------------------------------------------------------------------
- 
-  
+
+
 
   /** Set tap configuration
    *  The camera will be controlled for working with one or two taps
@@ -3913,15 +3913,15 @@ extern "C"
 
 	/**
 	 *	Set tap Configuration extended
-	 *  The camera will be controlled for working with one of the following tap configurations: 
-	 *  SVGIGE_SELECT_SINGLE_TAP 
-	 *	SVGIGE_SELECT_DUAL_TAP_H	
-	 *	SVGIGE_SELECT_DUAL_TAP_V	
-	 *	SVGIGE_SELECT_QUAD		 	
-	 *  
+	 *  The camera will be controlled for working with one of the following tap configurations:
+	 *  SVGIGE_SELECT_SINGLE_TAP
+	 *	SVGIGE_SELECT_DUAL_TAP_H
+	 *	SVGIGE_SELECT_DUAL_TAP_V
+	 *	SVGIGE_SELECT_QUAD
+	 *
 	 *  @see CameraContainer_getCamera()
      *  @param hCamera a camera handle received from CameraContainer_getCamera()
-	 *  @param SelectedTapConfig the selected tap configuration to be used by the camera 
+	 *  @param SelectedTapConfig the selected tap configuration to be used by the camera
      *  @return success or error code
 	 */
   __usrdllexport__ SVGigE_RETURN
@@ -3931,14 +3931,14 @@ extern "C"
 	/**
 	 *  getTapConfiguration
 	 *  The camera will be queried whether it is working with one of the following configurations:
-     *  SVGIGE_SELECT_SINGLE_TAP  
-	 *	SVGIGE_SELECT_DUAL_TAP_H	
-	 *	SVGIGE_SELECT_DUAL_TAP_V	
-	 *	SVGIGE_SELECT_QUAD	
+     *  SVGIGE_SELECT_SINGLE_TAP
+	 *	SVGIGE_SELECT_DUAL_TAP_H
+	 *	SVGIGE_SELECT_DUAL_TAP_V
+	 *	SVGIGE_SELECT_QUAD
 	 *
      *  @see CameraContainer_getCamera()
      *  @param hCamera a camera handle received from CameraContainer_getCamera()
-	 *  @param TapConfig the tap configuration currently used by the camera is returned 
+	 *  @param TapConfig the tap configuration currently used by the camera is returned
      *  @return success or error code
 	 */
   __usrdllexport__ SVGigE_RETURN
@@ -3971,21 +3971,21 @@ extern "C"
   Camera_getAutoTapBalanceMode(Camera_handle hCamera,
                                SVGIGE_AUTO_TAP_BALANCE_MODE *AutoTapBalanceMode);
 
- 
+
 
   /** Set tap gain
    *  A provided tap gain in [dB] will be transferred to camera.
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   
-   *  @param TapGain  one of the defined tap selectors 
-   *  @param TapSelect the new value for tap gain 
+
+   *  @param TapGain  one of the defined tap selectors
+   *  @param TapSelect the new value for tap gain
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_setTapGain(Camera_handle hCamera,
-										float TapGain, 
+										float TapGain,
                     SVGIGE_TAP_SELECT TapSelect);
 
   /** Get tap gain
@@ -3993,13 +3993,13 @@ extern "C"
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param TapSelect one of the defined tap selectors 
-   *  @param TapGain the new value for tap gain 
+   *  @param TapSelect one of the defined tap selectors
+   *  @param TapGain the new value for tap gain
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_getTapGain(Camera_handle hCamera,
-										float *TapGain, 
+										float *TapGain,
                     SVGIGE_TAP_SELECT TapSelect);
 
 //------------------------------------------------------------------------------
@@ -4113,7 +4113,7 @@ extern "C"
    *  @param OffsetY an upper side offset of the scanned area
    *  @return success or error code
    */
-  __usrdllexport__ SVGigE_RETURN 
+  __usrdllexport__ SVGigE_RETURN
   Camera_setAreaOfInterest(Camera_handle hCamera,
                            int SizeX,
                            int SizeY,
@@ -4175,7 +4175,7 @@ extern "C"
                                     int *OffsetYIncrement);
 
   /** Reset timestamp counter
-   *  The camera's timestamp counter will be set to zero. 
+   *  The camera's timestamp counter will be set to zero.
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -4185,7 +4185,7 @@ extern "C"
   Camera_resetTimestampCounter(Camera_handle hCamera);
 
   /** Get timestamp counter
-   *  Current value of the camera's timestamp counter will be returned. 
+   *  Current value of the camera's timestamp counter will be returned.
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -4197,7 +4197,7 @@ extern "C"
                              double *TimestampCounter);
 
   /** Get timestamp tick frequency
-   *  A camera's timestamp tick frequency will be returned. 
+   *  A camera's timestamp tick frequency will be returned.
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -4217,7 +4217,7 @@ extern "C"
    *   REVERSE_OFF (without flipping)
    *   REVERSE_X (vertical flipping)
    *   REVERSE_Y (horizontal flipping)
-   *   REVERSE_X_Y( horizontal and vertical flipping) 
+   *   REVERSE_X_Y( horizontal and vertical flipping)
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -4243,14 +4243,14 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
   Camera_getFlippingMode(Camera_handle hCamera,
                         SVGIGE_FLIPPING_MODE *FlippingMode);
-  
+
 
 //-----------------------------------------------------------------------------------------------------
 
 
   /** Set Shutter mode.
    *  The camera will be controlled for working with the following shutter mode if selected:
-   *  GLOBAL_SHUTTER 
+   *  GLOBAL_SHUTTER
    *  ROLLING_SHUTTER
    *
    *  @see CameraContainer_getCamera()
@@ -4264,7 +4264,7 @@ extern "C"
 
   /** Get Shutter mode.
    *  The camera will be queried whether it is working with one of the following shutter mode:
-   *  GLOBAL_SHUTTER 
+   *  GLOBAL_SHUTTER
    *  ROLLING_SHUTTER
    *
    *  @see CameraContainer_getCamera()
@@ -4280,7 +4280,7 @@ extern "C"
 //------------------------------------------------------------------------------
 // 21 - Controlling camera: Image appearance
 //------------------------------------------------------------------------------
- 
+
   /** Get pixel type.
    *  The pixel type will be retrieved from the camera
    *
@@ -4377,7 +4377,7 @@ extern "C"
 
   /** setGammaCorrection.
    *  A lookup table will be generated based on given gamma correction.
-   *  Subsequently the lookup table will be uploaded to the camera. 
+   *  Subsequently the lookup table will be uploaded to the camera.
    *  A gamma correction is supported in a range 0.4 - 2.5
    *
    *  @param Camera a handle from a camera that has been opened before
@@ -4391,12 +4391,12 @@ extern "C"
   /** setGammaCorrectionExt.
    *  A lookup table will be generated based on given gamma correction.
    *  Additionally, a digital gain and offset will be taken into account.
-   *  Subsequently the lookup table will be uploaded to the camera. 
+   *  Subsequently the lookup table will be uploaded to the camera.
    *  A gamma correction is supported in a range 0.4 - 2.5
    *
    *  @param Camera a handle from a camera that has been opened before
    *  @param GammaCorrection a gamma correction factor
-   *  @param DigitalGain a digital gain used 
+   *  @param DigitalGain a digital gain used
    *  @param DigitalOffset a digital offset used
    *  @return SVGigE_SUCCESS or an appropriate SVGigE error code
    */
@@ -4455,7 +4455,7 @@ extern "C"
 
   /** setLookupTable.
    *  A user-defined lookup table will be uploaded to the camera. The size has to match
-   *  the lookup table size that is supported by the camera (1024 for 10to8 or 4096 for 12to8). 
+   *  the lookup table size that is supported by the camera (1024 for 10to8 or 4096 for 12to8).
    *
    *  @see Camera_isCameraFeature()
    *  @see CameraContainer_getCamera()
@@ -4470,7 +4470,7 @@ extern "C"
                         int LookupTableSize);
 
   /** getLookupTable.
-   *  The currently installed lookup table will be downloaded from the camera. The size of the 
+   *  The currently installed lookup table will be downloaded from the camera. The size of the
    *  reserved download space has to match the lookup table size (1024 for 10to8 or 4096 for 12to8).
    *
    *  @see Camera_isCameraFeature()
@@ -4527,8 +4527,8 @@ extern "C"
 	 *    - None (image correction is off)
 	 *    - Offset only (available for Flat Field Correction, FFC)
 	 *    - Enabled (image correction is on)
-	 *  If image correction is enabled, then it depends on the camera whether 
-	 *  Flat Field Correction (FFC) is enabled (gain and offset for each pixel) 
+	 *  If image correction is enabled, then it depends on the camera whether
+	 *  Flat Field Correction (FFC) is enabled (gain and offset for each pixel)
 	 *  or Shading Correction (gain interpolation for a group of adjacent pixels)
 	 *
    *  @see Camera_isCameraFeature()
@@ -4546,8 +4546,8 @@ extern "C"
 	 *    - None (image correction is off)
 	 *    - Offset only (available for Flat Field Correction, FFC)
 	 *    - Enabled (image correction is on)
-	 *  If image correction is enabled, then it depends on the camera whether 
-	 *  Flat Field Correction (FFC) is enabled (gain and offset for each pixel) 
+	 *  If image correction is enabled, then it depends on the camera whether
+	 *  Flat Field Correction (FFC) is enabled (gain and offset for each pixel)
 	 *  or Shading Correction (gain interpolation for a group of adjacent pixels)
 	 *
    *  @see Camera_isCameraFeature()
@@ -4565,7 +4565,7 @@ extern "C"
 	  *    - SVS map
 	  *    - custom map
       * the pixels correction control for the currently selected map is enabled per default.
-	  * 
+	  *
    *
    *  @see Camera_isCameraFeature()
    *  @see CameraContainer_getCamera()
@@ -4577,14 +4577,14 @@ extern "C"
   Camera_setPixelsCorrectionMap(Camera_handle hCamera,
 								  PIXELS_CORRECTION_MAP_SELECT PixelsCorrectionMap);
 
-  /** Get pixels correction map 
+  /** Get pixels correction map
    *  A camera will be queried for current selected pixels correction map
    *
    *  @see Camera_isCameraFeature()
    *  @see Camera_isCameraFeature()
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param PixelsCorrectionMap a currently selected map 
+   *  @param PixelsCorrectionMap a currently selected map
    *  @return success or error code
 	 */
    __usrdllexport__ SVGigE_RETURN
@@ -4596,7 +4596,7 @@ extern "C"
    *  @see Camera_isCameraFeature()
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param isPixelsCorrectionEnabled whether Pixels Correction control has to be enabled or disabled    
+   *  @param isPixelsCorrectionEnabled whether Pixels Correction control has to be enabled or disabled
    *  @return success or error code
 	 */
  __usrdllexport__ SVGigE_RETURN
@@ -4615,13 +4615,13 @@ extern "C"
  __usrdllexport__ SVGigE_RETURN
   Camera_getPixelsCorrectionControlEnabel(Camera_handle hCamera,
 									bool *isPixelsCorrectionEnabled);
-									
+
   /** Set Pixels Correction Control mark.
    *  The defect pixels will be marked or not.
    *  @see Camera_isCameraFeature()
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param isPixelsCorrectionMarked whether defect pixels have to be marked or not  
+   *  @param isPixelsCorrectionMarked whether defect pixels have to be marked or not
    *  @return success or error code
 	 */
  __usrdllexport__ SVGigE_RETURN
@@ -4629,9 +4629,9 @@ extern "C"
 									bool isPixelsCorrectionMarked);
 
   /** Get pixels correction control mark.
-   *  A camera will be queried for current pixels correction control status. 
+   *  A camera will be queried for current pixels correction control status.
    *  the defect pixels can be marked or not.
-   *  
+   *
    *  @see Camera_isCameraFeature()
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -4643,13 +4643,13 @@ extern "C"
 									bool *isPixelsCorrectionMarked);
 
 
-  /** set pixels correction map offset 
+  /** set pixels correction map offset
    *  The offset x and y of the currently slected map will be set to the provided values
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param OffsetX the new value for pixel offset in x-axis 
-   *  @param OffsetY the new value for pixel offset in y-axis 
+   *  @param OffsetX the new value for pixel offset in x-axis
+   *  @param OffsetY the new value for pixel offset in y-axis
    *  @return success or error code
    */
 
@@ -4657,26 +4657,26 @@ extern "C"
  Camera_setPixelsCorrectionMapOffset(Camera_handle hCamera,
 										  int  OffsetX, int  OffsetY);
 
-  /** Get pixels correction map offset 
+  /** Get pixels correction map offset
    *  The offset x and y values of the currently slected map will be returned
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param OffsetX the currently programmed value for pixel offset in x-axis 
-   *  @param OffsetY the currently programmed value for pixel offset in Y-axis 
+   *  @param OffsetX the currently programmed value for pixel offset in x-axis
+   *  @param OffsetY the currently programmed value for pixel offset in Y-axis
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
  Camera_getPixelsCorrectionMapOffset(Camera_handle hCamera,
 									int *OffsetX, int *OffsetY);
-									 
+
 
   /** Get pixels correction map size
    *  The currently coordinates number of defect pixels in selected map will be returned
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param MapSize the currently programmed number of pixels coordinates in selected map 
+   *  @param MapSize the currently programmed number of pixels coordinates in selected map
    *  @return success or error code
    */
    __usrdllexport__ SVGigE_RETURN
@@ -4688,13 +4688,13 @@ extern "C"
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param MaximalMapSize the Maximal programmed number of defect pixels coordinates per map  
+   *  @param MaximalMapSize the Maximal programmed number of defect pixels coordinates per map
    *  @return success or error code
    */
     __usrdllexport__ SVGigE_RETURN
   Camera_getMaximalPixelsCorrectionMapSize(Camera_handle hCamera,
 											 unsigned int *MaximalMapSize);
- 
+
 
   /** Set map index coordinate
    *  write a new X and Y coordinate accordingly to a map index that was specified
@@ -4702,33 +4702,33 @@ extern "C"
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param MapIndex the map index from zero to one less the Map size 
+   *  @param MapIndex the map index from zero to one less the Map size
    *  @param X_Coordinate the new X coordinate to be written
    *  @param Y_Coordinate the new Y coordinate to be written
    *  @return success or error code
    */
    __usrdllexport__ SVGigE_RETURN
   Camera_setMapIndexCoordinate(Camera_handle hCamera,
-									unsigned int MapIndex, 
+									unsigned int MapIndex,
 									unsigned int X_Coordinate, unsigned int Y_Coordinate );
-									
- 
-	/** Get map index coordinate 
+
+
+	/** Get map index coordinate
    *  get X and Y coordinate accordingly to a map index that was specified
    *  as an input parameter
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param MapIndex the map index from zero to one less the map size 
-   *  @param CoordinateX the programmed X coordinate accordingly to a map index 
-   *  @param CoordinateY the programmed Y coordinate accordingly to a map index 
+   *  @param MapIndex the map index from zero to one less the map size
+   *  @param CoordinateX the programmed X coordinate accordingly to a map index
+   *  @param CoordinateY the programmed Y coordinate accordingly to a map index
    *  @return success or error code
    */
    __usrdllexport__ SVGigE_RETURN
   Camera_getMapIndexCoordinate(Camera_handle hCamera,
-									unsigned int MapIndex, 
+									unsigned int MapIndex,
 									unsigned int *CoordinateX, unsigned int *CoordinateY );
-  /** Delete Pixel coordinate from map 
+  /** Delete Pixel coordinate from map
    *  delete Pixel Coordinate accordingly to a map index that was specified
    *  as an input parameter
    *
@@ -4739,16 +4739,16 @@ extern "C"
    */
 
    __usrdllexport__ SVGigE_RETURN
-  Camera_deletePixelCoordinateFromMap(Camera_handle hCamera, unsigned int MapIndex);	
-  
+  Camera_deletePixelCoordinateFromMap(Camera_handle hCamera, unsigned int MapIndex);
+
 
 //------------------------------------------------------------------------------
 // 22 - Special control: IOMux configuration
 //------------------------------------------------------------------------------
 
   /** getMaxIOMuxIN.
-   *  The maximal number of IN signals (signal sources) to the multiplexer will 
-   *  be returned that are currently available in the camera for connecting them 
+   *  The maximal number of IN signals (signal sources) to the multiplexer will
+   *  be returned that are currently available in the camera for connecting them
    *  to the multiplexer's OUT signals.
    *
    *  @see Camera_isCameraFeature()
@@ -4955,17 +4955,17 @@ extern "C"
 
   /** getUARTBuffer.
    *  A block of data will be retrieved which has arrived in the camera's UART
-   *  receiver buffer. If this function returns the maximal possible byte count 
-   *  of the serial buffer (=512 bytes) then there might be more data available 
+   *  receiver buffer. If this function returns the maximal possible byte count
+   *  of the serial buffer (=512 bytes) then there might be more data available
    *  which should be retrieved by a subsequent call to this function.
    *
    *  NOTE: If DataLengthMax is set to less than the serial buffer size (512 bytes)
    *        and if DataLengthMax is not sufficient for returning all buffered data
-   *        then data loss will occur. 
+   *        then data loss will occur.
    *
    *  HINT: If more data will be transferred than the serial buffer size (512 bytes),
-   *        then DataLengthMax has to match that serial buffer size. Only then a 
-   *        seamless transfer of data chunks can be performed, each chunk being the 
+   *        then DataLengthMax has to match that serial buffer size. Only then a
+   *        seamless transfer of data chunks can be performed, each chunk being the
    *        size of the serial buffer (512 bytes).
    *
    *  @see Camera_isCameraFeature()
@@ -4985,7 +4985,7 @@ extern "C"
                        float Timeout);
 
   /** setUARTBaud.
-   *  The baud rate of the camera's UART will be set to one out of a set of 
+   *  The baud rate of the camera's UART will be set to one out of a set of
    *  pre-defined baud rates. Alternatively, any baud rate can be provided
    *  as integer which would not have to comply with any pre-defined value.
    *
@@ -5085,11 +5085,11 @@ extern "C"
                               unsigned char *DataBlock,
                               unsigned int  DataLength,
                               unsigned int  GigECameraAccessKey);
- 
+
 //------------------------------------------------------------------------------
 // 26 - Controlling camera: Persistent settings and recovery
 //------------------------------------------------------------------------------
- 
+
   /** Write EEPROM defaults.
    *  The current settings will be made the EEPROM defaults that will be
    *  restored on each camera start-up
@@ -5127,8 +5127,8 @@ extern "C"
  /** Load settings from XML
   *  New camera settings will be loaded from a XML file.
   *  The  XML file content will be moved to the appropriate camera registers.
-  *  In this operation the XML file will be used instead of the EEPROM. 
-  *  
+  *  In this operation the XML file will be used instead of the EEPROM.
+  *
   *  @see CameraContainer_getCamera()
   *  @param hCamera a camera handle received from CameraContainer_getCamera()
   *  @param Filename a complete path and filename where to load the settings from
@@ -5136,11 +5136,11 @@ extern "C"
   */
   __usrdllexport__ SVGigE_RETURN
   Camera_loadSettingsFromXml(Camera_handle hCamera,
-                             char *Filename);
-   
+                             const char *Filename);
+
  /** Save settings to XML
-  *  The current settings will be stored in a XML file 
-  *  In this operation the XML file will be used instead of the EEPROM. 
+  *  The current settings will be stored in a XML file
+  *  In this operation the XML file will be used instead of the EEPROM.
   *
   *  @see CameraContainer_getCamera()
   *  @param hCamera a camera handle received from CameraContainer_getCamera()
@@ -5149,7 +5149,7 @@ extern "C"
   */
   __usrdllexport__ SVGigE_RETURN
   Camera_SaveSettingsToXml(Camera_handle hCamera,
-                           char *Filename);
+                           const char *Filename);
 
 //------------------------------------------------------------------------------
 // 27 - General functions
@@ -5190,7 +5190,7 @@ extern "C"
 													int &Green,
 													int &Blue,
 													SVGIGE_Whitebalance_SELECT  Whitebalance_Art );
-  
+
   /** Write image as a bitmap file to disk
    *  An image given by image data, geometry and type will be written to a
    *  specified location on disk.
@@ -5203,7 +5203,7 @@ extern "C"
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
-  SVGigE_writeImageToBitmapFile(char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
+  SVGigE_writeImageToBitmapFile(const char *Filename, unsigned char *Data, int SizeX, int SizeY, GVSP_PIXEL_TYPE PixelType);
 
   /** Install a filter driver
    *  A filter driver will be installaed automatically for current system platform
@@ -5212,7 +5212,7 @@ extern "C"
    *  If not, a default location will be supposed for particular driver files.
    *  If the driver location is provided then that location has to contain the
    *  platform folders for WinXP x86/x64 and Win7 x86/x64 except when the name
-   *  of the .inf file is also provided. In the latter case the path has to 
+   *  of the .inf file is also provided. In the latter case the path has to
    *  point to the folder where the .inf file can be found.
    *
    *  @param PathToDriverPackage (optional) the full path to driver packages (excluding platform folders)
@@ -5221,7 +5221,7 @@ extern "C"
    *  @return a success or failure code
    */
   __usrdllexport__ SVGigE_RETURN
-  SVGigE_installFilterDriver(char *PathToDriverPackage, char *FilenameINF, char *FilenameINF_m);
+  SVGigE_installFilterDriver(const char *PathToDriverPackage, const char *FilenameINF, const char *FilenameINF_m);
 
   /** De-install filter driver
    *  A SVGigE filter driver component will be located in the system and if it
@@ -5235,7 +5235,7 @@ extern "C"
 //------------------------------------------------------------------------------
 // 28 - Diagnostics
 //------------------------------------------------------------------------------
- 
+
   /**
    *  Error get message.
    *  If the provided function return code represents an error condition then
@@ -5244,7 +5244,7 @@ extern "C"
    *  @param ReturnCode a valid function return code
    *  @return a string which will explain the return code
    */
-  __usrdllexport__ char *
+  __usrdllexport__ const char *
   Error_getMessage(SVGigE_RETURN ReturnCode);
 
   /** Register for log messages.
@@ -5275,7 +5275,7 @@ extern "C"
   __usrdllexport__ SVGigE_RETURN
   Camera_registerForLogMessages(Camera_handle hCamera,
                                 int LogLevel =4,
-                                char *LogFilename =NULL,
+                                const char *LogFilename =NULL,
                                 LogMessageCallback LogCallback =NULL,
                                 void *MessageContext =NULL);
 
@@ -5283,7 +5283,7 @@ extern "C"
 //------------------------------------------------------------------------------
 // 29 - Special control: Lens control
 //------------------------------------------------------------------------------
-  
+
 
 /** Is Lens available.
    *The camera will be queried whether a MFT Lens is available or not.
@@ -5292,10 +5292,10 @@ extern "C"
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param isAvailable a flag indicating whether Objective is availabel or not
-   *  @return success or error code	
+   *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
-  Camera_isLensAvailable(Camera_handle hCamera, bool *isAvailable); 
+  Camera_isLensAvailable(Camera_handle hCamera, bool *isAvailable);
 
 
 
@@ -5303,12 +5303,12 @@ extern "C"
    *  The lens name that is obtained from the lens firmware will be
    *  returned
    *
-   *  @see Camera_isCameraFeature() 
+   *  @see Camera_isCameraFeature()
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @return success or error code	
+   *  @return success or error code
    */
-  __usrdllexport__ char*
+  __usrdllexport__ const char*
   Camera_getLensName(Camera_handle hCamera);
 
 
@@ -5316,10 +5316,10 @@ extern "C"
 /** setLensFocalLenght.
    *
    *  A provided focal length  will be transferred to lens.
-   *  @see Camera_isCameraFeature()  
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param FocalLenght the focal length to be assigned to the Lens (granularity: 1/10 mm, ex. 350 corresponds to 35 mm). 
+   *  @param FocalLenght the focal length to be assigned to the Lens (granularity: 1/10 mm, ex. 350 corresponds to 35 mm).
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
@@ -5327,35 +5327,35 @@ extern "C"
 
 
 /** getLensFocalLenght.
-   
+
    *  The currently set focal length  of the lens will be returned.
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param FocalLenght the currently assigned focal length (granularity: 1/10 mm, ex. 350 corresponds to 35 mm).
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
 	Camera_getLensFocalLenght(Camera_handle hCamera, unsigned int *FocalLenght);
-	
+
 /** getLensFocalLenghtMin.
-   
+
    *  Get the minimal focal length that can be used.
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param FocalLenghtMin the minimal focal length setting(granularity: 1/10 mm, ex. 140 corresponds to 14 mm). 
+   *  @param FocalLenghtMin the minimal focal length setting(granularity: 1/10 mm, ex. 140 corresponds to 14 mm).
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
 	Camera_getLensFocalLenghtMin(Camera_handle hCamera, unsigned int *FocalLenghtMin);
-	
+
   /** getLensFocalLenghtMax.
    *  Get the maximal focal length that can be used.
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param FocalLenghtMax the maximal focal length setting (granularity: 1/10 mm, ex. 420 corresponds to 42 mm). 
+   *  @param FocalLenghtMax the maximal focal length setting (granularity: 1/10 mm, ex. 420 corresponds to 42 mm).
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
@@ -5365,8 +5365,8 @@ extern "C"
   /** set focus unit
    *  A selected focus unit will be transferred to lens.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param Selected_unit the focus unit( mm or 1/10 mm) to be assigned to Lens
    *  @return success or error code
@@ -5377,8 +5377,8 @@ extern "C"
 
   /** get focus unit
    *  The currently focus unit will be returned.
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param Selected_unit the currently used focus unit.
    *  @return success or error code
@@ -5390,10 +5390,10 @@ extern "C"
 /** setLensFocus.
    *  A provided focus will be transferred to lens.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param Focus the focus in the selected unit to be assigned to lens (default unit is mm) 
+   *  @param Focus the focus in the selected unit to be assigned to lens (default unit is mm)
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
@@ -5403,48 +5403,48 @@ extern "C"
 /** getLensFocus.
    *  The currently set focus of the lens will be returned.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param Focus the currently assigned focus in the selected unit(default unit is mm)
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
   Camera_getLensFocus(Camera_handle hCamera, unsigned int *Focus);
-  
+
 /** getLensFocusMin.
    *  Get the minimal focus that can be used.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param FocusMin the minimal focus setting in the selected unit(default unit is mm)
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
    Camera_getLensFocusMin(Camera_handle hCamera, unsigned int *FocusMin );
-  
-  
+
+
 /** getLensFocusMax.
    *  Get the maximal focus that can be used.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param FocusMax the maximal focus setting in the selected unit(default unit is mm)
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
-  Camera_getLensFocusMax(Camera_handle hCamera, unsigned int *FocusMax); 
-  
+  Camera_getLensFocusMax(Camera_handle hCamera, unsigned int *FocusMax);
+
 
 
 /** setLensAperture.
    *  A provided aperture will be transferred to lens.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
-   *  @param hCamera a camera handle received from CameraContainer_getCamera() 
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
+   *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param Aperture the aperture to be assigned to the Lens (granularity: 1/10 , ex. 90 corresponds to 9)
    *  @return success or error code
    */
@@ -5455,22 +5455,22 @@ extern "C"
 /** getLensAperture.
    *  The currently set aperture of the lens will be returned.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param Aperture the currently assigned aperture (granularity: 1/10 , ex. 90 corresponds to 9)
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
 	Camera_getLensAperture(Camera_handle hCamera, unsigned int *Aperture);
-	
+
 /** getLensApertureMin.
    *  Get the minimal aperture that can be used.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param ApertureMin the minimal aperture setting (granularity: 1/10 , ex. 35 corresponds to 3.5) 
+   *  @param ApertureMin the minimal aperture setting (granularity: 1/10 , ex. 35 corresponds to 3.5)
    *  @return success or error code
    */
  __usrdllexport__ SVGigE_RETURN
@@ -5479,8 +5479,8 @@ extern "C"
 /** getLensApertureMax.
    *  Get the maximal aperture that can be used.
    *
-   *  @see Camera_isCameraFeature() 
-   *  @see CameraContainer_getCamera()  
+   *  @see Camera_isCameraFeature()
+   *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
    *  @param ApertureMax the maximal aperture setting (granularity: 1/10 , ex. 90 corresponds to 9)
    *  @return success or error code
@@ -5494,7 +5494,7 @@ extern "C"
 // 99 - Deprecated functions
 //------------------------------------------------------------------------------
 
-  /** Start acquisition cycle. 
+  /** Start acquisition cycle.
    *  2009-05-05: DEPRECATED, please use Camera_softwareTrigger()
    *
    *  The camera will be triggered for starting a new acquisition cycle.
@@ -5548,19 +5548,19 @@ extern "C"
                            unsigned int *Offset);
 
 	/** 2009-02-19: Re-implemented for backward compatibility */
-  __usrdllexport__ SVGigE_RETURN 
+  __usrdllexport__ SVGigE_RETURN
   Camera_setLUTMode(Camera_handle hCamera,
                     LUT_MODE LUTMode);
 
 	/** 2009-02-19: Re-implemented for backward compatibility */
-  __usrdllexport__ SVGigE_RETURN 
+  __usrdllexport__ SVGigE_RETURN
   Camera_getLUTMode(Camera_handle hCamera,
                     LUT_MODE *LUTMode);
 
   /** Create look-up table.
    *
    *  DEACTIVATED !
-   *  2006-12-20: White balance has been re-implemented by the Camera_setWhiteBalance() 
+   *  2006-12-20: White balance has been re-implemented by the Camera_setWhiteBalance()
    *              function and a separate lookup table can be uploaded by setLookupTable().
    */
   __usrdllexport__ SVGigE_RETURN
@@ -5595,7 +5595,7 @@ extern "C"
                       double *Timestamp);
 
   /** Camera_getDebugInfo
-   *  The value of a selected debug information will be returned. 
+   *  The value of a selected debug information will be returned.
 	 *  This function is for internal use only.
    *
    *  @see CameraContainer_getCamera()
@@ -5609,11 +5609,11 @@ extern "C"
 
   /** Get image gray
 	 *
-	 *  OBSOLETE. Please obtain a raw image and use a suitable conversion algorithm 
-	 *            in order to get from a raw image of a bayer coded sensor to a 
+	 *  OBSOLETE. Please obtain a raw image and use a suitable conversion algorithm
+	 *            in order to get from a raw image of a bayer coded sensor to a
 	 *            gray image of intended quality.
 	 *            Please refer to: http://en.wikipedia.org/wiki/Grayscale
-	 * 
+	 *
    *  A bayer coded image will be converted into a BW image. The caller needs to
    *  provide a sufficient 8-bit buffer.
    *
@@ -5631,10 +5631,10 @@ extern "C"
    *
    *  INTERNAL USE ONLY, please do not use in customer applications.
    *
-   *  A TCP/IP control channel will be established. 
-   *  The connection will be established independently whether the camera firmware 
-   *  matches a minimal build number or not. In case of a low build number the 
-   *  application may run into error conditions with SDK functions. Therefore 
+   *  A TCP/IP control channel will be established.
+   *  The connection will be established independently whether the camera firmware
+   *  matches a minimal build number or not. In case of a low build number the
+   *  application may run into error conditions with SDK functions. Therefore
    *  this function can be used only by those applications that need to access
    *  cameras with an older firmware build. The application has to deal with all
    *  problem situations in this case. Usually an application needs to do direct
@@ -5646,11 +5646,11 @@ extern "C"
    *                NOTE: Values between 0.0 to 0.5 sec. will be mapped to the default value (3.0 sec.)
    *  @return success or error code
    */
-  __usrdllexport__ SVGigE_RETURN 
+  __usrdllexport__ SVGigE_RETURN
   Camera_forceOpenConnection(Camera_handle hCamera, float Timeout);
 
   /** Set tap balance
-   *  2011-08-18 - DEPRECATED. Please use setTapGain() instead.  
+   *  2011-08-18 - DEPRECATED. Please use setTapGain() instead.
 	 *
 	 *  A provided tap balance in [dB] will be transferred to camera.
    *
@@ -5664,7 +5664,7 @@ extern "C"
                        float TapBalance);
 
   /** Get tap balance
-   *  2011-08-18 - DEPRECATED. Please use getTapGain() instead.  
+   *  2011-08-18 - DEPRECATED. Please use getTapGain() instead.
 	 *
    *  Currently adjusted tap balance in [dB] will be retrieved from camera.
    *
@@ -5693,7 +5693,7 @@ extern "C"
    *  An overall channel timeout will be set that is applied to the period from receiving a first
    *  data packet in an image stream and the completion of the image. When the specified
    *  timeout is reached the streaming channel will send a NULL pointer to application in a
-   *  registered before image callback function. Possible image data from any camera arriving 
+   *  registered before image callback function. Possible image data from any camera arriving
    *  after timeout will be rejected. The channel will be ready for receiving a subsequent image.
    *
    *  @param hStreamingChannel a streaming channel handle received from StreamingChannel_create()
@@ -5720,9 +5720,9 @@ extern "C"
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param TapSelect one of the defined tap selectors 
-   *  @param TapUserGain the new value for tap user gain 
-   *  @param TapUserOffset the new value for tap user offset 
+   *  @param TapSelect one of the defined tap selectors
+   *  @param TapUserGain the new value for tap user gain
+   *  @param TapUserOffset the new value for tap user offset
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
@@ -5736,9 +5736,9 @@ extern "C"
    *
    *  @see CameraContainer_getCamera()
    *  @param hCamera a camera handle received from CameraContainer_getCamera()
-   *  @param TapSelect one of the defined tap selectors 
-   *  @param TapUserGain the currently value for tap user gain 
-   *  @param TapUserOffset the currently value for tap user offset 
+   *  @param TapSelect one of the defined tap selectors
+   *  @param TapUserGain the currently value for tap user gain
+   *  @param TapUserOffset the currently value for tap user offset
    *  @return success or error code
    */
   __usrdllexport__ SVGigE_RETURN
@@ -5761,7 +5761,7 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_saveTapBalanceSettings(Camera_handle hCamera,
-                                char *Filename);
+                                const char *Filename);
 
   /** Load tap balance settings(no longer available )
    *  New settings for tap balance will be loaded from a XML file.
@@ -5773,7 +5773,7 @@ extern "C"
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_loadTapBalanceSettings(Camera_handle hCamera,
-                                char *Filename);
+                                const char *Filename);
 
 
 
@@ -5851,5 +5851,3 @@ extern "C"
 	dc1394_bayer_decoding_16bit(const uint16_t *bayer, uint16_t *rgb, uint_t sx, uint_t sy, uint_t tile, uint_t bits, uint_t method);
 
 #endif
-
-

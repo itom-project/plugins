@@ -67,7 +67,7 @@ After that make shure that the bin folder of the royale software is added to you
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL, uses royale software and driver (not covered by LPGL)");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("camera Number", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");
     m_initParamsOpt.append(paramVal);
@@ -78,7 +78,7 @@ After that make shure that the bin folder of the royale software is added to you
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
 /*!
-    
+
 */
 PmdPicoInterface::~PmdPicoInterface()
 {
@@ -108,7 +108,7 @@ ExposureListener::ExposureListener() : integrationTime(0)
 void ExposureListener::onNewExposure(const uint32_t exposureTime, const royale::StreamId streamId)
 {
     integrationTime = exposureTime;
-    emit integrationTimeChanged(integrationTime);  
+    emit integrationTimeChanged(integrationTime);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::int32 ExposureListener::getIntegrationTime() const
@@ -141,7 +141,7 @@ void DataListener::onNewData(const royale::DepthData *data)
         }
         m_data = data;
         m_host->copyDataToBuffer();
-        
+
         if (m_updateParams)
         {
             m_host->updateParamsFromImage();
@@ -153,7 +153,7 @@ void DataListener::onNewData(const royale::DepthData *data)
             m_mutex = NULL;
         }
     }
-    
+
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 //! starts the acquisition of a single picture
@@ -199,7 +199,7 @@ ito::RetVal DataListener::freeRunCapture()
         retValue += m_host->setCapturingState(false);
     }
     return retValue;
-    
+
 
 }
 void DataListener::setLockMutex(QMutex* mutex)
@@ -262,12 +262,12 @@ PmdPico::PmdPico() : AddInGrabber(), m_isgrabbing(false), m_exposureListener(), 
     m_params.insert(paramVal.getName(), paramVal);
 
     DockWidgetPmdPico *dw = new DockWidgetPmdPico(this);
-    
+
 
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
     QVector<ito::Param> pMand;
     pMand << ito::Param("xCoordinate", ito::ParamBase::DObjPtr | ito::ParamBase::In| ito::ParamBase::Out, NULL,tr("x-coordinate map of the same shape as the current image").toLatin1().data());
     pMand << ito::Param("yCoordinate", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL,tr("y-coordinate map of the same shape as the current image").toLatin1().data());
@@ -370,9 +370,9 @@ ito::RetVal PmdPico::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-    
+
     if (!retValue.containsError())
-    {  
+    {
         QMutex mutex;
         m_dataListener.setLockMutex(&mutex);
         retValue+=m_dataListener.captureSingleImage(true); //this is needed to get all params
@@ -384,12 +384,12 @@ ito::RetVal PmdPico::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             switchDataObj();
         }
     }
-    
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -493,7 +493,7 @@ ito::RetVal PmdPico::execFunc(const QString funcName, QSharedPointer<QVector<ito
                             {
                                 retval += copyToExternalObj(paramsMand->at(1).getVal<ito::DataObject*>(), &m_dataYCoordinate);
                             }
-                } 
+                }
                 m_deliverState ^= cXCoordinate;
                 m_deliverState ^= cYCoordinate;
             }
@@ -554,7 +554,7 @@ ito::RetVal PmdPico::synchronizeCameraSettings(const int &paramMask /*=sAll*/)
                 {
                     m_params["auto_exposure"].setVal<int>(0);
                 }
-                else 
+                else
                 {
                     m_params["auto_exposure"].setVal<int>(1);
                 }
@@ -668,7 +668,7 @@ ito::RetVal PmdPico::close(ItomSharedSemaphore *waitCond)
                 delete m_cameraDevice;
             }
         }
-        
+
         m_cameraDevice = NULL;
 
     }
@@ -677,7 +677,7 @@ ito::RetVal PmdPico::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -770,7 +770,7 @@ ito::RetVal PmdPico::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     retValue +=setCapturingState(true);
                 }
                 retValue += getErrStr(m_cameraDevice->setExposureTime(time));
-                
+
                 m_exposureListener.onNewExposure(time,0); //set this value to the listener since a manuel set does not call the onNewExposure
 
                 synchronizeCameraSettings(sExposure);
@@ -849,8 +849,8 @@ ito::RetVal PmdPico::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
-    incGrabberStarted(); 
+
+    incGrabberStarted();
 
 
     if (waitCond)
@@ -860,7 +860,7 @@ ito::RetVal PmdPico::startDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PmdPico::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -874,7 +874,7 @@ ito::RetVal PmdPico::stopDevice(ItomSharedSemaphore *waitCond)
         retValue += ito::RetVal(ito::retWarning, 0, tr("The grabber has already been stopped.").toLatin1().data());
         setGrabberStarted(0);
     }
-    
+
     if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("stopDevice ignored since camera was not started.").toLatin1().data());
@@ -935,10 +935,10 @@ ito::RetVal PmdPico::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             }
             mutex.lock();
 
-        
+
     }
 
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -959,7 +959,7 @@ ito::RetVal PmdPico::retrieveData(ito::DataObject *externalDataObject)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without starting device").toLatin1().data());
     }
-    
+
     int mode = m_params["data_mode"].getVal<int>();
     switch (mode)
     {
@@ -1013,7 +1013,7 @@ ito::RetVal PmdPico::retrieveData(ito::DataObject *externalDataObject)
                 retValue += copyToExternalObj(externalDataObject, &m_dataConfidence);
                 break;
             }
-        }       
+        }
     }
     if (!retValue.containsWarning()) //if there is a warning dont set the bitmask to available...
     {
@@ -1061,7 +1061,7 @@ ito::RetVal PmdPico::checkData(ito::DataObject *externalDataObject)
 
                 }
                 break;
-            case 1: 
+            case 1:
                 if (m_dataGray.getDims() < 2 || m_dataGray.getSize(0) != (unsigned int)futureHeight || m_dataGray.getSize(1) != (unsigned int)futureWidth || m_dataGray.getType() != ito::tUInt16)
                 {
                     m_dataGray = ito::DataObject(futureHeight, futureWidth, ito::tUInt16);
@@ -1086,7 +1086,7 @@ ito::RetVal PmdPico::checkData(ito::DataObject *externalDataObject)
                 {
                     m_dataZValue = ito::DataObject(futureHeight, futureWidth, ito::tFloat32);
                 }
-        
+
          }
         // the coordiantes are always buffered
         if (m_dataXCoordinate.getDims() < 2 || m_dataXCoordinate.getSize(0) != (unsigned int)futureHeight || m_dataXCoordinate.getSize(1) != (unsigned int)futureWidth || m_dataXCoordinate.getType() != ito::tFloat32)
@@ -1150,16 +1150,16 @@ ito::RetVal PmdPico::checkData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
 /*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
+    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the
     DataObject.
-    
+
     This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, copyVal
 */
 ito::RetVal PmdPico::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -1167,7 +1167,7 @@ ito::RetVal PmdPico::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
     retValue += retrieveData();
 
@@ -1182,7 +1182,7 @@ ito::RetVal PmdPico::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1194,8 +1194,8 @@ ito::RetVal PmdPico::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
+    This method copies the recently grabbed camera frame to the given DataObject.
+
     The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
     interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
     an image stack is possible then)
@@ -1203,7 +1203,7 @@ ito::RetVal PmdPico::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, getVal
 */
 ito::RetVal PmdPico::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -1211,7 +1211,7 @@ ito::RetVal PmdPico::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
@@ -1220,7 +1220,7 @@ ito::RetVal PmdPico::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     {
         retValue += checkData(dObj);
     }
-    
+
     if (!retValue.containsError())
     {
         //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
@@ -1233,13 +1233,13 @@ ito::RetVal PmdPico::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         //send newly acquired image to possibly connected live images
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
-    
-    if (waitCond) 
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -1275,17 +1275,17 @@ void PmdPico::dockWidgetVisibilityChanged(bool visible)
     If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
     of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
     m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
+
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
     all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
+
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
-    
+
     Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
     has a configuration dialog.
-    
+
     \sa hasConfDialog
 */
 const ito::RetVal PmdPico::showConfDialog(void)
@@ -1312,7 +1312,7 @@ ito::RetVal PmdPico::setCapturingState(const bool capture) const
             }
         }
     }
-    else 
+    else
     {
         retval += ito::RetVal(ito::retError, 0, tr("camera handle is not available").toLatin1().data());
     }
@@ -1510,7 +1510,7 @@ ito::RetVal PmdPico::switchDataObj()
     switch (m_params["data_mode"].getVal<int>())
     {
     case 0:
-        m_data = m_dataZValue; 
+        m_data = m_dataZValue;
         break;
     case 1:
         m_data = m_dataGray;
@@ -1521,5 +1521,5 @@ ito::RetVal PmdPico::switchDataObj()
 
     }
     return ito::retOk;
-    
+
 }

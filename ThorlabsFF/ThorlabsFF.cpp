@@ -63,7 +63,7 @@ This plugin has been tested with the flipper MFF101.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
 }
@@ -95,7 +95,7 @@ m_opened(false)
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsFF", tr("name of the plugin").toLatin1().data()));
     m_params.insert("deviceName", ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("description of the device").toLatin1().data()));
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("serial number of the device").toLatin1().data()));
-    
+
     m_params.insert("pollingInterval", ito::Param("pollingInterval", ito::ParamBase::Int | ito::ParamBase::Readonly, 200, new ito::IntMeta(1, 10000, 1, "pollingInterval"), tr("device polling interval in ms").toLatin1().data()));
 
     m_params.insert("position", ito::Param("position", ito::ParamBase::Int, FF_Positions::Position1, \
@@ -154,7 +154,7 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         int idx = existingSerialNo.indexOf("\0");
         if (idx > 0)
         {
-            existingSerialNo = existingSerialNo.left(idx); //serial number found 
+            existingSerialNo = existingSerialNo.left(idx); //serial number found
         }
 
         QList<QByteArray> serialNumbers = existingSerialNo.split(','); // Thorlabs really!?
@@ -229,7 +229,7 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
                 openedDevices.append(m_serialNo);
             }
 
-            FF_StartPolling(m_serialNo, m_params["pollingInterval"].getVal<int>());//start device polling at pollingInterval intervals 
+            FF_StartPolling(m_serialNo, m_params["pollingInterval"].getVal<int>());//start device polling at pollingInterval intervals
         }
         else
         {
@@ -247,7 +247,7 @@ ito::RetVal ThorlabsFF::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
         m_params["transitTime"].setVal<int>((int)FF_GetTransitTime(m_serialNo));
     }
-    
+
 
     if (!retValue.containsError())
     {
@@ -269,7 +269,7 @@ ito::RetVal ThorlabsFF::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     FF_StopPolling(m_serialNo);
     FF_Close(m_serialNo);
 
@@ -281,7 +281,7 @@ ito::RetVal ThorlabsFF::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -366,7 +366,7 @@ ito::RetVal ThorlabsFF::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             {
                 it->setVal<int>(position);
             }
-            
+
         }
         else if (key == "transitTime")
         {
@@ -414,7 +414,7 @@ void ThorlabsFF::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsFF::checkError(short value, const char* message)
 {
     if (value == 0)

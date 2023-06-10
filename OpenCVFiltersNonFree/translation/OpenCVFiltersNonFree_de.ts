@@ -31,11 +31,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Implements the sift algorithm and extracts the corresponding descriptors. 
-The sift algorithm is a scale invariant feature transform in which image content is transformed into local feature coordinates. 
-In each octave, the initial image is repeatedly convolved with Gaussians to produce a set of scale space images. Adjacent Gaussians are subtracted to produce the DOG. 
-After each octave, the Gaussian image is down-sampled by a factor of 2. 
-Detect maxima and minima of difference-of-Gaussian in scale space. Each point is compared to its 8 neighbours in the current image and 9 neighbours in the scales above and below. 
+        <source>Implements the sift algorithm and extracts the corresponding descriptors.
+The sift algorithm is a scale invariant feature transform in which image content is transformed into local feature coordinates.
+In each octave, the initial image is repeatedly convolved with Gaussians to produce a set of scale space images. Adjacent Gaussians are subtracted to produce the DOG.
+After each octave, the Gaussian image is down-sampled by a factor of 2.
+Detect maxima and minima of difference-of-Gaussian in scale space. Each point is compared to its 8 neighbours in the current image and 9 neighbours in the scales above and below.
 reference: David G. Lowe, &quot;Distinctive image features from scale-invariant key points,&quot; International Journal of Computer Vision, 60, 2 (2004), pp. 91-110.</source>
         <translation type="unfinished"></translation>
     </message>

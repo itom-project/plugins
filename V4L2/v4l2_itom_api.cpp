@@ -1253,5 +1253,3 @@ std::string flags2s(unsigned val, const flag_def *def)
     }
     return s;
 }
-
-

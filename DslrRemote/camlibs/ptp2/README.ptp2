@@ -1,6 +1,6 @@
 libptp2 (c)2001-2003 Mariusz Woloszyn <emsi@ipartners.pl>
 
-libgphoto2 ptp2 camlib driver also 
+libgphoto2 ptp2 camlib driver also
 Copyright 2003 - 2012 Marcus Meissner <marcus@jet.franken.de>
 Copyright        2005 Hubert Figuire.
 
@@ -166,7 +166,7 @@ Use gphoto2 -L to see if it detects the camera.
 If you see something like this:
 
 ~> gphoto2 -L
-Unable to get descriptor (-1)                                                   
+Unable to get descriptor (-1)
 (... lot of other errors ...)
 
 it may mean that you're working as user while the usb access is restricted.

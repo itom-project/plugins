@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "niDAQmx" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2020, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -42,7 +42,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogNiDAQmx : public ito::AbstractAddInConfigDialog 
+class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
@@ -81,7 +81,7 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
         Ui::niDAQmx ui;
         QMap<QString, QTreeWidgetItem*> m_channelItems;
         bool m_channelsModified;
-        TaskType m_taskType;        
+        TaskType m_taskType;
 
         void disableChannelProps();
         void setChannelPropsAI(int terminalConfig, double minV, double maxV);

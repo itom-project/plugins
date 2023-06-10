@@ -11,17 +11,19 @@
 **Author**:     :pluginauthor:`PiezosystemJena_NV40_1`
 **Version**:    :pluginversion:`PiezosystemJena_NV40_1`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: PiezosystemJena_NV40_1
 
+Plugins interface with the piezo actuators from **Piezosystem Jena GmbH** https://www.piezosystem.com/
+
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: PiezosystemJena_NV40_1

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -30,7 +30,7 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetNanotecStepMotor::DockWidgetNanotecStepMotor(ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator)
 {
-    ui.setupUi(this); 
+    ui.setupUi(this);
     firstRun = true;
 
     m_pIncSignalMapper    = new QSignalMapper(this);
@@ -57,7 +57,7 @@ void DockWidgetNanotecStepMotor::createUiListEntry(const int i)
     QHBoxLayout *layout = new QHBoxLayout(frame);
     layout->setContentsMargins(0, 0, 0, 0);
     frame->setLayout(layout);
-    
+
     // Create innner elements and set option
     QLabel *nrLabel = new QLabel(QString::number(i), frame);
     nrLabel->setAlignment(Qt::AlignCenter);
@@ -133,10 +133,10 @@ void DockWidgetNanotecStepMotor::createUiListEntry(const int i)
     m_pGoSignalMapper->setMapping(goBtn, i);
     connect(destSpin, SIGNAL(editingFinished()), m_pAbsPosSignalMapper, SLOT(map()));
     m_pAbsPosSignalMapper->setMapping(destSpin, i);
-    
+
     // store Pointer to each spin box in a qvector for later occuring use
     m_pDestSpinBoxes.append(destSpin);
-    m_pCurrSpinBoxes.append(currSpin); 
+    m_pCurrSpinBoxes.append(currSpin);
     m_pIncButtons.append(incBtn);
     m_pDecButtons.append(decBtn);
     m_pGoButtons.append(goBtn);
@@ -169,7 +169,7 @@ void DockWidgetNanotecStepMotor::parametersChanged(QMap<QString, ito::Param> par
         connect(m_pAbsPosSignalMapper, SIGNAL(mapped(const int &)), this, SLOT(absDestPosChanged(const int &)));
 
         // Don´t enter this part again
-        firstRun = false; 
+        firstRun = false;
     }
 }
 
@@ -209,7 +209,7 @@ void DockWidgetNanotecStepMotor::actuatorStatusChanged(QVector<int> status, QVec
     {
         int i = 0;
         foreach(QDoubleSpinBox *cSB, m_pCurrSpinBoxes)
-        {            
+        {
             if (actPosition.size() > 0)
             {
                 cSB->setValue(actPosition[i]);
@@ -264,7 +264,7 @@ void DockWidgetNanotecStepMotor::targetChanged(QVector<double> targetPositions)
     {
         int i = 0;
         foreach(QDoubleSpinBox *dSB, m_pDestSpinBoxes)
-        {            
+        {
             dSB->setValue(targetPositions[i]);
 
             //if (targetPositions.size() > 0)

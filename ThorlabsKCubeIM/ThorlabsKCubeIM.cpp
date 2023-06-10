@@ -4,7 +4,7 @@
     Copyright (C) 2021, TRUMPF GmbH, Ditzingen
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -83,8 +83,8 @@ This plugin has been tested with the cage rotator KIM101.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
 }
 
@@ -101,10 +101,10 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
     m_params.insert("firmwareVersion", ito::Param("firmwareVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Firmware version of the device").toLatin1().data()));
     m_params.insert("softwareVersion", ito::Param("softwareVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Software version of the device").toLatin1().data()));
-    
+
     ito::int32 voltage[4] = { 112, 112, 112, 112};
     m_params.insert("maxVoltage", ito::Param("maxVoltage", ito::ParamBase::IntArray, 4, voltage, new ito::IntArrayMeta(85, 125, 1, 4, 4), tr("maximum voltage of axis").toLatin1().data()));
-    
+
     ito::int32 steps[4] = { 500, 500, 500, 500 };
     m_params.insert("stepRate", ito::Param("stepRate", ito::ParamBase::IntArray, 4, steps, new ito::IntArrayMeta(1, 2000, 1, 4, 4), tr("step rate in Steps/s").toLatin1().data()));
 
@@ -123,7 +123,7 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     m_currentPos.fill(0.0, 4);
     m_currentStatus.fill(0, 4);
     m_targetPos.fill(0.0, 4);
-    
+
     if (hasGuiSupport())
     {
         //now create dock widget for this plugin
@@ -132,7 +132,7 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dockWidget);
     }
-    
+
     memset(m_serialNo, '\0', sizeof(m_serialNo));
 }
 
@@ -147,7 +147,7 @@ std::map<const unsigned int, KIM_Channels> KIMChannelMap
     { 3, KIM_Channels::Channel4 }
 };
 
-KIM_Channels WhatChannel(unsigned int num) 
+KIM_Channels WhatChannel(unsigned int num)
 {
     return KIMChannelMap[num];
 }
@@ -210,7 +210,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                     break;
                 }
             }
-            
+
             if (!found)
             {
                 retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found");
@@ -255,7 +255,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     if (!retval.containsError())
     {
-        if (deviceInfo.isKnownType && (deviceInfo.typeID == 97 /*KCube Inertial Motor*/)) 
+        if (deviceInfo.isKnownType && (deviceInfo.typeID == 97 /*KCube Inertial Motor*/))
         {
             memcpy(m_serialNo, serial.data(), std::min((size_t)serial.size(), sizeof(m_serialNo)));
             retval += checkError(KIM_Open(m_serialNo), "open device");
@@ -273,7 +273,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     }
 
     if (!retval.containsError())
-    {        
+    {
         if (!KIM_LoadSettings(m_serialNo))
         {
             retval += ito::RetVal(ito::retWarning, 0, "settings of device could not be loaded");
@@ -304,7 +304,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         //get num of axis
         // num = sizeof(KIM_Channels); does not work
         m_numaxis = m_params["numaxis"].getVal<int>();
-        
+
         // get the device parameter here
         bool deviceCanLockFrontPanel = KIM_CanDeviceLockFrontPanel(m_serialNo) ? 1 : 0;
         m_params["lockFrontPanel"].setVal<int>(KIM_GetFrontPanelLocked(m_serialNo) ? 1 : 0);
@@ -333,7 +333,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         int stepRate[4];
         int accel[4];
         for(int axis = 0; axis < m_numaxis; axis++)
-        {    
+        {
             short vol;
             retval += checkError(KIM_GetDriveOPParameters(m_serialNo, WhatChannel(axis), vol, stepRate[axis], accel[axis]), "get drive OP Parameter");
             maxVol[axis] = int(vol);
@@ -383,7 +383,7 @@ ito::RetVal ThorlabsKCubeIM::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -435,7 +435,7 @@ ito::RetVal ThorlabsKCubeIM::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -477,7 +477,7 @@ ito::RetVal ThorlabsKCubeIM::getParam(QSharedPointer<ito::Param> val, ItomShared
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsISM::SMCSwitchType is executed.
 
@@ -651,7 +651,7 @@ ito::RetVal ThorlabsKCubeIM::calib(const QVector<int> axis, ItomSharedSemaphore 
         {
             retValue += checkError(KIM_ZeroPosition(m_serialNo, WhatChannel(i)), "set position as new zero");
             m_targetPos[i] = 0.0;
-            
+
             retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axis); //should drop into timeout
             if (retValue.errorCode() == -1) // movement interrupted
             {
@@ -786,9 +786,9 @@ ito::RetVal ThorlabsKCubeIM::getPos(const QVector<int> axis, QSharedPointer<QVec
         {
             QSharedPointer<double> _pos(new double);
             retValue += getPos(axis[naxis], _pos, NULL);
-            (*pos)[naxis] = *_pos;         
+            (*pos)[naxis] = *_pos;
         }
-    }    
+    }
 
     sendStatusUpdate(false);
 
@@ -833,7 +833,7 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
             }
             else
             {
-                m_targetPos[i] = pos[cntPos]; 
+                m_targetPos[i] = pos[cntPos];
             }
             cntPos++;
         }
@@ -864,7 +864,7 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
                 {
                     retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[0]), m_targetPos[axis[0]]), "move absolute");
                     retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axis[1]), m_targetPos[axis[1]]), "move absolute");
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute); 
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Absolute);
 
                     if (retValue.errorCode() == -1)
                     {
@@ -891,14 +891,14 @@ ito::RetVal ThorlabsKCubeIM::setPosAbs(QVector<int> axis, QVector<double> pos, I
                 foreach(const int axisNum, axis)
                 {
                     retValue += checkError(KIM_MoveAbsolute(m_serialNo, WhatChannel(axisNum), m_targetPos[axisNum]), "move absolute");
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute); 
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, axisNum, MoveType::Absolute);
                     if (retValue.errorCode() == -1)
                     {
                         for (int i = 0; i < m_numaxis; i++)
                         {
                             m_currentStatus[i] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
                         }
-                        
+
                         sendStatusUpdate(false);
                         retValue = ito::retOk;
                         break;
@@ -951,7 +951,7 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
             }
             else
             {
-                m_targetPos[i] = m_currentPos[i] + pos[cntPos]; 
+                m_targetPos[i] = m_currentPos[i] + pos[cntPos];
             }
             cntPos++;
         }
@@ -988,7 +988,7 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
                     retValue += checkError(
                         KIM_MoveRelative(m_serialNo, WhatChannel(axis[1]), pos[1]),
                         "move relative");
-                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Relative); 
+                    retValue += waitForDone(m_params["timeout"].getVal<double>() * 1000.0, QVector<int>{axis[0], axis[1]}, MoveType::Relative);
 
                     if (retValue.errorCode() == -1) // movement interrupted
                     {
@@ -1020,8 +1020,8 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
                     retValue += waitForDone(
                         m_params["timeout"].getVal<double>() * 1000.0,
                         axisNum,
-                        MoveType::Relative); 
-                    
+                        MoveType::Relative);
+
 
                     if (retValue.errorCode() == -1) // movement interrupted
                     {
@@ -1038,7 +1038,7 @@ ito::RetVal ThorlabsKCubeIM::setPosRel(QVector<int> axis, QVector<double> pos, I
                     idx++;
                 }
 
-                
+
             }
 
             if (!m_async && waitCond)
@@ -1085,7 +1085,7 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const int axis, co
     return retVal;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! method must be overwritten from ito::AddInActuator
 /*!
 WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is indicated) have stopped or a timeout or user interruption
@@ -1102,11 +1102,11 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
 
     //reset interrupt flag
     isInterrupted();
-    
+
     long delay = 100; //[ms]
 
     timer.start();
-    
+
     //if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
     if (_axis.size() == 0) //all axis
@@ -1130,13 +1130,13 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
             foreach (axis, _axis)
             {
                 retVal += checkError(KIM_MoveStop(m_serialNo, WhatChannel(axis)), "error while interrupt movement");
-                
+
             }
             // set the status of all axes from moving to interrupted (only if moving was set
             // before)
 
             retVal += ito::RetVal(ito::retWarning, -1, "Movement interrupted");
-            
+
             done = true;
             return retVal;
         }
@@ -1147,7 +1147,7 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         waitMutex.unlock();
         setAlive();
 
-        
+
 
         if (timeoutMS > -1)
         {
@@ -1196,7 +1196,7 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
         {
             sendStatusUpdate();
             Sleep(20);
-        }        
+        }
 
     }
 
@@ -1214,7 +1214,7 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
     return retVal;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ThorlabsKCubeIM::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1242,7 +1242,7 @@ void ThorlabsKCubeIM::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsKCubeIM::checkError(short value, const char* message)
 {
     if (value == 0)

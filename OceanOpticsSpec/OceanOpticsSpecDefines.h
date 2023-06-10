@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "OceanOpticsSpec" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -63,7 +63,7 @@ typedef struct
     uint32                  m_LaserWidth;
     float                   m_LaserWaveLength;
     uint16                  m_StoreToRam;
-} ControlSettingsType; 
+} ControlSettingsType;
 
 typedef struct
 {
@@ -161,7 +161,7 @@ typedef struct
 typedef struct
 {
     float                   m_aSpectrumCorrect[MAX_NR_PIXELS];
-} SpectrumCorrectionType; 
+} SpectrumCorrectionType;
 
 typedef struct
 {
@@ -253,7 +253,7 @@ typedef struct
 
 //typedef struct {
 //    uint8 start_bytes[2] = { 0xC1, 0xC0 };// -don't reverse byte order
-//    uint16 protocol_version; // = 0x1000 
+//    uint16 protocol_version; // = 0x1000
 //    uint16 flags; // response, ACK[d], ACKreq[h], NACK[d], exc[d], protocol_deprecated[d]
 //    uint16 errnum; // 0x0000 == ok
 //    uint32 message_type;
@@ -280,7 +280,7 @@ typedef struct OcHeader
     uint32 bytes_remaining = 0x00000014; //20bytes remaining, swapped - default case, buildheader() creates new memory and adjusts bytes_remaining if necessary
     //uint8 payload[] = {};
     uint8 checksum[16];
-    uint8 footer[4] = { 0xC5,0xC4,0xC3,0xC2 }; 
+    uint8 footer[4] = { 0xC5,0xC4,0xC3,0xC2 };
 }OcHeader; //no Payload, only immediate_data available
 
 //uint32 ooi_footer = { 0xC5C4C3C2 };

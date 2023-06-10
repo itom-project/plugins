@@ -4,32 +4,29 @@ set(target_name PI_GCS2)
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
-
-
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
-
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 itom_find_package_qt(ON Widgets Xml LinguistTools)
 
 add_definitions(-DGCS2)
-
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -70,7 +67,7 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dockWidgetPIPiezoCtrl.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dialogPIPiezoCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dockWidgetPIPiezoCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/PIPiezoCtrl.cpp

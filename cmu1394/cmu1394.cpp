@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -103,7 +103,7 @@ of this plugin.");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr(GITVERSION); 
+    m_aboutThis         = tr(GITVERSION);
 
    ito::Param paramVal = ito::Param("Format", ito::ParamBase::Int, 0, 2, 0, tr("Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
    m_initParamsMand.append(paramVal);
@@ -121,7 +121,7 @@ of this plugin.");
    m_initParamsOpt.append(paramVal);
 
    /**\brief width, height and color code for the core formats (0-2) */
-    //static VIDEO_MODE_DESCRIPTOR tableModeDesc[3][8] = 
+    //static VIDEO_MODE_DESCRIPTOR tableModeDesc[3][8] =
     //{
        // {
           //  {160 ,120 ,COLOR_CODE_YUV444},
@@ -173,7 +173,7 @@ ito::RetVal CMU1394::copyObjBytesSwapped(ito::DataObject *extDObj, uchar *src, i
         retval = ito::RetVal(ito::retError, 0, tr("Error in copyFromData2D. Size of Buffer unequal size of DataObject").toLatin1().data());
         return retval;
     }
-    
+
     //retval = checkType(src); // This is bullshit because this type is anytype and src is always uchar!!!!
     //if (retval != ito::retOk)
     //   return retval;
@@ -217,7 +217,7 @@ ito::RetVal CMU1394::copyObjBytesSwapped(ito::DataObject *extDObj, uchar *src, i
         retval = ito::RetVal(ito::retError, 0, tr("Error in copyFromData2D. Size of Buffer unequal size of DataObject").toLatin1().data());
         return retval;
     }
-    
+
     //retval = checkType(src); // This is bullshit because this type is anytype and src is always uchar!!!!
     //if (retval != ito::retOk)
     //   return retval;
@@ -276,9 +276,9 @@ const ito::RetVal CMU1394::showConfDialog(void)
     if (confDialog->exec())
     {
         confDialog->getVals(&m_params);
-        
+
         foreach(const ito::ParamBase &param1, m_params)
-        {    
+        {
             retValue += setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
         }
     }
@@ -288,15 +288,15 @@ const ito::RetVal CMU1394::showConfDialog(void)
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-CMU1394::CMU1394() :  AddInGrabber(), m_saveParamsOnClose(false), 
-                                        m_ptheCamera(NULL), m_pC1394gain(NULL), m_pC1394offset(NULL), 
+CMU1394::CMU1394() :  AddInGrabber(), m_saveParamsOnClose(false),
+                                        m_ptheCamera(NULL), m_pC1394gain(NULL), m_pC1394offset(NULL),
                                         m_pC1394autoexp(NULL), m_pC1394trigger(NULL), m_isgrabbing(0),
                                         m_iFireWire_VideoMode(0), m_iFireWire_VideoFormat(0), m_iFireWire_VideoRate(0),
                                         m_iCamNumber(0)
 {
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
-    
+
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "CMU1394", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -409,7 +409,7 @@ ito::RetVal CMU1394::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -443,10 +443,10 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     int hbin = 0;
     double gain = 0.0;
     double offset = 0.0;
-    
+
     int trigger_mode = 0;
     int trigger_on = 0;
-    
+
     QString key = val->getName();
 
     if (key == "")    // Check if the key is valied
@@ -459,7 +459,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
         if (paramIt != m_params.end()) // Okay the camera has this parameter so go on
         {
-    
+
             if (paramIt->getFlags() & ito::ParamBase::Readonly)
             {
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
@@ -478,7 +478,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
-                else 
+                else
                 {
                     paramIt.value().setVal<double>(curval);
                 }
@@ -492,14 +492,14 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
                 goto end;
             }
-        
+
             Sleep(5);
 
             trigger_mode = m_params["trigger_mode"].getVal<int>();
             trigger_on = m_params["trigger_enable"].getVal<int>();
-            gain = (double)(m_params["gain"].getVal<double>()); 
-            offset = (double)(m_params["offset"].getVal<double>());    
-            int timeout_ms = (int)(m_params["timeout"].getVal<double>()*1000);    
+            gain = (double)(m_params["gain"].getVal<double>());
+            offset = (double)(m_params["offset"].getVal<double>());
+            int timeout_ms = (int)(m_params["timeout"].getVal<double>()*1000);
             //vbin = m_params["binning"].getVal<int>();
             //hbin = m_params["binning"].getVal<int>();
 
@@ -526,7 +526,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             {
                 m_swapBO = val->getVal<int>() > 0 ? 1: 0;
             }
-            else 
+            else
             {
                 if (grabberStartedCount())
                 {
@@ -551,7 +551,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                         {
                             m_pC1394trigger->SetOnOff(true);
 
-                            if ((ret = m_ptheCamera->StartImageAcquisitionEx(6, timeout_ms, ACQ_START_VIDEO_STREAM)))  
+                            if ((ret = m_ptheCamera->StartImageAcquisitionEx(6, timeout_ms, ACQ_START_VIDEO_STREAM)))
                             {
                                 if (ret == -14)
                                 {
@@ -573,7 +573,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                         {
                             m_pC1394trigger->SetOnOff(false);
 
-                            if ((ret = m_ptheCamera->StartImageAcquisition()))  
+                            if ((ret = m_ptheCamera->StartImageAcquisition()))
                             {
                                 if (ret == -14)
                                 {
@@ -622,7 +622,7 @@ end:
 //        emit parametersChanged(m_params);
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -635,7 +635,7 @@ end:
 ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    
+
     ito::RetVal retValue(ito::retOk);
 
     int ret = 0;
@@ -649,7 +649,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     int hbin = 0;
 
     int trigger_mode = 0;
-    
+
     double gain = 0;
     double offset = 0;
 
@@ -675,7 +675,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     }
     else
     {
-        //Get the Initnumber / check if camera is already running  
+        //Get the Initnumber / check if camera is already running
         if (m_iCamNumber < 0) // find next free camera automatically
         {
             int freeplace = MAX1394;
@@ -689,7 +689,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
                 }
             }
             InitList[Initnum-1] = m_iCamNumber + 1;
-            
+
         }
         else    // Set the next camera by user input
         {
@@ -853,7 +853,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
                 //ansonsten ist der Cam-Mode benutzerdefiniert!
                 //die Kamera hat Defaultwerte fuer Mode 7, unterstuetzt aber auch andere Groessen wenn
                 //in der entsprechenden TReiberdll ein SetROI-Befehl exportiert wird.
-                {    
+                {
     /*
                     switch(s->FireWire_VideoMode)
                     {
@@ -868,7 +868,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
                             break;
                         default:
                                 AddErrorMessage("Basler Kamera:illegaler Camera Mode! Erlaubt: 0,1,7)\n");
-                            return -EHARDWARE;                
+                            return -EHARDWARE;
                     }
     */
                     switch(m_iFireWire_VideoMode)
@@ -878,7 +878,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
                             break;
                         default:
                             retValue = ito::RetVal(ito::retError, 0, tr("PtGrey Kamera:illegaler Camera Mode! Only: 0)\n").toLatin1().data());
-                            break;            
+                            break;
                     }
                 }
             break;
@@ -927,7 +927,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     if (!retValue.containsError())
     {
         m_ptheCamera->GetVideoFrameDimensions(&maxxsize, &maxysize);
-        
+
         static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(maxxsize);
         static_cast<ito::IntMeta*>(m_params["sizey"].getMeta())->setMax(maxysize);
         m_params["sizex"].setVal<int>(maxxsize);
@@ -969,7 +969,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     }
     if (!retValue.containsError())
     {
-        if ((ret = m_ptheCamera->StartImageAcquisition()))  
+        if ((ret = m_ptheCamera->StartImageAcquisition()))
         {
             if (ret == -14)
             {
@@ -987,7 +987,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         else
         {
             ret = m_ptheCamera->GetNode();
-            m_ptheCamera->StopImageAcquisition();    
+            m_ptheCamera->StopImageAcquisition();
         }
     }
 
@@ -1031,7 +1031,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-        
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
@@ -1041,23 +1041,23 @@ ito::RetVal CMU1394::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     if (m_timerID > 0)
-    { 
+    {
         killTimer(m_timerID);
         m_timerID=0;
     }
 
     int i = 0;
     int camnum = -1;
-    
+
     Initnum--;  // So count down the init-number
-    
+
     if (m_ptheCamera != NULL)
     {
         camnum = m_ptheCamera->GetNode();
         this->stopDevice(0);
-        Sleep(50);    
+        Sleep(50);
         delete(m_ptheCamera);
         m_ptheCamera = NULL;
     }
@@ -1075,7 +1075,7 @@ ito::RetVal CMU1394::close(ItomSharedSemaphore *waitCond)
         }
         for (; n < MAX1394; n++)
         {
-            InitList[n] = InitList[n+1]; 
+            InitList[n] = InitList[n+1];
         }
     }
 
@@ -1084,7 +1084,7 @@ ito::RetVal CMU1394::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -1127,7 +1127,7 @@ ito::RetVal CMU1394::startDevice(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal CMU1394::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1169,7 +1169,7 @@ ito::RetVal CMU1394::stopDevice(ItomSharedSemaphore *waitCond)
 
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal CMU1394::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {ItomSharedSemaphoreLocker locker(waitCond);
@@ -1184,8 +1184,8 @@ ito::RetVal CMU1394::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     else
     {
         this->m_isgrabbing = true;
-        
-        if (m_ptheCamera->AcquireImage())  
+
+        if (m_ptheCamera->AcquireImage())
         {
             retValue = ito::RetVal(ito::retError, 0, tr("FireWireDll: CaptureImage failed!").toLatin1().data());
         }
@@ -1194,7 +1194,7 @@ ito::RetVal CMU1394::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
 
     return retValue;
@@ -1235,9 +1235,9 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
     }
     else
     {
-        //here we wait until the Event is set to signaled state 
+        //here we wait until the Event is set to signaled state
         //or the timeout runs out
-    
+
         if (retValue != ito::retError)
         {// Now we shoud have a picture in the camera buffer
 
@@ -1360,7 +1360,7 @@ ito::RetVal CMU1394::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1382,12 +1382,12 @@ ito::RetVal CMU1394::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if (!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1395,7 +1395,7 @@ ito::RetVal CMU1394::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1410,22 +1410,22 @@ ito::RetVal CMU1394::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void CMU1394::updateParameters(QMap<QString, ito::ParamBase> params)
-{ 
+{
     foreach(const ito::ParamBase &param1, params)
-    {    
+    {
         setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void CMU1394::OffsetPropertiesChanged(double offset)
-{ 
+{
     setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset)), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void CMU1394::GainPropertiesChanged(double gain)
-{ 
+{
     setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)), NULL);
 }
 

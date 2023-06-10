@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -56,7 +56,7 @@ namespace ito
 *   overwrite a warning if it is added to an existing RetVal.
 */
 class ITOMCOMMON_EXPORT RetVal
-{       
+{
     private:
         tRetValue m_retValue;    /*!< can be one of enumeration \ref tLogLevel values or an or-combination of these values*/
         int m_retCode;           /*!< the error code itself */
@@ -65,13 +65,13 @@ class ITOMCOMMON_EXPORT RetVal
     public:
         //! default constructor that creates a RetVal with status ito::retOk, code 0 and no message.
         inline RetVal() : m_retValue(ito::retOk), m_retCode(0) {}
-        
+
         //! default constructor that creates a RetVal with the status given by retValue, code 0 and no message.
         RetVal(tRetValue retValue) : m_retValue(retValue), m_retCode(0) {}
-        
+
         //! default constructor that creates a RetVal with the status given by retValue, code 0 and no message.
         RetVal(int retValue) : m_retValue((tRetValue)retValue), m_retCode(0) {}
-        
+
         //RetVal(tRetValue retValue, int retCode, char *pRetMessage)
         /**
         *   constructor with retValue, retCode and errorMessage
@@ -81,7 +81,7 @@ class ITOMCOMMON_EXPORT RetVal
         *   Makes a deep copy of RetVal, i.e. a copy of the error message
         */
         RetVal(ito::tRetValue retValue, int retCode, const char *pRetMessage);
-        
+
         //! destructor
         inline ~RetVal() {}
 

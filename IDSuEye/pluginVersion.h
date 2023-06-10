@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -31,14 +31,14 @@
 #include "itom_sdk.h"
 
 #define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 6
+#define PLUGIN_VERSION_MINOR 7
 #define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_COMPANY        "ITO Uni Stuttgart, Pulsar Photonics"
-#define PLUGIN_AUTHOR         "M. Gronle (ITO Uni Stuttgart); A. Kempe (ILT Aachen, Pulsar Photonics)"
-#define PLUGIN_COPYRIGHT      "(C) 2021, ITO Uni Stuttgart, Pulsar Photonics"
+#define PLUGIN_AUTHOR         "M. Gronle (ITO Uni Stuttgart); A. Kempe (ILT Aachen, Pulsar Photonics), M. Petz (IPROM, TU Braunschweig)"
+#define PLUGIN_COPYRIGHT      "(C) 2023, ITO Uni Stuttgart, Pulsar Photonics"
 #define PLUGIN_NAME           "IDSuEye"
 
 

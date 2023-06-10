@@ -10,20 +10,26 @@
 **Devices**:    Powermeter VEGA from company *Ophir*
 **Author**:     :pluginauthor:`OphirPowermeter`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
 .. pluginsummaryextended::
     :plugin: OphirPowermeter
-    
+
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: OphirPowermeter
+
+Instruction
+===========
+
+Download the Starlab SDK from Ophir: https://www.ophiropt.com/laser--measurement/de/software/starlab-for-usb.
+Set the Windows Environment Variable OPHIR_STARLAB_ROOT to the installation directory (e.g. C:\Program Files\Ophir Optronics\StarLab 3.80).
 
 Parameters
 ==========
@@ -74,7 +80,7 @@ In the following script, the first detectable power meter is connected and a osc
 plot is opened that displays a moving graph of recent intensity values:
 
 .. code-block:: python
-    
+
     connectionType = "USB"
 
     if connectionType == "USB":  # connects the USB powermeter type

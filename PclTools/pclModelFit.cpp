@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -166,7 +166,7 @@ Models with * need an input cloud where normal vectors are defined.");
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
     paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, pcl::SACMODEL_PLANE, tr("Model type according to enum pcl::SacModel").toLatin1().data()));
-    
+
     paramsOpt->clear();
     paramsOpt->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
     double limits[] = { 0.0, std::numeric_limits<double>::max()};
@@ -301,7 +301,7 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
 
     ito::PCLPointCloud tmpCloud;
 
-    ito::PCLPointCloud *tmpCloudFilter = NULL; 
+    ito::PCLPointCloud *tmpCloudFilter = NULL;
 
     bool deleteOnClose = false;
 
@@ -602,7 +602,7 @@ const QString PclTools::pclFitLineDOC = QObject::tr("fits a line model to the gi
 
     paramsOut->clear();
     paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
-    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
 
     return retval;
@@ -645,8 +645,8 @@ const QString PclTools::pclFitConeDOC = QObject::tr("fits a conical model to the
 
     paramsOut->clear();
     paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
-    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
-    paramsOut->append(ito::Param("openingAgle", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting opening angle in radiant").toLatin1().data())); 
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data()));
+    paramsOut->append(ito::Param("openingAgle", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting opening angle in radiant").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
 
     return retval;
@@ -905,8 +905,8 @@ SACMODEL_STICK = 17 \n\
     #if (USEOMP)
     #pragma omp parallel num_threads(nthreads)
     {
-    #endif  
-    
+    #endif
+
     Eigen::Vector4f curPt;
     curPt[3] = 0.0f;
 
@@ -926,7 +926,7 @@ SACMODEL_STICK = 17 \n\
 
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -941,13 +941,13 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                
+                }
             }
             else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -962,13 +962,13 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -981,13 +981,13 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -1001,7 +1001,7 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                    
+                }
             }
         }
         break;
@@ -1014,9 +1014,9 @@ SACMODEL_STICK = 17 \n\
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {                       
+                {
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
@@ -1026,15 +1026,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                
+                }
             }
             else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
@@ -1044,15 +1044,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {   
+                {
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
@@ -1061,15 +1061,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {    
+                {
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
@@ -1078,7 +1078,7 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                    
+                }
             }
         }
         break;
@@ -1091,9 +1091,9 @@ SACMODEL_STICK = 17 \n\
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
@@ -1107,13 +1107,13 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                }                
+                }
             }
             else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -1129,13 +1129,13 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                }                     
+                }
             }
             else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -1150,13 +1150,13 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                }                     
+                }
             }
             else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -1171,7 +1171,7 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                }                    
+                }
             }
         }
         break;
@@ -1184,9 +1184,9 @@ SACMODEL_STICK = 17 \n\
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
@@ -1200,13 +1200,13 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                }                
+                }
             }
             else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -1222,13 +1222,13 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                }                     
+                }
             }
             else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -1243,13 +1243,13 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                }                     
+                }
             }
             else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
@@ -1264,7 +1264,7 @@ SACMODEL_STICK = 17 \n\
                         pclDists->at(np).curvature = floatNAN;
                     }
                     pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                }                    
+                }
             }
         }
         break;
@@ -1277,9 +1277,9 @@ SACMODEL_STICK = 17 \n\
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
@@ -1289,15 +1289,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                
+                }
             }
             else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
@@ -1307,15 +1307,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
@@ -1324,16 +1324,16 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
-                        
+                {
+
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
@@ -1342,7 +1342,7 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                    
+                }
             }
         }
         break;
@@ -1350,14 +1350,14 @@ SACMODEL_STICK = 17 \n\
         {
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
-                
+
             if (distanceType == 0)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
@@ -1367,15 +1367,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                
+                }
             }
             else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
@@ -1385,15 +1385,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
@@ -1402,15 +1402,15 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                     
+                }
             }
             else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
-                #endif     
+                #endif
                 for (int np = 0; np < pclOut->size(); np++)
-                {     
+                {
                     if (ito::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
@@ -1419,7 +1419,7 @@ SACMODEL_STICK = 17 \n\
                     {
                         pclDists->at(np).curvature = floatNAN;
                     }
-                }                    
+                }
             }
         }
         break;
@@ -1436,7 +1436,7 @@ SACMODEL_STICK = 17 \n\
     }
 
     return retval;
-#endif  
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------------
@@ -1457,7 +1457,7 @@ SACMODEL_STICK = 17 \n\
     paramsMand->append(ito::Param("distanceObj", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output distance object (inplace allowed)").toLatin1().data()));
     paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Model type according to enum pcl::SacModel (sphere: 4, cylinder: 5)").toLatin1().data()));
     paramsMand->append(ito::Param("coefficients", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("model coefficients (sphere: p_x, p_y, p_z, r; cylinder: p_x, p_y, p_z, v_x, v_y, v_z, r)").toLatin1().data()));
-    
+
     paramsOpt->clear();
     paramsOut->clear();
 
@@ -1479,7 +1479,7 @@ template<typename _Tp> ito::RetVal distanceToModelDObjHelper(const ito::DataObje
     Eigen::Vector4d line_pt(coefficients[0], coefficients[1], coefficients[2], 0);
     Eigen::Vector4d pt(0.0, 0.0, 0.0, 0.0);
     double line_dir_norm;
-    
+
     switch (modelType)
     {
     case pcl::SACMODEL_CYLINDER:

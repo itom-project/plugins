@@ -8,7 +8,7 @@ This document describes the USB communication.
 <p>
 The USB command is at most 3 bytes long: A B C
 and is converted into an USB control message:<br>
-	0xc0 0x10 &lt;A&gt; &lt;B&gt; &lt;C&gt; &lt;checksum&gt; 0x40 
+	0xc0 0x10 &lt;A&gt; &lt;B&gt; &lt;C&gt; &lt;checksum&gt; 0x40
 <p>
 The checksum is calculated by:<br>
 	(A^0x34)+(B^0xcb)+(C^0x67)+0x14f;

@@ -1,5 +1,5 @@
 dnl @synopsis GP_CHECK_SHELL_ENVIRONMENT([SHOW-LOCALE-VARS])
-dnl 
+dnl
 dnl Check that the shell environment is sane.
 dnl
 dnl If SHOW-LOCALE-VARS is set to [true], print all LC_* and LANG*

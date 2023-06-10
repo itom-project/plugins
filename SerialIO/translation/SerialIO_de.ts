@@ -300,17 +300,17 @@
         <location line="+36"/>
         <source>SerialIO is a itom-Plugin which gives direct access to serial ports.
 It is used by different plugins for communication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
-The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system. 
+The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system.
 
-flow bitmask 
--------------- 
+flow bitmask
+--------------
 
 The flow bitmask is an OR combination of the following possible values:
 Xon/Xoff - default: Xoff, Xon=1 (1. bit)
 rts control - default: disabled, enabled=2, handshake=4 or (4+2) (2. and 3. bit)
 cts control - default: disabled, enabled=8 (4. bit)
-dtr control - default: disabled, enabled = 16, handshake = 32 or (32+16) (5. and 6. bit) 
-dsr control - default: disabled, enabled = 64 
+dtr control - default: disabled, enabled = 16, handshake = 32 or (32+16) (5. and 6. bit)
+dsr control - default: disabled, enabled = 64
 
 If an endline character is given, this is automatically appended to each sequence that is send using the setVal-command.
 On the other side, any obtained value from the serial port is scanned for &apos;endlineRead&apos; character and automatically split.
@@ -320,13 +320,13 @@ Example
 --------
 
 ..
-    
+
     s = dataIO(&quot;SerialIO&quot;,port=1,baud=9600,endline=&quot;&quot;,bits=8,stopbits=1,parity=0,flow=16)
-    
+
     #send command
     sendString = bytearray(b&quot;POS?&quot;) #or bytearray([80,79,83,63]);
     s.setVal(sendString)
-    
+
     #get result
     answer = bytearray(9) #supposed length is 9 characters
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns</source>
@@ -338,11 +338,11 @@ Flusskontrolle
 --------------
 
 Die Flusskontrolle ist eine &apos;OR&apos;-Verknüpfung mit folgenden möglichen Werten:
-Xon/Xoff - Standard: Xoff, Xon=1 (1. bit) 
-rts control - Standard: disabled, enabled=2, handshake=(4 or (4+2)) (2. und 3. bit) 
-cts control - Standard: disabled, enabled=8 (4. bit) 
-dtr control - Standard: disabled, enabled = 16, handshake =( 32 or (32+16)) (5. und 6. bit) 
-dsr control - Standard: disabled, enabled = 64 
+Xon/Xoff - Standard: Xoff, Xon=1 (1. bit)
+rts control - Standard: disabled, enabled=2, handshake=(4 or (4+2)) (2. und 3. bit)
+cts control - Standard: disabled, enabled=8 (4. bit)
+dtr control - Standard: disabled, enabled = 16, handshake =( 32 or (32+16)) (5. und 6. bit)
+dsr control - Standard: disabled, enabled = 64
 
 Wurde eine Terminierung (Endline) mit angegeben, wird diese automatisch bei jeder Nachricht an das Gerät angehängt.
 Beim Lesen hingegen wird die Antwort nach der &apos;endlineRead&apos;-Terminierung gescannt und automatisch abgeschnitten.
@@ -352,13 +352,13 @@ Beispiel
 --------
 
 ..
-    
+
     s = dataIO(&quot;SerialIO&quot;,port=1,baud=9600,endline=&quot;&quot;,bits=8,stopbits=1,parity=0,flow=16)
-    
+
     #Kommando senden
     sendString = bytearray(b&quot;POS?&quot;) #Oder bytearray([80,79,83,63]);
     s.setVal(sendString)
-    
+
     #Antwort
     answer = bytearray(9) #angenommene Antwortlänge ist 9 Zeichen
     num = s.getVal(answer) #Wenn ok, dann enthält num die Anzahl der empfangenen Zeichen (max: Länge der Antwort)</translation>

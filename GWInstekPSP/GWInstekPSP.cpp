@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -71,7 +71,7 @@ ito::RetVal GWInstekPSPInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 GWInstekPSPInterface::GWInstekPSPInterface()
@@ -97,8 +97,8 @@ instance when initializing this plugin.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);      
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
     paramVal.setMeta( new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
@@ -122,7 +122,7 @@ GWInstekPSPInterface::~GWInstekPSPInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-//! 
+//!
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
     creates new instance of dialogGWInstekPSP, calls the method setVals of dialogGWInstekPSP, starts the execution loop and if the dialog
@@ -146,7 +146,7 @@ const ito::RetVal GWInstekPSP::showConfDialog(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal GWInstekPSP::SetParams() 
+const ito::RetVal GWInstekPSP::SetParams()
 {
     QByteArray status(m_status);
     m_params.find("status").value().setVal<char*>(m_status);
@@ -212,7 +212,7 @@ const ito::RetVal GWInstekPSP::ReadFromSerial(bool *state)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal GWInstekPSP::WriteToSerial(const char *text, bool commandHasAnswer, bool getCurrentStatus /*= true*/) 
+const ito::RetVal GWInstekPSP::WriteToSerial(const char *text, bool commandHasAnswer, bool getCurrentStatus /*= true*/)
 {
     ito::RetVal retValue = ito::retOk;
 
@@ -282,7 +282,7 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GWInstekPSP", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     paramVal = ito::Param("status", ito::ParamBase::String | ito::ParamBase::Readonly, m_status, tr("Current status string of controller").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("voltage", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage; the unit: V").toLatin1().data());
@@ -369,7 +369,7 @@ ito::RetVal GWInstekPSP::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -414,7 +414,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
-                else 
+                else
                 {
                     paramIt.value().setVal<double>(curval);
                 }
@@ -429,27 +429,27 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 goto end;
             }
 
-            if (key == "voltage") 
+            if (key == "voltage")
             {
                 commandHasAnswer = false;
                 sprintf(text, "SV %05.2f", m_params["voltage"].getVal<double>());
             }
-            else if (key == "voltage_limit") 
+            else if (key == "voltage_limit")
             {
                 commandHasAnswer = false;
                 sprintf(text, "SU %02.0f", (m_params["voltage_limit"].getVal<double>()));
             }
-            else if (key == "current_limit") 
+            else if (key == "current_limit")
             {
                 commandHasAnswer = false;
                 sprintf(text, "SI %04.2f", (m_params["current_limit"].getVal<double>()));
             }
-            else if (key == "load_limit") 
+            else if (key == "load_limit")
             {
                 commandHasAnswer = false;
                 sprintf(text, "SP %03.0f", (m_params["load_limit"].getVal<double>()));
             }
-            else if (key == "relay") 
+            else if (key == "relay")
             {
                 commandHasAnswer = false;
                 if (m_params["relay"].getVal<int>())
@@ -461,7 +461,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                     sprintf(text, "KOD");
                 }
             }
-            else if (key == "wheel") 
+            else if (key == "wheel")
             {
                 commandHasAnswer = false;
                 if (m_params["wheel"].getVal<int>())
@@ -491,7 +491,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     }
 
 end:
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -512,7 +512,7 @@ end:
     \return retOk
 */
 ito::RetVal GWInstekPSP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
-{   
+{
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
@@ -657,7 +657,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
                 sprintf(text, "SV %05.2f", yourVoltage);
                 timer.restart();
                 retValue += WriteToSerial(text, false, false);
-                
+
                 if (yourVoltage >= endVoltage)
                 {
                     break;
@@ -702,7 +702,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
             waitCond->release();
             waitCond = NULL;
         }
-          
+
     }
 
     return retValue;

@@ -28,7 +28,7 @@
 
 # Generate a revision that looks similar to CVS revision by using 1.
 # then the number of lines in the ChangeLogs starting with dates (an
-# approximation of the number of commits) + 1000. 
+# approximation of the number of commits) + 1000.
 # For those pulling from the savannah git repository it should be
 # possible to go from this revision number to the git revision fairly
 # easily. The number will also always increase.

@@ -23,12 +23,12 @@ if dy == 0:
     endy = objOut.size(0)
 else:
     endy = -dy
-    
+
 if dx == 0:
     endx = objOut.size(1)
 else:
     endx = -dx
-    
+
 objOut2 = np.abs(objOut[dy:, dx:])**2 + np.abs(objOut[:endy, :endx])**2
 #objOut2 = np.abs(objOut[dy:, dx:]) + np.abs(objOut[:endy, :endx])
 plot(objOut2)

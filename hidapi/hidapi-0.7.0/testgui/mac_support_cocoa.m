@@ -1,6 +1,6 @@
 /*******************************
  Mac support for HID Test GUI
- 
+
  Alan Ott
  Signal 11 Software
 *******************************/
@@ -13,7 +13,7 @@ extern FXMainWindow *g_main_window;
 
 @interface MyAppDelegate : NSObject
 {
-} 
+}
 @end
 
 @implementation MyAppDelegate

@@ -84,7 +84,7 @@ ito::RetVal DialogPIHexapodCtrl::sendParameters()
     {
         values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("local", ito::ParamBase::Int, v) ) );
     }
-    
+
     v = ui.checkAsync->isChecked() ? 1.0 : 0.0;
     if (m_actualParameters["async"].getVal<double>() != v)
     {

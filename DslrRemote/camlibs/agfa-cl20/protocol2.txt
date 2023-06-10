@@ -81,10 +81,10 @@ SetupPacket          : 80 06 00 01 00 00 12 00
 
 We get as an answer the device descriptor:
 
-    0000:       
-      12 01 00 01 00 00 00 08 bd 06 04 04 90 00 00 00        
-    0010:       
-      00 01  
+    0000:
+      12 01 00 01 00 00 00 08 bd 06 04 04 90 00 00 00
+    0010:
+      00 01
 
 What this means is in the USB specs.
 
@@ -113,7 +113,7 @@ I think this is done by sending:
 SetupPacket          : 00 09 01 00 00 00 00 00
 Note, that the direction is "out" now (00) and the length 0x0000 (00 00).
 
-        
+
 That was the setup process. Now the camera should talk to us.
 
 
@@ -132,16 +132,16 @@ this output is very different if you use a flash card or not.
 These are the first rows with a flash card:
 
 
-   0000:                   1  .  1  6            
-01 00 00 10 00 00 00 00 00 31 2e 31 36 00 00 00 
-   0010:                                       
+   0000:                   1  .  1  6
+01 00 00 10 00 00 00 00 00 31 2e 31 36 00 00 00
+   0010:
 00 00 00 00 00 00 02 00 00 02 00 00 00 00 06 0a  The first 02 is the number of
    0020:                                         pictures plus one. In this case
 1e 79 01 69 02 28 06 50 01 e0 00 60 00 c0 0f 00  one piture.
-   0030:       
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00        
-   0040:       
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00        
+   0030:
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+   0040:
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
 
 These are the first rows without a flash card:
@@ -156,7 +156,7 @@ ff ff ff ff 00 03 00 00 00 02 00 00 ff ff 05 09 Maybe the 03 is the nubmer of pi
 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
   UPDATE: dennis, 09.09.02
-  The 03 IS the number of pictures. I have tried it several times and it always represents the 
+  The 03 IS the number of pictures. I have tried it several times and it always represents the
   number of pictures. Funny how you don't have to subtract 1 here!
 
 
@@ -174,7 +174,7 @@ SetupPacket          : 41 0a 05 00 08 00 00 00    41 03 fb 0f 00 00 00 00
 
 Each time I get back a picture information package, looing like (for pic 4 for ex)
 
-   0000:                                          
+   0000:
 01 00 00 10 00 90 01 01 05 31 2e 31 36 01 08 01		01 74 00 ff ff 35 00 02 20 18 90 78 34 00 00 00
    0010:
 09 05 0a 01 00 03 06 00 00 02 00 00 0f 01 05 09		1b 01 00 00 17 0f 00 5c 66 40 3c ff ff ff ff ff

@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -120,7 +120,7 @@ GenTLFramegrabber::~GenTLFramegrabber()
 void GenTLFramegrabber::resyncAllParameters()
 {
     QHash<INode*, GCType*>::const_iterator i = m_paramMapping2.constBegin();
-    while (i != m_paramMapping2.constEnd()) 
+    while (i != m_paramMapping2.constEnd())
     {
         try
         {
@@ -184,7 +184,7 @@ ito::RetVal GenTLFramegrabber::special(int num)
         catch (GenericException& ex)
         {
             std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
-        }       
+        }
     }
     else if (num == 2)
     {
@@ -231,7 +231,7 @@ ito::RetVal GenTLFramegrabber::special(int num)
         catch (GenericException& ex)
         {
             std::cout << "Framegrabber: Special 1 error " << ex.GetDescription() << "\n" << std::endl;
-        }       
+        }
     }
 
     return ito::retOk;

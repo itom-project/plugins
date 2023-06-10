@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -67,9 +67,9 @@ void DialogMeasurementComputing::parametersChanged(QMap<QString, ito::Param> par
     {
 		enableDialog(true);
         //use params (identical to m_params of the plugin)
-        //__________________________________________________________________________________________________________ 
-        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog")); 
-        
+        //__________________________________________________________________________________________________________
+        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+
 		// general information group box
 		ui.label_devicesName->setText(params["device_name"].getVal<char*>());
 		ui.label_serialNumber->setText(params["serial_number"].getVal<char*>());
@@ -106,7 +106,7 @@ void DialogMeasurementComputing::parametersChanged(QMap<QString, ito::Param> par
 		ui.rangeWidget_analogInputChannels->setMinimum(minMeta->getMin());
 		ui.rangeWidget_analogInputChannels->setMaximum(maxMeta->getMax());
 		ui.rangeWidget_analogInputChannels->setMinimumValue(minValue);
-		ui.rangeWidget_analogInputChannels->setMaximumValue(maxValue);	
+		ui.rangeWidget_analogInputChannels->setMaximumValue(maxValue);
 		ui.rangeWidget_analogInputChannels->setEnabled(true);
 
 		if (params["analog_voltage_input"].getVal<int>() == 1)
@@ -118,7 +118,7 @@ void DialogMeasurementComputing::parametersChanged(QMap<QString, ito::Param> par
 			ui.checkBox_voltageInput->setChecked(false);
 		}
 		ui.checkBox_voltageInput->setEnabled(!(params["analog_voltage_input"].getFlags() & ito::ParamBase::Readonly));
-		
+
 		//analog output groupbox
 		ui.label_analogOutputBpp->setText(QString::number(params["analog_output_bpp"].getVal<int>()));
 		ui.label_analogNumberOutputs->setText(QString::number(params["analog_number_outputs"].getVal<int>()));
@@ -133,7 +133,7 @@ void DialogMeasurementComputing::parametersChanged(QMap<QString, ito::Param> par
 		ui.rangeWidget_analogOutputChannels->setMinimum(minMeta->getMin());
 		ui.rangeWidget_analogOutputChannels->setMaximum(maxMeta->getMax());
 		ui.rangeWidget_analogOutputChannels->setMinimumValue(minValue);
-		ui.rangeWidget_analogOutputChannels->setMaximumValue(maxValue);	
+		ui.rangeWidget_analogOutputChannels->setMaximumValue(maxValue);
 		ui.rangeWidget_analogOutputChannels->setEnabled(true);
 
 		if (params["analog_voltage_output"].getVal<int>() == 1)
@@ -260,7 +260,7 @@ ito::RetVal DialogMeasurementComputing::applyParameters()
 		}
 	}
 
-	//digital port name 
+	//digital port name
 	if (ui.lineEdit_digitalPortName->isEnabled())
 	{
 		values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("digital_port_name", ito::ParamBase::String, ui.lineEdit_digitalPortName->text().toLatin1().data())));

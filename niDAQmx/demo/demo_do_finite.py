@@ -16,7 +16,7 @@ as argument to the 'setVal' method. This dataObject must be 2-dimensional
 and the number of rows must be equal to the number of channels. The int32
 object is internally casted to uint32 (however int32 is no valid dataObject
 data type). The datatype itself depends on the number of lines of each
-selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines 
+selected port. If the port has 0-8 lines, uint8 is required, for 9-16 lines
 uint16, else int32 (usually uint8).
 
 The number of samples that are written to each channel for each setVal

@@ -5635,7 +5635,7 @@ rarely causes the build to fail (*note File Name Conversion Failure::).
    libtool supports file name conversion in the following scenarios:
 
 build platform     host platform      Notes
---------------------------------------------------------------------------- 
+---------------------------------------------------------------------------
 MinGW (MSYS)       MinGW (Windows)    *note Native MinGW File Name
                                       Conversion::
 Cygwin             MinGW (Windows)    *note Cygwin/Windows File Name
@@ -5854,7 +5854,7 @@ to convert file names for the toolchain in this case, by doing the
 following before you run configure:
 
      export lt_cv_to_tool_file_cmd=func_convert_file_cygwin_to_w32
-   
+
    In the _lying_ Cygwin to MinGW cross compile case, you lie to the
 build system:
 
@@ -5877,7 +5877,7 @@ should do the following _before_ running configure:
 
      export lt_cv_to_host_file_cmd=func_convert_file_cygwin_to_w32
      export lt_cv_to_tool_file_cmd=func_convert_file_cygwin_to_w32
-   
+
    Note that this relies on internal implementation details of libtool,
 and is subject to change.  Also, `--disable-dependency-tracking' is
 required, because otherwise the MinGW GCC will generate dependency
@@ -6921,4 +6921,3 @@ situation.
 recommend releasing these examples in parallel under your choice of
 free software license, such as the GNU General Public License, to
 permit their use in free software.
-

@@ -582,4 +582,3 @@ turn_on_floating_exceptions yes_turn_on_floating_exceptions;
 #endif /* _TURNONFPES */
 
 #endif /* _NR3_H_ */
-

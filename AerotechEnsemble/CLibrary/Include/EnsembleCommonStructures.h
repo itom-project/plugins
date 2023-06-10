@@ -1,8 +1,8 @@
 /// \file EnsembleCommonStructures.h
 /// \brief Contains some common structures and enumerations.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_COMMON_STRUCTURES_H__
 #define __Ensemble_COMMON_STRUCTURES_H__
@@ -80,24 +80,24 @@ typedef enum
 /// \brief Represents the debug flags on the controller
 typedef enum
 {
-	/// \brief 
+	/// \brief
 	DEBUGFLAGS_PrintStringCallbackPending = (1u << 0),
-	/// \brief 
+	/// \brief
 	DEBUGFLAGS_CollectionTriggered = (1u << 1),
-	/// \brief 
+	/// \brief
 	DEBUGFLAGS_CollectionDone = (1u << 2),
-	/// \brief 
+	/// \brief
 	DEBUGFLAGS_InputBoxCallbackPending = (1u << 3),
 }	DEBUGFLAGS;
 typedef enum
 {
-	/// \brief 
+	/// \brief
 	DEBUGFLAGSBITS_PrintStringCallbackPendingBit = 0,
-	/// \brief 
+	/// \brief
 	DEBUGFLAGSBITS_CollectionTriggeredBit = 1,
-	/// \brief 
+	/// \brief
 	DEBUGFLAGSBITS_CollectionDoneBit = 2,
-	/// \brief 
+	/// \brief
 	DEBUGFLAGSBITS_InputBoxCallbackPendingBit = 3,
 }	DEBUGFLAGSBITS;
 
@@ -124,7 +124,7 @@ typedef enum
 	AXISSTATUS_BrakeOutput = (1u << 8),
 	/// \brief Indicates the direction of the active (or last) motion.
 	AXISSTATUS_MotionIsCw = (1u << 9),
-	/// \brief 
+	/// \brief
 	AXISSTATUS_MasterSlaveControl = (1u << 10),
 	/// \brief The correction table for this axis is currently being applied.
 	AXISSTATUS_CalibrationActive = (1u << 11),
@@ -189,7 +189,7 @@ typedef enum
 	AXISSTATUSBITS_BrakeOutputBit = 8,
 	/// \brief Indicates the direction of the active (or last) motion.
 	AXISSTATUSBITS_MotionIsCwBit = 9,
-	/// \brief 
+	/// \brief
 	AXISSTATUSBITS_MasterSlaveControlBit = 10,
 	/// \brief The correction table for this axis is currently being applied.
 	AXISSTATUSBITS_CalibrationActiveBit = 11,
@@ -608,22 +608,22 @@ typedef enum
 	COMPILERERRORTYPE_Warning = 4,
 }	COMPILERERRORTYPE;
 
-/// \brief 
+/// \brief
 typedef enum
 {
-	/// \brief 
+	/// \brief
 	DAYOFWEEK_Sunday = 0,
-	/// \brief 
+	/// \brief
 	DAYOFWEEK_Monday = 1,
-	/// \brief 
+	/// \brief
 	DAYOFWEEK_Tuesday = 2,
-	/// \brief 
+	/// \brief
 	DAYOFWEEK_Wednesday = 3,
-	/// \brief 
+	/// \brief
 	DAYOFWEEK_Thursday = 4,
-	/// \brief 
+	/// \brief
 	DAYOFWEEK_Friday = 5,
-	/// \brief 
+	/// \brief
 	DAYOFWEEK_Saturday = 6,
 }	DAYOFWEEK;
 
@@ -688,9 +688,9 @@ typedef enum
 	COMPONENTTYPE_HPE = 32777,
 	/// \brief High performance linear enhanced
 	COMPONENTTYPE_HLE = 32778,
-	/// \brief 
+	/// \brief
 	COMPONENTTYPE_ML = 32779,
-	/// \brief 
+	/// \brief
 	COMPONENTTYPE_PMT = 32780,
 	/// \brief Ensemble Lab controller
 	COMPONENTTYPE_Lab = 32781,
@@ -726,4 +726,3 @@ typedef enum
 }	RAMPMODE;
 
 #endif // __Ensemble_COMMON_STRUCTURES_H__
-

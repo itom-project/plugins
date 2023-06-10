@@ -9,7 +9,7 @@
 **Platforms**:  Windows, Linux
 **Author**:     :pluginauthor:`Roughness`
 =============== ========================================================================================================
-  
+
 Overview
 ========
 
@@ -24,9 +24,8 @@ These filters are defined in the plugin:
 
 Filters
 ==============
-        
+
 Detailed overview about all defined filters:
-    
+
 .. pluginfilterlist::
     :plugin: Roughness
-

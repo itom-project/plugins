@@ -1,5 +1,5 @@
 /** \file
- * 
+ *
  * \author Copyright 2001 Lutz Mueller <lutz@users.sf.net>
  * \author Copyright 1999 Scott Fritzinger <scottf@unr.edu>
  *
@@ -10,10 +10,10 @@
  * version 2 of the License, or (at your option) any later version.
  *
  * \par
- * This library is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details. 
+ * Lesser General Public License for more details.
  *
  * \par
  * You should have received a copy of the GNU Lesser General Public
@@ -169,10 +169,10 @@ int gp_system_is_dir (const char *dirname) {
 
 #else
 
-/** 
+/**
  * \brief mkdir UNIX functionality
  * \param dirname directory to create
- * 
+ *
  * Creates a new directory.
  *
  * \return a gphoto error code
@@ -187,7 +187,7 @@ int gp_system_mkdir (const char *dirname) {
 /**
  * \brief rmdir UNIX functionality
  * \param dirname directory to remove
- * 
+ *
  * Removes a empty directory.
  *
  * \return a gphoto error code
@@ -203,8 +203,8 @@ int gp_system_rmdir (const char *dirname) {
 /**
  * \brief opendir UNIX functionality
  * \param dirname directory to open
- * 
- * Opens a directory for readdir and later closedir operations, 
+ *
+ * Opens a directory for readdir and later closedir operations,
  * to enumerate its contents.
  *
  * \return a directory handle for use in gp_system_readdir() and gp_system_closedir()
@@ -216,7 +216,7 @@ gp_system_dir gp_system_opendir (const char *dirname) {
 /**
  * \brief readdir UNIX functionality
  * \param d directory to enumerate
- * 
+ *
  * Reads one directory entry from the specified directory handle
  * as returned from gp_system_opendir(). Use gp_system_filename()
  * to extract the filename from the returned value.
@@ -230,7 +230,7 @@ gp_system_dirent gp_system_readdir (gp_system_dir d) {
 /**
  * \brief retrieve UNIX filename out of a directory entry
  * \param de directory entry as returned from gp_system_readdir()
- * 
+ *
  * Extracts a filename out of the passed directory entry.
  *
  * \return the filename of the directory entry
@@ -242,8 +242,8 @@ const char *gp_system_filename (gp_system_dirent de) {
 /**
  * \brief closedir UNIX functionality
  * \param dir directory to close
- * 
- * Closes a directory after readdir operations. 
+ *
+ * Closes a directory after readdir operations.
  *
  * \return a gphoto error code
  */
@@ -255,7 +255,7 @@ int gp_system_closedir (gp_system_dir dir) {
 /**
  * \brief check if passed filename is a file
  * \param filename file name to check
- * 
+ *
  * Checks whether the passed in filename is
  * a file and returns this as boolean.
  *
@@ -272,7 +272,7 @@ int gp_system_is_file (const char *filename) {
 /**
  * \brief check if passed filename is a directory
  * \param dirname file name to check
- * 
+ *
  * Checks whether the passed in dirname is
  * a directory and returns this as boolean.
  *

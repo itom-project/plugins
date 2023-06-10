@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -130,7 +130,7 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
                 default: // If Ascii
                     break;
             }
-            
+
             if (uc < 32)
             {
                 switch (uc)
@@ -193,7 +193,7 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
         }
         else if (text2.length() == 0)
         {
-            text2 = "";        
+            text2 = "";
         }
         else if (displayType != 0)
         {
@@ -234,4 +234,3 @@ void DockWidgetSerialIO::on_checkIgnoreEmpty_clicked()
         m_inEditing = false;
     }
 }
-

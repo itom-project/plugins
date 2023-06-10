@@ -1,8 +1,8 @@
 /// \file EnsembleParameter.h
 /// \brief Contains the functions to retrieve and send parameters from or to the drive.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_PARAMETER_H__
 #define __Ensemble_PARAMETER_H__
@@ -19,7 +19,7 @@ extern "C" {
 
 /// \brief Retrieves the value of a double parameter from the drive.
 ///
-/// This function will retrieve the value of one of the double type parameters to a double variable. 
+/// This function will retrieve the value of one of the double type parameters to a double variable.
 ///
 /// \param[in] handle The handle to the Ensemble
 /// \param[in] parameterID The ID number of the parameter.
@@ -30,7 +30,7 @@ BOOL DLLENTRYDECLARATION EnsembleParameterGetValue(EnsembleHandle handle, PARAME
 
 /// \brief Retrieves the value of a string parameter from the drive.
 ///
-/// This function will retrieve the value of one of the string type parameters to a string variable. 
+/// This function will retrieve the value of one of the string type parameters to a string variable.
 ///
 /// Retrieve a string value of a parameter from the drive
 ///
@@ -44,7 +44,7 @@ BOOL DLLENTRYDECLARATION EnsembleParameterGetValueString(EnsembleHandle handle, 
 
 /// \brief Sends the value of a double parameter to the drive.
 ///
-/// This function will send the value of one of the double type parameters to the drive. 
+/// This function will send the value of one of the double type parameters to the drive.
 ///
 /// \param[in] handle The handle to the Ensemble
 /// \param[in] parameterID The ID number of the parameter.
@@ -55,7 +55,7 @@ BOOL DLLENTRYDECLARATION EnsembleParameterSetValue(EnsembleHandle handle, PARAME
 
 /// \brief Sends the value of a string parameter to the drive.
 ///
-/// This function will send the value of one of the string type parameters to the drive. 
+/// This function will send the value of one of the string type parameters to the drive.
 ///
 /// \param[in] handle The handle to the Ensemble
 /// \param[in] parameterID The ID number of the parameter.

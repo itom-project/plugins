@@ -1,5 +1,5 @@
 /* pccam600.h
- *  
+ *
  *  This library is free software; you can redistribute and/or
  *  modify it inder the terms of the GNU Lesser Genreral Public
  *  License as publiced by the Free Software Foundation; either
@@ -44,4 +44,3 @@ int pccam600_get_file(GPPort *port, GPContext *context, int index);
 int pccam600_get_mem_info(GPPort *port, GPContext *context, int *totalmem,
 			  int *freemem);
 #endif /* __PCCAM600_H__ */
-

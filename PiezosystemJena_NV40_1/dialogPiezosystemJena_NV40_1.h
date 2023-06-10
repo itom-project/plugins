@@ -19,7 +19,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogPiezosystemJena_NV40_1 : public ito::AbstractAddInConfigDialog 
+class DialogPiezosystemJena_NV40_1 : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 

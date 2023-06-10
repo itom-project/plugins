@@ -5,7 +5,7 @@
 #include <comutil.h>
 #include <comdef.h>
 
-namespace{	
+namespace{
 	class AutoBstr
 	{
 	public:
@@ -25,7 +25,7 @@ namespace{
 		void operator=(AutoBstr&);
 
 	private:
-		BSTR m_str; 
+		BSTR m_str;
 	};
 
 	template<class T>
@@ -150,7 +150,7 @@ namespace{
 		Status_txt::value_type(OphirLMMeasurement::settingChanged, L"settingChanged"),
 	};
 	const int numElems = sizeof rawData / sizeof rawData[0];
-	const Status_txt status_txt(rawData, rawData + numElems);	
+	const Status_txt status_txt(rawData, rawData + numElems);
 }
 
 OphirLMMeasurement::OphirLMMeasurement(void):
@@ -166,55 +166,55 @@ OphirLMMeasurement::~OphirLMMeasurement(void)
 	ShutdownConnectionPoint();
 }
 
-void OphirLMMeasurement::ScanWireless(std::vector<std::wstring>& serialNumbers) 
+void OphirLMMeasurement::ScanWireless(std::vector<std::wstring>& serialNumbers)
 {
 	_variant_t v_serialNumbers;
 	m_coLM->ScanWireless(&v_serialNumbers);
 	serialNumbers = getStrings(v_serialNumbers);
 }
 
-void OphirLMMeasurement::GetKnownWirelessDevices(std::vector<std::wstring>& serialNumbers) 
+void OphirLMMeasurement::GetKnownWirelessDevices(std::vector<std::wstring>& serialNumbers)
 {
 	_variant_t v_serialNumbers;
 	m_coLM->GetKnownWirelessDevices(&v_serialNumbers);
 	serialNumbers = getStrings(v_serialNumbers);
 }
 
-void OphirLMMeasurement::OpenWirelessDevice(std::wstring serialNumber,long& hDevice) 
+void OphirLMMeasurement::OpenWirelessDevice(std::wstring serialNumber,long& hDevice)
 {
-	AutoBstr ab_serialNumber(serialNumber);	
-	m_coLM->OpenWirelessDevice(ab_serialNumber.InParam(), &hDevice);	
+	AutoBstr ab_serialNumber(serialNumber);
+	m_coLM->OpenWirelessDevice(ab_serialNumber.InParam(), &hDevice);
 }
 
-void OphirLMMeasurement::ScanUSB(std::vector<std::wstring>& serialNumbers) 
+void OphirLMMeasurement::ScanUSB(std::vector<std::wstring>& serialNumbers)
 {
-	_variant_t v_serialNumbers; 
+	_variant_t v_serialNumbers;
 	m_coLM->ScanUSB(&v_serialNumbers);
 	serialNumbers = getStrings(v_serialNumbers);
 }
 
-void OphirLMMeasurement::OpenUSBDevice(std::wstring serialNumber,long& hDevice) 
+void OphirLMMeasurement::OpenUSBDevice(std::wstring serialNumber,long& hDevice)
 {
-	AutoBstr ab_serialNumber(serialNumber);	
-	m_coLM->OpenUSBDevice(ab_serialNumber.InParam(), &hDevice);	
+	AutoBstr ab_serialNumber(serialNumber);
+	m_coLM->OpenUSBDevice(ab_serialNumber.InParam(), &hDevice);
 }
 
-void OphirLMMeasurement::ResetDevice(long hDevice) 
+void OphirLMMeasurement::ResetDevice(long hDevice)
 {
 	m_coLM->ResetDevice(hDevice);
 }
 
-void OphirLMMeasurement::ResetAllDevices() 
+void OphirLMMeasurement::ResetAllDevices()
 {
 	m_coLM->ResetAllDevices();
 }
 
-void OphirLMMeasurement::Close(long hDevice) 
+void OphirLMMeasurement::Close(long hDevice)
 {
 	m_coLM->Close(hDevice);
 }
 
-void OphirLMMeasurement::CloseAll() 
+void OphirLMMeasurement::CloseAll()
 {
 	m_coLM->CloseAll();
 }
@@ -222,12 +222,12 @@ void OphirLMMeasurement::CloseAll()
 //------------------------
 // General Information and Diagnostics
 //------------------------
-void OphirLMMeasurement::GetVersion(long& version) 
+void OphirLMMeasurement::GetVersion(long& version)
 {
 	m_coLM->GetVersion(&version);
 }
 
-void OphirLMMeasurement::GetDeviceInfo(long hDevice, std::wstring& deviceName, std::wstring& romVersion, std::wstring& serialNumber) 
+void OphirLMMeasurement::GetDeviceInfo(long hDevice, std::wstring& deviceName, std::wstring& romVersion, std::wstring& serialNumber)
 {
 	AutoBstr ab_deviceName, ab_romVersion, ab_deviceSN;
 	m_coLM->GetDeviceInfo(hDevice, ab_deviceName.OutParam(), ab_romVersion.OutParam(), ab_deviceSN.OutParam());
@@ -243,21 +243,21 @@ void OphirLMMeasurement::GetDeviceCalibrationDueDate(long hDevice, std::tm& dueD
 	dueDate = getTm(date);
 }
 
-void OphirLMMeasurement::GetDriverVersion(std::wstring& info) 
+void OphirLMMeasurement::GetDriverVersion(std::wstring& info)
 {
 	AutoBstr ab_info;
 	m_coLM->GetDriverVersion(ab_info.OutParam());
 	info = ab_info.str();
-}	
+}
 
-void OphirLMMeasurement::GetErrorFromCode(HRESULT errorCode, std::wstring& errorString) 
+void OphirLMMeasurement::GetErrorFromCode(HRESULT errorCode, std::wstring& errorString)
 {
 	AutoBstr ab_errorString;
 	m_coLM->GetErrorFromCode(errorCode, ab_errorString.OutParam());
 	errorString = ab_errorString.str();
 }
 
-void OphirLMMeasurement::GetSensorInfo(long hDevice, long channel, std::wstring& serialNumber, std::wstring& headType, std::wstring& headName) 
+void OphirLMMeasurement::GetSensorInfo(long hDevice, long channel, std::wstring& serialNumber, std::wstring& headType, std::wstring& headName)
 {
 	AutoBstr  ab_headSN, ab_headType, ab_headName;
 	m_coLM->GetSensorInfo(hDevice ,channel, ab_headSN.OutParam(), ab_headType.OutParam(), ab_headName.OutParam());
@@ -273,118 +273,118 @@ void OphirLMMeasurement::GetSensorCalibrationDueDate(long hDevice, long channel,
 	dueDate = getTm(date);
 }
 
-void OphirLMMeasurement::IsSensorExists(long hDevice, long channel, bool& exists) 
+void OphirLMMeasurement::IsSensorExists(long hDevice, long channel, bool& exists)
 {
 	VARIANT_BOOL v_exists;
 	m_coLM->IsSensorExists(hDevice, channel, &v_exists);
-	exists = GetBool(v_exists); 
+	exists = GetBool(v_exists);
 }
 
 //------------------------
 // Head Configuration
 //------------------------
-void OphirLMMeasurement::AddWavelength(long hDevice, long channel, long wavelength) 
+void OphirLMMeasurement::AddWavelength(long hDevice, long channel, long wavelength)
 {
 	m_coLM->AddWavelength(hDevice, channel, wavelength);
 }
 
-void OphirLMMeasurement::DeleteWavelength(long hDevice, long channel, long wlIndex) 
+void OphirLMMeasurement::DeleteWavelength(long hDevice, long channel, long wlIndex)
 {
 	m_coLM->DeleteWavelength(hDevice, channel, wlIndex);
 }
 
-void OphirLMMeasurement::ModifyWavelength(long hDevice, long channel, long wlIndex, long wavelength) 
+void OphirLMMeasurement::ModifyWavelength(long hDevice, long channel, long wlIndex, long wavelength)
 {
 	m_coLM->ModifyWavelength(hDevice, channel, wlIndex, wavelength);
 }
 
-void OphirLMMeasurement::GetWavelengths(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetWavelengths(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	_variant_t v_options;
 	m_coLM->GetWavelengths(hDevice, channel, &index, &v_options);
 	options= getStrings(v_options);
 }
 
-void OphirLMMeasurement::GetWavelengthsExtra(long hDevice, long channel, bool& modifiable, long& minWavelength, long& maxWavelength) 
+void OphirLMMeasurement::GetWavelengthsExtra(long hDevice, long channel, bool& modifiable, long& minWavelength, long& maxWavelength)
 {
 	VARIANT_BOOL v_modifiable;
 	m_coLM->GetWavelengthsExtra(hDevice, channel, &v_modifiable, &minWavelength, &maxWavelength);
 	modifiable = GetBool(v_modifiable);
 }
 
-void OphirLMMeasurement::SetWavelength(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetWavelength(long hDevice, long channel, long index)
 {
 	m_coLM->SetWavelength(hDevice, channel, index);
 }
 
-void OphirLMMeasurement::GetDiffuser(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetDiffuser(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	_variant_t v_options;
 	m_coLM->GetDiffuser(hDevice, channel, &index, &v_options);
 	options = getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetDiffuser(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetDiffuser(long hDevice, long channel, long index)
 {
 	m_coLM->SetDiffuser(hDevice, channel, index);
 }
 
-void OphirLMMeasurement::GetFilter(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetFilter(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	variant_t v_options;
 	m_coLM->GetFilter(hDevice, channel, &index, &v_options);
 	options = getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetFilter(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetFilter(long hDevice, long channel, long index)
 {
 	m_coLM->SetFilter(hDevice, channel, index);
 }
 
-void OphirLMMeasurement::GetMeasurementMode(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetMeasurementMode(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	variant_t v_options;
 	m_coLM->GetMeasurementMode(hDevice, channel, &index, &v_options);
 	options = getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetMeasurementMode(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetMeasurementMode(long hDevice, long channel, long index)
 {
 	m_coLM->SetMeasurementMode(hDevice, channel, index);
 }
 
-void OphirLMMeasurement::GetPulseLengths(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetPulseLengths(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	variant_t v_options;
 	m_coLM->GetPulseLengths(hDevice, channel, &index, &v_options);
 	options = getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetPulseLength(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetPulseLength(long hDevice, long channel, long index)
 {
 	m_coLM->SetPulseLength(hDevice, channel, index);
 }
 
-void OphirLMMeasurement::GetRanges(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetRanges(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	variant_t v_options;
 	m_coLM->GetRanges(hDevice, channel, &index, &v_options);
 	options= getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetRange(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetRange(long hDevice, long channel, long index)
 {
 	m_coLM->SetRange(hDevice, channel, index);
 }
 
-void OphirLMMeasurement::GetThreshold(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetThreshold(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	variant_t v_options;
 	m_coLM->GetThreshold(hDevice, channel, &index, &v_options);
 	options= getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetThreshold(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetThreshold(long hDevice, long channel, long index)
 {
 	m_coLM->SetThreshold(hDevice, channel, index);
 }
@@ -417,36 +417,36 @@ void OphirLMMeasurement::SaveSettings(long hDevice, long channel)
 //------------------------
 // Trigger Settings (for Pulsar)
 //------------------------
-void OphirLMMeasurement::GetExtTrigModes(long hDevice, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetExtTrigModes(long hDevice, long& index, std::vector<std::wstring>& options)
 {
 	variant_t v_options;
 	m_coLM->GetExtTrigModes(hDevice, &index, &v_options);
 	options = getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetExtTrigMode(long hDevice, long index) 
+void OphirLMMeasurement::SetExtTrigMode(long hDevice, long index)
 {
 	m_coLM->SetExtTrigMode(hDevice, index);
 }
 
-void OphirLMMeasurement::GetExtTrigOnOff(long hDevice, long channel, long& index, std::vector<std::wstring>& options) 
+void OphirLMMeasurement::GetExtTrigOnOff(long hDevice, long channel, long& index, std::vector<std::wstring>& options)
 {
 	variant_t v_options;
 	m_coLM->GetExtTrigOnOff(hDevice, channel, &index, &v_options);
 	options = getStrings(v_options);
 }
 
-void OphirLMMeasurement::SetExtTrigOnOff(long hDevice, long channel, long index) 
+void OphirLMMeasurement::SetExtTrigOnOff(long hDevice, long channel, long index)
 {
 	m_coLM->SetExtTrigOnOff(hDevice, channel, index);
 }
 
-void OphirLMMeasurement::GetExtTrigWindowTime(long hDevice, long& extTrigWindowTime) 
+void OphirLMMeasurement::GetExtTrigWindowTime(long hDevice, long& extTrigWindowTime)
 {
 	m_coLM->GetExtTrigWindowTime(hDevice, &extTrigWindowTime);
 }
 
-void OphirLMMeasurement::SetExtTrigWindowTime(long hDevice, long extTrigWindowTime) 
+void OphirLMMeasurement::SetExtTrigWindowTime(long hDevice, long extTrigWindowTime)
 {
 	m_coLM->SetExtTrigWindowTime(hDevice, extTrigWindowTime);
 }
@@ -454,17 +454,17 @@ void OphirLMMeasurement::SetExtTrigWindowTime(long hDevice, long extTrigWindowTi
 //------------------------
 // Measurement Delivery
 //------------------------
-void OphirLMMeasurement::ConfigureStreamMode(long hDevice, long channel, long mode, long nOff) 
+void OphirLMMeasurement::ConfigureStreamMode(long hDevice, long channel, long mode, long nOff)
 {
 	m_coLM->ConfigureStreamMode(hDevice, channel, mode, nOff);
 }
 
-void OphirLMMeasurement::StartStream(long hDevice, long channel) 
+void OphirLMMeasurement::StartStream(long hDevice, long channel)
 {
 	m_coLM->StartStream(hDevice, channel);
 }
 
-void OphirLMMeasurement::GetData(long hDevice, long channel, std::vector<double>& arrayValue, std::vector<double>& arrayTimestamp, std::vector<OphirLMMeasurement::Status>& arrayStatus) 
+void OphirLMMeasurement::GetData(long hDevice, long channel, std::vector<double>& arrayValue, std::vector<double>& arrayTimestamp, std::vector<OphirLMMeasurement::Status>& arrayStatus)
 {
 	_variant_t v_values;
 	_variant_t v_timestamps;
@@ -477,12 +477,12 @@ void OphirLMMeasurement::GetData(long hDevice, long channel, std::vector<double>
 	arrayStatus = getStatuses(getLongs(v_statuses));
 }
 
-void OphirLMMeasurement::StopStream(long hDevice, long channel) 
+void OphirLMMeasurement::StopStream(long hDevice, long channel)
 {
 	m_coLM->StopStream(hDevice, channel);
 }
 
-void OphirLMMeasurement::StopAllStreams() 
+void OphirLMMeasurement::StopAllStreams()
 {
 	m_coLM->StopAllStreams();
 }
@@ -490,17 +490,17 @@ void OphirLMMeasurement::StopAllStreams()
 //------------------------
 // Legacy Methods
 //------------------------
-void OphirLMMeasurement::Read(long hDevice, std::wstring& reply) 
+void OphirLMMeasurement::Read(long hDevice, std::wstring& reply)
 {
 	AutoBstr ab_reply;
 	m_coLM->Read(hDevice, ab_reply.OutParam());
-	reply = ab_reply.str();	
+	reply = ab_reply.str();
 }
 
-void OphirLMMeasurement::Write(long hDevice, std::wstring command) 
+void OphirLMMeasurement::Write(long hDevice, std::wstring command)
 {
-	AutoBstr ab_command(command);	
-	m_coLM->Write(hDevice, ab_command.InParam());	
+	AutoBstr ab_command(command);
+	m_coLM->Write(hDevice, ab_command.InParam());
 }
 
 //------------------------
@@ -517,26 +517,26 @@ void OphirLMMeasurement::RegisterDataReady (std::function<void(long hDevice, lon
 }
 
 HRESULT OphirLMMeasurement::OnCOMEventFiring(
-	DISPID dispidMember, 
+	DISPID dispidMember,
 	REFIID riid,
-	LCID lcid, 
-	WORD wFlags, 
-	DISPPARAMS* pdispparams, 
+	LCID lcid,
+	WORD wFlags,
+	DISPPARAMS* pdispparams,
 	VARIANT* pvarResult,
-	EXCEPINFO* pexcepinfo, 
+	EXCEPINFO* pexcepinfo,
 	UINT* puArgErr
 	)
 {
 	if (dispidMember==1)// Data ready
-	{	
+	{
 		if(m_dataReadyCallback && pdispparams->cArgs >=2)
-			m_dataReadyCallback(pdispparams->rgvarg[1].lVal, pdispparams->rgvarg[0].lVal);	
+			m_dataReadyCallback(pdispparams->rgvarg[1].lVal, pdispparams->rgvarg[0].lVal);
 	}
 	else if(dispidMember==2)// Plug and play
 		if (m_plugAndPlayCallback)
-			m_plugAndPlayCallback();		
+			m_plugAndPlayCallback();
 
-	return S_OK; 
+	return S_OK;
 }
 
 void OphirLMMeasurement::SetupConnectionPoint()
@@ -583,6 +583,6 @@ std::wstring OphirLMMeasurement::StatusString(Status status)
 	auto search = status_txt.find(status);
 	if(search != status_txt.end())
 		return search->second ;
-	
-	return L"unknown";	
+
+	return L"unknown";
 }

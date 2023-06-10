@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -30,12 +30,12 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetOphirPowermeter::DockWidgetOphirPowermeter(int uniqueID, ito::AddInDataIO *adda) :
     AbstractAddInDockWidget(adda),
-    m_inEditing(false),  
+    m_inEditing(false),
     m_plugin(adda),
     m_firstRun(true),
     m_timerIsRunning(false)
 {
-     ui.setupUi(this); 
+     ui.setupUi(this);
 
      identifierChanged(QString::number(uniqueID));
 
@@ -127,7 +127,7 @@ DockWidgetOphirPowermeter::~DockWidgetOphirPowermeter()
         }
 
         ui.comboBoxMeasurementType->setCurrentIndex(ui.comboBoxMeasurementType->findText(params["measurementType"].getVal<char*>()));
-        
+
         m_inEditing = false;
     }
 
@@ -176,20 +176,20 @@ void DockWidgetOphirPowermeter::timerEvent(QTimerEvent *event)
     QSharedPointer<QString> unit = QSharedPointer<QString>(new QString);
 
     QMetaObject::invokeMethod(m_plugin, "acquireAutograbbing", Q_ARG(QSharedPointer<double>, value), Q_ARG(QSharedPointer<QString>, unit), Q_ARG(ItomSharedSemaphore*, waitCond));
-    
+
     if (waitCond)
     {
         observeInvocation(waitCond, msgLevelWarningAndError);
     }
-    
+
 
     if (value && unit)
     {
         ui.lcdNumber->display(*value);
         ui.lblUnit->setText(*unit);
     }
-    
-    
+
+
     if (waitCond)
     {
         waitCond->deleteSemaphore();

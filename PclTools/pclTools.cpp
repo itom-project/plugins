@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -136,7 +136,7 @@ PclToolsInterface::PclToolsInterface()
 {
     m_type = ito::typeAlgo;
     setObjectName("PclTools");
-    
+
 /*    char docstring[] = \
 "This plugin contains methods for filtering, transforming, saving and loading \n\
 point clouds and polygon meshes. Most methods are wrappers for functions provided \n\
@@ -173,8 +173,8 @@ by this plugin.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     PclTools::nthreads  = QThread::idealThreadCount();
 }
 
@@ -448,7 +448,7 @@ ito::RetVal PclTools::loadPointCloudParams(QVector<ito::Param> *paramsMand, QVec
     paramsMand->append(ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("complete filename (type is read by suffix)").toLatin1().data()));
 
     paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('xyz', 'pcd','ply','auto' [default, check suffix of filename])").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -461,7 +461,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
     QString filename = QString::fromLatin1((*paramsMand)[1].getVal<const char*>());
     std::string filename_ = (*paramsMand)[1].getVal<const char*>(); //directly load the std::string from the given char* instead of extracting it from the latin1-str, since encoding errors can occur in case of special characters
     QString typeString = (*paramsOpt)[0].getVal<char*>();
-    
+
     QString type;
     int ret = 1;
 
@@ -474,7 +474,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 
     //check filename
     QFileInfo finfo(filename);
-    
+
     if (typeString == "" || typeString == "auto")
     {
         type = finfo.suffix().toLower();
@@ -544,7 +544,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
             {
                 retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not contain valid point cloud data.").toLatin1().data(), filename_.data());
             }
-        }        
+        }
 #else
         retval += ito::RetVal(ito::retError, 0, tr("ply-support is not compiled in this version (since this is not supported in PCL1.5.1 or lower").toLatin1().data());
 #endif
@@ -734,7 +734,7 @@ This file format allows displaying volume data from the given 3D data object for
 
     paramsOpt->append(ito::Param("scalarFieldName", ito::ParamBase::String, "scalars", tr("name of scalar field, e.g. 'scalars' (zero values will be transparent), 'ImageScalars' (zero values will be displayed)...").toLatin1().data()));
     paramsOpt->append(ito::Param("scalarThreshold", ito::ParamBase::Int, 0, std::numeric_limits<ito::uint16>::max(), 0, tr("values <= threshold will be set to 0 (transparent values for scalar field name 'scalars')").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -842,7 +842,7 @@ This file format allows displaying volume data from the given 3D data object for
             break;
         }
 #endif
-        
+
         switch (input->getType())
         {
         case ito::tUInt8:
@@ -976,7 +976,7 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     {
         retval += ito::RetVal(ito::retError, 0, tr("invalid polygon mesh cannot be saved").toLatin1().data());
     }
-    
+
     if (!retval.containsError())
     {
     //check point cloud
@@ -1008,7 +1008,7 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
             ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()));
 #endif
         }
-    
+
 #if PCL_VERSION_COMPARE(>=,1,7,0)
         if (ret < 0)
         {
@@ -1047,9 +1047,9 @@ ito::RetVal PclTools::loadPolygonMeshParams(QVector<ito::Param> *paramsMand, QVe
 
     paramsMand->append(ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("loaded polygon mesh").toLatin1().data()));
     paramsMand->append(ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("complete filename (type is read by suffix").toLatin1().data()));
-    
+
     paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('obj','vtk','stl','ply', 'auto' [default, check suffix of filename])").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -1113,7 +1113,7 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
             }
 
             file.close();
-            
+
             if (startContent.contains("ply") && startContent.contains("format") && \
                 startContent.contains("element vertex") && startContent.contains("element face"))
             {
@@ -1123,7 +1123,7 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
             {
                 retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not contain valid polygon mesh data.").toLatin1().data(), filename_.data());
             }
-        }        
+        }
     }
     else
     {
@@ -1180,7 +1180,7 @@ is transformed by P_out = transform * P_in. Independent on the type of the trans
     ito::RetVal retval = ito::retOk;
 
     //read params from mandatory and optional params
-    
+
     const ito::PCLPointCloud *pclIn = (*paramsMand)[0].getVal<const ito::PCLPointCloud*>();
     ito::PCLPointCloud *pclOut = (*paramsMand)[1].getVal<ito::PCLPointCloud*>();
     const ito::DataObject *transform = (*paramsMand)[2].getVal<const ito::DataObject*>();
@@ -1304,7 +1304,7 @@ is transformed by P_out = transform * P_in. Independent on the type of the trans
     {
         return ito::RetVal(ito::retError, 0, tr("cloud type of 'meshIn' is invalid.").toLatin1().data());
     }
-    
+
     Eigen::Affine3f trafo;
     retval += ito::pclHelper::dataObj4x4ToEigenAffine3f(transform, trafo);
 
@@ -1442,10 +1442,10 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
     ito::RetVal retval = ito::retOk;
 
     //read params from mandatory and optional params
-    
+
     ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
     ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)(*paramsMand)[1].getVal<void*>();
-    
+
     int kSearch = (*paramsOpt)[0].getVal<int>();
     double *viewPoint = (*paramsOpt)[1].getVal<double*>();
 
@@ -1550,7 +1550,7 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
                 }
                 ne.compute(*normals);
 
-                
+
                 pcl::concatenateFields(*(srcTempPCL), *normals, *(pclOut->toPointXYZINormal()));
 
                 if (areTheSame)
@@ -1616,7 +1616,7 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
 //
 //    paramsMand->clear();
 //    paramsMand->append(ito::Param("pointCloudNormalIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Valid point cloud with normals. The curvature value of this point cloud is set to the maximum curvature value determined by this filter.").toLatin1().data()));
-//    
+//
 //    paramsOpt->clear();
 //    paramsOpt->append(ito::Param("kSearch", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 7, tr("the number of k nearest neighbours to use for the feature estimation [default: 7, if 0: not set]").toLatin1().data()));
 //    paramsOpt->append(ito::Param("searchRadius", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, tr("search radius for nearest neighbours (if 0.0, this value is not set)").toLatin1().data()));
@@ -1631,11 +1631,11 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
 //    curvatureEstimator.setSearchMethod(tree);
 //    curvatureEstimator.setInputCloud(cloud);
 //    curvatureEstimator.setInputNormals(cloud);
-//    if (searchRadius > 0) 
+//    if (searchRadius > 0)
 //    {
 //        curvatureEstimator.setRadiusSearch(searchRadius);
 //    }
-//    else if (kSearch > 0) 
+//    else if (kSearch > 0)
 //    {
 //        curvatureEstimator.setKSearch(kSearch);
 //    }
@@ -1653,12 +1653,12 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
 //    ito::RetVal retval = ito::retOk;
 //
 //    //read params from mandatory and optional params
-//    
+//
 //    ito::PCLPointCloud *pclIn = (*paramsMand)[0].getVal<ito::PCLPointCloud*>();
-//    
+//
 //    int kSearch = paramsOpt->at(0).getVal<int>();
 //    double searchRadius = paramsOpt->at(1).getVal<double>();
-//    
+//
 //    if ((kSearch == 0 && searchRadius == 0.0) || (kSearch > 0 && searchRadius > 0.0))
 //    {
 //        retval += ito::RetVal(ito::retError, 0, tr("you need to indicate either the parameter 'kSearch' or 'searchRadius'").toLatin1().data());
@@ -1693,7 +1693,7 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
 //                _pclEstimateMaxCurvature<pcl::PointXYZRGBNormal>(pclIn->toPointXYZRGBNormal(), kSearch, searchRadius);
 //            }
 //            break;
-//        
+//
 //        default:
 //            retval += ito::RetVal(ito::retError, 0, tr("type of input point cloud not supported (only normal based input types allowed.)").toLatin1().data());
 //            break;
@@ -2049,7 +2049,7 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     {
         return ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
     }
-    
+
     const double *mins = paramsOpt->at(0).getVal<double*>();
     const double *maxs = paramsOpt->at(1).getVal<double*>();
     const double *rot = paramsOpt->at(3).getVal<double*>();
@@ -2252,7 +2252,7 @@ const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
     {
         return ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
     }
-       
+
     ito::ParamBase leafSizeP = (*paramsMand)[2];
     if (leafSizeP.getLen() != 3)
     {
@@ -2303,7 +2303,7 @@ const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
                 voxelsor.setFilterLimits(minValue, maxValue);
                 voxelsor.setFilterLimitsNegative(negative > 0);
             }
-            
+
             voxelsor.filter(*(pclOut->toPointXYZ()));
         }
         break;
@@ -2319,7 +2319,7 @@ const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
                 voxelsor.setFilterLimits(minValue, maxValue);
                 voxelsor.setFilterLimitsNegative(negative > 0);
             }
-            
+
             voxelsor.filter(*(pclOut->toPointXYZI()));
         }
         break;
@@ -2335,7 +2335,7 @@ const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
                 voxelsor.setFilterLimits(minValue, maxValue);
                 voxelsor.setFilterLimitsNegative(negative > 0);
             }
-            
+
             voxelsor.filter(*(pclOut->toPointXYZRGBA()));
         }
         break;
@@ -2351,7 +2351,7 @@ const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
                 voxelsor.setFilterLimits(minValue, maxValue);
                 voxelsor.setFilterLimitsNegative(negative > 0);
             }
-            
+
             voxelsor.filter(*(pclOut->toPointXYZNormal()));
         }
         break;
@@ -2367,7 +2367,7 @@ const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
                 voxelsor.setFilterLimits(minValue, maxValue);
                 voxelsor.setFilterLimitsNegative(negative > 0);
             }
-            
+
             voxelsor.filter(*(pclOut->toPointXYZINormal()));
         }
         break;
@@ -2383,7 +2383,7 @@ const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
                 voxelsor.setFilterLimits(minValue, maxValue);
                 voxelsor.setFilterLimitsNegative(negative > 0);
             }
-            
+
             voxelsor.filter(*(pclOut->toPointXYZRGBNormal()));
         }
 
@@ -2422,7 +2422,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with removed NaN values").toLatin1().data()));
     paramsMand->append(ito::Param("meanK", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 8, tr("number of nearest neighbors to use for mean distance estimation").toLatin1().data()));
     paramsMand->append(ito::Param("stdDevMulThresh", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 1.0, tr("standard deviation multiplier for the distance threshold calculation").toLatin1().data()));
-    
+
     paramsOpt->append(ito::Param("negative", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("0: the regular filter conditions are applied [default], 1: the inverted conditions are applied").toLatin1().data()));
     paramsOpt->append(ito::Param("keepOrganized", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("filtered points should be kept and set to NaN [1] or removed (potentially breaking organized structure) [default: 0]").toLatin1().data()));
 
@@ -2451,7 +2451,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
     {
         *pclOut = ito::PCLPointCloud(pclIn->getType());
     }
-    
+
     int meanK = (*paramsMand)[2].getVal<int>();
     double stdDevMulThres = (*paramsMand)[3].getVal<double>();
     int negative = (*paramsOpt)[0].getVal<int>();
@@ -2470,7 +2470,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
             sorfilter.setStddevMulThresh(stdDevMulThres);
             sorfilter.setNegative(negative > 0);
             sorfilter.setKeepOrganized(keepOrganized > 0);
-            
+
             sorfilter.filter(*(pclOut->toPointXYZ()));
         }
         break;
@@ -2483,7 +2483,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
             sorfilter.setStddevMulThresh(stdDevMulThres);
             sorfilter.setNegative(negative > 0);
             sorfilter.setKeepOrganized(keepOrganized > 0);
-            
+
             sorfilter.filter(*(pclOut->toPointXYZI()));
         }
         break;
@@ -2496,7 +2496,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
             sorfilter.setStddevMulThresh(stdDevMulThres);
             sorfilter.setNegative(negative > 0);
             sorfilter.setKeepOrganized(keepOrganized > 0);
-            
+
             sorfilter.filter(*(pclOut->toPointXYZRGBA()));
         }
         break;
@@ -2509,7 +2509,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
             sorfilter.setStddevMulThresh(stdDevMulThres);
             sorfilter.setNegative(negative > 0);
             sorfilter.setKeepOrganized(keepOrganized > 0);
-            
+
             sorfilter.filter(*(pclOut->toPointXYZNormal()));
         }
         break;
@@ -2522,7 +2522,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
             sorfilter.setStddevMulThresh(stdDevMulThres);
             sorfilter.setNegative(negative > 0);
             sorfilter.setKeepOrganized(keepOrganized > 0);
-            
+
             sorfilter.filter(*(pclOut->toPointXYZINormal()));
         }
         break;
@@ -2535,7 +2535,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
             sorfilter.setStddevMulThresh(stdDevMulThres);
             sorfilter.setNegative(negative > 0);
             sorfilter.setKeepOrganized(keepOrganized > 0);
-            
+
             sorfilter.filter(*(pclOut->toPointXYZRGBNormal()));
         }
 
@@ -2573,7 +2573,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with removed NaN values").toLatin1().data()));
     paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<int>::max(), 10000, tr("number of randomly picked points.").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -2601,7 +2601,7 @@ const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
     {
         *pclOut = ito::PCLPointCloud(pclIn->getType());
     }
-    
+
     switch(pclIn->getType())
     {
     case ito::pclInvalid:
@@ -2703,10 +2703,10 @@ const QString PclTools::pclGetMinMax3DDOC = QObject::tr("\n\
 
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
-    
+
     paramsOut->append(ito::Param("minXYZ", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("minimum (x,y,z) values").toLatin1().data()));
     paramsOut->append(ito::Param("maxXYZ", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("maximum (x,y,z) values").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -2717,7 +2717,7 @@ const QString PclTools::pclGetMinMax3DDOC = QObject::tr("\n\
 
     double mins[] = {std::numeric_limits<double>::signaling_NaN() ,std::numeric_limits<double>::signaling_NaN() ,std::numeric_limits<double>::signaling_NaN() };
     double maxs[] = {std::numeric_limits<double>::signaling_NaN() ,std::numeric_limits<double>::signaling_NaN() ,std::numeric_limits<double>::signaling_NaN() };
-    
+
     bool inplace = false; //no real inplace is possible
 
     if (pclIn == NULL)
@@ -2840,11 +2840,11 @@ const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
     paramsMand->append(ito::Param("fieldName", ito::ParamBase::String | ito::ParamBase::In, "", tr("field name, whose values are used for the determination of the threshold value.").toLatin1().data()));
     paramsMand->append(ito::Param("percentage", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100.0, 50.0, tr("percentage value [0.0,100.0]").toLatin1().data()));
-    
+
     paramsOpt->append(ito::Param("sortedValues", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("provide a dataObject if you want to access the sorted values of 'fieldName'. The output is then a float32 data object of size [1 x n], where n is the number of valid values in the specific field.").toLatin1().data()));
 
     paramsOut->append(ito::Param("threshold", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("threshold value (NaN if point cloud was empty or invalid)").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -3041,9 +3041,9 @@ const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
     paramsMand->append(ito::Param("maxValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<float>::max(), 4095.0, tr("upper boundary of the uniformly distributed histogram").toLatin1().data()));
     paramsMand->append(ito::Param("steps", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<int>::max(), 4096, tr("number of discrete fields in the histogram").toLatin1().data()));
     paramsMand->append(ito::Param("histogram", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("The histogram is a int32 data object with size [1 x steps].").toLatin1().data()));
-    
+
     paramsOpt->append(ito::Param("uniformDistribution", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("provide a dataObject if you want to access the uniform percentage distribution. The resulting data object is of type float32 and has the size [1 x 100]. The value at index j gives the histogram value, where j% of the values lies below that value.").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -3282,11 +3282,11 @@ const QString PclTools::pclCylinderClipper3DDOC = QObject::tr("\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud").toLatin1().data()));
-    
+
     paramsMand->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("point on axis of cylinder").toLatin1().data()));
     paramsMand->append(ito::Param("orientation", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("orientation vector of cylinder").toLatin1().data()));
     paramsMand->append(ito::Param("radius", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("array with [min,max] radius").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -3412,10 +3412,10 @@ const QString PclTools::pclPCADOC = QObject::tr("\n\
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
 
     paramsOpt->append(ito::Param("eigenVectors", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("results in 3x3 float32 data object with three eigen-vectors").toLatin1().data()));
-    
+
     paramsOut->append(ito::Param("mean", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("mean value").toLatin1().data()));
     paramsOut->append(ito::Param("eigenValues", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("eigen values").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -3537,10 +3537,10 @@ ito::RetVal PclTools::pclTrimmedICPParams(QVector<ito::Param> *paramsMand, QVect
     paramsMand->append(ito::Param("pointCloudTarget", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid target point cloud of type XYZ").toLatin1().data()));
 
     paramsMand->append(ito::Param("pointCloudSource", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Point cloud of same type than target cloud. This cloud is registered to the target.").toLatin1().data()));
-    
+
     paramsMand->append(ito::Param("numSourcePointsToUse", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 100, tr("gives the number of closest source points taken into account for registration. By closest source points we mean the source points closest to the target. These points are computed anew at each iteration.").toLatin1().data()));
     paramsMand->append(ito::Param("transform", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("    is the estimated rigid transform. IMPORTANT: this matrix is also taken as the initial guess for the alignment. If there is no guess, set the matrix to identity!").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -3566,7 +3566,7 @@ ito::RetVal PclTools::pclTrimmedICP(QVector<ito::ParamBase> *paramsMand, QVector
     {
         retval += ito::RetVal(ito::retError, 0, "target and source cloud must have the same type pointXYZ");
     }
-    
+
 
     if (!retval.containsError())
     {
@@ -3624,7 +3624,7 @@ const QString PclTools::pclPolygonMeshFromIndicesDOC = QObject::tr("\n\
     paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid polygon mesh").toLatin1().data()));
     paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygon mesh").toLatin1().data()));
     paramsMand->append(ito::Param("indices", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("vector with indices of polygons that will be copied into output mesh").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -3764,7 +3764,7 @@ const QString PclTools::pclMeshTriangulationDOC = QObject::tr("\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid polygon mesh").toLatin1().data()));
     paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygon mesh").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -3908,15 +3908,15 @@ const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
             //#endif
 
             ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
-            
+
             #if (USEOMP)
             #pragma omp for schedule(guided)
             #endif
             for (int np = 0; np < pointCloud->size(); np++)
             {
                 rowPtr[np] = pclSrc->at(np).z;
-            }                
-           
+            }
+
         }
         break;
     case ito::pclXYZI: //pcl::PointXYZI, toPointXYZI
@@ -3926,10 +3926,10 @@ const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
             #if (USEOMP)
             #pragma omp parallel num_threads(nthreads)
             {
-            #endif 
+            #endif
 
             ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
-            
+
             if (getIntensity)
             {
                 ito::float32* intPtr = intMat->ptr<ito::float32>(0);
@@ -3951,12 +3951,12 @@ const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
                 for (int np = 0; np < pointCloud->size(); np++)
                 {
                     rowPtr[np] = pclSrc->at(np).z;
-                }            
+                }
             }
 
             #if (USEOMP)
             }
-            #endif 
+            #endif
         }
         break;
     /*
@@ -3973,9 +3973,9 @@ const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
             #if (USEOMP)
             #pragma omp parallel num_threads(nthreads)
             {
-            #endif 
+            #endif
             ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
-            
+
             if (getDeviation)
             {
                 ito::float32* devPtr = devMat->ptr<ito::float32>(0);
@@ -3997,11 +3997,11 @@ const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
                 for (int np = 0; np < pointCloud->size(); np++)
                 {
                     rowPtr[np] = pclSrc->at(np).z;
-                }            
+                }
             }
             #if (USEOMP)
             }
-            #endif 
+            #endif
         }
         break;
     case ito::pclXYZINormal: //pcl::PointXYZINormal, toPointXYZINormal
@@ -4011,9 +4011,9 @@ const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
             #if (USEOMP)
             #pragma omp parallel num_threads(nthreads)
             {
-            #endif 
+            #endif
             ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
-            
+
             if (getIntensity && getDeviation)
             {
                 ito::float32* intPtr = intMat->ptr<ito::float32>(0);
@@ -4063,11 +4063,11 @@ const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
                 for (int np = 0; np < pointCloud->size(); np++)
                 {
                     rowPtr[np] = pclSrc->at(np).z;
-                }            
+                }
             }
             #if (USEOMP)
             }
-            #endif 
+            #endif
         }
         break;
     /*
@@ -4192,7 +4192,7 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
         *polygonMesh = ito::PCLPolygonMesh(pcl::PolygonMesh::Ptr(new pcl::PolygonMesh()));
     }
 
-    
+
 
     if (pointCloud == NULL || polygonMesh == NULL)
     {
@@ -4384,14 +4384,14 @@ ito::RetVal PclTools::pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<
     paramsOpt->clear();
     paramsOpt->append(ito::Param("treeDepth", ito::ParamBase::Int | ito::ParamBase::In , 1, 100, 8, tr("Maximum depth of the octTree to reconstruct. Be careful: High values might require a lot of memory and processing time.").toLatin1().data()));
     paramsOpt->append(ito::Param("minTreeDepth", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 5, tr("The minimum depth.").toLatin1().data()));
-    paramsOpt->append(ito::Param("isoDivide", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 8, 
+    paramsOpt->append(ito::Param("isoDivide", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 8,
         tr("Set the depth at which a block iso-surface extractor should be used to extract the iso-surface.\n\
 This parameter must be >= minTreeDepth. \n\
 \n\
 Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time. \n\
 (In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)").toLatin1().data()));
-    
-    paramsOpt->append(ito::Param("solverDivide", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 8, 
+
+    paramsOpt->append(ito::Param("solverDivide", ito::ParamBase::Int | ito::ParamBase::In, 1, 100, 8,
         tr("Get the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation.\n\
 This parameter must be >= minTreeDepth. \n\
 \n\
@@ -4409,7 +4409,7 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
     retval += ito::RetVal(ito::retError, 0, tr("Only tested / implemented for PCL >= 1.7.0").toLatin1().data());
-    
+
 #else
     const ito::PCLPointCloud *cloudIn = (*paramsMand)[0].getVal<const ito::PCLPointCloud*>();
     ito::PCLPolygonMesh *meshOut = (*paramsMand)[1].getVal<ito::PCLPolygonMesh*>();
@@ -4532,22 +4532,22 @@ ito::RetVal PclTools::pclMarchingCubesParams(QVector<ito::Param> *paramsMand, QV
     paramsOpt->clear();
     paramsOpt->append(ito::Param("algorithmType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("0: MarchingCubesHoppe, 1: MarchingCubesRBF").toLatin1().data()));
     paramsOpt->append(ito::Param("isoLevel", ito::ParamBase::Double | ito::ParamBase::In, -100000.0, 100000.0, 0.0, tr("the iso level of the surface to be extracted.").toLatin1().data()));
-    
+
     int gridResolution[] = { 32,32,32 };
     auto pGridRes = ito::Param("gridResolution", ito::ParamBase::IntArray | ito::ParamBase::In, 3, gridResolution, tr("The grid resolution in x, y, and z (default: 32 each)").toLatin1().data());
     pGridRes.setMeta(new ito::IntArrayMeta(INT_MIN, INT_MAX, 1, 3, 3, 1), true);
     paramsOpt->append(pGridRes);
 
-    paramsOpt->append(ito::Param("percentageExtendGrid", ito::ParamBase::Double | ito::ParamBase::In, -100000.0, 100000.0, 0.0, 
+    paramsOpt->append(ito::Param("percentageExtendGrid", ito::ParamBase::Double | ito::ParamBase::In, -100000.0, 100000.0, 0.0,
         tr("parameter that defines how much free space should be left inside the grid between the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.").toLatin1().data()));
-    
-    paramsOpt->append(ito::Param("distIgnore", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 100000.0, -1.0, 
+
+    paramsOpt->append(ito::Param("distIgnore", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 100000.0, -1.0,
         tr("Method that sets the distance for ignoring voxels which are far from point cloud. \n\
 If the distance is negative, then the distance functions would be calculated in all voxels; \n\
 otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube. \n\
 Default value is - 1.0. Set to negative if all voxels are to be involved. \n\
 Only used for algorithmType = MarchingCubesHoppe (0).").toLatin1().data()));
-    
+
     paramsOpt->append(ito::Param("offSurfaceEpsilon", ito::ParamBase::Double | ito::ParamBase::In, -100000.0, 100000.0, 0.1,
         tr("Set the off - surface points displacement value. Only used for algorithmType = MarchingCubesRBF (1)").toLatin1().data()));
 
@@ -4598,13 +4598,13 @@ ito::RetVal PclTools::pclMarchingCubes(QVector<ito::ParamBase> *paramsMand, QVec
         if (useHoppeNotRBF)
         {
             mc = new pcl::MarchingCubesHoppe<pcl::PointNormal>(distIgnore, percentageExtendGrid, isoLevel);
-            
+
         }
         else
         {
             mc = new pcl::MarchingCubesRBF<pcl::PointNormal>(offSurfaceEpsilon, percentageExtendGrid, isoLevel);
         }
-        
+
         mc->setGridResolution(gridRes[0], gridRes[1], gridRes[2]);
         mc->setInputCloud(cloudIn->toPointXYZNormal());
         mc->reconstruct(*(meshOut->polygonMesh()));
@@ -4748,7 +4748,7 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::pclFitModel, PclTools::pclFitModelParams, pclFitModelDOC);
     m_filterList.insert("pclFitModel", filter);
 
-    filter = new FilterDef(PclTools::pclFitModelDObj, PclTools::pclFitModelDObjParams, pclFitModelDObjDOC); 
+    filter = new FilterDef(PclTools::pclFitModelDObj, PclTools::pclFitModelDObjParams, pclFitModelDObjDOC);
     m_filterList.insert("pclFitModelDObj", filter);
 
     filter = new FilterDef(PclTools::pclFitCylinder, PclTools::pclFitCylinderParams, pclFitCylinderDOC);
@@ -4792,7 +4792,7 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclPassThrough, PclTools::pclPassThroughParams, tr("filters a point cloud by giving boundary values to a specific dimension (outside or inside of this field)."));
     m_filterList.insert("pclPassThrough", filter);
-    
+
     filter = new FilterDef(PclTools::pclCropBox, PclTools::pclCropBoxParams, pclCropBoxDOC);
     m_filterList.insert("pclCropBox", filter);
 
@@ -4807,10 +4807,10 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclGetMinMax3D, PclTools::pclGetMinMax3DParams, tr("get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud."));
     m_filterList.insert("pclGetMinMax3D", filter);
-    
+
     filter = new FilterDef(PclTools::pclGetPercentageThreshold, PclTools::pclGetPercentageThresholdParams, tr("returns the threshold value at the percentage value in the sorted values of the specific field."));
     m_filterList.insert("pclGetPercentageThreshold", filter);
-    
+
     filter = new FilterDef(PclTools::pclGetHistogram, PclTools::pclGetHistogramParams, tr("returns the histogram of the specific field."));
     m_filterList.insert("pclGetHistogram", filter);
 

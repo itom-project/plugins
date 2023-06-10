@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -37,7 +37,7 @@
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     #include<qtextcodec.h>
-#else 
+#else
     #include<qstringconverter.h>
 #endif
 
@@ -118,7 +118,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = QObject::tr(GITVERSION);         
+    m_aboutThis         = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -289,9 +289,9 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
     double lowLimit = (*paramsOpt)[0].getVal<double>();
     double highLimit = (*paramsOpt)[1].getVal<double>();
 
-    char *color_format = NULL;    
+    char *color_format = NULL;
     std::string color_form;
-    if ((*paramsOpt)[2].getLen()!=0) 
+    if ((*paramsOpt)[2].getLen()!=0)
     {
         color_format = (*paramsOpt)[1].getVal<char*>();
         color_form = color_format;
@@ -304,8 +304,8 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
   /*  QVariant out1 = QVariant(2.0);    // showing any desired output on itom application.
     outVals->append(out1);*/
-            
-    
+
+
 
     //Creating an Image in Mono Format
     if (imgFormat.compare("QImage::Format_Mono") == 0)
@@ -612,7 +612,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
     }
     //Creating an Image in Indexed8 Format
     else if (imgFormat.compare("QImage::Format_Indexed8")==0)
-    {    
+    {
         if (dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
         {
             double scaling = 1.0;
@@ -679,7 +679,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
     //Creating an Image in RGB32 Format
     else if (imgFormat.compare("QImage::Format_RGB32")==0)
-    {        
+    {
         if (dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
         {
             double scaling = 1.0;
@@ -767,7 +767,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
-            }        
+            }
         }
         else
         {
@@ -864,11 +864,11 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
-            }        
+            }
         }
         else if ((dObj->getType() == ito::tInt8) && (dObj->getDims() > 2 && dObj->calcNumMats() == 3))   // RGB-Planes
         {
-        
+
         }
         else
         {
@@ -895,7 +895,7 @@ This filter is deprecated and can also be directly used via the filter 'loadAnyI
 *    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*    and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject. 
+*    and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject.
 */
 ito::RetVal DataObjectIO::loadDataObjectParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -943,7 +943,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     if (!fileinfo.exists())
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
-    }    
+    }
     else if (!image.load(QLatin1String(filename)))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable image file.").toLatin1().data(), filename);
@@ -952,7 +952,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     {
         ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
         std::string colorElem;
-        if ((*paramsOpt)[0].getLen()!= 0) 
+        if ((*paramsOpt)[0].getLen()!= 0)
         {
             colorElem = (*paramsOpt)[0].getVal<char*>();
         }
@@ -980,18 +980,18 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
             }
 
         }
-        if (colorElem.compare("RGB") == 0 || colorElem.compare("RGBA") == 0) 
+        if (colorElem.compare("RGB") == 0 || colorElem.compare("RGBA") == 0)
         {
             *dObjDst= ito::DataObject(image.height() ,image.width(), ito::tRGBA32);
         }
-        else 
+        else
         {
             *dObjDst = ito::DataObject(image.height(), image.width(), ito::tUInt8);
         }
-        
-    
-        if (imgFormat == QImage::Format_Mono || imgFormat == QImage::Format_MonoLSB)    //Case for Format_Mono and Format_MonoLSB images. Note: All Format_MonoLSB images are detected as Format_Mono images so No special case for Format_MonoLSB. 
-        {                                        
+
+
+        if (imgFormat == QImage::Format_Mono || imgFormat == QImage::Format_MonoLSB)    //Case for Format_Mono and Format_MonoLSB images. Note: All Format_MonoLSB images are detected as Format_Mono images so No special case for Format_MonoLSB.
+        {
             if (dObjDst->getType() == ito::tRGBA32)
             {
                 ret += itom::io::QImage_Mono_to_dataObject<ito::Rgba32>(&image, dObjDst);
@@ -1024,7 +1024,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
             }
         }
         else if (imgFormat == QImage::Format_ARGB32)     //Case for Format_ARGB32 images
-        {    
+        {
             if (dObjDst->getType() == ito::tRGBA32)
             {
                 ret += itom::io::QImage_ARGB32_to_dataObject<ito::Rgba32>(&image, dObjDst, colorElem.data());
@@ -1119,7 +1119,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     int decimals = (*paramsOpt)[0].getVal<int>();
     QString version = paramsOpt->at(4).getVal<char*>();
     bool is_iso25178 = (version == "aISO-1.0");
-    
+
     int flags = DataObjectIO::invWrite;
 
     switch((*paramsOpt)[2].getVal<int>())
@@ -1140,7 +1140,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 
     if (ret.containsWarningOrError())
     {
-    
+
     }
     else if (!dataOut.open(QIODevice::WriteOnly))
     {
@@ -1165,7 +1165,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         {
             dataOut.write("aNIST-1.0\n");
         }
-        
+
         outLine = ("ManufacID\t\t= ");
         tag = dObjSrc->getTag("ManufacID", dummyBool).getVal_ToString();
         if (tag.empty())
@@ -1305,7 +1305,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
             outLine = ("Zresolution\t\t= " + QByteArray(tag.data()) + "\n");
         }
         dataOut.write(outLine);
-        
+
         outLine = ("Compression\t\t= 0\n");
         dataOut.write(outLine);
 
@@ -1452,7 +1452,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                 curLine = QByteArray::number(p_Dst[0]*zScale, 'f', decimals);
                 curLine.append('\n');
                 outFile.write(curLine);
-            }        
+            }
         }
     }
     else if (ysize == 1)
@@ -1474,12 +1474,12 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                 curLine = QByteArray::number(p_Dst[x]*zScale, 'f', decimals);
                 curLine.append('\n');
                 outFile.write(curLine);
-            }        
-        }    
+            }
+        }
     }
     else
     {
-        
+
         if (std::numeric_limits<_Tp>::is_exact)
         {
             for (y = 0; y < ysize; y ++)
@@ -1513,7 +1513,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                     curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
                     curLine.append('\n');
                     outFile.write(curLine);
-                } 
+                }
                 break;
                 case DataObjectIO::invIgnor:
                 for (y = 0; y < ysize; y ++)
@@ -1528,7 +1528,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                     if (ito::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
                     curLine.append('\n');
                     outFile.write(curLine);
-                } 
+                }
                 break;
                 case DataObjectIO::invChange:
                 for (y = 0; y < ysize; y ++)
@@ -1545,7 +1545,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                     else curLine.append(QByteArray::number(nanValue, 'f', decimals));
                     curLine.append('\n');
                     outFile.write(curLine);
-                } 
+                }
                 break;
                 case DataObjectIO::invBAD:
                 for (y = 0; y < ysize; y ++)
@@ -1562,7 +1562,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                     else curLine.append("BAD");
                     curLine.append('\n');
                     outFile.write(curLine);
-                } 
+                }
                 break;
             }
         }
@@ -1591,7 +1591,7 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
     {
         ito::Param param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("data object where the file data is loaded to. The type of destinationObject corresponds to the type of the data block in the sdf file (uint8, uint16, uint32, int8, int16, int32, float32, float64) or always float64 if the header value Zscale is != 1.0 or the valueUnit is != 'm'").toLatin1().data());
         paramsMand->append(param);
-        
+
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("filename of the sdf file (aISO-1.0, aNIST-1.0, aBCR-1.0 or bISO-1.0 format)").toLatin1().data());
         paramsMand->append(param);
 
@@ -1656,13 +1656,13 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     else if (!fileinfo.exists())
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
-    }    
+    }
     else if (!dataIn.open(QIODevice::ReadOnly))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toLatin1().data(), filename);
     }
     else
-    {     
+    {
         //check if binary or ascii format
         char version[8];
         int versionLen = dataIn.read(version, 8);
@@ -1760,7 +1760,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
     QMap<QString, QByteArray>::const_iterator it;
 
     curLine = inFile.readLine();
-    
+
     zscale = 1.0;
 
     QString stringLine = curLine;
@@ -1937,7 +1937,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
             retValue += ito::RetVal(ito::retWarning, 0, "Header CheckType must be 0 or NULL. Other check sum types are ignored by this filter and not specified in ISO25178-71.");
         }
     }
-    
+
     it = rawMetaData.constFind("datatype");
     if (it != rawMetaData.constEnd())
     {
@@ -2118,7 +2118,7 @@ ito::RetVal DataObjectIO::readNistHeaderBinary(QFile &inFile, ito::DataObject &n
     char compression = header[78];
     char dataTypeRaw = header[79];
     char checkType = header[80];
-    
+
     if (version != "bISO-1.0")
     {
         return ito::RetVal(ito::retError, 0, "Version tag bISO-1.0 could not be found.");
@@ -2131,7 +2131,7 @@ ito::RetVal DataObjectIO::readNistHeaderBinary(QFile &inFile, ito::DataObject &n
     std::map<std::string, std::string> metaData;
 
     metaData["ManufacID"] = manufacID;
-        
+
     QDateTime date = QDateTime::fromString(QString::fromStdString(createDate), "ddMMyyyyHHmm");
     if (date.isValid())
     {
@@ -2157,13 +2157,13 @@ ito::RetVal DataObjectIO::readNistHeaderBinary(QFile &inFile, ito::DataObject &n
         //limit 65535 is given in ISO 25178-71
         retValue += ito::RetVal(ito::retError, 0, "Header NumPoints out of range (0, 65535]");
     }
-        
+
     if (numProfiles <= 0 || numProfiles > 65535)
     {
         //limit 65535 is given in ISO 25178-71
         retValue += ito::RetVal(ito::retError, 0, "Header NumProfiles out of range (0, 65535]");
     }
-        
+
     if (zResolution < 0.0)
     {
         zResolution = 1.0; //BCR Format 1.0 says: if zResolution negative, it is unknown
@@ -2387,7 +2387,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, it
                     }
                     else
                     {
-                        *p_Dst = cv::saturate_cast<_Tp>(ba.toDouble() * zScale);    
+                        *p_Dst = cv::saturate_cast<_Tp>(ba.toDouble() * zScale);
                     }
                     p_Dst++;
                 }
@@ -3030,7 +3030,7 @@ void DataObjectIO::checkAndModifyFilenameSuffix(QFileInfo &file, const QString &
 ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/, const ImageFormat &imageFormat)
 {
     ito::RetVal ret = ito::retOk;
-    
+
     // Optional parameters (sourceImage, filename, Format, bitscaling)
     const ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
     const char *filename = (*paramsMand)[1].getVal<char*>();
@@ -3107,7 +3107,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
             break;
 
         case DataObjectIO::pgmFormat:
-            
+
             save_params.push_back(CV_IMWRITE_PXM_BINARY);
             save_params.push_back((*paramsOpt)[0].getVal<int>());
             gray16Supported = true;
@@ -3426,7 +3426,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 
                     default:
                         return ito::RetVal(ito::retError, 0, tr("Data object could not be converted to a gray image with 256 values (indexed8). No color palette could be applied.").toLatin1().data());
-                } 
+                }
             }
         }
         else
@@ -3441,7 +3441,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 
     if (!ret.containsError())
     {
-        try 
+        try
         {
             bool test = cv::imwrite(fileName.absoluteFilePath().toLatin1().data(), saveMat, save_params);
             if (test == false)
@@ -3452,9 +3452,9 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         catch (cv::Exception exc)
         {
             ret += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
-        } 
+        }
     }
-    
+
     return ret;
 }
 
@@ -3472,7 +3472,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 ito::RetVal DataObjectIO::saveDataObjectQt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/, const ImageFormat &imageFormat)
 {
     ito::RetVal ret = ito::retOk;
-    
+
     const ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
     const char *filename = (*paramsMand)[1].getVal<char*>();
 
@@ -3763,7 +3763,7 @@ ito::RetVal DataObjectIO::saveDataObjectQt(QVector<ito::ParamBase> *paramsMand, 
 
                     default:
                         return ito::RetVal(ito::retError, 0, tr("Data object could not be converted to a gray image with 256 values (indexed8). No color palette could be applied.").toLatin1().data());
-                } 
+                }
             }
         }
         else
@@ -3785,7 +3785,7 @@ ito::RetVal DataObjectIO::saveDataObjectQt(QVector<ito::ParamBase> *paramsMand, 
             ret += ito::RetVal(ito::retError, 0, tr("error saving the image file (%1)!").arg(writer.errorString()).toLatin1().data());
         }
     }
-    
+
     return ret;
 }
 
@@ -3825,7 +3825,7 @@ All file formats are loaded using OpenCV, besides gif, xbm, xpm which are loaded
 *    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*    and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject. 
+*    and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject.
 */
 ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -3921,7 +3921,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
         {
             reduceChannel = false;
             flags = CV_LOAD_IMAGE_COLOR;
-            flags *= -1;        
+            flags *= -1;
         }
 
         cv::Mat image;
@@ -3929,10 +3929,10 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
         if (!fileinfo.exists())
         {
             ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
-        }    
+        }
         else
-        {       
-            try 
+        {
+            try
             {
                 image = cv::imread(filename, flags);
             }
@@ -3963,7 +3963,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                     imageType = ito::tUInt16;
                     break;
                 case CV_8UC3:
-                    if (reduceChannel) 
+                    if (reduceChannel)
                     {
                         imageType = ito::tUInt8;
                     }
@@ -3973,7 +3973,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                     }
                     break;
                 case CV_8UC4:
-                    if (reduceChannel) 
+                    if (reduceChannel)
                     {
                         imageType = ito::tUInt8;
                     }
@@ -3984,7 +3984,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                     break;
                 case CV_16UC3:
                 case CV_16UC4:
-                    if (reduceChannel) 
+                    if (reduceChannel)
                     {
                         imageType = ito::tUInt16;
                     }
@@ -4366,7 +4366,7 @@ template<typename _Tp> ito::RetVal doWriteDataD(ito::DataObject *dObjSrc, QTextS
             }
         }
         else
-        { 
+        {
             for (int nm = 0; nm < dObjSrc->getNumPlanes(); nm++)
             {
                 for (int ny = 0; ny < dObjSrc->getSize(dObjSrc->getDims() - 2); ny++)
@@ -4569,7 +4569,7 @@ template<typename _Tp> ito::RetVal doWriteData(const ito::DataObject *dObjSrc, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
+/**
 *   saveDataToTxtParams method, specifies the parameter list for saveDataToTxtParams method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -4629,7 +4629,7 @@ ito::RetVal DataObjectIO::saveDataToTxtParams(QVector<ito::Param> *paramsMand, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
+/**
 *   saveDataToTxt method, writes the ascii data and creates corresponding DataObject.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -4693,7 +4693,7 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
         QString encoding = paramsOpt->at(7).getVal<char*>();
 
         if (encoding != "")
-        {  
+        {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
 #else
@@ -4719,7 +4719,7 @@ ito::RetVal DataObjectIO::saveDataToTxt(QVector<ito::ParamBase> *paramsMand, QVe
         QTextStream textStream(&dataOut);
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        textStream.setCodec(encoding.toLatin1().data()); 
+        textStream.setCodec(encoding.toLatin1().data());
 #else
         textStream.setEncoding(QStringConverter::encodingForName(encoding.toLatin1().data()).value());
 #endif
@@ -4845,13 +4845,13 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
     else if (!fileinfo.exists())
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
-    }    
+    }
     else if (!dataIn.open(QIODevice::ReadOnly))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toLatin1().data(), filename);
     }
     else
-    {   
+    {
         QChar separatorSign(0);
         QChar decimalSign(0);
 
@@ -4875,7 +4875,7 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
 
         if (encoding != "")
         {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if (QTextCodec::codecForName(encoding.toLatin1()) == NULL)
 #else
             if (!QStringConverter::encodingForName(encoding.toLatin1()).has_value())
@@ -4901,7 +4901,7 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
             {
                 encoding = QStringConverter::nameForEncoding(tc.value());
             }
-#endif            
+#endif
             else
             {
                 ret += ito::RetVal(ito::retWarning, 0, "encoding of file can not be guessed. UTF-8 is assumed.");
@@ -5067,7 +5067,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
                 else if (space != 0) separator = ' ';
                 else if (sim != 0) separator = ';';
                 else if (points != 0) separator = '.';
-                else 
+                else
                 {
                     decimalSign = '.';
                     separator = ',';
@@ -5087,7 +5087,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
     }
 
     if (!ret.containsError())
-    { 
+    {
         if (guessSeparator)
         {
             int remove = 0;
@@ -5114,41 +5114,41 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
                 if ((tabs + space + sim + comma - remove) > 0)
                 {
                     ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (.) but other separator signs are also possible.").toLatin1().data());
-                }            
+                }
             }
             else if (separator == ',')
             {
                 if ((tabs + space + sim + points - remove) > 0)
                 {
                     ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (,) but other separator signs are also possible.").toLatin1().data());
-                }            
+                }
             }
             else if (separator == '\t')
             {
                 if ((points + space + sim + comma - remove) > 0)
                 {
                     ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (tab) but other separator signs are also possible.").toLatin1().data());
-                }            
+                }
             }
             else if (separator == ' ')
             {
                 if ((tabs + comma + sim + points - remove) > 0)
                 {
                     ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (space) but other separator signs are also possible.").toLatin1().data());
-                }            
+                }
             }
             else if (separator == ';')
             {
                 if ((tabs + space + comma + points - remove) > 0)
                 {
                     ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (;) but other separator signs are also possible.").toLatin1().data());
-                }            
+                }
             }
         }
     }
-    
+
     if (!ret.containsError())
-    {   
+    {
         //Check if data is a list with 3 columns and n-Row
         if (flags & 0x01)
         {
@@ -5176,7 +5176,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
             cols = curLine.split(separator, Qt::KeepEmptyParts).size();
 #else
             cols = curLine.split(separator, QString::KeepEmptyParts).size();
-#endif        
+#endif
             while(!inFile.atEnd())
             {
                 inFile.readLine();
@@ -5186,7 +5186,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QTextStream &inFile, ito::DataObject &n
     }
 
     if (!ret.containsError())
-    { 
+    {
         newObject = ito::DataObject(lines, cols, ito::tFloat32);
         if (ignoreLines)
         {
@@ -5227,7 +5227,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
         local = QLocale(QLocale::German); //if the decimal sign is a comma (,), the thousands group separator is assumed to be a dot (.)
     }
 
-    
+
 
     for (int y = 0; y < ysize; ++y)
     {
@@ -5255,7 +5255,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
             if (wrapSign_.isEmpty())
             {
                 rowPtr[x] = local.toFloat(curline, &check);
-                if (!check) 
+                if (!check)
                 {
                     rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
                 }
@@ -5265,7 +5265,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
                 if (curline.startsWith(wrapSign_) && curline.endsWith(wrapSign_))
                 {
                     rowPtr[x] = local.toFloat(curline.mid(wrapSignLen, curline.size() - 2 * wrapSignLen), &check);
-                    if (!check) 
+                    if (!check)
                     {
                         rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
                     }
@@ -5275,9 +5275,9 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
                     rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
                 }
             }
-        }    
+        }
 
-        
+
     }
 
     if (flags & 0x01)
@@ -5295,8 +5295,8 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
         for (int y = 0; y < ysize; y++)
         {
             rowPtr = myMat->ptr<ito::float32>(y);
-            
-            if (ito::isFinite(rowPtr[1]) && ito::isNotZero(rowPtr[1] - lastY)) 
+
+            if (ito::isFinite(rowPtr[1]) && ito::isNotZero(rowPtr[1] - lastY))
             {
                 yCords.append(rowPtr[1]);
                 lastY = rowPtr[1];
@@ -5305,7 +5305,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
             if (ito::isFinite(rowPtr[0]) && !xCords.contains(rowPtr[0]))
             {
                 xCords.append(rowPtr[0]);
-            }    
+            }
         }
         std::sort(yCords.begin(), yCords.end());
         std::sort(xCords.begin(), xCords.end());
@@ -5320,7 +5320,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
         cv::Mat* dstMat = (cv::Mat*)(tmpObj.get_mdata()[tmpObj.seekMat(0)]);
 
         rowPtr = myMat->ptr<ito::float32>(0);
-        
+
         lastY = rowPtr[1];
         int yt = yCords.indexOf(rowPtr[1]);
         yt = std::min(yt, newYSize);
@@ -5381,7 +5381,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QTextStream &inFile, ito::DataObject 
         {
             meanStepX += xCords[i] - xCords[i - 1];
         }
-        
+
         if (newXSize < 2)
         {
             meanStepX = 1.0;
@@ -5464,7 +5464,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
 
     if (ret.containsError())
     {
-    
+
     }
     else if (!dataOut.open(QIODevice::WriteOnly))
     {
@@ -5472,7 +5472,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
     }
 
     if (!ret.containsError())
-    {   
+    {
         int len = source.getSize(1);
         double valueScale = 1.0;
 
@@ -5537,7 +5537,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         std::string axisUnit = source.getAxisUnit(1, valid);
         if (axisUnit == "mm")
         {
-            
+
         }
         else if (axisUnit == "µm")
         {
@@ -5784,7 +5784,7 @@ struct Buffer
                 ito::float64 zscaling; //in m / bit
             } sensor;
 
-            
+
 
             std::vector<Buffer> buffers;
             Buffer data01buffer;
@@ -5793,18 +5793,18 @@ struct Buffer
 
             ito::float64 zOffset = 0.0;
 
-            const char * scanDirections[] = { 
-                "", 
-                "pos x, low y", 
-                "neg x, low y", 
-                "pos y, low x", 
-                "neg y, low x", 
-                "pos x, high y", 
-                "neg x, high y", 
-                "pos y, high x", 
-                "neg y, high x", 
-                "meander start pos x, low y", 
-                "meander start pos y, low x", 
+            const char * scanDirections[] = {
+                "",
+                "pos x, low y",
+                "neg x, low y",
+                "pos y, low x",
+                "neg y, low x",
+                "pos x, high y",
+                "neg x, high y",
+                "pos y, high x",
+                "neg y, high x",
+                "meander start pos x, low y",
+                "meander start pos y, low x",
                 "meander start pos x, high y",
                 "meander start pos y, high x",
                 "unknown"
@@ -6035,7 +6035,7 @@ struct Buffer
                                 it = buffers.end() - 1;
                             }
 
-                            
+
                             it->alias = alias;
                             it->sizey = *((ito::int32*)(&data_temp[8])); //lines
                             it->sizex = *((ito::int32*)(&data_temp[4])); //rows
@@ -6099,7 +6099,7 @@ struct Buffer
                     int axisX = 1;
                     int axisY = 0;
                     const Buffer *usedBuffer = NULL;
-                    
+
                     if (selectedBufferIndex == -1) //take data 01
                     {
                         if (data01buffer.bpp == 16)
@@ -6594,7 +6594,7 @@ struct Buffer
                             break;
                         }
 
-                        data_part += blockSize; 
+                        data_part += blockSize;
                     }
 
                     if (warnings.size() > 0)

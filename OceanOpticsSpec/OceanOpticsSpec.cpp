@@ -1,10 +1,10 @@
 /* ********************************************************************
     Plugin "OceanOpticsSpec" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2020, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -126,7 +126,7 @@ Tested with: \
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr(GITVERSION);  
+    m_aboutThis         = tr(GITVERSION);
 
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
@@ -157,8 +157,8 @@ const ito::RetVal OceanOpticsSpec::showConfDialog(void)
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-OceanOpticsSpec::OceanOpticsSpec() :  
-    AddInGrabber(), 
+OceanOpticsSpec::OceanOpticsSpec() :
+    AddInGrabber(),
     m_pUsb(NULL),
     m_isGrabbing(false),
     m_numberDeadPixels(0),
@@ -183,12 +183,12 @@ OceanOpticsSpec::OceanOpticsSpec() :
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("current height").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 16, 16, tr("Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled.").toLatin1().data()); 
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 16, 16, tr("Bit depth. The output object is float32 for all cases but uint16 only if no averaging is enabled.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("average", ito::ParamBase::Int, 1, 50000, 1, tr("Number of averages for every frame").toLatin1().data()); //0xffffffff --> timeout, also in libusb
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     /*paramVal = ito::Param("dark_correction", ito::ParamBase::Int, 0, 2, 0, tr("Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output \n\
 dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values. \n\
 Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software \n\
@@ -210,7 +210,7 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
-   
+
     if (hasGuiSupport())
     {
         DockWidgetOceanOpticsSpec *toolbox = new DockWidgetOceanOpticsSpec(this);
@@ -221,7 +221,7 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
         //register the toolbox
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, toolbox);
     }
-    
+
 
 }
 
@@ -235,7 +235,7 @@ OceanOpticsSpec::~OceanOpticsSpec()
 ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    
+
     ito::RetVal retValue(ito::retOk);
 
     //open libUSB as further plugin instance.
@@ -243,7 +243,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     QVector<ito::Param> *libUSBParamsMand = NULL;
     QVector<ito::Param> *libUSBParamsOpt = NULL;
     retValue += apiAddInGetInitParams("LibUSB", ito::typeDataIO | ito::typeRawIO, &libUSBNo, libUSBParamsMand, libUSBParamsOpt);
-    
+
     if (!retValue.containsError())
     {
         QVector<ito::ParamBase> mands, opts;
@@ -285,7 +285,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         unsigned char cmd[4];
 
         *(uint32*)cmd = 0x00000100; //get serial number 0x000 001 00
-         
+
 
         retValue += sendCommand(cmd, sizeof(cmd), (unsigned char*)answer, a_len);
         len = (uint8)answer[23];
@@ -330,7 +330,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
             fit[t] = *(float*)&answer[24]; //swapsingle()maybe no swap, because already typecast readout?
         }
 
-        int nrPixels = MAX_NR_PIXELS; // atm 
+        int nrPixels = MAX_NR_PIXELS; // atm
         if (n_wvl_c > 4) {
             retValue += ito::RetVal::format(ito::retWarning, n_wvl_c, 0, "Warning: spectrometer returned %i wavelength coefficients, while the lambda table is only calculated up to 4.", n_wvl_c);
         }
@@ -344,7 +344,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
                 //fit[4] * t*t*t*t*1.0;
         }
         m_params["lambda_table"].setVal<double*>(lambda, nrPixels);
- 
+
         m_params["sizex"].setVal<int>(nrPixels);
         m_params["sizex"].setMeta(new ito::IntMeta(1, nrPixels, 1), true);
 
@@ -353,7 +353,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     }
 
-    
+
 
 
     if (waitCond)
@@ -361,7 +361,7 @@ ito::RetVal OceanOpticsSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    setInitialized(true); //init method has been finished (independent on retval)    
+    setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
 
@@ -382,7 +382,7 @@ ito::RetVal OceanOpticsSpec::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -472,7 +472,7 @@ ito::RetVal OceanOpticsSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
         //next value (depending on a possible step size, if different than 0.0)
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
-    
+
     if(!retValue.containsError())
     {
         if(key == "integration_time" || key == "roi" || key == "average")// || key == "dark_correction")
@@ -537,7 +537,7 @@ ito::RetVal OceanOpticsSpec::startDevice(ItomSharedSemaphore *waitCond)
     if(grabberStartedCount() == 0)
     {
         OcHeader header;
-       
+
         const int *roi = m_params["roi"].getVal<int*>();
         uint32 int_time_ms = (uint32)rint(m_params["integration_time"].getVal<double>() * 1e3);
         double readouttime = m_params["integration_time"].getVal<double>();
@@ -577,11 +577,11 @@ ito::RetVal OceanOpticsSpec::startDevice(ItomSharedSemaphore *waitCond)
             return retValue;
         }
 
-        // roi 
+        // roi
         // cmd: 0x001 020 10 [set partial spectrum mode], no response
         // immediate:0x02 00 SS SS II II CC CC [band mode: Start, Interval, Count, 16b LSB]
         //if (roi[0] != 0 || roi[2] != MAX_NR_PIXELS) { // roi always needs to be set for aquire() to work
-        
+
             a_len = 64;
             *(uint32*)cmd = 0x00102010;// (uint32)0x10201000;
             unsigned char roipayload[] = { 0x02, 0x00, LOBYTE((uint16)roi[0]), HIBYTE((uint16)roi[0]), 0x01, 0x00, LOBYTE((uint16)(roi[2]-1)), HIBYTE((uint16)roi[2]-1) }; // losing 1 px, but device returns h/w error otherwise(?!)
@@ -600,19 +600,19 @@ ito::RetVal OceanOpticsSpec::startDevice(ItomSharedSemaphore *waitCond)
         m_measConfig.m_StopPixel = roi[0] + roi[2] - 1;
         m_measConfig.m_IntegrationTime = int_time_ms;
         m_measConfig.m_NrAverages = average;
-       
+
         // maybe set timeout here, again?
         double timeout = 3.0 + m_params["average"].getVal<int>() * m_params["integration_time"].getVal<double>();
         retValue += m_pUsb->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)), NULL);
 
-        
+
     }
 
     if (!retValue.containsError())
     {
         retValue += checkData();
         incGrabberStarted();
-    } 
+    }
 
     if (waitCond)
     {
@@ -621,7 +621,7 @@ ito::RetVal OceanOpticsSpec::startDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OceanOpticsSpec::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -653,7 +653,7 @@ ito::RetVal OceanOpticsSpec::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OceanOpticsSpec::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -668,7 +668,7 @@ ito::RetVal OceanOpticsSpec::acquire(const int trigger, ItomSharedSemaphore *wai
         if (waitCond)
         {
             waitCond->returnValue = retValue;
-            waitCond->release();  
+            waitCond->release();
         }
     }
     else
@@ -736,7 +736,7 @@ ito::RetVal OceanOpticsSpec::acquire(const int trigger, ItomSharedSemaphore *wai
             for (int a = 0; a < average; ++a) {
                 m_acquisitionRetVal = ito::retOk;
                 int size = 64;
-                int request_size = sizeof(singleMeasdata.pixels) + 64; 
+                int request_size = sizeof(singleMeasdata.pixels) + 64;
                 //start measurement
                 m_acquisitionRetVal += sendCommand(cmd, sizeof(cmd), (unsigned char*)&singleMeasdata.header, request_size);
 
@@ -747,8 +747,8 @@ ito::RetVal OceanOpticsSpec::acquire(const int trigger, ItomSharedSemaphore *wai
                 }
 
                 m_isGrabbing = true;
-                
-                
+
+
 
                 uint32 timestamp = (uint32)((long)QDateTime::currentMSecsSinceEpoch() / 1000);
 
@@ -792,7 +792,7 @@ ito::RetVal OceanOpticsSpec::acquire(const int trigger, ItomSharedSemaphore *wai
                             vals32[teller] += (ito::float32)singleMeasdata.pixels[teller] / (ito::float32)average;
                         }
                     }
-                    
+
 
                     m_data.setTag("timestamp", timestamp); //timestamp in sec since UTC0
                 }
@@ -801,7 +801,7 @@ ito::RetVal OceanOpticsSpec::acquire(const int trigger, ItomSharedSemaphore *wai
             }
         }
     }
-    
+
     return retValue + m_acquisitionRetVal;
 }
 
@@ -830,7 +830,7 @@ ito::RetVal OceanOpticsSpec::retrieveData(ito::DataObject *externalDataObject)
 
 
     if (!retVal.containsError())
-    {      
+    {
         if (externalDataObject)
         {
             switch (m_data.getType())
@@ -870,7 +870,7 @@ ito::RetVal OceanOpticsSpec::checkData(ito::DataObject *externalDataObject)
     int bpp = m_params["bpp"].getVal<int>();
     //int darkCorrection = m_params["dark_correction"].getVal<int>();
     int average = m_params["average"].getVal<int>();
-    
+
     if (bpp <= 16 && m_numberOfCorrectionValues == 0 && average == 1 )
     {
         futureType = ito::tUInt16;
@@ -898,7 +898,7 @@ ito::RetVal OceanOpticsSpec::checkData(ito::DataObject *externalDataObject)
         }
         else if (externalDataObject->calcNumMats () != 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
         }
         else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
@@ -928,7 +928,7 @@ ito::RetVal OceanOpticsSpec::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -950,12 +950,12 @@ ito::RetVal OceanOpticsSpec::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond
     }
     else
     {
-        retValue += checkData(dObj);  
+        retValue += checkData(dObj);
     }
 
     if(!retValue.containsError())
     {
-        retValue += retrieveData(dObj);  
+        retValue += retrieveData(dObj);
     }
 
     if(!retValue.containsError())
@@ -963,7 +963,7 @@ ito::RetVal OceanOpticsSpec::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -977,9 +977,9 @@ ito::RetVal OceanOpticsSpec::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void OceanOpticsSpec::updateParameters(QMap<QString, ito::ParamBase> params)
-{ 
+{
     foreach(const ito::ParamBase &param1, params)
-    {    
+    {
         setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
     }
 }
@@ -1110,10 +1110,10 @@ ito::RetVal OceanOpticsSpec::sendCommand(unsigned char* cmd, int cmd_size, unsig
         if (!retVal.containsError())
         {
             uint8 *asdf = nullptr;
-            
+
 
             uint8 immediate_bytes = (uint8)(buf[23]);
-            
+
             //uint8 blah = (uint8)*((uint8*)((unsigned char*)buf + 23));
 
 

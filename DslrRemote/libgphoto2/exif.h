@@ -10,7 +10,7 @@
  */
 
 #ifndef _gphoto_exif_
-#define _gphoto_exif_ 
+#define _gphoto_exif_
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

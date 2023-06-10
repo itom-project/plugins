@@ -16,10 +16,10 @@ Number of Pictures:
 	Gets number of pictures.
 
 Get Directory:
-	control read 0x0d, 0x03, 0x00	-> buf[1] 
+	control read 0x0d, 0x03, 0x00	-> buf[1]
 	bulk read  (((8*(1+numpics))+0x3f) & ~0x3f) bytes.
 
-	Buffer has now: 
+	Buffer has now:
 	i = 0 .. numpics:
 		buf[8*(i+1)]	- movie flag
 		buf[8*(i+1)+5 ... 7]	- 3 bytes start, MSB first
@@ -41,7 +41,7 @@ Get Memory:
 
 Capture Picture:
 	control read 0x0e, 0x03, 0x00	-> buf[1]
-	do 
+	do
 		control read 0x16, 0x03, 0x00 -> buf[1]
 	while buf[0] == 0
 

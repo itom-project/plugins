@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -29,7 +29,7 @@
 
 /*!
     \class VistekContainer
-    \brief Helper-Class for the Vistek. 
+    \brief Helper-Class for the Vistek.
 
     This class manages the camera container, which is the same for all instances of Vistek.
 */
@@ -104,14 +104,14 @@ ito::RetVal VistekContainer::initCameraContainer()
             expectedVersion.DriverVersion = SVGigE_VERSION_DRIVER;
             expectedVersion.BuildVersion = SVGigE_VERSION_BUILD;
             SVGigE_VERSION dllVersion;
-            
+
             svsReturn = isVersionCompliantDLL(&dllVersion, &expectedVersion);
 
             if(svsReturn == SVGigE_DLL_VERSION_MISMATCH)
             {
                 QString gotVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
                 QString expectedVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
-#ifdef _WIN64                 
+#ifdef _WIN64
                 return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2 (64bit).").arg(gotVersion).arg(expectedVersion).toLatin1().data());
 #else
                 return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2.").arg(gotVersion).arg(expectedVersion).toLatin1().data());
@@ -240,7 +240,7 @@ ito::RetVal VistekContainer::checkError(const char *prependStr, SVGigE_RETURN re
             str = "";
         }
 
-        char *msg = Error_getMessage(returnCode);
+        const char *msg = Error_getMessage(returnCode);
         if (msg)
         {
             retval += ito::RetVal::format(ito::retError,returnCode, "%s: Vistek DLL error %i '%s' occurred", str, returnCode, msg);

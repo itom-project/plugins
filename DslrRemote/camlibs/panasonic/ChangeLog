@@ -16,4 +16,3 @@
 
 	* l859/l859.c: Fixed a typo that failed to initialize camera. See
 	bug 483903.
-

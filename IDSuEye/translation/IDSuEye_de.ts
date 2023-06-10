@@ -309,25 +309,25 @@
     </message>
     <message>
         <location line="-27"/>
-        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models: 
+        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models:
 
-* UI145xSE-C (colored, USB2) 
-* UI124xSE-M (monochrome, USB2) 
-* UI224xSE-M (monochrome, USB2) 
-* UI337xCP-C (colored, USB3) 
-* UI318xCP-M (monochrome, USB3) 
-* UI318xCP-C (colored, USB3) 
-* UI306xCP-M (monochrome, USB3) 
-* UI148xLE-M (monochrome, USB2) 
-* UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL 
+* UI145xSE-C (colored, USB2)
+* UI124xSE-M (monochrome, USB2)
+* UI224xSE-M (monochrome, USB2)
+* UI337xCP-C (colored, USB3)
+* UI318xCP-M (monochrome, USB3)
+* UI318xCP-C (colored, USB3)
+* UI306xCP-M (monochrome, USB3)
+* UI148xLE-M (monochrome, USB2)
+* UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL
 
-(Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU). 
+(Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU).
 
-The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. 
+The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx.
 
-In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. 
+In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed.
 
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart. 
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.
 
 Note on supported sensor bit depths on monochrome cameras: The plugin may list a supported bit depth of 16 bit even if the camera explicitly does not support 16 bit color mode. The returned 16 bit images are most probably a MSB-Aligned representation of the maximum supported bit depth. (See IDS uEye handbook, appendix Color- and Dataformat)</source>
         <translation type="unfinished"></translation>

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -91,8 +91,8 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LGPL, The Aerotech Ensemble library belongs to Aerotech under their specific license.");
-    m_aboutThis = QObject::tr(GITVERSION);     
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
 
@@ -118,7 +118,7 @@ const ito::RetVal AerotechEnsemble::showConfDialog(void)
     if (confDialog->exec())    // Is dialog is endet with exec and not with cancel
     {
         confDialog->getVals(&m_params);    // get parameters from dialog
-    }    
+    }
     delete confDialog;    // destray dialog
 
     return retValue;
@@ -339,7 +339,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
             retValue += ito::RetVal(ito::retError, 0, tr("Please make sure that only one controller is configured and connected").toLatin1().data());
         }
     }
-    
+
     if (!retValue.containsError())
     {
         m_pHandle = m_pHandles[0];
@@ -348,7 +348,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
         QByteArray name(256, '\0');
         if (EnsembleInformationGetName(m_pHandle, name.size(), name.data()))
         {
-            m_params["controller"].setVal<char*>(name.data());
+            m_params["controller"].setVal<const char*>(name.data());
             m_identifier = name;
         }
 
@@ -357,15 +357,15 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
         if (EnsembleInformationGetCommunicationType(m_pHandle, &communicationType))
         {
             name = (communicationType == COMMUNICATIONTYPE_Ethernet)? "Ethernet" : "USB";
-            m_params["communication"].setVal<char*>(name.data());
+            m_params["communication"].setVal<const char*>(name.data());
         }
-        
+
         //library version
         Version version;
         if (EnsembleInformationGetLibraryVersion(&version))
         {
             name = QString("%1.%2.%3 (%4)").arg(version.major).arg(version.minor, 2, 10, QLatin1Char('0')).arg(version.patch, 3, 10, QLatin1Char('0')).arg(version.build).toLatin1(); //TODO 4.01.006
-            m_params["libraryVersion"].setVal<char*>(name.data());
+            m_params["libraryVersion"].setVal<const char*>(name.data());
         }
 
         if (!retValue.containsError())
@@ -375,7 +375,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
 
         AXISMASK availableMask;
         retValue += checkError(EnsembleInformationGetAxisMask(m_pHandle, &availableMask));
-        
+
         if (!retValue.containsError())
         {
             if (axesLength <= 0) //no specific axes given, all available are taken
@@ -470,7 +470,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
                 }
             }
 
-            
+
         }
     }
 
@@ -515,7 +515,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
     }
 
     if (!retValue.containsError())
-    {    
+    {
         emit parametersChanged(m_params);
     }
 
@@ -541,7 +541,7 @@ ito::RetVal AerotechEnsemble::close(ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();        
+        waitCond->release();
     }
     return retValue;
 }
@@ -718,7 +718,7 @@ ito::RetVal AerotechEnsemble::calib(const QVector<int> axis, ItomSharedSemaphore
         {
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
             sendStatusUpdate();
-            
+
             //starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the alive thread such that itom do not run into
             //a timeout if the homing needs lots of time
             QThread *awakeThread = new QThread(this);
@@ -730,7 +730,7 @@ ito::RetVal AerotechEnsemble::calib(const QVector<int> axis, ItomSharedSemaphore
             // Make sure the timer gets started from m_thread.
             QObject::connect(awakeThread, SIGNAL(started()), timer, SLOT(start()));
             awakeThread->start();
-    
+
             if (axis.size() > 0)
             {
                 retValue += checkError(EnsembleMotionHome(m_pHandle, mask));
@@ -743,8 +743,8 @@ ito::RetVal AerotechEnsemble::calib(const QVector<int> axis, ItomSharedSemaphore
             awakeThread = NULL;
 
             sendTargetUpdate();
-            
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget); 
+
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
             doUpdatePosAndState(axis);
 
             sendStatusUpdate();
@@ -945,8 +945,8 @@ ito::RetVal AerotechEnsemble::setPosAbs(QVector<int> axis, QVector<double> pos, 
                 m_targetPos[axis[naxis]] = pos[naxis];
                 speedArray[naxis] = paramSpeed[axis[naxis]];
             }
-                    
-            if (axis.size() > 0) 
+
+            if (axis.size() > 0)
             {
                 retValue += checkError(EnsembleMotionMoveAbs(m_pHandle, mask, posArray, speedArray));
             }
@@ -964,7 +964,7 @@ ito::RetVal AerotechEnsemble::setPosAbs(QVector<int> axis, QVector<double> pos, 
             {
                 retValue += temp;
             }
-            
+
             doUpdatePosAndState(axis);
 
             sendStatusUpdate();
@@ -1031,10 +1031,10 @@ ito::RetVal AerotechEnsemble::setPosRel(QVector<int> axis, QVector<double> pos, 
             {
                 posArray[naxis] = pos[naxis];
                 m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] + pos[naxis];
-                speedArray[naxis] = paramSpeed[axis[naxis]];        
+                speedArray[naxis] = paramSpeed[axis[naxis]];
             }
-                    
-            if (axis.size() > 0) 
+
+            if (axis.size() > 0)
             {
                 retValue += checkError(EnsembleMotionMoveInc(m_pHandle, mask, posArray, speedArray));
             }
@@ -1052,7 +1052,7 @@ ito::RetVal AerotechEnsemble::setPosRel(QVector<int> axis, QVector<double> pos, 
             {
                 retValue += temp;
             }
-            
+
             doUpdatePosAndState(axis);
 
             sendStatusUpdate();
@@ -1068,7 +1068,7 @@ ito::RetVal AerotechEnsemble::setPosRel(QVector<int> axis, QVector<double> pos, 
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
     ito::RetVal retVal(ito::retOk);
@@ -1082,7 +1082,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
             _axis.append(i);
         }
     }
-    
+
     QElapsedTimer timer;
     timer.start();
     QMutex waitMutex;
@@ -1093,7 +1093,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
     {
         if (!done && isInterrupted())
         {
-            if (m_pHandle != NULL) 
+            if (m_pHandle != NULL)
             {
                 AXISMASK AxisMask = AXISMASK_All;
                 retVal += checkError(EnsembleMotionAbort(m_pHandle, AxisMask));
@@ -1132,7 +1132,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
             }
         }
         sendStatusUpdate();
- 
+
         if (bMove == FALSE)
         {
             done = true;
@@ -1141,7 +1141,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
 
     if (timeout)
     {
-        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout); 
+        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
 
@@ -1157,18 +1157,18 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
     return retVal;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechEnsemble::doUpdatePosAndState(const QVector<int> &axes)
 {
     ito::RetVal retval;
-    if (m_pHandle != NULL) 
+    if (m_pHandle != NULL)
     {
         STATUSITEM pItems[3];
         double pDouble[3];
         bool bRet = TRUE;
         bool bMove = FALSE;
 
-        foreach(const int &axis, axes) 
+        foreach(const int &axis, axes)
         {
             AXISINDEX axisIndex = (AXISINDEX)(AXISINDEX_0 + m_enabledAxes[axis]);
 
@@ -1176,7 +1176,7 @@ ito::RetVal AerotechEnsemble::doUpdatePosAndState(const QVector<int> &axes)
             pItems[1] = STATUSITEM_AxisStatus;
             pItems[2] = STATUSITEM_AxisFault;
 
-            if (EnsembleStatusGetItems(m_pHandle, axisIndex, 3, pItems, pDouble)) 
+            if (EnsembleStatusGetItems(m_pHandle, axisIndex, 3, pItems, pDouble))
             {
                 m_currentPos[axis] = pDouble[0];
                 DWORD State = (DWORD)(pDouble[1]);
@@ -1190,21 +1190,21 @@ ito::RetVal AerotechEnsemble::doUpdatePosAndState(const QVector<int> &axes)
                     m_currentStatus[axis] ^= ito::actuatorEnabled;
                 }
 
-                if (State & AXISSTATUS_InPosition) 
+                if (State & AXISSTATUS_InPosition)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
                 }
-                else if (State & AXISSTATUS_MoveActive) 
+                else if (State & AXISSTATUS_MoveActive)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
                 }
 
-                if (State & AXISSTATUS_CwEndOfTravelLimitInput) 
+                if (State & AXISSTATUS_CwEndOfTravelLimitInput)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorRightEndSwitch, ito::actMovingMask | ito::actStatusMask);
                 }
 
-                if (State & AXISSTATUS_CcwEndOfTravelLimitInput) 
+                if (State & AXISSTATUS_CcwEndOfTravelLimitInput)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorLeftEndSwitch, ito::actMovingMask | ito::actStatusMask);
                 }
@@ -1231,7 +1231,7 @@ ito::RetVal AerotechEnsemble::doUpdatePosAndState(const QVector<int> &axes)
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechEnsemble::axisFaultToRetVal(int axisFault, int axisID)
 {
     ito::RetVal retval;
@@ -1308,7 +1308,7 @@ ito::RetVal AerotechEnsemble::axisFaultToRetVal(int axisFault, int axisID)
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechEnsemble::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retValue(ito::retOk);
@@ -1331,7 +1331,7 @@ ito::RetVal AerotechEnsemble::requestStatusAndPosition(bool sendCurrentPos, bool
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AerotechEnsemble::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())

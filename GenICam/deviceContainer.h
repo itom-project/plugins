@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -95,11 +95,11 @@ public:
     QSharedPointer<GenTLInterface> getInterface(const QByteArray &interfaceID, ito::RetVal &retval);
 
     void setVerbose(int verbose) { m_verbose = verbose; }
-    
+
     QByteArray getInterfaceInfo(GenTL::INTERFACE_INFO_CMD_LIST cmd, const char *sIfaceID, ito::RetVal &retval) const;
 
 protected:
-    
+
     GenTL::PGCInitLib GCInitLib;
     GenTL::PGCCloseLib GCCloseLib;
     GenTL::PGCGetInfo GCGetInfo;
@@ -135,11 +135,11 @@ class GenTLOrganizer
 
     public:
         static GenTLOrganizer* instance();
-        
+
         QSharedPointer<GenTLSystem> getSystem(const QString &filename, ito::RetVal &retval);
 
     protected:
-        
+
         QList<QWeakPointer<GenTLSystem> > m_systems;
 
     private:

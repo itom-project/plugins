@@ -1270,4 +1270,3 @@ camera_init (Camera* camera, GPContext *context)
 						       timeout_func);
         return (GP_OK);
 }
-

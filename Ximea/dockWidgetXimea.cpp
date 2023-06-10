@@ -5,7 +5,7 @@
     Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -27,11 +27,11 @@
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetXimea::DockWidgetXimea(int uniqueID, ito::AddInDataIO *grabber) :
-    AbstractAddInDockWidget(grabber),  
-	m_inEditing(false),  
+    AbstractAddInDockWidget(grabber),
+	m_inEditing(false),
 	m_firstRun(true)
 {
-     ui.setupUi(this); 
+     ui.setupUi(this);
      identifierChanged(QString::number(uniqueID));
      enableWidget(true);
  }
@@ -60,7 +60,7 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
         }
         //use params (identical to m_params of the plugin)
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
-        
+
         m_firstRun = false;
     }
 
@@ -83,7 +83,7 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
             ui.sliderWidget_integrationtime->setMaximum(dm->getMax()*1000);
             ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<double>()*1000);
         }
-    }    
+    }
     m_inEditing = false;
 
     m_currentParams = params;

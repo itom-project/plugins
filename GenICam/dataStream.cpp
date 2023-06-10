@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -97,7 +97,7 @@ GenTLDataStream::GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE 
             }
         }
 
-        
+
     }
 
     if (m_verbose >= VERBOSE_INFO)
@@ -160,7 +160,7 @@ QByteArray GenTLDataStream::getInfoString(GenTL::STREAM_INFO_CMD cmd, int maxSiz
 
     GenTL::INFO_DATATYPE type = GenTL::INFO_DATATYPE_STRING;
     GenTL::GC_ERROR err = DSGetInfo(m_handle, cmd, &piType, &pBuffer, &piSize);
-    
+
     if (err == GenTL::GC_ERR_SUCCESS)
     {
         if (piType == GenTL::INFO_DATATYPE_STRING)
@@ -172,7 +172,7 @@ QByteArray GenTLDataStream::getInfoString(GenTL::STREAM_INFO_CMD cmd, int maxSiz
             err = GenTL::GC_ERR_CUSTOM_ID;
         }
     }
-    
+
     if (returnCode)
     {
         *returnCode = err;
@@ -217,7 +217,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
     size_t payloadSize = 0;
     size_t bufAnnounceMin = 1;
     int payloadType = 0;
-    
+
     if (bytesPerBuffer == 0) //estimate payload
     {
         size = sizeof(definesPayloadsize);
@@ -331,7 +331,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
     for (int i = 0; i < nrOfBuffers; ++i)
     {
         GenTL::GC_ERROR err;
-        
+
         if (m_usePreAllocatedBuffer >= 0) //use the type of buffer (itom-allocated or camera-allocated depending on the first buffer)
         {
             if (m_usePreAllocatedBuffer > 0)
@@ -365,7 +365,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
             }
         }
         else //in the first run, guess if pre-allocated or internal-allocated memory should be used.
-        { 
+        {
             err = DSAllocAndAnnounceBuffer(m_handle, bytesPerBuffer, this, &handle);
 
             if (err == GenTL::GC_ERR_INVALID_PARAMETER && DSAnnounceBuffer)
@@ -422,7 +422,7 @@ ito::RetVal GenTLDataStream::allocateAndAnnounceBuffers(int nrOfBuffers, size_t 
 
     if (m_verbose >= VERBOSE_INFO)
     {
-        
+
         std::cout << "* Allocation type: " << ((m_usePreAllocatedBuffer == 0) ? "camera internal" : "allocated by itom") << "\n" << std::endl;
         std::cout << "* Number of buffers " << m_buffers.size() << "\n" << std::endl;
         if (retval.containsError())
@@ -506,7 +506,7 @@ ito::RetVal GenTLDataStream::flushBuffers(GenTL::ACQ_QUEUE_TYPE queueType /*= Ge
             std::cout << "Error flushing all buffers. Type " << queueType << ". Error message: " << retval.errorMessage() << "\n" << std::endl;
         }
     }
-                   
+
 
     return retval;
 }
@@ -604,7 +604,7 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
             printBufferInfo(QString("* buffer 0x%1 ->").arg((size_t)buf,0,16).toLatin1().constData(), buf);
         }
     }
-    
+
     while (!newData)
     {
         err = EventGetData(m_newBufferEvent, &latestBuffer, &pSize, m_timeoutMS);
@@ -1058,11 +1058,11 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
                 pixelformatNamespace = (GenTL::PIXELFORMAT_NAMESPACE_IDS)temp64;
             }
         }
-        
-        
+
+
 
         //get pixel endianess
-        if (pixelformat != PFNC_Mono8 && 
+        if (pixelformat != PFNC_Mono8 &&
             pixelformat != PFNC_Mono16 &&
             pixelformat != PFNC_RGB8 &&
             pixelformat != PFNC_BGR8 &&
@@ -1163,7 +1163,7 @@ ito::RetVal GenTLDataStream::copyRGB8ToDataObject(const char* ptr, const size_t&
 
     rowPtrDst = matRes->ptr<ito::Rgba32>(0); // pointer of first element
 
-    // iterate rows 
+    // iterate rows
     int x;
     int y;
     for (y = 0; y < height; y++)
@@ -1178,7 +1178,7 @@ ito::RetVal GenTLDataStream::copyRGB8ToDataObject(const char* ptr, const size_t&
             ptr++;
             rowPtrDst[x].b = *ptr;
             ptr++;
-            rowPtrDst[x].a = 255; 
+            rowPtrDst[x].a = 255;
         }
     }
 
@@ -1251,7 +1251,7 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
     cv::Mat* matB = &rgbChannels[2];
 
     cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(dobj.getCvPlaneMat(0));
-    
+
     const ito::uint8* rowPtrR;
     const ito::uint8* rowPtrG;
     const ito::uint8* rowPtrB;
@@ -1272,7 +1272,7 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
             rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
         }
     }
-    
+
     return ito::retOk;
 }
 
@@ -1317,7 +1317,7 @@ void unpack_12Packed_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, si
         b0 = *source++;
         b1 = *source++;
         b2 = *source++;
-        
+
         //byte 0: pixel 0, bit 11..4
         //byte 1: pixel 1, bit 3..0  FOLLOWED by pixel 0, bit 3..0
         //byte 2: pixel 1, bit 11..4
@@ -1338,7 +1338,7 @@ void unpack_12p_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, size_t 
         b0 = *source++;
         b1 = *source++;
         b2 = *source++;
-        
+
         //byte 0: pixel 0, bit 7..0
         //byte 1: pixel 1, bit 3..0  FOLLOWED by pixel 0, bit 11..8
         //byte 2: pixel 1, bit 11..4
@@ -1359,7 +1359,7 @@ void unpack_10Packed_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, si
         b0 = *source++;
         b1 = *source++;
         b2 = *source++;
-        
+
         //byte 0: pixel 0, bit 9..2
         //byte 1: bits 0..1 -> pixel 1, bit 0..1; bits 2..3 -> unused; bits 4..5 -> pixel 0, bit 0..1; bits 6..7 -> unused
         //byte 2: pixel 1, bit 9..2
@@ -1382,7 +1382,7 @@ void unpack_10p_into_16_lsb(ito::uint16 *dest, const ito::uint8 *source, size_t 
         b2 = *source++;
         b3 = *source++;
         b4 = *source++;
-        
+
         *dest++ = ((b0 & 0xff) << 0) + ((b1 & 0x03) << 8); //black in link above
         *dest++ = ((b1 & 0xfc) >> 2) + ((b2 & 0x0f) << 6); //gray in link above
         *dest++ = ((b2 & 0xf0) >> 4) + ((b3 & 0x3f) << 4); //red in link above

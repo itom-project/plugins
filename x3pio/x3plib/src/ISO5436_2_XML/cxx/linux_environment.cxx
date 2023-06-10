@@ -102,7 +102,7 @@ int copyFile(const char *src, const char *dst)
         if( n_chars == -1 )
         {
 			fclose(in_fd);
-			fclose(out_fd);		
+			fclose(out_fd);
             // read error
             return -1;
         }

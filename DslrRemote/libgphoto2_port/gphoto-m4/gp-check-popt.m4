@@ -31,7 +31,7 @@ AC_ARG_ENABLE([popt],
 [AS_HELP_STRING([--$1-popt],[Do not use popt])],
 [ if   test "x$enableval" = xno \
     || test "x$enableval" = xoff \
-    || test "x$enableval" = xfalse; 
+    || test "x$enableval" = xfalse;
   then
     try_popt=no
     require_popt=no
@@ -172,7 +172,7 @@ AM_CONDITIONAL([HAVE_POPT],[test "$have_popt" = "yes"])
 dnl
 dnl Please do not remove this:
 dnl filetype: 7595380e-eff3-49e5-90ab-e40f1d544639
-dnl I use this to find all the different instances of this file which 
+dnl I use this to find all the different instances of this file which
 dnl are supposed to be synchronized.
 dnl
 dnl Local Variables:

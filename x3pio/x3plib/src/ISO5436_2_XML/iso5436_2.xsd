@@ -61,7 +61,7 @@
 						allways defined as a matrix of size (N,1,M) with
 						N beeing the number of points in the profile and
 						M the number of layers in z-direction.
-            Point clouds have to be stored as list type. 
+            Point clouds have to be stored as list type.
 					</xsd:documentation>
             </xsd:annotation>
             <xsd:simpleType>

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -76,7 +76,7 @@ ito::RetVal ThorlabsBPInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 ThorlabsBPInterface::ThorlabsBPInterface()
@@ -104,8 +104,8 @@ The position values are always in mm if the corresponding axis is in closed-loop
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr(GITVERSION);    
-    
+    m_aboutThis = QObject::tr(GITVERSION);
+
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("channels", ito::ParamBase::IntArray, NULL, tr("list of channels to connect to. If an empty list is given, all connected channels are used. The plugin axis indices are then mapped to the channels.").toLatin1().data()));
     m_initParamsOpt[1].setMeta(new ito::IntArrayMeta(1, 3, 1, 0, 3, 1), true);
@@ -116,7 +116,7 @@ The position values are always in mm if the corresponding axis is in closed-loop
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
+/*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
     with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ThorlabsBP::init. The widged window is created at this position.
 */
 ThorlabsBP::ThorlabsBP() :
@@ -131,14 +131,14 @@ ThorlabsBP::ThorlabsBP() :
     m_params.insert("serialNumber", ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the device").toLatin1().data()));
     m_params.insert("channel", ito::Param("channel", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Channel number of each axis.").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 5.0, tr("Timeout for positioning in seconds.").toLatin1().data()));
-    
+
     m_params.insert("enabled", ito::Param("enabled", ito::ParamBase::IntArray, NULL, tr("If 1, the axis is enabled and power is applied to the motor. 0: disabled, the motor can be turned by hand.").toLatin1().data()));
     m_params.insert("zeroed", ito::Param("zeroed", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("If 0, the axis is not zeroed. 1: zeroed. If the axis is not zeroed, it is possible that position values at the edge of the valid range can not be reached.").toLatin1().data()));
     m_params.insert("hasFeedback", ito::Param("hasFeedback", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("If 0, the axis is not equipped with a strain gauge feedback, else 1.").toLatin1().data()));
     m_params.insert("controlMode", ito::Param("controlMode", ito::ParamBase::IntArray, NULL, tr("Open loop (0), closed loop (1)").toLatin1().data()));
     m_params.insert("maximumTravelRange", ito::Param("maximumTravelRange", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Maximum travel range for each axis in mm. This requires an actuator with built in position sensing. These values might not be correct if the motor is in open loop mode.").toLatin1().data()));
     m_params.insert("maximumVoltage", ito::Param("maximumVoltage", ito::ParamBase::IntArray, NULL, tr("Maximum output voltage (75, 100 or 150 V).").toLatin1().data()));
-    
+
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data()));
 
     m_currentPos.fill(0.0, 1);
@@ -208,7 +208,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 					break;
 				}
 			}
-            
+
 			if (!found)
 			{
 				retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found.");
@@ -245,7 +245,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         }
         else
         {
-            
+
             m_params["serialNumber"].setVal<char*>(serial.data()); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
             setIdentifier(QLatin1String(serial.data())); // bug: deviceInfo.serialNo is sometimes wrong if more than one of the same devices are connected
             m_params["deviceName"].setVal<char*>(deviceInfo.description);
@@ -354,7 +354,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
         m_numChannels = m_channelIndices.size();
         m_dummyValues = QSharedPointer<QVector<double> >(new QVector<double>(m_numChannels, 0.0));
-       
+
 
         m_params["numaxis"].setVal<int>(m_numChannels);
         m_currentPos.fill(0.0, m_numChannels);
@@ -390,7 +390,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         retval += getStatus(status, NULL);
         updateRanges();
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -466,7 +466,7 @@ ito::RetVal ThorlabsBP::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
@@ -508,7 +508,7 @@ ito::RetVal ThorlabsBP::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsBP::SMCSwitchType is executed.
 
@@ -988,7 +988,7 @@ ito::RetVal ThorlabsBP::getPos(const int axis, QSharedPointer<double> pos, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
+/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -1043,7 +1043,7 @@ ito::RetVal ThorlabsBP::getPos(const QVector<int> axis, QSharedPointer<QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls ThorlabsBP::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -1199,7 +1199,7 @@ ito::RetVal ThorlabsBP::setPosAbs(const QVector<int> axis, QVector<double> pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
+/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
             This function calls ThorlabsBP::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -1380,7 +1380,7 @@ ito::RetVal ThorlabsBP::requestStatusAndPosition(bool sendCurrentPos, bool sendT
 {
     ito::RetVal retval(ito::retOk);
 
-    
+
 
     if (sendCurrentPos)
     {
@@ -1416,7 +1416,7 @@ ito::RetVal ThorlabsBP::waitForDone(const int timeoutMS, const QVector<int> axis
     timer.start();
 
     while (!done && !retval.containsError())
-    {   
+    {
         memcpy(oldCurrentPos.data(), m_currentPos.data(), sizeof(double)*m_currentPos.size());
 
         done = true;
@@ -1478,7 +1478,7 @@ ito::RetVal ThorlabsBP::waitForDone(const int timeoutMS, const QVector<int> axis
     return retval;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ThorlabsBP::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1501,7 +1501,7 @@ void ThorlabsBP::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsBP::checkError(short value, const char* message)
 {
     if (value == 0)

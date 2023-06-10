@@ -783,7 +783,7 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &po
                 ito::int32 *rowPtr;
                 for (int nMat = 0; nMat < numMats; nMat++)
                 {
-                    plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];      
+                    plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];
                     for (int y = 0; y < ySize; y++)
                     {
                         rowPtr = plane->ptr<ito::int32>(y);
@@ -804,7 +804,7 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &po
                 ito::float32 tempVal;
                 ito::float32 *rowPtr;
                 for (int nMat = 0; nMat < numMats; nMat++)
-                {   
+                {
                     plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];
                     for (int y = 0; y < ySize; y++)
                     {
@@ -836,7 +836,7 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &po
                 ito::float64 tempVal;
                 ito::float64 *rowPtr;
                 for (int nMat = 0; nMat < numMats; nMat++)
-                {    
+                {
                     plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];
                     for (int y = 0; y < ySize; y++)
                     {
@@ -1429,7 +1429,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             while(!vector.IsValid() && iterator->HasNext())
             {
                 iterator->MoveNext();
-                iterator->GetCurrent(vector); 
+                iterator->GetCurrent(vector);
             }
 
             pointType = vector.GetZ()->GetPointType();
@@ -1600,5 +1600,3 @@ ito::RetVal X3pIO::close(ItomSharedSemaphore * /*waitCond*/)
 
     return retval;
 }
-
-

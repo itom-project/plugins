@@ -55,11 +55,11 @@ class DockWidgetThorlabsPowerMeter : public ito::AbstractAddInDockWidget
         int m_timerId;
         bool m_timerIsRunning;
         void calculateUnit(const ito::float64 &val, QPair<double, QString> &result);
-        
+
     protected:
         void timerEvent(QTimerEvent *event);
 
-        
+
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

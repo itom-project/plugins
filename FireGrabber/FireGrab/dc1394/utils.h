@@ -53,7 +53,7 @@ dc1394error_t dc1394_get_color_coding_data_depth(dc1394color_coding_t color_codi
 
 /**
  * Returns the bit-space used by a pixel. This is different from the data depth! For instance, RGB16 has a bit space of 48 bits,
- * YUV422 is 16bits and YU411 is 12bits. 
+ * YUV422 is 16bits and YU411 is 12bits.
  */
 dc1394error_t dc1394_get_color_coding_bit_size(dc1394color_coding_t color_coding, uint32_t* bits);
 
@@ -83,7 +83,7 @@ dc1394bool_t dc1394_is_video_mode_still_image(dc1394video_mode_t video_mode);
 dc1394bool_t dc1394_is_same_camera(dc1394camera_id_t id1, dc1394camera_id_t id2);
 
 /**
- * Returns a descriptive name for a feature 
+ * Returns a descriptive name for a feature
  */
 const char * dc1394_feature_get_string(dc1394feature_t feature);
 
@@ -102,4 +102,3 @@ uint16_t dc1394_checksum_crc16 (const uint8_t* buffer, uint32_t buffer_size);
 #endif
 
 #endif /* _DC1394_UTILS_H */
-

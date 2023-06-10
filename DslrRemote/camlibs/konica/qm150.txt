@@ -10,7 +10,7 @@ all functions are preceded by escape code (0x1B).
 	0x33 = 57600 bauds
 	0x34 = 115200 bauds
 	(In all case, if ok, receive an ACK (1 byte))
- - 0x47 0x46 0x3X 0x3X 0x3X 0x3X = Get image 
+ - 0x47 0x46 0x3X 0x3X 0x3X 0x3X = Get image
  	receive 1 byte which contains the ACK (0x6 = all is ok | 0x15 = there is an error)
 	And by cycle :
 		receive a part of the picture (512 bytes)
@@ -48,7 +48,7 @@ Camera's Information buffer :
 0x19        = Focus (0 = auto | 1 = 2.0m | 2 = 0.5m | 3 = 0.1m)
 0x1A        = Macro (0 = off | 1 = on)
 0x1B        = Zoom (0 = off | 1 = on)
-0x1C - 0x1D = Rapport avec la carte mémoire : surement sa présence + sa taille ?? 
+0x1C - 0x1D = Rapport avec la carte mémoire : surement sa présence + sa taille ??
 0x1E        = capture (0 = single | 1 = sequence 9)
 0x1F        = Date display (0 = off | 1 = on)
 0x20        = Date display in play mode (0 = on | 1 = off)
@@ -73,7 +73,7 @@ Image's Information buffer :
 Escape codes of the windows driver:
 
 Ping:
-        Writes 2 byte: 1B 58    ESC X   
+        Writes 2 byte: 1B 58    ESC X
         Expects: 1 byte NACK/ACK
 
 Getcaminfo:
@@ -96,7 +96,7 @@ cmd_H: UNSUPPORTED !
 
 SetSpeed:
         Writes 3 byte: 1B 42 <nr>               ESC B x
-        
+
         Speeds are mapped to this (ascii) number:
                 0       - 9600
                 1       - 19200
@@ -116,7 +116,7 @@ ImageInfo 2:
         Writes 7 byte: 1B 49 46 <nr> <nr> <nr> <nr>     ESC I F xxxx
 
         Expects: 1 byte NACK or 256 byte data.
-        
+
         The data is the same as in ImageInfo 1.
 
         Unclear what the difference between the 2 commands is.
@@ -167,26 +167,25 @@ Capture:
 Set Time (?): do nothing ?
         Writes 11 byte: 1B 57 44 <8*nr>                 ESC W D xxxxxxxx
         Expects: 1 byte NACK/ACK.
-                
+
         The number is the current time in seconds sinc 1980 I guess.
 
 Get Thumbnail 1:
         Writes: 6 byte 1B 54 <4*nr>                     ESC T xxxx
-        Expects: ...  see code 
+        Expects: ...  see code
 
 Get Thumbnail 2:
         Writes: 7 byte 1B 54 46 <4*nr>                  ESC TF xxxx
-        Expects: ...  see code 
+        Expects: ...  see code
 
 Get Image 1:
         Writes: 6 byte 1B 47 <4*nr>                     ESC G xxxx
-        Expects: ...  see code 
+        Expects: ...  see code
 
 Get Image 2:
         Writes: 7 byte 1B 47 46 <4*nr>                  ESC GF xxxx
-        Expects: ...  see code 
+        Expects: ...  see code
 
 Upload:
         Writes: 2 byte 1B 55                            ESC U
         Expects: ... see code
-

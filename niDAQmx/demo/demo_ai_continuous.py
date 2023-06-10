@@ -23,10 +23,10 @@ where ConfigMode is an integer from this list
 (see also argument terminalConfig from command
 DAQmxCreateAIVoltageChan):
 
-DAQmx_Val_Cfg_Default = 0, 
-DAQmx_Val_Diff = 1, 
-DAQmx_Val_RSE = 2, 
-DAQmx_Val_NRSE = 3, 
+DAQmx_Val_Cfg_Default = 0,
+DAQmx_Val_Diff = 1,
+DAQmx_Val_RSE = 2,
+DAQmx_Val_NRSE = 3,
 DAQmx_Val_PseudoDiff = 4
 
 Hint: It depends on the NI DAQ devices, if they allow
@@ -54,7 +54,7 @@ plugin = dataIO(
 # samples, obtained by 'samplesPerChannel' * noOfChannels is lower
 # than the values in the following table, NI-DAQ uses the values from
 # the table:
-# 
+#
 # no sampling rate:      10000 samples
 # 0 - 100 samples / sec: 1 kS
 # 101 - 10000 S/s:       10 kS
@@ -100,12 +100,12 @@ arrays = []
 [i, h] = plot1(dataObject())
 
 for j in range(0, 2):
-    
+
     print(f"Run {j+1}/2...", end="")
-    
+
     # start the task
     plugin.acquire()
-    
+
     for i in range(0, 5):
         t = time.time()
         # the following sleep must not be too long, since NI raises
@@ -121,10 +121,10 @@ for j in range(0, 2):
         print(f", step {i+1}/5 in %.2f s" % (time.time() - t), end="")
         h["source"] = d  # update the plot
         arrays.append(d)
-    
+
     # stop the task
     plugin.stop()
-    
+
     print(" done")
 
 # print the shapes of all subobjects
@@ -142,9 +142,9 @@ plot1(total)
 #    getVal/copyVal values in order to not raise a timeout / unsufficient
 #    buffer size error.
 #
-#    The logging is enabled via the parameters 'loggingMode', 
+#    The logging is enabled via the parameters 'loggingMode',
 #    'loggingFilePath', 'loggingGroupName' and 'loggingOperation':
-#    
+#
 #    loggingMode: 0 -> disable logging
 #                 1 -> enable fast mode logging
 #                      (no simultaneous read via getVal/copyVal allowed),
@@ -171,21 +171,20 @@ plugin.setParam("loggingOperation", "createOrReplace")
 
 for i in range(0, 3):
     print(f"logged acquisition {i+1}/3: ", end="")
-    
+
     # start the continuous task again
     plugin.acquire()
-    
+
     # wait for 3 seconds (data are acquired and stored into the file)
     for j in range(0, 3):
         print(".", end="")
         time.sleep(1)
-    
+
     # stop the task
     plugin.stop()
-    
+
     print(" done")
 
 # stop the device (if there are still running \
 # tasks, they will also be stopped here)
 plugin.stopDevice()
-

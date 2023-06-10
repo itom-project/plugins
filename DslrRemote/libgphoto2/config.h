@@ -18,13 +18,13 @@
     #define C_MEM( VAL ) \
         if ( !(VAL) ) assert(sprintf("Failed to allocate memory in %s %s", __FUNCTION__, __FILE__))
 #else
-    #define GP_LOG_E( ERRMSG, ... ) 
+    #define GP_LOG_E( ERRMSG, ... )
     #define GP_LOG_D( DBGMSG, ... )
     #define C_PARAMS_MSG( COND, PARAMSMSG ) COND
     #define C_PARAMS( VAL ) VAL
     #define C_MEM( VAL ) VAL
 #endif
-*/ 
+*/
 
 #define __func__  __FUNCTION__
 #define lseek _lseek

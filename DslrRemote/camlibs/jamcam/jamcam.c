@@ -198,7 +198,7 @@ static int get_file_func (CameraFilesystem *fs, const char *folder,
 
 	raw = malloc(640*480 * 3);
 	ppm = malloc(640*480 * 3 + 200);
-	
+
 	switch (type) {
 	case GP_FILE_TYPE_PREVIEW:
 
@@ -343,4 +343,3 @@ int camera_init (Camera *camera, GPContext *context)
 	/* Set up the CameraFilesystem */
 	return gp_filesystem_set_funcs (camera->fs, &fsfuncs, camera);
 }
-

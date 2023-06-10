@@ -28,8 +28,8 @@ AERERR_CODE AER_DLLENTRY AerVerGetSMCVersionEx( HAERCTRL hAerCtrl, PDWORD pdwUni
                                                 PDWORD pdwBuild );
 AERERR_CODE AER_DLLENTRY AerVerGetSMCVersionString( HAERCTRL hAerCtrl, LPTSTR pszVersion );
 
-AERERR_CODE AER_DLLENTRY AerVerGetDriveVersion( HAERCTRL hAerCtrl, 
-                                                AXISINDEX iAxis, 
+AERERR_CODE AER_DLLENTRY AerVerGetDriveVersion( HAERCTRL hAerCtrl,
+                                                AXISINDEX iAxis,
                                                 PDWORD pdwHardwareType,
                                                 PDWORD pdwMajorVersion,
                                                 PDWORD pdwMinorVersion,

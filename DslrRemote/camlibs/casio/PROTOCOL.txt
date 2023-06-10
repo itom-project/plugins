@@ -1,5 +1,5 @@
-[ 
-  PREAMBLE: this file comes from qvplay-0.95 that is available at 
+[
+  PREAMBLE: this file comes from qvplay-0.95 that is available at
   	http://www.asahi-net.or.jp/~XG2K-HYS/qvplay-0.95.tar.gz
   This copy is here for convenience to gphoto2 developers.
 ]
@@ -8,14 +8,14 @@
 =============================================================================
 
                     QV-10 SERIAL COMMUNICATIONS PROTOCOL
-                  
+
 =============================================================================
 
     This document describes the serial communication protocol used by
-    QV-10's "DIGITAL" connecter. This information is not official. 
-    Rather, it is the result of individual analysis. Please.  Do *not* 
-    contact CASIO to ask questions about this information. 
-   
+    QV-10's "DIGITAL" connecter. This information is not official.
+    Rather, it is the result of individual analysis. Please.  Do *not*
+    contact CASIO to ask questions about this information.
+
     You should read source code of 'qvplay' too.
 
 =============================
@@ -27,11 +27,11 @@ S E R I A L   P R O T O C O L
     * RTS off
     * CTS,DTR on
 
-CASIO's QV-10 serial cable is a level converter. It converts RS-232C 
+CASIO's QV-10 serial cable is a level converter. It converts RS-232C
 voltage levels to QV-10's voltage levels. This voltage converter circuit
-uses the electrical power supplied by the host computer's RS-232C 
-connector. (V+ is CTS, V- is RTS.) To recieve digital data from QV-10, 
-set the CTS terminal to ON, RTS terminal to OFF. 
+uses the electrical power supplied by the host computer's RS-232C
+connector. (V+ is CTS, V- is RTS.) To recieve digital data from QV-10,
+set the CTS terminal to ON, RTS terminal to OFF.
 
 On power-up, QV-10 serial communication speed defaults to 9600baud.  This
 speed may be changed with the'CB' command, described below. This change
@@ -66,7 +66,7 @@ RESET CAMERA
 
     05 'QR' 06
     ------------    Reset QV10.
-      06  5c    
+      06  5c
 
 Comment:
   This command is acceptable, in all states.
@@ -79,10 +79,10 @@ Comment:
 
     05 'QE' 06
     ------------    Reset QV10.
-      06  69    
+      06  69
 
 Comment:
-  This command does not clear the QV10's LCD.    
+  This command does not clear the QV10's LCD.
   The meaning of 0x69 is checksum.
 
 
@@ -91,10 +91,10 @@ QUERY PICTURE NUMBER
 
     05 'MP' 06
     -------------- Fetch number of pictures in QV10
-      06  62  XX 
+      06  62  XX
 
 Comment:
-    Number of pictures in QV10 returned at XX. 
+    Number of pictures in QV10 returned at XX.
     The meaning of 0x62 is checksum.
 
 
@@ -102,8 +102,8 @@ SHOW PICTURE #XX ON LCD
 ======================
 
     05 'DA' XX 06
-    ---------------- Show picture on QV10's LCD. 
-      06      YY 
+    ---------------- Show picture on QV10's LCD.
+      06      YY
 
 Comment:
     Picture number is specified by XX.
@@ -117,7 +117,7 @@ GET PICTURE DATA IN JPEG FORMAT
      06      YY     06   6f     06  6b     [Picture Data] [Picture Data]
 
     06           06                    06
-    -----------------------------......---------------- 
+    -----------------------------......----------------
     [Picture Data] [Picture Data]        02 00 00 03 FC
 
 
@@ -137,17 +137,17 @@ FORMAT OF [Picture Data]
 
 Comment:
  WW WW: Data Block Size (2 bytes):  (Normally 0x00 0x80, 128 bytes)
-        The data preceeding the endmark(02 00 00 03 FC) is its 
+        The data preceeding the endmark(02 00 00 03 FC) is its
         block size(under 0x00 0x80).
-    JJ: Picture data. (Image Area of CAM format) 
+    JJ: Picture data. (Image Area of CAM format)
         (Please refer to the CAM format information below).
-    SS: Check sum.  Reverse bits of all sum of second byte (after 0x02) 
+    SS: Check sum.  Reverse bits of all sum of second byte (after 0x02)
         of data block to before SS (0x17).
 
 SEND JPEG FORMAT PICTURE DATA TO QV-10
 ======================================
 
-    05 'MH' 06 [Picture Data] [Picture Data] 
+    05 'MH' 06 [Picture Data] [Picture Data]
     ------------------------------------------
       06  6a 12             06             06
 
@@ -170,11 +170,11 @@ GET THUMBNAIL IMAGE AS "YCC" FORMAT
 ===================================
 
     05 'DA' XX 06 05 'DL' 06 05  'MK' 06 12             06
-    -------------------------------------------------------------------- 
+    --------------------------------------------------------------------
     06    YY        06  6f     06   67     [Picture Data] [Picture Data]
 
     06           06                   06
-    ----------------------------......---------------- 
+    ----------------------------......----------------
     [Picture Data] [Picture Data]      02 00 00 03 FC
 
 Comment:
@@ -189,23 +189,23 @@ FORMAT OF [PICTURE DATA]
      02 WW WW TT TT TT TT TT ........ 17 SS
 
 Comment:
- WW WW: Data block size. (2byte). 
+ WW WW: Data block size. (2byte).
         Normally 0x00 0x80 (128 bytes)
-        The data preceeding the endmark(02 00 00 03 FC) is its 
+        The data preceeding the endmark(02 00 00 03 FC) is its
         block size(under 0x00 0x80).
     TT: Picture data. (YCC format)
     SS: Check sum.
-        Reverse bits of all sum of second byte (after 0x02) 
+        Reverse bits of all sum of second byte (after 0x02)
         of data block to before SS (0x17).
     Thumbnail image size is 52(W)x36(H).
 
-    In 2808 bytes, 
-        the first 1872 bytes contain Y element data(0 to 255), 
-        the second 468 bytes contain Cb element data(-128 to 127), 
-        the third 468 bytes contain Cr element data(-128 to 127). 
+    In 2808 bytes,
+        the first 1872 bytes contain Y element data(0 to 255),
+        the second 468 bytes contain Cb element data(-128 to 127),
+        the third 468 bytes contain Cr element data(-128 to 127).
 
     The Y element is represented by an unsigned char.
-    Cb and Cr elements are represented by signed char. 
+    Cb and Cr elements are represented by signed char.
     The formula to convert YCC to RGB, is described in "ppm.c".
     (qvplay's source file)
 
@@ -214,11 +214,11 @@ GET PICTURE DATA IN YCC FORMAT
 ==================================
 
     05 'DA' XX  06 05 'DL' 06 05 'ML' 06 12              06
-    -------------------------------------------------------------------- 
+    --------------------------------------------------------------------
       06      YY     06  6f     06  66     [Picture Data] [Picture Data]
 
     06            06                 06
-    ----------------------------......---------------- 
+    ----------------------------......----------------
     [Picture Data] [Picture Data]     02 00 00 03 FC
 
 
@@ -233,37 +233,37 @@ FORMAT OF [PICTURE DATA]
 ========================
 
     02 WW WW JJ JJ JJ JJ JJ ........ 17 SS
-    
+
 Comment:
-  WW WW: Data block size. (2bytes). 
+  WW WW: Data block size. (2bytes).
          Normaly 0x00 0x80, 128 bytes.
-         The data preceeding the endmark(02 00 00 03 FC) is its 
+         The data preceeding the endmark(02 00 00 03 FC) is its
          block size(under 0x00 0x80).
      TT: Picture Data. (YCC format)
      SS: Check sum.
-         Reverse bits of all sum of second byte (after 0x02) of data 
+         Reverse bits of all sum of second byte (after 0x02) of data
          block to before SS(0x17).
 
  - When picture is 'normal mode(420x240)' picture
     Picture size is 480(W)x240(H).
     All Picture Data size is 153600 byte.
 
-    In 153600 bytes, 
-        the first 115200 bytes contain Y element data(0 to 255), 
-        the second 19200 bytes contain Cb element data(-128 to 127), 
-        the third 19200 bytes contain Cr element data(-128 to 127). 
+    In 153600 bytes,
+        the first 115200 bytes contain Y element data(0 to 255),
+        the second 19200 bytes contain Cb element data(-128 to 127),
+        the third 19200 bytes contain Cr element data(-128 to 127).
 
  - When picture is 'fine mode' picture
     Picture size is 640(W)x480(H).
     All Picture Data size is 460800 byte.
 
-    In 460800 bytes, 
-        the first 307200 bytes contain Y element data(0 to 255), 
-        the second 76800 bytes contain Cb element data(-128 to 127), 
-        the third 76800 bytes contain Cr element data(-128 to 127). 
+    In 460800 bytes,
+        the first 307200 bytes contain Y element data(0 to 255),
+        the second 76800 bytes contain Cb element data(-128 to 127),
+        the third 76800 bytes contain Cr element data(-128 to 127).
 
     The Y element is represented by an unsigned char.
-    Cb and Cr elements are represented by signed char. 
+    Cb and Cr elements are represented by signed char.
     The formula to convert YCC to RGB, is described in "ppm.c".
     (qvplay's source file)
 
@@ -271,9 +271,9 @@ Comment:
 SEND A YCC FORMAT PICTURE TO QV-10
 ==================================
 
-    05 'MM' 06 [Picture Data] [Picture Data] 
+    05 'MM' 06 [Picture Data] [Picture Data]
     -----------------------------------------
-      06  65  12            06    
+      06  65  12            06
 
     [Picture Data] [Picture Data]       02 00 00 03 FC
     ----------------------------......----------------
@@ -294,18 +294,18 @@ DELETE A PICTURE FROM QV-10 MEMORY
 ===================================
 
     05 'DF' XX ff 06
-    ------------------- 
-    06    YY    
+    -------------------
+    06    YY
 
 Comment:
     XX: Picture Number.
     YY: checksum (0x76 - XX)
 
-TAKE A PICTURE    
+TAKE A PICTURE
 ==============
 
     05 'DR' 06
-    -------------    
+    -------------
       06  69  ZZ
 
 Comment:
@@ -319,12 +319,12 @@ CHANGE SERIAL COMMUNICATION SPEED
 =================================
 
     05 'CB' XX   06
-    ----------------    
-      06      YY    
+    ----------------
+      06      YY
 
 Comment:
    XX: Select XX from the table below
-   YY: checksum 
+   YY: checksum
 
      XX(decimal(hex)): baud
          --------------------
@@ -339,8 +339,8 @@ Comment:
 CHANGE PICTURE ORDER
 ====================
 
-    05 'DI' XX 06 05 'DY' 02 XX 06 05 'DF' XX ff 06 05 'Dj' VV 06 
-    ------------------------------------------------------------------------ 
+    05 'DI' XX 06 05 'DY' 02 XX 06 05 'DF' XX ff 06 05 'Dj' VV 06
+    ------------------------------------------------------------------------
       06      YY    06         ZZ    06         WW    06      UU
 
 Comment:
@@ -360,7 +360,7 @@ POWER OFF QV-10
 
     05  'QX'  06
     --------------
-      06    56 
+      06    56
 
 Comment:
     Power off QV-10.
@@ -371,7 +371,7 @@ DISABLE AUTO POWER OFF FUNCTION
 
     05  'DU'  06 05  'QE'  06
     ----------------------------
-      06    66     06   69 
+      06    66     06   69
 
 Comment:
     Disable auto power off function.
@@ -396,7 +396,7 @@ SHOW TEST COLOR PATTERN
 
     05  'DP' 06
     -------------
-      06   XX 
+      06   XX
 
 Comment:
     Show 'test color patten' on LCD.
@@ -413,7 +413,7 @@ Comment:
       Report REC/PLAY switch status and CCD lens unit status.
     The return byte XX is checksum.
     YY:
-      MSB 
+      MSB
       7 0x80 Too brighter warning mark(filled circle)) is shown on LCD.
       6 0x40 Too darker warning mark(hollow circle)) is shown on LCD.
       5 0x20 unknown
@@ -424,7 +424,7 @@ Comment:
       0 0x01 unknown
       LSB
     ZZ:
-      MSB 
+      MSB
       7 0x80 CCD lens unit is reverse position.
       6 0x40 REC/PLAY SW. is PLAY position.
       5 0x20 PROTECT button is pressed.
@@ -471,7 +471,7 @@ Comment:
             off      640x480   0x02
             on       640x480   0x03
 
-CHANGE IMAGE TRANSFER BLOCK SIZE 
+CHANGE IMAGE TRANSFER BLOCK SIZE
 ================================
 
     05  'PP' XX YY  06
@@ -527,7 +527,7 @@ Comment:
     ZZ: model ID2
     WW: revision num1
     VV: revision num2
- 
+
     sample
     model    YYZZWWVV
     QV10   0x00531719
@@ -548,9 +548,9 @@ NEW COMMANDS FOR QV-700/770
 ENABLE NEW COMMANDS FOR QV-700/770?
 ===================================
 
-    05  'NP' 01  06 
+    05  'NP' 01  06
     ------------------
-      06       60  
+      06       60
 Comment:
      Enable new commands.
 
@@ -558,7 +558,7 @@ Comment:
 
 GET PICTURE DATA IN JPEG FORMAT
 ===================================
-    05 'DA' XX 06 05  'DL' 06 05 'EM'             06 
+    05 'DA' XX 06 05  'DL' 06 05 'EM'             06
     -------------------------------------------------
      06      YY     06   6f     06  6d ZZ ZZ ZZ ZZ
 
@@ -567,7 +567,7 @@ GET PICTURE DATA IN JPEG FORMAT
       06   73      [Picture Data] [Picture Data]
 
     06           06                    06
-    -----------------------------......---------------- 
+    -----------------------------......----------------
     [Picture Data] [Picture Data]        02 00 00 03 FC
 
 Comment:
@@ -586,17 +586,17 @@ FORMAT OF [Picture Data]
 
 Comment:
  WW WW: Data Block Size (2 bytes):  (Normally 0x00 0x80, 128 bytes)
-        The data preceeding the endmark(02 00 00 03 FC) is its 
+        The data preceeding the endmark(02 00 00 03 FC) is its
         block size(under 0x00 0x80).
-    JJ: Picture data. (JFIF format) 
-    SS: Check sum.  Reverse bits of all sum of second byte (after 0x02) 
+    JJ: Picture data. (JFIF format)
+    SS: Check sum.  Reverse bits of all sum of second byte (after 0x02)
         of data block to before SS (0x17).
 
 GET PICTURE INFORMATION
 =======================
     05 'DA' XX 06 05  'DL' 06
     -------------------------
-     06      YY     06   6f  
+     06      YY     06   6f
 
     05  'CV'  06  12                             06
     -------------------------------------------------------------
@@ -607,7 +607,7 @@ Comment:
     The return byte YY is checksum. (0x7a - XX).
     Return byte 6f is checksum.
     Return byte 66 is checksum.
-    SS: Check sum.  Reverse bits of all sum of second byte (after 0x02) 
+    SS: Check sum.  Reverse bits of all sum of second byte (after 0x02)
         of data block to before SS (0x17).
 
     11bytes data
@@ -644,7 +644,7 @@ SPECIAL THANKS
   Itojun-san, Brahma-san, Goto-san, Mario-san
   (Thanks for their research and report about the serial protocol)
   Dr. Sadun
-  (Thanks for fixup of early version of this document which 
+  (Thanks for fixup of early version of this document which
     written in my poor English.)
   Kuwata-san
   (Thanks for the report about battery voltage.)

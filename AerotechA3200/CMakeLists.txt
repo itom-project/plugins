@@ -1,37 +1,30 @@
 set(target_name AerotechA3200)
 
-
 cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
-
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
+
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
-
-
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 itom_find_package_qt(ON Core Widgets LinguistTools)
-find_package(OpenCV COMPONENTS core REQUIRED)
-
-
-
-
-
 
 if(BUILD_TARGET64)
     message(WARNING "AerotechA3200 can only be build for 32bit. ${target_name} will not be build")
@@ -69,10 +62,10 @@ else(BUILD_TARGET64)
         #${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
     )
 
-    set(PLUGIN_SOURCES 
+    set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/aerotechA3200.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp    
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp
     )
 
     #Add version information to the plugIn-dll unter MSVC
@@ -81,10 +74,10 @@ else(BUILD_TARGET64)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    
+
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-    
+
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${LIB_NAME})
 
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -94,10 +87,10 @@ else(BUILD_TARGET64)
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
-    
+
     #documentation
     itom_configure_plugin_documentation(${target_name} aerotechA3200)
-    
+
     # COPY SECTION
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")
@@ -106,7 +99,4 @@ else(BUILD_TARGET64)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-    # copy dlls in itoms lib folder
-    #file(GLOB dlls "${BINARY_PATH}/*.dll")
-    #itom_post_build_copy_files_to_lib_folder(${target_name} dlls)
 endif(BUILD_TARGET64)

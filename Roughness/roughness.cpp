@@ -74,7 +74,7 @@ Some algorithms the plugin 'fittingFilters' for a valid execution.");
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LPGL licensed");
-    m_aboutThis = QObject::tr(GITVERSION);   
+    m_aboutThis = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ ito::RetVal checkSamplingLength(const int length, const Roughness::RoughnessPara
         if ((sample_length * num_samples) > length)
         {
             sample_length--;
-        } 
+        }
     }
     else if (params.sampling_length_mode == Roughness::RoughnessParams::Use5SamplesWithCutOffWavelength)
     {
@@ -148,7 +148,7 @@ ito::RetVal checkSamplingLength(const int length, const Roughness::RoughnessPara
         if (sample_length * num_samples > length)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("measurement length is too short to be split into 5 samples with a length of the cut-off wavelength each").toLatin1().data());
-        } 
+        }
     }
     else
     {
@@ -660,7 +660,7 @@ template<typename _Tp> ito::RetVal CalcZsk(const uchar* data, const size_t byte_
         }
     }
 
-    
+
 
     return retval;
 }
@@ -995,7 +995,7 @@ template<typename _Tp> ito::RetVal CalcZdc(const uchar* data, const size_t byte_
     std::vector<_Tp> vec;
     int count = 0;
     bool valids = false;
-    
+
     if (std::numeric_limits<_Tp>::is_exact)
     {
         vec.resize(length);
@@ -1049,7 +1049,7 @@ template<typename _Tp> ito::RetVal CalcAbbott(const uchar* data, const size_t by
     size_t steps = byte_steps / sizeof(_Tp);
     std::vector<_Tp> vec;
     int count = 0;
-    
+
     if (std::numeric_limits<_Tp>::is_exact)
     {
         vec.resize(length);
@@ -1253,7 +1253,7 @@ ito::RetVal Roughness::calcRoughnessProfile(QVector<ito::ParamBase> *paramsMand,
         bool valid;
         std::string unit = input.getAxisUnit(1, valid);
         ito::float64 spacing = input.getAxisScale(1);
-        
+
         if (!valid)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("axis unit could not be read").toLatin1().data());
@@ -1326,7 +1326,7 @@ ito::RetVal Roughness::calcRoughnessProfile(QVector<ito::ParamBase> *paramsMand,
                 }
                 else //open profiles (non periodicity)
                 {
-                    
+
                     std::vector<ito::float64> kernel = gen_gauss_convolution(spacing, lc, cutoff_factor, nr_of_endeffect_pixels_lc);
                     retval += gauss_conv_non_periodic_rowwise(input_plane, waviness_plane, kernel);
 
@@ -1492,7 +1492,7 @@ the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").repla
     paramsOpt->append(ito::Param("nr_of_endeffect_pixels", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, QObject::tr("nr of pixels at both sides of the profile that contain wrong values to the final length of the convolution filter kernel. Skip these pixels in any evaluation (see DIN EN ISO 16610-21, 4.3; DIN EN ISO 16610-28 will show more information when it is released in a final version)").toLatin1().data()));
     paramsOpt->append(ito::Param("sampling_length_mode", ito::ParamBase::Int | ito::ParamBase::In, RoughnessParams::SplitInto5EqualSamples, RoughnessParams::Use5SamplesWithCutOffWavelength, RoughnessParams::SplitInto5EqualSamples, QObject::tr("mode how to split the measurement length (ml) into different sampling lengths (sl): 0: split ml into five samples (warn if the sl does not correspond to Lc), 1: split ml into n samples whose length is Lc, 2: same as 1 but only use the first 5 sampling lengths.").toLatin1().data()));
     paramsOpt->append(ito::Param("result_detailed", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, QObject::tr("returns a Nx3 float64 data object will the mean,min and max roughness value for each evaluated line (only interesting if input contains more than one line)").toLatin1().data()));
-    
+
     int mr_range[] = {20, 80};
     param = ito::Param("mr_range", ito::ParamBase::IntArray | ito::ParamBase::In, 2, mr_range, QObject::tr("[min,max] range in percent for the parameter Rdc or Wdc (height difference between two levels of the Abbott-Firstone-Curve").toLatin1().data());
     param.setMeta(new ito::RangeMeta(0, 100, 1), true);
@@ -1500,7 +1500,7 @@ the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").repla
 
     paramsOut->append(ito::Param("result", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, QObject::tr("resulting values. See docstring of filter.").toLatin1().data()));
     paramsOut->append(ito::Param("nr_of_samples", ito::ParamBase::Int | ito::ParamBase::Out, 1, 1000, 5, QObject::tr("Number of evaluated samples per line (5 is the desired value with respect to DIN EN ISO 4288), Rt is evaluated over the whole measurement range, therefore nr_of_samples is 1.").toLatin1().data()));
-    
+
     return retval;
 }
 
@@ -1564,7 +1564,7 @@ the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").repla
         bool valid;
         std::string unit = input.getAxisUnit(1, valid);
         ito::float64 spacing = input.getAxisScale(1);
-        
+
         if (!valid)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("axis unit could not be read").toLatin1().data());
@@ -1630,7 +1630,7 @@ the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.").repla
                 plane_cropped = plane->colRange(endeffect_pixels, plane->cols - endeffect_pixels);
             }
 
-            if (plane->rows == 1) 
+            if (plane->rows == 1)
             {
                 int num_samples_out;
                 ito::float64 Z_out[3];
@@ -1757,7 +1757,7 @@ ito::RetVal Roughness::roughnessProfileParams(QVector<ito::Param> *paramsMand, Q
     if (retval.containsError()) return retval;
 
     paramsMand->append(ito::Param("input", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, QObject::tr("real input object (1D or 2D). The roughness is determined row-by-row. The axis units must be set to 'mm', '_m' or 'nm'.").replace("_", QLatin1String("\u00B5")).toLatin1().data()));
-    
+
     param = ito::Param("param", ito::ParamBase::String | ito::ParamBase::In, "Ra", QObject::tr("roughness parameter to determine").toLatin1().data());
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "Rp");
     sm->addItem("Rv");
@@ -1863,7 +1863,7 @@ ito::RetVal Roughness::roughnessProfile(QVector<ito::ParamBase> *paramsMand, QVe
             p_opt[1].setVal<int>(sampling_length_mode);
             p_opt[3].setVal<int*>((int*)mr_range,2);
             retval += apiFilterCall("evalRoughnessProfile", &p_mand, &p_opt, &p_out);
-            
+
             if (!retval.containsError())
             {
                 if (p_out[0].getLen() > 0)
@@ -1943,7 +1943,7 @@ ito::RetVal Roughness::calcAbbottCurve(QVector<ito::ParamBase> *paramsMand, QVec
         histogram.setAxisDescription(1, "z");
 
         *((*paramsMand)[1].getVal<ito::DataObject*>()) = abbott_curve;
-        
+
         if (h)
         {
             *h = histogram;
@@ -1952,7 +1952,7 @@ ito::RetVal Roughness::calcAbbottCurve(QVector<ito::ParamBase> *paramsMand, QVec
 
     return retval;
 }
-        
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** helper for gauss_conv_non_periodic_rowwise: generates the gaussian kernel (based on DIN EN ISO 16610-21:2013)
 *
@@ -1967,7 +1967,7 @@ ito::RetVal Roughness::calcAbbottCurve(QVector<ito::ParamBase> *paramsMand, QVec
 *   integral is over-estimated, which leads to bad results. Of course, one has to think if it is allowed to filter under-sampled profiles
 *   with a short cut-off frequency, nevertheless, if this happens, it is not desired to get magnified results. Therefore, we decided
 *   to normalize the gaussian profile.
-*   
+*
 *   @param [in] spacing is the spacing between two points in input_line (in \mu m, nm or similar length unit)
 *   @param [in] cutoff is the cut-off wavelength lambda of the filter (must be in the same unit than spacing)
 *   @param [in] cutoff factor for gaussian weighting function (see Lc in DIN EN ISO 16610-21), ISO 16610-21:2013 A.5: 0.5 for general purpose, high precision: 0.6, reference software: 1.0
@@ -2021,7 +2021,7 @@ std::vector<ito::float64> Roughness::gen_gauss_convolution(const ito::float64 sp
 *   The first half of the kernel is not calculated since it is symmetrical.
 *   If the kernel is applied, the first and last (len(kernel)-1) values must be ignored since they do not
 *   contain valid values.
-*   
+*
 *   @param [in] length is the desired length of the fourier transformed gaussian peak
 *   @param [in] spacing is the spacing between two points in input_line (in \mu m, nm or similar length unit)
 *   @param [in] cutoff is the cut-off wavelength lambda of the filter (must be in the same unit than spacing)
@@ -2061,7 +2061,7 @@ std::vector<ito::float64> Roughness::gen_dft_gauss_convolution(const int length,
 *   the transmission at the cutoff wavelength is 50%.
 *
 *   See also: Michael Krystek, "A fast gauss filtering algorithm for roughness measurements", Precision Engineering 19, 1996
-*   
+*
 *   @param [in] input is a float64 cv::Mat where each line will be filtered independently
 *   @param [in/out] output is the resulting float64 cv::Mat contain the resulting, lowpass filtered values (must be allocated with the same length than input and must not be the same than input)
 *   @param [in] half_gauss_kernel is the pre-calculated gaussian kernel for non periodic profiles as given by DIN EN ISO 16610-21:2013, 4.1 (beginning with the center-value to the right end cut after a certain length)
@@ -2076,7 +2076,7 @@ ito::RetVal Roughness::gauss_dft_non_periodic_rowwise(const cv::Mat_<ito::float6
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("given gauss kernel too short").toLatin1().data());
     }
-    
+
     m = std::min(m, length/2);
 
     if (length == length_optimized) //input has optimal size
@@ -2146,7 +2146,7 @@ ito::RetVal Roughness::gauss_dft_non_periodic_rowwise(const cv::Mat_<ito::float6
 *   the transmission at the cutoff wavelength is 50%.
 *
 *   See also: Michael Krystek, "A fast gauss filtering algorithm for roughness measurements", Precision Engineering 19, 1996
-*   
+*
 *   @param [in] input is a float64 cv::Mat where each line will be filtered independently
 *   @param [in/out] output is the resulting float64 cv::Mat contain the resulting, lowpass filtered values (must be allocated with the same length than input and must not be the same than input)
 *   @param [in] half_gauss_kernel is the pre-calculated gaussian kernel for non periodic profiles as given by DIN EN ISO 16610-21:2013, 4.1 (beginning with the center-value to the right end cut after a certain length)
@@ -2216,7 +2216,7 @@ ito::RetVal Roughness::gauss_conv_non_periodic_rowwise(const cv::Mat_<ito::float
 *   the transmission at the cutoff wavelength is 50%.
 *
 *   See also: Michael Krystek, "A fast gauss filtering algorithm for roughness measurements", Precision Engineering 19, 1996
-*   
+*
 *   @param [in] input is a float64 cv::Mat where each line will be filtered independently
 *   @param [in/out] output is the resulting float64 cv::Mat contain the resulting, lowpass filtered values (must be allocated with the same length than input and must not be the same than input)
 *   @param [in] half_gauss_kernel is the pre-calculated gaussian kernel for non periodic profiles as given by DIN EN ISO 16610-21:2013, 4.1 (beginning with the center-value to the right end cut after a certain length)

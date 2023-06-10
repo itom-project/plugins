@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -194,7 +194,7 @@ GLDisplay::GLDisplay() :
     }
 
     if (scount > 1)
-    {        
+    {
         geometry = QGuiApplication::primaryScreen()->geometry();
         defheight = geometry.height();
         defwidth = geometry.width();
@@ -293,7 +293,7 @@ GLDisplay::GLDisplay() :
     {
         m_pWindow = new GLWindow(nullptr, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
         m_pWindow->setFormat(format);
-        
+
         m_pWindow->setCursor(Qt::BlankCursor);
         m_pWindow->setWindowTitle("GLDisplay");
         m_pWindow->move(defx0, defy0);
@@ -409,7 +409,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
 
-        //readonly are 'name', 'numgraybits', 
+        //readonly are 'name', 'numgraybits',
     }
 
     if (!retValue.containsError())
@@ -586,7 +586,7 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             m_params["y0"].setVal<int>(y0);
             m_params["xsize"].setVal<int>(xsize);
             m_params["ysize"].setVal<int>(ysize);
-            
+
             QMetaObject::invokeMethod(m_pWindow, "setPosAndSize", Q_ARG(int, x0), Q_ARG(int, y0), Q_ARG(int, xsize), Q_ARG(int, ysize));
         }
 
@@ -806,7 +806,7 @@ ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<i
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void GLDisplay::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())

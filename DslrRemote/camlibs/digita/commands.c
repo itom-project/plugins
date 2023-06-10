@@ -220,4 +220,3 @@ int digita_delete_picture(CameraPrivateLibrary *dev, struct filename *filename)
 
 	return 0;
 }
-

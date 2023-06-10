@@ -1,5 +1,5 @@
 % texinfo.tex -- TeX macros to handle Texinfo files.
-% 
+%
 % Load plain if necessary, i.e., if running under initex.
 \expandafter\ifx\csname fmtname\endcsname\relax\input plain\fi
 %
@@ -2332,7 +2332,7 @@ end
 % If we are in a monospaced environment, however, 1) always use \ttsl,
 % and 2) do not add an italic correction.
 \def\dosmartslant#1#2{%
-  \ifusingtt 
+  \ifusingtt
     {{\ttsl #2}\let\next=\relax}%
     {\def\next{{#1#2}\futurelet\next\smartitaliccorrection}}%
   \next
@@ -7008,13 +7008,13 @@ end
 % why catcode 0 for \ in the above?  To recognize \\ \{ \} as "escapes"
 % for the single characters \ { }.  Thus, we end up with the "commands"
 % that would be written @\ @{ @} in a Texinfo document.
-% 
+%
 % We already have @{ and @}.  For @\, we define it here, and only for
 % this purpose, to produce a typewriter backslash (so, the @\ that we
 % define for @math can't be used with @macro calls):
 %
 \def\\{\normalbackslash}%
-% 
+%
 % We would like to do this for \, too, since that is what makeinfo does.
 % But it is not possible, because Texinfo already has a command @, for a
 % cedilla accent.  Documents must use @comma{} instead.
@@ -7200,7 +7200,7 @@ end
 % {.  If so it reads up to the closing }, if not, it reads the whole
 % line.  Whatever was read is then fed to the next control sequence
 % as an argument (by \parsebrace or \parsearg).
-% 
+%
 \def\braceorline#1{\let\macnamexxx=#1\futurelet\nchar\braceorlinexxx}
 \def\braceorlinexxx{%
   \ifx\nchar\bgroup\else

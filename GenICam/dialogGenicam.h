@@ -40,7 +40,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogGenicam : public ito::AbstractAddInConfigDialog 
+class DialogGenicam : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 

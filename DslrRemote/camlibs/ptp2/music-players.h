@@ -3165,7 +3165,7 @@
    * GoPro Action Cams.
    */
   { "HERO3+ Black", 0x2672, "Action Cam", 0x0011, DEVICE_FLAG_NONE },
-  { "HERO", 0x2672, "Action Cam", 0x000c, DEVICE_FLAG_NONE },  
+  { "HERO", 0x2672, "Action Cam", 0x000c, DEVICE_FLAG_NONE },
   { "HERO4 Silver", 0x2672, "Action Cam", 0x000d, DEVICE_FLAG_NONE },
   { "HERO4 Black", 0x2672, "Action Cam", 0x000e, DEVICE_FLAG_NONE },
   { "HERO4 Session", 0x2672, "Action Cam", 0x000f, DEVICE_FLAG_NONE },

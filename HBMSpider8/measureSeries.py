@@ -44,7 +44,7 @@ class hbmMeasureSeries(ItomUi):
     offset = 1.2275
     gui = None
     buttonHandle = None
-    
+
     def __init__(self, systemPath = None):
         try:
             self.lastFolder
@@ -53,20 +53,20 @@ class hbmMeasureSeries(ItomUi):
 
         self.resultDic = {}
         self.resultObj = dataObject([self.preAllocSize, self.numSeries + 1],dtype='float64')
-            
+
         self.upDating = True
         print(os.path.dirname(os.path.realpath(__file__)))
-        
+
         if(systemPath is None):
             ownFilename = inspect.getfile(inspect.currentframe())
             self.ownDir = os.path.dirname(os.path.realpath(__file__)) #os.path.dirname(ownFilename)
         else:
             self.ownDir = systemPath
-        self.targetDir = self.ownDir        
-                
+        self.targetDir = self.ownDir
+
         uiFile = os.path.join(self.ownDir, "UI/measureSeries.ui")
         uiFile = os.path.abspath(uiFile)
-            
+
         ItomUi.__init__(self, uiFile, ui.TYPEWINDOW, childOfMainWindow=True, deleteOnClose=True)
         #if userIsDeveloper() :
         #       ItomUi.__init__(self, uiFile, ui.TYPEWINDOW, childOfMainWindow=True)
@@ -79,7 +79,7 @@ class hbmMeasureSeries(ItomUi):
             del self.hbm
         if (self.ser != None):
             del self.ser
-            
+
         try:
             self.ser = dataIO("serialIO", self.port, 9600, "\r\n")
         except:
@@ -89,7 +89,7 @@ class hbmMeasureSeries(ItomUi):
             serialErr = 1
             self.ser = None
             return -1
-        try: 
+        try:
             self.hbm = dataIO("HBMSpider8", self.ser)
             self.gui.leStatus["text"] = self.hbm.getParam("status")
         except:
@@ -99,7 +99,7 @@ class hbmMeasureSeries(ItomUi):
                 self.gui.leStatus["text"] = errStr
                 return -2
             self.hbm = None
-            
+
         self.gui.dsbOffset["value"] = self.offset
         self.gui.dsbScale["value"] = self.scale
         return 0
@@ -125,7 +125,7 @@ class hbmMeasureSeries(ItomUi):
         if self.gui.cbRange["currentText"] == "500 mV/V":
             self.range = 3
             self.axisScaleLive = [-0.5 * 1.05, 0.5 * 1.05]
-            
+
         self.gui.plot["yAxisInterval"] = self.axisScaleLive
         self.upDating = False
 #        if (self.gui != None):
@@ -134,25 +134,25 @@ class hbmMeasureSeries(ItomUi):
     def show(self,modalLevel = 0):
         '''
         Set up values of the GUI-elementes.
-        
+
         Parameters
         -----------
         modalLevel: {int}, optional
-            Toggle between modal and non-modal execution of the GUI, defaults is 0.       
+            Toggle between modal and non-modal execution of the GUI, defaults is 0.
 
         '''
-        
+
         try:
             removeButton("Spider", "showGUI")
         except:
             self.buttonHandle = None
-            
+
         self.buttonHandle = addButton("Spider","showGUI","hbmMeas.show()", "ui/spider.png")
         if self.gui == None:
             uiFile = os.path.join(self.ownDir, "UI/measureSeries.ui")
             uiFile = os.path.abspath(uiFile)
             ItomUi.__init__(self, uiFile, ui.TYPEWINDOW, childOfMainWindow=True, deleteOnClose=True)
-            
+
         ret = self.gui.show(modalLevel)
 
     def prepMeasure(self):
@@ -189,13 +189,13 @@ class hbmMeasureSeries(ItomUi):
     def plotAutoScale(self):
         if len(self.resultObj.shape) < 1:
             return
-        
+
         hasSetValues = self.resultObj.size(1) > 1
         if self.numMeas > self.lastSeriesSize:
             numVals = self.numMeas
         else:
             numVals = self.lastSeriesSize
-            
+
         if numVals < 1:
             return
         if hasSetValues:
@@ -216,8 +216,8 @@ class hbmMeasureSeries(ItomUi):
             maxVal *= 0.9
         else:
             maxVal *= 1.1
-        self.gui.plot["yAxisInterval"] = [minVal, maxVal]  
-                
+        self.gui.plot["yAxisInterval"] = [minVal, maxVal]
+
     def fillTable(self):
         self.gui.tbMeas.call("clearContents")
         if (self.numMeas < self.gui.tbMeas["rowCount"]):
@@ -231,10 +231,10 @@ class hbmMeasureSeries(ItomUi):
                 self.gui.tbMeas.call("removeColumn", 0)
         else:
             for nc in range(self.gui.tbMeas["columnCount"], self.numSeries + 1):
-                self.gui.tbMeas.call("insertColumn", nc)        
+                self.gui.tbMeas.call("insertColumn", nc)
         #for nc in range(0, self.gui.tbMeas["rowCount"]):
             #self.gui.tbMeas.call("removeRow", 0)
-            
+
         hasNoSetValues = self.resultObj.size(1) < 2
         if (self.gui.cbZero["checked"]):
             if (self.numMeas == 0):
@@ -254,7 +254,7 @@ class hbmMeasureSeries(ItomUi):
                 for no in range(0, self.resultObj.size(1)):
                     for na in range(0, self.numMeas):
                         self.gui.tbMeas.call("setItem", na + hasNoSetValues, no, self.resultObj[na, no])
-        
+
     @ItomUi.autoslot("QString")
     def on_cbFrequency_currentIndexChanged(self, text):
         if (int(float(text)) != self.freq):
@@ -263,7 +263,7 @@ class hbmMeasureSeries(ItomUi):
                 self.hbm.setParam("samplingRate", self.freq)
                 self.gui.leStatus["text"] = self.hbm.getParam("status")
             self.gui.leMeasTime["text"] = float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"])
-            
+
     @ItomUi.autoslot("")
     def on_leSamples_editingFinished(self):
         if (int(float(self.gui.leSamples["text"])) != self.samples):
@@ -291,10 +291,10 @@ class hbmMeasureSeries(ItomUi):
             res = self.initHBM()
             if res != 0:
                 return
-                
+
         self.frequency = int(float(self.gui.cbFrequency["currentText"]))
         self.channel = int(float(self.gui.cbChannel["currentText"]))
-        
+
         if self.gui.cbBridge["currentText"] == "Full":
             self.bridge = 0
         elif self.gui.cbBridge["currentText"] == "Half":
@@ -303,7 +303,7 @@ class hbmMeasureSeries(ItomUi):
             self.bridge = 2
         self.measType = self.gui.cbMeasType["currentText"]
         # todo need to check if channel type is compatible with selected channel!
-        
+
         if self.gui.cbRange["currentText"] == "3 mV/V":
             self.range = 0
             self.axisScaleLive = [-0.003 * 1.05, 0.003 * 1.05]
@@ -317,7 +317,7 @@ class hbmMeasureSeries(ItomUi):
             self.range = 3
             self.axisScaleLive = [-0.5 * 1.05, 0.5 * 1.05]
         self.gui.plot["yAxisInterval"] = self.axisScaleLive
-        
+
         try:
             self.prepMeasure()
         except:
@@ -335,7 +335,7 @@ class hbmMeasureSeries(ItomUi):
         except:
             pass
         self.timer = timer(int(self.samples / self.freq * 1000.0 * 1.0), self.updateGraph)
-        
+
     @ItomUi.autoslot("bool")
     def on_rbOverview_toggled(self, state):
         if (self.timer != None):
@@ -351,12 +351,12 @@ class hbmMeasureSeries(ItomUi):
             filename = itom.ui.getOpenFileName('Measurement data file')
         else:
             filename = itom.ui.getOpenFileName('Measurement data file', self.lastEvalFolder)
-        
+
         #open the idc-file
         if filename[-3: ] == 'idc':
             try:
                 dataTmp = loadIDC(filename)
-                
+
                 if(len(dataTmp.keys()) != 2):
                     raise
                 else:
@@ -372,11 +372,11 @@ class hbmMeasureSeries(ItomUi):
                     except:
                         print("Error loading file\n", filename)
                         pass
-                    
+
             except:
                 ui.msgCritical("ReadError", "Error in opening idc file", ui.MsgBoxOk)
                 raise
-        
+
         elif filename[-3: ] == 'rpm':
             ui.msgCritical("File Format", "RPM files not supported", ui.MsgBoxOk)
         elif filename[-3: ] == 'mat':
@@ -385,7 +385,7 @@ class hbmMeasureSeries(ItomUi):
             ui.msgCritical("File Format", "Txt files not supported", ui.MsgBoxOk)
         else:
             ui.msgCritical("FileName", "File could not be opened", ui.MsgBoxOk)
-        
+
         self.lastEvalFolder = filename
 
         return
@@ -399,7 +399,7 @@ class hbmMeasureSeries(ItomUi):
             filename = itom.ui.getSaveFileName('Measurement data file',filters='(*.idc);;(*.txt)')
         else:
             filename = itom.ui.getSaveFileName('Measurement data file', self.lastEvalFolder,filters='(*.idc);;(*.txt)')
-        
+
         #open the idc-file
         try:
             try:
@@ -411,7 +411,7 @@ class hbmMeasureSeries(ItomUi):
                 numVals = self.lastSeriesSize
             else:
                 numVals = self.numMeas
-                
+
             if filename[-4:] == '.txt':
                 filter("saveTXT", self.resultObj[:numVals,:], filename, separatorSign="\t", decimalSign=",")
             else:
@@ -419,7 +419,7 @@ class hbmMeasureSeries(ItomUi):
                 if filename[-4:] != '.idc':
                     filename += ".idc"
                 saveIDC(filename, dataTmp)
-            
+
             print("File saved successfuly\n", filename)
         except:
             pass
@@ -435,7 +435,7 @@ class hbmMeasureSeries(ItomUi):
             wasLive = 1
         else:
             self.prepMeasure()
-        
+
         if self.hbm is None:
             ui.msgCritical("Error", "HBM not initialized!")
             return
@@ -445,7 +445,7 @@ class hbmMeasureSeries(ItomUi):
         if self.gui.cbUseCalib["checked"]:
             self.seriesData = self.seriesData * self.gui.dsbScale["value"] - self.gui.dsbOffset["value"]
         self.invertSeries = self.gui.cbSeriesInverted["checked"]
-        
+
         self.gui.leAverage["text"] = "{0:.5g}".format(np.sum(self.seriesData) / self.seriesData.size(1))
         self.resultDic['s' + str(self.numSeries) + 'n' + str(self.numMeas)] = self.seriesData.copy()
         if self.invertSeries:
@@ -463,9 +463,9 @@ class hbmMeasureSeries(ItomUi):
 
         if ((self.numMeas + 1) > self.gui.tbMeas["rowCount"] and self.invertSeries == 0):
             self.gui.tbMeas.call("insertRow", self.numMeas)
-            
+
         #self.gui.tbMeas.call("setItem", self.numMeas, self.numSeries, self.resultObj[self.numMeas, self.numSeries])
-        
+
         if self.invertSeries:
             if (not self.gui.cbZero["checked"]):
                 for nc in range(0, self.resultObj.size(0)):
@@ -473,25 +473,25 @@ class hbmMeasureSeries(ItomUi):
             else:
                 # this does not make too much sense in this way ... but for the sake of less complexity we ignore it at the moment
                 for nc in range(0, self.resultObj.size(0)):
-                    self.gui.tbMeas.call("setItem", insertPos, self.numSeries, self.resultObj[insertPos, self.numSeries] - self.resultObj[0, self.numSeries])            
+                    self.gui.tbMeas.call("setItem", insertPos, self.numSeries, self.resultObj[insertPos, self.numSeries] - self.resultObj[0, self.numSeries])
         else:
             if (not self.gui.cbZero["checked"]):
-                for nc in range(0, self.resultObj.size(0)):                
+                for nc in range(0, self.resultObj.size(0)):
                     self.gui.tbMeas.call("setItem", self.numMeas, self.numSeries, self.resultObj[self.numMeas, self.numSeries])
             else:
                 for nc in range(0, self.resultObj.size(0)):
                     self.gui.tbMeas.call("setItem", self.numMeas, self.numSeries, self.resultObj[self.numMeas, self.numSeries] - self.resultObj[0, self.numSeries])
-        
+
         self.numMeas += 1
         if self.numMeas == self.preAllocSize:
             tmp = dataObject.zeros([self.preAllocSize * 2, 1 + self.numSeries], dtype='float64')
             tmp[0:self.preAllocSize,:] = self.resultObj
             self.resultObj = tmp.copy()
             self.preAllocSize *= 2
-            
+
         if (self.gui.rbOverview["checked"]):
             self.plotAutoScale()
-            
+
         if wasLive:
             self.timer.start()
         self.upDating = False
@@ -502,7 +502,7 @@ class hbmMeasureSeries(ItomUi):
         curCol = self.gui.tbMeas.call("currentColumn")
 
         try:
-            # todo check when delete error here        
+            # todo check when delete error here
             if self.numSeries == 1:
                 self.gui.tbMeas.call("removeRow", curRow)
                 self.resultObj[curRow : self.preAllocSize - 1, self.numSeries] = self.resultObj[curRow + 1 : , self.numSeries]
@@ -510,14 +510,14 @@ class hbmMeasureSeries(ItomUi):
                 del self.resultDic['s' + str(self.numSeries) + 'n' + str(curRow)]
                 for ni in range(curRow, self.numMeas - 1):
                     self.resultDic['s' + str(self.numSeries) + 'n' + str(ni)] = self.resultDic['s' + str(self.numSeries) + 'n' + str(ni + 1)]
-                self.numMeas -= 1            
+                self.numMeas -= 1
                 del self.resultDic['s' + str(self.numSeries) + 'n' + str(self.numMeas)]
             elif curCol > 0:
                 self.resultObj[curRow, curCol] = 0
                 del self.resultDic['s' + str(curCol) + 'n' + str(curRow)]
         except:
             print('error deleting value')
-            
+
         if (self.gui.rbOverview["checked"]):
             self.plotAutoScale
 
@@ -541,10 +541,10 @@ class hbmMeasureSeries(ItomUi):
         #newElement = self.gui.inpImage["geometricElementsCount"]
         #try:
             #tempObj = self.gui.inpImage["source"]
-#            
+#
         #except:
             #pass
-    
+
     @ItomUi.autoslot("int,int")
     def on_tbMeas_cellChanged(self,row,col):
         pass
@@ -556,7 +556,7 @@ class hbmMeasureSeries(ItomUi):
                 #self.gui.tbMeas.call("setItem", row, col, self.resultObj[row, col])
             #pass
             #self.cellUpdating = False
-    
+
     @ItomUi.autoslot("")
     def on_pbReset_pressed(self):
         self.numMeas = 0
@@ -569,11 +569,11 @@ class hbmMeasureSeries(ItomUi):
         for nc in range(0, self.gui.tbMeas["rowCount"]):
             self.gui.tbMeas.call("removeRow", 0)
         self.gui.leAverage["text"] = ""
-        
+
     @ItomUi.autoslot("bool")
     def on_cbZero_toggled(self, state):
         self.fillTable()
-            
+
     @ItomUi.autoslot("int")
     def on_tabHBMMeas_currentChanged(self,index):
         if (index == 1):
@@ -591,7 +591,7 @@ class hbmMeasureSeries(ItomUi):
             else:
                 for nc in range(self.gui.tbEval["columnCount"], self.numSeries + 6):
                     self.gui.tbEval.call("insertColumn", nc)
-            
+
             if self.numSeries > 1:
                 avg = np.sum(self.resultObj[0, 1:]) / self.numSeries
                 dp = np.sqrt(np.sum((self.resultObj[0, 1:] - avg) ** 2) / (self.numSeries - 1))
@@ -614,12 +614,12 @@ class hbmMeasureSeries(ItomUi):
                         self.gui.tbEval.call("setItem", nm, 1, avg)
                         self.gui.tbEval.call("setItem", nm, 2, dp)
                         self.gui.tbEval.call("setItem", nm, 3, dp/np.sqrt(self.numSeries))
-                        
+
                         #Student, n=self.numSeries, p<0.05, 2-tail
                         self.gui.tbEval.call("setItem", nm, 4, dp/np.sqrt(self.numSeries) * stats.t.ppf(1-0.025, self.numSeries - 1))
                         #Student, n=self.numSeries, p<0.01, 2-tail
                         self.gui.tbEval.call("setItem", nm, 5, dp/np.sqrt(self.numSeries) * stats.t.ppf(1-0.005, self.numSeries - 1))
-                        
+
             if self.numSeries > 0 and self.numMeas > 0:
                 # Calculate linear regression model
                 A = dataObject.ones([self.numMeas * (self.resultObj.shape[1] - 1), 2], dtype=self.resultObj.dtype)
@@ -627,7 +627,7 @@ class hbmMeasureSeries(ItomUi):
                 y = np.matlib.repmat(self.resultObj[:self.numMeas,0].copy(), self.numSeries, 1)
                 fitResult = np.linalg.lstsq(A, y)
                 [scale, offset] = fitResult[0]
-                
+
                 # Calculate determination coefficient R^2
                 ym = np.sum(self.resultObj[:,0])/self.resultObj.shape[0]
                 SStot = np.sum((self.resultObj[:,0] - ym)**2)
@@ -635,10 +635,10 @@ class hbmMeasureSeries(ItomUi):
                 for nv in range(0, self.numMeas):
                     for ns in range(0, self.numSeries):
                         SSreg  = SSreg + (self.resultObj[nv, ns + 1] * scale + offset - self.resultObj[nv, 0]) ** 2
-                R2 = 1 - SSreg / SStot                
+                R2 = 1 - SSreg / SStot
                 resStr = "y = {0:.5e} + {1:.5e} * x\nR^2 = {2:7.5f}\n".format(float(offset), float(scale), float(R2))
                 self.gui.txtEval.call("setText", resStr)
-                            
+
                 # Calculate total variance of fitted model, we have numMeas - 2 degrees of freedom, as we are fitting
                 # a linear model
                 ym = np.sum(self.resultObj[:self.numMeas,0]) / self.resultObj.shape[0]
@@ -661,7 +661,7 @@ t_critical_1 = {2:.2f}\nt_scale > t_critical_5 --> parameter is significant @ 95
 t_critical_1 = {2:.2f}\nt_scale < t_critical_5 --> parameter is NOT significant @ 95%\n".format(float(tSMv), float(tCrit5), float(tCrit1))
                 self.gui.txtEval.call("append", "Checking for significance of scale (m):\nTest statistics is of type t, as we have few values.\nTest hypothesis is H0: scale = 0,\nH1: scale != 0,\nso we want to reject H0\n")
                 self.gui.txtEval.call("append", resStr)
-                
+
                 fitObj = dataObject(offset + self.resultObj[:self.numMeas,1:] * scale)
                 SQR = np.sum((fitObj - ym)**2)
                 SQE = 0
@@ -687,14 +687,14 @@ the explained variance (Yf - Ym)^2 to\nthe not explained variance (Yi - Yf)^2\n\
 Test hypothesis H0: is the data lies on a horizontal line,\n\
 H1: data is NOT on a horizonzal line,\nso we want to reject H0.\n")
                 self.gui.txtEval.call("append", resStr)
-                
+
                 # finally calculate the confidence interval for the fitted model
                 xm = np.sum(self.resultObj[:self.numMeas,1:]) / (self.numSeries * self.numMeas)
                 xd = np.sum((self.resultObj[:self.numMeas,1:] - xm) ** 2)
                 se = np.sqrt(SQE / (self.numSeries * self.numMeas - 2))
                 tCI1 = stats.t.ppf(1-0.005, self.numMeas * self.numSeries - 2)
                 tCI5 = stats.t.ppf(1-0.025, self.numMeas * self.numSeries - 2)
-                
+
                 canvas = self.gui.plotEval
                 fig = plt.figure(canvas=canvas)
                 ax1 = fig.add_subplot(111)
@@ -703,11 +703,11 @@ H1: data is NOT on a horizonzal line,\nso we want to reject H0.\n")
                 minVal = np.min(self.resultObj[:self.numMeas, 1:])
                 maxVal = np.max(self.resultObj[:self.numMeas, 1:])
                 inc = (maxVal - minVal) / 10.0
-                
+
                 xvals = np.arange(minVal, maxVal + inc, inc)
-                yvals = offset + scale * xvals            
+                yvals = offset + scale * xvals
                 ax1.plot(xvals, yvals, '-d', color='black')
-                
+
                 ydvals = se * np.sqrt(1.0/(self.numMeas * self.numSeries) + (xvals - xm) ** 2 / xd)
                 yvalsPCI1 = yvals + tCI1 * ydvals
                 yvalsMCI1 = yvals - tCI1 * ydvals
@@ -718,7 +718,7 @@ H1: data is NOT on a horizonzal line,\nso we want to reject H0.\n")
                 ax1.plot(xvals, yvalsPCI5, '--', color='indianred')
                 ax1.plot(xvals, yvalsMCI5, '--', color='indianred')
                 plt.show()
-            
+
     def __del__(self):
         try:
             if (self.timer != None):
@@ -736,8 +736,8 @@ H1: data is NOT on a horizonzal line,\nso we want to reject H0.\n")
         try:
             removeButton("Spider", "showGUI")
         except:
-            print("\n deleting button bar failed") 
-            
+            print("\n deleting button bar failed")
+
     @ItomUi.autoslot("")
     def on_Dialog_destroyed(self):
         if (self.timer != None):
@@ -749,7 +749,7 @@ H1: data is NOT on a horizonzal line,\nso we want to reject H0.\n")
             #del self.hbm
         #if (self.ser != None):
             #del self.ser
-  
+
 if __name__ == "__main__":
     try:
         hbmMeas = hbmMeasureSeries()
@@ -757,5 +757,5 @@ if __name__ == "__main__":
         pass
     except:
         raise
-    
+
     hbmMeas.show()

@@ -4,7 +4,7 @@
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -178,7 +178,7 @@ void clearFilterCache(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal doCalcAMat(const float *img, const int sizex, const int sizey, const int imgStep, const int interpType, const int flags) 
+ito::RetVal doCalcAMat(const float *img, const int sizex, const int sizey, const int imgStep, const int interpType, const int flags)
 {
     ito::float32 kernel[9] = { -3.0 / 32.0, 0.0,  3.0 / 32.0,
         -10.0 / 32.0, 0.0, 10.0 / 32.0,
@@ -370,7 +370,7 @@ ito::RetVal doCalcAMat(const float *img, const int sizex, const int sizey, const
 #endif
         }
         break;
-        
+
         // biquintic
         case 2:
         {
@@ -451,7 +451,7 @@ ito::RetVal doCalcAMat(const float *img, const int sizex, const int sizey, const
                             + BMatBiHe[v * 64 + 66] * dyp[y * nimgStep + x - 1] + BMatBiHe[v * 64 + 37] * dyp[y * sizex + x] + BMatBiHe[v * 64 + 38] * dyp[y * sizex + x + 1] + BMatBiHe[v * 64 + 39] * dyp[y * sizex + x + 2]
                             + BMatBiHe[v * 64 + 40] * dyp[(y + 1) * nimgStep + x - 1] + BMatBiHe[v * 64 + 41] * dyp[(y + 1) * sizex + x] + BMatBiHe[v * 64 + 42] * dyp[(y + 1) * sizex + x + 1] + BMatBiHe[v * 64 + 43] * dyp[(y + 1) * sizex + x + 2]
                             + BMatBiHe[v * 64 + 44] * dyp[(y + 2) * nimgStep + x - 1] + BMatBiHe[v * 64 + 45] * dyp[(y + 2) * sizex + x] + BMatBiHe[v * 64 + 46] * dyp[(y + 2) * sizex + x + 1] + BMatBiHe[v * 64 + 47] * dyp[(y + 2) * sizex + x + 2]
-                            
+
                             + BMatBiHe[v * 64 + 48] * dxyp[(y - 1) * nimgStep + x - 1] + BMatBiHe[v * 64 + 49] * dxyp[(y - 1) * nimgStep + x] + BMatBiHe[v * 64 + 50] * dxyp[(y - 1) * nimgStep + x + 1] + BMatBiHe[v * 64 + 51] * dxyp[(y - 1) * nimgStep + x + 2]
                             + BMatBiHe[v * 64 + 52] * dxyp[y * nimgStep + x - 1] + BMatBiHe[v * 64 + 53] * dxyp[y * sizex + x] + BMatBiHe[v * 64 + 54] * dxyp[y * sizex + x + 1] + BMatBiHe[v * 64 + 55] * dxyp[y * sizex + x + 2]
                             + BMatBiHe[v * 64 + 56] * dxyp[(y + 1) * nimgStep + x - 1] + BMatBiHe[v * 64 + 57] * dxyp[(y + 1) * sizex + x] + BMatBiHe[v * 64 + 58] * dxyp[(y + 1) * sizex + x + 1] + BMatBiHe[v * 64 + 59] * dxyp[(y + 1) * sizex + x + 2]
@@ -474,7 +474,7 @@ ito::RetVal doInterpolateCubicPts(const float *img, const int sizex, const int s
 {
     // Here we have to do the real job
     // we loop over all points, using openmp to speed up a little bit
-    
+
     ito::float32 kernel[9] = { -3.0 / 32.0, 0.0,  3.0 / 32.0,
         -10.0 / 32.0, 0.0, 10.0 / 32.0,
         -3.0 / 32.0, 0.0,  3.0 / 32.0 };
@@ -704,7 +704,7 @@ ito::RetVal doInterpolateCubicPts(const float *img, const int sizex, const int s
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal doInterpolateCubic(const float *positions, const int numPts, float *res, const int flags = 0) 
+ito::RetVal doInterpolateCubic(const float *positions, const int numPts, float *res, const int flags = 0)
 {
     // Here we have to do the real job
     // we loop over all points, using openmp to speed up a little bit
@@ -773,8 +773,8 @@ ito::RetVal doInterpolateCubic(const float *positions, const int numPts, float *
                 //        + 2 * a(8) * h + 2 * a(9) * h * t + 2 * a(10) * h * t^2 + 2 * a(11) * h * t^3 ...
                 //        + 3 * a(12) * h^2 + 3 * a(13) * h^2 * t + 3 * a(14) * h^2 * t^2 + 3 * a(15) * h^2 * t^3;
                 res[npts * 3 + 1] = AMat[16 * (row1 * sizex + col1) + 1] + AMat[16 * (row1 * sizex + col1) + 2] * 2.0F * t
-                    + AMat[16 * (row1 * sizex + col1) + 3] * 3.0F * t2       + AMat[16 * (row1 * sizex + col1) + 5] * h 
-                    + AMat[16 * (row1 * sizex + col1) + 6] * 2.0F * h * t    + AMat[16 * (row1 * sizex + col1) + 7] * 3.0F * h * t2  
+                    + AMat[16 * (row1 * sizex + col1) + 3] * 3.0F * t2       + AMat[16 * (row1 * sizex + col1) + 5] * h
+                    + AMat[16 * (row1 * sizex + col1) + 6] * 2.0F * h * t    + AMat[16 * (row1 * sizex + col1) + 7] * 3.0F * h * t2
                     + AMat[16 * (row1 * sizex + col1) + 9] * h2             + AMat[16 * (row1 * sizex + col1) + 10] * 2.0F * h2 * t
                     + AMat[16 * (row1 * sizex + col1) + 11] * 3.0F * h2 * t2 + AMat[16 * (row1 * sizex + col1) + 13] * h3
                     + AMat[16 * (row1 * sizex + col1) + 14] * 2.0F * h3 * t  + AMat[16 * (row1 * sizex + col1) + 15] * 3.0F * h3 * t2;
@@ -888,14 +888,14 @@ ito::RetVal doInterpolateQuintic(const float *positions, const int numPts, float
                     + 4.0F * AMat[16 * (row1 * sizex + col1) + 22] * h3 * t3 + 5.0F * AMat[16 * (row1 * sizex + col1) + 23] * h4 * t3
                     + AMat[16 * (row1 * sizex + col1) + 25] * t4 + 2.0F * AMat[16 * (row1 * sizex + col1) + 26] * h * t4
                     + 3.0F * AMat[16 * (row1 * sizex + col1) + 27] * h2 * t4 + 4.0F * AMat[16 * (row1 * sizex + col1) + 28] * h3 * t4
-                    + 5.0F * AMat[16 * (row1 * sizex + col1) + 29] * h4 * t4 + AMat[16 * (row1 * sizex + col1) + 31] * t5 
+                    + 5.0F * AMat[16 * (row1 * sizex + col1) + 29] * h4 * t4 + AMat[16 * (row1 * sizex + col1) + 31] * t5
                     + 2.0F * AMat[16 * (row1 * sizex + col1) + 32] * h * t5 + 3.0F * AMat[16 * (row1 * sizex + col1) + 33] * h2 * t5
                     + 4.0F * AMat[16 * (row1 * sizex + col1) + 34] * h3 * t5  + 5.0F * AMat[16 * (row1 * sizex + col1) + 35] * h4 * t5;
 
                 // calculate interpolated derivative(s) dhdy(t)
                 res[npts * 3 + 2] = AMat[16 * (row1 * sizex + col1) + 6] + AMat[16 * (row1 * sizex + col1) + 7] * h
                     + AMat[16 * (row1 * sizex + col1) + 8] * h2 + AMat[16 * (row1 * sizex + col1) + 9] * h3
-                    + AMat[16 * (row1 * sizex + col1) + 10] * h4 + AMat[16 * (row1 * sizex + col1) + 11] * h5 
+                    + AMat[16 * (row1 * sizex + col1) + 10] * h4 + AMat[16 * (row1 * sizex + col1) + 11] * h5
                     + 2.0F * AMat[16 * (row1 * sizex + col1) + 12] * t + 2.0F * AMat[16 * (row1 * sizex + col1) + 13] * h * t
                     + 2.0F * AMat[16 * (row1 * sizex + col1) + 14] * h2 * t + 2.0F * AMat[16 * (row1 * sizex + col1) + 15] * h3 * t
                     + 2.0F * AMat[16 * (row1 * sizex + col1) + 16] * h4 * t + 2.0F * AMat[16 * (row1 * sizex + col1) + 17] * h5 * t
@@ -922,7 +922,7 @@ ito::RetVal doInterpolateHeptic(const float *positions, const int numPos, float 
 {
     // Here we have to do the real job
     // we loop over all points, using openmp to speed up a little bit
-    
+
     float *AMat = AMatBiHe.data;
     int sizex = AMatBiHe.sizex;
     int sizey = AMatBiHe.sizey;
@@ -1008,7 +1008,7 @@ ito::RetVal doInterpolateHeptic(const float *positions, const int numPos, float 
                 + AMat[16 * (row1 * sizex + col1) + 50] * h6 * t2   + AMat[16 * (row1 * sizex + col1) + 51] * h6 * t3
                 + AMat[16 * (row1 * sizex + col1) + 52] * h6 * t4   + AMat[16 * (row1 * sizex + col1) + 53] * h6 * t5
                 + AMat[16 * (row1 * sizex + col1) + 54] * h6 * t6   + AMat[16 * (row1 * sizex + col1) + 55] * h6 * t7
-                
+
                 + AMat[16 * (row1 * sizex + col1) + 56] * h7        + AMat[16 * (row1 * sizex + col1) + 57] * h7 * t
                 + AMat[16 * (row1 * sizex + col1) + 58] * h7 * t2   + AMat[16 * (row1 * sizex + col1) + 59] * h7 * t3
                 + AMat[16 * (row1 * sizex + col1) + 60] * h7 * t4   + AMat[16 * (row1 * sizex + col1) + 61] * h7 * t5
@@ -1102,4 +1102,3 @@ template ito::RetVal doInterpolateLinear<float>(const float* inPtr, const int wi
     const float* positions, const int numPos, float* outPtr, const int stepout, const int flags);
 template ito::RetVal doInterpolateLinear<double>(const double* inPtr, const int width, const int height, const int stepin,
     const float* positions, const int numPos, float* outPtr, const int stepout, const int flags);
-

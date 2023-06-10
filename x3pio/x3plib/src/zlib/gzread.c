@@ -407,7 +407,7 @@ int ZEXPORT gzgetc(file)
 gzFile file;
 {
     return gzgetc_(file);
-}    
+}
 
 /* -- see zlib.h -- */
 int ZEXPORT gzungetc(c, file)

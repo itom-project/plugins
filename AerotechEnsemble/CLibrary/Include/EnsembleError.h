@@ -1,8 +1,8 @@
 /// \file EnsembleError.h
 /// \brief Contains the functions to handle internal errors.
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_ERROR_H__
 #define __Ensemble_ERROR_H__

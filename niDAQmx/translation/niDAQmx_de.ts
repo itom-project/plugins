@@ -8,7 +8,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. 
+        <source>The plugin implements the DAQmx functions for analog-digital-converters from National Instruments.
 The installation needs the NI-DAQmx Library that can be downloaded from the NI website (http://www.ni.com/download/ni-daqmx-14.2/5046/en/)</source>
         <translation type="unfinished"></translation>
     </message>

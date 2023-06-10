@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -71,7 +71,7 @@ class OpenCVFiltersNonFree : public ito::AddInAlgo
         static ito::RetVal cvSiftDetectorDescriptorExtractor(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvSiftDetectorDescriptorExtractorParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-        
+
     private:
 
     public slots:

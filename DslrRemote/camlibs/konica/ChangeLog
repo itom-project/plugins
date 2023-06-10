@@ -1,6 +1,6 @@
 2004-03-25  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* qm150.c (k_getdata): 
+	* qm150.c (k_getdata):
 	(camera_summary): fix C99 stuff for Solaris C compiler
 	See bug #923219.
 
@@ -20,7 +20,7 @@
 
 	Patches by Andreas Burmester <a.burmester@hamburg.de>:
 
-	* library.c (camera_[get,set]_config: Months are counted from 1 to 
+	* library.c (camera_[get,set]_config: Months are counted from 1 to
 	  12 on the C200.
 
 2003-05-25  Marcus Meissner <marcus@jet.franken.de>
@@ -31,7 +31,7 @@
 	  but picture download/deletion already possible.
 
 2003-02-27  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* library.c: We support EXIF download.
 
 2002-11-20  Hans Ulrich Niedermann  <gp@n-dimensional.de>
@@ -44,7 +44,7 @@
 	  subdir.
 
 2002-11-17  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* library.c: Got rid of some broken long*/int*/time_t* casts.
 	  (would break 64bit on big endian).
 
@@ -70,7 +70,7 @@
 	* library.c: ping the camera every minute to prevent shutdown.
 
 2002-03-08  Marcus Meissner <marcus@jet.franken.de>
-	
+
 	* lowlevel.c: When reading we do not need to escape that much,
 	  the original HP PhotoSmart does not escape all characters.
 
@@ -95,7 +95,7 @@
 
 2002-01-13  Lutz Müller <urc8@rz.uni-karlsruhe.de>
 
-	* library.c: More progress reporting. Remove references to 
+	* library.c: More progress reporting. Remove references to
 	  gp_camera_set_error.
 
 2002-01-11  Dan Fandrich <dan@coneharvesters.com>

@@ -5,7 +5,7 @@
 //    Universitaet Stuttgart, Germany
 //
 //    This file is part of a plugin for the measurement software itom.
-//  
+//
 //    This itom-plugin is free software; you can redistribute it and/or modify it
 //    under the terms of the GNU Library General Public Licence as published by
 //    the Free Software Foundation; either version 2 of the Licence, or (at
@@ -130,7 +130,7 @@ ito::RetVal DialogThorlabsKCubeDCServo::applyParameters()
     if (std::abs(timeout - m_currentParameters["timeout"].getVal<double>()) > std::numeric_limits<double>::epsilon())
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
-    }  
+    }
 
     double accel = ui.spinAccel->value();
     if (std::abs(timeout - m_currentParameters["acceleration"].getVal<double>()) > std::numeric_limits<double>::epsilon())
@@ -143,7 +143,7 @@ ito::RetVal DialogThorlabsKCubeDCServo::applyParameters()
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Double, speed)));
     }
-    
+
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }

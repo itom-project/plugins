@@ -66,7 +66,7 @@ void dockWidgetNITWidySWIR::parametersChanged(QMap<QString, ito::Param> params)
 		{
 			ui.label_imageBPP->setText(QString::number(params["bpp"].getVal<int>()));
 		}
-		
+
 		if (params.contains("roi") & !(params["roi"].getFlags() & ito::ParamBase::Readonly))
 		{
 			ui.label_imageWidth->setText(QString::number(params["sizex"].getVal<int>()));

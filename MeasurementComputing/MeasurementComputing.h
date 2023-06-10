@@ -48,12 +48,12 @@ class MeasurementComputing : public ito::AddInDataIO
 
 		int m_numInputChannels;
 		int m_numInputSamples;
-		
+
 		ito::RetVal m_acquisitionResult;
 		bool m_dataAcquired;
 
 		enum SyncParams {
-			sMData = 0x0001, 
+			sMData = 0x0001,
 			sOutputData = 0x0002,
 
 			sAll = sMData | sOutputData
@@ -105,7 +105,7 @@ class MeasurementComputing : public ito::AddInDataIO
         // clear task
         ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
 
-        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);      
+        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(void *data, ItomSharedSemaphore *waitCond);
 		ito::RetVal copyVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal setVal(const char *dObj, const int length, ItomSharedSemaphore *waitCond);
@@ -131,7 +131,7 @@ class MeasurementComputingInterface : public ito::AddInInterfaceBase
         MeasurementComputingInterface();
         ~MeasurementComputingInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);
-    
+
     protected:
 
         int m_numberOfInstances;

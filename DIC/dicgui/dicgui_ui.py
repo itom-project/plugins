@@ -3,7 +3,7 @@
 By twipOS 2016.
 '''
 
-#The algorithm is based on Python 3.2 and must be used with "itom" ==> https://bitbucket.org/itom/itom
+#The algorithm is based on Python 3.2 and must be used with "itom" ==> https://github.com/itom-project/itom
 #Import basic function and packages used by this file
 #See python help for more details
 import cv2
@@ -31,22 +31,22 @@ except:
 reloadModules = 1
 
 class dicGuiUi(ItomUi):
-    
+
     def __init__(self, sys ,systemPath = None):
         '''
         Internal constructor of the GUI class.
-        
+
         Parameters
         -----------
         sys: {dicgui}
             a weak reference to the image processing system
         systemPath:
             Path where the system is located, if no parameter is giving the files has to be in the working directory
-        
+
         Returns
         -------
         None
-        
+
         Notes
         -----
         This function loads the ui-dialog and takes a weak reference on the image processing system.
@@ -63,18 +63,18 @@ class dicGuiUi(ItomUi):
         self.loadedImgListFile = -1
         self.axisScaleLive = [-0.125 * 1.05, 0.125 * 1.05]
         self.generateRun = 0
-        
+
         if(systemPath is None):
             ownFilename = inspect.getfile(inspect.currentframe())
             self.ownDir = os.path.dirname(os.path.realpath(__file__)) #os.path.dirname(ownFilename)
         else:
             self.ownDir = systemPath
-        
+
         self.lastSaveDir = None
         self.calibDir = None
         ownFilename = inspect.getfile(inspect.currentframe())
         ownDir = os.path.dirname(ownFilename)
-                
+
         uiFile = os.path.join(ownDir, "ui/dicgui.ui")
         uiFile = os.path.abspath(uiFile)
         if userIsDeveloper() :
@@ -85,92 +85,92 @@ class dicGuiUi(ItomUi):
             self.gui.ple_selCalibDir["currentPath"] = ownDir
             self.gui.le_baseFName["text"] = "distCalib_" + time.strftime("%Y%m%d_%H%M")
         self.gui.teCalibData["plainText"] = "N/A"
-        
+
         if self.sys().cfg["channels"] != []:
             numChan = len(self.sys().cfg["channels"])
         else:
             numChan = 0
-        self.sys().resultObj = dataObject([5, self.sys().preAllocSize],dtype='float64')      
-        
+        self.sys().resultObj = dataObject([5, self.sys().preAllocSize],dtype='float64')
+
     def __del__(self):
         if not self.sys() is None:
             self.sys().saveConfig()
-        
+
     def init(self):
         '''
         Set up values of the GUI-elementes.
-        
+
         Parameters
         -----------
         cam: camera for the live image
-        
+
         Returns
         -------
         None
-        
+
         Notes
         -----
         This function initializes the gui elements and set the values to start the image processing.
         '''
-        
+
         self.gui.twDicGui["currentIndex"] = 0
         #self.gui.pe_openFolder["filters"] = "Dirs"
-        
+
         self.upDating = True
         self.gui.leSamples["text"] = self.sys().cfg["samples"]
         self.gui.lePort["text"] = self.sys().cfg["serport"]
         self.gui.leSpiderDelay["text"] = self.sys().cfg["spiderDelay"]
-        
+
         self.gui.cbRange4["currentIndex"] = int(self.sys().cfg["ranges"][0])
         self.gui.cbRange5["currentIndex"] = int(self.sys().cfg["ranges"][1])
         self.gui.cbRange6["currentIndex"] = int(self.sys().cfg["ranges"][2])
         self.gui.cbRange7["currentIndex"] = int(self.sys().cfg["ranges"][3])
- 
+
         self.gui.cbBridge4["currentIndex"] = int(self.sys().cfg["bridges"][0])
         self.gui.cbBridge5["currentIndex"] = int(self.sys().cfg["bridges"][1])
         self.gui.cbBridge6["currentIndex"] = int(self.sys().cfg["bridges"][2])
         self.gui.cbBridge7["currentIndex"] = int(self.sys().cfg["bridges"][3])
- 
+
         self.gui.cbFrequency["currentText"] = self.sys().cfg["freq"]
         scaleMin = 0
         scaleMax = 0
-        
+
         self.sys().range2CB(self.sys().cfg["ranges"][0], self.gui.cbRange4)
         self.sys().range2CB(self.sys().cfg["ranges"][1], self.gui.cbRange5)
         self.sys().range2CB(self.sys().cfg["ranges"][2], self.gui.cbRange6)
         self.sys().range2CB(self.sys().cfg["ranges"][3], self.gui.cbRange7)
-        
+
         for nc in range(4, 8):
             exec("self.gui.cbChan" + str(nc) + "[\"checked\"] = False")
         for nc in range(0, len(self.sys().cfg["channels"])):
             exec("self.gui.cbChan" + str(self.sys().cfg["channels"][nc]) + "[\"checked\"] = True")
-        
+
         if self.sys().cfg["enableCam"] == 1:
             self.gui.cbEnableCam["checked"] = True
         else:
             self.gui.cbEnableCam["checked"] = False
-            
+
         if self.sys().cfg["enableSpider"] == 1:
             self.gui.cbEnableSpider["checked"] = True
         else:
             self.gui.cbEnableSpider["checked"] = False
-            
+
         self.gui.plotSpiderGraph["yAxisInterval"] = self.axisScaleLive
-        
+
         self.gui.cbDownloadImgs["checked"] = self.sys().cfg["downloadImgs"]
         self.gui.pleImgsPath["enabled"] = self.sys().cfg["downloadImgs"]
         self.gui.pleImgsPath["currentPath"] = self.sys().cfg["imgsPath"]
         self.upDating = False
-        
-        self.gui.leMeasTime["text"] = float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"])        
-        
-    
+
+        self.gui.leMeasTime["text"] = float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"])
+
+
     def show(self, modalLevel):
         '''
         Displayes the User Interface.
         '''
         ret = self.gui.show(modalLevel)
-    
+
 
     def getMinMax(self, points):
         if len(points["point1"]) == 2:
@@ -205,7 +205,7 @@ class dicGuiUi(ItomUi):
             or self.sys().data['imageOrig'] is None or self.sys().data['imageDef'] is None:
             return
         usDic = self.sys().detUsableImgRange(self.sys().data["imageOrig"], self.sys().data["imageDef"])
-        
+
         if self.gui.cbDispType["currentIndex"] == 0:
             self.gui.pltImageGen["source"] = self.sys().data["imageOrig"]
         elif self.gui.cbDispType["currentIndex"] == 1:
@@ -216,7 +216,7 @@ class dicGuiUi(ItomUi):
                 - self.sys().data["imageOrig"][usDic["dO"][0, 0] : usDic["dS"][0, 0], usDic["dO"][1, 0] : usDic["dS"][1, 0]]
         self.gui.pltDisplacement["source"] = self.sys().data["imageDef"][usDic["dO"][0, 1] : usDic["dS"][0, 1], \
                 usDic["dO"][1, 1] : usDic["dS"][1, 1]]
-    
+
     def fillDispTable(self, outVec):
         largestShift = 0
         self.gui.tblDisplRes.call("clearContents")
@@ -257,23 +257,23 @@ class dicGuiUi(ItomUi):
                         largestShift = actShift
                     self.gui.tblDisplRes.call("setItem", nc, 0, outVec[nc, 2])
                     self.gui.tblDisplRes.call("setItem", nc, 1, outVec[nc, 3])
-                    
+
         return largestShift
         pass
-    
+
     @ItomUi.autoslot("")
     def on_Form_destroyed(self):
         self.sys().deleteUI()
-        
+
     #@ItomUi.autoslot("")
-    #def on_Dialog_destroyed(self):        
+    #def on_Dialog_destroyed(self):
         #self.sys().deleteUI()
-        
+
     #@ItomUi.autoslot("QString")
     #def on_pe_savePath_currentPathChanged(self, pathString):
         #self.lastSaveDir = pathString
         #self.gui.pe_savePath.call("addCurrentPathToHistory")
-            
+
     @ItomUi.autoslot("int")
     def on_twDicGui_currentChanged(self,index):
         if index==0:
@@ -287,17 +287,17 @@ class dicGuiUi(ItomUi):
                 self.gui.lwDeform["currentRow"] = 0
                 self.sys().data["displ"] = self.sys().data["displResults"][keylist[0]]["displVecs"][0]
                 self.sys().data["displCC"] = self.sys().data["displResults"][keylist[0]]["displVecs"][1]
-                
+
                 if self.sys().data["displResults"][keylist[0]]["imageDefPath"] != "":
                     self.gui.pltDeformation["source"] = self.loadDisplImages(self.sys().data["displResults"][keylist[0]]["imageDefPath"])
                 else:
                     self.gui.pltDeformation["source"] = self.sys().data["imageDef"]
-                
+
         elif index==4:
             pass
         else:
             pass
-        
+
     @ItomUi.autoslot("int")
     def on_cbDispType_currentIndexChanged(self,index):
         self.updateInpImage()
@@ -479,8 +479,8 @@ class dicGuiUi(ItomUi):
             self.gui.sbBit["enabled"] = False
         else:
             pass
-        
-        
+
+
     @ItomUi.autoslot("")
     def on_pbShowCameraCalib_pressed(self):
                 ui.msgInformation("Calibration result", "Camera Matrix:\n{:>9.2f} {:9.2f} {:9.2f}\n\
@@ -489,22 +489,22 @@ class dicGuiUi(ItomUi):
             self.sys().cfg["CamMat"] [0, 1], self.sys().cfg["CamMat"] [0, 2], self.sys().cfg["CamMat"] [1, 0], \
             self.sys().cfg["CamMat"] [1, 1], self.sys().cfg["CamMat"] [1, 2], self.sys().cfg["CamMat"] [2, 0], \
             self.sys().cfg["CamMat"] [2, 1], self.sys().cfg["CamMat"] [2, 2]))
-        
+
     @ItomUi.autoslot("QString")
     def on_pleDisplCalibrationFile_currentPathChanged(self, pathString):
         self.gui.pbShowCameraCalib["enabled"] = True
-        
+
     @ItomUi.autoslot("QString")
     def on_pleCalibFile_currentPathChanged(self, pathString):
         #filename = ui.getOpenFileName('Select file to load', self.ownDir, 'Itom Dictionary (*.idc)')
         if not pathString:
             return
-        
+
         try:
             calib = loadIDC(pathString)
         except:
             pass
-            
+
         try:
             self.sys().cfg["CamMat"] = calib["CamMat"]
             self.sys().cfg["DistCoeff"] = calib["DistCoeff"]
@@ -546,7 +546,7 @@ Translation Vectors:\n".format(camMat[0,0], \
             self.sys().loadedCalib = None
             self.gui.teCalibData["plainText"] = "N/A"
             self.gui.cbCoordSysNum.call("clear")
-        
+
     @ItomUi.autoslot("")
     def on_pb_LoadCalibImages_pressed(self):
         filenames = ui.getOpenFileNames('Select files to load', self.ownDir, 'RAW Image (*.nef);; Itom Dictionary (*.idc);; Bitmap (*.bmp);; JPG FIle (*.jpg);; Tiff Image (*.tiff);; All Files (*.*)')
@@ -575,14 +575,14 @@ Translation Vectors:\n".format(camMat[0,0], \
                         tmpImg.tags = dict(tagss)
                     else:
                         filter("loadAnyImage", tmpImg, nf)
-                        
+
                     # convert to grayscale image
                     if tmpImg.dtype == 'rgba32':
                         filter("cvCvtColor", tmpImg, tmpImg, 7)
-                        
+
                     ptsFileName = nf[:-4] + "_pts.idc"
                     try:
-                        tmpPts = loadIDC(ptsFileName)                        
+                        tmpPts = loadIDC(ptsFileName)
                         if list(tmpPts.values())[0].size(1) < 5:
                             markerSize = [self.gui.dsb_SizeX["value"], self.gui.dsb_SizeY["value"]]
                             pts = self.sys().defineCoordSys(tmpImg, list(tmpPts.values())[0], markerSize)
@@ -604,10 +604,10 @@ Translation Vectors:\n".format(camMat[0,0], \
                                 self.calibImages[nimg] = {'img' : tmpImg.copy(), 'pts' : pts, 'name' : nf}
                             except:
                                 self.calibImages[nimg] = {'img' : tmpImg.copy(), 'name' : nf}
-                            
+
                     nimg = nimg + 1
             self.gui.lw_Files["currentRow"] = 1
-            
+
     @ItomUi.autoslot("")
     def on_pb_RedefineCoordSys_pressed(self):
         nimg = self.gui.lw_Files["currentRow"]
@@ -620,7 +620,7 @@ Translation Vectors:\n".format(camMat[0,0], \
         ptsFileName = filename[:-4] + "_pts.idc"
         tmpImg = self.gui.pltCalibration["source"]
         # ignore point files
-        
+
         pts = dataObject()
         nptsx = self.gui.sb_ptsX["value"]
         nptsy = self.gui.sb_ptsY["value"]
@@ -637,7 +637,7 @@ Translation Vectors:\n".format(camMat[0,0], \
             except:
                 self.calibImages[nimg] = {'img' : tmpImg.copy(), 'name' : filename}
         pass
-        
+
     @ItomUi.autoslot("")
     def on_lw_Files_itemSelectionChanged(self):
         curRow = self.gui.lw_Files["currentRow"]
@@ -649,7 +649,7 @@ Translation Vectors:\n".format(camMat[0,0], \
             self.gui.pltCalibration["source"] = self.calibImages[self.gui.lw_Files["currentRow"]]["img"]
             try:
                 ptsObj = self.calibImages[self.gui.lw_Files["currentRow"]]["pts"]
-                numPts = ptsObj.size(0) 
+                numPts = ptsObj.size(0)
                 shapes = set()
                 for np in range(0, numPts):
                     pt = ptsObj[np, :]
@@ -658,12 +658,12 @@ Translation Vectors:\n".format(camMat[0,0], \
                 self.gui.pltCalibration["geometryModificationModes"] = 0
             except:
                 pass
-        
+
     @ItomUi.autoslot("")
     def on_pb_CaptureCB_pressed(self):
-        
+
         self.calibPath = self.sys().modulePath + self.gui.le_baseFName["text"] +"/"
-        
+
         if not os.path.exists(self.calibPath):
             os.makedirs(self.calibPath)
 
@@ -684,7 +684,7 @@ Translation Vectors:\n".format(camMat[0,0], \
         else:
             ui.msgCritical("Error", "No camera initialized, aborting!")
             return
-            
+
         #self.gui.pltCalibration["source"]
         tempDict = {}
         tempDict.update({self.gui.le_baseFName["text"] + "_" + str(self.numCalibImg) : calibImg})
@@ -737,7 +737,7 @@ Translation Vectors:\n".format(camMat[0,0], \
         cbPx = int(self.gui.sb_sizeX["value"] / (numSqrsX + 2))
         self.gui.dsb_SizeX["value"] = cbPx * self.gui.dsb_pixelPitch["value"]
         self.gui.dsb_SizeY["value"] = cbPy * self.gui.dsb_pixelPitch["value"]
-        
+
         borderY = int((self.gui.sb_sizeY["value"] - (numSqrsY) * cbPy) / 2)
         borderX = int((self.gui.sb_sizeX["value"] - (numSqrsX) * cbPx) / 2)
         col = 0
@@ -753,7 +753,7 @@ Translation Vectors:\n".format(camMat[0,0], \
                     col = 0
                 else:
                     col = 255
-        
+
         if self.gui.sb_sizeX["value"] > 100:
             fmarkerLengthX = 50
         else:
@@ -763,13 +763,13 @@ Translation Vectors:\n".format(camMat[0,0], \
             fmarkerLengthY = 50
         else:
             fmarkerLengthY = int(self.gui.sb_sizeY["value"] * 0.3)
-            
+
         # draw focus markers
         checkerDObj[0, 0:fmarkerLengthX] = 0
         checkerDObj[2, 2:fmarkerLengthX] = 0
         checkerDObj[0:fmarkerLengthY, 0] = 0
         checkerDObj[2:fmarkerLengthY, 2] = 0
-        
+
         checkerDObj[0, self.gui.sb_sizeX["value"] - 1 - fmarkerLengthX:self.gui.sb_sizeX["value"] - 1] = 0
         checkerDObj[2, self.gui.sb_sizeX["value"] - 1 - fmarkerLengthX:self.gui.sb_sizeX["value"] - 3] = 0
         checkerDObj[0:fmarkerLengthY, self.gui.sb_sizeX["value"] - 1] = 0
@@ -784,14 +784,14 @@ Translation Vectors:\n".format(camMat[0,0], \
         checkerDObj[self.gui.sb_sizeY["value"] - 3, self.gui.sb_sizeX["value"] - 1 - fmarkerLengthX:self.gui.sb_sizeX["value"] - 3] = 0
         checkerDObj[self.gui.sb_sizeY["value"] - 1 - fmarkerLengthY:self.gui.sb_sizeY["value"] - 1, self.gui.sb_sizeX["value"] - 1] = 0
         checkerDObj[self.gui.sb_sizeY["value"] - 3 - fmarkerLengthY:self.gui.sb_sizeY["value"] - 3, self.gui.sb_sizeX["value"] - 3] = 0
-        
+
         # draw origin marker
         checkerDObj[6, 4:9] = 0
         checkerDObj[4:9, 6] = 0
-        
+
         self.dispWin = dataIO("DispWindow", x0=self.gui.sb_x0["value"], y0=self.gui.sb_y0["value"], xsize=self.gui.sb_sizeX["value"], ysize=self.gui.sb_sizeY["value"])
-        self.dispWin.setParam("dObj", checkerDObj)        
-            
+        self.dispWin.setParam("dObj", checkerDObj)
+
     @ItomUi.autoslot("int")
     def on_sb_sizeX_valueChanged(self,val):
         if self.updating:
@@ -800,7 +800,7 @@ Translation Vectors:\n".format(camMat[0,0], \
             self.updating = True
         #self.gui.sb_sizeX["value"] = int(self.gui.sb_sizeX["value"] / (self.gui.sb_ptsX["value"] + 2))
         self.updating = False
-            
+
     @ItomUi.autoslot("int")
     def on_sb_sizeY_valueChanged(self,val):
         if self.updating:
@@ -809,12 +809,12 @@ Translation Vectors:\n".format(camMat[0,0], \
             self.updating = True
         #self.gui.sb_sizeY["value"] = int(self.gui.sb_sizeY["value"] / (self.gui.sb_ptsY["value"] + 2))
         self.updating = False
-            
+
     @ItomUi.autoslot("")
     def on_pb_ClearImageList_pressed(self):
         self.gui.lw_Files.call("clear")
         self.calibImages = dict()
-        
+
     @ItomUi.autoslot("")
     def on_pb_RemoveImage_pressed(self):
         if self.gui.lw_Files["currentRow"] > 0:
@@ -824,7 +824,7 @@ Translation Vectors:\n".format(camMat[0,0], \
             for ni in range(remItm, numItm):
                 self.calibImages[ni] = self.calibImages[ni + 1]
             del self.calibImages[numItm]
-             
+
     @ItomUi.autoslot("")
     def on_pb_EvaluateDist_pressed(self):
         numImgs = self.gui.lw_Files["count"] - 1
@@ -840,7 +840,7 @@ Translation Vectors:\n".format(camMat[0,0], \
                 nviews.append(0)
         numViews = sum(nviews)
         npts = pts.size(0)
-        nimgp = []        
+        nimgp = []
         for nip in range(0, len(self.calibImages)):
             if 'pts' in list(self.calibImages.values())[nip].keys():
                 nimgp.append(nip)
@@ -852,7 +852,7 @@ Translation Vectors:\n".format(camMat[0,0], \
                 objPts[niv, :, :] = list(self.calibImages.values())[nv]['pts'][:,2:5]
                 imgPts[niv, :, :] = list(self.calibImages.values())[nv]['pts'][:,0:2]
                 niv = niv + 1
-                
+
         if 'FocalLength' in self.calibImages[list(self.calibImages.keys())[nimgp[0]]]['img'].tags:
             focalLengthExif = float(self.calibImages[list(self.calibImages.keys())[nimgp[0]]]['img'].tags['FocalLength'])
         else:
@@ -861,7 +861,7 @@ Translation Vectors:\n".format(camMat[0,0], \
             apertureExif = float(self.calibImages[list(self.calibImages.keys())[nimgp[0]]]['img'].tags['Aperture'])
         else:
             apertureExif = -1
-            
+
         # seeding camera matrix with reasonable values, if possible
         camMat = dataObject.zeros([3, 3], dtype='float64')
         camMat[0, 2] = list(self.calibImages.values())[0]['img'].size(1) / 2.0
@@ -876,9 +876,9 @@ Translation Vectors:\n".format(camMat[0,0], \
         reproErr = filter("cvCalibrateCamera", objPts, imgPts, list(self.calibImages.values())[nimgp[0]]['img'].size(), camMat, distCoeff, rvecs, tvecs)
         focalLengthCalib = (camMat[0, 0] + camMat[1, 1]) / 2 * self.gui.dsb_pixelPitchCamera["value"]
 
-        # calculate average distance of calibration patterns and depth of field 
+        # calculate average distance of calibration patterns and depth of field
         avgDist = np.mean(tvecs[2, :])
-        
+
         if apertureExif > 0:
             frontfocalplane = avgDist * focalLengthCalib**2 / (focalLengthCalib**2 - 2 * self.gui.dsb_pixelPitchCamera["value"] \
                 * apertureExif * (focalLengthCalib + avgDist))
@@ -909,7 +909,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         self.sys().cfg["CamAperture"]  = apertureExif
         self.sys().cfg["cam.calibFile"] = "unsaved"
         self.sys().loadedCalib = 1
-        
+
     @ItomUi.autoslot("")
     def on_pb_SaveCalib_pressed(self):
         self.sys().modulePath + self.gui.le_baseFName["text"] +"/"
@@ -924,9 +924,9 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                ui.msgInformation("Camera Calibration", "Calibration data saved successfully!")
         else:
             ui.msgCritical("Error", "No calibration results to save, run calibration first!")
-        
+
         self.sys().saveConfig()
-        
+
     @ItomUi.autoslot("")
     def on_pbGenImages_pressed(self):
         if self.gui.cbInpFileType["currentIndex"] == 0:
@@ -947,12 +947,12 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     tmpImg.tags = dict(tagsSave)
                 else:
                     filter("loadAnyImage", tmpImg, nf)
-                    
+
                 # convert to grayscale image
                 if tmpImg.dtype == 'rgba32':
                     filter("cvCvtColor", tmpImg, tmpImg, 7)
                 self.sys().data["imageOrig"] = tmpImg.copy()
-            
+
         self.sys().data["imageDef"] = dataObject()
         defType = self.gui.cbDefType["currentIndex"]
         distCoeff = dataObject.zeros([12, 1], dtype='float64')
@@ -968,7 +968,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         distCoeff[9, 0] = self.gui.dsbD10["value"]
         distCoeff[10, 0] = self.gui.dsbD11["value"]
         distCoeff[11, 0] = self.gui.dsbD12["value"]
-        
+
         if (not self.gui.cb3DProj["checked"] and self.sys().loadedCalib is None) or \
             (self.gui.cb3DProj["checked"] and self.gui.cbObjectType["currentIndex"] == 0):
             filter("DICGenImages", self.sys().data["imageOrig"], self.sys().data["imageDef"], defType, distCoeff, nu=self.gui.dsbNu["value"], \
@@ -977,7 +977,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 Pc=self.gui.dsbPc["value"])
         else:
             self.sys().data["imageDef"] = self.sys().data["imageOrig"].copy()
-        
+
         if self.gui.cb3DProj["checked"] and not self.sys().loadedCalib is None:
             useCoordSys = self.gui.cbCoordSysNum["currentIndex"]
             objSX = self.gui.dsbObjSizeX["value"]
@@ -985,7 +985,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             zval = self.gui.dsbZValue["value"]
             imageSX = self.sys().data["imageOrig"].size(1)
             imageSY = self.sys().data["imageOrig"].size(0)
-            
+
             imgOut = dataObject()
             if self.gui.cbObjectType["currentIndex"] == 0:
                 # first calculating undeformed image, Pc = 0
@@ -1004,14 +1004,14 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 # then calculate deformed image
                 filter("DICGenProjectedImages", self.sys().data["imageDef"], self.sys().data["imageDef"], objSX, objSY, zval, self.sys().cfg["CamMat"], \
                     self.sys().cfg["DistCoeff"], self.sys().cfg["RVecs"][:, useCoordSys], self.sys().cfg["TVecs"][:, useCoordSys], nu=self.gui.dsbNu3D["value"], \
-                    shapeType=1, E=self.gui.dsbE3D["value"], Pc=self.gui.dsbPc3D["value"])            
+                    shapeType=1, E=self.gui.dsbE3D["value"], Pc=self.gui.dsbPc3D["value"])
             else:
                 pass
             #filter("DICGenProjectedImages", self.sys().data["imageOrig"], self.sys().data["imageOrig"], objSX, objSY, zval, self.sys().cfg["CamMat"], \
                 #self.sys().cfg["DistCoeff"], self.sys().cfg["RVecs"][:, useCoordSys], self.sys().cfg["TVecs"][:, useCoordSys])
             #filter("DICGenProjectedImages", self.sys().imageDef, self.sys().imageDef, objSX, objSY, zval, self.sys().cfg["CamMat"], \
-                #self.sys().cfg["DistCoeff"], self.sys().cfg["RVecs"][:, useCoordSys], self.sys().cfg["TVecs"][:, useCoordSys])                
-            pass 
+                #self.sys().cfg["DistCoeff"], self.sys().cfg["RVecs"][:, useCoordSys], self.sys().cfg["TVecs"][:, useCoordSys])
+            pass
             #inpPts = dataObject.zeros([imageSY, imageSX, 3], dtype="float32")
             #inPtsX = np.array(np.arange(0, objSX, objSX / imageSX)[np.newaxis], dtype='float32')
             #inPtsY = np.array(np.arange(0, objSY, objSY / imageSY)[np.newaxis], dtype='float32')
@@ -1026,10 +1026,10 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 #self.sys().cfg["DistCoeff"], self.sys().cfg["RVecs"][:, useCoordSys], self.sys().cfg["TVecs"][:, useCoordSys])
             ##filter("cvProjectPoints", self.sys().imageDef, self.sys().imageDef, self.sys().cfg["CamMat"], \
                 #self.sys().cfg["DistCoeff"], self.sys().cfg["RVecs"][:, useCoordSys], self.sys().cfg["TVecs"][:, useCoordSys])
-        
-        self.generateRun = self.generateRun + 1    
+
+        self.generateRun = self.generateRun + 1
         self.updateInpImage()
-        
+
     @ItomUi.autoslot("")
     def on_pbSaveImages_pressed(self):
         #saveFName = self.gui.pleImagePath["currentPath"]
@@ -1059,7 +1059,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 saveIDC(filename, genImages)
         else:
             print('no images generated')
-        
+
     @ItomUi.autoslot("")
     def on_pbLoadImages_pressed(self):
         filename = ui.getOpenFileName('Select file to load', self.ownDir, 'Itom Dictionary (*.idc);;')
@@ -1072,8 +1072,8 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 self.sys().data["imageDef"] = tmpImg['imageDef']
                 self.updateInpImage()
             else:
-                print('only idc files can be loaded')    
-        
+                print('only idc files can be loaded')
+
     @ItomUi.autoslot("ito::Shape")
     def on_pltDisplacement_geometricShapeCurrentChanged(self, shape):
         try:
@@ -1090,7 +1090,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             self.gui.sbCurY1["value"] = 0
             self.gui.sbCurDx["value"] = 0
             self.gui.sbCurDy["value"] = 0
-        
+
     @ItomUi.autoslot("")
     def on_pbGenFields_pressed(self):
         if not self.gui.pltDisplacement["source"] is None:
@@ -1105,12 +1105,12 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             sizey = int((imgSizeY - 2 * self.gui.sbBorderY["value"]) / numFieldsY)
             if sizex < 1 or sizey < 1:
                 ui.msgCritical("Error", "Fields have meaningless size, check parameters!")
-                
+
             startx = self.gui.sbBorderX["value"] - self.gui.pltDisplacement["source"].axisOffsets[1]
             starty = self.gui.sbBorderY["value"] - self.gui.pltDisplacement["source"].axisOffsets[0]
             overlx = int(self.gui.sbOverlapX["value"] / 2)
             overly = int(self.gui.sbOverlapY["value"] / 2)
-            for ny in range(0, numFieldsY):            
+            for ny in range(0, numFieldsY):
                 for nx in range(0, numFieldsX):
                     if nx > 0 and nx < numFieldsX - 1:
                         uox = 1
@@ -1125,7 +1125,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             self.gui.pltDisplacement.call("setGeometricShapes", list(shapes))
             #self.gui.pltDisplacement["geometryModificationModes"] = 2
             self.generateRun = self.generateRun + 1
-        
+
     @ItomUi.autoslot("")
     def on_pbClearFields_pressed(self):
         self.gui.pltDisplacement.call("clearGeometricShapes")
@@ -1141,21 +1141,21 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     or str.lower(file.name[-4:]) == '.png' or str.lower(file.name[-4:]) == '.idc' \
                     or str.lower(file.name[-4:]) == '.ido'):
                     self.gui.lwDisplFiles.call("addItem", file.name)
-        
+
     def loadDisplImages(self, fname):
         tmpObj = dataObject()
         if (fname[-4:].lower() == '.nef'):
             filter("loadRawImage", fname, tmpObj, "-o 0 -4 -D -j -T -t 0")
-            
+
             if self.gui.rbNefDemosaicing["checked"]:
                 # demosaicing
                 tagsSave = tmpObj.tags
                 tmpObj = dataObject(cv2.cvtColor(np.array(tmpObj), cv2.COLOR_BayerRG2GRAY))
                 #tmpObj = dataObject(cv2.cvtColor(np.array(tmpObj), cv2.COLOR_BayerRG2RGB))
-                    
+
                 tmpObj.tags = dict(tagsSave)
             elif self.gui.rbNefRed["checked"]:
-                tmpObj = dataObject(np.array(tmpObj)[0:-1:2, 0:-1:2]) 
+                tmpObj = dataObject(np.array(tmpObj)[0:-1:2, 0:-1:2])
             elif self.gui.rbNefGreen["checked"]:
                 tmpObj = dataObject(np.array(tmpObj)[0:-1:2, 1::2])
             elif self.gui.rbNefBlue["checked"]:
@@ -1167,14 +1167,14 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         else:
             filter("loadAnyImage", tmpObj, fname)
         return tmpObj
-        
-    def runDisplacementCalc(self, posObj):        
+
+    def runDisplacementCalc(self, posObj):
         outVec = dataObject()
         outVecCC = dataObject()
-        
-        usDic = self.sys().detUsableImgRange(self.sys().data["imageOrig"], self.sys().data["imageDef"])        
+
+        usDic = self.sys().detUsableImgRange(self.sys().data["imageOrig"], self.sys().data["imageDef"])
         initialGuessT = self.gui.cbDisplInitialGuess["currentIndex"]
-        
+
         if self.gui.cb3DProj["checked"] and self.gui.cbDisplUndistort["checked"] and not self.sys().loadedCalib is None:
             imgOrigTemp = self.sys().data["imageOrig"].copy()
             imgDefTemp = self.sys().data["imageDef"].copy()
@@ -1207,7 +1207,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         if self.sys().data["imageOrig"].axisScales[0] == self.sys().data["imageOrig"].axisScales[1]:
             outVec = outVec * self.sys().data["imageOrig"].axisScales[0]
         return [outVec, outVecCC]
-        
+
     @ItomUi.autoslot("")
     def on_lwDisplFiles_itemSelectionChanged(self):
         if self.gui.lwDisplFiles["count"] > 0:
@@ -1217,28 +1217,28 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 tmpObj = self.loadDisplImages(fpath + "/" + self.gui.lwDisplFiles.call("item", lwfiles[0]))
                 self.gui.pltDisplacement["source"] = tmpObj
                 self.loadedImgListFile = lwfiles[0]
-        
+
     @ItomUi.autoslot("")
     def on_pbRunDisplacement_pressed(self):
         if self.gui.lwDisplFiles["count"] > 2 and len(self.gui.lwDisplFiles.call("selectedRows")) < 2:
             ui.msgWarning("Warning", "More than 2 files available and less than 2 selected.\nSelect at least 2 files to continue")
             return
-        
+
         if self.gui.lwDisplFiles["count"] < 2 and (self.sys().data["imageOrig"] is None or self.sys().data["imageDef"] is None):
             ui.msgWarning("Warning", "Original / deformed image not set. Etiher load files or generate images")
             return
-            
+
         runCount = 1
         if self.gui.lwDisplFiles["count"] > 2:
             runCount = self.gui.lwDisplFiles["count"]  - 1
-            
+
         if self.gui.pleDisplCalibrationFile["currentPath"] != '' and os.path.exists(self.gui.pleDisplCalibrationFile["currentPath"]):
             try:
                 calib = loadIDC(self.gui.pleDisplCalibrationFile["currentPath"])
             except:
                 ui.msgCritical("Error", "Could not load calibration file, setting scale to 1")
                 self.mscale = 1.0
-                
+
             try:
                 self.sys().cfg["CamMat"] = calib["CamMat"]
                 self.sys().cfg["DistCoeff"] = calib["DistCoeff"]
@@ -1256,7 +1256,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         else:
             self.sys().cfg["CamMat"] = None
             self.mscale = 1.0
-            
+
         for nimg in range(0, runCount):
             if self.gui.lwDisplFiles["count"] > 2:
                 fpath = self.gui.pleDisplFolder["currentPath"]
@@ -1268,14 +1268,14 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     if self.gui.cbDisplMScaling["checked"]:
                         self.sys().data["imageOrig"].axisScales = (self.mscale, self.mscale)
                         self.sys().data["imageOrig"].axisUnits = ('mm','mm')
-                        
+
                 self.sys().data["imageDef"] = self.loadDisplImages(fpath + "/" + self.gui.lwDisplFiles.call("item", lwfiles[nimg + 1]))
                 if self.gui.cbDisplUndistort["checked"] and (self.sys().cfg["CamMat"].dtype != None):
                     filter("cvUndistort", self.sys().data["imageDef"], self.sys().data["imageDef"], self.sys().cfg["CamMat"], self.sys().cfg["DistCoeff"])
                 if self.gui.cbDisplMScaling["checked"]:
                     self.sys().data["imageDef"].axisScales = (self.mscale, self.mscale)
                     self.sys().data["imageDef"].axisUnits = ('mm','mm')
-                        
+
                 if (self.sys().data["imageOrig"].size(0) != self.sys().data["imageDef"].size(0) or \
                     self.sys().data["imageOrig"].size(1) != self.sys().data["imageDef"].size(1)):
                     ui.msgCritical("Error", "Image size of original {0} and deformed [1] image different, aborting!".format(\
@@ -1283,13 +1283,13 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     return
             else:
                 lwfiles = []
-                
+
             shapes = self.gui.pltDisplacement["geometricShapes"]
             if self.sys().data["imageOrig"].size(0) > self.sys().data["imageOrig"].size(1):
                 minCellDim = self.sys().data["imageOrig"].size(0)
             else:
                 minCellDim = self.sys().data["imageOrig"].size(1)
-                
+
             outVec = dataObject()
             outVecCC = dataObject()
             if not shapes is None and len(shapes) > 0:
@@ -1301,7 +1301,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                         validShapes = validShapes + 1
                 #posObj = dataObject.zeros([validShapes, 4], dtype='float64')
                 posObj = np.zeros([validShapes, 4], dtype='float64')
-                
+
                 imgSizeX = self.sys().data["imageOrig"].size(1)
                 imgSizeY = self.sys().data["imageOrig"].size(0)
                 numFieldsX = self.gui.sbFieldsX["value"]
@@ -1310,8 +1310,8 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 sizey = int((imgSizeY - 2 * self.gui.sbBorderY["value"]) / numFieldsY)
                 startx = self.gui.sbBorderX["value"] - self.sys().data["imageOrig"].axisOffsets[1]
                 starty = self.gui.sbBorderY["value"] - self.sys().data["imageOrig"].axisOffsets[0]
-                
-                #for ny in range(0, numFieldsY):            
+
+                #for ny in range(0, numFieldsY):
                     #for nx in range(0, numFieldsX):
                         #if nx > 0 and nx < numFieldsX - 1:
                             #uox = 1
@@ -1341,7 +1341,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                         minCellDim = posObj[ns, 3]
                 indices = np.argsort(posObj[:,1])
                 posObj2 = np.zeros([validShapes, 4], dtype='float64')
-                
+
                 totIdx = 0
                 startIdx = 0
                 endIdx = 0
@@ -1365,17 +1365,17 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     for nx in range(0, colIdx):
                         posObj2[startIdx + nx, :] = posObj[indices[startIdx + indices2[nx]], :]
                     startIdx = endIdx
-                    
+
                 posObj = dataObject(posObj2)
                 #self.sys().data["cells"] = posObj
                 #self.sys().data["cellsX"] = colIdx
                 #self.sys().data["cellsY"] = int(totIdx / colIdx)
-                
+
                 [outVec, outVecCC] = self.runDisplacementCalc(posObj)
                 if lwfiles != []:
                     dictkey = self.gui.lwDisplFiles.call("item", lwfiles[0]) \
                         + " -> " + self.gui.lwDisplFiles.call("item", lwfiles[nimg + 1])
-                        
+
                     self.sys().data["displResults"][dictkey] = {"displVecs" : [outVec, outVecCC], "cellsXVecs" : colIdx, "cellsYVecs" : int(totIdx / colIdx), \
                         "cells" : posObj, "imageOrigPath" : fpath + "/" + self.gui.lwDisplFiles.call("item", lwfiles[0]), \
                         "imageDefPath" : fpath + "/" + self.gui.lwDisplFiles.call("item", lwfiles[nimg + 1])}
@@ -1388,12 +1388,12 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 #self.sys().data["displVecs"][dictkey] = [outVec, outVecCC]
                 #self.sys().data["cellsXVecs"][dictkey] = colIdx
                 #self.sys().data["cellsYVecs"][dictkey] = int(totIdx / colIdx)
-                    
+
             else:
                 ui.msgCritical("Error", "No Analysis Mesh / Areas defined, define mesh / areas first!")
-                return    
+                return
             largestShift = self.fillDispTable(outVec)
-            
+
             if largestShift > 0:
                 posAndSizes = dataObject.zeros([outVec.size(0), 4], dtype="int16")
                 # subset output
@@ -1427,7 +1427,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 self.sys().showQuivers(posAndSizes)
             else:
                 self.sys().showQuivers(dataObject())
-            
+
     @ItomUi.autoslot("")
     def on_pbRunDeformation_pressed(self):
         keylist = list(self.sys().data["displResults"].keys())
@@ -1461,11 +1461,11 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             #    largestDeform = curDeform
             for nco in range(0, tmpRes.size(1)):
                 self.gui.tblDeformRes.call("setItem", nc, nco, tmpRes[nc, nco])
-                
+
         if not self.sys().data["displ"] is None and not self.sys().data["cellsX"] is None \
             and not self.sys().data["cellsY"] is None \
             and not self.sys().data["deformVecs"][keylist[self.gui.lwDeform["currentRow"]]] is None:
-            if self.sys().data["displ"].shape[1] > 2: 
+            if self.sys().data["displ"].shape[1] > 2:
                 exxmat = self.sys().data["deformVecs"][keylist[self.gui.lwDeform["currentRow"]]][:,0].reshape((self.sys().data["cellsY"], self.sys().data["cellsX"]))
                 eyymat = self.sys().data["deformVecs"][keylist[self.gui.lwDeform["currentRow"]]][:,1].reshape((self.sys().data["cellsY"], self.sys().data["cellsX"]))
                 exymat = self.sys().data["deformVecs"][keylist[self.gui.lwDeform["currentRow"]]][:,2].reshape((self.sys().data["cellsY"], self.sys().data["cellsX"]))
@@ -1478,7 +1478,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             cellsVec[:,0] -= cellsVec[:,2] / 2
             cellsVec[:,1] -= cellsVec[:,3] / 2
             cellsVec1[:,0] += cellsVec1[:,2] / 2
-            cellsVec1[:,1] += cellsVec1[:,3] / 2 
+            cellsVec1[:,1] += cellsVec1[:,3] / 2
             minx = np.min(cellsVec[:,0])
             maxx = np.max(cellsVec1[:,0])
             miny = np.min(cellsVec[:,1])
@@ -1489,7 +1489,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             self.sys().data["exxmat"].axisOffsets = (-miny, -minx)
             self.sys().data["eyymat"].axisOffsets = (-miny, -minx)
             self.sys().data["exymat"].axisOffsets = (-miny, -minx)
-            
+
             self.gui.pltDeformation["overlayImage"] = self.sys().data["exxmat"]
             self.gui.pltDeformation["overlayColorMap"]='falseColorIR'
             self.gui.pltDeformation["overlayAlpha"] = 128
@@ -1503,11 +1503,11 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
     @ItomUi.autoslot("")
     def on_pbDisplSave_pressed(self):
         self.Save()
-        
+
     @ItomUi.autoslot("")
     def on_pbDefSave_pressed(self):
         self.Save()
-        
+
     def Save(self):
         filename  = ui.getSaveFileName('Select file to load', self.ownDir, 'Itom Dictionary (*.idc)')
         if not filename:
@@ -1515,25 +1515,25 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         else:
             if filename[-4:] != '.idc':
                 filename += '.idc'
-                
+
             saveDic = {'cfg' : self.sys().cfg, 'data' : self.sys().data, 'resultObj' : self.sys().resultObj, 'resultDic' : self.sys().resultDic}
             saveIDC(filename, saveDic)
             ui.msgInformation("Save System Data", "All system data saved successfully!")
-        
+
         #self.sys().saveConfig()
-        
+
     @ItomUi.autoslot("")
     def on_pbMeasLoad_pressed(self):
         self.Load()
-        
+
     @ItomUi.autoslot("")
     def on_pbDisplLoad_pressed(self):
         self.Load()
-        
+
     @ItomUi.autoslot("")
     def on_pbDefLoad_pressed(self):
         self.Load()
-    
+
     def Load(self):
         filename = ui.getOpenFileName('Select file to load', self.ownDir, 'Itom Dictionary (*.idc);;')
         if not filename:
@@ -1557,7 +1557,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     self.sys().resultDic = lsys["resultDic"]
                 except:
                     ui.msgWarning("Warning", "No result dictionary found in file!")
-                
+
                 #self.sys().imageOrig = tmpImg['imageOrig']
                 #self.sys().imageDef = tmpImg['imageDef']
                 self.updateInpImage()
@@ -1571,26 +1571,26 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                         y1 = int(self.sys().data["cells"][n, 1] + self.sys().data["cells"][n, 3] / 2)
                         shapes.add(shape(8, [x0, y0], [x1, y1]))
                     self.gui.pltDisplacement.call("setGeometricShapes", list(shapes))
-                    
+
                 self.fillTable()
             else:
                 print('only idc files can be loaded')
-        
+
     @ItomUi.autoslot("")
     def on_pbDisplWorkSpaceExp_pressed(self):
         self.on_WorkSpaceExp()
-        
+
     @ItomUi.autoslot("")
     def on_pbDefWorkSpaceExp_pressed(self):
         self.on_WorkSpaceExp()
-        
+
     def on_WorkSpaceExp(self):
         __main__.__dict__["dic"] = {'cfg' : self.sys().cfg, 'data' : self.sys().data}
-        
+
     @ItomUi.autoslot("")
     def on_pbDisplWorkSpaceImp_pressed(self):
         self.on_WorkSpaceImp()
-        
+
     @ItomUi.autoslot("")
     def on_pbDefWorkSpaceImp_pressed(self):
         self.on_WorkSpaceImp()
@@ -1600,7 +1600,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             self.sys().cfg = __main__.__dict__["dic"]["cfg"]
             self.sys().data = __main__.__dict__["dic"]["data"]
         pass
-        
+
     def updateGraph(self):
         if (self.gui.pbSpiderLive["checked"] == True and self.upDating == False):
             self.upDating = True
@@ -1645,20 +1645,20 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             return
         if (self.sys().numMeas > 0):
             self.gui.plotSpiderGraph["source"] = self.sys().resultObj[1:, 0:self.sys().numMeas]
-        else:            
+        else:
             self.gui.plotSpiderGraph["source"] = self.sys().resultObj[1:, :]
         minVal = min(self.sys().resultObj[1:, :])
         if minVal < 0:
             minVal *= 1.1
         else:
             minVal *= 0.9
-            
+
         maxVal = max(self.sys().resultObj[1:, :])
         if maxVal < 0:
             maxVal *= 0.9
         else:
             maxVal *= 1.1
-        self.gui.plotSpiderGraph["yAxisInterval"] = [minVal, maxVal]  
+        self.gui.plotSpiderGraph["yAxisInterval"] = [minVal, maxVal]
 
     def fillTable(self):
         self.gui.tbMeas.call("clearContents")
@@ -1690,7 +1690,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 for no in range(0, self.sys().resultObj.size(0)):
                     for na in range(0, self.sys().numMeas):
                         self.gui.tbMeas.call("setItem", na, no, self.sys().resultObj[no, na])
-                        
+
     @ItomUi.autoslot("QString")
     def on_cbFrequency_currentIndexChanged(self, text):
         if (int(float(text)) != self.sys().cfg["freq"]):
@@ -1699,28 +1699,28 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 self.sys().hbm.setParam("samplingRate", self.sys().cfg["freq"])
                 #self.gui.leStatus["text"] = self.sys().hbm.getParam("status")
             self.gui.leMeasTime["text"] = float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"])
-            
+
     @ItomUi.autoslot("")
     def on_leSpiderDelay_editingFinished(self):
         try:
             self.sys().cfg["spiderDelay"] = float(self.gui.leSpiderDelay["text"])
         except:
             pass
-            
+
     @ItomUi.autoslot("")
     def on_leSpiderDelay_returnPressed(self):
         try:
             self.sys().cfg["spiderDelay"] = float(self.gui.leSpiderDelay["text"])
         except:
             pass
-            
+
     @ItomUi.autoslot("")
     def on_dsbCamDelay_editingFinished(self):
         try:
             self.sys().cfg["camDelay"] = float(self.gui.dsbCamDelay["value"])
         except:
             pass
-            
+
     @ItomUi.autoslot("")
     def on_leSamples_editingFinished(self):
         try:
@@ -1751,10 +1751,10 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             [retval, retstr] = self.sys().initHBM()
             if retval != 0:
                 return
-                
+
         self.sys().cfg["frequency"] = int(float(self.gui.cbFrequency["currentText"]))
         #self.sys().cfg["channels"] = int(float(self.gui.cbChannel["currentText"]))
-        
+
         self.sys().cfg["bridges"][0] = self.sys().CB2bridge(self.gui.cbBridge4)
         self.sys().cfg["bridges"][1] = self.sys().CB2bridge(self.gui.cbBridge5)
         self.sys().cfg["bridges"][2] = self.sys().CB2bridge(self.gui.cbBridge6)
@@ -1765,7 +1765,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         self.sys().cfg["measTypes"][2] = self.gui.cbMeasType6["currentText"]
         self.sys().cfg["measTypes"][3] = self.gui.cbMeasType7["currentText"]
         # todo need to check if channel type is compatible with selected channel!
-        
+
         self.sys().cfg["ranges"][0] = self.sys().CB2range(self.gui.cbRange4)
         self.sys().cfg["ranges"][1] = self.sys().CB2range(self.gui.cbRange5)
         self.sys().cfg["ranges"][2] = self.sys().CB2range(self.gui.cbRange6)
@@ -1776,10 +1776,10 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         #self.axisScaleLive = [-0.125 * 1.05, 0.125 * 1.05]
         #self.axisScaleLive = [-0.5 * 1.05, 0.5 * 1.05]
         self.gui.plotSpiderGraph["yAxisInterval"] = self.axisScaleLive
-        
+
         if (self.sys().cam == None):
             self.sys().initCam()
-        
+
         try:
             self.sys().prepMeasure()
         except:
@@ -1793,7 +1793,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             time.sleep(self.sys().cfg["samples"] / self.sys().cfg["freq"])
             self.sys().timer = None
             #self.upDating = True
-            
+
         if self.sys().timerCam != None:
             self.sys().timerCam.stop()
             self.sys().timerCam = None
@@ -1802,7 +1802,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     self.sys().cam.stopDevice()
                 except:
                     pass
-            
+
         if (self.sys().isMeasuring == True):
             self.sys().isMeasuring = False
             self.gui.pbSpiderLive["enabled"] = True
@@ -1811,7 +1811,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
         else:
             self.sys().prepMeasure()
             self.sys().isMeasuring = True
-        
+
             try:
                 self.sys().newMeasVal()
                 self.sys().timer = timer(int(float(self.gui.leSpiderDelay["text"]) * 1000.0), self.sys().newMeasVal)
@@ -1821,7 +1821,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 self.sys().isMeasuring = False
                 self.gui.pbMeasStart["styleSheet"] = "background-color: #f06d6f;"
                 pass
-                
+
             try:
                 if (self.gui.cbEnableCam["checked"] == True):
                     try:
@@ -1842,7 +1842,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                     self.sys().timerCam = timer(int(self.gui.dsbCamDelay["value"] * 1000.0 * 1.0), self.sys().newImage)
             except:
                 print("could not start camera")
-            
+
             self.gui.pbMeasStart["text"] = "Pause Measurement"
             self.gui.pbMeasStart["styleSheet"] = "background-color: #80f07a;"
 
@@ -1895,7 +1895,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 return
         if (self.sys().isMeasuring == True):
             return
-        
+
         if (state == True):
             if (self.sys().timer != None):
                 self.sys().timer.stop()
@@ -1912,7 +1912,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 self.sys().timer.stop()
                 self.sys().timer = None
             self.plotAutoScale()
-            
+
     @ItomUi.autoslot("bool")
     def on_cbEnableCam_toggled(self, state):
         self.sys().cfg["enableCam"] = state
@@ -1924,7 +1924,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             self.gui.dsbCamDelay["enabled"] = False
             self.gui.cbDownloadImgs["enabled"] = False
             self.gui.pleImgsPath["enabled"] = False
-            
+
     @ItomUi.autoslot("bool")
     def on_cbEnableSpider_toggled(self, state):
         self.sys().cfg["enableSpider"] = state
@@ -1982,12 +1982,12 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             self.gui.dsbScale5["enabled"] = False
             self.gui.dsbScale6["enabled"] = False
             self.gui.dsbScale7["enabled"] = False
-            
+
     @ItomUi.autoslot("bool")
     def on_cbDownloadImgs_toggled(self, state):
         self.sys().cfg["downloadImgs"] = state
         self.gui.pleImgsPath["enabled"] = state
-        
+
     @ItomUi.autoslot("")
     def on_pbSnapImage_pressed(self):
         if self.sys().cam != None:
@@ -2003,13 +2003,13 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             tmpObj = dataObject(cv2.cvtColor(np.array(tmpObj), cv2.COLOR_BayerRG2GRAY))
             #tmpObj = dataObject(cv2.cvtColor(np.array(tmpObj), cv2.COLOR_BayerRG2RGB))
             tmpObj.tags = dict(tagsSave)
-            
+
             self.gui.plotCamImage["source"] = tmpObj
-        
+
     @ItomUi.autoslot("QString")
     def on_pleImgsPath_currentPathChanged(self, pathString):
         self.sys().cfg["imgsPath"] = pathString
-        
+
     @ItomUi.autoslot("QString")
     def on_cbAnalResult_currentIndexChanged(self, text):
         if text.lower() == "exx":

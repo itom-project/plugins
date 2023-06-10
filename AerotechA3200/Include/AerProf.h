@@ -73,7 +73,7 @@ AERERR_CODE AER_DLLENTRY AerProfileGetDepth( HAERCTRL hAerCtrl, PAOULONG pDepths
 //  These values are constants used in computing the Carlson Elliptical integral of the
 //	second kind.  With the exception of SK_ERRTOL these values should not be changed
 //	The SK_ERRTOL value can be changed to try and achieve a higher degree of precision
-//	on the computation of the arc length.  
+//	on the computation of the arc length.
 
 #define SK_ERRTOL	0.0015 //0.05     // original
 //#define SK_ERRTOL	0.000015 //0.05
@@ -87,7 +87,7 @@ AERERR_CODE AER_DLLENTRY AerProfileGetDepth( HAERCTRL hAerCtrl, PAOULONG pDepths
 //  These values are constants used in computing the Carlson Elliptical integral of the
 //	first kind.  With the exception of FK_ERRTOL these values should not be changed
 //	The FK_ERRTOL value can be changed to try and achieve a higher degree of precision
-//	on the computation of the arc length. 
+//	on the computation of the arc length.
 
 #define FK_ERRTOL	0.0025 //0.08  // original
 //#define FK_ERRTOL	0.000025 //0.08
@@ -97,7 +97,7 @@ AERERR_CODE AER_DLLENTRY AerProfileGetDepth( HAERCTRL hAerCtrl, PAOULONG pDepths
 #define FK_CONST_3	(3.0/44.0)
 #define FK_CONST_4	(1.0/14.0)
 
-//	This value is used to check if the coordinates 
+//	This value is used to check if the coordinates
 //	given are actually on the supposed ellipse
 
 #define COORD_ERR_TOL 1.0e-9
@@ -106,7 +106,7 @@ DOUBLE AerGetCarlsonEllipseFirstKind(	DOUBLE x, DOUBLE y, DOUBLE z);
 
 DOUBLE AerGetCarlsonEllipseSecondKind(	DOUBLE x, DOUBLE y, DOUBLE z);
 
-DOUBLE AerGetEllipseCircumference(		DOUBLE semiMajorAxisNum, 
+DOUBLE AerGetEllipseCircumference(		DOUBLE semiMajorAxisNum,
 										         DOUBLE semiMinorAxisNum);
 
 DOUBLE AerGetBasicEllipseArcLength(		DOUBLE semiMajorAxisNum,
@@ -116,7 +116,7 @@ DOUBLE AerGetBasicEllipseArcLength(		DOUBLE semiMajorAxisNum,
 
 AERERR_CODE AerGetEllipticalArcLength(	DOUBLE   dstart_x_coord,
 										         DOUBLE   dstart_y_coord,
-										         DOUBLE   dend_x, 
+										         DOUBLE   dend_x,
 										         DOUBLE   dend_y,
 										         DOUBLE   dcenter_i,
 										         DOUBLE   dcenter_j,
@@ -128,7 +128,7 @@ AERERR_CODE AerGetEllipticalArcLength(	DOUBLE   dstart_x_coord,
 
 WORD findQuad(DOUBLE dAngle);
 
-  
+
 
 #ifdef __cplusplus
 }

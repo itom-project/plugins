@@ -11,4 +11,3 @@ THEN you can run "sh autoconf.sh"
 ./configure --prefix=/usr --with-drivers=agfa-cl20
 make
 make install
-

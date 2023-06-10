@@ -2,9 +2,9 @@
 /// \brief Contains parameter identifiers
 ///
 /// This file is version dependent and needs to match the rest of the software
-/// 
+///
 /// Copyright (c) Aerotech, Inc. 2010-2013.
-/// 
+///
 
 #ifndef __Ensemble_PARAMETER_ID_H__
 #define __Ensemble_PARAMETER_ID_H__

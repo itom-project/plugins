@@ -10,14 +10,14 @@
     </message>
     <message>
         <location line="+1"/>
-        <source>This plugin contains algorithms for the 1D roughness evaluation. 
+        <source>This plugin contains algorithms for the 1D roughness evaluation.
 
-The contained algorithms are: 
+The contained algorithms are:
 
-* calcRoughnessProfile: divide the given profile row-by-row into roughness and waviness 
-* evalRoughnessProfile: evaluate either the roughness or waviness based on various 1D roughness parameters (e.g. Rz, Ra...) 
-* roughnessProfile: combination of the two algorithms above as well as a possible initial subtraction of a regression line 
-* calcAbbottCurve: determination of the abbott curve based on the roughness or waviness 
+* calcRoughnessProfile: divide the given profile row-by-row into roughness and waviness
+* evalRoughnessProfile: evaluate either the roughness or waviness based on various 1D roughness parameters (e.g. Rz, Ra...)
+* roughnessProfile: combination of the two algorithms above as well as a possible initial subtraction of a regression line
+* calcAbbottCurve: determination of the abbott curve based on the roughness or waviness
 
 Some algorithms the plugin &apos;fittingFilters&apos; for a valid execution.</source>
         <translation type="unfinished"></translation>
@@ -107,23 +107,23 @@ Some algorithms the plugin &apos;fittingFilters&apos; for a valid execution.</so
     </message>
     <message>
         <location line="+28"/>
-        <source>calculate the roughness and waviness profile based in a given real input data object. 
+        <source>calculate the roughness and waviness profile based in a given real input data object.
 
-The roughness and waviness profile is determined row-by-row from the given input object that is filtered using 
-one or two gaussian convolution operations. The gaussian filters are choosen such that a transmission of 50% is 
-obtained at the given cut-off wavelength levels. 
+The roughness and waviness profile is determined row-by-row from the given input object that is filtered using
+one or two gaussian convolution operations. The gaussian filters are choosen such that a transmission of 50% is
+obtained at the given cut-off wavelength levels.
 
-The waviness is a lowpass of the input data cut at the cut-off wavelength Lc. 
-The roughness is the obtained by the difference between input and waviness. Additionally a lowpass is applied 
-at the cut-off wavelength Ls (if Ls &gt; 0.0). 
+The waviness is a lowpass of the input data cut at the cut-off wavelength Lc.
+The roughness is the obtained by the difference between input and waviness. Additionally a lowpass is applied
+at the cut-off wavelength Ls (if Ls &gt; 0.0).
 
 You need to define if your profile is an open, non-periodic profiel or a closed, periodic profile. In the latter case
-the evaluation is only implemented by a convolution based algorithm, in the first case one can choose between the fast 
-dft-implementation or the convolution-based implementation. If &apos;mode&apos; is set to &apos;auto&apos;, lowpass filter operations with 
-big wavelengths are evaluated using the dft-approach (Lc) while the high-frequency cut-off Ls is done using the convolution operation. 
+the evaluation is only implemented by a convolution based algorithm, in the first case one can choose between the fast
+dft-implementation or the convolution-based implementation. If &apos;mode&apos; is set to &apos;auto&apos;, lowpass filter operations with
+big wavelengths are evaluated using the dft-approach (Lc) while the high-frequency cut-off Ls is done using the convolution operation.
 
-In order to guarantee an efficient algorithm, the gaussian filter kernel will be cut after a certain length. This length can be 
-controlled using the parameter &apos;cutoff_factor&apos;. 
+In order to guarantee an efficient algorithm, the gaussian filter kernel will be cut after a certain length. This length can be
+controlled using the parameter &apos;cutoff_factor&apos;.
 
 This filter is implemented based on DIN EN ISO 16610-21:2013.</source>
         <translation type="unfinished"></translation>
@@ -214,22 +214,22 @@ This filter is implemented based on DIN EN ISO 16610-21:2013.</source>
     </message>
     <message>
         <location line="+21"/>
-        <source>Evaluates given roughness or waviness profiles for a specific roughness profile parameter. 
+        <source>Evaluates given roughness or waviness profiles for a specific roughness profile parameter.
 
-The given roughness data is evaluated line by line. If only one line is evaluated, &apos;result&apos; contains: 
+The given roughness data is evaluated line by line. If only one line is evaluated, &apos;result&apos; contains:
 
-(mean-value-over-all-samples, min-value-over-all-samples, max-value-over-all-samples) 
+(mean-value-over-all-samples, min-value-over-all-samples, max-value-over-all-samples)
 
-The result values are always in _m. In case of Rt (or Wt), the evaluation is not separated to various samples, therefore mean, min and max contain the same values. 
+The result values are always in _m. In case of Rt (or Wt), the evaluation is not separated to various samples, therefore mean, min and max contain the same values.
 
-If multiple lines are evaluated, the result contains the 
+If multiple lines are evaluated, the result contains the
 
-(mean-value-over-all-lines, min-value, max-value, std-dev), 
-where min-value, max-value and std-dev are calculated over the mean-values of all lines. 
+(mean-value-over-all-lines, min-value, max-value, std-dev),
+where min-value, max-value and std-dev are calculated over the mean-values of all lines.
 
-The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997. 
+The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997.
 
-Possible roughness parameters are Rp, Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile 
+Possible roughness parameters are Rp, Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile
 the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -290,13 +290,13 @@ the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.</source
     </message>
     <message>
         <location line="+137"/>
-        <source>Calculate a profile roughness parameter for each line in the given input object. 
+        <source>Calculate a profile roughness parameter for each line in the given input object.
 
-The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997. 
+The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997.
 
-This filter is a thre-step filter, based on the single filters &apos;subtract1DRegression&apos; from the plugin &apos;FittingFilters&apos; 
-and &apos;calcRoughnessProfile&apos; as well as &apos;evalRoughnessProfile&apos;. The first is an optional filter to remove the form of the raw signal. 
-The second filter splits the raw signal into the waviness and roughness signal (given by the cut-off wavelengths Lc and Ls). 
+This filter is a thre-step filter, based on the single filters &apos;subtract1DRegression&apos; from the plugin &apos;FittingFilters&apos;
+and &apos;calcRoughnessProfile&apos; as well as &apos;evalRoughnessProfile&apos;. The first is an optional filter to remove the form of the raw signal.
+The second filter splits the raw signal into the waviness and roughness signal (given by the cut-off wavelengths Lc and Ls).
 The last filter evaluates the given roughness parameter and returns the result. For more information see the description of the single filters.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -312,8 +312,8 @@ The last filter evaluates the given roughness parameter and returns the result. 
     </message>
     <message>
         <location line="+93"/>
-        <source>This filter calculates the Abbott firestone curve (as well as an optional histogram) of 
-a roughness or waviness profile, e.g. obtained from the filter &apos;calcRoughnessProfile&apos;. 
+        <source>This filter calculates the Abbott firestone curve (as well as an optional histogram) of
+a roughness or waviness profile, e.g. obtained from the filter &apos;calcRoughnessProfile&apos;.
 
 The evaluation is done based on DIN EN ISO 4287:2010.</source>
         <translation type="unfinished"></translation>

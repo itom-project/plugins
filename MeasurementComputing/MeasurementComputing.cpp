@@ -64,7 +64,7 @@ Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact 
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = tr("LGPL").toLatin1().data();
-    m_aboutThis = tr(GITVERSION).toLatin1().data(); 
+    m_aboutThis = tr(GITVERSION).toLatin1().data();
 
     ito::Param param = ito::Param("board_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 254, 0, tr("board number of the connected device. This number must be defined by the software 'InstaCal'").toLatin1().data());
     m_initParamsMand.append(param);
@@ -110,7 +110,7 @@ MeasurementComputing::MeasurementComputing() : AddInDataIO(),
 	m_pBuffer(NULL),
 	m_dataAcquired(false),
 	m_ad_resolution(0),
-	m_da_resolution(0), 
+	m_da_resolution(0),
 	m_vxdrevnum(0),
 	m_revision(0)
 {
@@ -146,7 +146,7 @@ MeasurementComputing::MeasurementComputing() : AddInDataIO(),
 
 	paramVal = ito::Param("analog_number_outputs", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("number of output channels of this device.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	
+
 	paramVal = ito::Param("samples_per_input_channel", ito::ParamBase::Int, 1, std::numeric_limits<int>::max(), 1, tr("number of samples that are acquired per channel after each acquisition.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
@@ -169,7 +169,7 @@ MeasurementComputing::MeasurementComputing() : AddInDataIO(),
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("input_range_code", ito::ParamBase::String, "BIP10VOLTS", tr("A/D range code, if board has a programmable gain. Refer to board specific information for a list of the supported A/D ranges.").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);	
+    m_params.insert(paramVal.getName(), paramVal);
 
 	paramVal = ito::Param("output_range_code", ito::ParamBase::String, "UNI5VOLTS", tr("D/A range code, if board has a programmable gain. Refer to board specific information for a list of the supported D/A ranges.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -363,7 +363,7 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
     {
         InitializedBoards.insert(m_boardNum);
     }
-	
+
 	if (!retValue.containsError())
 	{
 		if (int ret = cbDeclareRevision(&m_revision))
@@ -392,8 +392,8 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
 		}
 
 	}
-	
-    if (!retValue.containsError()) 
+
+    if (!retValue.containsError())
     {
         // get board name
         it = m_params.find("device_name");
@@ -408,7 +408,7 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
         it->setVal<char*>(name);
 	}
 
-	if (!retValue.containsError()) 
+	if (!retValue.containsError())
     {
         // factory serial number
         it = m_params.find("serial_number");
@@ -417,7 +417,7 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
         {
 			retValue += getErrStr(ret, QString::number(serial));
 		}
-        it->setVal<char*>(QString::number(serial).toLatin1().data());     
+        it->setVal<char*>(QString::number(serial).toLatin1().data());
 	}
 
 	if (!retValue.containsError())// init analog inputs
@@ -526,10 +526,10 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
 		{
 			retValue += getErrStr(ret, QString::number(m_da_resolution));
 		}
-		
+
 		it->setMeta(new ito::IntMeta(m_da_resolution, m_da_resolution, 1), true);
 		it->setVal<int>(m_da_resolution);
-		it->setFlags(ito::ParamBase::Readonly);	
+		it->setFlags(ito::ParamBase::Readonly);
 	}
 
 	if (!retValue.containsError())
@@ -540,25 +540,25 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
 		{
 			retValue += getErrStr(ret, QString::number(m_ad_resolution));
 		}
-		
+
 		it->setMeta(new ito::IntMeta(m_ad_resolution,m_ad_resolution, 1), true);
 		it->setVal<int>(m_ad_resolution);
-		it->setFlags(ito::ParamBase::Readonly);	
+		it->setFlags(ito::ParamBase::Readonly);
 	}
-	
-	if (!retValue.containsError()) 
-    {   
-		//successful initialization will flash the LED on device. 
+
+	if (!retValue.containsError())
+    {
+		//successful initialization will flash the LED on device.
         if (int ret = cbFlashLED(m_boardNum))
 		{
             retValue += getErrStr(ret, QString::number(0));
 		}
-	}   	
+	}
 
 	// synchronize settings of plugin
 	retValue += synchronizeSettings(sAll);
-	
-	if (!retValue.containsError()) 
+
+	if (!retValue.containsError())
     {    // emit signal about changed parameters
 		emit parametersChanged(m_params);
 	}
@@ -682,14 +682,14 @@ ito::RetVal MeasurementComputing::setParam(QSharedPointer<ito::ParamBase> val, I
 		if (key == "input_range_code")
 		{
 			m_input_range = rangeCodeStringToInt(val->getVal<char*>());
-            retValue += it->copyValueFrom(&(*val));		
+            retValue += it->copyValueFrom(&(*val));
 			retValue += synchronizeSettings(sMData);
 		}
 
 		else if(key == "output_range_code")
 		{
 			m_output_range = rangeCodeStringToInt(val->getVal<char*>());
-            retValue += it->copyValueFrom(&(*val));		
+            retValue += it->copyValueFrom(&(*val));
 			retValue += synchronizeSettings(sMData);
 		}
 
@@ -926,12 +926,12 @@ ito::RetVal MeasurementComputing::acquire(const int /*trigger*/, ItomSharedSemap
 							{
 								retVal += getErrStr(ret, "Error during datavalue convertion");
 							}
-							
+
 							channelPtr++;
 						}
 					}
 				}
-				
+
 				if (voltageInput)
 				{
 					m_data.setValueDescription("voltage");
@@ -981,7 +981,7 @@ ito::RetVal MeasurementComputing::getVal(void *data, ItomSharedSemaphore *waitCo
         waitCond->release();
     }
 
-    return retval;    
+    return retval;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1031,7 +1031,7 @@ ito::RetVal MeasurementComputing::copyVal(void *dObj, ItomSharedSemaphore *waitC
         waitCond->release();
     }
 
-    return retval;    
+    return retval;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1070,8 +1070,8 @@ ito::RetVal MeasurementComputing::setVal(const char *dObj, const int length, Ito
 		{
 			retValue += ito::RetVal(ito::retError, 0, tr("Wrong dataobject datatype.").toLatin1().data());
 		}
-	}	
-	
+	}
+
 	if ((dataObj->getSize(0) != numChannels) && (dataObj->getSize(1) != numSamples)) //check if dimensions are right
 	{
 		retValue += ito::RetVal(ito::retError, 0, tr("DataObject has wrong size. Size must be numberOfChannels x numberOfSamples.").toLatin1().data());
@@ -1116,7 +1116,7 @@ ito::RetVal MeasurementComputing::setVal(const char *dObj, const int length, Ito
 				}
 			}
 		}
-		else 
+		else
 		{
 			int cnt = 0;
 			for (int channel = 0; channel < numChannels; channel++)
@@ -1128,12 +1128,12 @@ ito::RetVal MeasurementComputing::setVal(const char *dObj, const int length, Ito
 				}
 			}
 		}
-	
+
 	}
 
 	if (!retValue.containsError())
 	{
-		// the range of the analog output is not programmable, fixed to UNI5VOLTS (0 to 5 volts) (USB1208LS). 
+		// the range of the analog output is not programmable, fixed to UNI5VOLTS (0 to 5 volts) (USB1208LS).
 		// all rate settings are ignored
 		if (ret = cbAOutScan(m_boardNum, lowChannel, highChannel, count, &rate, m_output_range, m_pOutputBuffer, Options))
 		{
@@ -1218,7 +1218,7 @@ ito::RetVal MeasurementComputing::execFunc(const QString funcName, QSharedPointe
 		{
 			retValue += MeasurementComputing::setDOut(*param1, *param2);
 		}
-	}	
+	}
 	else if(funcName == "getBitIn")
 	{
 		param1 = ito::getParamByName(&(*paramsMand), "digital_port_number", &retValue);
@@ -1305,7 +1305,7 @@ ito::RetVal MeasurementComputing::getDIn(ito::ParamBase &digitalPort, ito::Param
     ito::RetVal retValue(ito::retOk);
 
 	USHORT val;
-	int port = digDevTypeStringToInt(digitalPort.getVal<char*>());	
+	int port = digDevTypeStringToInt(digitalPort.getVal<char*>());
 
 	if (int ret = cbDIn(m_boardNum, port, &val))
 	{
@@ -1323,7 +1323,7 @@ ito::RetVal MeasurementComputing::getCIn(ito::ParamBase &channel, ito::ParamBase
     ito::RetVal retValue(ito::retOk);
 
 	unsigned long val;
-	int chan = channel.getVal<int>();	
+	int chan = channel.getVal<int>();
 
 	//int test = counterSet.getVal<int>();
 	if (counterSet.getVal<int>() != -1)
@@ -1349,9 +1349,9 @@ ito::RetVal MeasurementComputing::getTIn(ito::ParamBase &channel, ito::ParamBase
 {
     ito::RetVal retValue(ito::retOk);
 
-	int Options = FILTER; //a smoothing function is applied to temprature readings. When selected 10 samples are read from the specified channel and averaged. 
+	int Options = FILTER; //a smoothing function is applied to temprature readings. When selected 10 samples are read from the specified channel and averaged.
 	float val = -1;
-	int chan = channel.getVal<int>();	
+	int chan = channel.getVal<int>();
 
 	if (int ret = cbTIn(m_boardNum, chan, m_temperature_scale, &val, Options))
 	{
@@ -1370,7 +1370,7 @@ ito::RetVal MeasurementComputing::setVOut(ito::ParamBase &channel, ito::ParamBas
 
 	int Options = 0;
 	float val = voltage.getVal<double>();
-	int chan = channel.getVal<int>();	
+	int chan = channel.getVal<int>();
 
 	if (int ret = cbVOut(m_boardNum, chan, m_output_range, val, Options))
 	{
@@ -1389,7 +1389,7 @@ ito::RetVal MeasurementComputing::getVIn(ito::ParamBase &channel, ito::ParamBase
 
 	int Options = 0;
 	float val;
-	int chan = channel.getVal<int>();	
+	int chan = channel.getVal<int>();
 
 	if (int ret = cbVIn(m_boardNum, chan, m_input_range, &val, Options))
 	{
@@ -1446,7 +1446,7 @@ ito::RetVal MeasurementComputing::synchronizeSettings(int what)
 			//alloc new output buffer (uint32)
 			m_pBuffer = cbWinBufAlloc32(m_numInputChannels * m_numInputSamples);
 		}
-		else if (m_ad_resolution <= 16 && voltageInput) 
+		else if (m_ad_resolution <= 16 && voltageInput)
 		{
 			m_data = ito::DataObject(m_numInputChannels, m_numInputSamples, ito::tFloat64);
 
@@ -1460,7 +1460,7 @@ ito::RetVal MeasurementComputing::synchronizeSettings(int what)
 			//alloc new output buffer (float64)
 			m_pBuffer = cbWinBufAlloc32(m_numInputChannels * m_numInputSamples);
 		}
-		
+
 	}
 	else if (what & sOutputData)
 	{
@@ -1520,37 +1520,37 @@ QString MeasurementComputing::rangeCodeIntToString(int rangeCodeInt)
 		rangeCodeString = "BIP30VOLTS";
 		break;
 	case 15: //BIP20VOLTS
-		rangeCodeString = "BIP20VOLTS";	
+		rangeCodeString = "BIP20VOLTS";
 		break;
 	case 21: //BIP15VOLTS
-		rangeCodeString = "BIP15VOLTS";		
+		rangeCodeString = "BIP15VOLTS";
 		break;
 	case 1: //BIP10VOLTS
-		rangeCodeString = "BIP10VOLTS";	
+		rangeCodeString = "BIP10VOLTS";
 		break;
 	case 0: //BIP5VOLTS
-		rangeCodeString = "BIP5VOLTS";		
+		rangeCodeString = "BIP5VOLTS";
 		break;
 	case 16: //BIP4VOLTS
-		rangeCodeString = "BIP4VOLTS";			
+		rangeCodeString = "BIP4VOLTS";
 		break;
 	case 2: //BIP2PT5VOLTS
-		rangeCodeString = "BIP2PT5VOLTS";		
+		rangeCodeString = "BIP2PT5VOLTS";
 		break;
 	case 14: //BIP2VOLTS
-		rangeCodeString = "BIP2VOLTS";		
+		rangeCodeString = "BIP2VOLTS";
 		break;
 	case 3: //BIP1PT25VOLTS
-		rangeCodeString = "BIP1PT25VOLTS";	
+		rangeCodeString = "BIP1PT25VOLTS";
 		break;
 	case 4: //BIP1VOLTS
-		rangeCodeString = "BIP1VOLTS";	
+		rangeCodeString = "BIP1VOLTS";
 		break;
 	case 5: //BIPPT625VOLTS
-		rangeCodeString = "BIPPT625VOLTS";		
+		rangeCodeString = "BIPPT625VOLTS";
 		break;
 	case 6: //BIPPT5VOLTS
-		rangeCodeString = "BIPPT5VOLTS";		
+		rangeCodeString = "BIPPT5VOLTS";
 		break;
 	case 12: //BIPPT25VOLTS
 		rangeCodeString = "BIPPT25VOLTS";
@@ -1584,7 +1584,7 @@ QString MeasurementComputing::rangeCodeIntToString(int rangeCodeInt)
 		break;
 	case 19: //BIPPT078VOLTS
 		rangeCodeString = "BIPPT078VOLTS";
-		break; 
+		break;
 	case 100: //UNI10VOLTS
 		rangeCodeString = "UNI10VOLTS";
 		break;
@@ -1655,7 +1655,7 @@ QString MeasurementComputing::rangeCodeIntToString(int rangeCodeInt)
 		rangeCodeString = "";
 		break;
 	}
-	
+
 	return rangeCodeString;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1852,7 +1852,7 @@ int MeasurementComputing::rangeCodeStringToInt(char* rangeCodeString)
 		rangeCodeInt = NOTUSED;
 	}
 
-	return rangeCodeInt;	
+	return rangeCodeInt;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1884,7 +1884,7 @@ int MeasurementComputing::tempScaleStringToInt(char* tempScaleString)
 		tempScaleInt = NOSCALE;
 	}
 
-	return tempScaleInt;	
+	return tempScaleInt;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1894,7 +1894,7 @@ QString MeasurementComputing::tempScaleIntToString(int tempScaleInt)
 
 	switch (tempScaleInt)
 	{
-	case 0:  //CELSIUS		
+	case 0:  //CELSIUS
 		tempScaleString = "CELSIUS";
 		break;
 	case 1:	//FAHRENHEIT
@@ -1913,7 +1913,7 @@ QString MeasurementComputing::tempScaleIntToString(int tempScaleInt)
 		tempScaleString = "NOSCALE";
 		break;
 	}
-	
+
 	return tempScaleString;
 }
 
@@ -2027,7 +2027,7 @@ QString MeasurementComputing::digDevTypeIntToString(int digDevTypeInt)
 		digDevTypeString = "FIRSTPORTA";
 		break;
 	}
-	
+
 	return digDevTypeString;
 }
 
@@ -2176,5 +2176,5 @@ int MeasurementComputing::digDevTypeStringToInt(char* digDevTypeString)
 		digDevTypeInt = FIRSTPORTA;
 	}
 
-	return digDevTypeInt;	
+	return digDevTypeInt;
 }

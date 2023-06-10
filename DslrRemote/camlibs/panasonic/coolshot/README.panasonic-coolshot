@@ -18,4 +18,3 @@ TODO List
 	we say that negative return values are errors. That is, we do
 	CHECK_RESULT (pic_num = count_pictures (camera)); everywhere and let
 	CHECK_RESULT test for a return value < 0.
-

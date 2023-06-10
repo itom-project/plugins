@@ -12,7 +12,6 @@
 
 2001-12-20  Hubert Figuiere  <hfiguiere@teaser.fr>
 
-	* dc120.c, library.h, library.c:  cleaned it up a 
-	lot and improved error handling. Patch by 
+	* dc120.c, library.h, library.c:  cleaned it up a
+	lot and improved error handling. Patch by
 	Ralf Engels <ralf-engels@gmx.de>
-
