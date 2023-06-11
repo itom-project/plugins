@@ -1,6 +1,6 @@
-set(target_name Ximea)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-cmake_minimum_required(VERSION 3.1...3.15)
+set(target_name Ximea)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(XIMEA_BUILD_API_VERSION "4.25 or newer" CACHE STRING "Expected API version")

@@ -1,8 +1,8 @@
-SET (target_name HBMSpider8) #->replace PCI6115 by the name of your plugin (one word)
+cmake_minimum_required(VERSION 3.8...3.24)
+
+set(target_name HBMSpider8) #->replace PCI6115 by the name of your plugin (one word)
 
 project(${target_name})
-
-cmake_minimum_required(VERSION 3.8...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 

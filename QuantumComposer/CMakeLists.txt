@@ -1,7 +1,6 @@
-set(target_name QuantumComposer)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-# this should be the first line of your project.
-cmake_minimum_required(VERSION 3.1...3.15)
+set(target_name QuantumComposer)
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})

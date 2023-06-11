@@ -1,6 +1,6 @@
-set(target_name niDAQmx) #->replace PCI6115 by the name of your plugin (one word)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-cmake_minimum_required(VERSION 3.1...3.15)
+set(target_name niDAQmx) #->replace PCI6115 by the name of your plugin (one word)
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})
