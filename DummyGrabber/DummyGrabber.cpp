@@ -172,13 +172,13 @@ DummyGrabberInterface::DummyGrabberInterface()
     \n\
     This plugin can also be used as template for other grabber.";*/
 
-    m_description = QObject::tr("A virtual white noise grabber");
+    m_description = QObject::tr("A virtual grabber with white noise or a Gaussian spot.");
     //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-        "The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
+        "The DummyGrabber is a virtual camera which emulates a camera with white noise or a Gaussian spot like a laser beam. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
-You can choose between different image types (noise, GaussianSpot). \
+You can choose between different image types (noise, GaussianSpot, GaussianSpotArray). \
 The value range is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). \
 The gaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera \
 image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
@@ -458,6 +458,55 @@ DummyGrabber::DummyGrabber() :
     paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    ito::float64 offset[2] = {0.0, 0.0};
+    paramVal = ito::Param(
+        "axisOffset",
+        ito::ParamBase::DoubleArray,
+        2,
+        offset,
+        new ito::DoubleArrayMeta(
+            std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0, 2, 2),
+        tr("axis offset").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    ito::float64 scale[2] = {1.0e-3, 1.0e-3};
+    paramVal = ito::Param(
+        "axisScale",
+        ito::ParamBase::DoubleArray,
+        2,
+        scale,
+        new ito::DoubleArrayMeta(
+            std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0, 2, 2),
+        tr("axis scale").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("axisUnit", ito::ParamBase::StringList, nullptr, "axis unit");
+    ito::ByteArray axisUnit[] = {ito::ByteArray("mm"), ito::ByteArray("mm")};
+    paramVal.setVal<ito::ByteArray*>(axisUnit, 2);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "axisDescription",
+        ito::ParamBase::StringList,
+        nullptr,
+        "axis description");
+    ito::ByteArray axisDescription[] = {ito::ByteArray("y axis"), ito::ByteArray("x axis")};
+    paramVal.setVal<ito::ByteArray*>(axisDescription, 2);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "valueDescription",
+        ito::ParamBase::String,
+        "counts",
+        tr("camera chip counts").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "valueUnit",
+        ito::ParamBase::String,
+        "a.u.",
+        tr("unit of counts").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())
     {
