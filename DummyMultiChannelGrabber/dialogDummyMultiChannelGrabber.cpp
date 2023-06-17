@@ -1,11 +1,11 @@
 /* ********************************************************************
     Plugin "DummyMultiChannelGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
-  
+
     This itom-plugin is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -93,11 +93,11 @@ void DialogDummyMultiChannelGrabber::parametersChanged(QMap<QString, ito::Param>
 
     dval = params["offset"].getVal<double>();
     ui.sliderOffset->setValue(dval*100.0);
-    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));  
+    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
     ui.spinBox_offset->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
 
     ui.combo_bpp->setEnabled(!(params["pixelFormat"].getFlags() & ito::ParamBase::Readonly));
-    
+
     for (int i = 0; i < ui.combo_bpp->count(); ++i)
     {
         if (ui.combo_bpp->itemData(i, Qt::UserRole).toInt() == params["pixelFormat"].getVal<int>())
@@ -222,14 +222,14 @@ ito::RetVal DialogDummyMultiChannelGrabber::applyParameters()
     if (ui.combo_bpp->isEnabled())
     {
         int bpp = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt();
-        
+
         if (m_currentParameters["pixelFormat"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixelFormat", ito::ParamBase::Int, bpp)));
         }
     }
 
-   
+
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
 

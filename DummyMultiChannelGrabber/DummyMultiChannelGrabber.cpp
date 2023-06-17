@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyMultiChannelGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -181,7 +181,7 @@ DummyMultiChannelGrabberInterface::DummyMultiChannelGrabberInterface()
     m_description = QObject::tr("A virtual white noise grabber");
     //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-        "The DummyMultiChannelGrabber is a virtual camera which emulates a camera with white noise. \n\
+        "The DummyMultiChannelGrabber is a virtual camera which emulates a camera with multiple channels with white noise. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
 The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera \
