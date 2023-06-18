@@ -868,6 +868,7 @@ ito::RetVal DummyGrabber::setParam(
 
     if (!retValue.containsError())
     {
+        checkData();
         emit parametersChanged(m_params);
     }
 
