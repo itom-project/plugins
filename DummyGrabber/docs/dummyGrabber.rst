@@ -30,6 +30,18 @@ Parameters
 
 An instance of this plugin has the following parameters:
 
+**axisDescription**: Sequence[str]
+    axis description
+**axisOffset**: Sequence[float]
+    axis offset
+
+    *2 values required, All values allowed, Default: [0, 0]*
+**axisScale**: Sequence[float]
+    axis scale
+
+    *2 values required, All values allowed, Default: [0.001, 0.001]*
+**axisUnit**: Sequence[str]
+    axis unit
 **binning**: int
     Binning of different pixel, binning = x-factor * 100 + y-factor
 
@@ -54,7 +66,7 @@ An instance of this plugin has the following parameters:
 **demoRegexpString**: str
     matches strings without whitespaces
 
-    *RegExp: "^\S+$", Default: <empty str>*
+    *RegularExpression: "^\S+$", Default: <empty str>*
 **demoWildcardString**: str
     dummy filename of a bmp file, pattern: *.bmp
 
@@ -82,12 +94,16 @@ An instance of this plugin has the following parameters:
 **roi**: Tuple[int,int,int,int] (rect [x0,y0,width,height])
     ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
 
-    *Height: Value range: [0:4:479], Default: [0, 0, 640, 480]*
+    *Height: Value range: [0:4:479], Default: [100, 40, 400, 300]*
 **sizex**: int, read-only
     size in x (cols) [px]
 
-    *Value range: [4:4:640], Default: 640*
+    *Value range: [4:4:640], Default: 400*
 **sizey**: int, read-only
     size in y (rows) [px]
 
-    *Value range: [4:4:480], Default: 480*
+    *Value range: [4:4:480], Default: 300*
+**valueDescription**: str
+    camera chip counts
+**valueUnit**: str
+    unit of counts

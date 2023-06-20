@@ -187,7 +187,7 @@ You can initialize this camera either as a 2D sensor with a width and height >= 
 \n\
 This plugin can also be used as template for other grabber.");
 
-    m_author = "C. Kohler, W. Lyda, ITO, University Stuttgart";
+    m_author = "C. Kohler, W. Lyda, J. Krauter; ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = CREATEVERSION(1, 4, 0);
     m_maxItomVer = MAXVERSION;
@@ -465,7 +465,7 @@ DummyGrabber::DummyGrabber() :
         2,
         offset,
         new ito::DoubleArrayMeta(
-            std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0, 2, 2),
+            -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, 2, 2),
         tr("axis offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -476,7 +476,7 @@ DummyGrabber::DummyGrabber() :
         2,
         scale,
         new ito::DoubleArrayMeta(
-            std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), 0, 2, 2),
+            -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0, 2, 2),
         tr("axis scale").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
