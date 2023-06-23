@@ -432,6 +432,28 @@ ito::RetVal DummyMultiChannelGrabber::init(
             tr("axis scale").toLatin1().data());
         standardParam.insert(paramVal.getName(), paramVal);
 
+        paramVal = ito::Param("axisUnit", ito::ParamBase::StringList, nullptr, "axis unit");
+        ito::ByteArray axisUnit[] = {ito::ByteArray("mm"), ito::ByteArray("mm")};
+        paramVal.setVal<ito::ByteArray*>(axisUnit, 2);
+        standardParam.insert(paramVal.getName(), paramVal);
+
+        paramVal =
+            ito::Param("axisDescription", ito::ParamBase::StringList, nullptr, "axis description");
+        ito::ByteArray axisDescription[] = {ito::ByteArray("y axis"), ito::ByteArray("x axis")};
+        paramVal.setVal<ito::ByteArray*>(axisDescription, 2);
+        standardParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param(
+            "valueDescription",
+            ito::ParamBase::String,
+            "counts",
+            tr("camera chip counts").toLatin1().data());
+        standardParam.insert(paramVal.getName(), paramVal);
+
+        paramVal = ito::Param(
+            "valueUnit", ito::ParamBase::String, "a.u.", tr("unit of counts").toLatin1().data());
+        standardParam.insert(paramVal.getName(), paramVal);
+
         QMap<QString, ChannelContainer> channelMap;
         for (int i = 0; i < numChannel; i++)
         {
@@ -443,7 +465,11 @@ ito::RetVal DummyMultiChannelGrabber::init(
                     standardParam["sizex"],
                     standardParam["sizey"],
                     standardParam["axisOffset"],
-                    standardParam["axisScale"]));
+                    standardParam["axisScale"],
+                    standardParam["axisDescription"],
+                    standardParam["axisUnit"],
+                    standardParam["valueDescription"],
+                    standardParam["valueUnit"]));
         }
 
         channelMap["channel_1"].m_channelParam.insert(
@@ -832,11 +858,13 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(
         }
         ok = true;
     }
+
     if (key == "roi")
     {
         m_isgrabbing = false; // we need to trigger again since the roi changed
         ok = false; // we want to further process the parameter by setParam to set the size etc.
     }
+
     if (key == "integration_time")
     {
         bool timerIsRunning = m_freerunTimer.isActive();
@@ -849,6 +877,7 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(
         }
         ok = false;
     }
+
     if (key == "frame_time")
     {
         bool timerIsRunning = m_freerunTimer.isActive();
@@ -865,6 +894,8 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(
     {
         ok = false; // set ok to false to let setParam process the parameter
     }
+
+    sendDataToListeners(0);
 
     return retValue;
 }
@@ -953,6 +984,7 @@ ito::RetVal DummyMultiChannelGrabber::stopDevice(ItomSharedSemaphore* waitCond)
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMultiChannelGrabber::generateImageData()
 {
     ito::RetVal retValue = ito::retOk;
@@ -1262,6 +1294,7 @@ ito::RetVal DummyMultiChannelGrabber::getVal(void* vpdObj, ItomSharedSemaphore* 
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMultiChannelGrabber::getValByMap(
     QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
 {
@@ -1292,6 +1325,7 @@ ito::RetVal DummyMultiChannelGrabber::getValByMap(
     }
     return retValue;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMultiChannelGrabber::retrieveData(
     QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
@@ -1322,6 +1356,8 @@ ito::RetVal DummyMultiChannelGrabber::retrieveData(
 
     return retValue;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMultiChannelGrabber::copyValByMap(
     QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
 {
