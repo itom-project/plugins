@@ -1039,10 +1039,12 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
                     ito::uint8* linePtr;
                     foreach (ChannelContainer container, m_channels)
                     {
-                        ito::DataObject& channelObj = container.data;
+                        ito::DataObject& channelObj = container.m_data;
+
                         for (int m = 0; m < channelObj.getSize(0); ++m)
                         {
                             linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
+
                             for (int n = 0; n < channelObj.getSize(1); ++n)
                             {
                                 *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
@@ -1056,10 +1058,12 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
                     ito::uint16* linePtr;
                     foreach (ChannelContainer container, m_channels)
                     {
-                        ito::DataObject& channelObj = container.data;
+                        ito::DataObject& channelObj = container.m_data;
+
                         for (int m = 0; m < channelObj.getSize(0); ++m)
                         {
                             linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
+
                             for (int n = 0; n < channelObj.getSize(1); ++n)
                             {
                                 *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
@@ -1076,10 +1080,12 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
                     ito::uint8* linePtr;
                     foreach (ChannelContainer container, m_channels)
                     {
-                        ito::DataObject& channelObj = container.data;
+                        ito::DataObject& channelObj = container.m_data;
+
                         for (int m = 0; m < channelObj.getSize(0); ++m)
                         {
                             linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
+
                             for (int n = 0; n < channelObj.getSize(1); ++n)
                             {
                                 *linePtr++ = fastrand_mean<ito::uint8>(
@@ -1094,10 +1100,12 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
                     ito::uint16* linePtr;
                     foreach (ChannelContainer container, m_channels)
                     {
-                        ito::DataObject& channelObj = container.data;
+                        ito::DataObject& channelObj = container.m_data;
+
                         for (int m = 0; m < channelObj.getSize(0); ++m)
                         {
                             linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
+
                             for (int n = 0; n < channelObj.getSize(1); ++n)
                             {
                                 *linePtr++ = fastrand_mean<ito::uint16>(
@@ -1115,7 +1123,7 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
                 ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, 8) - 1);
                 foreach (ChannelContainer container, m_channels)
                 {
-                    gaussFunc<ito::uint8>(rng, container.data, amplitude);
+                    gaussFunc<ito::uint8>(rng, container.m_data, amplitude);
                 }
             }
             else if (max < 65536)
@@ -1123,14 +1131,14 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
                 ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, 16) - 1);
                 foreach (ChannelContainer container, m_channels)
                 {
-                    gaussFunc<ito::uint16>(rng, container.data, amplitude);
+                    gaussFunc<ito::uint16>(rng, container.m_data, amplitude);
                 }
             }
             else if (max < 2147483647)
             {
                 ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, 32) - 1);
                 foreach (ChannelContainer container, m_channels)
-                {                    gaussFunc<ito::uint32>(rng, container.data, amplitude);
+                {                    gaussFunc<ito::uint32>(rng, container.m_data, amplitude);
                 }
             }
         }
@@ -1139,9 +1147,9 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
             ito::DataObject droi;
 
             int width =
-                this->m_channels[m_params["defaultChannel"].getVal<char*>()].data.getSize(1);
+                this->m_channels[m_params["defaultChannel"].getVal<char*>()].m_data.getSize(1);
             int height =
-                this->m_channels[m_params["defaultChannel"].getVal<char*>()].data.getSize(0);
+                this->m_channels[m_params["defaultChannel"].getVal<char*>()].m_data.getSize(0);
 
             int roiwidth = (int)width / 2;
             int roiheight = (int)height / 2;
@@ -1156,7 +1164,7 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
             {
                 foreach (ChannelContainer container, m_channels)
                 {
-                    droi = container.data;
+                    droi = container.m_data;
                     droi = droi.adjustROI(roi[cnt][0], roi[cnt][1], roi[cnt][2], roi[cnt][3]);
 
                     if (max < 256)
@@ -1196,7 +1204,7 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
     QMap<QString, ChannelContainer>::iterator it = m_channels.begin();
     while (it != m_channels.end())
     {
-        (*returnMap)[it.key()] = it.value().data;
+        (*returnMap)[it.key()] = it.value().m_data;
         ++it;
     }
     emit newData(returnMap);
@@ -1281,7 +1289,7 @@ ito::RetVal DummyMultiChannelGrabber::getVal(void* vpdObj, ItomSharedSemaphore* 
             retValue += sendDataToListeners(0); // don't wait for live image, since user should get
                                                 // the image as fast as possible.
 
-            (*dObj) = this->m_channels[m_params["defaultChannel"].getVal<char*>()].data;
+            (*dObj) = this->m_channels[m_params["defaultChannel"].getVal<const char*>()].m_data;
         }
     }
 
@@ -1318,7 +1326,7 @@ ito::RetVal DummyMultiChannelGrabber::getValByMap(
             QMap<QString, ito::DataObject*>::iterator it = (*dataObjMap).begin();
             while (it != (*dataObjMap).end())
             {
-                *(it.value()) = this->m_channels[it.key()].data;
+                *(it.value()) = this->m_channels[it.key()].m_data;
                 ++it;
             }
         }
@@ -1346,7 +1354,7 @@ ito::RetVal DummyMultiChannelGrabber::retrieveData(
             QMap<QString, ito::DataObject*>::const_iterator it = (*dataObjMap).constBegin();
             while (it != (*dataObjMap).constEnd())
             {
-                m_channels[it.key()].data.deepCopyPartial(*it.value());
+                m_channels[it.key()].m_data.deepCopyPartial(*it.value());
                 ++it;
             }
         }
@@ -1382,7 +1390,7 @@ ito::RetVal DummyMultiChannelGrabber::copyValByMap(
             QMap<QString, ito::DataObject*>::iterator it = (*dataObjMap).begin();
             while (it != (*dataObjMap).end())
             {
-                *(it.value()) = this->m_channels[it.key()].data;
+                *(it.value()) = this->m_channels[it.key()].m_data;
                 ++it;
             }
         }
@@ -1456,7 +1464,7 @@ ito::RetVal DummyMultiChannelGrabber::retrieveData(ito::DataObject* externalData
     {
         if (externalDataObject)
         {
-            m_channels[m_params["defaultChannel"].getVal<char*>()].data.deepCopyPartial(
+            m_channels[m_params["defaultChannel"].getVal<const char*>()].m_data.deepCopyPartial(
                 *externalDataObject);
         }
 
