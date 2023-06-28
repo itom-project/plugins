@@ -994,8 +994,8 @@ ito::RetVal DummyMultiChannelGrabber::generateImageData()
     float offset = m_params["offset"].getVal<double>();
     int min, max = 0;
     bool ok = false;
-    AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(
-        m_params["pixelFormat"].getVal<char*>(), min, max, ok);
+    AbstractAddInGrabber::minMaxBoundariesFromIntegerPixelFormat(
+        m_params["pixelFormat"].getVal<const char*>(), min, max, ok);
     if (!ok)
     {
         retValue += ito::RetVal(
