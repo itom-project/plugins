@@ -1,8 +1,8 @@
-SET (target_name MatlabInterpolation)
+cmake_minimum_required(VERSION 3.8)
+
+set(target_name MatlabInterpolation)
 
 project(${target_name})
-
-cmake_minimum_required(VERSION 3.8)
 
 if (POLICY CMP0053)
     cmake_policy(SET CMP0053 NEW)
