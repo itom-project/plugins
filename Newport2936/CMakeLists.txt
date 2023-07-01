@@ -1,7 +1,6 @@
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name Newport2936) #->replace MyGrabber by the name of your plugin (one word)
-
-cmake_minimum_required(VERSION 3.1...3.15)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 

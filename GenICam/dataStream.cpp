@@ -1099,6 +1099,10 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
 
     if (!retval.containsError())
     {
+        // for more information see:
+        // https://docs.baslerweb.com/pixel-format
+        // http://softwareservices.flir.com/BFS-PGE-16S2/latest/Model/public/ImageFormatControl.html
+
         switch (pixelformat)
         {
         case PFNC_Mono8:
@@ -1115,23 +1119,27 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             break;
         case PFNC_Mono10:
         case PFNC_Mono12:
-        case PFNC_BGR12p:
-            retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
-            break;
         case PFNC_Mono14:
         case PFNC_Mono16:
             retval += copyMono10to16ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
-        case GVSP_Mono12Packed: //GigE specific
+        case PFNC_BGR12p:
+            retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
+        case GVSP_Mono12Packed:
+            // GigE version of Mono12 Packed
             retval += copyMono12PackedToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono12p:
+            // USB3 version of Mono12 Packed (differs from GigE version)
             retval += copyMono12pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
-        case GVSP_Mono10Packed: //GigE specific
+        case GVSP_Mono10Packed:
+            // GigE version of Mono10 Packed
             retval += copyMono10PackedToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono10p:
+            // USB3 version of Mono10 Packed (differs from GigE version)
             retval += copyMono10pToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_BGR10p:
