@@ -1241,7 +1241,12 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
 
             switch (m_acquisitionCache.mode)
             {
-            case AcquisitionCache::Continuous:
+            case AcquisitionCache::Continuous: {
+                /*if (!m_acquisitionStartCommandByStartDevice)
+                {
+                    retValue += m_device->invokeCommandNode("AcquisitionStart", ito::retWarning);
+                }*/
+            }
                 break;
             case AcquisitionCache::SingleFrame:
             {
@@ -1252,7 +1257,7 @@ ito::RetVal GenICamClass::acquire(const int trigger, ItomSharedSemaphore *waitCo
             }
                 break;
             default:
-                retValue += ito::RetVal(ito::retError, 0, tr("AcquisitionMode 'multiFrame' (or other than 'Continous' and 'SingleFrame') not supported, yet.").toLatin1().constData());
+                retValue += ito::RetVal(ito::retError, 0, tr("AcquisitionMode 'multiFrame' (or other than 'Continuous' and 'SingleFrame') not supported, yet.").toLatin1().constData());
                 break;
             }
 
