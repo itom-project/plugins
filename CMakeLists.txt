@@ -1,10 +1,10 @@
-project(itom_plugins)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-cmake_minimum_required(VERSION 3.1...3.15)
+project(itom_plugins)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
-
+ 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})
     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
@@ -22,7 +22,7 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 include(ItomBuildMacros)
 
 # ITOM Shipment
-option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." ON)
+option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." OFF)
 
 # AerotechA3200
 if(NOT BUILD_TARGET64)
@@ -338,10 +338,12 @@ if(WIN32)
 endif()
 
 # PclTools
-option(PLUGIN_PclTools "Build with this plugin." ON)
-if(PLUGIN_PclTools)
-  add_subdirectory(PclTools)
-endif(PLUGIN_PclTools)
+if(BUILD_WITH_PCL)
+    option(PLUGIN_PclTools "Build with this plugin." ON)
+    if(PLUGIN_PclTools)
+        add_subdirectory(PclTools)
+    endif(PLUGIN_PclTools)
+endif(BUILD_WITH_PCL)
 
 # PCOCamera
 if(WIN32)

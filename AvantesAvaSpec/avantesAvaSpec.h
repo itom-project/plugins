@@ -1,6 +1,6 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.

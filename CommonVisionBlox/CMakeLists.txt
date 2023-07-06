@@ -1,8 +1,8 @@
+cmake_minimum_required(VERSION 3.12...3.24)
+
 set(target_name CommonVisionBlox)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
-
-cmake_minimum_required(VERSION 3.1...3.15)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 

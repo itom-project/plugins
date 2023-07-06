@@ -1,8 +1,8 @@
+cmake_minimum_required(VERSION 3.12...3.24)
+
 set(target_name PCOSensicam)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
-
-cmake_minimum_required(VERSION 3.1...3.15)
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)

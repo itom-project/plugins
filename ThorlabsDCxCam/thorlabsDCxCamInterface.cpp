@@ -1,6 +1,6 @@
 /* ********************************************************************
     Plugin "ThorlabsDCxCam" for itom software
-    URL: http://www.bitbucket.org/itom/plugins
+    URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
     Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
