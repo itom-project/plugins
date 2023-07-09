@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DUMMYMULTICHANNELGRABBER_H
-#define DUMMYMULTICHANNELGRABBER_H
+#pragma once
 
 #include "common/addInMultiChannelGrabber.h"
 #include "common/typeDefs.h"
@@ -30,83 +29,85 @@
 #include <qsharedpointer.h>
 #include <qtimer.h>
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 class DummyMultiChannelGrabberInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
-    Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this DummyMultiChannelGrabberInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
-    PLUGIN_ITOM_API
+        Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase")
 
-    public:
-        DummyMultiChannelGrabberInterface();                    /*!< Constructor */
-        ~DummyMultiChannelGrabberInterface();                   /*!< Destructor */
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);   /*!< creates new instance of DummyMultiChannelGrabber and returns this instance */
+        /*!< this DummyMultiChannelGrabberInterface implements the
+        ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
+        Q_INTERFACES(ito::AddInInterfaceBase)
 
-    private:
-        ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*!< closes any specific instance of DummyMultiChannelGrabber, given by *addInInst */
+        PLUGIN_ITOM_API
+
+public:
+    /*!< Constructor */
+    DummyMultiChannelGrabberInterface();
+
+    /*!< Destructor */
+    ~DummyMultiChannelGrabberInterface();
+
+    /*!< creates new instance of DummyMultiChannelGrabber and returns this instance */
+    ito::RetVal getAddInInst(ito::AddInBase** addInInst);
+
+private:
+
+    /*!< closes any specific instance of DummyMultiChannelGrabber, given by *addInInst */
+    ito::RetVal closeThisInst(ito::AddInBase** addInInst);
 
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 class DummyMultiChannelGrabber : public ito::AddInMultiChannelGrabber
 {
     Q_OBJECT
 
-    protected:
-        ~DummyMultiChannelGrabber();
-        DummyMultiChannelGrabber();
+protected:
+    ~DummyMultiChannelGrabber();
+    DummyMultiChannelGrabber();
 
-        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);
-        ito::RetVal retrieveData(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
-        ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
-        ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
-        ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok);
-        ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok, QStringList& pendingUpdate);
+    ito::RetVal retrieveData(ito::DataObject* externalDataObject = NULL);
+    ito::RetVal retrieveData(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
+    ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
+    ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
+    ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok);
+    ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok, QStringList& pendingUpdate);
 
-    public:
-        friend class DummyMultiChannelGrabberInterface;
-        const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+public:
+    friend class DummyMultiChannelGrabberInterface;
+    const ito::RetVal showConfDialog(void);
 
-    private:
-        bool m_isgrabbing;
-        int64 m_startOfLastAcquisition;
-        ito::uint8 m_totalBinning;
-        bool m_lineCamera;
-        QTimer m_freerunTimer;
-        int m_imageType;
+    //!< indicates that this plugin has got a configuration dialog
+    int hasConfDialog(void) { return 1; };
 
-        enum dummyImageType
-        {
-            imgTypeNoise,
-            imgTypeGaussianSpot,
-            imgTypeGaussianSpotArray,
-        };
+private:
+    bool m_isgrabbing;
+    int64 m_startOfLastAcquisition;
+    QTimer m_freerunTimer;
+    int m_imageType;
 
-    signals:
+    enum dummyImageType
+    {
+        imgTypeNoise,
+        imgTypeGaussianSpot,
+        imgTypeGaussianSpotArray,
+    };
 
-    public slots:
+signals:
 
-        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal close(ItomSharedSemaphore *waitCond);
+public slots:
 
-        ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
-        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
-        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
-        ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+    ito::RetVal init(QVector<ito::ParamBase>* paramsMand, QVector<ito::ParamBase>* paramsOpt, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal close(ItomSharedSemaphore* waitCond);
 
-    private slots:
-        void dockWidgetVisibilityChanged(bool visible);
-        ito::RetVal generateImageData();
+    ito::RetVal startDevice(ItomSharedSemaphore* waitCond);
+    ito::RetVal stopDevice(ItomSharedSemaphore* waitCond);
+    ito::RetVal acquire(const int trigger, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal getVal(void* dObj, ItomSharedSemaphore* waitCond);
+    ito::RetVal copyVal(void* vpdObj, ItomSharedSemaphore* waitCond);
 
-
-
+private slots:
+    void dockWidgetVisibilityChanged(bool visible);
+    ito::RetVal generateImageData();
 };
-
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-
-#endif // DummyMultiChannelGrabber_H
