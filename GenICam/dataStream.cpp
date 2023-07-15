@@ -1008,14 +1008,6 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         retval += checkGCError(errWidth, "request width of image buffer");
         retval += checkGCError(errHeight, "request height of image buffer");
     }
-    
-    
-
-    if (retval.containsError())
-    {
-    
-        int i = 1;
-    }
 
     size_t buffer_offset = 0;
 
@@ -1120,7 +1112,8 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             pixelformat != PFNC_RGB8 &&
             pixelformat != PFNC_BGR8 &&
             pixelformat != PFNC_BGR12p &&
-            pixelformat != PFNC_YCbCr422_8)
+            pixelformat != PFNC_YCbCr422_8 &&
+            pixelformat != PFNC_BayerRG8)
         {
             pSize = sizeof(temp);
             if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXEL_ENDIANNESS, &dtype, &temp, &pSize) != GenTL::GC_ERR_SUCCESS)
@@ -1169,6 +1162,9 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             break;
         case PFNC_YCbCr422_8:
             retval += copyYCbCr422ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
+        case PFNC_BayerRG8:
+            retval += copyBayerRG8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono10:
         case PFNC_Mono12:
@@ -1304,32 +1300,59 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
     cv::cvtColor(sourceImage, rgbImage, CV_YUV2RGB, 3);
 #endif
 
-    std::vector<cv::Mat> rgbChannels(3);
-    cv::split(rgbImage, rgbChannels);
-
-    cv::Mat* matR = &rgbChannels[0];
-    cv::Mat* matG = &rgbChannels[1];
-    cv::Mat* matB = &rgbChannels[2];
-
     cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(dobj.getCvPlaneMat(0));
-
-    const ito::uint8* rowPtrR;
-    const ito::uint8* rowPtrG;
-    const ito::uint8* rowPtrB;
     ito::RgbaBase32* rowPtrDst;
+    const cv::Vec3b* rowPtrSrc = rgbImage.ptr<cv::Vec3b>(0);
 
     for (int y = 0; y < height; y++)
     {
-        rowPtrR = matR->ptr<ito::uint8>(y);
-        rowPtrG = matG->ptr<ito::uint8>(y);
-        rowPtrB = matB->ptr<ito::uint8>(y);
         rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
         for (int x = 0; x < width; x++)
         {
-            rowPtrDst[x].b = (ito::int32)rowPtrB[x];
-            rowPtrDst[x].g = (ito::int32)rowPtrG[x];
-            rowPtrDst[x].r = (ito::int32)rowPtrR[x];
+            rowPtrDst[x].r = (*rowPtrSrc)[0];
+            rowPtrDst[x].g = (*rowPtrSrc)[1];
+            rowPtrDst[x].b = (*rowPtrSrc)[2];
+            rowPtrSrc++;
+            rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
+        }
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyBayerRG8ToDataObject(
+    const char* ptr,
+    const size_t& width,
+    const size_t& height,
+    bool littleEndian,
+    ito::DataObject& dobj)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    cv::Mat sourceImage = cv::Mat(height, width, CV_8UC1, (void*)ptr);
+    cv::Mat rgbImage;
+#if (CV_MAJOR_VERSION > 3)
+    cv::cvtColor(sourceImage, rgbImage, cv::COLOR_BayerRG2BGR, 3);
+#else
+    cv::cvtColor(sourceImage, rgbImage, CV_BayerRG2BGR, 3);
+#endif
+
+    cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(dobj.getCvPlaneMat(0));
+    ito::RgbaBase32* rowPtrDst;
+    const cv::Vec3b* rowPtrSrc = rgbImage.ptr<cv::Vec3b>(0);
+
+    for (int y = 0; y < height; y++)
+    {
+        rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
+        for (int x = 0; x < width; x++)
+        {
+            rowPtrDst[x].r = (*rowPtrSrc)[0];
+            rowPtrDst[x].g = (*rowPtrSrc)[1];
+            rowPtrDst[x].b = (*rowPtrSrc)[2];
+            rowPtrSrc++;
             rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
         }
     }

@@ -79,7 +79,7 @@ Indicate the right interface or leave 'interface' empty, in order to get a list 
 In order to keep this plugin compatible to other camera plugins, the additional parameters 'integration_time', 'roi', 'sizex', 'sizey', \n\
 and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Width', 'Height', 'OffsetX', 'OffsetY' or 'PixelFormat'. \n\
 \n\
-Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14, Mono16, YCbCr422_8, RGB8, BGR8, BGR10p, BGR12p. \n\
+Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14, Mono16, YCbCr422_8, RGB8, BGR8, BGR10p, BGR12p, BayerRG8. \n\
 In order to operate framegrabber-based cameras (CoaXPress, Camera Link) with this plugin, please read the additional information in the \n\
 documenation of this plugin. \n\
 \n\
@@ -88,6 +88,7 @@ This plugin has been tested with the following cameras: \n\
 * Allied Vision, Manta (Firewire) \n\
 * Allied Vision, Goldeye G-008 SWIR (GigE) \n\
 * Basler puA1280-54uc (USB3)\n\
+* Basler acA1920-50gm (GigE) \n\
 * Baumer TXG12 (GigE) \n\
 * Dalsa calibIr GXM640 \n\
 * FLIR AX5 (GigE) \n\

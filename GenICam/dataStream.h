@@ -75,6 +75,7 @@ protected:
     ito::RetVal copyRGB8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
     ito::RetVal copyBGR8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
     ito::RetVal copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyBayerRG8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
     ito::RetVal copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono12pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono12PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
