@@ -367,6 +367,7 @@ ito::RetVal DummyMultiChannelGrabber::init(
     // of the overall plugin. This item in m_params is like a proxy to the underlying
     // channel parameters, where the parameter 'channelSelector' defines which of
     // the more than one channels is used as current proxy.
+    QMap<QString, ChannelContainer> channels;
 
     // create the channel parameters, that are the same for all channels
     ito::Param paramSizeX("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, tr("sensor width of the channel").toLatin1().data());
@@ -398,6 +399,24 @@ ito::RetVal DummyMultiChannelGrabber::init(
     ChannelContainer channel1(paramRoi, pixelFormat1, paramSizeX, paramSizeY);
     channel1.m_channelParam["valueDescription"].setVal<ito::ByteArray>("intensity");
 
+    // every channel can also further additional parameters.
+    // Rules:
+    /* 1. If 1 or more channels have a parameter with a specific name, no
+    *     global parameter with this name must exist.
+    *  2. Not every channel must have the same parameter, with the same name,
+    *     however in initChannelsAndGlobalParameters it is verified, that
+    *     any channel parameter is available in all channels with the same type flags.
+    *     If a channel does not have a parameter, it is created (with default arguments)
+    *     and the "not-available" flag.
+    *  3. Channel parameters of the same name must have the same type flag
+    *     (checked in initChannelsAndGlobalParamters).
+    */
+    channel1.addChannelParam(ito::Param(
+        "gammaCorrection",
+        ito::ParamBase::Double, 0.0, 1.0, 1.0, "gamma correction value (channelColour and channelMono only)"));
+
+    // add channel1 to the preliminary channel map. The channel name is 'channelMono' as an example.
+    channels["channelMono"] = channel1;
 
     ChannelContainer channel2(paramRoi, pixelFormat2, paramSizeX, paramSizeY);
     channel2.m_channelParam["valueDescription"].setVal<ito::ByteArray>("topography");
@@ -406,47 +425,32 @@ ito::RetVal DummyMultiChannelGrabber::init(
     ito::ByteArray axisUnits[] = { "mm", "mm" };
     channel2.m_channelParam["axisUnits"].setVal<ito::ByteArray*>(axisUnits, 2);
 
+    // add channel2 to the preliminary channel map. The channel name is 'channelTopo' as an example.
+    channels["channelTopo"] = channel2;
+
     ChannelContainer channel3(paramRoi, pixelFormat3, paramSizeX, paramSizeY);
     channel3.m_channelParam["valueDescription"].setVal<ito::ByteArray>("color");
 
+    channel3.addChannelParam(ito::Param(
+        "gammaCorrection",
+        ito::ParamBase::Double, 0.0, 1.0, 0.8, "gamma correction value (channelColour and channelMono only)"));
 
-    QMap<QString, ChannelContainer> channelMap;
-    for (int i = 0; i < numChannel; i++)
-    {
-        channelMap.insert(
-            QString("channel_%1").arg(i),
-            ChannelContainer(
-                standardParam["roi"],
-                standardParam["pixelFormat"],
-                standardParam["sizex"],
-                standardParam["sizey"],
-                standardParam["axisOffset"],
-                standardParam["axisScale"],
-                standardParam["axisDescription"],
-                standardParam["axisUnit"],
-                standardParam["valueDescription"],
-                standardParam["valueUnit"]));
-    }
+    // add channel3 to the preliminary channel map. The channel name is 'channelColour' as an example.
+    channels["channelColour"] = channel3;
 
-    channelMap["channel_1"].m_channelParam.insert(
-        "channelSpecificParameter",
-        ito::Param(
-            "channelSpecificParameter",
-            ito::ParamBase::Int,
-            0,
-            1,
-            1,
-            tr("this is a channel specific parameter").toLatin1().data()));
-    channelMap["channel_1"]
-        .m_channelParam["channelSpecificParameter"]
-        .getMetaT<ito::IntMeta>()
-        ->setCategory("DemoParameters");
+    // global parameters:
+    /* Other than in other plugins, global parameters, that are the same for all
+    channels will be added to a temporary list of Param and then given to initChannelsAndGlobalParameters.
 
-    // global params
-    ParamMap globalParam;
-    globalParam.insert(
-        "globalParam",
-        ito::Param(
+    Internally, after some checks, they will be added to m_params, like in any other plugin.
+
+    Due to the base class "addInMultiChannelGrabber", three default global parameters are
+    created and initialized: defaultChannel, channelSelector, availableChannels.
+    */
+
+    QList<ito::Param> globalParams;
+
+    globalParams << ito::Param(
             "globalParam",
             ito::ParamBase::Int,
             0,
@@ -454,91 +458,14 @@ ito::RetVal DummyMultiChannelGrabber::init(
             1,
             tr("this is a global parameter").toLatin1().data()));
 
-    ito::DoubleMeta* dm;
-    paramVal = ito::Param(
-        "frame_time",
-        ito::ParamBase::Double,
-        0.0,
-        60.0,
-        0.0,
-        tr("Minimum time between the start of two consecutive acquisitions [s], default: 0.0.")
-            .toLatin1()
-            .data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setUnit("s");
-    dm->setRepresentation(
-        ito::ParamMeta::Linear); // show a linear slider in generic paramEditorWidget...
-    globalParam.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "integration_time",
-        ito::ParamBase::Double,
-        0.0,
-        60.0,
-        0.001,
-        tr("Minimum integration time for an acquisition [s], default: 0.001.")
-            .toLatin1()
-            .data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setUnit("s");
-    dm->setRepresentation(
-        ito::ParamMeta::Linear); // show a linear slider in generic paramEditorWidget...
-    globalParam.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "gain", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setRepresentation(
-        ito::ParamMeta::Linear); // show a linear slider in generic paramEditorWidget...
-    globalParam.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "offset",
-        ito::ParamBase::Double,
-        0.0,
-        1.0,
-        0.0,
-        tr("Virtual offset").toLatin1().data());
-    dm = paramVal.getMetaT<ito::DoubleMeta>();
-    dm->setCategory("AcquisitionControl");
-    dm->setRepresentation(
-        ito::ParamMeta::Linear); // show a linear slider in generic paramEditorWidget...
-    globalParam.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "triggerMode",
-        ito::ParamBase::String,
-        "software",
-        tr("trigger mode of the camera (freerun or software)").toLatin1().data());
-    ito::StringMeta* sm =
-        new ito::StringMeta(ito::StringMeta::String, "software", "AcquisitionControl");
-    sm->addItem("freerun");
-    paramVal.setMeta(sm, true);
-    globalParam.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "binning",
-        ito::ParamBase::Int,
-        101,
-        404,
-        101,
-        tr("Binning of different pixel, binning = x-factor * 100 + y-factor")
-            .toLatin1()
-            .data());
-    paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
-    globalParam.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
+    auto paramVal = ito::Param(
         "demoRegexpString",
         ito::ParamBase::String,
         "",
         tr("matches strings without whitespaces").toLatin1().data());
     paramVal.setMeta(
         new ito::StringMeta(ito::StringMeta::RegExp, "^\\S+$", "DemoParameters"), true);
-    globalParam.insert(paramVal.getName(), paramVal);
+    globalParams << paramVal;
 
     paramVal = ito::Param(
         "demoWildcardString",
@@ -547,18 +474,18 @@ ito::RetVal DummyMultiChannelGrabber::init(
         tr("dummy filename of a bmp file, pattern: *.bmp").toLatin1().data());
     paramVal.setMeta(
         new ito::StringMeta(ito::StringMeta::Wildcard, "*.bmp", "DemoParameters"), true);
-    globalParam.insert(paramVal.getName(), paramVal);
+    globalParams << paramVal;
 
     paramVal = ito::Param(
         "demoEnumString",
         ito::ParamBase::String,
         "mode 1",
         tr("enumeration string (mode 1, mode 2, mode 3)").toLatin1().data());
-    sm = new ito::StringMeta(ito::StringMeta::String, "mode 1", "DemoParameters");
+    auto sm = new ito::StringMeta(ito::StringMeta::String, "mode 1", "DemoParameters");
     sm->addItem("mode 2");
     sm->addItem("mode 3");
     paramVal.setMeta(sm, true);
-    globalParam.insert(paramVal.getName(), paramVal);
+    globalParams << paramVal;
 
     paramVal = ito::Param(
         "demoArbitraryString",
@@ -568,9 +495,9 @@ ito::RetVal DummyMultiChannelGrabber::init(
     sm = new ito::StringMeta(ito::StringMeta::String);
     sm->setCategory("DemoParameters");
     paramVal.setMeta(sm, true);
-    globalParam.insert(paramVal.getName(), paramVal);
+    globalParams << paramVal;
 
-    initializeDefaultConfiguration(channelMap, globalParam);
+    initChannelsAndGlobalParameters(channels, globalParam);
 
     if (!retVal.containsError())
     {
