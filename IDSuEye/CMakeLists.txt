@@ -32,14 +32,17 @@ if(NOT EXISTS ${IDS_DEVELOP_DIRECTORY})
     if(EXISTS $ENV{IDS_UEYE_ROOT})
         set(IDS_DEVELOP_DIRECTORY "$ENV{IDS_UEYE_ROOT}/develop" CACHE PATH "path to develop directory of IDS SDK")
     else(EXISTS $ENV{IDS_UEYE_ROOT})
-        set(IDS_DEVELOP_DIRECTORY "IDS-UEYE_DIR-NOTFOUND" CACHE PATH "path to develop directory of IDS SDK")
+        set(IDS_DEVELOP_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/IDSDevLibs" CACHE PATH "path to develop directory of IDS SDK")
     endif(EXISTS $ENV{IDS_UEYE_ROOT})
-endif(NOT EXISTS ${IDS_DEVELOP_DIRECTORY})
+endif()
 
 if(IDS_DEVELOP_DIRECTORY)
     if(WIN32)
         message(STATUS "IDS SDK is located in ${IDS_DEVELOP_DIRECTORY}")
-        set(IDS_INCLUDE_DIRECTORY "${IDS_DEVELOP_DIRECTORY}/include" )
+		find_path(IDS_INCLUDE_DIRECTORY
+        NAMES ueye.h
+        PATHS "${IDS_DEVELOP_DIRECTORY}/include"
+              "${IDS_DEVELOP_DIRECTORY}/IDS")
         find_file( IDS_HEADER_FILE ueye.h PATHS ${IDS_INCLUDE_DIRECTORY})
     else(WIN32)
         find_path(IDS_INCLUDE_DIRECTORY
