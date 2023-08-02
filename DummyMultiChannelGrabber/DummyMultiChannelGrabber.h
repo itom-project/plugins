@@ -71,8 +71,25 @@ protected:
     ito::RetVal retrieveData(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
     ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
     ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
-    ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok);
-    ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok, QStringList& pendingUpdate);
+
+    ito::RetVal getParameter(
+        QSharedPointer<ito::Param> val,
+        const ParamMapIterator& it,
+        const QString& key,
+        const QString& suffix,
+        int index,
+        bool hasIndex,
+        bool& ok);
+
+    ito::RetVal setParameter(
+        QSharedPointer<ito::ParamBase>& val,
+        const ParamMapIterator& it,
+        const QString& suffix,
+        const QString& key,
+        int index,
+        bool hasIndex,
+        bool& ok,
+        QStringList& pendingUpdate);
 
 public:
     friend class DummyMultiChannelGrabberInterface;

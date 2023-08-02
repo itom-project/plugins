@@ -235,7 +235,7 @@ This plugin can also be used as template for other grabbers.");
         ito::ParamBase::String,
         "float32",
         tr("Pixel format for the 2nd channel (here: a float32 or float64 disparity image).").toLatin1().data());
-    ito::StringMeta* m = new ito::StringMeta(ito::StringMeta::String, "float32");
+    m = new ito::StringMeta(ito::StringMeta::String, "float32");
     m->addItem("float64");
     param.setMeta(m, true);
     m_initParamsOpt.append(param);
@@ -245,7 +245,7 @@ This plugin can also be used as template for other grabbers.");
         ito::ParamBase::String,
         "rgba8",
         tr("Pixel format for the 3nd channel (here: color image with or without alpha channel).").toLatin1().data());
-    ito::StringMeta* m = new ito::StringMeta(ito::StringMeta::String, "rgba8");
+    m = new ito::StringMeta(ito::StringMeta::String, "rgba8");
     m->addItem("rgb8");
     param.setMeta(m, true);
     m_initParamsOpt.append(param);
@@ -367,11 +367,11 @@ ito::RetVal DummyMultiChannelGrabber::init(
     // of the overall plugin. This item in m_params is like a proxy to the underlying
     // channel parameters, where the parameter 'channelSelector' defines which of
     // the more than one channels is used as current proxy.
-    QMap<QString, ChannelContainer> channels;
+    ChannelContainerMap channels;
 
     // create the channel parameters, that are the same for all channels
-    ito::Param paramSizeX("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, tr("sensor width of the channel").toLatin1().data());
-    ito::Param paramSizeY("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, tr("sensor height of the channel").toLatin1().data());
+    ito::Param paramSizeX("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 4096, 1280, tr("sensor width of the channel").toLatin1().data());
+    ito::Param paramSizeY("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 4096, 1024, tr("sensor height of the channel").toLatin1().data());
     int roi[] = { 0, 0, sensorWidth, sensorHeight };
     ito::Param paramRoi("roi", ito::ParamBase::IntArray, 4, roi, tr("current region of interest of the channel (x, y, width, height)").toLatin1().data());
 
@@ -456,7 +456,7 @@ ito::RetVal DummyMultiChannelGrabber::init(
             0,
             1,
             1,
-            tr("this is a global parameter").toLatin1().data()));
+            tr("this is a global parameter").toLatin1().data());
 
     auto paramVal = ito::Param(
         "demoRegexpString",
@@ -497,7 +497,7 @@ ito::RetVal DummyMultiChannelGrabber::init(
     paramVal.setMeta(sm, true);
     globalParams << paramVal;
 
-    initChannelsAndGlobalParameters(channels, globalParam);
+    retVal += initChannelsAndGlobalParameters(channels, "channelMono", globalParams);
 
     if (!retVal.containsError())
     {
@@ -505,6 +505,8 @@ ito::RetVal DummyMultiChannelGrabber::init(
 
         emit parametersChanged(m_params);
     }
+
+    setIdentifier(QString::number(getID()));
 
     // get type of dummy image
     QString type = paramsOpt->at(4).getVal<const char*>();
@@ -521,8 +523,6 @@ ito::RetVal DummyMultiChannelGrabber::init(
     {
         m_imageType = imgTypeGaussianSpotArray;
     }
-
-    setIdentifier(QString::number(getID()));
 
     if (waitCond)
     {
@@ -579,13 +579,30 @@ ito::RetVal DummyMultiChannelGrabber::close(ItomSharedSemaphore* waitCond)
 ito::RetVal DummyMultiChannelGrabber::getParameter(
     QSharedPointer<ito::Param> val,
     const ParamMapIterator& it,
-    const QString& suffix,
     const QString& key,
+    const QString& suffix,
     int index,
     bool hasIndex,
     bool& ok)
 {
-    ok = false;
+    // just as a demo. If a specific parameter requires more actions than
+    // just returning its value, can be handled in this method. Else set ok to false,
+    // such that the returned parameter is the corresponding value in m_params and this
+    // is handled by AddInMultiChannelGrabber::getParam.
+
+    if (key == "demoArbitraryString")
+    {
+        // do anything special, for instance request a current value from a hardware
+        // device, update the internal parameter and return this updated value.
+        *val = it.value();
+        ok = true;
+    }
+    else
+    {
+        // let the calling method return the current value in m_params.
+        ok = false;
+    }
+
     return ito::retOk;
 }
 
@@ -621,9 +638,10 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(
             {
                 running = grabberStartedCount();
                 setGrabberStarted(1);
-                retValue += stopDevice(NULL);
+                retValue += stopDevice(nullptr);
             }
         }
+
         if (!retValue.containsError())
         {
             int oldval = it->getVal<int>();
