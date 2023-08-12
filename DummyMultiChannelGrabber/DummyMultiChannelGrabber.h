@@ -67,8 +67,7 @@ protected:
     ~DummyMultiChannelGrabber();
     DummyMultiChannelGrabber();
 
-    ito::RetVal retrieveData(ito::DataObject* externalDataObject = NULL);
-    ito::RetVal retrieveData(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
+
     ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
     ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
 
@@ -111,6 +110,9 @@ private:
         imgTypeGaussianSpotArray,
     };
 
+    // fills a rgba32 dataObject with a color image
+    void fillColorImage(ito::DataObject& img, const cv::Point2f& centerPixel, const float radius, bool hasAlpha) const;
+
 signals:
 
 public slots:
@@ -120,9 +122,8 @@ public slots:
 
     ito::RetVal startDevice(ItomSharedSemaphore* waitCond);
     ito::RetVal stopDevice(ItomSharedSemaphore* waitCond);
-    ito::RetVal acquire(const int trigger, ItomSharedSemaphore* waitCond = NULL);
-    ito::RetVal getVal(void* dObj, ItomSharedSemaphore* waitCond);
-    ito::RetVal copyVal(void* vpdObj, ItomSharedSemaphore* waitCond);
+    ito::RetVal acquire(const int trigger, ItomSharedSemaphore* waitCond = nullptr);
+
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);

@@ -397,7 +397,7 @@ ito::RetVal DummyMultiChannelGrabber::init(
     pixelFormat3.setMeta(pixelFormat3Meta, true);
 
     ChannelContainer channel1(paramRoi, pixelFormat1, paramSizeX, paramSizeY);
-    channel1.m_channelParam["valueDescription"].setVal<ito::ByteArray>("intensity");
+    channel1.m_channelParams["valueDescription"].setVal<ito::ByteArray>("intensity");
 
     // every channel can also further additional parameters.
     // Rules:
@@ -419,17 +419,17 @@ ito::RetVal DummyMultiChannelGrabber::init(
     channels["channelMono"] = channel1;
 
     ChannelContainer channel2(paramRoi, pixelFormat2, paramSizeX, paramSizeY);
-    channel2.m_channelParam["valueDescription"].setVal<ito::ByteArray>("topography");
+    channel2.m_channelParams["valueDescription"].setVal<ito::ByteArray>("topography");
     double axisScales[] = {0.05, 0.05};
-    channel2.m_channelParam["axisScales"].setVal<double*>(axisScales, 2);
+    channel2.m_channelParams["axisScales"].setVal<double*>(axisScales, 2);
     ito::ByteArray axisUnits[] = { "mm", "mm" };
-    channel2.m_channelParam["axisUnits"].setVal<ito::ByteArray*>(axisUnits, 2);
+    channel2.m_channelParams["axisUnits"].setVal<ito::ByteArray*>(axisUnits, 2);
 
     // add channel2 to the preliminary channel map. The channel name is 'channelTopo' as an example.
     channels["channelTopo"] = channel2;
 
     ChannelContainer channel3(paramRoi, pixelFormat3, paramSizeX, paramSizeY);
-    channel3.m_channelParam["valueDescription"].setVal<ito::ByteArray>("color");
+    channel3.m_channelParams["valueDescription"].setVal<ito::ByteArray>("color");
 
     channel3.addChannelParam(ito::Param(
         "gammaCorrection",
@@ -680,29 +680,29 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(
                     for (i = m_channels.begin(); i != m_channels.end();
                          ++i) // we need to adapt the roi for each channel
                     {
-                        width = (i.value().m_channelParam["roi"].getVal<int*>()[1] -
-                                 i.value().m_channelParam["roi"].getVal<int*>()[0]) *
+                        width = (i.value().m_channelParams["roi"].getVal<int*>()[1] -
+                                 i.value().m_channelParams["roi"].getVal<int*>()[0]) *
                             factorX;
-                        height = (i.value().m_channelParam["roi"].getVal<int*>()[3] -
-                                  i.value().m_channelParam["roi"].getVal<int*>()[2]) *
+                        height = (i.value().m_channelParams["roi"].getVal<int*>()[3] -
+                                  i.value().m_channelParams["roi"].getVal<int*>()[2]) *
                             factorY;
 
                         maxWidth =
-                            static_cast<ito::RectMeta*>(i.value().m_channelParam["roi"].getMeta())
+                            static_cast<ito::RectMeta*>(i.value().m_channelParams["roi"].getMeta())
                                 ->getWidthRangeMeta()
                                 .getSizeMax();
                         maxHeight =
-                            static_cast<ito::RectMeta*>(i.value().m_channelParam["roi"].getMeta())
+                            static_cast<ito::RectMeta*>(i.value().m_channelParams["roi"].getMeta())
                                 ->getHeightRangeMeta()
                                 .getSizeMax();
 
-                        sizeX = i.value().m_channelParam["roi"].getVal<int*>()[2] * factorX;
-                        sizeY = i.value().m_channelParam["roi"].getVal<int*>()[3] * factorY;
-                        offsetX = i.value().m_channelParam["roi"].getVal<int*>()[0] * factorX;
-                        offsetY = i.value().m_channelParam["roi"].getVal<int*>()[1] * factorY;
+                        sizeX = i.value().m_channelParams["roi"].getVal<int*>()[2] * factorX;
+                        sizeY = i.value().m_channelParams["roi"].getVal<int*>()[3] * factorY;
+                        offsetX = i.value().m_channelParams["roi"].getVal<int*>()[0] * factorX;
+                        offsetY = i.value().m_channelParams["roi"].getVal<int*>()[1] * factorY;
                         int roi[] = {offsetX, offsetY, sizeX, sizeY};
-                        i.value().m_channelParam["roi"].setVal<int*>(roi, 4);
-                        i.value().m_channelParam["roi"].setMeta(
+                        i.value().m_channelParams["roi"].setVal<int*>(roi, 4);
+                        i.value().m_channelParams["roi"].setMeta(
                             new ito::RectMeta(
                                 ito::RangeMeta(
                                     0, width - 1, 4 / newX, 4 / newX, maxWidth * factorX, 4 / newX),
@@ -1120,6 +1120,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
 {
     ito::RetVal retValue = ito::retOk;
     ItomSharedSemaphoreLocker locker(waitCond);
+
     if (strcmp(m_params["triggerMode"].getVal<const char*>(), "software") == 0)
     {
         retValue += generateImageData();
@@ -1134,6 +1135,7 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
                 .toLatin1()
                 .data());
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1144,54 +1146,102 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
     return retValue;
 }
 
-//-------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as a shallow copy.
-/*!
-    This method copies the recently grabbed camera frame to the given DataObject-handle
-
-    \note This method is similar to VideoCapture::retrieve() of openCV
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to
-   ito::DataObject*) where the acquired image is shallow-copied to. \param [in] waitCond is the
-   semaphore (default: NULL), which is released if this method has been terminated \return retOk if
-   everything is ok, retError is camera has not been started or no image has been acquired by the
-   method acquire. \sa DataObject, acquire
-*/
-ito::RetVal DummyMultiChannelGrabber::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
-
-    ito::RetVal retValue(ito::retOk);
-
-    retValue += retrieveData();
-
-    if (!retValue.containsError())
-    {
-        if (dObj == NULL)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                1004,
-                tr("data object of getVal is NULL or cast failed").toLatin1().data());
-        }
-        else
-        {
-            retValue += sendDataToListeners(0); // don't wait for live image, since user should get
-                                                // the image as fast as possible.
-
-            (*dObj) = this->m_channels[m_params["defaultChannel"].getVal<const char*>()].m_data;
-        }
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
+////-------------------------------------------------------------------------------------
+////! Returns the grabbed camera frame as a shallow copy.
+///*!
+//    This method copies the recently grabbed camera frame to the given DataObject-handle
+//
+//    \note This method is similar to VideoCapture::retrieve() of openCV
+//
+//    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to
+//   ito::DataObject*) where the acquired image is shallow-copied to. \param [in] waitCond is the
+//   semaphore (default: NULL), which is released if this method has been terminated \return retOk if
+//   everything is ok, retError is camera has not been started or no image has been acquired by the
+//   method acquire. \sa DataObject, acquire
+//*/
+//ito::RetVal DummyMultiChannelGrabber::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
+//{
+//    ItomSharedSemaphoreLocker locker(waitCond);
+//    ito::RetVal retValue(ito::retOk);
+//    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
+//
+//    if (!dObj)
+//    {
+//        retValue += ito::RetVal(
+//            ito::retError, 0, tr("Empty dataObject handle retrieved from caller").toLatin1().data());
+//    }
+//
+//    if (!retValue.containsError())
+//    {
+//        retValue += retrieveData();
+//    }
+//
+//    if (!retValue.containsError())
+//    {
+//        // don't wait for live image, since user should get the image as fast as possible.
+//        sendDataToListeners(0);
+//
+//        (*dObj) = m_channels[m_params["defaultChannel"].getVal<const char*>()].m_data;
+//    }
+//
+//    if (waitCond)
+//    {
+//        waitCond->returnValue = retValue;
+//        waitCond->release();
+//    }
+//
+//    return retValue;
+//}
+//
+////-------------------------------------------------------------------------------------
+////! Returns the grabbed camera frame as a deep copy.
+///*!
+//    This method copies the recently grabbed camera frame to the given DataObject. Therefore this
+//   camera size must fit to the data structure of the DataObject.
+//
+//    \note This method is similar to VideoCapture::retrieve() of openCV
+//
+//    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to
+//   ito::DataObject*) where the acquired image is deep copied to. \param [in] waitCond is the
+//   semaphore (default: NULL), which is released if this method has been terminated \return retOk if
+//   everything is ok, retError is camera has not been started or no image has been acquired by the
+//   method acquire. \sa DataObject, acquire
+//*/
+//ito::RetVal DummyMultiChannelGrabber::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond)
+//{
+//    ItomSharedSemaphoreLocker locker(waitCond);
+//    ito::RetVal retValue(ito::retOk);
+//    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
+//
+//    if (!dObj)
+//    {
+//        retValue += ito::RetVal(
+//            ito::retError, 0, tr("Empty dataObject handle retrieved from caller").toLatin1().data());
+//    }
+//    else
+//    {
+//        retValue += checkData(dObj);
+//    }
+//
+//    if (!retValue.containsError())
+//    {
+//        retValue += retrieveData(dObj);
+//    }
+//
+//    if (!retValue.containsError())
+//    {
+//         don't wait for live image, since user should get the image as fast as possible.
+//        sendDataToListeners(0);
+//    }
+//
+//    if (waitCond)
+//    {
+//        waitCond->returnValue = retValue;
+//        waitCond->release();
+//    }
+//
+//    return retValue;
+//}
 
 //-------------------------------------------------------------------------------------
 ito::RetVal DummyMultiChannelGrabber::getValByMap(
@@ -1289,55 +1339,7 @@ ito::RetVal DummyMultiChannelGrabber::copyValByMap(
     return retValue;
 }
 
-//-------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as a deep copy.
-/*!
-    This method copies the recently grabbed camera frame to the given DataObject. Therefore this
-   camera size must fit to the data structure of the DataObject.
 
-    \note This method is similar to VideoCapture::retrieve() of openCV
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to
-   ito::DataObject*) where the acquired image is deep copied to. \param [in] waitCond is the
-   semaphore (default: NULL), which is released if this method has been terminated \return retOk if
-   everything is ok, retError is camera has not been started or no image has been acquired by the
-   method acquire. \sa DataObject, acquire
-*/
-ito::RetVal DummyMultiChannelGrabber::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
-
-    if (!dObj)
-    {
-        retValue += ito::RetVal(
-            ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
-    }
-    else
-    {
-        retValue += checkData(dObj);
-    }
-
-    if (!retValue.containsError())
-    {
-        retValue += retrieveData(dObj);
-    }
-
-    if (!retValue.containsError())
-    {
-        sendDataToListeners(
-            0); // don't wait for live image, since user should get the image as fast as possible.
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
 
 //-------------------------------------------------------------------------------------
 ito::RetVal DummyMultiChannelGrabber::retrieveData(ito::DataObject* externalDataObject)
@@ -1355,14 +1357,120 @@ ito::RetVal DummyMultiChannelGrabber::retrieveData(ito::DataObject* externalData
     {
         if (externalDataObject)
         {
-            m_channels[m_params["defaultChannel"].getVal<const char*>()].m_data.deepCopyPartial(
-                *externalDataObject);
+            auto internalImage = getCurrentDefaultChannel().m_data;
+            internalImage.deepCopyPartial(*externalDataObject);
         }
 
         m_isgrabbing = false;
     }
 
     return retValue;
+}
+
+//-------------------------------------------------------------------------------------
+ito::Rgba32 hsv2rgb(float hue, float saturation, float intensity, ito::uint8 alpha)
+{
+    double      hh, p, q, t, ff;
+    long        i;
+    ito::Rgba32 out;
+
+    out.a = alpha;
+
+    if (saturation <= 0.0)
+    {
+        // < is bogus, just shuts up warnings
+        out.r = intensity * 255;
+        out.g = out.b = out.r;
+        return out;
+    }
+
+    hh = hue * 360;
+
+    if (hh >= 360.0)
+    {
+        hh = 0.0;
+    }
+
+    hh /= 60.0;
+
+    i = (long)hh;
+    ff = hh - i;
+    p = intensity * (1.0 - saturation);
+    q = intensity * (1.0 - (saturation * ff));
+    t = intensity * (1.0 - (saturation * (1.0 - ff)));
+
+    switch (i) {
+    case 0:
+        out.r = intensity;
+        out.g = t;
+        out.b = p;
+        break;
+    case 1:
+        out.r = q;
+        out.g = intensity;
+        out.b = p;
+        break;
+    case 2:
+        out.r = p;
+        out.g = intensity;
+        out.b = t;
+        break;
+
+    case 3:
+        out.r = p;
+        out.g = q;
+        out.b = intensity;
+        break;
+    case 4:
+        out.r = t;
+        out.g = p;
+        out.b = intensity;
+        break;
+    case 5:
+    default:
+        out.r = intensity;
+        out.g = p;
+        out.b = q;
+        break;
+    }
+    return out;
+}
+
+//-------------------------------------------------------------------------------------
+void DummyMultiChannelGrabber::fillColorImage(ito::DataObject& img, const cv::Point2f& centerPixel, const float radius, bool hasAlpha) const
+{
+    Q_ASSERT_X(img.getType() == ito::tRGBA32, "fillNextColorImage", "img must be of type rgba32");
+
+    int height = img.getSize()[0];
+    int width = img.getSize()[1];
+    float hue, saturation, intensity, alpha;
+    float dx, dy, r_square;
+    float sigma_square = radius * radius;
+
+    alpha = 1.0;
+    intensity = 1.0;
+
+    for (int i = 0; i < height; ++i)
+    {
+        ito::Rgba32* ptr = img.rowPtr<ito::Rgba32>(0, i);
+
+        for (int j = 0; j < width; ++j)
+        {
+            dx = j - centerPixel.x;
+            dy = i - centerPixel.y;
+            r_square = dx * dx + dy * dy;
+
+            hue = cv::fastAtan2(dy, dx) / 360.0;
+            saturation = cv::exp(-0.5 * r_square / sigma_square);
+
+            if (hasAlpha)
+            {
+                alpha = saturation;
+            }
+
+            ptr[j] = hsv2rgb(hue, saturation, intensity, alpha * 255);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------
