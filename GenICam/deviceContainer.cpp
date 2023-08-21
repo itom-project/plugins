@@ -597,6 +597,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                     char pBuffer[512];
                     size_t piSize = sizeof(pBuffer);
                     GenTL::GC_ERROR err = IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_ACCESS_STATUS, &piType, &pBuffer, &piSize);
+
                     if (err == GenTL::GC_ERR_SUCCESS && piType == GenTL::INFO_DATATYPE_INT32)
                     {
                         accessStatus = ((ito::int32*)pBuffer)[0];
@@ -604,8 +605,23 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                         if (accessStatus == GenTL::DEVICE_ACCESS_STATUS_UNKNOWN)
                         {
                             accessStatus = GenTL::DEVICE_ACCESS_STATUS_READWRITE;
-                            localRetVal += ito::RetVal::format(ito::retWarning, 0, "Device '%s' reports an unknown access status. Therefore it is assumed that this camera can be accessed!", sDeviceID);
+                            localRetVal += ito::RetVal::format(
+                                ito::retWarning, 
+                                0, 
+                                "Device '%s' reports an unknown access status. Therefore it is assumed that this camera can be accessed!", 
+                                sDeviceID
+                            );
                         }
+                    }
+                    else
+                    {
+                        accessStatus = GenTL::DEVICE_ACCESS_STATUS_READWRITE;
+                        localRetVal += ito::RetVal::format(
+                            ito::retWarning,
+                            0,
+                            "Device '%s' does not provide information about its access status. Therefore it is assumed "
+                            "that this camera can be accessed!",
+                            sDeviceID);
                     }
                 }
 

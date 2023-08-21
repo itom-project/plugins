@@ -612,9 +612,9 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
         if (err == GenTL::GC_ERR_SUCCESS)
         {
             newData = true;
-            /*
+            
             //The following block would enable a double check if the reported new buffer really contains new data, however this is not robustly announced by all cameras (e.g. Vistek)
-            newData = true;
+            /*newData = true;
             if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, latestBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
             {
                 if (type == GenTL::INFO_DATATYPE_BOOL8)
@@ -692,9 +692,9 @@ ito::RetVal GenTLDataStream::waitForNewestBuffer(ito::DataObject &destination)
             {
                 newData = true;
 
-                /*
+                
                 //The following block would enable a double check if the reported new buffer really contains new data, however this is not robustly announced by all cameras (e.g. Vistek)
-                if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, nextBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
+                /*if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, nextBuffer.BufferHandle, GenTL::BUFFER_INFO_NEW_DATA, &type, &value, &valueSize))
                 {
                     if (type == GenTL::INFO_DATATYPE_BOOL8)
                     {
@@ -963,11 +963,51 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         bytes_pp_transferred = (float)PFNC_PIXEL_SIZE(pixelformat) / 8.0;
     }
 
+    // request mandatory parameter: BUFFER_INFO_IS_INCOMPLETE
+    bool incomplete;
+    pSize = sizeof(incomplete);
+
+    if (GenTL::GC_ERR_SUCCESS == DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_IS_INCOMPLETE, &dtype, &incomplete, &pSize) 
+        && incomplete)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, "an incomplete image is reported.");
+    }
+
+    /*bool contains_chunk;
+    pSize = sizeof(contains_chunk);
+    retval += checkGCError(
+        DSGetBufferInfo(
+            m_handle,
+            buffer,
+            GenTL::BUFFER_INFO_CONTAINS_CHUNKDATA,
+            &dtype,
+            &contains_chunk,
+            &pSize),
+        "request 'contains_chunkdata' feature of image buffer");*/
+
     //request mandatory parameter: width and height of image
     pSize = sizeof(width);
-    retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_WIDTH, &dtype, &width, &pSize), "request width of image buffer");
+    auto errWidth =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_WIDTH, &dtype, &width, &pSize);
     pSize = sizeof(height);
-    retval += checkGCError(DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_HEIGHT, &dtype, &height, &pSize), "request height of image buffer");
+    auto errHeight =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_HEIGHT, &dtype, &height, &pSize);
+    if (errWidth == GenTL::GC_ERR_NOT_AVAILABLE || errWidth == GenTL::GC_ERR_NO_DATA ||
+        errHeight == GenTL::GC_ERR_NOT_AVAILABLE || errHeight == GenTL::GC_ERR_NO_DATA)
+    {
+        // with Basler cameras, it seems that the image height or width is sometimes not
+        // available, although the image is properly acquired. It might be that this occurs
+        // mainly, if chunk data is enabled. Then, the payload type is also not image but
+        // chunk.
+        int dims = dobj.getDims();
+        width = dobj.getSize(dims - 1);
+        height = dobj.getSize(dims - 2);
+    }
+    else
+    {
+        retval += checkGCError(errWidth, "request width of image buffer");
+        retval += checkGCError(errHeight, "request height of image buffer");
+    }
 
     size_t buffer_offset = 0;
 
@@ -1028,12 +1068,17 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
         {
             payloadType = (GenTL::PAYLOADTYPE_INFO_IDS)temp;
 
-            if (payloadType != GenTL::PAYLOAD_TYPE_IMAGE)
+            if (payloadType == GenTL::PAYLOAD_TYPE_CHUNK_DATA)
+            {
+                // with Basler cameras and enabled chunk data, this payload type was reported
+                // although an image is contained, too. Therefore hope that chunk data is contained, too.
+            }
+            else if (payloadType != GenTL::PAYLOAD_TYPE_IMAGE)
             {
                 retval += ito::RetVal(ito::retError, 0, "currently only buffers that contain image data are supported");
             }
         }
-        else if (err == GenTL::GC_ERR_NOT_IMPLEMENTED)
+        else if (err == GenTL::GC_ERR_NOT_IMPLEMENTED || GenTL::GC_ERR_NOT_AVAILABLE)
         {
             //payload type not implemented -> no information -> hope everything is ok
         }
@@ -1067,7 +1112,8 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             pixelformat != PFNC_RGB8 &&
             pixelformat != PFNC_BGR8 &&
             pixelformat != PFNC_BGR12p &&
-            pixelformat != PFNC_YCbCr422_8)
+            pixelformat != PFNC_YCbCr422_8 &&
+            pixelformat != PFNC_BayerRG8)
         {
             pSize = sizeof(temp);
             if (DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_PIXEL_ENDIANNESS, &dtype, &temp, &pSize) != GenTL::GC_ERR_SUCCESS)
@@ -1116,6 +1162,9 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(const GenTL::BUFFER_HANDLE b
             break;
         case PFNC_YCbCr422_8:
             retval += copyYCbCr422ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
+            break;
+        case PFNC_BayerRG8:
+            retval += copyBayerRG8ToDataObject(ptr + buffer_offset, width, height, endianess == GenTL::PIXELENDIANNESS_LITTLE, dobj);
             break;
         case PFNC_Mono10:
         case PFNC_Mono12:
@@ -1251,32 +1300,59 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(const char* ptr, const siz
     cv::cvtColor(sourceImage, rgbImage, CV_YUV2RGB, 3);
 #endif
 
-    std::vector<cv::Mat> rgbChannels(3);
-    cv::split(rgbImage, rgbChannels);
-
-    cv::Mat* matR = &rgbChannels[0];
-    cv::Mat* matG = &rgbChannels[1];
-    cv::Mat* matB = &rgbChannels[2];
-
     cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(dobj.getCvPlaneMat(0));
-
-    const ito::uint8* rowPtrR;
-    const ito::uint8* rowPtrG;
-    const ito::uint8* rowPtrB;
     ito::RgbaBase32* rowPtrDst;
+    const cv::Vec3b* rowPtrSrc = rgbImage.ptr<cv::Vec3b>(0);
 
     for (int y = 0; y < height; y++)
     {
-        rowPtrR = matR->ptr<ito::uint8>(y);
-        rowPtrG = matG->ptr<ito::uint8>(y);
-        rowPtrB = matB->ptr<ito::uint8>(y);
         rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
         for (int x = 0; x < width; x++)
         {
-            rowPtrDst[x].b = (ito::int32)rowPtrB[x];
-            rowPtrDst[x].g = (ito::int32)rowPtrG[x];
-            rowPtrDst[x].r = (ito::int32)rowPtrR[x];
+            rowPtrDst[x].r = (*rowPtrSrc)[0];
+            rowPtrDst[x].g = (*rowPtrSrc)[1];
+            rowPtrDst[x].b = (*rowPtrSrc)[2];
+            rowPtrSrc++;
+            rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
+        }
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyBayerRG8ToDataObject(
+    const char* ptr,
+    const size_t& width,
+    const size_t& height,
+    bool littleEndian,
+    ito::DataObject& dobj)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    cv::Mat sourceImage = cv::Mat(height, width, CV_8UC1, (void*)ptr);
+    cv::Mat rgbImage;
+#if (CV_MAJOR_VERSION > 3)
+    cv::cvtColor(sourceImage, rgbImage, cv::COLOR_BayerRG2BGR, 3);
+#else
+    cv::cvtColor(sourceImage, rgbImage, CV_BayerRG2BGR, 3);
+#endif
+
+    cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(dobj.getCvPlaneMat(0));
+    ito::RgbaBase32* rowPtrDst;
+    const cv::Vec3b* rowPtrSrc = rgbImage.ptr<cv::Vec3b>(0);
+
+    for (int y = 0; y < height; y++)
+    {
+        rowPtrDst = matRes->ptr<ito::Rgba32>(y);
+
+        for (int x = 0; x < width; x++)
+        {
+            rowPtrDst[x].r = (*rowPtrSrc)[0];
+            rowPtrDst[x].g = (*rowPtrSrc)[1];
+            rowPtrDst[x].b = (*rowPtrSrc)[2];
+            rowPtrSrc++;
             rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
         }
     }

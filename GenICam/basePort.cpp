@@ -619,6 +619,7 @@ ito::RetVal BasePort::createParamsFromDevice(QMap<QString, ito::Param> &params, 
     bool addIt = false;
     QMap<GenApi::INode*, ito::ByteArray> categoryMap;
     ito::ByteArray category;
+    int ignoredNodes = 0;
 
     //at first look for all categories:
     for (int i = 0; i < nodes.size(); ++i)
@@ -654,40 +655,76 @@ ito::RetVal BasePort::createParamsFromDevice(QMap<QString, ito::Param> &params, 
                             switch (child->GetPrincipalInterfaceType())
                             {
                             case intfIValue:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Value, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Value, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIBase:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Integer, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Integer, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIInteger:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Integer, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Integer, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIBoolean:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Boolean, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Boolean, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfICommand:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Command, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Command, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIFloat:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Float, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Float, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIString:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:String, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:String, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfICategory:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Category, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Category, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIRegister:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Register, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Register, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIEnumeration:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Enumeration, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Enumeration, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIEnumEntry:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:EnumEntry, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:EnumEntry, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             case intfIPort:
-                                std::cout << " -- " << child->GetName() << " (A:" << (int)child->GetAccessMode() << ", I:Port, V:" << child->GetVisibility() << ")\n";
+                                std::cout << " -- " << child->GetName()
+                                          << " (A:" << (int)child->GetAccessMode()
+                                          << ", I:Port, V:" << child->GetVisibility()
+                                          << ")\n";
                                 break;
                             }
 
@@ -724,7 +761,11 @@ ito::RetVal BasePort::createParamsFromDevice(QMap<QString, ito::Param> &params, 
 
         QByteArray name = m_paramPrefix + node->GetName().c_str();
 
-        if (visibility <= visibilityLevel)
+        // there are many nodes, which seem to be intermediate nodes and are no features.
+        // For Basler cameras, they are called something like N1, N2 and do not have a category.
+        // Exclude these nodes.
+
+        if (visibility <= visibilityLevel && node->IsFeature())
         {
 
             category = categoryMap.contains(node) ? categoryMap[node] : ito::ByteArray();
@@ -783,6 +824,16 @@ ito::RetVal BasePort::createParamsFromDevice(QMap<QString, ito::Param> &params, 
                 retval += ito::RetVal::format(ito::retWarning, 0, "Error parsing parameter '%s': %s", name.constData(), ex.GetDescription());
             }
         }
+        else
+        {
+            ignoredNodes++;
+        }
+    }
+
+    if (m_verbose >= VERBOSE_DEBUG)
+    {
+        std::cout << "Number of ignored nodes (wrong visibility level or no feature): " << ignoredNodes << "\n " << std::endl;
+        std::cout << "----------------------------------------\n" << std::endl;
     }
 
     return retval;
@@ -1463,9 +1514,9 @@ QVector<PfncFormat> BasePort::supportedImageFormats(QVector<int> *bitdepths /*= 
     if (m_supportedFormats.size() == 0)
     {
 
-        m_supportedFormats      << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16 << RGB8 << YCbCr422_8 << BGR8 << BGR10p << BGR12p;
-        m_supportedFormatsBpp   << 8     << 10     << 10           << 10      << 12     << 12           << 12      << 14     << 16     << 8    << 8          << 8    << 10     << 12;
-        m_supportedFormatsColor << 0     << 0      << 0            << 0       << 0      << 0            << 0       << 0      << 0      << 1    << 1          << 1    << 1      << 1;
+        m_supportedFormats      << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16 << RGB8 << YCbCr422_8 << BGR8 << BGR10p << BGR12p << BayerRG8;
+        m_supportedFormatsBpp   << 8     << 10     << 10           << 10      << 12     << 12           << 12      << 14     << 16     << 8    << 8          << 8    << 10     << 12     << 8;
+        m_supportedFormatsColor << 0     << 0      << 0            << 0       << 0      << 0            << 0       << 0      << 0      << 1    << 1          << 1    << 1      << 1      << 1;
 
         for (int i = 0; i < m_supportedFormats.size(); ++i)
         {
