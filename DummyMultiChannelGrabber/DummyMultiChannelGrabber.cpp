@@ -23,7 +23,7 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "DummyMultiChannelGrabber.h"
+#include "dummyMultiChannelGrabber.h"
 
 #ifndef WIN32
 #include <unistd.h>
@@ -40,73 +40,7 @@
 #include <windows.h>
 #endif
 
-//-------------------------------------------------------------------------------------
-/** @func   fastrand
- *   @brief  function for pseudo random values
- *
- *   This function delivers the noise for the image.
- */
-template <typename _Tp> inline _Tp fastrand(cv::RNG& rng, _Tp maxval, float offset, float gain)
-{
-    return cv::saturate_cast<_Tp>(offset * maxval + gain * (((ito::uint32)rng.next()) & maxval));
-}
 
-//-------------------------------------------------------------------------------------
-/** @func   fastrand
- *   @brief  function for pseudo random values
- *
- *   This function delivers the noise for the image.
- */
-template <typename _Tp>
-inline _Tp fastrand_mean(cv::RNG& rng, _Tp maxval, ito::uint8 numMeans, float offset, float gain)
-{
-    ito::uint32 val = 0;
-
-    for (ito::uint8 i = 0; i < numMeans; ++i)
-    {
-        val += ((ito::uint32)rng.next()) & maxval;
-    }
-
-    return cv::saturate_cast<_Tp>(offset * maxval + (gain / (float)numMeans) * val);
-}
-
-//-------------------------------------------------------------------------------------
-/** @func   gaussFunc
- *   @brief  function for 2d Gaussian function
- *
- *   This function delivers a 2d dataObject with a Gaussian function
- */
-template <typename _Tp> ito::RetVal gaussFunc(cv::RNG& rng, ito::DataObject dObj, float amplitude)
-{
-    int width = dObj.getSize(1);
-    int height = dObj.getSize(0);
-    _Tp* rowPtr;
-    float xval, yval;
-    int planeID = dObj.seekMat(0);
-
-    float yRandOffset = rng.uniform(0.f, 20.f);
-    float xRandOffset = rng.uniform(0.f, 20.f);
-    float aRandOfset = rng.uniform(0.f, 20.f);
-
-    float sigmaX = width * rng.uniform(0.09f, 0.11f);
-    float sigmaY = height * rng.uniform(0.09f, 0.11f);
-
-    for (int y = 0; y < height; y++)
-    {
-        rowPtr = dObj.rowPtr<_Tp>(planeID, y);
-        yval = ((y - height / 2 + yRandOffset) * ((float)y - height / 2 + yRandOffset)) /
-            (2.0f * sigmaY * sigmaY);
-
-        for (int x = 0; x < width; x++)
-        {
-            xval = ((x - width / 2 + xRandOffset) * ((float)x - width / 2 + xRandOffset)) /
-                (2.0f * sigmaX * sigmaX);
-            rowPtr[x] = (float)(amplitude - aRandOfset) * exp(-(xval + yval));
-        }
-    }
-
-    return ito::retOk;
-}
 
 //-------------------------------------------------------------------------------------
 /*!
@@ -249,20 +183,6 @@ This plugin can also be used as template for other grabbers.");
     m->addItem("rgb8");
     param.setMeta(m, true);
     m_initParamsOpt.append(param);
-
-    param = ito::Param(
-        "imageType",
-        ito::ParamBase::String | ito::ParamBase::In,
-        "noise",
-        tr("Available dummy image types: noise (default), gaussianSpot, gaussianSpotArray")
-            .toLatin1()
-            .data());
-    ito::StringMeta sm(ito::StringMeta::String, "noise");
-    sm.addItem("gaussianSpot");
-    sm.addItem("gaussianSpotArray");
-    param.setMeta(&sm, false);
-
-    m_initParamsOpt.append(param);
 }
 
 //-------------------------------------------------------------------------------------
@@ -310,9 +230,7 @@ const ito::RetVal DummyMultiChannelGrabber::showConfDialog(void)
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
 DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
-    AddInMultiChannelGrabber("DummyMultiChannelGrabber"), m_isgrabbing(false),
-    m_startOfLastAcquisition(0), m_freerunTimer(this),
-    m_imageType(imgTypeNoise)
+    AddInMultiChannelGrabber("DummyMultiChannelGrabber")
 {
     if (hasGuiSupport())
     {
@@ -323,7 +241,6 @@ DummyMultiChannelGrabber::DummyMultiChannelGrabber() :
             QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<const char*>()), features, areas, dw);
     }
-    connect(&m_freerunTimer, &QTimer::timeout, this, &DummyMultiChannelGrabber::generateImageData);
 }
 
 //-------------------------------------------------------------------------------------
@@ -397,7 +314,7 @@ ito::RetVal DummyMultiChannelGrabber::init(
     pixelFormat3.setMeta(pixelFormat3Meta, true);
 
     ChannelContainer channel1(paramRoi, pixelFormat1, paramSizeX, paramSizeY);
-    channel1.m_channelParams["valueDescription"].setVal<ito::ByteArray>("intensity");
+    channel1.m_channelParams["valueDescription"].setVal<const char*>("intensity");
 
     // every channel can also further additional parameters.
     // Rules:
@@ -419,7 +336,7 @@ ito::RetVal DummyMultiChannelGrabber::init(
     channels["channelMono"] = channel1;
 
     ChannelContainer channel2(paramRoi, pixelFormat2, paramSizeX, paramSizeY);
-    channel2.m_channelParams["valueDescription"].setVal<ito::ByteArray>("topography");
+    channel2.m_channelParams["valueDescription"].setVal<const char*>("topography");
     double axisScales[] = {0.05, 0.05};
     channel2.m_channelParams["axisScales"].setVal<double*>(axisScales, 2);
     ito::ByteArray axisUnits[] = { "mm", "mm" };
@@ -429,7 +346,7 @@ ito::RetVal DummyMultiChannelGrabber::init(
     channels["channelTopo"] = channel2;
 
     ChannelContainer channel3(paramRoi, pixelFormat3, paramSizeX, paramSizeY);
-    channel3.m_channelParams["valueDescription"].setVal<ito::ByteArray>("color");
+    channel3.m_channelParams["valueDescription"].setVal<const char*>("color");
 
     channel3.addChannelParam(ito::Param(
         "gammaCorrection",
@@ -457,6 +374,16 @@ ito::RetVal DummyMultiChannelGrabber::init(
             1,
             1,
             tr("this is a global parameter").toLatin1().data());
+
+    ito::Param exposureTime(
+        "exposureTime",
+        ito::ParamBase::Double,
+        1.e-6,
+        0.5,
+        10.e-3,
+        tr("the exposure time for all channels. This is the time that is used to acquire one frame.").toLatin1().data());
+    exposureTime.getMetaT<ito::DoubleMeta>()->setRepresentation(ito::ParamMeta::Logarithmic);
+    globalParams << exposureTime;
 
     auto paramVal = ito::Param(
         "demoRegexpString",
@@ -507,22 +434,6 @@ ito::RetVal DummyMultiChannelGrabber::init(
     }
 
     setIdentifier(QString::number(getID()));
-
-    // get type of dummy image
-    QString type = paramsOpt->at(4).getVal<const char*>();
-
-    if (type == "noise")
-    {
-        m_imageType = imgTypeNoise;
-    }
-    else if (type == "gaussianSpot")
-    {
-        m_imageType = imgTypeGaussianSpot;
-    }
-    else if (type == "gaussianSpotArray")
-    {
-        m_imageType = imgTypeGaussianSpotArray;
-    }
 
     if (waitCond)
     {
@@ -630,165 +541,186 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(
     int running = 0; // Used to check if grabber was running bevor
 
     // first check parameters that influence the size or data type of m_channels
-    if (key == "binning")
-    {
-        if (!retValue.containsError())
-        {
-            if (grabberStartedCount() > 0)
-            {
-                running = grabberStartedCount();
-                setGrabberStarted(1);
-                retValue += stopDevice(nullptr);
-            }
-        }
+    //if (key == "binning")
+    //{
+    //    if (!retValue.containsError())
+    //    {
+    //        if (grabberStartedCount() > 0)
+    //        {
+    //            running = grabberStartedCount();
+    //            setGrabberStarted(1);
+    //            retValue += stopDevice(nullptr);
+    //        }
+    //    }
 
-        if (!retValue.containsError())
-        {
-            int oldval = it->getVal<int>();
+    //    if (!retValue.containsError())
+    //    {
+    //        int oldval = it->getVal<int>();
 
-            int ival = val->getVal<int>();
-            int newY = ival % 100;
-            int newX = (ival - newY) / 100;
+    //        int ival = val->getVal<int>();
+    //        int newY = ival % 100;
+    //        int newX = (ival - newY) / 100;
 
-            if (m_lineCamera && (newY != 1))
-            {
-                retValue += ito::RetVal(
-                    ito::retError, 0, "the vertical binning for a line camera must be 1");
-            }
-            else if ((newX != 1 && newX != 2 && newX != 4) || (newY != 1 && newY != 2 && newY != 4))
-            {
-                retValue += ito::RetVal(
-                    ito::retError,
-                    0,
-                    "horizontal and vertical binning must be 1, 2 or 4 (hence vertical * 100 + "
-                    "horizontal)");
-            }
-            else
-            {
-                m_totalBinning = newX * newY;
+    //        if (m_lineCamera && (newY != 1))
+    //        {
+    //            retValue += ito::RetVal(
+    //                ito::retError, 0, "the vertical binning for a line camera must be 1");
+    //        }
+    //        else if ((newX != 1 && newX != 2 && newX != 4) || (newY != 1 && newY != 2 && newY != 4))
+    //        {
+    //            retValue += ito::RetVal(
+    //                ito::retError,
+    //                0,
+    //                "horizontal and vertical binning must be 1, 2 or 4 (hence vertical * 100 + "
+    //                "horizontal)");
+    //        }
+    //        else
+    //        {
+    //            m_totalBinning = newX * newY;
 
-                retValue += it->copyValueFrom(&(*val));
+    //            retValue += it->copyValueFrom(&(*val));
 
-                if (oldval != ival)
-                {
-                    int oldY = oldval % 100;
-                    int oldX = (oldval - oldY) / 100;
-                    float factorX = (float)oldX / (float)newX;
-                    float factorY = (float)oldY / (float)newY;
-                    int width, height, maxWidth, maxHeight, sizeX, sizeY, offsetX, offsetY;
-                    QMap<QString, ChannelContainer>::iterator i;
-                    for (i = m_channels.begin(); i != m_channels.end();
-                         ++i) // we need to adapt the roi for each channel
-                    {
-                        width = (i.value().m_channelParams["roi"].getVal<int*>()[1] -
-                                 i.value().m_channelParams["roi"].getVal<int*>()[0]) *
-                            factorX;
-                        height = (i.value().m_channelParams["roi"].getVal<int*>()[3] -
-                                  i.value().m_channelParams["roi"].getVal<int*>()[2]) *
-                            factorY;
+    //            if (oldval != ival)
+    //            {
+    //                int oldY = oldval % 100;
+    //                int oldX = (oldval - oldY) / 100;
+    //                float factorX = (float)oldX / (float)newX;
+    //                float factorY = (float)oldY / (float)newY;
+    //                int width, height, maxWidth, maxHeight, sizeX, sizeY, offsetX, offsetY;
+    //                QMap<QString, ChannelContainer>::iterator i;
+    //                for (i = m_channels.begin(); i != m_channels.end();
+    //                     ++i) // we need to adapt the roi for each channel
+    //                {
+    //                    width = (i.value().m_channelParams["roi"].getVal<int*>()[1] -
+    //                             i.value().m_channelParams["roi"].getVal<int*>()[0]) *
+    //                        factorX;
+    //                    height = (i.value().m_channelParams["roi"].getVal<int*>()[3] -
+    //                              i.value().m_channelParams["roi"].getVal<int*>()[2]) *
+    //                        factorY;
 
-                        maxWidth =
-                            static_cast<ito::RectMeta*>(i.value().m_channelParams["roi"].getMeta())
-                                ->getWidthRangeMeta()
-                                .getSizeMax();
-                        maxHeight =
-                            static_cast<ito::RectMeta*>(i.value().m_channelParams["roi"].getMeta())
-                                ->getHeightRangeMeta()
-                                .getSizeMax();
+    //                    maxWidth =
+    //                        static_cast<ito::RectMeta*>(i.value().m_channelParams["roi"].getMeta())
+    //                            ->getWidthRangeMeta()
+    //                            .getSizeMax();
+    //                    maxHeight =
+    //                        static_cast<ito::RectMeta*>(i.value().m_channelParams["roi"].getMeta())
+    //                            ->getHeightRangeMeta()
+    //                            .getSizeMax();
 
-                        sizeX = i.value().m_channelParams["roi"].getVal<int*>()[2] * factorX;
-                        sizeY = i.value().m_channelParams["roi"].getVal<int*>()[3] * factorY;
-                        offsetX = i.value().m_channelParams["roi"].getVal<int*>()[0] * factorX;
-                        offsetY = i.value().m_channelParams["roi"].getVal<int*>()[1] * factorY;
-                        int roi[] = {offsetX, offsetY, sizeX, sizeY};
-                        i.value().m_channelParams["roi"].setVal<int*>(roi, 4);
-                        i.value().m_channelParams["roi"].setMeta(
-                            new ito::RectMeta(
-                                ito::RangeMeta(
-                                    0, width - 1, 4 / newX, 4 / newX, maxWidth * factorX, 4 / newX),
-                                ito::RangeMeta(
-                                    0,
-                                    height - 1,
-                                    4 / newY,
-                                    4 / newY,
-                                    maxHeight * factorY,
-                                    4 / newY)),
-                            true);
-                        if (i.key() == m_params["defaultChannel"].getVal<const char*>())
-                        {
-                            m_params["roi"].setVal<int*>(roi, 4);
-                            m_params["roi"].setMeta(
-                                new ito::RectMeta(
-                                    ito::RangeMeta(
-                                        0,
-                                        width - 1,
-                                        4 / newX,
-                                        4 / newX,
-                                        maxWidth * factorX,
-                                        4 / newX),
-                                    ito::RangeMeta(
-                                        0,
-                                        height - 1,
-                                        4 / newY,
-                                        4 / newY,
-                                        maxHeight * factorY,
-                                        4 / newY)),
-                                true);
-                        }
-                    }
-                    pendingUpdate << "roi"
-                                  << "binning"; // add roi to update list to trigger a update of
-                                                // sizey and sizey
-                }
-            }
-        }
-        if (running)
-        {
-            retValue += startDevice(NULL);
-            setGrabberStarted(running);
-        }
-        ok = true;
-    }
+    //                    sizeX = i.value().m_channelParams["roi"].getVal<int*>()[2] * factorX;
+    //                    sizeY = i.value().m_channelParams["roi"].getVal<int*>()[3] * factorY;
+    //                    offsetX = i.value().m_channelParams["roi"].getVal<int*>()[0] * factorX;
+    //                    offsetY = i.value().m_channelParams["roi"].getVal<int*>()[1] * factorY;
+    //                    int roi[] = {offsetX, offsetY, sizeX, sizeY};
+    //                    i.value().m_channelParams["roi"].setVal<int*>(roi, 4);
+    //                    i.value().m_channelParams["roi"].setMeta(
+    //                        new ito::RectMeta(
+    //                            ito::RangeMeta(
+    //                                0, width - 1, 4 / newX, 4 / newX, maxWidth * factorX, 4 / newX),
+    //                            ito::RangeMeta(
+    //                                0,
+    //                                height - 1,
+    //                                4 / newY,
+    //                                4 / newY,
+    //                                maxHeight * factorY,
+    //                                4 / newY)),
+    //                        true);
+    //                    if (i.key() == m_params["defaultChannel"].getVal<const char*>())
+    //                    {
+    //                        m_params["roi"].setVal<int*>(roi, 4);
+    //                        m_params["roi"].setMeta(
+    //                            new ito::RectMeta(
+    //                                ito::RangeMeta(
+    //                                    0,
+    //                                    width - 1,
+    //                                    4 / newX,
+    //                                    4 / newX,
+    //                                    maxWidth * factorX,
+    //                                    4 / newX),
+    //                                ito::RangeMeta(
+    //                                    0,
+    //                                    height - 1,
+    //                                    4 / newY,
+    //                                    4 / newY,
+    //                                    maxHeight * factorY,
+    //                                    4 / newY)),
+    //                            true);
+    //                    }
+    //                }
+    //                pendingUpdate << "roi"
+    //                              << "binning"; // add roi to update list to trigger a update of
+    //                                            // sizey and sizey
+    //            }
+    //        }
+    //    }
+    //    if (running)
+    //    {
+    //        retValue += startDevice(NULL);
+    //        setGrabberStarted(running);
+    //    }
+    //    ok = true;
+    //}
 
-    if (key == "roi")
-    {
-        m_isgrabbing = false; // we need to trigger again since the roi changed
-        ok = false; // we want to further process the parameter by setParam to set the size etc.
-    }
+    //if (key == "roi")
+    //{
+    //    m_isgrabbing = false; // we need to trigger again since the roi changed
+    //    ok = false; // we want to further process the parameter by setParam to set the size etc.
+    //}
 
-    if (key == "integration_time")
-    {
-        bool timerIsRunning = m_freerunTimer.isActive();
-        m_freerunTimer.stop();
-        m_freerunTimer.setInterval(
-            int((val->getVal<double>() + m_params["frame_time"].getVal<double>()) * 1000.0));
-        if (timerIsRunning)
-        {
-            m_freerunTimer.start();
-        }
-        ok = false;
-    }
+    //if (key == "integration_time")
+    //{
+    //    bool timerIsRunning = m_freerunTimer.isActive();
+    //    m_freerunTimer.stop();
+    //    m_freerunTimer.setInterval(
+    //        int((val->getVal<double>() + m_params["frame_time"].getVal<double>()) * 1000.0));
+    //    if (timerIsRunning)
+    //    {
+    //        m_freerunTimer.start();
+    //    }
+    //    ok = false;
+    //}
 
-    if (key == "frame_time")
-    {
-        bool timerIsRunning = m_freerunTimer.isActive();
-        m_freerunTimer.stop();
-        m_freerunTimer.setInterval(
-            int((val->getVal<double>() + m_params["integration_time"].getVal<double>()) * 1000.0));
-        if (timerIsRunning)
-        {
-            m_freerunTimer.start();
-        }
-        ok = false;
-    }
-    else
-    {
-        ok = false; // set ok to false to let setParam process the parameter
-    }
+    //if (key == "frame_time")
+    //{
+    //    bool timerIsRunning = m_freerunTimer.isActive();
+    //    m_freerunTimer.stop();
+    //    m_freerunTimer.setInterval(
+    //        int((val->getVal<double>() + m_params["integration_time"].getVal<double>()) * 1000.0));
+    //    if (timerIsRunning)
+    //    {
+    //        m_freerunTimer.start();
+    //    }
+    //    ok = false;
+    //}
+    //else
+    //{
+    //    ok = false; // set ok to false to let setParam process the parameter
+    //
+    //}
+
+    ok = false; // set ok to false to let setParam process the parameter
 
     sendDataToListeners(0);
 
     return retValue;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal DummyMultiChannelGrabber::retrieveData(const QStringList& channels /*= QStringList()*/)
+{
+    ito::RetVal retVal;
+
+    return retVal;
+}
+
+//-------------------------------------------------------------------------------------
+QRect roiParamToRect(const ito::ParamBase& roiParam)
+{
+    const int* roi = roiParam.getVal<int*>();
+    // int roi[] = { 0, 0, sensorWidth, sensorHeight };
+
+    QRect r(roi[0], roi[1], roi[2], roi[3]);
+    return r;
 }
 
 //-------------------------------------------------------------------------------------
@@ -806,24 +738,35 @@ ito::RetVal DummyMultiChannelGrabber::setParameter(
 ito::RetVal DummyMultiChannelGrabber::startDevice(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue = ito::retOk;
 
-    checkData(); // this will be reallocated in this method.
+    ito::RetVal retValue;
 
     incGrabberStarted();
 
     if (grabberStartedCount() == 1)
     {
-        m_startOfLastAcquisition = 0;
-        m_isgrabbing = false;
+        // the grabber is started for the first time
+        retValue += checkData();
+
+        if (retValue == ito::retOk)
+        {
+            // configure emulator for mono image
+            QByteArray pixelFormatMono = m_channels["channelMono"].m_channelParams["pixelFormat"].getVal<const char*>();
+            QRect roiMono = roiParamToRect(m_channels["channelMono"].m_channelParams["roi"]);
+            m_camEmulator.configureImageMono(roiMono, pixelFormatMono.mid(4 /*mono*/).toInt());
+
+            // configure emulator for topography image (here: float)
+            QByteArray pixelFormatTopo = m_channels["channelTopo"].m_channelParams["pixelFormat"].getVal<const char*>();
+            QRect roiTopo = roiParamToRect(m_channels["channelTopo"].m_channelParams["roi"]);
+            m_camEmulator.configureImageTopography(roiTopo, pixelFormatTopo.mid(5 /*float*/).toInt() == 32);
+
+            // configure emulator for colour image
+            QByteArray pixelFormatColour = m_channels["channelColour"].m_channelParams["pixelFormat"].getVal<const char*>();
+            QRect roiColour = roiParamToRect(m_channels["channelColour"].m_channelParams["roi"]);
+            m_camEmulator.configureImageColor(roiColour, pixelFormatColour == "rgba32");
+        }
     }
-    if (strcmp(m_params["triggerMode"].getVal<const char*>(), "freerun") == 0)
-    {
-        m_freerunTimer.start(
-            int((m_params["frame_time"].getVal<double>() +
-                 m_params["integration_time"].getVal<double>()) *
-                1000.0));
-    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -851,6 +794,7 @@ ito::RetVal DummyMultiChannelGrabber::stopDevice(ItomSharedSemaphore* waitCond)
     ito::RetVal retValue = ito::retOk;
 
     decGrabberStarted();
+
     if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(
@@ -862,10 +806,7 @@ ito::RetVal DummyMultiChannelGrabber::stopDevice(ItomSharedSemaphore* waitCond)
                 .data());
         setGrabberStarted(0);
     }
-    else
-    {
-        m_freerunTimer.stop();
-    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -875,232 +816,6 @@ ito::RetVal DummyMultiChannelGrabber::stopDevice(ItomSharedSemaphore* waitCond)
     return retValue;
 }
 
-//-------------------------------------------------------------------------------------
-ito::RetVal DummyMultiChannelGrabber::generateImageData()
-{
-    ito::RetVal retValue = ito::retOk;
-    double frame_time = m_params["frame_time"].getVal<double>();
-    double integration_time = m_params["integration_time"].getVal<double>();
-    float gain = m_params["gain"].getVal<double>();
-    float offset = m_params["offset"].getVal<double>();
-    int min, max = 0;
-    bool ok = false;
-    AbstractAddInGrabber::minMaxBoundariesFromIntegerPixelFormat(
-        m_params["pixelFormat"].getVal<const char*>(), min, max, ok);
-    if (!ok)
-    {
-        retValue += ito::RetVal(
-            ito::retError, 0, tr("pixel format is not a integer format").toLatin1().data());
-    }
-    if (grabberStartedCount() <= 0)
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            1002,
-            tr("Can not acquire image, since camera has not been "
-               "started.")
-                .toLatin1()
-                .data());
-    }
-    if (!retValue.containsError())
-    {
-        m_isgrabbing = true;
-        if (strcmp(m_params["triggerMode"].getVal<const char*>(), "software") == 0 &&
-            (frame_time > 0.0))
-        {
-            double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
-
-            if (diff < frame_time)
-            {
-                Sleep((frame_time - diff) * 1000.0);
-            }
-        }
-
-        m_startOfLastAcquisition = cv::getTickCount();
-        // ito::uint32 seed = m_startOfLastAcquisition % std::numeric_limits<ito::uint32>::max();
-        cv::RNG& rng = cv::theRNG();
-
-        if (m_imageType == imgTypeNoise)
-        {
-            if (m_totalBinning == 1)
-            {
-                if (max < 256)
-                {
-                    ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(max);
-                    ito::uint8* linePtr;
-                    foreach (ChannelContainer container, m_channels)
-                    {
-                        ito::DataObject& channelObj = container.m_data;
-
-                        for (int m = 0; m < channelObj.getSize(0); ++m)
-                        {
-                            linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
-
-                            for (int n = 0; n < channelObj.getSize(1); ++n)
-                            {
-                                *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
-                            }
-                        }
-                    }
-                }
-                else if (max < 65536)
-                {
-                    ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(max);
-                    ito::uint16* linePtr;
-                    foreach (ChannelContainer container, m_channels)
-                    {
-                        ito::DataObject& channelObj = container.m_data;
-
-                        for (int m = 0; m < channelObj.getSize(0); ++m)
-                        {
-                            linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
-
-                            for (int n = 0; n < channelObj.getSize(1); ++n)
-                            {
-                                *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (max < 256)
-                {
-                    ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(max);
-                    ito::uint8* linePtr;
-                    foreach (ChannelContainer container, m_channels)
-                    {
-                        ito::DataObject& channelObj = container.m_data;
-
-                        for (int m = 0; m < channelObj.getSize(0); ++m)
-                        {
-                            linePtr = (ito::uint8*)channelObj.rowPtr(0, m);
-
-                            for (int n = 0; n < channelObj.getSize(1); ++n)
-                            {
-                                *linePtr++ = fastrand_mean<ito::uint8>(
-                                    rng, maxInt, m_totalBinning, offset, gain);
-                            }
-                        }
-                    }
-                }
-                else if (max < 65536)
-                {
-                    ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(max);
-                    ito::uint16* linePtr;
-                    foreach (ChannelContainer container, m_channels)
-                    {
-                        ito::DataObject& channelObj = container.m_data;
-
-                        for (int m = 0; m < channelObj.getSize(0); ++m)
-                        {
-                            linePtr = (ito::uint16*)channelObj.rowPtr(0, m);
-
-                            for (int n = 0; n < channelObj.getSize(1); ++n)
-                            {
-                                *linePtr++ = fastrand_mean<ito::uint16>(
-                                    rng, maxInt, m_totalBinning, offset, gain);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else if (m_imageType == imgTypeGaussianSpot) // create dummy Gaussian image
-        {
-            if (max < 256)
-            {
-                ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, 8) - 1);
-                foreach (ChannelContainer container, m_channels)
-                {
-                    gaussFunc<ito::uint8>(rng, container.m_data, amplitude);
-                }
-            }
-            else if (max < 65536)
-            {
-                ito::uint16 amplitude = cv::saturate_cast<ito::uint16>(cv::pow(2.0, 16) - 1);
-                foreach (ChannelContainer container, m_channels)
-                {
-                    gaussFunc<ito::uint16>(rng, container.m_data, amplitude);
-                }
-            }
-            else if (max < 2147483647)
-            {
-                ito::uint32 amplitude = cv::saturate_cast<ito::uint32>(cv::pow(2.0, 32) - 1);
-                foreach (ChannelContainer container, m_channels)
-                {                    gaussFunc<ito::uint32>(rng, container.m_data, amplitude);
-                }
-            }
-        }
-        else if (m_imageType == imgTypeGaussianSpotArray)
-        {
-            ito::DataObject droi;
-
-            int width =
-                this->m_channels[m_params["defaultChannel"].getVal<char*>()].m_data.getSize(1);
-            int height =
-                this->m_channels[m_params["defaultChannel"].getVal<char*>()].m_data.getSize(0);
-
-            int roiwidth = (int)width / 2;
-            int roiheight = (int)height / 2;
-
-            int roi[4][4] = {
-                {-0, -roiheight, -roiwidth, 0},
-                {-0, -roiheight, 0, -roiwidth},
-                {-roiheight, 0, -roiwidth, 0},
-                {-roiheight, 0, 0, -roiwidth}};
-
-            for (int cnt = 0; cnt < 4; cnt++)
-            {
-                foreach (ChannelContainer container, m_channels)
-                {
-                    droi = container.m_data;
-                    droi = droi.adjustROI(roi[cnt][0], roi[cnt][1], roi[cnt][2], roi[cnt][3]);
-
-                    if (max < 256)
-                    {
-                        ito::uint8 amplitude = cv::saturate_cast<ito::uint8>(cv::pow(2.0, 8) - 1);
-                        gaussFunc<ito::uint8>(rng, droi, amplitude);
-                    }
-                    else if (max < 65536)
-                    {
-                        ito::uint16 amplitude =
-                            cv::saturate_cast<ito::uint16>(cv::pow(2.0, 16) - 1);
-                        gaussFunc<ito::uint16>(rng, droi, amplitude);
-                    }
-                    else if (max < 2147483647)
-                    {
-                        ito::uint32 amplitude =
-                            cv::saturate_cast<ito::uint32>(cv::pow(2.0, 32) - 1);
-                        gaussFunc<ito::uint32>(rng, droi, amplitude);
-                    }
-                }
-            }
-        }
-
-        if ((strcmp(m_params["triggerMode"].getVal<const char*>(), "software") == 0) &&
-            (integration_time > 0.0))
-        {
-            double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
-
-            if (diff < integration_time)
-            {
-                Sleep((integration_time - diff) * 1000.0);
-            }
-        }
-    }
-    ////pack all channel images to a QMap
-    QSharedPointer<QMap<QString, ito::DataObject>> returnMap(new QMap<QString, ito::DataObject>);
-    QMap<QString, ChannelContainer>::iterator it = m_channels.begin();
-    while (it != m_channels.end())
-    {
-        (*returnMap)[it.key()] = it.value().m_data;
-        ++it;
-    }
-    emit newData(returnMap);
-    return retValue;
-}
 
 //-------------------------------------------------------------------------------------
 //! Call this method to trigger a new image.
@@ -1121,25 +836,24 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
     ito::RetVal retValue = ito::retOk;
     ItomSharedSemaphoreLocker locker(waitCond);
 
-    if (strcmp(m_params["triggerMode"].getVal<const char*>(), "software") == 0)
-    {
-        retValue += generateImageData();
-    }
-    else
-    {
-        retValue += ito::RetVal(
-            ito::retWarning,
-            0,
-            tr("The trigger mode of the camera is set to freerun therefore calling acquire is "
-               "useless.")
-                .toLatin1()
-                .data());
-    }
+    double exposureTimeS = m_params["exposureTime"].getVal<double>();
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
+    }
+
+    // the emulator
+    if (m_camEmulator.grabImages(true, true, true, exposureTimeS * 1000.0))
+    {
+        m_camEmulator.imageMono().deepCopyPartial(m_channels["channelMono"].m_data);
+        m_camEmulator.imageTopography().deepCopyPartial(m_channels["channelTopo"].m_data);
+        m_camEmulator.imageColor().deepCopyPartial(m_channels["channelColour"].m_data);
+    }
+    else
+    {
+        // todo
     }
 
 
@@ -1243,129 +957,6 @@ ito::RetVal DummyMultiChannelGrabber::acquire(const int /*trigger*/, ItomSharedS
 //    return retValue;
 //}
 
-//-------------------------------------------------------------------------------------
-ito::RetVal DummyMultiChannelGrabber::getValByMap(
-    QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
-{
-    ito::RetVal retValue(ito::retOk);
-
-    retValue += retrieveData();
-
-    if (!retValue.containsError())
-    {
-        if (dataObjMap == NULL)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                1004,
-                tr("QMap<QString, ito::DataObject*> of getVal is NULL").toLatin1().data());
-        }
-        else
-        {
-            retValue += sendDataToListeners(0); // don't wait for live image, since user should get
-                                                // the image as fast as possible.
-            QMap<QString, ito::DataObject*>::iterator it = (*dataObjMap).begin();
-            while (it != (*dataObjMap).end())
-            {
-                *(it.value()) = this->m_channels[it.key()].m_data;
-                ++it;
-            }
-        }
-    }
-    return retValue;
-}
-
-//-------------------------------------------------------------------------------------
-ito::RetVal DummyMultiChannelGrabber::retrieveData(
-    QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
-{
-    ito::RetVal retValue(ito::retOk);
-
-    if (m_isgrabbing == false)
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            1002,
-            tr("image could not be obtained since no image has been acquired.").toLatin1().data());
-    }
-    else
-    {
-        if (dataObjMap)
-        {
-            QMap<QString, ito::DataObject*>::const_iterator it = (*dataObjMap).constBegin();
-            while (it != (*dataObjMap).constEnd())
-            {
-                m_channels[it.key()].m_data.deepCopyPartial(*it.value());
-                ++it;
-            }
-        }
-
-        m_isgrabbing = false;
-    }
-
-    return retValue;
-}
-
-//-------------------------------------------------------------------------------------
-ito::RetVal DummyMultiChannelGrabber::copyValByMap(
-    QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap)
-{
-    ito::RetVal retValue(ito::retOk);
-
-    retValue += checkData(*dataObjMap);
-    retValue += retrieveData(dataObjMap);
-
-    if (!retValue.containsError())
-    {
-        if (dataObjMap == NULL)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                1004,
-                tr("QMap<QString, ito::DataObject*> of getVal is NULL").toLatin1().data());
-        }
-        else
-        {
-            retValue += sendDataToListeners(0); // don't wait for live image, since user should get
-                                                // the image as fast as possible.
-            QMap<QString, ito::DataObject*>::iterator it = (*dataObjMap).begin();
-            while (it != (*dataObjMap).end())
-            {
-                *(it.value()) = this->m_channels[it.key()].m_data;
-                ++it;
-            }
-        }
-    }
-    return retValue;
-}
-
-
-
-//-------------------------------------------------------------------------------------
-ito::RetVal DummyMultiChannelGrabber::retrieveData(ito::DataObject* externalDataObject)
-{
-    ito::RetVal retValue(ito::retOk);
-
-    if (m_isgrabbing == false)
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            1002,
-            tr("image could not be obtained since no image has been acquired.").toLatin1().data());
-    }
-    else
-    {
-        if (externalDataObject)
-        {
-            auto internalImage = getCurrentDefaultChannel().m_data;
-            internalImage.deepCopyPartial(*externalDataObject);
-        }
-
-        m_isgrabbing = false;
-    }
-
-    return retValue;
-}
 
 //-------------------------------------------------------------------------------------
 ito::Rgba32 hsv2rgb(float hue, float saturation, float intensity, ito::uint8 alpha)
@@ -1434,43 +1025,6 @@ ito::Rgba32 hsv2rgb(float hue, float saturation, float intensity, ito::uint8 alp
         break;
     }
     return out;
-}
-
-//-------------------------------------------------------------------------------------
-void DummyMultiChannelGrabber::fillColorImage(ito::DataObject& img, const cv::Point2f& centerPixel, const float radius, bool hasAlpha) const
-{
-    Q_ASSERT_X(img.getType() == ito::tRGBA32, "fillNextColorImage", "img must be of type rgba32");
-
-    int height = img.getSize()[0];
-    int width = img.getSize()[1];
-    float hue, saturation, intensity, alpha;
-    float dx, dy, r_square;
-    float sigma_square = radius * radius;
-
-    alpha = 1.0;
-    intensity = 1.0;
-
-    for (int i = 0; i < height; ++i)
-    {
-        ito::Rgba32* ptr = img.rowPtr<ito::Rgba32>(0, i);
-
-        for (int j = 0; j < width; ++j)
-        {
-            dx = j - centerPixel.x;
-            dy = i - centerPixel.y;
-            r_square = dx * dx + dy * dy;
-
-            hue = cv::fastAtan2(dy, dx) / 360.0;
-            saturation = cv::exp(-0.5 * r_square / sigma_square);
-
-            if (hasAlpha)
-            {
-                alpha = saturation;
-            }
-
-            ptr[j] = hsv2rgb(hue, saturation, intensity, alpha * 255);
-        }
-    }
 }
 
 //-------------------------------------------------------------------------------------

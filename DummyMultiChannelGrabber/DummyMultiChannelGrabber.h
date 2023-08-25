@@ -25,6 +25,7 @@
 #include "common/addInMultiChannelGrabber.h"
 #include "common/typeDefs.h"
 #include "dialogDummyMultiChannelGrabber.h"
+#include "cameraEmulator.h"
 
 #include <qsharedpointer.h>
 #include <qtimer.h>
@@ -67,10 +68,6 @@ protected:
     ~DummyMultiChannelGrabber();
     DummyMultiChannelGrabber();
 
-
-    ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
-    ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap);
-
     ito::RetVal getParameter(
         QSharedPointer<ito::Param> val,
         const ParamMapIterator& it,
@@ -90,34 +87,24 @@ protected:
         bool& ok,
         QStringList& pendingUpdate);
 
+    ito::RetVal retrieveData(const QStringList& channels = QStringList());
+
 public:
     friend class DummyMultiChannelGrabberInterface;
+
     const ito::RetVal showConfDialog(void);
 
     //!< indicates that this plugin has got a configuration dialog
     int hasConfDialog(void) { return 1; };
 
 private:
-    bool m_isgrabbing;
-    int64 m_startOfLastAcquisition;
-    QTimer m_freerunTimer;
-    int m_imageType;
-
-    enum dummyImageType
-    {
-        imgTypeNoise,
-        imgTypeGaussianSpot,
-        imgTypeGaussianSpotArray,
-    };
-
-    // fills a rgba32 dataObject with a color image
-    void fillColorImage(ito::DataObject& img, const cv::Point2f& centerPixel, const float radius, bool hasAlpha) const;
+    CameraEmulator m_camEmulator;
 
 signals:
 
 public slots:
 
-    ito::RetVal init(QVector<ito::ParamBase>* paramsMand, QVector<ito::ParamBase>* paramsOpt, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal init(QVector<ito::ParamBase>* paramsMand, QVector<ito::ParamBase>* paramsOpt, ItomSharedSemaphore* waitCond = nullptr);
     ito::RetVal close(ItomSharedSemaphore* waitCond);
 
     ito::RetVal startDevice(ItomSharedSemaphore* waitCond);
@@ -127,5 +114,4 @@ public slots:
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
-    ito::RetVal generateImageData();
 };

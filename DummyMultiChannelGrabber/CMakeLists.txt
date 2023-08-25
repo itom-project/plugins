@@ -30,9 +30,6 @@ itom_find_package_qt(ON Core Widgets LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 
-
-
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -42,7 +39,8 @@ include_directories(
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMultiChannelGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMultiChannelGrabber.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/DummyMultiChannelGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dummyMultiChannelGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cameraEmulator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
@@ -52,10 +50,11 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMultiChannelGrabber.ui
 )
 
-set(PLUGIN_SOURCES 
+set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMultiChannelGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMultiChannelGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/DummyMultiChannelGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dummyMultiChannelGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cameraEmulator.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -89,6 +88,6 @@ set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 
 itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+
 itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
