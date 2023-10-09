@@ -30,34 +30,6 @@
 #include <qsharedpointer.h>
 #include <qtimer.h>
 
-//-------------------------------------------------------------------------------------
-class DummyMultiChannelGrabberInterface : public ito::AddInInterfaceBase
-{
-    Q_OBJECT
-        Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase")
-
-        /*!< this DummyMultiChannelGrabberInterface implements the
-        ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
-        Q_INTERFACES(ito::AddInInterfaceBase)
-
-        PLUGIN_ITOM_API
-
-public:
-    /*!< Constructor */
-    DummyMultiChannelGrabberInterface();
-
-    /*!< Destructor */
-    ~DummyMultiChannelGrabberInterface();
-
-    /*!< creates new instance of DummyMultiChannelGrabber and returns this instance */
-    ito::RetVal getAddInInst(ito::AddInBase** addInInst);
-
-private:
-
-    /*!< closes any specific instance of DummyMultiChannelGrabber, given by *addInInst */
-    ito::RetVal closeThisInst(ito::AddInBase** addInInst);
-
-};
 
 //-------------------------------------------------------------------------------------
 class DummyMultiChannelGrabber : public ito::AddInMultiChannelGrabber

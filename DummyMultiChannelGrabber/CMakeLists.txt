@@ -40,6 +40,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMultiChannelGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMultiChannelGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dummyMultiChannelGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dummyMultiChannelGrabberInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/cameraEmulator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
@@ -54,6 +55,7 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMultiChannelGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMultiChannelGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dummyMultiChannelGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dummyMultiChannelGrabberInterface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cameraEmulator.cpp
 )
 
