@@ -134,8 +134,8 @@ ito::RetVal DummyMultiChannelGrabber::init(
     ChannelContainerMap channels;
 
     // create the channel parameters, that are the same for all channels
-    ito::Param paramSizeX("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 4096, 1280, tr("sensor width of the channel").toLatin1().data());
-    ito::Param paramSizeY("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 4096, 1024, tr("sensor height of the channel").toLatin1().data());
+    ito::Param paramSizeX("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 4096, sensorWidth, tr("sensor width of the channel").toLatin1().data());
+    ito::Param paramSizeY("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 16, 4096, sensorHeight, tr("sensor height of the channel").toLatin1().data());
     int roi[] = { 0, 0, sensorWidth, sensorHeight };
     ito::Param paramRoi("roi", ito::ParamBase::IntArray, 4, roi, tr("current region of interest of the channel (x, y, width, height)").toLatin1().data());
 
@@ -275,7 +275,8 @@ ito::RetVal DummyMultiChannelGrabber::init(
 
     if (!retVal.containsError())
     {
-        retVal += checkData(); // check if image must be reallocated
+        // check if image must be reallocated
+        retVal += checkDataFromAllChannels();
 
         emit parametersChanged(m_params);
     }
