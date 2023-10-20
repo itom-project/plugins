@@ -71,7 +71,7 @@ template <typename _Tp> ito::RetVal gaussFunc(cv::RNG& rng, ito::DataObject &dOb
 
     float yRandOffset = rng.uniform(0.f, 20.f);
     float xRandOffset = rng.uniform(0.f, 20.f);
-    float aRandOfset = rng.uniform(0.f, 20.f);
+    float aRandOfset = rng.uniform(-amplitude * 0.1, amplitude * 0.1);
 
     float sigmaX = width * rng.uniform(0.09f, 0.11f);
     float sigmaY = height * rng.uniform(0.09f, 0.11f);
@@ -79,12 +79,12 @@ template <typename _Tp> ito::RetVal gaussFunc(cv::RNG& rng, ito::DataObject &dOb
     for (int y = 0; y < height; y++)
     {
         rowPtr = dObj.rowPtr<_Tp>(planeID, y);
-        yval = ((y - height / 2 + yRandOffset) * ((float)y - height / 2 + yRandOffset)) /
+        yval = (((float)y - height / 2 + yRandOffset) * ((float)y - height / 2 + yRandOffset)) /
             (2.0f * sigmaY * sigmaY);
 
         for (int x = 0; x < width; x++)
         {
-            xval = ((x - width / 2 + xRandOffset) * ((float)x - width / 2 + xRandOffset)) /
+            xval = (((float)x - width / 2 + xRandOffset) * ((float)x - width / 2 + xRandOffset)) /
                 (2.0f * sigmaX * sigmaX);
             rowPtr[x] = (float)(amplitude - aRandOfset) * exp(-(xval + yval));
         }
