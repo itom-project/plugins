@@ -24,19 +24,19 @@
 #define NEWPORTCONEXLDS_H
 
 #include "common/addInGrabber.h"
-#include "dialogConexLDS.h"
+#include "dialogNewportConexLDS.h"
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
- *\class    ConexLDSInterface
+ *\class    NewportConexLDSInterface
  *
- *\brief    Interface-Class for ConexLDS-Class
+ *\brief    Interface-Class for NewportConexLDS-Class
  *
- *    \sa    AddInDataIO, ConexLDS
+ *    \sa    AddInDataIO, NewportConexLDS
  *
  */
-class ConexLDSInterface : public ito::AddInInterfaceBase
+class NewportConexLDSInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase")
@@ -44,8 +44,8 @@ class ConexLDSInterface : public ito::AddInInterfaceBase
     PLUGIN_ITOM_API
 
 public:
-    ConexLDSInterface();
-    ~ConexLDSInterface();
+    NewportConexLDSInterface();
+    ~NewportConexLDSInterface();
     ito::RetVal getAddInInst(ito::AddInBase** addInInst);
 
 private:
@@ -55,24 +55,24 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
- *\class    ConexLDS
+ *\class    NewportConexLDS
 
  */
-class ConexLDS : public ito::AddInGrabber
+class NewportConexLDS : public ito::AddInGrabber
 {
     Q_OBJECT
 
 protected:
     //! Destructor
-    ~ConexLDS();
+    ~NewportConexLDS();
     //! Constructor
-    ConexLDS();
+    NewportConexLDS();
 
     ito::RetVal retrieveData(
         ito::DataObject* externalDataObject = NULL); /*!< Wait for acquired picture */
 
 public:
-    friend class ConexLDSInterface;
+    friend class NewportConexLDSInterface;
     const ito::RetVal showConfDialog(void);
     int hasConfDialog(void)
     {

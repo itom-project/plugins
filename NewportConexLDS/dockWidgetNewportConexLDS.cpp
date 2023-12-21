@@ -20,17 +20,17 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dockWidgetConexLDS.h"
+#include "dockWidgetNewportConexLDS.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetConexLDS::DockWidgetConexLDS(ito::AddInDataIO* grabber) :
+DockWidgetNewportConexLDS::DockWidgetNewportConexLDS(ito::AddInDataIO* grabber) :
     AbstractAddInDockWidget(grabber), m_inEditing(false), m_firstRun(true)
 {
     ui.setupUi(this);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetConexLDS::parametersChanged(QMap<QString, ito::Param> params)
+void DockWidgetNewportConexLDS::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
@@ -52,7 +52,7 @@ void DockWidgetConexLDS::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// void DockWidgetConexLDS::on_contrast_valueChanged(int i)
+// void DockWidgetNewportConexLDS::on_contrast_valueChanged(int i)
 // {
 // if (!m_inEditing)
 // {
@@ -64,7 +64,7 @@ void DockWidgetConexLDS::parametersChanged(QMap<QString, ito::Param> params)
 // }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetConexLDS::identifierChanged(const QString& identifier)
+void DockWidgetNewportConexLDS::identifierChanged(const QString& identifier)
 {
     ui.lblIdentifier->setText(identifier);
 }

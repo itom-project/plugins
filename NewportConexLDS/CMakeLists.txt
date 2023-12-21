@@ -97,7 +97,5 @@ if(NEWPORT_CONEX_LDS_DIRECTORY)
     # the itom build directory, use the following macro:
     set(BINARY_FILES "${NEWPORT_CONEX_LDS_DIRECTORY}/Bin/64-bit/Newport.XPS.CommandInterface.dll")
 
-    message(STATUS "BINARY FILES: ${BINARY_FILES}")
-
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
 endif(NEWPORT_CONEX_LDS_DIRECTORY)

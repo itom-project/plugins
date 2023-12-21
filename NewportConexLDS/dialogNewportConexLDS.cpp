@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dialogConexLDS.h"
+#include "dialogNewportConexLDS.h"
 
 #include "common/addInInterface.h"
 
@@ -29,7 +29,7 @@
 #include <qvector.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogConexLDS::DialogConexLDS(ito::AddInBase* grabber) :
+DialogNewportConexLDS::DialogNewportConexLDS(ito::AddInBase* grabber) :
     AbstractAddInConfigDialog(grabber), m_firstRun(true)
 {
     ui.setupUi(this);
@@ -41,7 +41,7 @@ DialogConexLDS::DialogConexLDS(ito::AddInBase* grabber) :
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogConexLDS::parametersChanged(QMap<QString, ito::Param> params)
+void DialogNewportConexLDS::parametersChanged(QMap<QString, ito::Param> params)
 {
     // save the currently set parameters to m_currentParameters
     m_currentParameters = params;
@@ -64,7 +64,7 @@ void DialogConexLDS::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogConexLDS::applyParameters()
+ito::RetVal DialogNewportConexLDS::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase>> values;
@@ -83,7 +83,7 @@ ito::RetVal DialogConexLDS::applyParameters()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogConexLDS::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogNewportConexLDS::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -104,7 +104,7 @@ void DialogConexLDS::on_buttonBox_clicked(QAbstractButton* btn)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogConexLDS::enableDialog(bool enabled)
+void DialogNewportConexLDS::enableDialog(bool enabled)
 {
     // e.g.
     ui.group1->setEnabled(enabled);

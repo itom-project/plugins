@@ -30,18 +30,18 @@
 #include <qstring.h>
 #include <qwidget.h>
 
-#include "ui_dockWidgetConexLDS.h"
+#include "ui_dockWidgetNewportConexLDS.h"
 
-class DockWidgetConexLDS : public ito::AbstractAddInDockWidget
+class DockWidgetNewportConexLDS : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
 public:
-    DockWidgetConexLDS(ito::AddInDataIO* grabber);
-    ~DockWidgetConexLDS(){};
+    DockWidgetNewportConexLDS(ito::AddInDataIO* grabber);
+    ~DockWidgetNewportConexLDS(){};
 
 private:
-    Ui::DockWidgetConexLDS ui;
+    Ui::DockWidgetNewportConexLDS ui;
     bool m_inEditing;
     bool m_firstRun;
 

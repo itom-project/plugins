@@ -12,7 +12,7 @@
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 
-#include "ui_dialogConexLDS.h"
+#include "ui_dialogNewportConexLDS.h"
 
 #include <qabstractbutton.h>
 #include <qmap.h>
@@ -22,13 +22,13 @@ namespace ito {
 class AddInBase; // forward declaration
 }
 
-class DialogConexLDS : public ito::AbstractAddInConfigDialog
+class DialogNewportConexLDS : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
 public:
-    DialogConexLDS(ito::AddInBase* grabber);
-    ~DialogConexLDS(){};
+    DialogNewportConexLDS(ito::AddInBase* grabber);
+    ~DialogNewportConexLDS(){};
 
     ito::RetVal applyParameters();
 
@@ -36,7 +36,7 @@ private:
     void enableDialog(bool enabled);
     bool m_firstRun;
 
-    Ui::DialogConexLDS ui;
+    Ui::DialogNewportConexLDS ui;
 
 public slots:
     void parametersChanged(QMap<QString, ito::Param> params);
