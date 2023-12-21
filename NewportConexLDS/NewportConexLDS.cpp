@@ -77,15 +77,14 @@ ConexLDSInterface::~ConexLDSInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ConexLDSInterface::getAddInInst(ito::AddInBase** addInInst)
 {
-    NEW_PLUGININSTANCE(NewPortConexLDS) // the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(ConexLDS) // the argument of the macro is the classname of the plugin
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ConexLDSInterface::closeThisInst(ito::AddInBase** addInInst)
 {
-    REMOVE_PLUGININSTANCE(
-        NewPortConexLDS) // the argument of the macro is the classname of the plugin
+    REMOVE_PLUGININSTANCE(ConexLDS) // the argument of the macro is the classname of the plugin
     return ito::retOk;
 }
 
@@ -104,7 +103,7 @@ Q_EXPORT_PLUGIN2(
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
    remove entries from m_params in this constructor or later in the init method
 */
-NewPortConexLDS::NewPortConexLDS() : AddInGrabber(), m_isgrabbing(false)
+ConexLDS::ConexLDS() : AddInGrabber(), m_isgrabbing(false)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyGrabber", NULL);
@@ -182,7 +181,7 @@ NewPortConexLDS::NewPortConexLDS() : AddInGrabber(), m_isgrabbing(false)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-NewPortConexLDS::~NewPortConexLDS()
+ConexLDS::~ConexLDS()
 {
 }
 
@@ -191,7 +190,7 @@ NewPortConexLDS::~NewPortConexLDS()
 /*!
     \sa close
 */
-ito::RetVal NewPortConexLDS::init(
+ito::RetVal ConexLDS::init(
     QVector<ito::ParamBase>* paramsMand,
     QVector<ito::ParamBase>* paramsOpt,
     ItomSharedSemaphore* waitCond)
@@ -199,7 +198,7 @@ ito::RetVal NewPortConexLDS::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-
+    OpenInstrument("");
     // steps todo:
     //  - get all initialization parameters
     //  - try to detect your device
@@ -239,7 +238,7 @@ ito::RetVal NewPortConexLDS::init(
 /*!
     \sa init
 */
-ito::RetVal NewPortConexLDS::close(ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -258,7 +257,7 @@ ito::RetVal NewPortConexLDS::close(ItomSharedSemaphore* waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewPortConexLDS::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -296,8 +295,7 @@ ito::RetVal NewPortConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewPortConexLDS::setParam(
-    QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -361,7 +359,7 @@ ito::RetVal NewPortConexLDS::setParam(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewPortConexLDS::startDevice(ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::startDevice(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -382,7 +380,7 @@ ito::RetVal NewPortConexLDS::startDevice(ItomSharedSemaphore* waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewPortConexLDS::stopDevice(ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::stopDevice(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -410,7 +408,7 @@ ito::RetVal NewPortConexLDS::stopDevice(ItomSharedSemaphore* waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewPortConexLDS::acquire(const int trigger, ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::acquire(const int trigger, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -455,7 +453,7 @@ ito::RetVal NewPortConexLDS::acquire(const int trigger, ItomSharedSemaphore* wai
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewPortConexLDS::retrieveData(ito::DataObject* externalDataObject)
+ito::RetVal ConexLDS::retrieveData(ito::DataObject* externalDataObject)
 {
     // todo: this is just a basic example for getting the buffered image to m_data or the externally
     // given data object enhance it and adjust it for your needs
@@ -550,7 +548,7 @@ ito::RetVal NewPortConexLDS::retrieveData(ito::DataObject* externalDataObject)
 //    fit to the given size restrictions
 //
 // if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal NewPortConexLDS::checkData(ito::DataObject *externalDataObject)
+/*ito::RetVal ConexLDS::checkData(ito::DataObject *externalDataObject)
 {
     return ito::retOk;
 }*/
@@ -573,7 +571,7 @@ ito::RetVal NewPortConexLDS::retrieveData(ito::DataObject* externalDataObject)
 
     \sa retrieveImage, copyVal
 */
-ito::RetVal NewPortConexLDS::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -622,7 +620,7 @@ ito::RetVal NewPortConexLDS::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
 
     \sa retrieveImage, getVal
 */
-ito::RetVal NewPortConexLDS::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond)
+ito::RetVal ConexLDS::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -667,7 +665,7 @@ ito::RetVal NewPortConexLDS::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond
    parametersChanged(m_params) in order to send the current status of all plugin parameters to the
    dock widget.
 */
-void NewPortConexLDS::dockWidgetVisibilityChanged(bool visible)
+void ConexLDS::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
@@ -717,7 +715,7 @@ void NewPortConexLDS::dockWidgetVisibilityChanged(bool visible)
 
     \sa hasConfDialog
 */
-const ito::RetVal NewPortConexLDS::showConfDialog(void)
+const ito::RetVal ConexLDS::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogConexLDS(this));
 }

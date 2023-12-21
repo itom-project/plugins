@@ -31,9 +31,9 @@
 /**
  *\class    ConexLDSInterface
  *
- *\brief    Interface-Class for NewPortConexLDS-Class
+ *\brief    Interface-Class for ConexLDS-Class
  *
- *    \sa    AddInDataIO, NewPortConexLDS
+ *    \sa    AddInDataIO, ConexLDS
  *
  */
 class ConexLDSInterface : public ito::AddInInterfaceBase
@@ -55,18 +55,18 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
- *\class    NewPortConexLDS
+ *\class    ConexLDS
 
  */
-class NewPortConexLDS : public ito::AddInGrabber
+class ConexLDS : public ito::AddInGrabber
 {
     Q_OBJECT
 
 protected:
     //! Destructor
-    ~NewPortConexLDS();
+    ~ConexLDS();
     //! Constructor
-    NewPortConexLDS();
+    ConexLDS();
 
     ito::RetVal retrieveData(
         ito::DataObject* externalDataObject = NULL); /*!< Wait for acquired picture */
