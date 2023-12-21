@@ -84,6 +84,7 @@ public:
 
 private:
     bool m_isgrabbing; /*!< Check if acquire was executed */
+    HINSTANCE m_commandInterface; // instance of Newport Conex LDS command interface
 
 
 public slots:

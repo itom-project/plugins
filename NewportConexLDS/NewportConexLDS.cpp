@@ -106,7 +106,8 @@ Q_EXPORT_PLUGIN2(
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
    remove entries from m_params in this constructor or later in the init method
 */
-NewportConexLDS::NewportConexLDS() : AddInGrabber(), m_isgrabbing(false)
+NewportConexLDS::NewportConexLDS() :
+    AddInGrabber(), m_isgrabbing(false), m_commandInterface(nullptr)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", NULL);
@@ -201,8 +202,13 @@ ito::RetVal NewportConexLDS::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    HINSTANCE hDLL = LoadLibraryA("Newport.XPS.CommandInterface.dll");
+    m_commandInterface = LoadLibraryA("Newport.XPS.CommandInterface.dll");
 
+    if (m_commandInterface == NULL)
+    {
+        retValue += ito::RetVal(
+            ito::retError, 0, tr("Cannot load Newport CommandInterface dll.").toLatin1().data());
+    }
 
     if (!retValue.containsError())
     {
@@ -234,9 +240,11 @@ ito::RetVal NewportConexLDS::close(ItomSharedSemaphore* waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    // todo:
-    //  - disconnect the device if not yet done
-    //  - this funtion is considered to be the "inverse" of init.
+    if (m_commandInterface)
+    {
+        FreeLibrary(m_commandInterface);
+        m_commandInterface = nullptr;
+    }
 
     if (waitCond)
     {
