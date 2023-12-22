@@ -202,13 +202,7 @@ ito::RetVal NewportConexLDS::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    m_commandInterface = LoadLibraryA("Newport.XPS.CommandInterface.dll");
-
-    if (m_commandInterface == NULL)
-    {
-        retValue += ito::RetVal(
-            ito::retError, 0, tr("Cannot load Newport CommandInterface dll.").toLatin1().data());
-    }
+    loadLib(retValue);
 
     if (!retValue.containsError())
     {
@@ -653,6 +647,33 @@ ito::RetVal NewportConexLDS::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond
         waitCond->release();
     }
 
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::loadLib(ito::RetVal retValue)
+{
+    m_commandInterface = LoadLibraryA("Newport.XPS.CommandInterface.dll");
+
+    if (m_commandInterface == NULL)
+    {
+        retValue += ito::RetVal(
+            ito::retError, 0, tr("Cannot load Newport CommandInterface dll.").toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        typedef UINT(CALLBACK * LPFNDLLFUNC1)(DWORD, UINT);
+        typedef UINT(CALLBACK * OPENINSTRUMENT)(const char* device);
+
+        LPFNDLLFUNC1 lpfnDllFunc1;
+        OPENINSTRUMENT openInstrument;
+        DWORD dwParam1;
+        UINT uParam2, uReturnVal;
+
+        lpfnDllFunc1 = (LPFNDLLFUNC1)GetProcAddress(m_commandInterface, "CONEXLDS");
+        openInstrument = (OPENINSTRUMENT)GetProcAddress(m_commandInterface, "OpenInstrument");
+    }
     return retValue;
 }
 

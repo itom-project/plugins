@@ -116,6 +116,7 @@ public slots:
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
+    ito::RetVal loadLib(ito::RetVal retValue);
 };
 
 #endif // NEWPORTCONEXLDS_H
