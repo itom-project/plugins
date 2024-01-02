@@ -24,7 +24,6 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "NewportConexLDS.h"
-#include "Windows.h"
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
@@ -106,8 +105,7 @@ Q_EXPORT_PLUGIN2(
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
    remove entries from m_params in this constructor or later in the init method
 */
-NewportConexLDS::NewportConexLDS() :
-    AddInGrabber(), m_isgrabbing(false), m_commandInterface(nullptr)
+NewportConexLDS::NewportConexLDS() : AddInGrabber(), m_isgrabbing(false)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", NULL);
@@ -202,8 +200,6 @@ ito::RetVal NewportConexLDS::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    loadLib(retValue);
-
     if (!retValue.containsError())
     {
         retValue += checkData();
@@ -233,12 +229,6 @@ ito::RetVal NewportConexLDS::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-
-    if (m_commandInterface)
-    {
-        FreeLibrary(m_commandInterface);
-        m_commandInterface = nullptr;
-    }
 
     if (waitCond)
     {
@@ -647,33 +637,6 @@ ito::RetVal NewportConexLDS::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond
         waitCond->release();
     }
 
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::loadLib(ito::RetVal retValue)
-{
-    m_commandInterface = LoadLibraryA("Newport.XPS.CommandInterface.dll");
-
-    if (m_commandInterface == NULL)
-    {
-        retValue += ito::RetVal(
-            ito::retError, 0, tr("Cannot load Newport CommandInterface dll.").toLatin1().data());
-    }
-
-    if (!retValue.containsError())
-    {
-        typedef UINT(CALLBACK * LPFNDLLFUNC1)(DWORD, UINT);
-        typedef UINT(CALLBACK * OPENINSTRUMENT)(const char* device);
-
-        LPFNDLLFUNC1 lpfnDllFunc1;
-        OPENINSTRUMENT openInstrument;
-        DWORD dwParam1;
-        UINT uParam2, uReturnVal;
-
-        lpfnDllFunc1 = (LPFNDLLFUNC1)GetProcAddress(m_commandInterface, "CONEXLDS");
-        openInstrument = (OPENINSTRUMENT)GetProcAddress(m_commandInterface, "OpenInstrument");
-    }
     return retValue;
 }
 

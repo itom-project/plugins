@@ -84,7 +84,6 @@ public:
 
 private:
     bool m_isgrabbing; /*!< Check if acquire was executed */
-    HINSTANCE m_commandInterface; // instance of Newport Conex LDS command interface
 
 
 public slots:
@@ -116,7 +115,6 @@ public slots:
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
-    ito::RetVal loadLib(ito::RetVal retValue);
 };
 
 #endif // NEWPORTCONEXLDS_H
