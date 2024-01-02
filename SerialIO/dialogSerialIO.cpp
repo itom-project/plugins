@@ -610,12 +610,15 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
 
     qstr = ui.lineEditSend->text();
     ui.lineEditSend->setText("");
-    if (!m_historyList.filter(qstr).empty())
+    if (!qstr.isEmpty())
     {
-        m_historyList.removeAt(m_historyList.indexOf(qstr));
+        if (!m_historyList.filter(qstr).empty())
+        {
+            m_historyList.removeAt(m_historyList.indexOf(qstr));
+        }
+        m_historyList.append(qstr);
+        m_historyListPointer = m_historyList.count();
     }
-    m_historyList.append(qstr);
-    m_historyListPointer = m_historyList.count();
     qout = "> ";
 
     SerialIO* sio = (SerialIO*)m_psport;
