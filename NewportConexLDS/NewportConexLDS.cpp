@@ -31,18 +31,15 @@
 #include <qplugin.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qwaitcondition.h>
 
 #include "dockWidgetNewportConexLDS.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of Interface Class.
-/*!
-    \todo add necessary information about your plugin here.
-*/
 NewportConexLDSInterface::NewportConexLDSInterface()
 {
-    m_type = ito::typeDataIO | ito::typeADDA; // any grabber is a dataIO device AND its subtype
-                                              // grabber (bitmask -> therefore the OR-combination).
+    m_type = ito::typeDataIO | ito::typeRawIO; // any grabber is a dataIO device AND its subtype
+                                               // grabber (bitmask -> therefore the OR-combination).
     setObjectName("NewportConexLDS");
 
     m_description = QObject::tr("NewportConexLDS");
@@ -61,15 +58,16 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_license = QObject::tr("The plugin's license string");
     m_aboutThis = QObject::tr(GITVERSION);
 
-    // add mandatory and optional parameters for the initialization here.
-    // append them to m_initParamsMand or m_initParamsOpt.
+    ito::Param paramVal(
+        "serialIOInstance",
+        ito::ParamBase::HWRef | ito::ParamBase::In,
+        nullptr,
+        tr("An opened serial port.").toLatin1().data());
+    paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
+    m_initParamsMand.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Destructor of Interface Class.
-/*!
-
-*/
 NewportConexLDSInterface::~NewportConexLDSInterface()
 {
 }
@@ -90,86 +88,35 @@ ito::RetVal NewportConexLDSInterface::closeThisInst(ito::AddInBase** addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(
-    mygrabberinterface,
-    NewportConexLDSInterface) // the second parameter must correspond to the class-name
-                              // of the interface class, the first parameter is
-                              // arbitrary (usually the same with small letters only)
-#endif
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of plugin.
-/*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
-   remove entries from m_params in this constructor or later in the init method
-*/
-NewportConexLDS::NewportConexLDS() : AddInGrabber(), m_isgrabbing(false)
+NewportConexLDS::NewportConexLDS() :
+    AddInDataIO(), m_pSerialIO(nullptr), m_delayAfterSendCommandMS(100), m_requestTimeOutMS(5000)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
-        "x0",
-        ito::ParamBase::Int | ito::ParamBase::In,
-        0,
-        2048,
-        0,
-        tr("first pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param(
-        "y0",
-        ito::ParamBase::Int | ito::ParamBase::In,
-        0,
-        2048,
-        0,
-        tr("first pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param(
-        "x1",
-        ito::ParamBase::Int | ito::ParamBase::In,
-        0,
-        1279,
-        1279,
-        tr("last pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param(
-        "y1",
-        ito::ParamBase::Int | ito::ParamBase::In,
-        0,
-        1023,
-        1023,
-        tr("last pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param(
-        "sizex",
-        ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In,
-        1,
-        2048,
-        2048,
-        tr("width of ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param(
-        "sizey",
-        ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In,
-        1,
-        2048,
-        2048,
-        tr("height of ROI (y-direction)").toLatin1().data());
+        "deviceName",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Device name.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
-        "bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
+        "version",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Controller version.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param(
-        "integrationTime",
-        ito::ParamBase::Double | ito::ParamBase::In,
-        0.0,
-        1.0,
-        0.01,
-        tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
+        "requestTimeout",
+        ito::ParamBase::Int,
+        m_requestTimeOutMS,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 5000, "SerialIO parameter"),
+        tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // the following lines create and register the plugin's dock widget. Delete these lines if the
@@ -188,10 +135,6 @@ NewportConexLDS::~NewportConexLDS()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! initialization of plugin
-/*!
-    \sa close
-*/
 ito::RetVal NewportConexLDS::init(
     QVector<ito::ParamBase>* paramsMand,
     QVector<ito::ParamBase>* paramsOpt,
@@ -200,10 +143,56 @@ ito::RetVal NewportConexLDS::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
+    if (reinterpret_cast<ito::AddInBase*>((*paramsMand)[0].getVal<void*>())
+            ->getBasePlugin()
+            ->getType() &
+        (ito::typeDataIO | ito::typeRawIO))
+    {
+        m_pSerialIO = (ito::AddInDataIO*)(*paramsMand)[0].getVal<void*>();
+    }
+    else
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            1,
+            tr("Input parameter is not a dataIO instance of ther SerialIO Plugin!")
+                .toLatin1()
+                .data());
+    }
+
     if (!retValue.containsError())
     {
-        retValue += checkData();
+        retValue += m_pSerialIO->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 921600)),
+            nullptr);
+        retValue += m_pSerialIO->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)),
+            nullptr);
+        retValue += m_pSerialIO->setParam(
+            QSharedPointer<ito::ParamBase>(
+                new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)),
+            nullptr);
+        retValue += m_pSerialIO->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)),
+            nullptr);
+        retValue += m_pSerialIO->setParam(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)),
+            nullptr);
+        retValue += m_pSerialIO->setParam(
+            QSharedPointer<ito::ParamBase>(
+                new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")),
+            nullptr);
+
+        QSharedPointer<QVector<ito::ParamBase>> _dummy;
+        m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
+        m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
     }
+
+    if (!retValue.containsError())
+    {
+        retValue += getVersion();
+    }
+
 
     if (!retValue.containsError())
     {
@@ -343,312 +332,6 @@ ito::RetVal NewportConexLDS::setParam(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::startDevice(ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-
-    incGrabberStarted(); // increment a counter to see how many times startDevice has been called
-
-    // todo:
-    //  if this function has been called for the first time (grabberStartedCount() == 1),
-    //  start the camera, allocate necessary buffers or do other work that is necessary
-    //  to prepare the camera for image acquisitions.
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::stopDevice(ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-
-    decGrabberStarted(); // decrements the counter (see startDevice)
-
-    if (grabberStartedCount() < 0)
-    {
-        retValue += ito::RetVal(
-            ito::retWarning, 0, tr("The grabber has already been stopped.").toLatin1().data());
-        setGrabberStarted(0);
-    }
-
-    // todo:
-    //  if the counter (obtained by grabberStartedCount()) drops to zero again, stop the camera,
-    //  free all allocated image buffers of the camera... (it is the opposite from all things that
-    //  have been started, allocated... in startDevice)
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::acquire(const int trigger, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    bool RetCode = false;
-
-    if (grabberStartedCount() <= 0)
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Tried to acquire an image without having started the device.").toLatin1().data());
-    }
-    else
-    {
-        m_isgrabbing = true;
-    }
-
-    // todo:
-    //  trigger the camera for starting the acquisition of a new image (software trigger or make
-    //  hardware trigger ready (depending on trigger (0: software trigger, default))
-
-    // now the wait condition is released, such that itom (caller) stops waiting and continuous with
-    // its own execution.
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    // todo:
-    //  it is possible now, to wait here until the acquired image is ready
-    //  if you want to do this here, wait for the finished image, get it and save it
-    //  to any accessible buffer, for instance the m_data dataObject that is finally delivered
-    //  via getVal or copyVal.
-    //
-    //  you can also implement this waiting and obtaining procedure in retrieveImage.
-    //  If you do it here, the camera thread is blocked until the image is obtained, such that calls
-    //  to getParam, setParam, stopDevice... are not executed during the waiting operation. They are
-    //  queued and executed once the image is acquired and transmitted to the plugin.
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::retrieveData(ito::DataObject* externalDataObject)
-{
-    // todo: this is just a basic example for getting the buffered image to m_data or the externally
-    // given data object enhance it and adjust it for your needs
-    ito::RetVal retValue(ito::retOk);
-
-    ito::DataObject* dataObj = externalDataObject ? externalDataObject : &m_data;
-
-    bool hasListeners = (m_autoGrabbingListeners.size() > 0);
-    bool copyExternal = (externalDataObject != NULL);
-
-    const int bufferWidth = m_params["sizex"].getVal<int>();
-    const int bufferHeight = m_params["sizey"].getVal<int>();
-
-
-    if (m_isgrabbing == false)
-    {
-        retValue += ito::RetVal(
-            ito::retWarning,
-            0,
-            tr("Tried to get picture without triggering exposure").toLatin1().data());
-    }
-    else
-    {
-        // step 1: create m_data (if not yet available)
-        if (externalDataObject && hasListeners)
-        {
-            retValue += checkData(NULL); // update m_data
-            retValue += checkData(externalDataObject); // update external object
-        }
-        else
-        {
-            retValue += checkData(externalDataObject); // update external object or m_data
-        }
-
-        if (!retValue.containsError())
-        {
-            if (m_data.getType() == ito::tUInt8)
-            {
-                if (copyExternal)
-                {
-                    retValue += externalDataObject->copyFromData2D<ito::uint8>(
-                        (ito::uint8*)bufferPtr, bufferWidth, bufferHeight);
-                }
-                if (!copyExternal || hasListeners)
-                {
-                    retValue += m_data.copyFromData2D<ito::uint8>(
-                        (ito::uint8*)bufferPtr, bufferWidth, bufferHeight);
-                }
-            }
-            else if (m_data.getType() == ito::tUInt16)
-            {
-                if (copyExternal)
-                {
-                    retValue += externalDataObject->copyFromData2D<ito::uint16>(
-                        (ito::uint16*)bufferPtr, bufferWidth, bufferHeight);
-                }
-                if (!copyExternal || hasListeners)
-                {
-                    retValue += m_data.copyFromData2D<ito::uint16>(
-                        (ito::uint16*)bufferPtr, bufferWidth, bufferHeight);
-                }
-            }
-            else
-            {
-                retValue += ito::RetVal(
-                    ito::retError,
-                    1002,
-                    tr("copying image buffer not possible since unsupported type.")
-                        .toLatin1()
-                        .data());
-            }
-        }
-
-        m_isgrabbing = false;
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// usually it is not necessary to implement the checkData method, since the default implementation
-// from AddInGrabber is already sufficient.
-//
-// What is does:
-// - it obtains the image size from sizex, sizey, bpp
-// - it checks whether the rows, cols and type of m_data are unequal to the requested dimensions and
-// type
-// - if so, m_data is reallocated, else nothing is done
-// - if an external data object is given (from copyVal), this object is checked in place of m_data
-// - the external data object is only reallocated if it is empty, else its size or its region of
-// interest must exactly
-//    fit to the given size restrictions
-//
-// if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal NewportConexLDS::checkData(ito::DataObject *externalDataObject)
-{
-    return ito::retOk;
-}*/
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as reference.
-/*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must
-   fit to the data structure of the DataObject.
-
-    This method returns a reference to the internal dataObject m_data of the camera where the
-   currently acquired image data is copied to (either in the acquire method or in retrieve data).
-   Please remember, that the reference may directly change if a new image is acquired.
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to
-   ito::DataObject*). After the call, the dataObject is a reference to the internal m_data
-   dataObject of the camera. \param [in] waitCond is the semaphore (default: NULL), which is
-   released if this method has been terminated \return retOk if everything is ok, retError is camera
-   has not been started or no image has been acquired by the method acquire.
-
-    \sa retrieveImage, copyVal
-*/
-ito::RetVal NewportConexLDS::getVal(void* vpdObj, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
-
-    // call retrieveData without argument. Retrieve data should then put the currently acquired
-    // image into the dataObject m_data of the camera.
-    retValue += retrieveData();
-
-    if (!retValue.containsError())
-    {
-        // send newly acquired image to possibly connected live images
-        sendDataToListeners(
-            0); // don't wait for live data, since user should get the data as fast as possible.
-
-        if (dObj)
-        {
-            (*dObj) = m_data; // copy reference to externally given object
-        }
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as a deep copy.
-/*!
-    This method copies the recently grabbed camera frame to the given DataObject.
-
-    The given dataObject must either have an empty size (then it is resized to the size and type of
-   the camera image) or its size or adjusted region of interest must exactly fit to the size of the
-   camera. Then, the acquired image is copied inside of the given region of interest (copy into a
-   subpart of an image stack is possible then)
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to
-   ito::DataObject*) where the acquired image is deep copied to. \param [in] waitCond is the
-   semaphore (default: NULL), which is released if this method has been terminated \return retOk if
-   everything is ok, retError is camera has not been started or no image has been acquired by the
-   method acquire.
-
-    \sa retrieveImage, getVal
-*/
-ito::RetVal NewportConexLDS::copyVal(void* vpdObj, ItomSharedSemaphore* waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
-
-    if (!dObj)
-    {
-        retValue += ito::RetVal(
-            ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
-    }
-
-    if (!retValue.containsError())
-    {
-        // this method calls retrieveData with the passed dataObject as argument such that
-        // retrieveData is able to copy the image obtained by the camera directly into the given,
-        // external dataObject
-        retValue += retrieveData(dObj); // checkData is executed inside of retrieveData
-    }
-
-    if (!retValue.containsError())
-    {
-        // send newly acquired image to possibly connected live images
-        sendDataToListeners(
-            0); // don't wait for live data, since user should get the data as fast as possible.
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot called if the dock widget of the plugin becomes (in)visible
-/*!
-    Overwrite this method if the plugin has a dock widget. If so, you can connect the
-   parametersChanged signal of the plugin with the dock widget once its becomes visible such that no
-   resources are used if the dock widget is not visible. Right after a re-connection emit
-   parametersChanged(m_params) in order to send the current status of all plugin parameters to the
-   dock widget.
-*/
 void NewportConexLDS::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -676,30 +359,175 @@ void NewportConexLDS::dockWidgetVisibilityChanged(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to show the configuration dialog
-/*!
-    This method is called from the main thread from itom and should show the configuration dialog of
-   the plugin. If the instance of the configuration dialog has been created, its slot
-   'parametersChanged' is connected to the signal 'parametersChanged' of the plugin. By invoking the
-   slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately
-   emitted with m_params as argument. Therefore the configuration dialog obtains the current set of
-   parameters and can be adjusted to its values.
-
-    The configuration dialog should emit reject() or accept() depending if the user wanted to close
-   the dialog using the ok or cancel button. If ok has been clicked (accept()), this method calls
-   applyParameters of the configuration dialog in order to force the dialog to send all changed
-   parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself
-   must call applyParameters.
-
-    If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function
-   apiShowConfigurationDialog that does all the things mentioned in this description.
-
-    Remember that you need to implement hasConfDialog in your plugin and return 1 in order to
-   signalize itom that the plugin has a configuration dialog.
-
-    \sa hasConfDialog
-*/
 const ito::RetVal NewportConexLDS::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogNewportConexLDS(this));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::sendCommand(const QByteArray& command)
+{
+    ito::RetVal retVal;
+    retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
+    if (m_delayAfterSendCommandMS > 0)
+    {
+        QMutex mutex;
+        mutex.lock();
+        QWaitCondition waitCondition;
+        waitCondition.wait(&mutex, m_delayAfterSendCommandMS);
+        mutex.unlock();
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::readString(QByteArray& result, int& len)
+{
+    ito::RetVal retValue = ito::retOk;
+    QElapsedTimer timer;
+
+    bool done = false;
+    int curFrom = 0;
+    int pos = 0;
+
+    int buflen = 100;
+    QSharedPointer<int> curBufLen(new int);
+    QSharedPointer<char> curBuf(new char[buflen]);
+    result = "";
+
+    QByteArray endline;
+
+    QSharedPointer<ito::Param> param(new ito::Param("endline"));
+    retValue += m_pSerialIO->getParam(param, nullptr);
+
+    if (param->getType() == (ito::ParamBase::String & ito::paramTypeMask))
+    {
+        char* temp = param->getVal<char*>(); // borrowed reference
+        int len = temp[0] == 0 ? 0 : (temp[1] == 0 ? 1 : (temp[2] == 0 ? 2 : 3));
+        endline = QByteArray::fromRawData(temp, len);
+    }
+    else
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("could not read endline parameter from serial port").toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        len = 0;
+        timer.start();
+        _sleep(m_delayAfterSendCommandMS);
+
+        while (!done && !retValue.containsError())
+        {
+            *curBufLen = buflen;
+            retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
+
+
+            if (!retValue.containsError())
+            {
+                result += QByteArray(curBuf.data(), *curBufLen);
+                pos = result.indexOf(endline, curFrom);
+                curFrom = qMax(0, result.length() - 3);
+
+                if (pos >= 0) // found
+                {
+                    done = true;
+                    result = result.left(pos);
+                }
+            }
+
+            if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    m_delayAfterSendCommandMS,
+                    tr("timeout during read string.").toLatin1().data());
+            }
+        }
+
+        len = result.length();
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::sendQuestionWithAnswerString(
+    const QByteArray& questionCommand, QByteArray& answer)
+{
+    int readSigns;
+    ito::RetVal retValue = sendCommand(questionCommand);
+    retValue += readString(answer, readSigns);
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::sendQuestionWithAnswerDouble(
+    const QByteArray& questionCommand, double& answer)
+{
+    int readSigns;
+    QByteArray _answer;
+    bool ok;
+    ito::RetVal retValue = sendCommand(questionCommand);
+    retValue += readString(_answer, readSigns);
+    _answer = _answer.replace(",", ".");
+    answer = _answer.toDouble(&ok);
+
+    if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
+                .arg(_answer.constData())
+                .toLatin1()
+                .data());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::sendQuestionWithAnswerInteger(
+    const QByteArray& questionCommand, int& answer)
+{
+    int readSigns;
+    QByteArray _answer;
+    bool ok;
+    ito::RetVal retValue = sendCommand(questionCommand);
+    retValue += readString(_answer, readSigns);
+
+    if (_answer.contains("?"))
+    {
+        _answer.replace("?", "");
+    }
+    answer = _answer.toInt(&ok);
+
+    if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerInteger, converting %1 to double value.")
+                .arg(_answer.constData())
+                .toLatin1()
+                .data());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getVersion()
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray answer;
+    retVal += sendQuestionWithAnswerString("1VE", answer);
+    if (!retVal.containsError())
+    {
+        m_params["version"].setVal<char*>(answer.data());
+    }
+
+    return retVal;
 }
