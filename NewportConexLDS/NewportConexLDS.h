@@ -87,6 +87,7 @@ private:
     ito::RetVal sendQuestionWithAnswerString(const QByteArray& questionCommand, QByteArray& answer);
     ito::RetVal sendQuestionWithAnswerDouble(const QByteArray& questionCommand, double& answer);
     ito::RetVal sendQuestionWithAnswerInteger(const QByteArray& questionCommand, int& answer);
+    void filterCommand(const QByteArray& questionCommand, QByteArray& answer);
 
     // Conex functions
     ito::RetVal getVersion();

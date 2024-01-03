@@ -29,6 +29,7 @@
 
 #include <qmessagebox.h>
 #include <qplugin.h>
+#include <qregularexpression.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qwaitcondition.h>
@@ -461,6 +462,7 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerString(
     int readSigns;
     ito::RetVal retValue = sendCommand(questionCommand);
     retValue += readString(answer, readSigns);
+    filterCommand(questionCommand, answer);
     return retValue;
 }
 
@@ -519,6 +521,25 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerInteger(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void NewportConexLDS::filterCommand(const QByteArray& questionCommand, QByteArray& answer)
+{
+    QRegularExpression regex("^(" + questionCommand + ")\\s(.+)$");
+    QRegularExpressionMatch match = regex.match(answer);
+
+    if (match.hasMatch())
+    {
+        int index = answer.indexOf(match.captured(0).toUtf8().data());
+
+        if (index != -1)
+        {
+            answer.remove(index, questionCommand.length());
+        }
+        answer = answer.trimmed();
+    }
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::getVersion()
 {
     ito::RetVal retVal = ito::retOk;
@@ -526,7 +547,14 @@ ito::RetVal NewportConexLDS::getVersion()
     retVal += sendQuestionWithAnswerString("1VE", answer);
     if (!retVal.containsError())
     {
-        m_params["version"].setVal<char*>(answer.data());
+        QRegularExpression regex("([A-Z\\-]+)\\s([0-9.]+)");
+        QRegularExpressionMatch match = regex.match(answer);
+
+        if (match.hasMatch())
+        {
+            m_params["deviceName"].setVal<char*>(match.captured(1).toUtf8().data());
+            m_params["version"].setVal<char*>(match.captured(2).toUtf8().data());
+        }
     }
 
     return retVal;
