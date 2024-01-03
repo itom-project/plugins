@@ -617,12 +617,18 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
 
     qstr = ui.lineEditSend->text();
     ui.lineEditSend->setText("");
+
     if (!qstr.isEmpty())
     {
-        if (!m_historyList.filter(qstr).empty())
+        for (int i = 0; i < m_historyList.count(); ++i)
         {
-            m_historyList.removeAt(m_historyList.indexOf(qstr));
+            if (qstr.compare(m_historyList.at(i), Qt::CaseInsensitive) == 0)
+            {
+                m_historyList.removeOne(m_historyList.at(i));
+                break;
+            }
         }
+
         m_historyList.append(qstr);
         m_historyListPointer = m_historyList.count();
     }
