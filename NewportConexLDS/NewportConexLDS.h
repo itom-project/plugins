@@ -80,6 +80,7 @@ private:
     ito::AddInDataIO* m_pSerialIO;
     int m_delayAfterSendCommandMS;
     int m_requestTimeOutMS;
+    int m_controllerAddress = 1;
 
     // SeralIO functions
     ito::RetVal sendCommand(const QByteArray& command);

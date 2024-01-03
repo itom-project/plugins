@@ -116,7 +116,15 @@ NewportConexLDS::NewportConexLDS() :
         "requestTimeout",
         ito::ParamBase::Int,
         m_requestTimeOutMS,
-        new ito::IntMeta(0, std::numeric_limits<int>::max(), 5000, "SerialIO parameter"),
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "SerialIO parameter"),
+        tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "requestTimeout",
+        ito::ParamBase::Int,
+        m_requestTimeOutMS,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "SerialIO parameter"),
         tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -459,8 +467,9 @@ ito::RetVal NewportConexLDS::readString(QByteArray& result, int& len)
 ito::RetVal NewportConexLDS::sendQuestionWithAnswerString(
     const QByteArray& questionCommand, QByteArray& answer)
 {
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
     int readSigns;
-    ito::RetVal retValue = sendCommand(questionCommand);
+    ito::RetVal retValue = sendCommand(questionCommand_);
     retValue += readString(answer, readSigns);
     filterCommand(questionCommand, answer);
     return retValue;
@@ -470,10 +479,11 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerString(
 ito::RetVal NewportConexLDS::sendQuestionWithAnswerDouble(
     const QByteArray& questionCommand, double& answer)
 {
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
     int readSigns;
     QByteArray _answer;
     bool ok;
-    ito::RetVal retValue = sendCommand(questionCommand);
+    ito::RetVal retValue = sendCommand(questionCommand_);
     retValue += readString(_answer, readSigns);
     _answer = _answer.replace(",", ".");
     answer = _answer.toDouble(&ok);
@@ -495,10 +505,11 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerDouble(
 ito::RetVal NewportConexLDS::sendQuestionWithAnswerInteger(
     const QByteArray& questionCommand, int& answer)
 {
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
     int readSigns;
     QByteArray _answer;
     bool ok;
-    ito::RetVal retValue = sendCommand(questionCommand);
+    ito::RetVal retValue = sendCommand(questionCommand_);
     retValue += readString(_answer, readSigns);
 
     if (_answer.contains("?"))
@@ -544,7 +555,7 @@ ito::RetVal NewportConexLDS::getVersion()
 {
     ito::RetVal retVal = ito::retOk;
     QByteArray answer;
-    retVal += sendQuestionWithAnswerString("1VE", answer);
+    retVal += sendQuestionWithAnswerString("VE", answer);
     if (!retVal.containsError())
     {
         QRegularExpression regex("([A-Z\\-]+)\\s([0-9.]+)");
