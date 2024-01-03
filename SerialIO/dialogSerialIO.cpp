@@ -504,6 +504,7 @@ ito::RetVal dialogSerialIO::parseOutString(char* buf, int* length)
 
     buf1 = buf;
     buf2 = strstr(buf1, "$");
+
     if (ui.checkAsciiParsing->isChecked())
     {
         while (buf2 && ((buf2 - buf) < (len - 1)))
@@ -565,12 +566,18 @@ ito::RetVal dialogSerialIO::parseOutString(char* buf, int* length)
     }
 
     *length = outbuf - out + len - (buf1 - buf);
-    memcpy(outbuf, buf1, len - (buf1 - buf));
-    //    strncpy(outbuf, buf1, len - (buf1 - buf));  // copy remaining string
-    memcpy(buf, out, *length);
-    //    memcpy(buf, out, strlen(out));
-    buf[*length] = 0;
-    //    buf[strlen(out)] = 0;
+    // Check if buf is not empty before accessing its elements
+    if (*length > 0)
+    {
+        memcpy(outbuf, buf1, len - (buf1 - buf));
+        memcpy(buf, out, *length);
+        buf[*length] = 0;
+    }
+    else
+    {
+        // If buf is empty, set length to 0 and return without further processing
+        *length = 0;
+    }
     free(out);
 
     return ret;
