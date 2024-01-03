@@ -93,9 +93,19 @@ NewportConexLDS::NewportConexLDS() :
     AddInDataIO(), m_pSerialIO(nullptr), m_delayAfterSendCommandMS(100), m_requestTimeOutMS(5000)
 {
     ito::Param paramVal(
-        "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", NULL);
+        "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", nullptr);
     m_params.insert(paramVal.getName(), paramVal);
 
+    // SerialIO parameter
+    paramVal = ito::Param(
+        "requestTimeout",
+        ito::ParamBase::Int,
+        m_requestTimeOutMS,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "SerialIO parameter"),
+        tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    // device parameter
     paramVal = ito::Param(
         "deviceName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
@@ -113,19 +123,11 @@ NewportConexLDS::NewportConexLDS() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
-        "requestTimeout",
+        "laserPower",
         ito::ParamBase::Int,
-        m_requestTimeOutMS,
-        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "SerialIO parameter"),
-        tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "requestTimeout",
-        ito::ParamBase::Int,
-        m_requestTimeOutMS,
-        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "SerialIO parameter"),
-        tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
+        0,
+        new ito::IntMeta(0, 1, 1, "Device parameter"),
+        tr("Laser power (0==OFF, 1==ON).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // the following lines create and register the plugin's dock widget. Delete these lines if the
@@ -200,6 +202,11 @@ ito::RetVal NewportConexLDS::init(
     if (!retValue.containsError())
     {
         retValue += getVersion();
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += getLaserPowerState();
     }
 
 
@@ -512,10 +519,12 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerInteger(
     ito::RetVal retValue = sendCommand(questionCommand_);
     retValue += readString(_answer, readSigns);
 
-    if (_answer.contains("?"))
+    if (questionCommand_.contains("?"))
     {
-        _answer.replace("?", "");
+        questionCommand_.replace("?", "");
     }
+
+    filterCommand(questionCommand_, _answer);
     answer = _answer.toInt(&ok);
 
     if (!ok)
@@ -534,7 +543,7 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerInteger(
 //----------------------------------------------------------------------------------------------------------------------------------
 void NewportConexLDS::filterCommand(const QByteArray& questionCommand, QByteArray& answer)
 {
-    QRegularExpression regex("^(" + questionCommand + ")\\s(.+)$");
+    QRegularExpression regex("^(" + questionCommand + ")\\s*(.+)$");
     QRegularExpressionMatch match = regex.match(answer);
 
     if (match.hasMatch())
@@ -566,6 +575,20 @@ ito::RetVal NewportConexLDS::getVersion()
             m_params["deviceName"].setVal<char*>(match.captured(1).toUtf8().data());
             m_params["version"].setVal<char*>(match.captured(2).toUtf8().data());
         }
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getLaserPowerState()
+{
+    ito::RetVal retVal = ito::retOk;
+    int state;
+    retVal += sendQuestionWithAnswerInteger("LB?", state);
+    if (!retVal.containsError())
+    {
+        m_params["laserPower"].setVal<int>(state);
     }
 
     return retVal;

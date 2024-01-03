@@ -92,6 +92,7 @@ private:
 
     // Conex functions
     ito::RetVal getVersion();
+    ito::RetVal getLaserPowerState();
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
