@@ -136,6 +136,14 @@ NewportConexLDS::NewportConexLDS() :
         tr("Enable/Disable laser power (0==OFF, 1==ON).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "factoryCalibrationState",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Factory calibration information.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
     // the following lines create and register the plugin's dock widget. Delete these lines if the
     // plugin does not have a dock widget.
     DockWidgetNewportConexLDS* dw = new DockWidgetNewportConexLDS(this);
@@ -214,6 +222,16 @@ ito::RetVal NewportConexLDS::init(
         {
             m_params["deviceName"].setVal<char*>(version.toUtf8().data());
             m_params["version"].setVal<char*>(deviceName.toUtf8().data());
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        QString state;
+        retValue += getFactoryCalibrationState(state);
+        if (!retValue.containsError())
+        {
+            m_params["factoryCalibrationState"].setVal<char*>(state.toUtf8().data());
         }
     }
 
@@ -616,6 +634,31 @@ ito::RetVal NewportConexLDS::getLaserPowerState(int& state)
             ito::RetVal(ito::retError, 0, tr("Error during laser power request.").toUtf8().data());
     }
     return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getFactoryCalibrationState(QString& state)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray answer;
+    retVal += sendQuestionWithAnswerString("CD?", answer);
+    if (!retVal.containsError())
+    {
+        filterCommand(QString::number(m_controllerAddress).toUtf8() + "CD", answer);
+        state = answer;
+    }
+    else
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during factory calibration state request with answer: '%1'")
+                .arg(answer.constData())
+                .toUtf8()
+                .data());
+    }
+
+    return ito::RetVal();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

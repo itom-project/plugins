@@ -93,6 +93,9 @@ private:
     // Conex functions
     ito::RetVal getVersion(QString& version, QString& deviceName);
     ito::RetVal getLaserPowerState(int& state);
+    ito::RetVal getFactoryCalibrationState(QString& state);
+
+
     ito::RetVal setLaserPowerState(const int state);
 
 public slots:
