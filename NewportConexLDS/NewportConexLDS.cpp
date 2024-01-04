@@ -190,6 +190,15 @@ NewportConexLDS::NewportConexLDS() :
         tr("Calibration coefficients of x and y axis.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    //-------------------------------------------------
+    paramVal = ito::Param(
+        "range",
+        ito::ParamBase::Int,
+        2000,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Measurement"),
+        tr("Value range.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------------------------- EXEC functions
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -378,6 +387,15 @@ ito::RetVal NewportConexLDS::init(
         DELETE_AND_SET_NULL_ARRAY(calibration);
     }
 
+    if (!retValue.containsError())
+    {
+        int range;
+        retValue += getRange(range);
+        if (!retValue.containsError())
+        {
+            m_params["range"].setVal<int>(range);
+        }
+    }
 
     if (!retValue.containsError())
     {
@@ -512,6 +530,15 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
                 it->setVal<ito::float64*>(calibration, 2);
             }
             DELETE_AND_SET_NULL_ARRAY(calibration);
+        }
+        else if (key == "range")
+        {
+            int range;
+            retValue += getRange(range);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(range);
+            }
         }
         *val = it.value();
     }
@@ -998,6 +1025,19 @@ ito::RetVal NewportConexLDS::getCalibrationCoefficients(ito::float64* calibratio
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getRange(int& range)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendQuestionWithAnswerInteger("RG?", range);
+    if (retVal.containsError())
+    {
+        retVal +=
+            ito::RetVal(ito::retError, 0, tr("Error during range value request.").toUtf8().data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 {
     ito::RetVal retVal = ito::retOk;
@@ -1013,7 +1053,7 @@ ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::setGain(ito::float64* gain)
+ito::RetVal NewportConexLDS::setGain(const ito::float64* gain)
 {
     ito::RetVal retVal = ito::retOk;
 
@@ -1034,7 +1074,7 @@ ito::RetVal NewportConexLDS::setGain(ito::float64* gain)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::setFrequency(ito::float64 frequency)
+ito::RetVal NewportConexLDS::setFrequency(const ito::float64 frequency)
 {
     ito::RetVal retVal = ito::retOk;
     QByteArray sendStr =
@@ -1049,7 +1089,7 @@ ito::RetVal NewportConexLDS::setFrequency(ito::float64 frequency)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::setCalibrationCoefficients(ito::float64* calibrationCoefficients)
+ito::RetVal NewportConexLDS::setCalibrationCoefficients(const ito::float64* calibrationCoefficients)
 {
     ito::RetVal retVal = ito::retOk;
 
@@ -1067,6 +1107,20 @@ ito::RetVal NewportConexLDS::setCalibrationCoefficients(ito::float64* calibratio
             ito::retError, 0, tr("Error during calibrationCoefficients setting.").toUtf8().data());
     }
 
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setRange(const int& range)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray sendStr =
+        QString::number(m_controllerAddress).toUtf8() + "RG" + QString::number(range).toUtf8();
+    retVal += sendCommand(sendStr);
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(ito::retError, 0, tr("Error during range setting.").toUtf8().data());
+    }
     return retVal;
 }
 
