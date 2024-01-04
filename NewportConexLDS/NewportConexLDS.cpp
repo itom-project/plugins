@@ -24,6 +24,7 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "NewportConexLDS.h"
+#include "common/helperCommon.h"
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
@@ -73,6 +74,14 @@ endline    \\r\\n\n\
         tr("An opened serial port.").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
+
+    paramVal = ito::Param(
+        "controllerAddress",
+        ito::ParamBase::Int,
+        1,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Device parameter"),
+        tr("Controller address.").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +111,7 @@ NewportConexLDS::NewportConexLDS() :
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", nullptr);
     m_params.insert(paramVal.getName(), paramVal);
 
-    // SerialIO parameter
+    //------------------------------------------------- SerialIO parameter
     paramVal = ito::Param(
         "requestTimeout",
         ito::ParamBase::Int,
@@ -111,7 +120,7 @@ NewportConexLDS::NewportConexLDS() :
         tr("Request timeout in ms for the SerialIO interface.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    // device parameter
+    //------------------------------------------------- device parameter
     paramVal = ito::Param(
         "deviceName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
@@ -155,6 +164,50 @@ NewportConexLDS::NewportConexLDS() :
         tr("Gain of x and y axis.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    //------------------------------------------------- Measurement
+    paramVal = ito::Param(
+        "frequency",
+        ito::ParamBase::Double,
+        0.20,
+        new ito::DoubleMeta(
+            std::numeric_limits<ito::float64>::min(),
+            std::numeric_limits<ito::float64>::max(),
+            0.20,
+            "Measurement"),
+        tr("Low pass filter frequency.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //------------------------------------------------- EXEC functions
+    QVector<ito::Param> pMand = QVector<ito::Param>();
+    QVector<ito::Param> pOpt = QVector<ito::Param>();
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+
+    ito::float64 values[3] = {0.0, 0.0, 0.0};
+    paramVal = ito::Param(
+        "positionAndPower",
+        ito::ParamBase::DoubleArray | ito::ParamBase::Out,
+        3,
+        values,
+        new ito::DoubleArrayMeta(
+            std::numeric_limits<ito::float64>::min(),
+            std::numeric_limits<ito::float64>::max(),
+            std::numeric_limits<ito::float64>::epsilon(),
+            0,
+            3,
+            3,
+            "Measurement"),
+        tr("Positions of x and y axis.").toLatin1().data());
+    pOut.append(paramVal);
+
+    ito::RetVal ret = registerExecFunc(
+        "getPositionAndPower",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Measure the position and laser power.").toLatin1().data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
 
     // the following lines create and register the plugin's dock widget. Delete these lines if the
     // plugin does not have a dock widget.
@@ -223,6 +276,11 @@ ito::RetVal NewportConexLDS::init(
         QSharedPointer<QVector<ito::ParamBase>> _dummy;
         m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
         m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
+    }
+
+    if (!retValue.containsError())
+    {
+        m_controllerAddress = (*paramsOpt)[0].getVal<int>();
     }
 
     if (!retValue.containsError())
@@ -297,6 +355,40 @@ ito::RetVal NewportConexLDS::close(ItomSharedSemaphore* waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::execFunc(
+    const QString funcName,
+    QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+    QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+    QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+    ItomSharedSemaphore* waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+
+
+    if (funcName == "getPositionAndPower")
+    {
+        ito::ParamBase* positionAndPower = nullptr;
+
+        positionAndPower = ito::getParamByName(&(*paramsOut), "positionAndPower", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += NewportConexLDS::execGetPositionAndPower(*positionAndPower);
+        }
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -330,13 +422,22 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
         }
         else if (key == "gain")
         {
-            ito::float64* gain = new double[2];
+            ito::float64* gain = new double[2]{0.0, 0.0};
             retValue += getGain(gain);
             if (!retValue.containsError())
             {
                 it->setVal<ito::float64*>(gain, 2);
             }
             DELETE_AND_SET_NULL_ARRAY(gain);
+        }
+        else if (key == "frequency")
+        {
+            ito::float64 frequency;
+            retValue += getFrequency(frequency);
+            if (!retValue.containsError())
+            {
+                it->setVal<ito::float64>(frequency);
+            }
         }
         *val = it.value();
     }
@@ -390,6 +491,11 @@ ito::RetVal NewportConexLDS::setParam(
         else if (key == "gain")
         {
             retValue += setGain(val->getVal<ito::float64*>());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "frequency")
+        {
+            retValue += setFrequency(val->getVal<ito::float64>());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -583,6 +689,52 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerDouble(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::sendQuestionWithAnswerDoubleArray(
+    const QByteArray& questionCommand, double* answer, const int number)
+{
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
+    int readSigns;
+    QByteArray answerStr;
+    bool ok = true;
+    ito::RetVal retValue = sendCommand(questionCommand_);
+    retValue += readString(answerStr, readSigns);
+
+    if (questionCommand_.contains("?"))
+    {
+        questionCommand_.replace("?", "");
+    }
+
+    filterCommand(questionCommand_, answerStr);
+
+    QRegularExpression regex("-?\\d+(\\.\\d+)?");
+    QRegularExpressionMatchIterator matchIterator = regex.globalMatch(answerStr);
+
+    // Extract and print all matched values
+    int n = 0;
+    QRegularExpressionMatch match;
+    QString matchedValue;
+    while (matchIterator.hasNext() and ok)
+    {
+        match = matchIterator.next();
+        matchedValue = match.captured();
+        answer[n] = matchedValue.toDouble(&ok);
+        n++;
+    }
+
+    if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
+                .arg(answerStr.constData())
+                .toLatin1()
+                .data());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::sendQuestionWithAnswerInteger(
     const QByteArray& questionCommand, int& answer)
 {
@@ -719,6 +871,36 @@ ito::RetVal NewportConexLDS::getGain(ito::float64* gain)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getFrequency(ito::float64& frequency)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendQuestionWithAnswerDouble("LF?", frequency);
+
+    if (retVal.containsError())
+    {
+        retVal +=
+            ito::RetVal(ito::retError, 0, tr("Error during getting gain values.").toUtf8().data());
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getPositionAndLaserPower(ito::float64* values)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendQuestionWithAnswerDoubleArray("GP?", values, 3);
+
+    if (retVal.containsError())
+    {
+        retVal +=
+            ito::RetVal(ito::retError, 0, tr("Error during getting gain values.").toUtf8().data());
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 {
     ito::RetVal retVal = ito::retOk;
@@ -752,4 +934,35 @@ ito::RetVal NewportConexLDS::setGain(ito::float64* gain)
     }
 
     return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setFrequency(ito::float64 frequency)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray sendStr =
+        QString::number(m_controllerAddress).toUtf8() + "LF" + QString::number(frequency).toUtf8();
+    retVal += sendCommand(sendStr);
+    if (retVal.containsError())
+    {
+        retVal +=
+            ito::RetVal(ito::retError, 0, tr("Error during setting frequency.").toUtf8().data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::execGetPositionAndPower(ito::ParamBase& positionAndPower)
+{
+    ito::RetVal retValue(ito::retOk);
+    ito::float64* values = new double[3]{0.0, 0.0, 0.0};
+    retValue += getPositionAndLaserPower(values);
+
+    if (!retValue.containsError())
+    {
+        positionAndPower.setVal<ito::float64*>(values, 3);
+    }
+    DELETE_AND_SET_NULL_ARRAY(values);
+
+    return retValue;
 }

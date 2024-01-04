@@ -87,17 +87,26 @@ private:
     ito::RetVal readString(QByteArray& result, int& len);
     ito::RetVal sendQuestionWithAnswerString(const QByteArray& questionCommand, QByteArray& answer);
     ito::RetVal sendQuestionWithAnswerDouble(const QByteArray& questionCommand, double& answer);
+    ito::RetVal sendQuestionWithAnswerDoubleArray(
+        const QByteArray& questionCommand, double* answer, const int number);
     ito::RetVal sendQuestionWithAnswerInteger(const QByteArray& questionCommand, int& answer);
     void filterCommand(const QByteArray& questionCommand, QByteArray& answer);
 
-    // Conex functions
+    // Conex get functions
     ito::RetVal getVersion(QString& version, QString& deviceName);
     ito::RetVal getLaserPowerState(int& state);
     ito::RetVal getFactoryCalibrationState(QString& state);
     ito::RetVal getGain(ito::float64* gain);
+    ito::RetVal getFrequency(ito::float64& frequency);
+    ito::RetVal getPositionAndLaserPower(ito::float64* values);
 
+    // Conex set functions
     ito::RetVal setLaserPowerState(const int state);
     ito::RetVal setGain(ito::float64* gain);
+    ito::RetVal setFrequency(ito::float64 frequency);
+
+    // exec functions
+    ito::RetVal execGetPositionAndPower(ito::ParamBase& positionAndPower);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -107,6 +116,13 @@ public slots:
         QVector<ito::ParamBase>* paramsOpt,
         ItomSharedSemaphore* waitCond = NULL);
     ito::RetVal close(ItomSharedSemaphore* waitCond);
+
+    ito::RetVal execFunc(
+        const QString funcName,
+        QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+        QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+        QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+        ItomSharedSemaphore* waitCond = NULL);
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
