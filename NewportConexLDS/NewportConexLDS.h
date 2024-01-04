@@ -101,6 +101,8 @@ private:
     ito::RetVal getPositionAndLaserPower(ito::float64* values);
     ito::RetVal getCalibrationCoefficients(ito::float64* calibrationCoefficients);
     ito::RetVal getRange(int& range);
+    ito::RetVal getLowLevelPowerThreshold(int& level);
+    ito::RetVal getHighLevelPowerThreshold(int& level);
 
     // Conex set functions
     ito::RetVal setLaserPowerState(const int state);
@@ -108,6 +110,8 @@ private:
     ito::RetVal setFrequency(const ito::float64 frequency);
     ito::RetVal setCalibrationCoefficients(const ito::float64* calibrationCoefficients);
     ito::RetVal setRange(const int& range);
+    ito::RetVal setLowLevelPowerThreshold(const int& level);
+    ito::RetVal setHighLevelPowerThreshold(const int& level);
 
     // exec functions
     ito::RetVal execGetPositionAndPower(ito::ParamBase& positionAndPower);

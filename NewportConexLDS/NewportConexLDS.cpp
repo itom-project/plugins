@@ -199,6 +199,24 @@ NewportConexLDS::NewportConexLDS() :
         tr("Value range.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    //-------------------------------------------------
+    paramVal = ito::Param(
+        "lowLevelPowerThreshold",
+        ito::ParamBase::Int,
+        0,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Measurement"),
+        tr("Low level power threshold for valid measurement.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //-------------------------------------------------
+    paramVal = ito::Param(
+        "highLevelPowerThreshold",
+        ito::ParamBase::Int,
+        0,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Measurement"),
+        tr("High level power threshold for valid measurement.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------------------------- EXEC functions
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -399,6 +417,26 @@ ito::RetVal NewportConexLDS::init(
 
     if (!retValue.containsError())
     {
+        int level;
+        retValue += getLowLevelPowerThreshold(level);
+        if (!retValue.containsError())
+        {
+            m_params["lowLevelPowerThreshold"].setVal<int>(level);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        int level;
+        retValue += getHighLevelPowerThreshold(level);
+        if (!retValue.containsError())
+        {
+            m_params["highLevelPowerThreshold"].setVal<int>(level);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         emit parametersChanged(m_params);
     }
 
@@ -540,6 +578,24 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
                 it->setVal<int>(range);
             }
         }
+        else if (key == "lowLevelPowerThreshold")
+        {
+            int level;
+            retValue += getLowLevelPowerThreshold(level);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(level);
+            }
+        }
+        else if (key == "highLevelPowerThreshold")
+        {
+            int level;
+            retValue += getHighLevelPowerThreshold(level);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(level);
+            }
+        }
         *val = it.value();
     }
 
@@ -602,6 +658,16 @@ ito::RetVal NewportConexLDS::setParam(
         else if (key == "calibrationCoefficients")
         {
             retValue += setCalibrationCoefficients(val->getVal<ito::float64*>());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "lowLevelPowerThreshold")
+        {
+            retValue += setLowLevelPowerThreshold(val->getVal<int>());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "highLevelPowerThreshold")
+        {
+            retValue += setHighLevelPowerThreshold(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -1038,6 +1104,36 @@ ito::RetVal NewportConexLDS::getRange(int& range)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getLowLevelPowerThreshold(int& level)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendQuestionWithAnswerInteger("SL?", level);
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during low level power threshold request.").toUtf8().data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getHighLevelPowerThreshold(int& level)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendQuestionWithAnswerInteger("SR?", level);
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during high level power threshold request.").toUtf8().data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 {
     ito::RetVal retVal = ito::retOk;
@@ -1120,6 +1216,40 @@ ito::RetVal NewportConexLDS::setRange(const int& range)
     if (retVal.containsError())
     {
         retVal += ito::RetVal(ito::retError, 0, tr("Error during range setting.").toUtf8().data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setLowLevelPowerThreshold(const int& level)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray sendStr =
+        QString::number(m_controllerAddress).toUtf8() + "SL" + QString::number(level).toUtf8();
+    retVal += sendCommand(sendStr);
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during low level power threshold setting.").toUtf8().data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setHighLevelPowerThreshold(const int& level)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray sendStr =
+        QString::number(m_controllerAddress).toUtf8() + "SR" + QString::number(level).toUtf8();
+    retVal += sendCommand(sendStr);
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during high level power threshold setting.").toUtf8().data());
     }
     return retVal;
 }
