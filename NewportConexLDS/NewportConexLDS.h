@@ -99,11 +99,13 @@ private:
     ito::RetVal getGain(ito::float64* gain);
     ito::RetVal getFrequency(ito::float64& frequency);
     ito::RetVal getPositionAndLaserPower(ito::float64* values);
+    ito::RetVal getCalibrationCoefficients(ito::float64* calibrationCoefficients);
 
     // Conex set functions
     ito::RetVal setLaserPowerState(const int state);
     ito::RetVal setGain(ito::float64* gain);
     ito::RetVal setFrequency(ito::float64 frequency);
+    ito::RetVal setCalibrationCoefficients(ito::float64* calibrationCoefficients);
 
     // exec functions
     ito::RetVal execGetPositionAndPower(ito::ParamBase& positionAndPower);

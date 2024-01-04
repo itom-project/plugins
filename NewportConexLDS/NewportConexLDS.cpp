@@ -174,12 +174,20 @@ NewportConexLDS::NewportConexLDS() :
         "frequency",
         ito::ParamBase::Double,
         0.20,
-        new ito::DoubleMeta(
-            std::numeric_limits<ito::float64>::min(),
-            std::numeric_limits<ito::float64>::max(),
-            0.20,
-            "Measurement"),
+        new ito::DoubleMeta(0.0, std::numeric_limits<ito::float64>::max(), 0.20, "Measurement"),
         tr("Low pass filter frequency.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //-------------------------------------------------
+    ito::float64 calibration[2] = {1.0, 1.0};
+    paramVal = ito::Param(
+        "calibrationCoefficients",
+        ito::ParamBase::DoubleArray,
+        2,
+        gain,
+        new ito::DoubleArrayMeta(
+            0.0, std::numeric_limits<ito::float64>::max(), 0.0, 0, 2, 2, "Measurement"),
+        tr("Calibration coefficients of x and y axis.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------------------------- EXEC functions
@@ -352,8 +360,22 @@ ito::RetVal NewportConexLDS::init(
     {
         ito::float64* gain = new double[2];
         retValue += getGain(gain);
-
+        if (!retValue.containsError())
+        {
+            m_params["gain"].setVal<double*>(gain, 2);
+        }
         DELETE_AND_SET_NULL_ARRAY(gain);
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::float64* calibration = new double[2];
+        retValue += getCalibrationCoefficients(calibration);
+        if (!retValue.containsError())
+        {
+            m_params["calibrationCoefficients"].setVal<double*>(calibration, 2);
+        }
+        DELETE_AND_SET_NULL_ARRAY(calibration);
     }
 
 
@@ -481,6 +503,16 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
                 it->setVal<ito::float64>(frequency);
             }
         }
+        else if (key == "calibrationCoefficients")
+        {
+            ito::float64* calibration = new double[2];
+            retValue += getCalibrationCoefficients(calibration);
+            if (!retValue.containsError())
+            {
+                it->setVal<ito::float64*>(calibration, 2);
+            }
+            DELETE_AND_SET_NULL_ARRAY(calibration);
+        }
         *val = it.value();
     }
 
@@ -538,6 +570,11 @@ ito::RetVal NewportConexLDS::setParam(
         else if (key == "frequency")
         {
             retValue += setFrequency(val->getVal<ito::float64>());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "calibrationCoefficients")
+        {
+            retValue += setCalibrationCoefficients(val->getVal<ito::float64*>());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -943,6 +980,24 @@ ito::RetVal NewportConexLDS::getPositionAndLaserPower(ito::float64* values)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getCalibrationCoefficients(ito::float64* calibrationCoefficients)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendQuestionWithAnswerDouble("PX?", calibrationCoefficients[0]);
+    retVal += sendQuestionWithAnswerDouble("PY?", calibrationCoefficients[1]);
+
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during getting calibration coeffients values.").toUtf8().data());
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 {
     ito::RetVal retVal = ito::retOk;
@@ -994,6 +1049,28 @@ ito::RetVal NewportConexLDS::setFrequency(ito::float64 frequency)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setCalibrationCoefficients(ito::float64* calibrationCoefficients)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    QByteArray sendStr = QString::number(m_controllerAddress).toUtf8() + "PX" +
+        QString::number(calibrationCoefficients[0]).toUtf8();
+    retVal += sendCommand(sendStr);
+
+    sendStr = QString::number(m_controllerAddress).toUtf8() + "PY" +
+        QString::number(calibrationCoefficients[1]).toUtf8();
+    retVal += sendCommand(sendStr);
+
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(
+            ito::retError, 0, tr("Error during calibrationCoefficients setting.").toUtf8().data());
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::execGetPositionAndPower(ito::ParamBase& positionAndPower)
 {
     ito::RetVal retValue(ito::retOk);
@@ -1021,26 +1098,33 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
             ito::RetVal(ito::retError, 0, tr("data dObj must be 2 dimensional").toLatin1().data());
     }
 
-    ito::float64* values = new double[3]{0.0, 0.0, 0.0};
-    int planeID = dObj.seekMat(0);
-    ito::float64* xPtr = dObj.rowPtr<ito::float64>(0, 0);
-    ito::float64* yPtr = dObj.rowPtr<ito::float64>(0, 1);
-    ito::float64* powerPtr = dObj.rowPtr<ito::float64>(0, 2);
-
-    int length = dObj.getSize(1);
-    ito::ByteArray* time = new ito::ByteArray[length];
-
-    for (int i = 0; i < dObj.getSize(1); i++)
+    if (!retValue.containsError())
     {
-        retValue += getPositionAndLaserPower(values);
-        powerPtr[i] = values[0];
-        xPtr[i] = values[1];
-        yPtr[i] = values[2];
-        time[i] = QDateTime::currentDateTime().toString().toUtf8().data();
+        ito::float64* values = new double[3]{0.0, 0.0, 0.0};
+        int planeID = dObj.seekMat(0);
+        ito::float64* xPtr = dObj.rowPtr<ito::float64>(0, 0);
+        ito::float64* yPtr = dObj.rowPtr<ito::float64>(0, 1);
+        ito::float64* powerPtr = dObj.rowPtr<ito::float64>(0, 2);
+
+        int length = dObj.getSize(1);
+        ito::ByteArray* time = new ito::ByteArray[length];
+
+        for (int i = 0; i < dObj.getSize(1); i++)
+        {
+            retValue += getPositionAndLaserPower(values);
+            powerPtr[i] = values[0];
+            xPtr[i] = values[1];
+            yPtr[i] = values[2];
+            time[i] = QDateTime::currentDateTime().toString().toUtf8().data();
+        }
+        dObj.setTag("legendTitle0", "laser power");
+        dObj.setTag("legendTitle1", "x position");
+        dObj.setTag("legendTitle2", "y position");
+
+        timeStemps.setVal<ito::ByteArray*>(time, length);
+        DELETE_AND_SET_NULL_ARRAY(values);
+        DELETE_AND_SET_NULL_ARRAY(time);
     }
 
-    timeStemps.setVal<ito::ByteArray*>(time, length);
-
-    DELETE_AND_SET_NULL_ARRAY(values);
     return retValue;
 }
