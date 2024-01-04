@@ -129,7 +129,7 @@ NewportConexLDS::NewportConexLDS() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
-        "laserPower",
+        "laserPowerState",
         ito::ParamBase::Int,
         0,
         new ito::IntMeta(0, 1, 1, "Device parameter"),
@@ -143,6 +143,18 @@ NewportConexLDS::NewportConexLDS() :
         tr("Factory calibration information.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
+
+    ito::float64 gain[2] = {1.0, 1.0};
+    paramVal = ito::Param(
+        "gain",
+        ito::ParamBase::DoubleArray,
+        2,
+        gain,
+        new ito::DoubleArrayMeta(
+            0.0, std::numeric_limits<ito::float64>::max(), 0.0, 0, 2, 2, "Device parameter"),
+        tr("Gain of x and y axis.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
 
     // the following lines create and register the plugin's dock widget. Delete these lines if the
     // plugin does not have a dock widget.
@@ -241,8 +253,16 @@ ito::RetVal NewportConexLDS::init(
         retValue += getLaserPowerState(state);
         if (!retValue.containsError())
         {
-            m_params["laserPower"].setVal<int>(state);
+            m_params["laserPowerState"].setVal<int>(state);
         }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::float64* gain = new double[2];
+        retValue += getGain(gain);
+
+        DELETE_AND_SET_NULL_ARRAY(gain);
     }
 
 
@@ -299,7 +319,7 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
 
     if (!retValue.containsError())
     {
-        if (key == "laserPower")
+        if (key == "laserPowerState")
         {
             int state;
             retValue += getLaserPowerState(state);
@@ -307,6 +327,16 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
             {
                 it->setVal<int>(state);
             }
+        }
+        else if (key == "gain")
+        {
+            ito::float64* gain = new double[2];
+            retValue += getGain(gain);
+            if (!retValue.containsError())
+            {
+                it->setVal<ito::float64*>(gain, 2);
+            }
+            DELETE_AND_SET_NULL_ARRAY(gain);
         }
         *val = it.value();
     }
@@ -352,9 +382,14 @@ ito::RetVal NewportConexLDS::setParam(
 
     if (!retValue.containsError())
     {
-        if (key == "laserPower")
+        if (key == "laserPowerState")
         {
             retValue += setLaserPowerState(val->getVal<int>());
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "gain")
+        {
+            retValue += setGain(val->getVal<ito::float64*>());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -521,12 +556,18 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerDouble(
 {
     QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
     int readSigns;
-    QByteArray _answer;
+    QByteArray answerStr;
     bool ok;
     ito::RetVal retValue = sendCommand(questionCommand_);
-    retValue += readString(_answer, readSigns);
-    _answer = _answer.replace(",", ".");
-    answer = _answer.toDouble(&ok);
+    retValue += readString(answerStr, readSigns);
+
+    if (questionCommand_.contains("?"))
+    {
+        questionCommand_.replace("?", "");
+    }
+
+    filterCommand(questionCommand_, answerStr);
+    answer = answerStr.toDouble(&ok);
 
     if (!ok)
     {
@@ -534,7 +575,7 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerDouble(
             ito::retError,
             0,
             tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
-                .arg(_answer.constData())
+                .arg(answerStr.constData())
                 .toLatin1()
                 .data());
     }
@@ -658,7 +699,23 @@ ito::RetVal NewportConexLDS::getFactoryCalibrationState(QString& state)
                 .data());
     }
 
-    return ito::RetVal();
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getGain(ito::float64* gain)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendQuestionWithAnswerDouble("GX?", gain[0]);
+    retVal += sendQuestionWithAnswerDouble("GY?", gain[1]);
+
+    if (retVal.containsError())
+    {
+        retVal +=
+            ito::RetVal(ito::retError, 0, tr("Error during getting gain values.").toUtf8().data());
+    }
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -673,5 +730,26 @@ ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
         retVal +=
             ito::RetVal(ito::retError, 0, tr("Error during laser power enabling.").toUtf8().data());
     }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setGain(ito::float64* gain)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    QByteArray sendStr =
+        QString::number(m_controllerAddress).toUtf8() + "GX" + QString::number(gain[0]).toUtf8();
+    retVal += sendCommand(sendStr);
+
+    sendStr =
+        QString::number(m_controllerAddress).toUtf8() + "GY" + QString::number(gain[1]).toUtf8();
+    retVal += sendCommand(sendStr);
+
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(ito::retError, 0, tr("Error during gain setting.").toUtf8().data());
+    }
+
     return retVal;
 }

@@ -94,9 +94,10 @@ private:
     ito::RetVal getVersion(QString& version, QString& deviceName);
     ito::RetVal getLaserPowerState(int& state);
     ito::RetVal getFactoryCalibrationState(QString& state);
-
+    ito::RetVal getGain(ito::float64* gain);
 
     ito::RetVal setLaserPowerState(const int state);
+    ito::RetVal setGain(ito::float64* gain);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
