@@ -107,6 +107,7 @@ private:
 
     // exec functions
     ito::RetVal execGetPositionAndPower(ito::ParamBase& positionAndPower);
+    ito::RetVal execGetPositionAndPowerArray(ito::DataObject& data, ito::ParamBase& timeStemps);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);

@@ -28,6 +28,7 @@
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
+#include <qdatetime.h>
 #include <qmessagebox.h>
 #include <qplugin.h>
 #include <qregularexpression.h>
@@ -129,6 +130,7 @@ NewportConexLDS::NewportConexLDS() :
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    //-------------------------------------------------
     paramVal = ito::Param(
         "version",
         ito::ParamBase::String | ito::ParamBase::Readonly,
@@ -137,6 +139,7 @@ NewportConexLDS::NewportConexLDS() :
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    //-------------------------------------------------
     paramVal = ito::Param(
         "laserPowerState",
         ito::ParamBase::Int,
@@ -145,6 +148,7 @@ NewportConexLDS::NewportConexLDS() :
         tr("Enable/Disable laser power (0==OFF, 1==ON).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    //-------------------------------------------------
     paramVal = ito::Param(
         "factoryCalibrationState",
         ito::ParamBase::String | ito::ParamBase::Readonly,
@@ -153,6 +157,7 @@ NewportConexLDS::NewportConexLDS() :
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    //-------------------------------------------------
     ito::float64 gain[2] = {1.0, 1.0};
     paramVal = ito::Param(
         "gain",
@@ -199,12 +204,40 @@ NewportConexLDS::NewportConexLDS() :
         tr("Positions of x and y axis.").toLatin1().data());
     pOut.append(paramVal);
 
-    ito::RetVal ret = registerExecFunc(
+    registerExecFunc(
         "getPositionAndPower",
         pMand,
         pOpt,
         pOut,
         tr("Measure the position and laser power.").toLatin1().data());
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    //-------------------------------------------------
+    paramVal = ito::Param(
+        "data",
+        ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out,
+        nullptr,
+        tr("Measruement data X, Y, position and laser power.").toLatin1().data());
+    pMand.append(paramVal);
+
+    paramVal = ito::Param(
+        "timeStemps",
+        ito::ParamBase::StringList | ito::ParamBase::Out,
+        nullptr,
+        tr("Timestemps corresponding to the measruement data.").toLatin1().data());
+    pOut.append(paramVal);
+
+    registerExecFunc(
+        "getPositionAndPowerMeasurement",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Measure the position and laser power. "
+           "It will fill the input dataObject with positions, laser power and timestemps.")
+            .toLatin1()
+            .data());
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -367,13 +400,22 @@ ito::RetVal NewportConexLDS::execFunc(
 
     if (funcName == "getPositionAndPower")
     {
-        ito::ParamBase* positionAndPower = nullptr;
-
-        positionAndPower = ito::getParamByName(&(*paramsOut), "positionAndPower", &retValue);
+        ito::ParamBase* positionAndPower =
+            ito::getParamByName(&(*paramsOut), "positionAndPower", &retValue);
 
         if (!retValue.containsError())
         {
             retValue += NewportConexLDS::execGetPositionAndPower(*positionAndPower);
+        }
+    }
+    else if (funcName == "getPositionAndPowerMeasurement")
+    {
+        ito::DataObject* dObj = (ito::DataObject*)(*paramsMand)[0].getVal<ito::DataObject*>();
+        ito::ParamBase* timeStemps = ito::getParamByName(&(*paramsOut), "timeStemps", &retValue);
+
+        if (!retValue.containsError())
+        {
+            retValue += NewportConexLDS::execGetPositionAndPowerArray(*dObj, *timeStemps);
         }
     }
 
@@ -964,5 +1006,41 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(ito::ParamBase& positionAnd
     }
     DELETE_AND_SET_NULL_ARRAY(values);
 
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
+    ito::DataObject& dObj, ito::ParamBase& timeStemps)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    if (dObj.getDims() != 2)
+    {
+        retValue +=
+            ito::RetVal(ito::retError, 0, tr("data dObj must be 2 dimensional").toLatin1().data());
+    }
+
+    ito::float64* values = new double[3]{0.0, 0.0, 0.0};
+    int planeID = dObj.seekMat(0);
+    ito::float64* xPtr = dObj.rowPtr<ito::float64>(0, 0);
+    ito::float64* yPtr = dObj.rowPtr<ito::float64>(0, 1);
+    ito::float64* powerPtr = dObj.rowPtr<ito::float64>(0, 2);
+
+    int length = dObj.getSize(1);
+    ito::ByteArray* time = new ito::ByteArray[length];
+
+    for (int i = 0; i < dObj.getSize(1); i++)
+    {
+        retValue += getPositionAndLaserPower(values);
+        powerPtr[i] = values[0];
+        xPtr[i] = values[1];
+        yPtr[i] = values[2];
+        time[i] = QDateTime::currentDateTime().toString().toUtf8().data();
+    }
+
+    timeStemps.setVal<ito::ByteArray*>(time, length);
+
+    DELETE_AND_SET_NULL_ARRAY(values);
     return retValue;
 }
