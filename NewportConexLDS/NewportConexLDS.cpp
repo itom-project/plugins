@@ -217,6 +217,12 @@ NewportConexLDS::NewportConexLDS() :
         tr("High level power threshold for valid measurement.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    //------------------------------------------------- Measurement
+    paramVal = ito::Param(
+        "unit", ito::ParamBase::String, "unknown", tr("Measurement unit.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Measurement"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------------------------- EXEC functions
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -437,6 +443,16 @@ ito::RetVal NewportConexLDS::init(
 
     if (!retValue.containsError())
     {
+        QString state;
+        retValue += getUnit(state);
+        if (!retValue.containsError())
+        {
+            m_params["unit"].setVal<char*>(state.toUtf8().data());
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         emit parametersChanged(m_params);
     }
 
@@ -594,6 +610,15 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
             if (!retValue.containsError())
             {
                 it->setVal<int>(level);
+            }
+        }
+        else if (key == "unit")
+        {
+            QString unit;
+            retValue += getUnit(unit);
+            if (!retValue.containsError())
+            {
+                it->setVal<char*>(unit.toUtf8().data());
             }
         }
         *val = it.value();
@@ -1134,6 +1159,26 @@ ito::RetVal NewportConexLDS::getHighLevelPowerThreshold(int& level)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getUnit(QString& unit)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray answer;
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + "SU?";
+    retVal += sendQuestionWithAnswerString("SU?", answer);
+    if (!retVal.containsError())
+    {
+        if (questionCommand_.contains("?"))
+        {
+            questionCommand_.replace("?", "");
+        }
+        filterCommand(questionCommand_, answer);
+        unit = answer;
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 {
     ito::RetVal retVal = ito::retOk;
@@ -1255,6 +1300,19 @@ ito::RetVal NewportConexLDS::setHighLevelPowerThreshold(const int& level)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setUnit(const QString& unit)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray sendStr = QString::number(m_controllerAddress).toUtf8() + "SU" + unit.toUtf8();
+    retVal += sendCommand(sendStr);
+    if (retVal.containsError())
+    {
+        retVal += ito::RetVal(ito::retError, 0, tr("Error during unit setting.").toUtf8().data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::execGetPositionAndPower(ito::ParamBase& positionAndPower)
 {
     ito::RetVal retValue(ito::retOk);
@@ -1300,6 +1358,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
             xPtr[i] = values[1];
             yPtr[i] = values[2];
             time[i] = QDateTime::currentDateTime().toString().toUtf8().data();
+            setAlive();
         }
         dObj.setTag("legendTitle0", "laser power");
         dObj.setTag("legendTitle1", "x position");
