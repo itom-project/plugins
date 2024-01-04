@@ -39,24 +39,31 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 NewportConexLDSInterface::NewportConexLDSInterface()
 {
-    m_type = ito::typeDataIO | ito::typeRawIO; // any grabber is a dataIO device AND its subtype
-                                               // grabber (bitmask -> therefore the OR-combination).
+    m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("NewportConexLDS");
 
     m_description = QObject::tr("NewportConexLDS");
-
-    // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] =
-        "This template can be used for implementing a new type of camera or grabber plugin \n\
+        "NewportConexLDS is an itom-plugin to use the Newport Conex-LDS autocollimator.\n\
+For further information go to: https://www.newport.com/p/CONEX-LDS\n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
+This plugin has been developed using SerialIO interface with following default parameters:\n\
+\n\
+========== ======================================================\n\
+Baud Rate  921600 (default for RS232)\n\
+Data Bits  8\n\
+Parity     None\n\
+Stop bits  1\n\
+endline    \\r\\n\n\
+========== ======================================================\n\
+";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal(
@@ -76,15 +83,14 @@ NewportConexLDSInterface::~NewportConexLDSInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDSInterface::getAddInInst(ito::AddInBase** addInInst)
 {
-    NEW_PLUGININSTANCE(NewportConexLDS) // the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(NewportConexLDS)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDSInterface::closeThisInst(ito::AddInBase** addInInst)
 {
-    REMOVE_PLUGININSTANCE(
-        NewportConexLDS) // the argument of the macro is the classname of the plugin
+    REMOVE_PLUGININSTANCE(NewportConexLDS)
     return ito::retOk;
 }
 
@@ -127,7 +133,7 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::Int,
         0,
         new ito::IntMeta(0, 1, 1, "Device parameter"),
-        tr("Laser power (0==OFF, 1==ON).").toLatin1().data());
+        tr("Enable/Disable laser power (0==OFF, 1==ON).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // the following lines create and register the plugin's dock widget. Delete these lines if the
@@ -165,8 +171,8 @@ ito::RetVal NewportConexLDS::init(
     {
         retValue += ito::RetVal(
             ito::retError,
-            1,
-            tr("Input parameter is not a dataIO instance of ther SerialIO Plugin!")
+            0,
+            tr("Input parameter is not a dataIO instance of the SerialIO Plugin!")
                 .toLatin1()
                 .data());
     }
@@ -201,12 +207,24 @@ ito::RetVal NewportConexLDS::init(
 
     if (!retValue.containsError())
     {
-        retValue += getVersion();
+        QString version;
+        QString deviceName;
+        retValue += getVersion(version, deviceName);
+        if (!retValue.containsError())
+        {
+            m_params["deviceName"].setVal<char*>(version.toUtf8().data());
+            m_params["version"].setVal<char*>(deviceName.toUtf8().data());
+        }
     }
 
     if (!retValue.containsError())
     {
-        retValue += getLaserPowerState();
+        int state;
+        retValue += getLaserPowerState(state);
+        if (!retValue.containsError())
+        {
+            m_params["laserPower"].setVal<int>(state);
+        }
     }
 
 
@@ -226,10 +244,6 @@ ito::RetVal NewportConexLDS::init(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shutdown of plugin
-/*!
-    \sa init
-*/
 ito::RetVal NewportConexLDS::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -267,9 +281,15 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
 
     if (!retValue.containsError())
     {
-        // put your switch-case.. for getting the right value here
-
-        // finally, save the desired value in the argument val (this is a shared pointer!)
+        if (key == "laserPower")
+        {
+            int state;
+            retValue += getLaserPowerState(state);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(state);
+            }
+        }
         *val = it.value();
     }
 
@@ -314,14 +334,9 @@ ito::RetVal NewportConexLDS::setParam(
 
     if (!retValue.containsError())
     {
-        if (key == "demoKey1")
+        if (key == "laserPower")
         {
-            // check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom(&(*val));
-        }
-        else if (key == "demoKey2")
-        {
-            // check the new value and if ok, assign it to the internal parameter
+            retValue += setLaserPowerState(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -560,7 +575,7 @@ void NewportConexLDS::filterCommand(const QByteArray& questionCommand, QByteArra
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::getVersion()
+ito::RetVal NewportConexLDS::getVersion(QString& version, QString& deviceName)
 {
     ito::RetVal retVal = ito::retOk;
     QByteArray answer;
@@ -572,8 +587,18 @@ ito::RetVal NewportConexLDS::getVersion()
 
         if (match.hasMatch())
         {
-            m_params["deviceName"].setVal<char*>(match.captured(1).toUtf8().data());
-            m_params["version"].setVal<char*>(match.captured(2).toUtf8().data());
+            version = match.captured(1);
+            deviceName = match.captured(2);
+        }
+        else
+        {
+            retVal += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error during version request with answer: '%1'")
+                    .arg(answer.constData())
+                    .toUtf8()
+                    .data());
         }
     }
 
@@ -581,15 +606,29 @@ ito::RetVal NewportConexLDS::getVersion()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::getLaserPowerState()
+ito::RetVal NewportConexLDS::getLaserPowerState(int& state)
 {
     ito::RetVal retVal = ito::retOk;
-    int state;
     retVal += sendQuestionWithAnswerInteger("LB?", state);
-    if (!retVal.containsError())
+    if (retVal.containsError())
     {
-        m_params["laserPower"].setVal<int>(state);
+        retVal +=
+            ito::RetVal(ito::retError, 0, tr("Error during laser power request.").toUtf8().data());
     }
+    return retVal;
+}
 
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray sendStr =
+        QString::number(m_controllerAddress).toUtf8() + "LB" + QString::number(state).toUtf8();
+    retVal += sendCommand(sendStr);
+    if (retVal.containsError())
+    {
+        retVal +=
+            ito::RetVal(ito::retError, 0, tr("Error during laser power enabling.").toUtf8().data());
+    }
     return retVal;
 }

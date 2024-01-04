@@ -91,8 +91,9 @@ private:
     void filterCommand(const QByteArray& questionCommand, QByteArray& answer);
 
     // Conex functions
-    ito::RetVal getVersion();
-    ito::RetVal getLaserPowerState();
+    ito::RetVal getVersion(QString& version, QString& deviceName);
+    ito::RetVal getLaserPowerState(int& state);
+    ito::RetVal setLaserPowerState(const int state);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
