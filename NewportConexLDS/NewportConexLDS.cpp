@@ -1354,15 +1354,15 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
         for (int i = 0; i < dObj.getSize(1); i++)
         {
             retValue += getPositionAndLaserPower(values);
-            powerPtr[i] = values[0];
-            xPtr[i] = values[1];
-            yPtr[i] = values[2];
+            xPtr[i] = values[0];
+            yPtr[i] = values[1];
+            powerPtr[i] = values[2];
             time[i] = QDateTime::currentDateTime().toString().toUtf8().data();
             setAlive();
         }
-        dObj.setTag("legendTitle0", "laser power");
-        dObj.setTag("legendTitle1", "x position");
-        dObj.setTag("legendTitle2", "y position");
+        dObj.setTag("legendTitle0", "x position");
+        dObj.setTag("legendTitle1", "y position");
+        dObj.setTag("legendTitle2", "laser power");
 
         timeStemps.setVal<ito::ByteArray*>(time, length);
         DELETE_AND_SET_NULL_ARRAY(values);
