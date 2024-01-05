@@ -29,11 +29,13 @@
 #include "pluginVersion.h"
 
 #include <qdatetime.h>
+#include <qelapsedtimer.h>
 #include <qmessagebox.h>
 #include <qplugin.h>
 #include <qregularexpression.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qthread.h>
 #include <qwaitcondition.h>
 
 #include "dockWidgetNewportConexLDS.h"
@@ -270,6 +272,14 @@ NewportConexLDS::NewportConexLDS() :
         nullptr,
         tr("Measruement data X, Y, position and laser power.").toLatin1().data());
     pMand.append(paramVal);
+
+    paramVal = ito::Param(
+        "delay",
+        ito::ParamBase::Int | ito::ParamBase::In,
+        200,
+        new ito::IntMeta(200, std::numeric_limits<int>::max(), 1, "Measurement"),
+        tr("Delay between measruement points in ms.").toLatin1().data());
+    pOpt.append(paramVal);
 
     paramVal = ito::Param(
         "timeStemps",
@@ -516,10 +526,11 @@ ito::RetVal NewportConexLDS::execFunc(
     {
         ito::DataObject* dObj = (ito::DataObject*)(*paramsMand)[0].getVal<ito::DataObject*>();
         ito::ParamBase* timeStemps = ito::getParamByName(&(*paramsOut), "timeStemps", &retValue);
+        int delay = (*paramsOpt)[0].getVal<int>();
 
         if (!retValue.containsError())
         {
-            retValue += NewportConexLDS::execGetPositionAndPowerArray(*dObj, *timeStemps);
+            retValue += NewportConexLDS::execGetPositionAndPowerArray(*dObj, *timeStemps, delay);
         }
     }
 
@@ -1358,7 +1369,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
-    ito::DataObject& dObj, ito::ParamBase& timeStemps)
+    ito::DataObject& dObj, ito::ParamBase& timeStemps, const int& delay)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -1379,6 +1390,12 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
         int length = dObj.getSize(1);
         ito::ByteArray* time = new ito::ByteArray[length];
 
+        QElapsedTimer timer;
+        timer.start();
+
+        int elapsed = timer.elapsed();
+        int remaining = delay - elapsed;
+
         for (int i = 0; i < dObj.getSize(1); i++)
         {
             retValue += getPositionAndLaserPower(values);
@@ -1388,6 +1405,13 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
             time[i] =
                 QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz").toUtf8().data();
             setAlive();
+
+            elapsed = timer.elapsed();
+            remaining = delay - elapsed;
+            if (remaining > 0)
+                QThread::msleep(remaining);
+
+            timer.restart();
         }
         dObj.setTag("legendTitle0", "x position");
         dObj.setTag("legendTitle1", "y position");
