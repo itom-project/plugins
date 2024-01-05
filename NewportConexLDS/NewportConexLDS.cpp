@@ -245,6 +245,14 @@ NewportConexLDS::NewportConexLDS() :
         tr("Positions of x and y axis.").toLatin1().data());
     pOut.append(paramVal);
 
+    paramVal = ito::Param(
+        "timeStemp",
+        ito::ParamBase::String | ito::ParamBase::Out,
+        "unknown",
+        tr("Timestemp of measurement.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Measurement"), true);
+    pOut.append(paramVal);
+
     registerExecFunc(
         "getPositionAndPower",
         pMand,
@@ -497,9 +505,11 @@ ito::RetVal NewportConexLDS::execFunc(
         ito::ParamBase* positionAndPower =
             ito::getParamByName(&(*paramsOut), "positionAndPower", &retValue);
 
+        ito::ParamBase* timeStemp = ito::getParamByName(&(*paramsOut), "timeStemp", &retValue);
+
         if (!retValue.containsError())
         {
-            retValue += NewportConexLDS::execGetPositionAndPower(*positionAndPower);
+            retValue += NewportConexLDS::execGetPositionAndPower(*positionAndPower, *timeStemp);
         }
     }
     else if (funcName == "getPositionAndPowerMeasurement")
@@ -1086,7 +1096,7 @@ ito::RetVal NewportConexLDS::getFrequency(ito::float64& frequency)
 ito::RetVal NewportConexLDS::getPositionAndLaserPower(ito::float64* values)
 {
     ito::RetVal retVal = ito::retOk;
-    retVal += sendQuestionWithAnswerDoubleArray("GP?", values, 3);
+    retVal += sendQuestionWithAnswerDoubleArray("GP", values, 3);
 
     if (retVal.containsError())
     {
@@ -1173,6 +1183,21 @@ ito::RetVal NewportConexLDS::getUnit(QString& unit)
         }
         filterCommand(questionCommand_, answer);
         unit = answer;
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::getError(QString& error)
+{
+    ito::RetVal retVal = ito::retOk;
+    QByteArray answer;
+    retVal += sendQuestionWithAnswerString("TB", answer);
+    if (!retVal.containsError())
+    {
+        filterCommand("TB", answer);
+        error = answer;
     }
 
     return retVal;
@@ -1313,7 +1338,8 @@ ito::RetVal NewportConexLDS::setUnit(const QString& unit)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal NewportConexLDS::execGetPositionAndPower(ito::ParamBase& positionAndPower)
+ito::RetVal NewportConexLDS::execGetPositionAndPower(
+    ito::ParamBase& positionAndPower, ito::ParamBase& timeStemp)
 {
     ito::RetVal retValue(ito::retOk);
     ito::float64* values = new double[3]{0.0, 0.0, 0.0};
@@ -1322,6 +1348,8 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(ito::ParamBase& positionAnd
     if (!retValue.containsError())
     {
         positionAndPower.setVal<ito::float64*>(values, 3);
+        timeStemp.setVal<char*>(
+            QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz").toUtf8().data());
     }
     DELETE_AND_SET_NULL_ARRAY(values);
 
@@ -1357,7 +1385,8 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
             xPtr[i] = values[0];
             yPtr[i] = values[1];
             powerPtr[i] = values[2];
-            time[i] = QDateTime::currentDateTime().toString().toUtf8().data();
+            time[i] =
+                QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz").toUtf8().data();
             setAlive();
         }
         dObj.setTag("legendTitle0", "x position");

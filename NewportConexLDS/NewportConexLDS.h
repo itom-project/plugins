@@ -104,6 +104,7 @@ private:
     ito::RetVal getLowLevelPowerThreshold(int& level);
     ito::RetVal getHighLevelPowerThreshold(int& level);
     ito::RetVal getUnit(QString& unit);
+    ito::RetVal getError(QString& error);
 
     // Conex set functions
     ito::RetVal setLaserPowerState(const int state);
@@ -116,7 +117,8 @@ private:
     ito::RetVal setUnit(const QString& unit);
 
     // exec functions
-    ito::RetVal execGetPositionAndPower(ito::ParamBase& positionAndPower);
+    ito::RetVal execGetPositionAndPower(
+        ito::ParamBase& positionAndPower, ito::ParamBase& timeStemp);
     ito::RetVal execGetPositionAndPowerArray(ito::DataObject& data, ito::ParamBase& timeStemps);
 
 public slots:
